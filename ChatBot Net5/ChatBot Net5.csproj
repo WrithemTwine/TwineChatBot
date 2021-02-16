@@ -1,0 +1,80 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>ChatBot_Net5</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <Authors>ChatBot Net5</Authors>
+    <StartupObject>ChatBot_Net5.App</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="tempMainWindow.xaml.cs" />
+    <Compile Remove="XML\ChatDataStore.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="XML\ChatDataStore.xml" />
+    <None Remove="XML\commands.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="tempMainWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="TwitchLib" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ChatPopup.xaml.cs">
+      <DependentUpon>ChatPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Data\DataSource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DataSource.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\DataSource.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="ChatPopup.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="XML\" />
+  </ItemGroup>
+
+</Project>

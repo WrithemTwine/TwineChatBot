@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DataSource" targetNamespace="http://tempuri.org/DataSource.xsd" xmlns:mstns="http://tempuri.org/DataSource.xsd" xmlns="http://tempuri.org/DataSource.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="ExcludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DataSource" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DataSource" msprop:Generator_UserDSName="DataSource">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Discord" msprop:Generator_TableClassName="DiscordDataTable" msprop:Generator_TableVarName="tableDiscord" msprop:Generator_RowChangedName="DiscordRowChanged" msprop:Generator_TablePropName="Discord" msprop:Generator_RowDeletingName="DiscordRowDeleting" msprop:Generator_RowChangingName="DiscordRowChanging" msprop:Generator_RowEvHandlerName="DiscordRowChangeEventHandler" msprop:Generator_RowDeletedName="DiscordRowDeleted" msprop:Generator_RowClassName="DiscordRow" msprop:Generator_UserTableName="Discord" msprop:Generator_RowEvArgName="DiscordRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" />
+              <xs:element name="Webhook" msprop:Generator_ColumnVarNameInTable="columnWebhook" msprop:Generator_ColumnPropNameInRow="Webhook" msprop:Generator_ColumnPropNameInTable="WebhookColumn" msprop:Generator_UserColumnName="Webhook" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ChannelEvents" msprop:Generator_TableClassName="ChannelEventsDataTable" msprop:Generator_TableVarName="tableChannelEvents" msprop:Generator_RowChangedName="ChannelEventsRowChanged" msprop:Generator_TablePropName="ChannelEvents" msprop:Generator_RowDeletingName="ChannelEventsRowDeleting" msprop:Generator_RowChangingName="ChannelEventsRowChanging" msprop:Generator_RowEvHandlerName="ChannelEventsRowChangeEventHandler" msprop:Generator_RowDeletedName="ChannelEventsRowDeleted" msprop:Generator_RowClassName="ChannelEventsRow" msprop:Generator_UserTableName="ChannelEvents" msprop:Generator_RowEvArgName="ChannelEventsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" />
+              <xs:element name="Name" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" />
+              <xs:element name="IsEnabled" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_UserColumnName="IsEnabled" type="xs:boolean" default="true" />
+              <xs:element name="MsgStr" msdata:Caption="Message" msprop:Generator_ColumnVarNameInTable="columnMsgStr" msprop:Generator_ColumnPropNameInRow="MsgStr" msprop:Generator_ColumnPropNameInTable="MsgStrColumn" msprop:Generator_UserColumnName="MsgStr" type="xs:string" minOccurs="0" />
+              <xs:element name="Commands" msprop:Generator_ColumnVarNameInTable="columnCommands" msprop:Generator_ColumnPropNameInRow="Commands" msprop:Generator_ColumnPropNameInTable="CommandsColumn" msprop:Generator_UserColumnName="Commands" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Users" msprop:Generator_TableClassName="UsersDataTable" msprop:Generator_TableVarName="tableUsers" msprop:Generator_RowChangedName="UsersRowChanged" msprop:Generator_TablePropName="Users" msprop:Generator_RowDeletingName="UsersRowDeleting" msprop:Generator_RowChangingName="UsersRowChanging" msprop:Generator_RowEvHandlerName="UsersRowChangeEventHandler" msprop:Generator_RowDeletedName="UsersRowDeleted" msprop:Generator_RowClassName="UsersRow" msprop:Generator_UserTableName="Users" msprop:Generator_RowEvArgName="UsersRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" />
+              <xs:element name="UserName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+              <xs:element name="FirstDateSeen" msprop:Generator_ColumnVarNameInTable="columnFirstDateSeen" msprop:Generator_ColumnPropNameInRow="FirstDateSeen" msprop:Generator_ColumnPropNameInTable="FirstDateSeenColumn" msprop:Generator_UserColumnName="FirstDateSeen" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="CurrLoginDate" msprop:Generator_ColumnVarNameInTable="columnCurrLoginDate" msprop:Generator_ColumnPropNameInRow="CurrLoginDate" msprop:Generator_ColumnPropNameInTable="CurrLoginDateColumn" msprop:Generator_UserColumnName="CurrLoginDate" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="LastDateSeen" msprop:Generator_ColumnVarNameInTable="columnLastDateSeen" msprop:Generator_ColumnPropNameInRow="LastDateSeen" msprop:Generator_ColumnPropNameInTable="LastDateSeenColumn" msprop:Generator_UserColumnName="LastDateSeen" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="WatchTime" msprop:Generator_ColumnVarNameInTable="columnWatchTime" msprop:Generator_ColumnPropNameInRow="WatchTime" msprop:Generator_ColumnPropNameInTable="WatchTimeColumn" msprop:Generator_UserColumnName="WatchTime" type="xs:duration" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Commands" msprop:Generator_TableClassName="CommandsDataTable" msprop:Generator_TableVarName="tableCommands" msprop:Generator_RowChangedName="CommandsRowChanged" msprop:Generator_TablePropName="Commands" msprop:Generator_RowDeletingName="CommandsRowDeleting" msprop:Generator_RowChangingName="CommandsRowChanging" msprop:Generator_RowEvHandlerName="CommandsRowChangeEventHandler" msprop:Generator_RowDeletedName="CommandsRowDeleted" msprop:Generator_RowClassName="CommandsRow" msprop:Generator_UserTableName="Commands" msprop:Generator_RowEvArgName="CommandsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="CmdName" msdata:ReadOnly="true" msdata:Caption="Command Name" msprop:Generator_ColumnVarNameInTable="columnCmdName" msprop:Generator_ColumnPropNameInRow="CmdName" msprop:Generator_ColumnPropNameInTable="CmdNameColumn" msprop:Generator_UserColumnName="CmdName" type="xs:string" />
+              <xs:element name="BuiltIn" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnBuiltIn" msprop:Generator_ColumnPropNameInRow="BuiltIn" msprop:Generator_ColumnPropNameInTable="BuiltInColumn" msprop:Generator_UserColumnName="BuiltIn" type="xs:string" minOccurs="0" />
+              <xs:element name="Message" msprop:Generator_ColumnVarNameInTable="columnMessage" msprop:Generator_ColumnPropNameInRow="Message" msprop:Generator_ColumnPropNameInTable="MessageColumn" msprop:Generator_UserColumnName="Message" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="CurrencyAccrued" msprop:Generator_TableClassName="CurrencyAccruedDataTable" msprop:Generator_TableVarName="tableCurrencyAccrued" msprop:Generator_RowChangedName="CurrencyAccruedRowChanged" msprop:Generator_TablePropName="CurrencyAccrued" msprop:Generator_RowDeletingName="CurrencyAccruedRowDeleting" msprop:Generator_RowChangingName="CurrencyAccruedRowChanging" msprop:Generator_RowEvHandlerName="CurrencyAccruedRowChangeEventHandler" msprop:Generator_RowDeletedName="CurrencyAccruedRowDeleted" msprop:Generator_RowClassName="CurrencyAccruedRow" msprop:Generator_UserTableName="CurrencyAccrued" msprop:Generator_RowEvArgName="CurrencyAccruedRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" minOccurs="0" />
+              <xs:element name="CurrencyName" msprop:Generator_ColumnVarNameInTable="columnCurrencyName" msprop:Generator_ColumnPropNameInRow="CurrencyName" msprop:Generator_ColumnPropNameInTable="CurrencyNameColumn" msprop:Generator_UserColumnName="CurrencyName" type="xs:string" minOccurs="0" />
+              <xs:element name="Value" msprop:Generator_ColumnVarNameInTable="columnValue" msprop:Generator_ColumnPropNameInRow="Value" msprop:Generator_ColumnPropNameInTable="ValueColumn" msprop:Generator_UserColumnName="Value" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Currency" msprop:Generator_TableClassName="CurrencyDataTable" msprop:Generator_TableVarName="tableCurrency" msprop:Generator_RowChangedName="CurrencyRowChanged" msprop:Generator_TablePropName="Currency" msprop:Generator_RowDeletingName="CurrencyRowDeleting" msprop:Generator_RowChangingName="CurrencyRowChanging" msprop:Generator_RowEvHandlerName="CurrencyRowChangeEventHandler" msprop:Generator_RowDeletedName="CurrencyRowDeleted" msprop:Generator_RowClassName="CurrencyRow" msprop:Generator_UserTableName="Currency" msprop:Generator_RowEvArgName="CurrencyRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" minOccurs="0" />
+              <xs:element name="CurrencyName" msprop:Generator_ColumnVarNameInTable="columnCurrencyName" msprop:Generator_ColumnPropNameInRow="CurrencyName" msprop:Generator_ColumnPropNameInTable="CurrencyNameColumn" msprop:Generator_UserColumnName="CurrencyName" type="xs:string" minOccurs="0" />
+              <xs:element name="AccrueRate" msdata:Caption="Accrue Rate per Hr" msprop:Generator_ColumnVarNameInTable="columnAccrueRate" msprop:Generator_ColumnPropNameInRow="AccrueRate" msprop:Generator_ColumnPropNameInTable="AccrueRateColumn" msprop:Generator_UserColumnName="AccrueRate" type="xs:double" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Followers" msprop:Generator_TableClassName="FollowersDataTable" msprop:Generator_TableVarName="tableFollowers" msprop:Generator_RowChangedName="FollowersRowChanged" msprop:Generator_TablePropName="Followers" msprop:Generator_RowDeletingName="FollowersRowDeleting" msprop:Generator_RowChangingName="FollowersRowChanging" msprop:Generator_RowEvHandlerName="FollowersRowChangeEventHandler" msprop:Generator_RowDeletedName="FollowersRowDeleted" msprop:Generator_RowClassName="FollowersRow" msprop:Generator_UserTableName="Followers" msprop:Generator_RowEvArgName="FollowersRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" />
+              <xs:element name="UserName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+              <xs:element name="IsFollower" msprop:Generator_ColumnVarNameInTable="columnIsFollower" msprop:Generator_ColumnPropNameInRow="IsFollower" msprop:Generator_ColumnPropNameInTable="IsFollowerColumn" msprop:Generator_UserColumnName="IsFollower" type="xs:boolean" minOccurs="0" />
+              <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_UserColumnName="FollowedDate" type="xs:dateTime" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1">
+      <xs:selector xpath=".//mstns:Discord" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="ChannelEvents_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:ChannelEvents" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Constraint2" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:ChannelEvents" />
+      <xs:field xpath="mstns:Name" />
+    </xs:unique>
+    <xs:unique name="Users_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:Users" />
+      <xs:field xpath="mstns:UserName" />
+    </xs:unique>
+    <xs:unique name="Users_Constraint2" msdata:ConstraintName="Constraint2">
+      <xs:selector xpath=".//mstns:Users" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Commands_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:Commands" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Commands_Constraint2" msdata:ConstraintName="Constraint2">
+      <xs:selector xpath=".//mstns:Commands" />
+      <xs:field xpath="mstns:CmdName" />
+    </xs:unique>
+    <xs:unique name="CurrencyAccrued_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:CurrencyAccrued" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Currency_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:Currency" />
+      <xs:field xpath="mstns:CurrencyName" />
+    </xs:unique>
+    <xs:unique name="Currency_Constraint2" msdata:ConstraintName="Constraint2">
+      <xs:selector xpath=".//mstns:Currency" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Followers_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:Followers" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Followers_Constraint2" msdata:ConstraintName="Constraint2">
+      <xs:selector xpath=".//mstns:Followers" />
+      <xs:field xpath="mstns:UserName" />
+    </xs:unique>
+  </xs:element>
+  <xs:annotation>
+    <xs:appinfo>
+      <msdata:Relationship name="Currency_CurrencyAccrued" msdata:parent="Currency" msdata:child="CurrencyAccrued" msdata:parentkey="CurrencyName" msdata:childkey="CurrencyName" msprop:Generator_UserChildTable="CurrencyAccrued" msprop:Generator_ChildPropName="GetCurrencyAccruedRows" msprop:Generator_UserRelationName="Currency_CurrencyAccrued" msprop:Generator_RelationVarName="relationCurrency_CurrencyAccrued" msprop:Generator_UserParentTable="Currency" msprop:Generator_ParentPropName="CurrencyRow" />
+      <msdata:Relationship name="Users_Followers" msdata:parent="Users" msdata:child="Followers" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="Followers" msprop:Generator_ChildPropName="GetFollowersRows" msprop:Generator_UserRelationName="Users_Followers" msprop:Generator_ParentPropName="UsersRow" msprop:Generator_RelationVarName="relationUsers_Followers" msprop:Generator_UserParentTable="Users" />
+      <msdata:Relationship name="Users_CurrencyAccrued" msdata:parent="Users" msdata:child="CurrencyAccrued" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="CurrencyAccrued" msprop:Generator_ChildPropName="GetCurrencyAccruedRows" msprop:Generator_UserRelationName="Users_CurrencyAccrued" msprop:Generator_ParentPropName="UsersRow" msprop:Generator_RelationVarName="relationUsers_CurrencyAccrued" msprop:Generator_UserParentTable="Users" />
+    </xs:appinfo>
+  </xs:annotation>
+</xs:schema>
