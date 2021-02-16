@@ -74,4 +74,8 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="img\" />
+  </ItemGroup>
+
 </Project>

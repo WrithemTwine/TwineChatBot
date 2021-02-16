@@ -21,6 +21,7 @@ namespace ChatBot_Net5.BotIOController
         public CommandCollection CommandInfo { get; set; } = new CommandCollection();
         public DataManager DataManage { get; private set; } = new DataManager();
 
+
         #region User Join
         public ObservableCollection<UserJoin> JoinCollection { get; set; } = new ObservableCollection<UserJoin>();
 

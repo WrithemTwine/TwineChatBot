@@ -91,7 +91,7 @@ namespace ChatBot_Net5.BotIOController
                 { "#url", "https://wwww.twitch.tv/" + e.Stream.UserId }
             };
 
-            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(), ParseReplace(msg, dictionary));
+            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(WebhooksKind.Live), ParseReplace(msg, dictionary));
         }
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
@@ -106,7 +106,7 @@ namespace ChatBot_Net5.BotIOController
                 { "#url", "https://wwww.twitch.tv/" + e.Stream.UserId }
             };
 
-            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(), ParseReplace(msg, dictionary));
+            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(WebhooksKind.Live), ParseReplace(msg, dictionary));
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)

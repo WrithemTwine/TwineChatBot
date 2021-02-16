@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:BotIOController ="clr-namespace:ChatBot_Net5.BotIOController"
+        xmlns:Enums ="clr-namespace:ChatBot_Net5.Models"
         mc:Ignorable="d"
         Title="Chat Bot Manager" Height="600" Width="1100" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
@@ -74,10 +75,13 @@
                             </StackPanel>
                         </WrapPanel>
                     </TabItem>
-                    <TabItem Header="Discord">
+                    <TabItem Header="Discord" DataContext="{Binding DataManage}">
                         <StackPanel>
-                            <Label>Add Webhook links, one per line. Bot will report Live notifications to each Webhook.</Label>
-                            <DataGrid Name="DG_Webhooks" Height="200" Margin="10,0" DataContext="{Binding DataManage}" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}"/>
+                            <TextBlock>Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
+                              Current 'Kind' implemented: <LineBreak />
+                                <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}"  />
+                            </TextBlock>
+                            <DataGrid Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Bot Status Log">

@@ -19,6 +19,7 @@ namespace ChatBot_Net5.Data
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
         private DataSource _DataSource;
 
+        public List<string> KindsWebhooks { get; private set; } = new List<string>(Enum.GetNames(typeof(WebhooksKind)));
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
@@ -354,7 +355,7 @@ namespace ChatBot_Net5.Data
         /// Retrieve all the webhooks from the Discord table
         /// </summary>
         /// <returns></returns>
-        internal List<Uri> GetWebhooks()
+        internal List<Uri> GetWebhooks(WebhooksKind webhooks)
         {
             DataRow[] dataRows = _DataSource.Discord.Select();
 
@@ -362,7 +363,12 @@ namespace ChatBot_Net5.Data
 
             foreach ( DataRow d in dataRows)
             {
-                uris.Add(new Uri( (d as DataSource.DiscordRow).Webhook) );
+                DataSource.DiscordRow row = (d as DataSource.DiscordRow);
+
+                if (row.Kind == webhooks.ToString())
+                {
+                    uris.Add(new Uri(row.Webhook));
+                }
             }
             return uris;
         }
