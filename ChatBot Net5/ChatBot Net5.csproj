@@ -10,13 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="tempMainWindow.xaml.cs" />
-    <Compile Remove="XML\ChatDataStore.Designer.cs" />
+    <Compile Remove="XML\**" />
+    <EmbeddedResource Remove="XML\**" />
+    <None Remove="XML\**" />
+    <Page Remove="XML\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="XML\ChatDataStore.xml" />
-    <None Remove="XML\commands.xml" />
+    <Compile Remove="tempMainWindow.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,10 +72,6 @@
     <Page Update="ChatPopup.xaml">
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="XML\" />
   </ItemGroup>
 
 </Project>
