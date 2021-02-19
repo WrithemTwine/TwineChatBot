@@ -9,9 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Helix;
 using TwitchLib.Api.Services;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
@@ -24,10 +26,18 @@ namespace ChatBot_Net5.Clients
     public class IOModuleTwitch : IOModule, INotifyPropertyChanged
     {
         /// <summary>
-        /// The websocket to connect to the server.
+        /// The client connection to the server.
         /// </summary>
         internal TwitchClient TwitchChat { get; private set; } // chat bot
-        internal FollowerService FollowerService { get; private set; } // checks followers
+
+        /// <summary>
+        /// Listens for new followers.
+        /// </summary>
+        internal FollowerService FollowerService { get; private set; } 
+
+        /// <summary>
+        /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
+        /// </summary>
         internal LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
         private Logger<TwitchClient> LogData { get; set; }
@@ -134,36 +144,31 @@ namespace ChatBot_Net5.Clients
             else
             {
                 TwitchChat.Initialize(credentials);
+
+                TwitchChat.Connect();
+                ConnectServices();
             }
 
             return true;
         }
 
+        /// <summary>
+        /// call Connect() first!
+        /// </summary>
+        /// <returns>true for successful bot start</returns>
         public override bool StartBot()
         {
             try
             {
-                ApiSettings apifollow = new ApiSettings() { AccessToken = AccessToken, ClientId = ClientID, Scopes = new List<TwitchLib.Api.Core.Enums.AuthScopes>() };
-                apifollow.Scopes.Add(TwitchLib.Api.Core.Enums.AuthScopes.Channel_Read);
-
-                ApiSettings apilive = new ApiSettings() { AccessToken = AccessToken, ClientId = ClientID, Scopes = new List<TwitchLib.Api.Core.Enums.AuthScopes>() };
-                apilive.Scopes.Add(TwitchLib.Api.Core.Enums.AuthScopes.Helix_User_Read_Broadcast);
-
-                int checkIntervalInSeconds = (int)Math.Round(FrequencyTime, 0);
-                FollowerService = new FollowerService(new TwitchAPI(null,null, apifollow, null), checkIntervalInSeconds);
-                LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), checkIntervalInSeconds);
-
-                // initiate follower and livestream service, connect to provided channel
-                FollowerService.SetChannelsByName(new List<string>() { ChannelName });
-                LiveStreamMonitor.SetChannelsByName(new List<string>() { ChannelName });
-
                 SaveParams();
-                Connect();
 
-                TwitchChat.Connect();
+                //if (!TwitchChat.IsConnected)
+                //{
+                //    Connect();
+                //}
 
-                FollowerService.Start();
-                LiveStreamMonitor.Start();
+                StartServices();
+
                 return true;
             } 
             catch (Exception ex)
@@ -217,6 +222,26 @@ namespace ChatBot_Net5.Clients
             Settings.Default.Save();
 
             return true;
+        }
+
+        internal void ConnectServices()
+        {
+            int checkIntervalInSeconds = (int)Math.Round(FrequencyTime, 0);
+
+            ApiSettings apifollow = new ApiSettings() { AccessToken = AccessToken, ClientId = ClientID };
+            //apifollow.Scopes.Add(TwitchLib.Api.Core.Enums.AuthScopes.Channel_Read);
+            FollowerService = new FollowerService(new TwitchAPI(null, null, apifollow, null), checkIntervalInSeconds);
+            FollowerService.SetChannelsByName(new List<string>() { ChannelName });
+            
+            ApiSettings apilive = new ApiSettings() { AccessToken = AccessToken, ClientId = ClientID };
+            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), checkIntervalInSeconds);
+            LiveStreamMonitor.SetChannelsByName(new List<string>() { ChannelName });
+        }
+
+        internal void StartServices()
+        {
+            FollowerService.Start();
+            LiveStreamMonitor.Start();
         }
     }
 }

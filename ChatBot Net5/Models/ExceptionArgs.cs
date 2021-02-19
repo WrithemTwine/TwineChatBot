@@ -23,4 +23,5 @@ namespace ChatBot_Net5.Clients
             throw new NotImplementedException();
         }
     }
+
 }

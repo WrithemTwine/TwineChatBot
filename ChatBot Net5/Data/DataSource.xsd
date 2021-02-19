@@ -36,11 +36,11 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" />
-              <xs:element name="UserName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
-              <xs:element name="FirstDateSeen" msprop:Generator_ColumnVarNameInTable="columnFirstDateSeen" msprop:Generator_ColumnPropNameInRow="FirstDateSeen" msprop:Generator_ColumnPropNameInTable="FirstDateSeenColumn" msprop:Generator_UserColumnName="FirstDateSeen" type="xs:dateTime" minOccurs="0" />
-              <xs:element name="CurrLoginDate" msprop:Generator_ColumnVarNameInTable="columnCurrLoginDate" msprop:Generator_ColumnPropNameInRow="CurrLoginDate" msprop:Generator_ColumnPropNameInTable="CurrLoginDateColumn" msprop:Generator_UserColumnName="CurrLoginDate" type="xs:dateTime" minOccurs="0" />
-              <xs:element name="LastDateSeen" msprop:Generator_ColumnVarNameInTable="columnLastDateSeen" msprop:Generator_ColumnPropNameInRow="LastDateSeen" msprop:Generator_ColumnPropNameInTable="LastDateSeenColumn" msprop:Generator_UserColumnName="LastDateSeen" type="xs:dateTime" minOccurs="0" />
-              <xs:element name="WatchTime" msprop:Generator_ColumnVarNameInTable="columnWatchTime" msprop:Generator_ColumnPropNameInRow="WatchTime" msprop:Generator_ColumnPropNameInTable="WatchTimeColumn" msprop:Generator_UserColumnName="WatchTime" type="xs:duration" minOccurs="0" />
+              <xs:element name="UserName" msdata:ReadOnly="true" msdata:Caption="User Name" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+              <xs:element name="FirstDateSeen" msdata:Caption="First Date Seen" msprop:Generator_ColumnVarNameInTable="columnFirstDateSeen" msprop:Generator_ColumnPropNameInRow="FirstDateSeen" msprop:Generator_ColumnPropNameInTable="FirstDateSeenColumn" msprop:Generator_UserColumnName="FirstDateSeen" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="CurrLoginDate" msdata:Caption="Curr Login Date" msprop:Generator_ColumnVarNameInTable="columnCurrLoginDate" msprop:Generator_ColumnPropNameInRow="CurrLoginDate" msprop:Generator_ColumnPropNameInTable="CurrLoginDateColumn" msprop:Generator_UserColumnName="CurrLoginDate" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="LastDateSeen" msdata:Caption="Last Date Seen" msprop:Generator_ColumnVarNameInTable="columnLastDateSeen" msprop:Generator_ColumnPropNameInRow="LastDateSeen" msprop:Generator_ColumnPropNameInTable="LastDateSeenColumn" msprop:Generator_UserColumnName="LastDateSeen" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="WatchTime" msdata:Caption="Watch Time" msprop:Generator_ColumnVarNameInTable="columnWatchTime" msprop:Generator_ColumnPropNameInRow="WatchTime" msprop:Generator_ColumnPropNameInTable="WatchTimeColumn" msprop:Generator_UserColumnName="WatchTime" type="xs:duration" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -58,8 +58,9 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" minOccurs="0" />
-              <xs:element name="CurrencyName" msprop:Generator_ColumnVarNameInTable="columnCurrencyName" msprop:Generator_ColumnPropNameInRow="CurrencyName" msprop:Generator_ColumnPropNameInTable="CurrencyNameColumn" msprop:Generator_UserColumnName="CurrencyName" type="xs:string" minOccurs="0" />
-              <xs:element name="Value" msprop:Generator_ColumnVarNameInTable="columnValue" msprop:Generator_ColumnPropNameInRow="Value" msprop:Generator_ColumnPropNameInTable="ValueColumn" msprop:Generator_UserColumnName="Value" type="xs:string" minOccurs="0" />
+              <xs:element name="UserName" msdata:Caption="User Name" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+              <xs:element name="CurrencyName" msdata:Caption="Currency Name" msprop:Generator_ColumnVarNameInTable="columnCurrencyName" msprop:Generator_ColumnPropNameInRow="CurrencyName" msprop:Generator_ColumnPropNameInTable="CurrencyNameColumn" msprop:Generator_UserColumnName="CurrencyName" type="xs:string" minOccurs="0" />
+              <xs:element name="Value" msprop:Generator_ColumnVarNameInTable="columnValue" msprop:Generator_ColumnPropNameInRow="Value" msprop:Generator_ColumnPropNameInTable="ValueColumn" msprop:Generator_UserColumnName="Value" type="xs:double" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -67,7 +68,7 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" minOccurs="0" />
-              <xs:element name="CurrencyName" msprop:Generator_ColumnVarNameInTable="columnCurrencyName" msprop:Generator_ColumnPropNameInRow="CurrencyName" msprop:Generator_ColumnPropNameInTable="CurrencyNameColumn" msprop:Generator_UserColumnName="CurrencyName" type="xs:string" minOccurs="0" />
+              <xs:element name="CurrencyName" msdata:Caption="Currency Name" msprop:Generator_ColumnVarNameInTable="columnCurrencyName" msprop:Generator_ColumnPropNameInRow="CurrencyName" msprop:Generator_ColumnPropNameInTable="CurrencyNameColumn" msprop:Generator_UserColumnName="CurrencyName" type="xs:string" minOccurs="0" />
               <xs:element name="AccrueRate" msdata:Caption="Accrue Rate per Hr" msprop:Generator_ColumnVarNameInTable="columnAccrueRate" msprop:Generator_ColumnPropNameInRow="AccrueRate" msprop:Generator_ColumnPropNameInTable="AccrueRateColumn" msprop:Generator_UserColumnName="AccrueRate" type="xs:double" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
@@ -76,8 +77,8 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" />
-              <xs:element name="UserName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
-              <xs:element name="IsFollower" msprop:Generator_ColumnVarNameInTable="columnIsFollower" msprop:Generator_ColumnPropNameInRow="IsFollower" msprop:Generator_ColumnPropNameInTable="IsFollowerColumn" msprop:Generator_UserColumnName="IsFollower" type="xs:boolean" minOccurs="0" />
+              <xs:element name="UserName" msdata:ReadOnly="true" msdata:Caption="User Name" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+              <xs:element name="IsFollower" msdata:Caption="Is Follower" msprop:Generator_ColumnVarNameInTable="columnIsFollower" msprop:Generator_ColumnPropNameInRow="IsFollower" msprop:Generator_ColumnPropNameInTable="IsFollowerColumn" msprop:Generator_UserColumnName="IsFollower" type="xs:boolean" minOccurs="0" />
               <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_UserColumnName="FollowedDate" type="xs:dateTime" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
@@ -116,6 +117,10 @@
       <xs:selector xpath=".//mstns:CurrencyAccrued" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
+    <xs:unique name="CurrencyAccrued_Constraint2" msdata:ConstraintName="Constraint2" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:CurrencyAccrued" />
+      <xs:field xpath="mstns:UserName" />
+    </xs:unique>
     <xs:unique name="Currency_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:Currency" />
       <xs:field xpath="mstns:CurrencyName" />
@@ -135,9 +140,9 @@
   </xs:element>
   <xs:annotation>
     <xs:appinfo>
-      <msdata:Relationship name="Currency_CurrencyAccrued" msdata:parent="Currency" msdata:child="CurrencyAccrued" msdata:parentkey="CurrencyName" msdata:childkey="CurrencyName" msprop:Generator_UserChildTable="CurrencyAccrued" msprop:Generator_ChildPropName="GetCurrencyAccruedRows" msprop:Generator_UserRelationName="Currency_CurrencyAccrued" msprop:Generator_ParentPropName="CurrencyRow" msprop:Generator_RelationVarName="relationCurrency_CurrencyAccrued" msprop:Generator_UserParentTable="Currency" />
       <msdata:Relationship name="Users_Followers" msdata:parent="Users" msdata:child="Followers" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="Followers" msprop:Generator_ChildPropName="GetFollowersRows" msprop:Generator_UserRelationName="Users_Followers" msprop:Generator_RelationVarName="relationUsers_Followers" msprop:Generator_UserParentTable="Users" msprop:Generator_ParentPropName="UsersRow" />
       <msdata:Relationship name="Users_CurrencyAccrued" msdata:parent="Users" msdata:child="CurrencyAccrued" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="CurrencyAccrued" msprop:Generator_ChildPropName="GetCurrencyAccruedRows" msprop:Generator_UserRelationName="Users_CurrencyAccrued" msprop:Generator_RelationVarName="relationUsers_CurrencyAccrued" msprop:Generator_UserParentTable="Users" msprop:Generator_ParentPropName="UsersRow" />
+      <msdata:Relationship name="Currency_CurrencyAccrued" msdata:parent="Currency" msdata:child="CurrencyAccrued" msdata:parentkey="CurrencyName" msdata:childkey="CurrencyName" msprop:Generator_UserChildTable="CurrencyAccrued" msprop:Generator_ChildPropName="GetCurrencyAccruedRows" msprop:Generator_UserRelationName="Currency_CurrencyAccrued" msprop:Generator_ParentPropName="CurrencyRow" msprop:Generator_RelationVarName="relationCurrency_CurrencyAccrued" msprop:Generator_UserParentTable="Currency" />
     </xs:appinfo>
   </xs:annotation>
 </xs:schema>

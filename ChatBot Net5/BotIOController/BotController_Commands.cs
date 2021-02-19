@@ -11,10 +11,6 @@ namespace ChatBot_Net5.BotIOController
 
         #endregion Data to Save
 
-        private void LoadCommands()
-        {
-
-        }
 
     }
 }

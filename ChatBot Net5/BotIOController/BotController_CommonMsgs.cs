@@ -16,16 +16,27 @@ namespace ChatBot_Net5.BotIOController
 
             string Rep(string key)
             {
-                dictionary.TryGetValue(key, out string value);
-                return value ?? "";
+                string hit = "";
+
+                foreach(string s in dictionary.Keys)
+                {
+                    if (key.Contains(s))
+                    {
+                        hit = s;
+                        break;
+                    }
+                }
+
+                dictionary.TryGetValue(hit, out string value);
+                return key.Replace(hit,value) ?? "";
             }
 
             for(int x=0; x<words.Length; x++)
             {
-                temp += words[x].StartsWith("#", System.StringComparison.CurrentCulture) ? Rep(words[x]) : words[x];
+                temp += (words[x].StartsWith("#", System.StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
             }
 
-            return temp;
+            return temp.Trim();
         }
 
         /// <summary>

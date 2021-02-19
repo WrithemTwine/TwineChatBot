@@ -39,7 +39,7 @@ namespace ChatBot_Net5.BotIOController
             Paragraph p = new Paragraph();
             p.ElementStart.InsertTextInRun(s.Message);
 
-            ChatData.Blocks.Add(p);
+           // ChatData.Blocks.Add(p);
         }
 
         public FlowDocument ChatData { get; private set; } = new FlowDocument();
@@ -68,17 +68,13 @@ namespace ChatBot_Net5.BotIOController
 
             foreach (IOModule i in IOModuleList)
             {
-                i.StartBot();
-                if (i.GetType() == typeof(IOModuleTwitch))
-                {
-                    DataManage.UpdateFollowers(TwitchIO.ChannelName, TwitchIO.FollowerService.KnownFollowers);
-                }
-            }
-            
-            // perform loading steps
-            RegisterHandlers();
-            LoadCommands();
+                i.Connect();
 
+                // perform loading steps
+                RegisterHandlers();
+
+                i.StartBot();
+            }
             return true;
         }
 
@@ -87,7 +83,10 @@ namespace ChatBot_Net5.BotIOController
             ProcessOps = false;
 
             //while (bgworker.IsBusy) { }
-            SendThread.Join();
+            if (SendThread.ThreadState != System.Threading.ThreadState.Unstarted)
+            {
+                SendThread.Join();
+            }
 
             foreach (IOModule i in IOModuleList)
             {
@@ -133,8 +132,8 @@ namespace ChatBot_Net5.BotIOController
 
         public void ExitSave()
         {
+            StopBot();
             DataManage.ExitSave();
-            TwitchIO.StopBot();
         }
     }
 }

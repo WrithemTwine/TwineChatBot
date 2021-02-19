@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Xml;
@@ -18,6 +20,7 @@ namespace ChatBot_Net5.Data
 
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
         private DataSource _DataSource;
+        private Thread followerThread;
 
         public List<string> KindsWebhooks { get; private set; } = new List<string>(Enum.GetNames(typeof(WebhooksKind)));
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
@@ -28,24 +31,22 @@ namespace ChatBot_Net5.Data
         public DataView CurrencyAccrued { get; private set; }  // DataSource.CurrencyAccruedDataTable
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
 
-
         internal DateTime defaultDate = DateTime.Parse("01/01/1900");
-
-        private Thread followerThread;
 
         #endregion DataSource
 
         public DataManager()
         {
+            _DataSource = new DataSource();
             LoadData();
 
-            ChannelEvents = _DataSource.ChannelEvents.DefaultView;
-            Users = _DataSource.Users.DefaultView;
-            Followers = _DataSource.Followers.DefaultView;
+            ChannelEvents =  _DataSource.ChannelEvents.DefaultView;
+            Users = new DataView(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
+            Followers = new  DataView (_DataSource.Followers, null, "UserName", DataViewRowState.CurrentRows);
             Discord = _DataSource.Discord.DefaultView;
-            Currency = _DataSource.Currency.DefaultView;
-            CurrencyAccrued = _DataSource.CurrencyAccrued.DefaultView;
-            Commands = _DataSource.Commands.DefaultView;
+            Currency = new DataView( _DataSource.Currency, null, "Id", DataViewRowState.CurrentRows);
+            CurrencyAccrued = new DataView( _DataSource.CurrencyAccrued, null, "UserName", DataViewRowState.CurrentRows);
+            Commands = new DataView( _DataSource.Commands, null, "CmdName", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -54,8 +55,6 @@ namespace ChatBot_Net5.Data
         /// </summary>
         private void LoadData()
         {
-            _DataSource = new DataSource();
-
             if (!File.Exists(DataFileName))
             {
                 _DataSource.WriteXml(DataFileName);
@@ -68,6 +67,8 @@ namespace ChatBot_Net5.Data
 
             // check all default names
             SetChannelEventsTableDefault();
+
+            _DataSource.AcceptChanges();
         }
 
         /// <summary>
@@ -90,38 +91,46 @@ namespace ChatBot_Net5.Data
             bool CheckName(string criteria) => _DataSource.ChannelEvents.FindByName(criteria) == null;
 
 
-            if (CheckName(CommandAction.Follow.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Follow.ToString(), true, "Thanks #user for the follow!", "#user");
-            }
-            if (CheckName(CommandAction.Subscribe.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Subscribe.ToString(), true, "Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname");
-            }
-            if (CheckName(CommandAction.Resubscribe.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Resubscribe.ToString(), true, "Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak");
-            }
-            if (CheckName(CommandAction.GiftSub.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.GiftSub.ToString(), true, "Thanks #user for gifting a #subplan subscription to #receiveuser !", "#user, #months, #receiveuser, #subplan, #subplanname");
-            }
             if (CheckName(CommandAction.BeingHosted.ToString()))
             {
                 _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.BeingHosted.ToString(), true, "Thanks #user for #autohost this channel!", "#user, #autohost, #viewers");
             }
-            if (CheckName(CommandAction.Raid.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Raid.ToString(), true, "Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers");
-            }
+
             if (CheckName(CommandAction.Bits.ToString()))
             {
                 _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Bits.ToString(), true, "Thanks #user for donating #bits !", "#user, #bits");
             }
+
+            if (CheckName(CommandAction.Follow.ToString()))
+            {
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Follow.ToString(), true, "Thanks #user for the follow!", "#user");
+            }
+
+            if (CheckName(CommandAction.GiftSub.ToString()))
+            {
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.GiftSub.ToString(), true, "Thanks #user for gifting a #subplan subscription to #receiveuser !", "#user, #months, #receiveuser, #subplan, #subplanname");
+            }
+
             if (CheckName(CommandAction.Live.ToString()))
             {
                 _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Live.ToString(), true, "@everyone, #user is now live! #title and playing #category at #url", "#user, #category, #title, #url");
             }
+
+            if (CheckName(CommandAction.Raid.ToString()))
+            {
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Raid.ToString(), true, "Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers");
+            }
+
+            if (CheckName(CommandAction.Resubscribe.ToString()))
+            {
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Resubscribe.ToString(), true, "Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak");
+            }
+
+            if (CheckName(CommandAction.Subscribe.ToString()))
+            {
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Subscribe.ToString(), true, "Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname");
+            }
+
         }
         #endregion Regular Channel Events
 
@@ -186,6 +195,7 @@ namespace ChatBot_Net5.Data
         {
             DataSource.UsersRow user = AddNewUser(User, NowSeen);
             user.CurrLoginDate = NowSeen;
+            _DataSource.AcceptChanges();
         }
 
         internal void UserLeft(string User, DateTime LastSeen)
@@ -193,6 +203,7 @@ namespace ChatBot_Net5.Data
             DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
             user.LastDateSeen = LastSeen;
             user.WatchTime.Add(user.LastDateSeen - user.CurrLoginDate);
+            _DataSource.AcceptChanges();
         }
 
         internal bool CheckFollower(string User)
@@ -203,7 +214,8 @@ namespace ChatBot_Net5.Data
             if (followers == null)
             {
                 return false;
-            } else
+            }
+            else
             {
                 return followers.IsFollower;
             }
@@ -221,22 +233,20 @@ namespace ChatBot_Net5.Data
             bool newfollow = false;
             DataSource.UsersRow users = AddNewUser(User, FollowedDate);
 
-            lock (_DataSource)
+            DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "'");
+            DataSource.FollowersRow followers = datafollowers.Length > 0 ? (DataSource.FollowersRow)datafollowers[0] : null;
+            if (followers != null)
             {
-                DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "'");
-                DataSource.FollowersRow followers = datafollowers.Length>0 ? (DataSource.FollowersRow) datafollowers[0] : null;
-                if (followers != null)
-                {
-                    newfollow = !followers.IsFollower;
-                    followers.IsFollower = true;
-                    followers.FollowedDate = FollowedDate;
-                }
-                else
-                {
-                    newfollow = true;
-                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
-                }
+                newfollow = !followers.IsFollower;
+                followers.IsFollower = true;
+                followers.FollowedDate = FollowedDate;
             }
+            else
+            {
+                newfollow = true;
+                _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
+            }
+            _DataSource.AcceptChanges();
 
             return newfollow;
         }
@@ -249,100 +259,35 @@ namespace ChatBot_Net5.Data
         /// <returns>True if the user is added, else false if the user already existed.</returns>
         private DataSource.UsersRow AddNewUser(string User, DateTime FirstSeen)
         {
-            lock (_DataSource) {
-                if (_DataSource.Users.FindByUserName(User) == null)
-                {
-                    return _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-                }
+            if (_DataSource.Users.FindByUserName(User) == null)
+            {
+                DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
+
+                return output;
             }
-            return _DataSource.Users.FindByUserName(User);
+
+            // if the user is added to list before identified as follower, update first seen date to followed date
+            DataSource.UsersRow usersRow = _DataSource.Users.FindByUserName(User);
+            if (DateTime.Compare(usersRow.FirstDateSeen, FirstSeen) > 0)
+            {
+                usersRow.FirstDateSeen = FirstSeen;
+            }
+
+            return usersRow;
         }
-
-
-        //private void AddUserData(string User, DateTime FirstSeen, DateTime CurrLoginDate, DateTime LastDateSeen, bool IsFollower, DateTime FollowedDate)
-        //{
-        //    lock (_DataSource)
-        //    {
-        //        if (_DataSource.Users.Select("UserName = '" + User + "'").Length == 0)
-        //        {
-        //            _DataSource.Users.AddUsersRow(User, FirstSeen, CurrLoginDate, LastDateSeen, LastDateSeen - CurrLoginDate, IsFollower, FollowedDate);
-        //        }
-        //        else
-        //        {
-        //            UpdateUserData(User, CurrLoginDate, LastDateSeen);
-        //        }
-        //    }
-        //}
-
-        //private void UpdateUserData(string User, DateTime? CurrLoginDate = null, DateTime? LastDateSeen = null)
-        //{
-        //    lock (_DataSource)
-        //    {
-        //        DataSource.UsersRow[] usersRow = ((DataSource.UsersRow[])_DataSource.Users.Select("Name='" + User + "'"));
-        //        if (usersRow.Length != 0)
-        //        {
-        //            DataSource.UsersRow user = usersRow[0];
-        //            if (CurrLoginDate != null) user.CurrLoginDate = CurrLoginDate.Value;
-        //            if (LastDateSeen != null) user.LastDateSeen = LastDateSeen.Value;
-
-        //            if (DateTime.Compare(user.CurrLoginDate, user.LastDateSeen) < 0)
-        //            {
-        //                user.WatchTime.Add(user.LastDateSeen - user.CurrLoginDate);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private DateTime GetUserFollowedDate(string User)
-        //{
-        //    lock (_DataSource)
-        //    {
-        //        DataSource.UsersRow[] usersRow;
-        //        if (ContainsUserFollower(User))
-        //        {
-        //            usersRow = ((DataSource.UsersRow[])_DataSource.Users.Select("Name='" + User + "'"));
-        //            return usersRow[0].FollowedDate;
-        //        }
-        //    }
-        //    return defaultDate;
-        //}
-
-        ///// <summary>
-        ///// Checks if the user is already a follower.
-        ///// </summary>
-        ///// <param name="User">The username to check.</param>
-        ///// <returns>Returns true if the provided username is also a follower.</returns>
-        //internal bool ContainsUserFollower(string User)
-        //{
-        //    lock (_DataSource)
-        //    {
-        //        return _DataSource.Users.Select("UserName = '" + User + "' and IsFollower=true").Length != 0;
-        //    }
-        //}
-
-        //private void AddFollower(string User, bool IsFollower, DateTime FollowedDate)
-        //{
-        //    if (!ContainsUserFollower(User))
-        //    {
-        //        lock (_DataSource)
-        //        {
-        //            AddUserData(User, defaultDate, defaultDate, defaultDate, IsFollower, FollowedDate);
-        //        }
-        //    }
-        //}
 
         internal void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
             followerThread = new Thread(new ThreadStart(() =>
+            {
+                if (follows.Count > 1)
                 {
-                    if (follows.Count > 1)
+                    foreach (Follow f in follows[ChannelName])
                     {
-                        foreach (Follow f in follows[ChannelName])
-                        {
-                            AddFollower(f.FromUserName, f.FollowedAt);
-                        }
+                        AddFollower(f.FromUserName, f.FollowedAt);
                     }
-                })
+                }
+            })
             );
 
             followerThread.Start();
@@ -361,7 +306,7 @@ namespace ChatBot_Net5.Data
 
             List<Uri> uris = new List<Uri>();
 
-            foreach ( DataRow d in dataRows)
+            foreach (DataRow d in dataRows)
             {
                 DataSource.DiscordRow row = (d as DataSource.DiscordRow);
 

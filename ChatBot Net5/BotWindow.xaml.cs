@@ -39,6 +39,11 @@ namespace ChatBot_Net5
 
         }
 
+        /// <summary>
+        /// Handles add a new item to a Datagrid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DG_AddingNewItem(object sender, AddingNewItemEventArgs e)
         {
 
@@ -57,6 +62,10 @@ namespace ChatBot_Net5
 
         private void BC_Twitch_StartBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+#if !DEBUG
+            TabItem_Users.Visibility = Visibility.Collapsed;
+            TabItem_Followers.Visibility = Visibility.Collapsed;
+#endif
             BotController io = (sender as RadioButton).DataContext as BotController;
             io.StartBot();
             ToggleInputEnabled();
@@ -77,6 +86,11 @@ namespace ChatBot_Net5
             BotController io = (sender as RadioButton).DataContext as BotController;
             io.StartBot();
             ToggleInputEnabled();
+
+#if !DEBUG
+            TabItem_Users.Visibility = Visibility.Visible;
+            TabItem_Followers.Visibility = Visibility.Visible;
+#endif
         }
 
         private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
@@ -125,6 +139,42 @@ namespace ChatBot_Net5
                         }
                     }
                     break;
+                case "DG_Users":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "FirstDateSeen" && dc.Header.ToString() != "CurrLoginDate" && dc.Header.ToString() != "LastDateSeen" && dc.Header.ToString() != "WatchTime")
+                        {
+                            dc.Visibility = Visibility.Collapsed ;
+                        }
+                    }
+                    break;
+                case "DG_Followers":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "IsFollower" && dc.Header.ToString() != "FollowedDate" )
+                        {
+                            dc.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    break;
+                case "DG_Currency":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "CurrencyName" && dc.Header.ToString() != "AccrueRate")
+                        {
+                            dc.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    break;
+                case "DG_CurrencyAccrual":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "User Name" && dc.Header.ToString() != "Currency Name" && dc.Header.ToString() != "Value")
+                        {
+                            dc.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    break;
             }
 
         }
@@ -138,5 +188,10 @@ namespace ChatBot_Net5
         }
 
         private void TextBlock_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
+
+        private void Bot_OnEndUserDataChanged(object sender, OnBeginUserDataChangedEventArgs e)
+        {
+
+        }
     }
 }
