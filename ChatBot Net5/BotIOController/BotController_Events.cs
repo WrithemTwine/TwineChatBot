@@ -10,7 +10,6 @@ using System.Reflection;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
-using TwitchLib.Client;
 using TwitchLib.Client.Events;
 
 namespace ChatBot_Net5.BotIOController
@@ -18,6 +17,7 @@ namespace ChatBot_Net5.BotIOController
     public sealed partial class BotController
     {
         #region Register Event Handlers for Chat services
+
         private void RegisterHandlers()
         {
             TwitchIO.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
@@ -76,7 +76,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            
+
         }
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
@@ -91,7 +91,7 @@ namespace ChatBot_Net5.BotIOController
                 { "#url", "https://wwww.twitch.tv/" + e.Stream.UserId }
             };
 
-            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(), ParseReplace(msg, dictionary));
+            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(WebhooksKind.Live), ParseReplace(msg, dictionary));
         }
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
@@ -106,25 +106,27 @@ namespace ChatBot_Net5.BotIOController
                 { "#url", "https://wwww.twitch.tv/" + e.Stream.UserId }
             };
 
-            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(), ParseReplace(msg, dictionary));
+            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(WebhooksKind.Live), ParseReplace(msg, dictionary));
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Follow))
-            {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Follow);
-                msg ??= "Thanks #user for the follow!";
+            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Follow);
+            msg ??= "Thanks #user for the follow!";
 
-                foreach (Follow f in e.NewFollowers)
+            foreach (Follow f in e.NewFollowers)
+            {
+                DataManage.AddFollower(f.FromUserName, f.FollowedAt);
+                if (!DataManage.CheckFollower(f.FromUserName))
                 {
-                    if (!DataManage.CheckFollower(f.FromUserName))
+                    if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Follow))
                     {
                         Send(msg.Replace("#user", "@" + f.FromUserName));
-                        DataManage.AddFollower(f.FromUserName, f.FollowedAt);
                     }
+
                 }
             }
+
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
@@ -225,17 +227,17 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnWhisperThrottled(object sender, TwitchLib.Communication.Events.OnWhisperThrottledEventArgs e)
         {
-            
+
         }
 
         private void Client_OnWhisperSent(object sender, OnWhisperSentArgs e)
         {
-            
+
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            
+
         }
 
         private void Client_OnWhisperCommandReceived(object sender, OnWhisperCommandReceivedArgs e)
@@ -245,7 +247,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnVIPsReceived(object sender, OnVIPsReceivedArgs e)
         {
-            
+
         }
 
         private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
@@ -352,7 +354,7 @@ namespace ChatBot_Net5.BotIOController
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             Version version = Assembly.GetEntryAssembly().GetName().Version;
-            string s = "Twine Chatbot by WrithemTwine, version " + string.Format(CultureInfo.CurrentCulture, "{0}.{1}.{2}.{3}",  version.Major, version.MajorRevision, version.Minor, version.MinorRevision) + ", is now connected!";
+            string s = "Twine Chatbot by WrithemTwine, version " + string.Format(CultureInfo.CurrentCulture, "{0}.{1}.{2}.{3}", version.Major, version.MajorRevision, version.Minor, version.MinorRevision) + ", is now connected!";
 
             Send(s);
         }
@@ -389,37 +391,37 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnError(object sender, TwitchLib.Communication.Events.OnErrorEventArgs e)
         {
-            
+
         }
 
         private void Client_OnDisconnected(object sender, TwitchLib.Communication.Events.OnDisconnectedEventArgs e)
         {
-            
+
         }
 
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
-            
+
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
-            
+
         }
 
         private void Client_OnChatColorChanged(object sender, OnChatColorChangedArgs e)
         {
-            
+
         }
 
         private void Client_OnChatCleared(object sender, OnChatClearedArgs e)
         {
-            
+
         }
 
         private void Client_OnChannelStateChanged(object sender, OnChannelStateChangedArgs e)
         {
-           
+
         }
 
 
@@ -442,7 +444,7 @@ namespace ChatBot_Net5.BotIOController
 
                     Dictionary<string, string> dictionary = new Dictionary<string, string>() {
                     { "#user", "@"+e.ChatMessage.DisplayName },
-                    { "#viewers", Plurality(e.ChatMessage.Bits, "bit", "bits" ) }
+                    { "#bits", Plurality(e.ChatMessage.Bits, "bit", "bits" ) }
                 };
 
                     Send(ParseReplace(msg, dictionary));
@@ -453,7 +455,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-            
+
         }
 
         #endregion Register Event Handlers to Chat Services

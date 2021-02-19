@@ -7,6 +7,13 @@
     <UseWPF>true</UseWPF>
     <Authors>ChatBot Net5</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
+    <AssemblyVersion>1.0.2.546</AssemblyVersion>
+    <FileVersion>1.0.2.546</FileVersion>
+    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +25,10 @@
 
   <ItemGroup>
     <Compile Remove="tempMainWindow.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Info\SplashScreen1.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +83,16 @@
     <Page Update="ChatPopup.xaml">
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="img\" />
+    <Folder Include="Learning\" />
+    <Folder Include="WebServer\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Info\SplashScreen1.png" />
   </ItemGroup>
 
 </Project>

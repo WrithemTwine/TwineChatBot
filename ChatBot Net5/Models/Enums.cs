@@ -11,6 +11,8 @@
 
     public enum DataSourceTableName { ChannelEvents, Users, Discord }
 
+    public enum WebhooksKind { Live, Clips }
+
     /// <summary>
     /// Designated table and column pair to retrieve
     /// </summary>
