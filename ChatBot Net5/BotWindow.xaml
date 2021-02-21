@@ -26,22 +26,27 @@
                                     <Label Content="Bot User Name" Width="110" />
                                     <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding BotUserName, Mode=TwoWay}" Width="250" LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Label Content="Client Id" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding ClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Label Content="Access Token" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding AccessToken, Mode=TwoWay}" Width="250"  LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Label Content="Refresh Token" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding RefreshToken, Mode=TwoWay}" Width="250" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" />
-                                    <Label Name="Twitch_RefreshDate" Content="{Binding RefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
-                                </StackPanel>
+
+                                <Expander Name="Expander_Credentials" Header="Credentials" ExpandDirection="Down" IsExpanded="False">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                            <Label Content="Client Id" Width="110" />
+                                            <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding ClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                            <Label Content="Access Token" Width="110" />
+                                            <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding AccessToken, Mode=TwoWay}" Width="250" LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                            <Label Content="Refresh Token" Width="110" />
+                                            <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding RefreshToken, Mode=TwoWay}" Width="250" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                            <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" />
+                                            <Label Name="Twitch_RefreshDate" Content="{Binding RefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Expander>
                             </StackPanel>
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -50,6 +55,7 @@
                                 </StackPanel>
 
                                 <Slider DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Slider_TimePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new activity in the channel. Smaller values increases traffic to your channel." Value="{Binding FrequencyTime, Mode=TwoWay}" Maximum="60" Minimum="1" SmallChange="1" SelectionStart="1" SelectionEnd="60" Margin="10,0" IsSnapToTickEnabled="True" />
+                                <CheckBox Content="Enable message when bot connects to a channel." IsChecked="{Binding ShowConnectionMsg, Mode=TwoWay}" DataContext="{Binding TwitchIO, Mode=OneWay}" />
                                 <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" Margin="0,30,0,0" Height="100" Width="150" BorderBrush="#FF212D34">
                                     <StackPanel Orientation="Vertical">
                                         <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StartBot" IsEnabled="False"  />
@@ -96,14 +102,22 @@
                 <TabControl>
                      <TabItem Header="Users" Name="TabItem_Users">
                         <Grid>
-                            <Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." />
-                            <DataGrid x:Name="DG_Users" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Users, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />
+                            <DataGrid x:Name="DG_Users" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Users, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Followers" Name="TabItem_Followers">
                         <Grid>
-                            <Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." />
-                            <DataGrid x:Name="DG_Followers" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />
+                            <DataGrid x:Name="DG_Followers" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Command Options">
@@ -135,9 +149,19 @@
                             <DataGrid Name="DG_Currency" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Currency Accrual">
+                    <TabItem Header="Currency Accrual" Name="TabItem_CurrencyAccrual">
                         <Grid>
-                            <DataGrid Name="DG_CurrencyAccrual" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyAccrued, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />
+                            <DataGrid Name="DG_CurrencyAccrual" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyAccrued, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Built-In Commands">
+                        <Grid>
+                            <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Commands">

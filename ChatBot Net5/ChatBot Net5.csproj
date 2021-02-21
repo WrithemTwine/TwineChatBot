@@ -7,9 +7,9 @@
     <UseWPF>true</UseWPF>
     <Authors>ChatBot Net5</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
-    <AssemblyVersion>1.0.2.546</AssemblyVersion>
-    <FileVersion>1.0.2.546</FileVersion>
-    <Version>1.0.2</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

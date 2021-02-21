@@ -101,7 +101,6 @@ namespace ChatBot_Net5.Clients
 
             TwitchChat = new TwitchClient(new WebSocketClient(options), TwitchLib.Client.Enums.ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
-            TwitchChat.OnConnected += TwitchChat_OnConnected;
 
             AccessToken = Settings.Default.TwitchAccessToken;
             BotUserName = Settings.Default.TwitchBotUserName;
@@ -110,11 +109,7 @@ namespace ChatBot_Net5.Clients
             FrequencyTime = Settings.Default.TwitchFrequency;
             RefreshToken = Settings.Default.TwitchRefreshToken;
             RefreshDate = Settings.Default.TwitchRefreshDate;
-        }
-
-        private void TwitchChat_OnConnected(object sender, TwitchLib.Client.Events.OnConnectedArgs e)
-        {
-            TwitchChat.JoinChannel(ChannelName);
+            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
         }
 
         private void TwitchChat_OnLog(object sender, TwitchLib.Client.Events.OnLogArgs e)
@@ -143,7 +138,7 @@ namespace ChatBot_Net5.Clients
             }
             else
             {
-                TwitchChat.Initialize(credentials);
+                TwitchChat.Initialize(credentials,ChannelName);
 
                 TwitchChat.Connect();
                 ConnectServices();
@@ -218,6 +213,7 @@ namespace ChatBot_Net5.Clients
             Settings.Default.TwitchRefreshToken = RefreshToken;
             Settings.Default.TwitchRefreshDate = RefreshDate;
             Settings.Default.TwitchFrequency = FrequencyTime;
+            Settings.Default.BotConnectionMsg = ShowConnectionMsg;
 
             Settings.Default.Save();
 

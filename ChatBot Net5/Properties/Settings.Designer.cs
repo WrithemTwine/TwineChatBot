@@ -117,5 +117,17 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchFrequency"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool BotConnectionMsg {
+            get {
+                return ((bool)(this["BotConnectionMsg"]));
+            }
+            set {
+                this["BotConnectionMsg"] = value;
+            }
+        }
     }
 }
