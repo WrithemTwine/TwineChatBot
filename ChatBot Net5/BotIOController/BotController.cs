@@ -18,33 +18,15 @@ namespace ChatBot_Net5.BotIOController
     {
         #region properties
 
-        public CommandCollection CommandInfo { get; set; } = new CommandCollection();
+        public CommandCollection CommandInfo { get; private set; } = new CommandCollection();
         public DataManager DataManage { get; private set; } = new DataManager();
+ 
+        public Statistics Stats { get; private set; }
 
-
-        #region User Join
-        public ObservableCollection<UserJoin> JoinCollection { get; set; } = new ObservableCollection<UserJoin>();
-
-        #endregion User Join
-
-        #region ChatBot Module List
+        #region Bot Services
         public Collection<IOModule> IOModuleList { get; private set; } = new Collection<IOModule>();
         public IOModuleTwitch TwitchIO { get; private set; }
-        #endregion ChatBot Module List
-
-        #region Chatbox data
-        
-        private void AddChatString(ChatMessage s)
-        {
-            Paragraph p = new Paragraph();
-            p.ElementStart.InsertTextInRun(s.Message);
-
-           // ChatData.Blocks.Add(p);
-        }
-
-        public FlowDocument ChatData { get; private set; } = new FlowDocument();
-
-        #endregion Chatbox data
+        #endregion Bot Services
 
         #endregion properties
 
@@ -55,6 +37,8 @@ namespace ChatBot_Net5.BotIOController
             SetThread();
             TwitchIO = new IOModuleTwitch();
             IOModuleList.Add(TwitchIO);
+
+            Stats = new Statistics(DataManage);
         }
 
         public bool StartBot()
@@ -75,6 +59,7 @@ namespace ChatBot_Net5.BotIOController
 
                 i.StartBot();
             }
+
             return true;
         }
 

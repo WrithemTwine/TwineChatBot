@@ -18,7 +18,7 @@ namespace ChatBot_Net5.Data
     {
         #region DataSource
 
-        private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
+        private static readonly string DataFileName = "ChatDataStore.xml"; // Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
         private DataSource _DataSource;
         private Thread followerThread;
 
@@ -98,7 +98,7 @@ namespace ChatBot_Net5.Data
 
             if (CheckName(CommandAction.Bits.ToString()))
             {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Bits.ToString(), true, "Thanks #user for donating #bits !", "#user, #bits");
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Bits.ToString(), true, "Thanks #user for giving #bits!", "#user, #bits");
             }
 
             if (CheckName(CommandAction.Follow.ToString()))
@@ -108,7 +108,7 @@ namespace ChatBot_Net5.Data
 
             if (CheckName(CommandAction.GiftSub.ToString()))
             {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.GiftSub.ToString(), true, "Thanks #user for gifting a #subplan subscription to #receiveuser !", "#user, #months, #receiveuser, #subplan, #subplanname");
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.GiftSub.ToString(), true, "Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname");
             }
 
             if (CheckName(CommandAction.Live.ToString()))
@@ -198,11 +198,18 @@ namespace ChatBot_Net5.Data
             _DataSource.AcceptChanges();
         }
 
-        internal void UserLeft(string User, DateTime LastSeen)
+        //internal void UserLeft(string User, DateTime LastSeen)
+        //{
+        //    DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+        //    user.LastDateSeen = LastSeen;
+        //    _DataSource.AcceptChanges();
+        //}
+
+        internal void UpdateWatchTime(string User, DateTime CurrTime)
         {
             DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
-            user.LastDateSeen = LastSeen;
-            user.WatchTime.Add(user.LastDateSeen - user.CurrLoginDate);
+            user.WatchTime = user.WatchTime.Add(CurrTime-user.LastDateSeen);
+            user.LastDateSeen = CurrTime;
             _DataSource.AcceptChanges();
         }
 

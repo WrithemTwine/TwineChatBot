@@ -18,6 +18,8 @@ namespace ChatBot_Net5.BotIOController
     {
         #region Register Event Handlers for Chat services
 
+        private bool LiveStreamCheck = false;
+
         private void RegisterHandlers()
         {
             TwitchIO.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
@@ -76,57 +78,68 @@ namespace ChatBot_Net5.BotIOController
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-
+            Stats.StreamOffline();
         }
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Live);
-            msg ??= "@everyone, #user is now live! #title and playing #category at #url";
+            if (!LiveStreamCheck)
+            {
+                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Live);
+                msg ??= "@everyone, #user is now live! #title and playing #category at #url";
 
-            Dictionary<string, string> dictionary = new Dictionary<string, string>() {
+                Dictionary<string, string> dictionary = new Dictionary<string, string>() {
                 { "#user", "@"+e.Stream.UserName },
                 { "#category", e.Stream.GameName },
                 { "#title", e.Stream.Title },
-                { "#url", "https://wwww.twitch.tv/" + e.Stream.UserId }
+                { "#url", "https://wwww.twitch.tv/" + e.Stream.UserName }
             };
 
-            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(WebhooksKind.Live), ParseReplace(msg, dictionary));
+                foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
+                {
+                    DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+                }
+            }
         }
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
+            LiveStreamCheck = true;
             string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Live);
             msg ??= "@everyone, #user is now live! #title and playing #category at #url";
 
             Dictionary<string, string> dictionary = new Dictionary<string, string>() {
-                { "#user", "@"+e.Stream.UserName },
-                { "#category", e.Stream.GameName },
-                { "#title", e.Stream.Title },
-                { "#url", "https://wwww.twitch.tv/" + e.Stream.UserId }
-            };
+                    { "#user", "@"+e.Stream.UserName },
+                    { "#category", e.Stream.GameName },
+                    { "#title", e.Stream.Title },
+                    { "#url", "https://wwww.twitch.tv/" + e.Stream.UserName }
+                };
 
-            DiscordWebhook.SendLiveMessage(DataManage.GetWebhooks(WebhooksKind.Live), ParseReplace(msg, dictionary));
+            foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
+            {
+                DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+            }
+            LiveStreamCheck = false;
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Follow);
-            msg ??= "Thanks #user for the follow!";
-
-            foreach (Follow f in e.NewFollowers)
+            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Follow))
             {
-                DataManage.AddFollower(f.FromUserName, f.FollowedAt);
-                if (!DataManage.CheckFollower(f.FromUserName))
+                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Follow);
+                msg ??= "Thanks #user for the follow!";
+
+                foreach (Follow f in e.NewFollowers)
                 {
-                    if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Follow))
+                    DataManage.AddFollower(f.FromUserName, f.FollowedAt);
+                    if (!DataManage.CheckFollower(f.FromUserName))
                     {
+
                         Send(msg.Replace("#user", "@" + f.FromUserName));
                     }
 
                 }
             }
-
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
@@ -141,7 +154,7 @@ namespace ChatBot_Net5.BotIOController
                 { "#submonths", Plurality(e.Subscriber.MsgParamCumulativeMonths, "total month", "total months") },
                 { "#subplan", e.Subscriber.SubscriptionPlan.ToString() },
                 { "#subplanname", e.Subscriber.SubscriptionPlanName }
-            };
+                };
 
                 Send(ParseReplace(msg, dictionary));
             }
@@ -160,7 +173,7 @@ namespace ChatBot_Net5.BotIOController
                 { "#submonths", Plurality(e.ReSubscriber.MsgParamCumulativeMonths, "month total", "months total") },
                 { "#subplan", e.ReSubscriber.SubscriptionPlan.ToString() },
                 { "#subplanname", e.ReSubscriber.SubscriptionPlanName }
-            };
+                };
 
                 // add the streak element if user wants their sub streak displayed
                 if (e.ReSubscriber.MsgParamShouldShareStreak)
@@ -202,7 +215,7 @@ namespace ChatBot_Net5.BotIOController
                 { "#user", "@"+e.BeingHostedNotification.HostedByChannel },
                 { "#autohost", e.BeingHostedNotification.IsAutoHosted ? "auto-hosting" : "hosting" },
                 { "#viewers", Plurality( e.BeingHostedNotification.Viewers, "viewer", "viewers" ) }
-            };
+                };
 
                 Send(ParseReplace(msg, dictionary));
             }
@@ -218,7 +231,7 @@ namespace ChatBot_Net5.BotIOController
                 Dictionary<string, string> dictionary = new Dictionary<string, string>() {
                 { "#user", "@"+e.RaidNotification.DisplayName },
                 { "#viewers", Plurality(e.RaidNotification.MsgParamViewerCount, "viewer", "viewers" ) }
-            };
+                };
 
                 Send(ParseReplace(msg, dictionary));
             }
@@ -262,12 +275,12 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
         {
-            DataManage.UserLeft(e.Username, DateTime.Now);
+            Stats.UserLeft(e.Username, DateTime.Now);
         }
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            DataManage.UserJoined(e.Username, DateTime.Now);
+            Stats.UserJoined(e.Username, DateTime.Now);
         }
 
         private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
@@ -353,10 +366,13 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Version version = Assembly.GetEntryAssembly().GetName().Version;
-            string s = "Twine Chatbot by WrithemTwine, version " + string.Format(CultureInfo.CurrentCulture, "{0}.{1}.{2}.{3}", version.Major, version.MajorRevision, version.Minor, version.MinorRevision) + ", is now connected!";
-
-            Send(s);
+            if (TwitchIO.ShowConnectionMsg)
+            {
+                Version version = Assembly.GetEntryAssembly().GetName().Version;
+                string s = "Twine Chatbot by WrithemTwine, version " + string.Format(CultureInfo.CurrentCulture, "{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision) + ", is now connected!";
+                
+                Send(s);
+            }
         }
 
         private void Client_OnIncorrectLogin(object sender, OnIncorrectLoginArgs e)
@@ -440,12 +456,12 @@ namespace ChatBot_Net5.BotIOController
                 if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Bits))
                 {
                     string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Bits);
-                    msg ??= "Thanks #user for donating #bits!";
+                    msg ??= "Thanks #user for giving #bits!";
 
                     Dictionary<string, string> dictionary = new Dictionary<string, string>() {
                     { "#user", "@"+e.ChatMessage.DisplayName },
                     { "#bits", Plurality(e.ChatMessage.Bits, "bit", "bits" ) }
-                };
+                    };
 
                     Send(ParseReplace(msg, dictionary));
                 }

@@ -44,6 +44,11 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public double FrequencyTime { get; set; }
 
+        /// <summary>
+        /// Whether to display bot connection to channel.
+        /// </summary>
+        public bool ShowConnectionMsg { get; set; }
+
         internal IOModule()
         {
 

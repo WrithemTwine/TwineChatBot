@@ -512,6 +512,8 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnId;
             
+            private global::System.Data.DataColumn columnServer;
+            
             private global::System.Data.DataColumn columnKind;
             
             private global::System.Data.DataColumn columnWebhook;
@@ -554,6 +556,14 @@ namespace ChatBot_Net5.Data {
             public global::System.Data.DataColumn IdColumn {
                 get {
                     return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ServerColumn {
+                get {
+                    return this.columnServer;
                 }
             }
             
@@ -610,10 +620,11 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow AddDiscordRow(string Kind, string Webhook) {
+            public DiscordRow AddDiscordRow(string Server, string Kind, string Webhook) {
                 DiscordRow rowDiscordRow = ((DiscordRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
+                        Server,
                         Kind,
                         Webhook};
                 rowDiscordRow.ItemArray = columnValuesArray;
@@ -639,6 +650,7 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
+                this.columnServer = base.Columns["Server"];
                 this.columnKind = base.Columns["Kind"];
                 this.columnWebhook = base.Columns["Webhook"];
             }
@@ -648,6 +660,8 @@ namespace ChatBot_Net5.Data {
             private void InitClass() {
                 this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
+                this.columnServer = new global::System.Data.DataColumn("Server", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnServer);
                 this.columnKind = new global::System.Data.DataColumn("Kind", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnKind);
                 this.columnWebhook = new global::System.Data.DataColumn("Webhook", typeof(string), null, global::System.Data.MappingType.Element);
@@ -2682,6 +2696,22 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Server {
+                get {
+                    try {
+                        return ((string)(this[this.tableDiscord.ServerColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Server\' in table \'Discord\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDiscord.ServerColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Kind {
                 get {
                     try {
@@ -2710,6 +2740,18 @@ namespace ChatBot_Net5.Data {
                 set {
                     this[this.tableDiscord.WebhookColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsServerNull() {
+                return this.IsNull(this.tableDiscord.ServerColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetServerNull() {
+                this[this.tableDiscord.ServerColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

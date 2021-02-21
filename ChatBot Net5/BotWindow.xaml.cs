@@ -35,8 +35,7 @@ namespace ChatBot_Net5
             {
                 Page_ChatPopup_RichText = RichTextBox_ChatBox
             };
-            CP.Page_ChatPopup_RichText.Opacity = Slider_PopOut_Opacity.Value;
-
+            CP.Page_ChatPopup_RichText.Opacity = Slider_PopOut_Opacity.Value;            
         }
 
         /// <summary>
