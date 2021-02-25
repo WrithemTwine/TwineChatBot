@@ -18,8 +18,9 @@ namespace ChatBot_Net5.BotIOController
     {
         #region Register Event Handlers for Chat services
 
-        private bool LiveStreamCheck = false;
-
+        /// <summary>
+        /// Register event handlers for the chat services
+        /// </summary>
         private void RegisterHandlers()
         {
             TwitchIO.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
@@ -76,50 +77,51 @@ namespace ChatBot_Net5.BotIOController
             TwitchIO.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
         }
 
+        /// <summary>
+        /// Event called when the stream is detected to be offline.
+        /// </summary>
+        /// <param name="sender">The calling object.</param>
+        /// <param name="e">Contains the offline arguments.</param>
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
             Stats.StreamOffline();
         }
 
+        /// <summary>
+        /// Event called when the stream is detected to be updated.
+        /// </summary>
+        /// <param name="sender">The calling object.</param>
+        /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
-        {
-            if (!LiveStreamCheck)
-            {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Live);
-                msg ??= "@everyone, #user is now live! #title and playing #category at #url";
+        {           
 
-                Dictionary<string, string> dictionary = new Dictionary<string, string>() {
-                { "#user", "@"+e.Stream.UserName },
-                { "#category", e.Stream.GameName },
-                { "#title", e.Stream.Title },
-                { "#url", "https://wwww.twitch.tv/" + e.Stream.UserName }
-            };
-
-                foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
-                {
-                    DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
-                }
-            }
         }
 
+        /// <summary>
+        /// Event called when the stream is detected to be online.
+        /// </summary>
+        /// <param name="sender">The calling object.</param>
+        /// <param name="e">Contains the online arguments.</param>
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
-            LiveStreamCheck = true;
-            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Live);
-            msg ??= "@everyone, #user is now live! #title and playing #category at #url";
+            Stats.StreamOnline();
 
+            // get message, set a default if otherwise deleted/unavailable
+            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Live);
+            msg ??= "@everyone, #user is now live streaming #category - #title! &lt;br/&gt; Come join and say hi at: #url";
+
+            // keys for exchanging codes for representative names
             Dictionary<string, string> dictionary = new Dictionary<string, string>() {
-                    { "#user", "@"+e.Stream.UserName },
+                    { "#user", e.Stream.UserName },
                     { "#category", e.Stream.GameName },
                     { "#title", e.Stream.Title },
-                    { "#url", "https://wwww.twitch.tv/" + e.Stream.UserName }
+                    { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
                 };
 
             foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
             {
                 DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
             }
-            LiveStreamCheck = false;
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
@@ -131,13 +133,11 @@ namespace ChatBot_Net5.BotIOController
 
                 foreach (Follow f in e.NewFollowers)
                 {
-                    DataManage.AddFollower(f.FromUserName, f.FollowedAt);
                     if (!DataManage.CheckFollower(f.FromUserName))
                     {
-
                         Send(msg.Replace("#user", "@" + f.FromUserName));
                     }
-
+                    DataManage.AddFollower(f.FromUserName, f.FollowedAt);
                 }
             }
         }
@@ -270,7 +270,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserStateChanged(object sender, OnUserStateChangedArgs e)
         {
-
+            
         }
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
@@ -427,7 +427,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnChatColorChanged(object sender, OnChatColorChangedArgs e)
         {
-
+            
         }
 
         private void Client_OnChatCleared(object sender, OnChatClearedArgs e)
@@ -437,7 +437,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnChannelStateChanged(object sender, OnChannelStateChangedArgs e)
         {
-
+            
         }
 
 

@@ -6,22 +6,22 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="TwitchClientID" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"> </Value>
     </Setting>
     <Setting Name="TwitchChannelName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"> </Value>
     </Setting>
     <Setting Name="TwitchAccessToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"> </Value>
     </Setting>
     <Setting Name="TwitchRefreshToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"> </Value>
     </Setting>
     <Setting Name="TwitchRefreshDate" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">1900-01-01</Value>
     </Setting>
     <Setting Name="TwitchBotUserName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"> </Value>
     </Setting>
     <Setting Name="TwitchFrequency" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>

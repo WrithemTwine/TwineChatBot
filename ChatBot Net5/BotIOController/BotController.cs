@@ -41,11 +41,12 @@ namespace ChatBot_Net5.BotIOController
             Stats = new Statistics(DataManage);
         }
 
+
         public bool StartBot()
         {
-            ProcessOps = true;
+            ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
 
-            if (SendThread.ThreadState == System.Threading.ThreadState.Stopped || SendThread.ThreadState == System.Threading.ThreadState.Unstarted)
+            if (SendThread.ThreadState == System.Threading.ThreadState.Unstarted) // start only an unstarted thread, don't attempt to restart the thread - it's sleeping
             {
                 SendThread.Start();
             }
@@ -63,15 +64,10 @@ namespace ChatBot_Net5.BotIOController
             return true;
         }
 
+
         public bool StopBot()
         {
             ProcessOps = false;
-
-            //while (bgworker.IsBusy) { }
-            if (SendThread.ThreadState != System.Threading.ThreadState.Unstarted)
-            {
-                SendThread.Join();
-            }
 
             foreach (IOModule i in IOModuleList)
             {
@@ -115,10 +111,16 @@ namespace ChatBot_Net5.BotIOController
             return Names.ToArray();
         }
 
+        /// <summary>
+        /// Stop bot operations, any sent messages, and save data
+        /// </summary>
         public void ExitSave()
         {
-            StopBot();
-            DataManage.ExitSave();
+            ProcessOps = false;     // stop processing operations
+            ExitApp = true;         // will cause the sleeping thread to drop out of action process
+            SendThread.Join();      // wait for thread to finish processing messages
+            StopBot();              // stop all the bot processes
+            DataManage.ExitSave();  // save data
         }
     }
 }

@@ -2,12 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Windows;
 using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -30,8 +27,6 @@ namespace ChatBot_Net5.Data
         public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
         public DataView CurrencyAccrued { get; private set; }  // DataSource.CurrencyAccruedDataTable
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
-
-        internal DateTime defaultDate = DateTime.Parse("01/01/1900");
 
         #endregion DataSource
 
@@ -113,7 +108,7 @@ namespace ChatBot_Net5.Data
 
             if (CheckName(CommandAction.Live.ToString()))
             {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Live.ToString(), true, "@everyone, #user is now live! #title and playing #category at #url", "#user, #category, #title, #url");
+                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Live.ToString(), true, "@everyone, #user is now live streaming #category - #title! &lt;br/&gt; Come join and say hi at: #url", "#user, #category, #title, #url");
             }
 
             if (CheckName(CommandAction.Raid.ToString()))
@@ -198,12 +193,12 @@ namespace ChatBot_Net5.Data
             _DataSource.AcceptChanges();
         }
 
-        //internal void UserLeft(string User, DateTime LastSeen)
-        //{
-        //    DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
-        //    user.LastDateSeen = LastSeen;
-        //    _DataSource.AcceptChanges();
-        //}
+        internal void UserLeft(string User, DateTime LastSeen)
+        {
+            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+            user.LastDateSeen = LastSeen;
+            _DataSource.AcceptChanges();
+        }
 
         internal void UpdateWatchTime(string User, DateTime CurrTime)
         {

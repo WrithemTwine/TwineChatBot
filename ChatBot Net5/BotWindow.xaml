@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:BotIOController ="clr-namespace:ChatBot_Net5.BotIOController"
+        xmlns:s="clr-namespace:ChatBot_Net5.Properties"
         mc:Ignorable="d"
         Title="Chat Bot Manager" Height="600" Width="1100" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
@@ -15,48 +16,54 @@
             <TabItem Header="Bot Setup">
                 <TabControl>
                     <TabItem Header="Twitch">
-                        <WrapPanel Margin="10">
-                            <StackPanel DataContext="{Binding TwitchIO, Mode=OneWay}">
+                        <DockPanel LastChildFill="True" Name="DockPanel_BotSetup_Twitch">
+                            <StackPanel DockPanel.Dock="Left"  DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                     <Label Content="Channel Name" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_Channel" Text="{Binding ChannelName, Mode=TwoWay}" Width="250" LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
+                                    <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
                                 </StackPanel>
                                 <TextBlock Width="300" Text="* Currently, this Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
                                 <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                     <Label Content="Bot User Name" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding BotUserName, Mode=TwoWay}" Width="250" LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
+                                    <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
                                 </StackPanel>
 
-                                <Expander Name="Expander_Credentials" Header="Credentials" ExpandDirection="Down" IsExpanded="False">
+                                <Expander Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                             <Label Content="Client Id" Width="110" />
-                                            <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding ClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                            <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                             <Label Content="Access Token" Width="110" />
-                                            <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding AccessToken, Mode=TwoWay}" Width="250" LostFocus="TextBox_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                            <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                             <Label Content="Refresh Token" Width="110" />
-                                            <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding RefreshToken, Mode=TwoWay}" Width="250" />
+                                            <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" />
-                                            <Label Name="Twitch_RefreshDate" Content="{Binding RefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
+                                            <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" LostFocus="Settings_LostFocus" />
+                                            <Label Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
                                         </StackPanel>
                                     </StackPanel>
                                 </Expander>
                             </StackPanel>
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Seconds between checking the channel: " />
-                                    <Label Content="{Binding Value, ElementName=Slider_TimePollSeconds}" />
-                                </StackPanel>
 
-                                <Slider DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Slider_TimePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new activity in the channel. Smaller values increases traffic to your channel." Value="{Binding FrequencyTime, Mode=TwoWay}" Maximum="60" Minimum="1" SmallChange="1" SelectionStart="1" SelectionEnd="60" Margin="10,0" IsSnapToTickEnabled="True" />
-                                <CheckBox Content="Enable message when bot connects to a channel." IsChecked="{Binding ShowConnectionMsg, Mode=TwoWay}" DataContext="{Binding TwitchIO, Mode=OneWay}" />
-                                <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" Margin="0,30,0,0" Height="100" Width="150" BorderBrush="#FF212D34">
+                            <StackPanel DockPanel.Dock="Left">
+                                <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="Seconds between checking the channel: " />
+                                        <Label Content="{Binding Value, ElementName=Slider_TimePollSeconds}" />
+                                    </StackPanel>
+
+                                    <Slider x:Name="Slider_TimePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new activity in the channel. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="60" Minimum="1" SmallChange="1" SelectionStart="1" SelectionEnd="60" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
+
+                                    <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
+                                    </CheckBox>
+                                </StackPanel>
+                                <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" Margin="0,10,0,0" Height="100" Width="150" BorderBrush="#FF212D34">
                                     <StackPanel Orientation="Vertical">
                                         <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StartBot" IsEnabled="False"  />
                                         <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StopBot" IsChecked="True" IsEnabled="False" />
@@ -64,21 +71,35 @@
                                 </GroupBox>
                             </StackPanel>
 
-                            <StackPanel Orientation="Vertical" Visibility="Hidden" >
-                                <StackPanel>
-                                    <TextBlock Margin="20,0" TextWrapping="Wrap">
-                                    
-                                        To use this bot, the user needs to enter an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token". The data isn't saved until the "Start Bot" is clicked.
-                                        <LineBreak /><LineBreak />
-                                        One such site to generate these tokens is at: 
-                                        <Hyperlink NavigateUri="https://twitchtokengenerator.com" RequestNavigate="Hyperlink_RequestNavigate" >https://twitchtokengenerator.com/</Hyperlink>
-                                        <LineBreak />
-                                        Use the site, connect it to a Twitch account (possibly a bot account), and the site will generate an access token and a 'refresh token'. The 'refresh token' is used within every 60 days to generate a new 'access token', provided by the above date given; calculated as 60 days from today's date. 
-                                        <LineBreak />*Be sure to stop the bot, apply the refreshed 'access token', and start the bot again.*
-                                    </TextBlock>
-                                </StackPanel>
+                            <StackPanel DockPanel.Dock="Right">
+                                <ScrollViewer x:Name="Info_Scroller" VerticalContentAlignment="Stretch" Margin="0,0,0,20" HorizontalContentAlignment="Stretch" HorizontalScrollBarVisibility="Disabled">
+
+                                    <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                                            Bots need an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token". <LineBreak/><LineBreak/>
+                                            *Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.<LineBreak/><LineBreak/>
+                                            *The 'Credentials' are in the expander to the left for privacy when the bot starts. Click to expand to enter and view the credentials.<LineBreak/><LineBreak/>
+                                             The data is saved after the textbox, slider, or checkbox loses focus. <LineBreak/>
+                                            <LineBreak />
+                                        
+                                            1) *The recommendation is to create a separate Twitch account for this bot to use.<LineBreak /><LineBreak />
+                                            2) Visit: <Hyperlink NavigateUri="https://dev.twitch.tv/console" RequestNavigate="Hyperlink_RequestNavigate" >https://dev.twitch.tv/console</Hyperlink> and "Register Your Application". *Note, the Twitch account needs 2-factor authentication set-up to register applications.* <LineBreak />
+                                            a) Give the application a name (it's just a reference when you look at the listing). <LineBreak />
+                                            b) Add: "https://twitchapps.com/tokengen/" as the OAuth Redirect URLs. Select "Chat Bot" category. <LineBreak />
+                                            c) Complete the reCaptcha and click 'Create'.<LineBreak />
+                                            d) View the application entry to get the 'Client Id'. You can save it in your files and add to the box on the left.<LineBreak /><LineBreak />
+                                            3) One such site to generate the access tokens is at: <LineBreak />
+                                            <Hyperlink NavigateUri="https://twitchapps.com/tokengen/" RequestNavigate="Hyperlink_RequestNavigate" >https://twitchapps.com/tokengen/</Hyperlink>
+                                            <LineBreak /><LineBreak />
+                                            a) Paste the 'Client Id'.<LineBreak />
+                                            b) For "Scopes", paste exactly "bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows". *This permits specific access for the app functions, which the app may later be updated to not perform certain actions you don't want to enable and therefore these scopes are unnecessary.<LineBreak />
+                                            c) Click 'Connect' and copy the resulting "Access Token". You can save it to your local files and paste it to the left in the box. <LineBreak />
+                                            d) Be sure to click "Refresh Date" here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform step 3 for a new 'access token'.<LineBreak /><LineBreak />
+                                            4) View the other tabs to setup your bot messages to events and commands. <LineBreak /><LineBreak />
+                                        </TextBlock>
+
+                                    </ScrollViewer> 
                             </StackPanel>
-                        </WrapPanel>
+                        </DockPanel>
                     </TabItem>
                     <TabItem Header="Discord" DataContext="{Binding DataManage}">
                         <StackPanel>
@@ -86,7 +107,7 @@
                               Current implemented <LineBreak /> 'Kind':
                             </TextBlock>
                             <StackPanel Orientation="Horizontal">
-                                <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single"  />                           
+                                <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single"  />
                                 <DataGrid Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}"/>
                             </StackPanel>
                         </StackPanel>
@@ -99,8 +120,8 @@
                 </TabControl>
             </TabItem>
             <TabItem Header="Data &amp; Messages">
-                <TabControl>
-                     <TabItem Header="Users" Name="TabItem_Users">
+                <TabControl x:Name="TabControl_DataTabs">
+                    <TabItem Header="Users" Name="TabItem_Users">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25" />
@@ -141,7 +162,7 @@
                                     Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before  the parameter, e.g. "the #user followed", the " #" needs to be the first character in the word.
                                     </TextBlock>
                                 </DataGrid.ToolTip>
-                            </DataGrid> 
+                            </DataGrid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Currency">

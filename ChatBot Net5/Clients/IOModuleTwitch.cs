@@ -9,11 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
-using TwitchLib.Api.Helix;
 using TwitchLib.Api.Services;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;

@@ -8,6 +8,8 @@ namespace ChatBot_Net5.Data
         private List<string> CurrUsers = new List<string>();
         private bool _StreamOnline;
         private DataManager datamanager;
+        internal DateTime defaultDate = DateTime.Parse("01/01/1900");
+
 
         public Statistics(DataManager dataManager)
         {
@@ -24,21 +26,35 @@ namespace ChatBot_Net5.Data
         public void UserLeft(string User, DateTime CurrTime)
         {
             UpdateWatchTime(User);
+            datamanager.UserLeft(User, CurrTime);
             CurrUsers.Remove(User);
-            // datamanager.UserLeft(User, CurrTime);
         }
 
+        /// <summary>
+        /// Default to all users or a specific user to register "DateTime.Now" as the current watch date.
+        /// </summary>
+        /// <param name="User">User to update "Now" or null to update all users watch time.</param>
         public void UpdateWatchTime(string User=null)
         {
             if (_StreamOnline)
             {
-                DateTime curr = DateTime.Now;
-                if (User != null) { }
+                UpdateWatchTime(User, DateTime.Now);
+            }
+        }
+
+        public void UpdateWatchTime(string User, DateTime Seen)
+        {
+            if (_StreamOnline)
+            {
+                if (User != null) 
+                {
+                    datamanager.UpdateWatchTime(User, Seen);
+                }
                 else
                 {
                     foreach (string s in CurrUsers)
                     {
-                        datamanager.UpdateWatchTime(s, curr);
+                        datamanager.UpdateWatchTime(s, Seen);
                     }
                 }
             }
@@ -51,6 +67,7 @@ namespace ChatBot_Net5.Data
 
         public void StreamOffline()
         {
+            UpdateWatchTime();
             _StreamOnline = false;
         }
     }
