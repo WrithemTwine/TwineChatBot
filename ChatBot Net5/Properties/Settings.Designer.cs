@@ -85,6 +85,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
         public global::System.DateTime TwitchRefreshDate {
             get {
                 return ((global::System.DateTime)(this["TwitchRefreshDate"]));

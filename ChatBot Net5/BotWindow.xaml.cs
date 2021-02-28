@@ -1,14 +1,13 @@
 ﻿using ChatBot_Net5.BotIOController;
-using ChatBot_Net5.Clients;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Properties;
-using ChatBot_Net5.Data;
 
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace ChatBot_Net5
 {
@@ -17,6 +16,8 @@ namespace ChatBot_Net5
     /// </summary>
     public partial class BotWindow : Window
     {
+        private int SelectedDataTabIndex;
+
         private readonly ChatPopup CP;
 
         public BotWindow()
@@ -61,15 +62,23 @@ namespace ChatBot_Net5
 
         private void BC_Twitch_StartBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            // ignore the following block if using debug build
 #if !DEBUG
             TabItem_Users.Visibility = Visibility.Collapsed;
             TabItem_Followers.Visibility = Visibility.Collapsed;
+            SelectedDataTabIndex = TabControl_DataTabs.SelectedIndex;
+            if (SelectedDataTabIndex < 2) TabControl_DataTabs.SelectedIndex = 2;
 #endif
+
             BotController io = (sender as RadioButton).DataContext as BotController;
             io.StartBot();
             ToggleInputEnabled();
         }
 
+        /// <summary>
+        /// Disable or Enable UIElements to prevent user changes while bot is active.
+        /// Same method takes the opposite value for the start then stop then start, i.e. toggling start/stop bot operations.
+        /// </summary>
         private void ToggleInputEnabled()
         {
             TB_Twitch_AccessToken.IsEnabled = !TB_Twitch_AccessToken.IsEnabled;
@@ -83,12 +92,14 @@ namespace ChatBot_Net5
         private void BC_Twitch_StopBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             BotController io = (sender as RadioButton).DataContext as BotController;
-            io.StartBot();
+            io.StopBot();
             ToggleInputEnabled();
 
+            // ignore the following block if using debug build
 #if !DEBUG
             TabItem_Users.Visibility = Visibility.Visible;
             TabItem_Followers.Visibility = Visibility.Visible;
+            TabControl_DataTabs.SelectedIndex = SelectedDataTabIndex;
 #endif
         }
 
@@ -107,7 +118,11 @@ namespace ChatBot_Net5
 
         private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
 
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e) => CheckFocus();
+        private void Settings_LostFocus(object sender, RoutedEventArgs e)
+        {
+            CheckFocus();
+            Settings.Default.Save();
+        }
 
         /// <summary>
         /// Check the conditions for starting the bot, where the data fields require data before the bot can be successfully started.
@@ -188,9 +203,9 @@ namespace ChatBot_Net5
 
         private void TextBlock_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
 
-        private void Bot_OnEndUserDataChanged(object sender, OnBeginUserDataChangedEventArgs e)
+        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
-
+            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
     }
 }
