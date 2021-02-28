@@ -42,7 +42,7 @@ namespace ChatBot_Net5.Clients
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusLog { get; set; } = "";
-        private const int maxlength = 16000;
+        private const int maxlength = 8000;
 
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …

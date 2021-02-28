@@ -6,7 +6,7 @@
         xmlns:BotIOController ="clr-namespace:ChatBot_Net5.BotIOController"
         xmlns:s="clr-namespace:ChatBot_Net5.Properties"
         mc:Ignorable="d"
-        Title="Chat Bot Manager" Height="600" Width="1100" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
+        Title="Chat Bot Manager" Height="650" Width="1100" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
         <BotIOController:BotController x:Name="ControlBot" x:Key="ControlBot" />
     </Window.Resources>
@@ -16,7 +16,7 @@
             <TabItem Header="Bot Setup">
                 <TabControl>
                     <TabItem Header="Twitch">
-                        <DockPanel LastChildFill="True" Name="DockPanel_BotSetup_Twitch">
+                        <DockPanel LastChildFill="False" Name="DockPanel_BotSetup_Twitch">
                             <StackPanel DockPanel.Dock="Left"  DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                     <Label Content="Channel Name" Width="110" />
@@ -48,16 +48,13 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </Expander>
-                            </StackPanel>
-
-                            <StackPanel DockPanel.Dock="Left">
                                 <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal">
-                                        <Label Content="Seconds between checking the channel: " />
+                                        <Label Content="Seconds between checking for new follows and going live: " />
                                         <Label Content="{Binding Value, ElementName=Slider_TimePollSeconds}" />
                                     </StackPanel>
 
-                                    <Slider x:Name="Slider_TimePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new activity in the channel. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="60" Minimum="1" SmallChange="1" SelectionStart="1" SelectionEnd="60" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
+                                    <Slider x:Name="Slider_TimePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers, and change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="60" Minimum="1" SmallChange="1" SelectionStart="1" SelectionEnd="60" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
 
                                     <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
@@ -71,34 +68,80 @@
                                 </GroupBox>
                             </StackPanel>
 
-                            <StackPanel DockPanel.Dock="Right">
-                                <ScrollViewer x:Name="Info_Scroller" VerticalContentAlignment="Stretch" Margin="0,0,0,20" HorizontalContentAlignment="Stretch" HorizontalScrollBarVisibility="Disabled">
-
-                                    <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
-                                            Bots need an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token". <LineBreak/><LineBreak/>
-                                            *Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.<LineBreak/><LineBreak/>
-                                            *The 'Credentials' are in the expander to the left for privacy when the bot starts. Click to expand to enter and view the credentials.<LineBreak/><LineBreak/>
-                                             The data is saved after the textbox, slider, or checkbox loses focus. <LineBreak/>
-                                            <LineBreak />
-                                        
-                                            1) *The recommendation is to create a separate Twitch account for this bot to use.<LineBreak /><LineBreak />
-                                            2) Visit: <Hyperlink NavigateUri="https://dev.twitch.tv/console" RequestNavigate="Hyperlink_RequestNavigate" >https://dev.twitch.tv/console</Hyperlink> and "Register Your Application". *Note, the Twitch account needs 2-factor authentication set-up to register applications.* <LineBreak />
-                                            a) Give the application a name (it's just a reference when you look at the listing). <LineBreak />
-                                            b) Add: "https://twitchapps.com/tokengen/" as the OAuth Redirect URLs. Select "Chat Bot" category. <LineBreak />
-                                            c) Complete the reCaptcha and click 'Create'.<LineBreak />
-                                            d) View the application entry to get the 'Client Id'. You can save it in your files and add to the box on the left.<LineBreak /><LineBreak />
-                                            3) One such site to generate the access tokens is at: <LineBreak />
-                                            <Hyperlink NavigateUri="https://twitchapps.com/tokengen/" RequestNavigate="Hyperlink_RequestNavigate" >https://twitchapps.com/tokengen/</Hyperlink>
-                                            <LineBreak /><LineBreak />
-                                            a) Paste the 'Client Id'.<LineBreak />
-                                            b) For "Scopes", paste exactly "bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows". *This permits specific access for the app functions, which the app may later be updated to not perform certain actions you don't want to enable and therefore these scopes are unnecessary.<LineBreak />
-                                            c) Click 'Connect' and copy the resulting "Access Token". You can save it to your local files and paste it to the left in the box. <LineBreak />
-                                            d) Be sure to click "Refresh Date" here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform step 3 for a new 'access token'.<LineBreak /><LineBreak />
-                                            4) View the other tabs to setup your bot messages to events and commands. <LineBreak /><LineBreak />
-                                        </TextBlock>
-
-                                    </ScrollViewer> 
-                            </StackPanel>
+                            <FlowDocumentScrollViewer DockPanel.Dock="Right" Margin="10" VerticalScrollBarVisibility="Auto">
+                                <FlowDocument FontSize="12" PagePadding="5">
+                                    <Paragraph>
+                                        Bots need an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token".
+                                        <LineBreak />
+                                        <LineBreak />
+                                        *Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.
+                                        <LineBreak/>
+                                        <LineBreak/>
+                                        *The 'Credentials' are in the expander to the left for privacy when the bot starts. Click to expand to enter and view the credentials.
+                                        <LineBreak/>
+                                        <LineBreak/>
+                                        The data is saved after the textbox, slider, or checkbox loses focus.
+                                    </Paragraph>
+                                    <List>
+                                        <ListItem>
+                                            <Paragraph>Getting the bot account to use within this chat bot.
+                                                <LineBreak/> *The recommendation is to create a separate Twitch account for this bot to use.
+                                            </Paragraph>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Paragraph>Visit:
+                                                <Hyperlink NavigateUri="https://dev.twitch.tv/console" RequestNavigate="Hyperlink_RequestNavigate" >https://dev.twitch.tv/console</Hyperlink> and "Register Your Application".
+                                                <LineBreak/> *Note, the Twitch account needs 2-factor authentication set-up to register applications.*
+                                            </Paragraph>
+                                            <List>
+                                                <ListItem>
+                                                    <Paragraph>Give the application a name (it's just a reference when you look at the listing).</Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>Add:
+                                                        <LineBreak />
+                                                        <TextBox Padding="2" IsReadOnly="True"  PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">https://twitchapps.com/tokengen/</TextBox>
+                                                        <LineBreak /> as the OAuth Redirect URLs. Select "Chat Bot" category.
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>Complete the reCaptcha and click 'Create'.</Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>View the application entry to get the 'Client Id'. You can save it in your files and add to the box on the left.</Paragraph>
+                                                </ListItem>
+                                            </List>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Paragraph>One such site to generate the access tokens is at:
+                                                <LineBreak />
+                                                <Hyperlink NavigateUri="https://twitchapps.com/tokengen/" RequestNavigate="Hyperlink_RequestNavigate" >https://twitchapps.com/tokengen/</Hyperlink>
+                                            </Paragraph>
+                                            <List>
+                                                <ListItem>
+                                                    <Paragraph>Paste the 'Client Id' from .</Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>For "Scopes", paste exactly
+                                                        <LineBreak />
+                                                        <TextBox Padding="2" IsReadOnly="True" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows</TextBox>
+                                                        <LineBreak /> *This permits specific access for the app functions. Please add these scopes. Currently, the app doesn't adjust to what user scopes you've selected if you don't want specific features enabled.
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>Click 'Connect' and copy the resulting "Access Token". You can save it to your local files and paste it to the left in the box.</Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>Be sure to click "Refresh Date" here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform step 3 for a new 'access token'.</Paragraph>
+                                                </ListItem>
+                                            </List>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Paragraph>View the other tabs to setup your bot messages to events and commands.</Paragraph>
+                                        </ListItem>
+                                    </List>
+                                </FlowDocument>
+                            </FlowDocumentScrollViewer>
                         </DockPanel>
                     </TabItem>
                     <TabItem Header="Discord" DataContext="{Binding DataManage}">

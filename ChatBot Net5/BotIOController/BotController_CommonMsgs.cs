@@ -7,13 +7,21 @@ namespace ChatBot_Net5.BotIOController
     // specific partial class for the common messages processes
     public sealed partial class BotController
     {
+        private const string codekey = "#";
+
+        /// <summary>
+        /// Replace in a message the keys from a dictionary for the matching values, must begin with the key token
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="dictionary"></param>
+        /// <returns></returns>
         internal static string ParseReplace(string message, Dictionary<string,string> dictionary)
         {
-            string temp = "";
+            string temp = ""; // build the message to return
+        
+            string[] words = message.Split(' ');    // tokenize the message by ' ' delimiters
 
-            string[] words = message.Split(' ');
-
-
+            // submethod to replace the found key with paired value
             string Rep(string key)
             {
                 string hit = "";
@@ -31,9 +39,10 @@ namespace ChatBot_Net5.BotIOController
                 return key.Replace(hit,value) ?? "";
             }
 
+            // review 
             for(int x=0; x<words.Length; x++)
             {
-                temp += (words[x].StartsWith("#", System.StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
+                temp += (words[x].StartsWith(codekey, StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
             }
 
             return temp.Trim();

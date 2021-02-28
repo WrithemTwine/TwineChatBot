@@ -85,45 +85,28 @@ namespace ChatBot_Net5.Data
         {
             bool CheckName(string criteria) => _DataSource.ChannelEvents.FindByName(criteria) == null;
 
-
-            if (CheckName(CommandAction.BeingHosted.ToString()))
+            Dictionary<CommandAction, Tuple<string, string>> dictionary = new Dictionary<CommandAction, Tuple<string, string>>()
             {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.BeingHosted.ToString(), true, "Thanks #user for #autohost this channel!", "#user, #autohost, #viewers");
-            }
+                {CommandAction.BeingHosted, new Tuple<string,string>("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
+                {CommandAction.Bits, new Tuple<string,string>("Thanks #user for giving #bits!", "#user, #bits") },
+                {CommandAction.CommunitySubs, new Tuple<string,string>("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
+                {CommandAction.Follow, new Tuple<string,string>("Thanks #user for the follow!", "#user") },
+                {CommandAction.GiftSub, new Tuple<string,string>("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
+                {CommandAction.Live, new Tuple<string,string>( "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
+                {CommandAction.Raid, new Tuple<string,string>("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
+                {CommandAction.Resubscribe, new Tuple<string,string>("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
+                {CommandAction.Subscribe, new Tuple<string,string>("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") }
+            };
 
-            if (CheckName(CommandAction.Bits.ToString()))
+            foreach (CommandAction command in Enum.GetValues(typeof(CommandAction)))
             {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Bits.ToString(), true, "Thanks #user for giving #bits!", "#user, #bits");
-            }
+                // consider only the values in the dictionary, check if data is already defined in the data table
+                if (dictionary.ContainsKey(command) && CheckName(command.ToString())) 
+                {   // extract the default data from the dictionary and add to the data table
+                    Tuple<string, string> values = dictionary[command];
+                    _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), true, values.Item1, values.Item2);
+                }
 
-            if (CheckName(CommandAction.Follow.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Follow.ToString(), true, "Thanks #user for the follow!", "#user");
-            }
-
-            if (CheckName(CommandAction.GiftSub.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.GiftSub.ToString(), true, "Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname");
-            }
-
-            if (CheckName(CommandAction.Live.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Live.ToString(), true, "@everyone, #user is now live streaming #category - #title! &lt;br/&gt; Come join and say hi at: #url", "#user, #category, #title, #url");
-            }
-
-            if (CheckName(CommandAction.Raid.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Raid.ToString(), true, "Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers");
-            }
-
-            if (CheckName(CommandAction.Resubscribe.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Resubscribe.ToString(), true, "Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak");
-            }
-
-            if (CheckName(CommandAction.Subscribe.ToString()))
-            {
-                _DataSource.ChannelEvents.AddChannelEventsRow(CommandAction.Subscribe.ToString(), true, "Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname");
             }
 
         }

@@ -5,7 +5,7 @@
 
     // TwitchLib.Client.Enums.UserType
 
-    public enum CommandAction { Respond, Random, JoinChannel, LeaveChannel, Follow, BeingHosted, Subscribe, Resubscribe, Raid, GiftSub, Bits, Live }
+    public enum CommandAction { Respond, Random, JoinChannel, LeaveChannel, Follow, BeingHosted, Subscribe, Resubscribe, Raid, GiftSub, Bits, Live, CommunitySubs }
     public enum ResponseType { Channel, Whisper, Both }
     public enum CurrencyAction { JoinChannel, LeaveChannel, Chat, Emoticon, GiftSub, Bits, Points }
 

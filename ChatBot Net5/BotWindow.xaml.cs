@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace ChatBot_Net5
 {
@@ -202,9 +203,9 @@ namespace ChatBot_Net5
 
         private void TextBlock_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
 
-        private void Bot_OnEndUserDataChanged(object sender, OnBeginUserDataChangedEventArgs e)
+        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
-
+            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
     }
 }

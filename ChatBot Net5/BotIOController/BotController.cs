@@ -1,55 +1,91 @@
-﻿
+﻿//#if DEBUG
+//#define LOGGING
+//#endif
+
+
 using ChatBot_Net5.BotIOController.Models;
 using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
-using ChatBot_Net5.Models;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Documents;
-
-using TwitchLib.Client.Models;
+using System.Reflection;
+using System.IO;
+using System;
 
 namespace ChatBot_Net5.BotIOController
 {
     // see "BotController_Events.cs for partial class implementation
     public sealed partial class BotController
     {
+        #region logging actions
+#if LOGGING
+        readonly StreamWriter _TraceLogWriter = new StreamWriter("LogCalledEvents.txt", true);
+#else
+        readonly StreamWriter _TraceLogWriter = null;
+#endif
+        #endregion logging actions
+
         #region properties
 
+        /// <summary>
+        /// List of commands supported as codes within the text, replaced with an actual value.
+        /// </summary>
         public CommandCollection CommandInfo { get; private set; } = new CommandCollection();
+
+        /// <summary>
+        /// Manages data storage with the data interface to the datagram xml.
+        /// </summary>
         public DataManager DataManage { get; private set; } = new DataManager();
  
+        /// <summary>
+        /// Manages statistics as the chat bot runs.
+        /// </summary>
         public Statistics Stats { get; private set; }
 
         #region Bot Services
+        /// <summary>
+        /// Collection of each attached chat bot.
+        /// </summary>
         public Collection<IOModule> IOModuleList { get; private set; } = new Collection<IOModule>();
+
+        /// <summary>
+        /// Specifically Twitch Lib chat bot.
+        /// </summary>
         public IOModuleTwitch TwitchIO { get; private set; }
         #endregion Bot Services
 
         #endregion properties
 
+        /// <summary>
+        /// Build a new BotController.
+        /// </summary>
         public BotController()
         {
-            ProcessOps = false;
+#if LOGGING
+            _TraceLogWriter.AutoFlush = true;
+#endif
 
-            SetThread();
             TwitchIO = new IOModuleTwitch();
             IOModuleList.Add(TwitchIO);
 
             Stats = new Statistics(DataManage);
         }
 
-
+        /// <summary>
+        /// Start all of the bots attached to this controller.
+        /// </summary>
+        /// <returns>True when completed.</returns>
         public bool StartBot()
         {
-            ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
+#if LOGGING
+            MethodBase b = MethodBase.GetCurrentMethod();
+            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
+#endif
 
-            if (SendThread.ThreadState == System.Threading.ThreadState.Unstarted) // start only an unstarted thread, don't attempt to restart the thread - it's sleeping
-            {
-                SendThread.Start();
-            }
+            ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
+            SetThread();
 
             foreach (IOModule i in IOModuleList)
             {
@@ -64,10 +100,19 @@ namespace ChatBot_Net5.BotIOController
             return true;
         }
 
-
+        /// <summary>
+        /// Set all of the attached bots into a stopped state.
+        /// </summary>
+        /// <returns>True when successful.</returns>
         public bool StopBot()
         {
+#if LOGGING
+            MethodBase b = MethodBase.GetCurrentMethod();
+            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
+#endif
+
             ProcessOps = false;
+            SendThread?.Join();
 
             foreach (IOModule i in IOModuleList)
             {
@@ -97,8 +142,17 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
+        /// <summary>
+        /// Retrieve the names of the bot APIs within this controller
+        /// </summary>
+        /// <returns>The string names array of the bots within this controller.</returns>
         public string[] GetProviderNames()
         {
+#if LOGGING
+            MethodBase b = MethodBase.GetCurrentMethod();
+            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
+#endif
+
             List<string> Names = new List<string>();
             
             foreach (IOModule a in IOModuleList)
@@ -116,11 +170,17 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
-            ProcessOps = false;     // stop processing operations
-            ExitApp = true;         // will cause the sleeping thread to drop out of action process
-            SendThread.Join();      // wait for thread to finish processing messages
+#if LOGGING
+            MethodBase b = MethodBase.GetCurrentMethod();
+            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
+#endif
+
             StopBot();              // stop all the bot processes
             DataManage.ExitSave();  // save data
+
+#if LOGGING
+            _TraceLogWriter.Close();
+#endif
         }
     }
 }
