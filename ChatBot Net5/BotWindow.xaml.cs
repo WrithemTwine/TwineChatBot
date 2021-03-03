@@ -16,14 +16,16 @@ namespace ChatBot_Net5
     /// </summary>
     public partial class BotWindow : Window
     {
+#if !DEBUG // active in the release version
         private int SelectedDataTabIndex;
+#endif
 
         private readonly ChatPopup CP;
 
         public BotWindow()
         {
             // move settings to the newest version, if the application version upgrades
-            if (Settings.Default.UpgradeRequired )
+            if (Settings.Default.UpgradeRequired)
             { 
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
@@ -37,21 +39,6 @@ namespace ChatBot_Net5
                 Page_ChatPopup_RichText = RichTextBox_ChatBox
             };
             CP.Page_ChatPopup_RichText.Opacity = Slider_PopOut_Opacity.Value;            
-        }
-
-        /// <summary>
-        /// Handles add a new item to a Datagrid.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DG_AddingNewItem(object sender, AddingNewItemEventArgs e)
-        {
-
-        }
-
-        private void Button_PreviewMouseLeftButtonDown_DGJoinList(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -142,6 +129,7 @@ namespace ChatBot_Net5
         {
             DataGrid dg = (sender as DataGrid);
 
+            // find the new item, hide columns other than the primary data columns, i.e. relational columns
             switch (dg.Name)
             {
                 case "DG_CommonMsgs":

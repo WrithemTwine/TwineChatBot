@@ -173,11 +173,10 @@ namespace ChatBot_Net5.BotIOController
 
                 foreach (Follow f in e.NewFollowers)
                 {
-                    if (!DataManage.CheckFollower(f.FromUserName))
+                    if (DataManage.AddFollower(f.FromUserName, f.FollowedAt) && !DataManage.UpdatingFollowers)
                     {
                         Send(msg.Replace("#user", "@" + f.FromUserName));
                     }
-                    DataManage.AddFollower(f.FromUserName, f.FollowedAt);
                 }
             }
         }

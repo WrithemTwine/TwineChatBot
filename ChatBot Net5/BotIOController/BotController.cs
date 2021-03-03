@@ -9,10 +9,8 @@ using ChatBot_Net5.Data;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.IO;
-using System;
+using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
 {
@@ -54,6 +52,8 @@ namespace ChatBot_Net5.BotIOController
         /// Specifically Twitch Lib chat bot.
         /// </summary>
         public IOModuleTwitch TwitchIO { get; private set; }
+
+        public bool FirstFollowerProcess { get; set; }
         #endregion Bot Services
 
         #endregion properties
@@ -95,6 +95,11 @@ namespace ChatBot_Net5.BotIOController
                 RegisterHandlers();
 
                 i.StartBot();
+            }
+
+            if (FirstFollowerProcess)
+            {
+                BeginAddFollowers(); // begin adding followers back to the data table
             }
 
             return true;

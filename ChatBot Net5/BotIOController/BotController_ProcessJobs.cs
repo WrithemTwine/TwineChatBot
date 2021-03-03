@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
+
 namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
@@ -12,6 +14,8 @@ namespace ChatBot_Net5.BotIOController
         private Queue<Task> Operations { get; set; } = new Queue<Task>();   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
 
+        private List<Follow> Follows { get; set; }
+
         /// <summary>
         /// Initialize a thread to process sending messages back to each chat bot and start the message processing thread.
         /// </summary>
@@ -19,6 +23,14 @@ namespace ChatBot_Net5.BotIOController
         {
             SendThread = new Thread(new ThreadStart(ProcMsgs));
             SendThread.Start();
+        }
+
+        /// <summary>
+        /// Retrieve all followers for the channel and add to the datatable.
+        /// </summary>
+        private void BeginAddFollowers()
+        {
+            new Thread(new ThreadStart(ProcessFollows)).Start();
         }
 
         /// <summary>
@@ -48,6 +60,19 @@ namespace ChatBot_Net5.BotIOController
                 Thread.Sleep(600); // sleep 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
             }
         }
+
+        /// <summary>
+        /// Process all of the followers from the reviewing channel
+        /// </summary>
+        private void ProcessFollows()
+        {
+            string ChannelName = TwitchIO.ChannelName;
+
+            Follows = TwitchIO.GetAllFollowersAsync().Result;
+
+            DataManage.UpdateFollowers(ChannelName, new Dictionary<string, List<Follow>>() { { ChannelName, Follows } });
+        }
+
 
         #endregion Process Bot Operations
 
