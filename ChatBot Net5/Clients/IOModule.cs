@@ -68,17 +68,17 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool ReceiveWhisper(Action<string> ReceiveWhisperCallback)
         {
-            throw new NotImplementedException();
+            throw new();
         }
 
         public virtual bool Send(string s)
         {
-            throw new NotImplementedException();
+            throw new();
         }
 
         public virtual bool SendWhisper(string user, string s)
         {
-            throw new NotImplementedException();
+            throw new();
         }
 
         public virtual bool StartBot()

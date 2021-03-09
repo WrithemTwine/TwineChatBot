@@ -11,7 +11,7 @@ namespace ChatBot_Net5.BotIOController
         #region Process Bot Operations
         private bool ProcessOps { get; set; } = false;  // whether to process ops or not
 
-        private Queue<Task> Operations { get; set; } = new Queue<Task>();   // an ordered list, enqueue into one end, dequeue from other end
+        private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
 
         private List<Follow> Follows { get; set; }
@@ -21,7 +21,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void SetThread()
         {
-            SendThread = new Thread(new ThreadStart(ProcMsgs));
+            SendThread = new(new ThreadStart(ProcMsgs));
             SendThread.Start();
         }
 

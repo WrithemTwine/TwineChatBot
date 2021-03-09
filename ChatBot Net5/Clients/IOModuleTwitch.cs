@@ -33,12 +33,12 @@ namespace ChatBot_Net5.Clients
         /// <summary>
         /// Listens for new followers.
         /// </summary>
-        internal FullFollowerService FollowerService { get; private set; } 
+        internal static FullFollowerService FollowerService { get; private set; } 
 
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
-        internal LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
+        internal static LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
         private Logger<TwitchClient> LogData { get; set; }
 
@@ -124,7 +124,7 @@ namespace ChatBot_Net5.Clients
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            if (StatusLog.Length + e.DateTime.ToString().Length + e.Data.Length + 2 >= maxlength)
+            if (StatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
             {
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
@@ -149,7 +149,7 @@ namespace ChatBot_Net5.Clients
             {
                 TwitchChat.Initialize(credentials,ChannelName);
 
-                TwitchChat.OverrideBeingHostedCheck = (ChannelName != BotUserName);
+                //TwitchChat.OverrideBeingHostedCheck = (ChannelName != BotUserName);
 
                 TwitchChat.Connect();
                 ConnectServices();

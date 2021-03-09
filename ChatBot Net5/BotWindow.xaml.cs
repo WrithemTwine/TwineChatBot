@@ -60,6 +60,8 @@ namespace ChatBot_Net5
             BotController io = (sender as RadioButton).DataContext as BotController;
             io.StartBot();
             ToggleInputEnabled();
+            //Radio_Twitch_StartBot.IsEnabled = false;
+            //Radio_Twitch_StopBot.IsEnabled = true;
         }
 
         /// <summary>
@@ -81,6 +83,8 @@ namespace ChatBot_Net5
             BotController io = (sender as RadioButton).DataContext as BotController;
             io.StopBot();
             ToggleInputEnabled();
+            //Radio_Twitch_StartBot.IsEnabled = true;
+            //Radio_Twitch_StopBot.IsEnabled = false;
 
             // ignore the following block if using debug build
 #if !DEBUG

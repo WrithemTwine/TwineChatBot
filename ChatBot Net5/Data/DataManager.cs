@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using System.Xml;
+using System.Linq;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
@@ -21,7 +22,7 @@ namespace ChatBot_Net5.Data
 
         public bool UpdatingFollowers { get; set; } = false;
 
-        public List<string> KindsWebhooks { get; private set; } = new List<string>(Enum.GetNames(typeof(WebhooksKind)));
+        public List<string> KindsWebhooks { get; private set; } = new(Enum.GetNames(typeof(WebhooksKind)));
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
@@ -34,16 +35,16 @@ namespace ChatBot_Net5.Data
 
         public DataManager()
         {
-            _DataSource = new DataSource();
+            _DataSource = new();
             LoadData();
 
             ChannelEvents = _DataSource.ChannelEvents.DefaultView;
-            Users = new DataView(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
-            Followers = new DataView(_DataSource.Followers, null, "UserName", DataViewRowState.CurrentRows);
+            Users = new(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
+            Followers = new(_DataSource.Followers, null, "UserName", DataViewRowState.CurrentRows);
             Discord = _DataSource.Discord.DefaultView;
-            Currency = new DataView(_DataSource.Currency, null, "Id", DataViewRowState.CurrentRows);
-            CurrencyAccrued = new DataView(_DataSource.CurrencyAccrued, null, "UserName", DataViewRowState.CurrentRows);
-            Commands = new DataView(_DataSource.Commands, null, "CmdName", DataViewRowState.CurrentRows);
+            Currency = new (_DataSource.Currency, null, "Id", DataViewRowState.CurrentRows);
+            CurrencyAccrued = new(_DataSource.CurrencyAccrued, null, "UserName", DataViewRowState.CurrentRows);
+            Commands = new(_DataSource.Commands, null, "CmdName", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -89,15 +90,15 @@ namespace ChatBot_Net5.Data
 
             Dictionary<CommandAction, Tuple<string, string>> dictionary = new Dictionary<CommandAction, Tuple<string, string>>()
             {
-                {CommandAction.BeingHosted, new Tuple<string,string>("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
-                {CommandAction.Bits, new Tuple<string,string>("Thanks #user for giving #bits!", "#user, #bits") },
-                {CommandAction.CommunitySubs, new Tuple<string,string>("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
-                {CommandAction.Follow, new Tuple<string,string>("Thanks #user for the follow!", "#user") },
-                {CommandAction.GiftSub, new Tuple<string,string>("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
-                {CommandAction.Live, new Tuple<string,string>( "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
-                {CommandAction.Raid, new Tuple<string,string>("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
-                {CommandAction.Resubscribe, new Tuple<string,string>("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
-                {CommandAction.Subscribe, new Tuple<string,string>("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") }
+                {CommandAction.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
+                {CommandAction.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
+                {CommandAction.CommunitySubs, new("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
+                {CommandAction.Follow, new("Thanks #user for the follow!", "#user") },
+                {CommandAction.GiftSub, new("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
+                {CommandAction.Live, new("@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
+                {CommandAction.Raid, new("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
+                {CommandAction.Resubscribe, new("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
+                {CommandAction.Subscribe, new("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") }
             };
 
             foreach (CommandAction command in Enum.GetValues(typeof(CommandAction)))
@@ -162,7 +163,7 @@ namespace ChatBot_Net5.Data
                 row = _DataSource.Tables[table].Select(criteriacolumn + "='" + rowcriteria.ToString() + "'");
             }
 
-            List<object> list = new List<object>();
+            List<object> list = new();
             foreach (DataRow d in row)
             {
                 list.Add(d.Field<object>(datacolumn));
@@ -290,27 +291,7 @@ namespace ChatBot_Net5.Data
 
         internal void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
-            followerThread = new Thread(new ThreadStart(() =>
-            {
-                UpdatingFollowers = true;
-
-                lock (_DataSource)
-                {
-                    _DataSource.Followers.Clear(); // remove all followers and add followers again
-                }
-
-                if (follows[ChannelName].Count > 1)
-                {
-                    foreach (Follow f in follows[ChannelName])
-                    {
-                        AddFollower(f.FromUserName, f.FollowedAt);
-                    }
-                }
-
-                _DataSource.AcceptChanges();
-                UpdatingFollowers = false;
-            })
-            );
+            followerThread = new(new ThreadStart(() => { UpdatingFollowers = true; lock (_DataSource) { List<DataSource.FollowersRow> temp = new(); temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select()); temp.ForEach((f) => f.IsFollower = false); } if (follows[ChannelName].Count > 1) { foreach (Follow f in follows[ChannelName]) { AddFollower(f.FromUserName, f.FollowedAt); } } _DataSource.AcceptChanges(); UpdatingFollowers = false; }));
 
             followerThread.Start();
         }
@@ -326,7 +307,7 @@ namespace ChatBot_Net5.Data
         {
             DataRow[] dataRows = _DataSource.Discord.Select();
 
-            List<Uri> uris = new List<Uri>();
+            List<Uri> uris = new();
 
             foreach (DataRow d in dataRows)
             {
