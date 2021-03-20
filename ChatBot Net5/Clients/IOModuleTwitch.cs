@@ -147,11 +147,17 @@ namespace ChatBot_Net5.Clients
             }
             else
             {
-                TwitchChat.Initialize(credentials,ChannelName);
+                if (TwitchChat.ConnectionCredentials == null)
+                {
+                    TwitchChat.Initialize(credentials, ChannelName);
+                }
 
-                //TwitchChat.OverrideBeingHostedCheck = (ChannelName != BotUserName);
+                TwitchChat.OverrideBeingHostedCheck = (ChannelName != BotUserName);
 
-                TwitchChat.Connect();
+                if (!TwitchChat.IsConnected)
+                {
+                    TwitchChat.Connect();
+                }
                 ConnectServices();
             }
 
@@ -167,12 +173,6 @@ namespace ChatBot_Net5.Clients
             try
             {
                 SaveParams();
-
-                //if (!TwitchChat.IsConnected)
-                //{
-                //    Connect();
-                //}
-
                 StartServices();
 
                 return true;
@@ -249,7 +249,7 @@ namespace ChatBot_Net5.Clients
         /// <summary>
         /// Start all of the services attached to the client.
         /// </summary>
-        internal void StartServices()
+        internal static void StartServices()
         {
             FollowerService.Start();
             LiveStreamMonitor.Start();
@@ -258,7 +258,7 @@ namespace ChatBot_Net5.Clients
         /// <summary>
         /// Stop all of the services attached to the client.
         /// </summary>
-        internal void StopServices()
+        internal static void StopServices()
         {
             FollowerService.Stop();
             LiveStreamMonitor.Stop();
