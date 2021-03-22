@@ -5,13 +5,17 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>ChatBot_Net5</RootNamespace>
     <UseWPF>true</UseWPF>
-    <Authors>ChatBot Net5</Authors>
+    <Authors>WrithemTwine</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
-    <PackageId>TwineChatBot</PackageId>
+    <AssemblyVersion>1.1.4.0</AssemblyVersion>
+    <FileVersion>1.1.4.0</FileVersion>
+    <Version>1.1.2</Version>
+    <PackageId></PackageId>
     <AssemblyName>TwineChatBot</AssemblyName>
+    <Company>ChatBot</Company>
+    <Product />
+    <PackageLicenseExpression>MIT license, except not for sale per Visual Studio Community license regarding developed code.</PackageLicenseExpression>
+    <Description>A chat bot for Twitch using the C# TwitchLib library.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

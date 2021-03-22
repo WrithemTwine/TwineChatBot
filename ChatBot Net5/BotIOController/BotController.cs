@@ -6,13 +6,12 @@
 using ChatBot_Net5.BotIOController.Models;
 using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Properties;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.IO;
-using System;
+using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
 {
@@ -32,12 +31,12 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// List of commands supported as codes within the text, replaced with an actual value.
         /// </summary>
-        public CommandCollection CommandInfo { get; private set; } = new CommandCollection();
+        public CommandCollection CommandInfo { get; private set; } = new();
 
         /// <summary>
         /// Manages data storage with the data interface to the datagram xml.
         /// </summary>
-        public DataManager DataManage { get; private set; } = new DataManager();
+        public DataManager DataManage { get; private set; } = new();
  
         /// <summary>
         /// Manages statistics as the chat bot runs.
@@ -48,12 +47,14 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// Collection of each attached chat bot.
         /// </summary>
-        public Collection<IOModule> IOModuleList { get; private set; } = new Collection<IOModule>();
+        public Collection<IOModule> IOModuleList { get; private set; } = new();
 
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
         public IOModuleTwitch TwitchIO { get; private set; }
+
+        public bool FirstFollowerProcess { get; set; }
         #endregion Bot Services
 
         #endregion properties
@@ -67,10 +68,11 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter.AutoFlush = true;
 #endif
 
-            TwitchIO = new IOModuleTwitch();
+            TwitchIO = new ();
             IOModuleList.Add(TwitchIO);
 
-            Stats = new Statistics(DataManage);
+            Stats = new(DataManage);
+            FirstFollowerProcess = Settings.Default.AddFollowersStart;
         }
 
         /// <summary>
@@ -95,6 +97,11 @@ namespace ChatBot_Net5.BotIOController
                 RegisterHandlers();
 
                 i.StartBot();
+            }
+
+            if (FirstFollowerProcess)
+            {
+                BeginAddFollowers(); // begin adding followers back to the data table
             }
 
             return true;
@@ -153,7 +160,7 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
 #endif
 
-            List<string> Names = new List<string>();
+            List<string> Names = new();
             
             foreach (IOModule a in IOModuleList)
             {

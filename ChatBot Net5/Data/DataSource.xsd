@@ -84,6 +84,35 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="StreamStats" msprop:Generator_TableClassName="StreamStatsDataTable" msprop:Generator_TableVarName="tableStreamStats" msprop:Generator_RowChangedName="StreamStatsRowChanged" msprop:Generator_TablePropName="StreamStats" msprop:Generator_RowDeletingName="StreamStatsRowDeleting" msprop:Generator_RowChangingName="StreamStatsRowChanging" msprop:Generator_RowEvHandlerName="StreamStatsRowChangeEventHandler" msprop:Generator_RowDeletedName="StreamStatsRowDeleted" msprop:Generator_RowClassName="StreamStatsRow" msprop:Generator_UserTableName="StreamStats" msprop:Generator_RowEvArgName="StreamStatsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" />
+              <xs:element name="StreamStart" msdata:DateTimeMode="Local" msprop:Generator_ColumnVarNameInTable="columnStreamStart" msprop:Generator_ColumnPropNameInRow="StreamStart" msprop:Generator_ColumnPropNameInTable="StreamStartColumn" msprop:Generator_UserColumnName="StreamStart" type="xs:dateTime" default="1990-01-01T00:00:00" minOccurs="0" />
+              <xs:element name="StreamEnd" msdata:DateTimeMode="Local" msprop:Generator_ColumnVarNameInTable="columnStreamEnd" msprop:Generator_ColumnPropNameInRow="StreamEnd" msprop:Generator_ColumnPropNameInTable="StreamEndColumn" msprop:Generator_UserColumnName="StreamEnd" type="xs:dateTime" default="1990-01-01T00:00:00" minOccurs="0" />
+              <xs:element name="NewFollows" msprop:Generator_ColumnVarNameInTable="columnNewFollows" msprop:Generator_ColumnPropNameInRow="NewFollows" msprop:Generator_ColumnPropNameInTable="NewFollowsColumn" msprop:Generator_UserColumnName="NewFollows" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="NewSubscribers" msdata:Caption="NewSubs and Resubscribes" msprop:Generator_ColumnVarNameInTable="columnNewSubscribers" msprop:Generator_ColumnPropNameInRow="NewSubscribers" msprop:Generator_ColumnPropNameInTable="NewSubscribersColumn" msprop:Generator_UserColumnName="NewSubscribers" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="GiftSubs" msdata:Caption="Gifted Subs" msprop:Generator_ColumnVarNameInTable="columnGiftSubs" msprop:Generator_ColumnPropNameInRow="GiftSubs" msprop:Generator_ColumnPropNameInTable="GiftSubsColumn" msprop:Generator_UserColumnName="GiftSubs" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="Bits" msprop:Generator_ColumnVarNameInTable="columnBits" msprop:Generator_ColumnPropNameInRow="Bits" msprop:Generator_ColumnPropNameInTable="BitsColumn" msprop:Generator_UserColumnName="Bits" type="xs:long" default="0" minOccurs="0" />
+              <xs:element name="Raids" msdata:Caption="Incoming Raids" msprop:Generator_ColumnVarNameInTable="columnRaids" msprop:Generator_ColumnPropNameInRow="Raids" msprop:Generator_ColumnPropNameInTable="RaidsColumn" msprop:Generator_UserColumnName="Raids" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="Hosted" msdata:Caption="On Being Hosted" msprop:Generator_ColumnVarNameInTable="columnHosted" msprop:Generator_ColumnPropNameInRow="Hosted" msprop:Generator_ColumnPropNameInTable="HostedColumn" msprop:Generator_UserColumnName="Hosted" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="UsersBanned" msprop:Generator_ColumnVarNameInTable="columnUsersBanned" msprop:Generator_ColumnPropNameInRow="UsersBanned" msprop:Generator_ColumnPropNameInTable="UsersBannedColumn" msprop:Generator_UserColumnName="UsersBanned" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="UsersTimedOut" msprop:Generator_ColumnVarNameInTable="columnUsersTimedOut" msprop:Generator_ColumnPropNameInRow="UsersTimedOut" msprop:Generator_ColumnPropNameInTable="UsersTimedOutColumn" msprop:Generator_UserColumnName="UsersTimedOut" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="ModeratorsPresent" msprop:Generator_ColumnVarNameInTable="columnModeratorsPresent" msprop:Generator_ColumnPropNameInRow="ModeratorsPresent" msprop:Generator_ColumnPropNameInTable="ModeratorsPresentColumn" msprop:Generator_UserColumnName="ModeratorsPresent" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="SubsPresent" msprop:Generator_ColumnVarNameInTable="columnSubsPresent" msprop:Generator_ColumnPropNameInRow="SubsPresent" msprop:Generator_ColumnPropNameInTable="SubsPresentColumn" msprop:Generator_UserColumnName="SubsPresent" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="VIPsPresent" msprop:Generator_ColumnVarNameInTable="columnVIPsPresent" msprop:Generator_ColumnPropNameInRow="VIPsPresent" msprop:Generator_ColumnPropNameInTable="VIPsPresentColumn" msprop:Generator_UserColumnName="VIPsPresent" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="TotalChats" msprop:Generator_ColumnVarNameInTable="columnTotalChats" msprop:Generator_ColumnPropNameInRow="TotalChats" msprop:Generator_ColumnPropNameInTable="TotalChatsColumn" msprop:Generator_UserColumnName="TotalChats" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="Commands" msdata:Caption="Commands Performed" msprop:Generator_ColumnVarNameInTable="columnCommands" msprop:Generator_ColumnPropNameInRow="Commands" msprop:Generator_ColumnPropNameInTable="CommandsColumn" msprop:Generator_UserColumnName="Commands" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="AutomatedEvents" msprop:Generator_ColumnVarNameInTable="columnAutomatedEvents" msprop:Generator_ColumnPropNameInRow="AutomatedEvents" msprop:Generator_ColumnPropNameInTable="AutomatedEventsColumn" msprop:Generator_UserColumnName="AutomatedEvents" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="AutomatedCommands" msprop:Generator_ColumnVarNameInTable="columnAutomatedCommands" msprop:Generator_ColumnPropNameInRow="AutomatedCommands" msprop:Generator_ColumnPropNameInTable="AutomatedCommandsColumn" msprop:Generator_UserColumnName="AutomatedCommands" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="DiscordMsgs" msdata:Caption="Discord Msgs Live and Other" msprop:Generator_ColumnVarNameInTable="columnDiscordMsgs" msprop:Generator_ColumnPropNameInRow="DiscordMsgs" msprop:Generator_ColumnPropNameInTable="DiscordMsgsColumn" msprop:Generator_UserColumnName="DiscordMsgs" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="ClipsMade" msprop:Generator_ColumnVarNameInTable="columnClipsMade" msprop:Generator_ColumnPropNameInRow="ClipsMade" msprop:Generator_ColumnPropNameInTable="ClipsMadeColumn" msprop:Generator_UserColumnName="ClipsMade" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="ChannelPtCount" msdata:Caption="Count of Redeemed Channel Points" msprop:Generator_ColumnVarNameInTable="columnChannelPtCount" msprop:Generator_ColumnPropNameInRow="ChannelPtCount" msprop:Generator_ColumnPropNameInTable="ChannelPtCountColumn" msprop:Generator_UserColumnName="ChannelPtCount" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="ChannelChallenge" msprop:Generator_ColumnVarNameInTable="columnChannelChallenge" msprop:Generator_ColumnPropNameInRow="ChannelChallenge" msprop:Generator_ColumnPropNameInTable="ChannelChallengeColumn" msprop:Generator_UserColumnName="ChannelChallenge" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="MaxUsers" msprop:Generator_ColumnVarNameInTable="columnMaxUsers" msprop:Generator_ColumnPropNameInRow="MaxUsers" msprop:Generator_ColumnPropNameInTable="MaxUsersColumn" msprop:Generator_UserColumnName="MaxUsers" type="xs:int" default="0" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Constraint1">
@@ -137,6 +166,10 @@
     <xs:unique name="Followers_Constraint2" msdata:ConstraintName="Constraint2">
       <xs:selector xpath=".//mstns:Followers" />
       <xs:field xpath="mstns:UserName" />
+    </xs:unique>
+    <xs:unique name="StreamStats_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:StreamStats" />
+      <xs:field xpath="mstns:Id" />
     </xs:unique>
   </xs:element>
   <xs:annotation>
