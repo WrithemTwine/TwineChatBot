@@ -1,5 +1,6 @@
 ﻿
 using ChatBot_Net5.Interfaces;
+using ChatBot_Net5.Properties;
 
 using System;
 
@@ -40,9 +41,14 @@ namespace ChatBot_Net5.Clients
         public DateTime RefreshDate { get; set; }
 
         /// <summary>
-        /// The poll time in seconds to check the data source
+        /// The poll time in seconds to check the channel for new followers
         /// </summary>
-        public double FrequencyTime { get; set; }
+        public double FrequencyFollowerTime { get; set; }
+
+        /// <summary>
+        /// The poll time in seconds to check for channel going live
+        /// </summary>
+        public double FrequencyLiveNotifyTime { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.
@@ -92,7 +98,7 @@ namespace ChatBot_Net5.Clients
             return true;
         }
 
-        internal virtual bool SaveParams() { return true; }
+        internal virtual bool SaveParams() { Settings.Default.Save(); return true; }
         #endregion
 
     }

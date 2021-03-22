@@ -4,6 +4,7 @@
 
 using ChatBot_Net5.Clients;
 using ChatBot_Net5.Models;
+using ChatBot_Net5.Properties;
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,10 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
+        /// <summary>
+        /// Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
+        /// </summary>
+        public bool PostMultiLive { get; set; } = Settings.Default.PostMultiLive;
 
         /// <summary>
         /// Register event handlers for the chat services
@@ -96,7 +101,7 @@ namespace ChatBot_Net5.BotIOController
             }
 #endif
 
-            Stats.StreamOffline();
+            Stats.StreamOffline(DateTime.Now);
         }
 
         /// <summary>
@@ -133,9 +138,9 @@ namespace ChatBot_Net5.BotIOController
             }
 #endif
 
-            Stats.StreamOnline();
+            Stats.StreamOnline(e.Stream.StartedAt);
 
-            if ((DateTime.Now - e.Stream.StartedAt.ToLocalTime()).TotalSeconds < 10 * TwitchIO.FrequencyTime)
+            if (PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
             {
 
                 // get message, set a default if otherwise deleted/unavailable
@@ -154,6 +159,7 @@ namespace ChatBot_Net5.BotIOController
                 foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
                 {
                     DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+                    Stats.AddDiscord();
                 }
             }
         }
@@ -170,20 +176,24 @@ namespace ChatBot_Net5.BotIOController
                 _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
             }
 #endif
+            bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Follow);
 
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, CommandAction.Follow))
+            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Follow);
+            msg ??= "Thanks #user for the follow!";
+
+            foreach (Follow f in e.NewFollowers)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, CommandAction.Follow);
-                msg ??= "Thanks #user for the follow!";
-
-                foreach (Follow f in e.NewFollowers)
+                if (DataManage.AddFollower(f.FromUserName, f.FollowedAt) && !DataManage.UpdatingFollowers)
                 {
-                    if (DataManage.AddFollower(f.FromUserName, f.FollowedAt) && !DataManage.UpdatingFollowers)
+                    if (FollowEnabled)
                     {
                         Send(msg.Replace("#user", "@" + f.FromUserName));
                     }
+                    Stats.AddFollow();
+                    Stats.AddAutoEvents();
                 }
             }
+            
         }
 
         #endregion Followers
@@ -214,6 +224,9 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(ParseReplace(msg, dictionary));
             }
+
+            Stats.AddSub();
+            Stats.AddAutoEvents();
         }
 
         private void Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
@@ -248,6 +261,9 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(ParseReplace(msg, dictionary));
             }
+
+            Stats.AddSub();
+            Stats.AddAutoEvents();
         }
 
         private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
@@ -276,6 +292,9 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(ParseReplace(msg, dictionary));
             }
+
+            Stats.AddGiftSubs();
+            Stats.AddAutoEvents();
         }
 
         private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
@@ -301,6 +320,9 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(ParseReplace(msg, dictionary));
             }
+
+            Stats.AddGiftSubs(e.GiftedSubscription.MsgParamMassGiftCount);
+            Stats.AddAutoEvents();
         }
 
         #endregion Subscriptions
@@ -331,6 +353,9 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(ParseReplace(msg, dictionary));
             }
+
+            Stats.AddHosted();
+            Stats.AddAutoEvents();
         }
 
         private void Client_OnHostLeft(object sender, EventArgs e)
@@ -410,6 +435,8 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(ParseReplace(msg, dictionary));
             }
+            Stats.AddRaids();
+            Stats.AddAutoEvents();
         }
 
         private void Client_OnSelfRaidError(object sender, EventArgs e)
@@ -505,6 +532,7 @@ namespace ChatBot_Net5.BotIOController
 #endif
 
             AddChatString(e.Command.ChatMessage);
+            Stats.AddCommands();
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -519,6 +547,16 @@ namespace ChatBot_Net5.BotIOController
 #endif
 
             AddChatString(e.ChatMessage);
+            Stats.AddTotalChats();
+
+            if (e.ChatMessage.IsSubscriber)
+            {
+                Stats.SubJoined(e.ChatMessage.DisplayName);
+            }
+            if (e.ChatMessage.IsVip)
+            {
+                Stats.VIPJoined(e.ChatMessage.DisplayName);
+            }
 
             // handle bit cheers
             if (e.ChatMessage.Bits > 0)
@@ -534,9 +572,10 @@ namespace ChatBot_Net5.BotIOController
                     };
 
                     Send(ParseReplace(msg, dictionary));
+                    Stats.AddBits(e.ChatMessage.Bits);
+                    Stats.AddAutoEvents();
                 }
             }
-
         }
 
         private void Client_OnMessageThrottled(object sender, TwitchLib.Communication.Events.OnMessageThrottledEventArgs e)
@@ -679,7 +718,7 @@ namespace ChatBot_Net5.BotIOController
                 _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
             }
 #endif
-
+            Stats.ModJoined(e.Username);
         }
 
         private void Client_OnModeratorLeft(object sender, OnModeratorLeftArgs e)
@@ -707,7 +746,7 @@ namespace ChatBot_Net5.BotIOController
             }
 
 #endif
-            Stats.UserJoined(e.Username, DateTime.Now);
+            Stats.UserJoined(e.Username, DateTime.Now);            
         }
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
@@ -734,6 +773,8 @@ namespace ChatBot_Net5.BotIOController
                 _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
             }
 #endif
+            Stats.AddUserBanned();
+
 
         }
 
@@ -759,7 +800,7 @@ namespace ChatBot_Net5.BotIOController
                 _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
             }
 #endif
-
+            Stats.AddUserTimedOut();
         }
 
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
@@ -775,7 +816,7 @@ namespace ChatBot_Net5.BotIOController
 
             foreach (string user in e.Users)
             {
-                Stats.UserJoined(user, DateTime.Now);
+                Stats.UserJoined(user, DateTime.Now);               
             }
         }
 

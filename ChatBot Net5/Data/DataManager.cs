@@ -30,6 +30,7 @@ namespace ChatBot_Net5.Data
         public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
         public DataView CurrencyAccrued { get; private set; }  // DataSource.CurrencyAccruedDataTable
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
+        public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
 
         #endregion DataSource
 
@@ -45,6 +46,7 @@ namespace ChatBot_Net5.Data
             Currency = new (_DataSource.Currency, null, "Id", DataViewRowState.CurrentRows);
             CurrencyAccrued = new(_DataSource.CurrencyAccrued, null, "UserName", DataViewRowState.CurrentRows);
             Commands = new(_DataSource.Commands, null, "CmdName", DataViewRowState.CurrentRows);
+            StreamStats = new(_DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -88,7 +90,7 @@ namespace ChatBot_Net5.Data
         {
             bool CheckName(string criteria) => _DataSource.ChannelEvents.FindByName(criteria) == null;
 
-            Dictionary<CommandAction, Tuple<string, string>> dictionary = new Dictionary<CommandAction, Tuple<string, string>>()
+            Dictionary<CommandAction, Tuple<string, string>> dictionary = new()
             {
                 {CommandAction.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
                 {CommandAction.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
@@ -177,17 +179,18 @@ namespace ChatBot_Net5.Data
 
         internal void UserJoined(string User, DateTime NowSeen)
         {
-            lock (_DataSource)
+            lock (_DataSource.Users)
             {
                 DataSource.UsersRow user = AddNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
+                user.LastDateSeen = NowSeen;
                 _DataSource.AcceptChanges();
             }
         }
 
         internal void UserLeft(string User, DateTime LastSeen)
         {
-            lock (_DataSource)
+            lock (_DataSource.Users)
             {
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 user.LastDateSeen = LastSeen;
@@ -197,7 +200,7 @@ namespace ChatBot_Net5.Data
 
         internal void UpdateWatchTime(string User, DateTime CurrTime)
         {
-            lock (_DataSource)
+            lock (_DataSource.Users)
             {
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 user.WatchTime = user.WatchTime.Add(CurrTime - user.LastDateSeen);
@@ -208,7 +211,7 @@ namespace ChatBot_Net5.Data
 
         internal bool CheckFollower(string User)
         {
-            lock (_DataSource)
+            lock (_DataSource.Followers)
             {
                 DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "'");
                 DataSource.FollowersRow followers = datafollowers.Length > 0 ? (DataSource.FollowersRow)datafollowers[0] : null;
@@ -232,7 +235,7 @@ namespace ChatBot_Net5.Data
         /// <returns>True if the follower is the first time. False if already followed.</returns>
         internal bool AddFollower(string User, DateTime FollowedDate)
         {
-            lock (_DataSource)
+            lock (_DataSource.Followers)
             {
                 bool newfollow = false;
 
@@ -265,7 +268,7 @@ namespace ChatBot_Net5.Data
         /// <returns>True if the user is added, else false if the user already existed.</returns>
         private DataSource.UsersRow AddNewUser(string User, DateTime FirstSeen)
         {
-            lock (_DataSource)
+            lock (_DataSource.Users)
             {
                 if (_DataSource.Users.FindByUserName(User) == null)
                 {
@@ -277,7 +280,7 @@ namespace ChatBot_Net5.Data
 
             DataSource.UsersRow usersRow = null;
             // if the user is added to list before identified as follower, update first seen date to followed date
-            lock (_DataSource)
+            lock (_DataSource.Users)
             {
                 usersRow = _DataSource.Users.FindByUserName(User);
 
@@ -291,7 +294,12 @@ namespace ChatBot_Net5.Data
 
         internal void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
-            followerThread = new(new ThreadStart(() => { UpdatingFollowers = true; lock (_DataSource) { List<DataSource.FollowersRow> temp = new(); temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select()); temp.ForEach((f) => f.IsFollower = false); } if (follows[ChannelName].Count > 1) { foreach (Follow f in follows[ChannelName]) { AddFollower(f.FromUserName, f.FollowedAt); } } _DataSource.AcceptChanges(); UpdatingFollowers = false; }));
+            followerThread = new(new ThreadStart(() =>
+            {
+                UpdatingFollowers = true; lock (_DataSource.Followers) { List<DataSource.FollowersRow> temp = new(); temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select()); temp.ForEach((f) => f.IsFollower = false); }
+                if (follows[ChannelName].Count > 1) { foreach (Follow f in follows[ChannelName]) { AddFollower(f.FromUserName, f.FollowedAt); } }
+                _DataSource.AcceptChanges(); UpdatingFollowers = false;
+            }));
 
             followerThread.Start();
         }
@@ -321,5 +329,75 @@ namespace ChatBot_Net5.Data
             return uris;
         }
         #endregion Discord and Webhooks
+
+        #region Stream Statistics
+        internal void AddStream(DateTime StreamStart)
+        {
+            lock (_DataSource.StreamStats)
+            {
+                _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                _DataSource.StreamStats.AcceptChanges();
+            }
+        }
+
+        internal void PostStreamStat(StreamStat streamStat)
+        {
+            lock (_DataSource.StreamStats)
+            {
+                DataSource.StreamStatsRow statsRow = (DataSource.StreamStatsRow)_DataSource.StreamStats.Select("StreamStart=" + streamStat.StreamStart.ToString())[0];
+
+                if (statsRow == null)
+                {
+                    _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
+                }
+                else
+                {
+                    statsRow.StreamEnd = streamStat.StreamEnd;
+                    statsRow.NewFollows = streamStat.NewFollows;
+                    statsRow.NewSubscribers = streamStat.NewSubs;
+                    statsRow.GiftSubs = streamStat.GiftSubs;
+                    statsRow.Bits = streamStat.Bits;
+                    statsRow.Raids = streamStat.Raids;
+                    statsRow.Hosted = streamStat.Hosted;
+                    statsRow.UsersBanned = streamStat.UsersBanned;
+                    statsRow.UsersTimedOut = streamStat.UsersTimedOut;
+                    statsRow.ModeratorsPresent = streamStat.ModsPresent;
+                    statsRow.SubsPresent = streamStat.SubsPresent;
+                    statsRow.VIPsPresent = streamStat.VIPsPresent;
+                    statsRow.TotalChats = streamStat.TotalChats;
+                    statsRow.Commands = streamStat.Commands;
+                    statsRow.AutomatedEvents = streamStat.AutoEvents;
+                    statsRow.AutomatedCommands = streamStat.AutoCommands;
+                    statsRow.DiscordMsgs = streamStat.DiscordMsgs;
+                    statsRow.ClipsMade = streamStat.ClipsMade;
+                    statsRow.ChannelPtCount = streamStat.ChannelPtCount;
+                    statsRow.ChannelChallenge = streamStat.ChannelChallenge;
+                    statsRow.MaxUsers = streamStat.MaxUsers;
+                }
+
+                _DataSource.StreamStats.AcceptChanges();
+            }
+        }
+
+        internal bool GetTodayStream(DateTime CurrTime)
+        {
+            DataSource.StreamStatsRow[] streamStatsRows = null;
+            lock (_DataSource.StreamStats)
+            {
+                streamStatsRows = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
+            }
+
+            foreach (DataSource.StreamStatsRow s in streamStatsRows)
+            {
+                if (s.StreamStart.Date == CurrTime.Date)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

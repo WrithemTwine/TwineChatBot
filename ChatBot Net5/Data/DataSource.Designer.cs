@@ -38,6 +38,8 @@ namespace ChatBot_Net5.Data {
         
         private FollowersDataTable tableFollowers;
         
+        private StreamStatsDataTable tableStreamStats;
+        
         private global::System.Data.DataRelation relationUsers_Followers;
         
         private global::System.Data.DataRelation relationUsers_CurrencyAccrued;
@@ -92,6 +94,9 @@ namespace ChatBot_Net5.Data {
                 }
                 if ((ds.Tables["Followers"] != null)) {
                     base.Tables.Add(new FollowersDataTable(ds.Tables["Followers"]));
+                }
+                if ((ds.Tables["StreamStats"] != null)) {
+                    base.Tables.Add(new StreamStatsDataTable(ds.Tables["StreamStats"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -183,6 +188,16 @@ namespace ChatBot_Net5.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public StreamStatsDataTable StreamStats {
+            get {
+                return this.tableStreamStats;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.BrowsableAttribute(true)]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Visible)]
         public override global::System.Data.SchemaSerializationMode SchemaSerializationMode {
@@ -269,6 +284,9 @@ namespace ChatBot_Net5.Data {
                 if ((ds.Tables["Followers"] != null)) {
                     base.Tables.Add(new FollowersDataTable(ds.Tables["Followers"]));
                 }
+                if ((ds.Tables["StreamStats"] != null)) {
+                    base.Tables.Add(new StreamStatsDataTable(ds.Tables["StreamStats"]));
+                }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
                 this.Namespace = ds.Namespace;
@@ -344,6 +362,12 @@ namespace ChatBot_Net5.Data {
                     this.tableFollowers.InitVars();
                 }
             }
+            this.tableStreamStats = ((StreamStatsDataTable)(base.Tables["StreamStats"]));
+            if ((initTable == true)) {
+                if ((this.tableStreamStats != null)) {
+                    this.tableStreamStats.InitVars();
+                }
+            }
             this.relationUsers_Followers = this.Relations["Users_Followers"];
             this.relationUsers_CurrencyAccrued = this.Relations["Users_CurrencyAccrued"];
             this.relationCurrency_CurrencyAccrued = this.Relations["Currency_CurrencyAccrued"];
@@ -371,6 +395,8 @@ namespace ChatBot_Net5.Data {
             base.Tables.Add(this.tableCurrency);
             this.tableFollowers = new FollowersDataTable();
             base.Tables.Add(this.tableFollowers);
+            this.tableStreamStats = new StreamStatsDataTable();
+            base.Tables.Add(this.tableStreamStats);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -424,6 +450,12 @@ namespace ChatBot_Net5.Data {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         private bool ShouldSerializeFollowers() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeStreamStats() {
             return false;
         }
         
@@ -502,6 +534,9 @@ namespace ChatBot_Net5.Data {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void FollowersRowChangeEventHandler(object sender, FollowersRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public delegate void StreamStatsRowChangeEventHandler(object sender, StreamStatsRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -2670,6 +2705,625 @@ namespace ChatBot_Net5.Data {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class StreamStatsDataTable : global::System.Data.TypedTableBase<StreamStatsRow> {
+            
+            private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnStreamStart;
+            
+            private global::System.Data.DataColumn columnStreamEnd;
+            
+            private global::System.Data.DataColumn columnNewFollows;
+            
+            private global::System.Data.DataColumn columnNewSubscribers;
+            
+            private global::System.Data.DataColumn columnGiftSubs;
+            
+            private global::System.Data.DataColumn columnBits;
+            
+            private global::System.Data.DataColumn columnRaids;
+            
+            private global::System.Data.DataColumn columnHosted;
+            
+            private global::System.Data.DataColumn columnUsersBanned;
+            
+            private global::System.Data.DataColumn columnUsersTimedOut;
+            
+            private global::System.Data.DataColumn columnModeratorsPresent;
+            
+            private global::System.Data.DataColumn columnSubsPresent;
+            
+            private global::System.Data.DataColumn columnVIPsPresent;
+            
+            private global::System.Data.DataColumn columnTotalChats;
+            
+            private global::System.Data.DataColumn columnCommands;
+            
+            private global::System.Data.DataColumn columnAutomatedEvents;
+            
+            private global::System.Data.DataColumn columnAutomatedCommands;
+            
+            private global::System.Data.DataColumn columnDiscordMsgs;
+            
+            private global::System.Data.DataColumn columnClipsMade;
+            
+            private global::System.Data.DataColumn columnChannelPtCount;
+            
+            private global::System.Data.DataColumn columnChannelChallenge;
+            
+            private global::System.Data.DataColumn columnMaxUsers;
+            
+            private static System.DateTime columnStreamStart_defaultValue = global::System.DateTime.Parse("1990-01-01T00:00:00");
+            
+            private static System.DateTime columnStreamEnd_defaultValue = global::System.DateTime.Parse("1990-01-01T00:00:00");
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsDataTable() {
+                this.TableName = "StreamStats";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal StreamStatsDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected StreamStatsDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn StreamStartColumn {
+                get {
+                    return this.columnStreamStart;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn StreamEndColumn {
+                get {
+                    return this.columnStreamEnd;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn NewFollowsColumn {
+                get {
+                    return this.columnNewFollows;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn NewSubscribersColumn {
+                get {
+                    return this.columnNewSubscribers;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn GiftSubsColumn {
+                get {
+                    return this.columnGiftSubs;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn BitsColumn {
+                get {
+                    return this.columnBits;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RaidsColumn {
+                get {
+                    return this.columnRaids;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn HostedColumn {
+                get {
+                    return this.columnHosted;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UsersBannedColumn {
+                get {
+                    return this.columnUsersBanned;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UsersTimedOutColumn {
+                get {
+                    return this.columnUsersTimedOut;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ModeratorsPresentColumn {
+                get {
+                    return this.columnModeratorsPresent;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn SubsPresentColumn {
+                get {
+                    return this.columnSubsPresent;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn VIPsPresentColumn {
+                get {
+                    return this.columnVIPsPresent;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TotalChatsColumn {
+                get {
+                    return this.columnTotalChats;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn CommandsColumn {
+                get {
+                    return this.columnCommands;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn AutomatedEventsColumn {
+                get {
+                    return this.columnAutomatedEvents;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn AutomatedCommandsColumn {
+                get {
+                    return this.columnAutomatedCommands;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn DiscordMsgsColumn {
+                get {
+                    return this.columnDiscordMsgs;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ClipsMadeColumn {
+                get {
+                    return this.columnClipsMade;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ChannelPtCountColumn {
+                get {
+                    return this.columnChannelPtCount;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ChannelChallengeColumn {
+                get {
+                    return this.columnChannelChallenge;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn MaxUsersColumn {
+                get {
+                    return this.columnMaxUsers;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsRow this[int index] {
+                get {
+                    return ((StreamStatsRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event StreamStatsRowChangeEventHandler StreamStatsRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event StreamStatsRowChangeEventHandler StreamStatsRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event StreamStatsRowChangeEventHandler StreamStatsRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event StreamStatsRowChangeEventHandler StreamStatsRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddStreamStatsRow(StreamStatsRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsRow AddStreamStatsRow(
+                        System.DateTime StreamStart, 
+                        System.DateTime StreamEnd, 
+                        int NewFollows, 
+                        int NewSubscribers, 
+                        int GiftSubs, 
+                        long Bits, 
+                        int Raids, 
+                        int Hosted, 
+                        int UsersBanned, 
+                        int UsersTimedOut, 
+                        int ModeratorsPresent, 
+                        int SubsPresent, 
+                        int VIPsPresent, 
+                        int TotalChats, 
+                        int Commands, 
+                        int AutomatedEvents, 
+                        int AutomatedCommands, 
+                        int DiscordMsgs, 
+                        int ClipsMade, 
+                        int ChannelPtCount, 
+                        int ChannelChallenge, 
+                        int MaxUsers) {
+                StreamStatsRow rowStreamStatsRow = ((StreamStatsRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        null,
+                        StreamStart,
+                        StreamEnd,
+                        NewFollows,
+                        NewSubscribers,
+                        GiftSubs,
+                        Bits,
+                        Raids,
+                        Hosted,
+                        UsersBanned,
+                        UsersTimedOut,
+                        ModeratorsPresent,
+                        SubsPresent,
+                        VIPsPresent,
+                        TotalChats,
+                        Commands,
+                        AutomatedEvents,
+                        AutomatedCommands,
+                        DiscordMsgs,
+                        ClipsMade,
+                        ChannelPtCount,
+                        ChannelChallenge,
+                        MaxUsers};
+                rowStreamStatsRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowStreamStatsRow);
+                return rowStreamStatsRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                StreamStatsDataTable cln = ((StreamStatsDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new StreamStatsDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars() {
+                this.columnId = base.Columns["Id"];
+                this.columnStreamStart = base.Columns["StreamStart"];
+                this.columnStreamEnd = base.Columns["StreamEnd"];
+                this.columnNewFollows = base.Columns["NewFollows"];
+                this.columnNewSubscribers = base.Columns["NewSubscribers"];
+                this.columnGiftSubs = base.Columns["GiftSubs"];
+                this.columnBits = base.Columns["Bits"];
+                this.columnRaids = base.Columns["Raids"];
+                this.columnHosted = base.Columns["Hosted"];
+                this.columnUsersBanned = base.Columns["UsersBanned"];
+                this.columnUsersTimedOut = base.Columns["UsersTimedOut"];
+                this.columnModeratorsPresent = base.Columns["ModeratorsPresent"];
+                this.columnSubsPresent = base.Columns["SubsPresent"];
+                this.columnVIPsPresent = base.Columns["VIPsPresent"];
+                this.columnTotalChats = base.Columns["TotalChats"];
+                this.columnCommands = base.Columns["Commands"];
+                this.columnAutomatedEvents = base.Columns["AutomatedEvents"];
+                this.columnAutomatedCommands = base.Columns["AutomatedCommands"];
+                this.columnDiscordMsgs = base.Columns["DiscordMsgs"];
+                this.columnClipsMade = base.Columns["ClipsMade"];
+                this.columnChannelPtCount = base.Columns["ChannelPtCount"];
+                this.columnChannelChallenge = base.Columns["ChannelChallenge"];
+                this.columnMaxUsers = base.Columns["MaxUsers"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass() {
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(long), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
+                this.columnStreamStart = new global::System.Data.DataColumn("StreamStart", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStreamStart);
+                this.columnStreamEnd = new global::System.Data.DataColumn("StreamEnd", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStreamEnd);
+                this.columnNewFollows = new global::System.Data.DataColumn("NewFollows", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnNewFollows);
+                this.columnNewSubscribers = new global::System.Data.DataColumn("NewSubscribers", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnNewSubscribers);
+                this.columnGiftSubs = new global::System.Data.DataColumn("GiftSubs", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnGiftSubs);
+                this.columnBits = new global::System.Data.DataColumn("Bits", typeof(long), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnBits);
+                this.columnRaids = new global::System.Data.DataColumn("Raids", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRaids);
+                this.columnHosted = new global::System.Data.DataColumn("Hosted", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnHosted);
+                this.columnUsersBanned = new global::System.Data.DataColumn("UsersBanned", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUsersBanned);
+                this.columnUsersTimedOut = new global::System.Data.DataColumn("UsersTimedOut", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUsersTimedOut);
+                this.columnModeratorsPresent = new global::System.Data.DataColumn("ModeratorsPresent", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnModeratorsPresent);
+                this.columnSubsPresent = new global::System.Data.DataColumn("SubsPresent", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnSubsPresent);
+                this.columnVIPsPresent = new global::System.Data.DataColumn("VIPsPresent", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnVIPsPresent);
+                this.columnTotalChats = new global::System.Data.DataColumn("TotalChats", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTotalChats);
+                this.columnCommands = new global::System.Data.DataColumn("Commands", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCommands);
+                this.columnAutomatedEvents = new global::System.Data.DataColumn("AutomatedEvents", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAutomatedEvents);
+                this.columnAutomatedCommands = new global::System.Data.DataColumn("AutomatedCommands", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAutomatedCommands);
+                this.columnDiscordMsgs = new global::System.Data.DataColumn("DiscordMsgs", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDiscordMsgs);
+                this.columnClipsMade = new global::System.Data.DataColumn("ClipsMade", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnClipsMade);
+                this.columnChannelPtCount = new global::System.Data.DataColumn("ChannelPtCount", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnChannelPtCount);
+                this.columnChannelChallenge = new global::System.Data.DataColumn("ChannelChallenge", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnChannelChallenge);
+                this.columnMaxUsers = new global::System.Data.DataColumn("MaxUsers", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnMaxUsers);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnId}, false));
+                this.columnId.AutoIncrement = true;
+                this.columnId.AutoIncrementSeed = 1;
+                this.columnId.AllowDBNull = false;
+                this.columnId.ReadOnly = true;
+                this.columnId.Unique = true;
+                this.columnStreamStart.DefaultValue = ((System.DateTime)(StreamStatsDataTable.columnStreamStart_defaultValue));
+                this.columnStreamStart.DateTimeMode = global::System.Data.DataSetDateTime.Local;
+                this.columnStreamEnd.DefaultValue = ((System.DateTime)(StreamStatsDataTable.columnStreamEnd_defaultValue));
+                this.columnStreamEnd.DateTimeMode = global::System.Data.DataSetDateTime.Local;
+                this.columnNewFollows.DefaultValue = ((int)(0));
+                this.columnNewSubscribers.Caption = "NewSubs and Resubscribes";
+                this.columnNewSubscribers.DefaultValue = ((int)(0));
+                this.columnGiftSubs.Caption = "Gifted Subs";
+                this.columnGiftSubs.DefaultValue = ((int)(0));
+                this.columnBits.DefaultValue = ((long)(0));
+                this.columnRaids.Caption = "Incoming Raids";
+                this.columnRaids.DefaultValue = ((int)(0));
+                this.columnHosted.Caption = "On Being Hosted";
+                this.columnHosted.DefaultValue = ((int)(0));
+                this.columnUsersBanned.DefaultValue = ((int)(0));
+                this.columnUsersTimedOut.DefaultValue = ((int)(0));
+                this.columnModeratorsPresent.DefaultValue = ((int)(0));
+                this.columnSubsPresent.DefaultValue = ((int)(0));
+                this.columnVIPsPresent.DefaultValue = ((int)(0));
+                this.columnTotalChats.DefaultValue = ((int)(0));
+                this.columnCommands.Caption = "Commands Performed";
+                this.columnCommands.DefaultValue = ((int)(0));
+                this.columnAutomatedEvents.DefaultValue = ((int)(0));
+                this.columnAutomatedCommands.DefaultValue = ((int)(0));
+                this.columnDiscordMsgs.Caption = "Discord Msgs Live and Other";
+                this.columnDiscordMsgs.DefaultValue = ((int)(0));
+                this.columnClipsMade.DefaultValue = ((int)(0));
+                this.columnChannelPtCount.Caption = "Count of Redeemed Channel Points";
+                this.columnChannelPtCount.DefaultValue = ((int)(0));
+                this.columnChannelChallenge.DefaultValue = ((int)(0));
+                this.columnMaxUsers.DefaultValue = ((int)(0));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsRow NewStreamStatsRow() {
+                return ((StreamStatsRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new StreamStatsRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(StreamStatsRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.StreamStatsRowChanged != null)) {
+                    this.StreamStatsRowChanged(this, new StreamStatsRowChangeEvent(((StreamStatsRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.StreamStatsRowChanging != null)) {
+                    this.StreamStatsRowChanging(this, new StreamStatsRowChangeEvent(((StreamStatsRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.StreamStatsRowDeleted != null)) {
+                    this.StreamStatsRowDeleted(this, new StreamStatsRowChangeEvent(((StreamStatsRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.StreamStatsRowDeleting != null)) {
+                    this.StreamStatsRowDeleting(this, new StreamStatsRowChangeEvent(((StreamStatsRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveStreamStatsRow(StreamStatsRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DataSource ds = new DataSource();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "StreamStatsDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class DiscordRow : global::System.Data.DataRow {
@@ -3511,6 +4165,648 @@ namespace ChatBot_Net5.Data {
         }
         
         /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class StreamStatsRow : global::System.Data.DataRow {
+            
+            private StreamStatsDataTable tableStreamStats;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal StreamStatsRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableStreamStats = ((StreamStatsDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public long Id {
+                get {
+                    return ((long)(this[this.tableStreamStats.IdColumn]));
+                }
+                set {
+                    this[this.tableStreamStats.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.DateTime StreamStart {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableStreamStats.StreamStartColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'StreamStart\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.StreamStartColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.DateTime StreamEnd {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableStreamStats.StreamEndColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'StreamEnd\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.StreamEndColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int NewFollows {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.NewFollowsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'NewFollows\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.NewFollowsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int NewSubscribers {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.NewSubscribersColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'NewSubscribers\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.NewSubscribersColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int GiftSubs {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.GiftSubsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'GiftSubs\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.GiftSubsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public long Bits {
+                get {
+                    try {
+                        return ((long)(this[this.tableStreamStats.BitsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Bits\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.BitsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int Raids {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.RaidsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Raids\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.RaidsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int Hosted {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.HostedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Hosted\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.HostedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int UsersBanned {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.UsersBannedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'UsersBanned\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.UsersBannedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int UsersTimedOut {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.UsersTimedOutColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'UsersTimedOut\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.UsersTimedOutColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int ModeratorsPresent {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.ModeratorsPresentColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ModeratorsPresent\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.ModeratorsPresentColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int SubsPresent {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.SubsPresentColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'SubsPresent\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.SubsPresentColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int VIPsPresent {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.VIPsPresentColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'VIPsPresent\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.VIPsPresentColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int TotalChats {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.TotalChatsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TotalChats\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.TotalChatsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int Commands {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.CommandsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Commands\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.CommandsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int AutomatedEvents {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.AutomatedEventsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AutomatedEvents\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.AutomatedEventsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int AutomatedCommands {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.AutomatedCommandsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AutomatedCommands\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.AutomatedCommandsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int DiscordMsgs {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.DiscordMsgsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'DiscordMsgs\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.DiscordMsgsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int ClipsMade {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.ClipsMadeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ClipsMade\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.ClipsMadeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int ChannelPtCount {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.ChannelPtCountColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelPtCount\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.ChannelPtCountColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int ChannelChallenge {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.ChannelChallengeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelChallenge\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.ChannelChallengeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int MaxUsers {
+                get {
+                    try {
+                        return ((int)(this[this.tableStreamStats.MaxUsersColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'MaxUsers\' in table \'StreamStats\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStreamStats.MaxUsersColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsStreamStartNull() {
+                return this.IsNull(this.tableStreamStats.StreamStartColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetStreamStartNull() {
+                this[this.tableStreamStats.StreamStartColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsStreamEndNull() {
+                return this.IsNull(this.tableStreamStats.StreamEndColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetStreamEndNull() {
+                this[this.tableStreamStats.StreamEndColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsNewFollowsNull() {
+                return this.IsNull(this.tableStreamStats.NewFollowsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetNewFollowsNull() {
+                this[this.tableStreamStats.NewFollowsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsNewSubscribersNull() {
+                return this.IsNull(this.tableStreamStats.NewSubscribersColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetNewSubscribersNull() {
+                this[this.tableStreamStats.NewSubscribersColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsGiftSubsNull() {
+                return this.IsNull(this.tableStreamStats.GiftSubsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetGiftSubsNull() {
+                this[this.tableStreamStats.GiftSubsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsBitsNull() {
+                return this.IsNull(this.tableStreamStats.BitsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetBitsNull() {
+                this[this.tableStreamStats.BitsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsRaidsNull() {
+                return this.IsNull(this.tableStreamStats.RaidsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetRaidsNull() {
+                this[this.tableStreamStats.RaidsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsHostedNull() {
+                return this.IsNull(this.tableStreamStats.HostedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetHostedNull() {
+                this[this.tableStreamStats.HostedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsUsersBannedNull() {
+                return this.IsNull(this.tableStreamStats.UsersBannedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetUsersBannedNull() {
+                this[this.tableStreamStats.UsersBannedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsUsersTimedOutNull() {
+                return this.IsNull(this.tableStreamStats.UsersTimedOutColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetUsersTimedOutNull() {
+                this[this.tableStreamStats.UsersTimedOutColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsModeratorsPresentNull() {
+                return this.IsNull(this.tableStreamStats.ModeratorsPresentColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetModeratorsPresentNull() {
+                this[this.tableStreamStats.ModeratorsPresentColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsSubsPresentNull() {
+                return this.IsNull(this.tableStreamStats.SubsPresentColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetSubsPresentNull() {
+                this[this.tableStreamStats.SubsPresentColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsVIPsPresentNull() {
+                return this.IsNull(this.tableStreamStats.VIPsPresentColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetVIPsPresentNull() {
+                this[this.tableStreamStats.VIPsPresentColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsTotalChatsNull() {
+                return this.IsNull(this.tableStreamStats.TotalChatsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetTotalChatsNull() {
+                this[this.tableStreamStats.TotalChatsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsCommandsNull() {
+                return this.IsNull(this.tableStreamStats.CommandsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetCommandsNull() {
+                this[this.tableStreamStats.CommandsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsAutomatedEventsNull() {
+                return this.IsNull(this.tableStreamStats.AutomatedEventsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetAutomatedEventsNull() {
+                this[this.tableStreamStats.AutomatedEventsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsAutomatedCommandsNull() {
+                return this.IsNull(this.tableStreamStats.AutomatedCommandsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetAutomatedCommandsNull() {
+                this[this.tableStreamStats.AutomatedCommandsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsDiscordMsgsNull() {
+                return this.IsNull(this.tableStreamStats.DiscordMsgsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetDiscordMsgsNull() {
+                this[this.tableStreamStats.DiscordMsgsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsClipsMadeNull() {
+                return this.IsNull(this.tableStreamStats.ClipsMadeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetClipsMadeNull() {
+                this[this.tableStreamStats.ClipsMadeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsChannelPtCountNull() {
+                return this.IsNull(this.tableStreamStats.ChannelPtCountColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetChannelPtCountNull() {
+                this[this.tableStreamStats.ChannelPtCountColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsChannelChallengeNull() {
+                return this.IsNull(this.tableStreamStats.ChannelChallengeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetChannelChallengeNull() {
+                this[this.tableStreamStats.ChannelChallengeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsMaxUsersNull() {
+                return this.IsNull(this.tableStreamStats.MaxUsersColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetMaxUsersNull() {
+                this[this.tableStreamStats.MaxUsersColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -3734,6 +5030,40 @@ namespace ChatBot_Net5.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public FollowersRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class StreamStatsRowChangeEvent : global::System.EventArgs {
+            
+            private StreamStatsRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsRowChangeEvent(StreamStatsRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsRow Row {
                 get {
                     return this.eventRow;
                 }

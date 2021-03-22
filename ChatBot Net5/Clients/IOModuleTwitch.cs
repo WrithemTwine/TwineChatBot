@@ -106,7 +106,8 @@ namespace ChatBot_Net5.Clients
             BotUserName = Settings.Default.TwitchBotUserName;
             ChannelName = Settings.Default.TwitchChannelName;
             ClientID = Settings.Default.TwitchClientID;
-            FrequencyTime = Settings.Default.TwitchFrequency;
+            FrequencyFollowerTime = Settings.Default.TwitchFrequency;
+            FrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
             RefreshToken = Settings.Default.TwitchRefreshToken;
             RefreshDate = Settings.Default.TwitchRefreshDate;
             ShowConnectionMsg = Settings.Default.BotConnectionMsg;
@@ -234,15 +235,12 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         internal void ConnectServices()
         {
-            int checkIntervalInSeconds = (int)Math.Round(FrequencyTime, 0);
-
-            ApiSettings apifollow = new ApiSettings() { AccessToken = AccessToken, ClientId = ClientID };
-            //apifollow.Scopes.Add(TwitchLib.Api.Core.Enums.AuthScopes.Channel_Read);
-            FollowerService = new FullFollowerService(new TwitchAPI(null, null, apifollow, null), checkIntervalInSeconds);
+            ApiSettings apifollow = new() { AccessToken = AccessToken, ClientId = ClientID };
+            FollowerService = new FullFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(FrequencyFollowerTime, 0));
             FollowerService.SetChannelsByName(new List<string>() { ChannelName });
             
-            ApiSettings apilive = new ApiSettings() { AccessToken = AccessToken, ClientId = ClientID };
-            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), checkIntervalInSeconds);
+            ApiSettings apilive = new() { AccessToken = AccessToken, ClientId = ClientID };
+            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(FrequencyLiveNotifyTime, 0));
             LiveStreamMonitor.SetChannelsByName(new List<string>() { ChannelName });
         }
 

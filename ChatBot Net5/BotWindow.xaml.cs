@@ -21,6 +21,7 @@ namespace ChatBot_Net5
 #endif
 
         private readonly ChatPopup CP;
+        private bool IsBotEnabled; // prevent bot from starting twice
 
         public BotWindow()
         {
@@ -33,12 +34,11 @@ namespace ChatBot_Net5
             }
 
             InitializeComponent();
+            IsBotEnabled = false;
 
-            CP = new ChatPopup
-            {
-                Page_ChatPopup_RichText = RichTextBox_ChatBox
-            };
-            CP.Page_ChatPopup_RichText.Opacity = Slider_PopOut_Opacity.Value;            
+            CP = new();
+            CP.Page_ChatPopup_FlowDocViewer.Document = FlowDoc_ChatBox.Document;            
+            CP.Page_ChatPopup_FlowDocViewer.Opacity = Slider_PopOut_Opacity.Value;            
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -57,11 +57,15 @@ namespace ChatBot_Net5
             if (SelectedDataTabIndex < 2) TabControl_DataTabs.SelectedIndex = 2;
 #endif
 
-            BotController io = (sender as RadioButton).DataContext as BotController;
-            io.StartBot();
-            ToggleInputEnabled();
-            //Radio_Twitch_StartBot.IsEnabled = false;
-            //Radio_Twitch_StopBot.IsEnabled = true;
+            if (!IsBotEnabled)
+            {
+                BotController io = (sender as RadioButton).DataContext as BotController;
+                io.StartBot();
+                ToggleInputEnabled();
+                IsBotEnabled = !IsBotEnabled;
+                //Radio_Twitch_StartBot.IsEnabled = false;
+                //Radio_Twitch_StopBot.IsEnabled = true;
+            }
         }
 
         /// <summary>
@@ -75,16 +79,21 @@ namespace ChatBot_Net5
             TB_Twitch_Channel.IsEnabled = !TB_Twitch_Channel.IsEnabled;
             TB_Twitch_ClientID.IsEnabled = !TB_Twitch_ClientID.IsEnabled;
             Btn_Twitch_RefreshDate.IsEnabled = !Btn_Twitch_RefreshDate.IsEnabled;
-            Slider_TimePollSeconds.IsEnabled = !Slider_TimePollSeconds.IsEnabled;
+            Slider_TimeFollowerPollSeconds.IsEnabled = !Slider_TimeFollowerPollSeconds.IsEnabled;
+            Slider_TimeGoLivePollSeconds.IsEnabled = !Slider_TimeGoLivePollSeconds.IsEnabled;
         }
 
         private void BC_Twitch_StopBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            BotController io = (sender as RadioButton).DataContext as BotController;
-            io.StopBot();
-            ToggleInputEnabled();
-            //Radio_Twitch_StartBot.IsEnabled = true;
-            //Radio_Twitch_StopBot.IsEnabled = false;
+            if (IsBotEnabled)
+            {
+                BotController io = (sender as RadioButton).DataContext as BotController;
+                io.StopBot();
+                ToggleInputEnabled();
+                IsBotEnabled = !IsBotEnabled;
+                //Radio_Twitch_StartBot.IsEnabled = true;
+                //Radio_Twitch_StopBot.IsEnabled = false;
+            }
 
             // ignore the following block if using debug build
 #if !DEBUG
