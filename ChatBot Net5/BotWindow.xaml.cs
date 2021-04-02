@@ -16,14 +16,17 @@ namespace ChatBot_Net5
     /// </summary>
     public partial class BotWindow : Window
     {
+#if !DEBUG // active in the release version
         private int SelectedDataTabIndex;
+#endif
 
         private readonly ChatPopup CP;
+        private bool IsBotEnabled; // prevent bot from starting twice
 
         public BotWindow()
         {
             // move settings to the newest version, if the application version upgrades
-            if (Settings.Default.UpgradeRequired )
+            if (Settings.Default.UpgradeRequired)
             { 
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
@@ -31,27 +34,11 @@ namespace ChatBot_Net5
             }
 
             InitializeComponent();
+            IsBotEnabled = false;
 
-            CP = new ChatPopup
-            {
-                Page_ChatPopup_RichText = RichTextBox_ChatBox
-            };
-            CP.Page_ChatPopup_RichText.Opacity = Slider_PopOut_Opacity.Value;            
-        }
-
-        /// <summary>
-        /// Handles add a new item to a Datagrid.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DG_AddingNewItem(object sender, AddingNewItemEventArgs e)
-        {
-
-        }
-
-        private void Button_PreviewMouseLeftButtonDown_DGJoinList(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-
+            CP = new();
+            CP.Page_ChatPopup_FlowDocViewer.Document = FlowDoc_ChatBox.Document;            
+            CP.Page_ChatPopup_FlowDocViewer.Opacity = Slider_PopOut_Opacity.Value;            
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -70,9 +57,15 @@ namespace ChatBot_Net5
             if (SelectedDataTabIndex < 2) TabControl_DataTabs.SelectedIndex = 2;
 #endif
 
-            BotController io = (sender as RadioButton).DataContext as BotController;
-            io.StartBot();
-            ToggleInputEnabled();
+            if (!IsBotEnabled)
+            {
+                BotController io = (sender as RadioButton).DataContext as BotController;
+                io.StartBot();
+                ToggleInputEnabled();
+                IsBotEnabled = !IsBotEnabled;
+                //Radio_Twitch_StartBot.IsEnabled = false;
+                //Radio_Twitch_StopBot.IsEnabled = true;
+            }
         }
 
         /// <summary>
@@ -86,14 +79,21 @@ namespace ChatBot_Net5
             TB_Twitch_Channel.IsEnabled = !TB_Twitch_Channel.IsEnabled;
             TB_Twitch_ClientID.IsEnabled = !TB_Twitch_ClientID.IsEnabled;
             Btn_Twitch_RefreshDate.IsEnabled = !Btn_Twitch_RefreshDate.IsEnabled;
-            Slider_TimePollSeconds.IsEnabled = !Slider_TimePollSeconds.IsEnabled;
+            Slider_TimeFollowerPollSeconds.IsEnabled = !Slider_TimeFollowerPollSeconds.IsEnabled;
+            Slider_TimeGoLivePollSeconds.IsEnabled = !Slider_TimeGoLivePollSeconds.IsEnabled;
         }
 
         private void BC_Twitch_StopBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            BotController io = (sender as RadioButton).DataContext as BotController;
-            io.StopBot();
-            ToggleInputEnabled();
+            if (IsBotEnabled)
+            {
+                BotController io = (sender as RadioButton).DataContext as BotController;
+                io.StopBot();
+                ToggleInputEnabled();
+                IsBotEnabled = !IsBotEnabled;
+                //Radio_Twitch_StartBot.IsEnabled = true;
+                //Radio_Twitch_StopBot.IsEnabled = false;
+            }
 
             // ignore the following block if using debug build
 #if !DEBUG
@@ -142,6 +142,7 @@ namespace ChatBot_Net5
         {
             DataGrid dg = (sender as DataGrid);
 
+            // find the new item, hide columns other than the primary data columns, i.e. relational columns
             switch (dg.Name)
             {
                 case "DG_Users":

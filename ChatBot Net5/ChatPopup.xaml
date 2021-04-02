@@ -6,9 +6,9 @@
       xmlns:local="clr-namespace:ChatBot_Net5"
       mc:Ignorable="d" 
       MinHeight="450" MinWidth="230"
-      Title="ChatPopup" SnapsToDevicePixels="True" Unloaded="Page_Unloaded">
+      Title="ChatPopup" SnapsToDevicePixels="True" Unloaded="Page_Unloaded" UseLayoutRounding="True">
 
     <DockPanel>
-        <RichTextBox x:Name="Page_ChatPopup_RichText" SnapsToDevicePixels="True" UseLayoutRounding="True" Opacity="50" />
+        <FlowDocumentScrollViewer Name="Page_ChatPopup_FlowDocViewer" Opacity="50" DockPanel.Dock="Top" BorderBrush="#FF020202" BorderThickness="1,1,1,1" />
     </DockPanel>
 </Page>

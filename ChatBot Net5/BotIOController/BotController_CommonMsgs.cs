@@ -15,10 +15,10 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="message"></param>
         /// <param name="dictionary"></param>
         /// <returns></returns>
-        internal static string ParseReplace(string message, Dictionary<string,string> dictionary)
+        internal static string ParseReplace(string message, Dictionary<string, string> dictionary)
         {
             string temp = ""; // build the message to return
-        
+
             string[] words = message.Split(' ');    // tokenize the message by ' ' delimiters
 
             // submethod to replace the found key with paired value
@@ -26,7 +26,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 string hit = "";
 
-                foreach(string s in dictionary.Keys)
+                foreach (string s in dictionary.Keys)
                 {
                     if (key.Contains(s))
                     {
@@ -36,11 +36,11 @@ namespace ChatBot_Net5.BotIOController
                 }
 
                 dictionary.TryGetValue(hit, out string value);
-                return key.Replace(hit,value) ?? "";
+                return key.Replace(hit, (hit == "#user" ? "@" : "") + value) ?? "";
             }
 
-            // review 
-            for(int x=0; x<words.Length; x++)
+            // review the incoming string message for all of the keys in the dictionary, replace with paired value
+            for (int x = 0; x < words.Length; x++)
             {
                 temp += (words[x].StartsWith(codekey, StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
             }

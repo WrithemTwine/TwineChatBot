@@ -8,7 +8,7 @@ namespace ChatBot_Net5.Clients
 {
     public static class DiscordWebhook
     {
-        private static HttpClient client = new HttpClient();
+        private static HttpClient client = new();
 
         /// <summary>
         /// Send a message to provided Webhooks
@@ -63,41 +63,41 @@ namespace ChatBot_Net5.Clients
     {
         private const int max_data = 100;
 
-        public string[] parse { get; private set; }        
-        public string[] roles { get; private set; }
-        public string[] users { get; private set; }
+        public string[] Parse { get; private set; }        
+        public string[] Roles { get; private set; }
+        public string[] Users { get; private set; }
 
         public AllowedMentions(AllowedMentionTypes[] mentions, string[] Roles, string[] Users)
         {
-            List<string> temp = new List<string>();
-            List<AllowedMentionTypes> tempmentions = new List<AllowedMentionTypes>(mentions);
+            List<string> temp = new();
+            List<AllowedMentionTypes> tempmentions = new(mentions);
 
             if (tempmentions.Contains(AllowedMentionTypes.everyone)) temp.Add(AllowedMentionTypes.everyone.ToString());
             if (tempmentions.Contains(AllowedMentionTypes.roles)) temp.Add(AllowedMentionTypes.roles.ToString());
             if (tempmentions.Contains(AllowedMentionTypes.users)) temp.Add(AllowedMentionTypes.users.ToString());
 
-            parse = temp.ToArray();
+            Parse = temp.ToArray();
             
             if(Roles?.Length > max_data)
             {
-                List<string> temproles = new List<string>(Roles);
+                List<string> temproles = new(Roles);
                 temproles.RemoveRange(max_data, temproles.Count - max_data);
-                roles = temproles.ToArray();
+                this.Roles = temproles.ToArray();
             } 
             else
             {
-                roles = Roles;
+                this.Roles = Roles;
             }
 
             if (Users?.Length > max_data)
             {
-                List<string> tempusers = new List<string>(Users);
+                List<string> tempusers = new(Users);
                 tempusers.RemoveRange(max_data, tempusers.Count - max_data);
-                users = tempusers.ToArray();
+                this.Users = tempusers.ToArray();
             }
             else
             {
-                users = Users;
+                this.Users = Users;
             }
         }
     }
