@@ -166,5 +166,29 @@ namespace ChatBot_Net5.Properties {
                 this["PostMultiLive"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool InsertMeToMsg {
+            get {
+                return ((bool)(this["InsertMeToMsg"]));
+            }
+            set {
+                this["InsertMeToMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool WelcomeChatMsg {
+            get {
+                return ((bool)(this["WelcomeChatMsg"]));
+            }
+            set {
+                this["WelcomeChatMsg"] = value;
+            }
+        }
     }
 }

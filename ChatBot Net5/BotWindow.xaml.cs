@@ -145,15 +145,6 @@ namespace ChatBot_Net5
             // find the new item, hide columns other than the primary data columns, i.e. relational columns
             switch (dg.Name)
             {
-                case "DG_CommonMsgs":
-                    foreach (DataGridColumn dc in dg.Columns)
-                    {
-                        if (dc.Header.ToString() == "Name")
-                        {
-                            dc.IsReadOnly = true;
-                        }
-                    }
-                    break;
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {

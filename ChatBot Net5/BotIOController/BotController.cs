@@ -43,6 +43,8 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public Statistics Stats { get; private set; }
 
+        public CommandSystem ProcessCommands { get; private set; }
+
         #region Bot Services
         /// <summary>
         /// Collection of each attached chat bot.
@@ -55,6 +57,8 @@ namespace ChatBot_Net5.BotIOController
         public IOModuleTwitch TwitchIO { get; private set; }
 
         public bool FirstFollowerProcess { get; set; }
+        public bool FirstUserJoinedMsg { get; set; }
+        public bool AddMeMsg { get; set; }
         #endregion Bot Services
 
         #endregion properties
@@ -72,7 +76,10 @@ namespace ChatBot_Net5.BotIOController
             IOModuleList.Add(TwitchIO);
 
             Stats = new(DataManage);
+            ProcessCommands = new(DataManage);
             FirstFollowerProcess = Settings.Default.AddFollowersStart;
+            FirstUserJoinedMsg = Settings.Default.WelcomeChatMsg;
+            AddMeMsg = Settings.Default.InsertMeToMsg;
         }
 
         /// <summary>
@@ -142,7 +149,7 @@ namespace ChatBot_Net5.BotIOController
                     {
                         foreach (IOModule i in IOModuleList)
                         {
-                            i.Send(s);
+                            i.Send( (AddMeMsg?"\\me ": "") + s);
                         }
                     }
                 ));

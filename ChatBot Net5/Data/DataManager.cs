@@ -28,7 +28,8 @@ namespace ChatBot_Net5.Data
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
         public DataView Discord { get; private set; } // DataSource.DiscordDataTable
         public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
-        public DataView CurrencyAccrued { get; private set; }  // DataSource.CurrencyAccruedDataTable
+        public DataView CurrencyType { get; private set; }  // DataSource.CurrencyTypeDataTable
+        public DataView BuiltInCommands { get; private set; } // DataSource.CommandsDataTable
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
         public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
 
@@ -36,16 +37,35 @@ namespace ChatBot_Net5.Data
 
         public DataManager()
         {
+            string ComFilter()
+            {
+                string filter = string.Empty;
+
+                foreach(DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
+                {
+                    filter += "'" + d.ToString() + "',";
+                }
+
+                foreach(DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+                {
+                    filter += "'" + s.ToString() + "',";
+                }             
+
+                return filter==string.Empty ? "" : filter.Substring(0,filter.Length-1);
+            }
+
+
             _DataSource = new();
             LoadData();
 
             ChannelEvents = _DataSource.ChannelEvents.DefaultView;
             Users = new(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
-            Followers = new(_DataSource.Followers, null, "UserName", DataViewRowState.CurrentRows);
+            Followers = new(_DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
             Discord = _DataSource.Discord.DefaultView;
-            Currency = new (_DataSource.Currency, null, "Id", DataViewRowState.CurrentRows);
-            CurrencyAccrued = new(_DataSource.CurrencyAccrued, null, "UserName", DataViewRowState.CurrentRows);
-            Commands = new(_DataSource.Commands, null, "CmdName", DataViewRowState.CurrentRows);
+            CurrencyType = new (_DataSource.CurrencyType, null, "Id", DataViewRowState.CurrentRows);
+            Currency = new(_DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
+            BuiltInCommands = new(_DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
+            Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             StreamStats = new(_DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
         }
 
@@ -65,8 +85,11 @@ namespace ChatBot_Net5.Data
                 _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
             }
 
-            // check all default names
-            SetChannelEventsTableDefault();
+            // check all default ChannelEvents names
+            SetDefaultChannelEventsTable();
+
+            // check all default Commands
+            SetDefaultCommandsTable();
 
             _DataSource.AcceptChanges();
         }
@@ -86,24 +109,25 @@ namespace ChatBot_Net5.Data
         /// <summary>
         /// Add default data to Channel Events table, to ensure the data is available to use in event messages.
         /// </summary>
-        private void SetChannelEventsTableDefault()
+        private void SetDefaultChannelEventsTable()
         {
             bool CheckName(string criteria) => _DataSource.ChannelEvents.FindByName(criteria) == null;
 
-            Dictionary<CommandAction, Tuple<string, string>> dictionary = new()
+            Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
-                {CommandAction.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
-                {CommandAction.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
-                {CommandAction.CommunitySubs, new("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
-                {CommandAction.Follow, new("Thanks #user for the follow!", "#user") },
-                {CommandAction.GiftSub, new("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
-                {CommandAction.Live, new("@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
-                {CommandAction.Raid, new("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
-                {CommandAction.Resubscribe, new("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
-                {CommandAction.Subscribe, new("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") }
+                {ChannelEventActions.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
+                {ChannelEventActions.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
+                {ChannelEventActions.CommunitySubs, new("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
+                {ChannelEventActions.Follow, new("Thanks #user for the follow!", "#user") },
+                {ChannelEventActions.GiftSub, new("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
+                {ChannelEventActions.Live, new("@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
+                {ChannelEventActions.Raid, new("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
+                {ChannelEventActions.Resubscribe, new("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
+                {ChannelEventActions.Subscribe, new("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") },
+                {ChannelEventActions.UserJoined, new("Welcome #user! Glad you could make it to the stream. How are you?", "#user") }
             };
 
-            foreach (CommandAction command in Enum.GetValues(typeof(CommandAction)))
+            foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
             {
                 // consider only the values in the dictionary, check if data is already defined in the data table
                 if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
@@ -127,7 +151,7 @@ namespace ChatBot_Net5.Data
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>Null for no value or the first row found using the <i>rowcriteria</i></returns>
-        internal object GetRowData(DataRetrieve dataRetrieve, CommandAction rowcriteria)
+        internal object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
         {
             return GetAllRowData(dataRetrieve, rowcriteria)?[0];
         }
@@ -138,7 +162,7 @@ namespace ChatBot_Net5.Data
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>All data found using the <i>rowcriteria</i></returns>
-        internal object[] GetAllRowData(DataRetrieve dataRetrieve, CommandAction rowcriteria)
+        internal object[] GetAllRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
         {
             string criteriacolumn = "";
             string datacolumn = "";
@@ -344,7 +368,18 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.StreamStats)
             {
-                DataSource.StreamStatsRow statsRow = (DataSource.StreamStatsRow)_DataSource.StreamStats.Select("StreamStart=" + streamStat.StreamStart.ToString())[0];
+                DataSource.StreamStatsRow[] statsRowAll = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
+
+                DataSource.StreamStatsRow statsRow = null;
+
+                foreach(DataSource.StreamStatsRow s in statsRowAll) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
+                {
+                    if(s.StreamStart == streamStat.StreamStart)
+                    {
+                        statsRow = s;
+                        break;
+                    }
+                }
 
                 if (statsRow == null)
                 {
@@ -352,6 +387,7 @@ namespace ChatBot_Net5.Data
                 }
                 else
                 {
+                    statsRow.StreamStart = streamStat.StreamStart;
                     statsRow.StreamEnd = streamStat.StreamEnd;
                     statsRow.NewFollows = streamStat.NewFollows;
                     statsRow.NewSubscribers = streamStat.NewSubs;
@@ -399,5 +435,100 @@ namespace ChatBot_Net5.Data
         }
 
         #endregion
+
+        #region CommandSystem
+
+        /*
+ 
+!command: <switches-optional> <message>
+
+switches:
+-t:<table>   (requires -f)
+-f:<field>    (requires -t)
+-c:<currency> (requires -f, optional switch)
+-unit:<field units>   (optional with -f, but recommended)
+
+-p:<permission>
+-top:<number>
+-s:<sort>
+-a:<action>
+-u:<allow other user>
+-timer:<seconds>
+
+<message> -> The message to display, may include parameters (e.g. #user, #field).
+         */
+
+        /// <summary>
+        /// Add all of the default commands to the table, ensure they are available
+        /// </summary>
+        private void SetDefaultCommandsTable()
+        {
+            bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
+
+               // command name     // msg   // params
+            Dictionary<string,Tuple<string, string>> DefCommandsDictionary = new()
+            {
+                { DefaultCommand.addcommand.ToString(), new("Command added","-p:Mod")},
+                { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC")},
+                { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine", "")},
+                { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "")},
+                { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!","")},
+                { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "")},
+                { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "")}
+            };
+
+            foreach(DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+            {
+                DefCommandsDictionary.Add(social.ToString(), new("Social media url here", ""));
+            }
+
+            foreach(string key in DefCommandsDictionary.Keys)
+            {
+                if (CheckName(key))
+                {
+                    CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
+                    _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, DefCommandsDictionary[key].Item2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check if the provided table exists within the database system.
+        /// </summary>
+        /// <param name="table">The table name to check.</param>
+        /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
+        internal bool CheckTable(string table) => _DataSource.Tables.Contains(table);
+
+        /// <summary>
+        /// Check if the provided field is part of the supplied table.
+        /// </summary>
+        /// <param name="table">The table to check.</param>
+        /// <param name="field">The field within the table to see if it exists.</param>
+        /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
+        internal bool CheckField(string table, string field) => _DataSource.Tables[table].Columns.Contains(field);
+
+        /// <summary>
+        /// Determine if the user invoking the command has permission to access the command.
+        /// </summary>
+        /// <param name="cmd">The command to verify the permission.</param>
+        /// <param name="permission">The supplied permission to check.</param>
+        /// <returns><i>true</i> - the permission is allowed to the command. <i>false</i> - the command permission is not allowed.</returns>
+        /// <exception cref="InvalidOperationException">The command is not found.</exception>
+        internal bool CheckPermission(string cmd, ViewerTypes permission)
+        {
+           DataSource.CommandsRow[] rows =  (DataSource.CommandsRow[]) _DataSource.Commands.Select("CmdName='" + cmd +"'");
+
+            if (rows != null)
+            {
+                ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+
+                return cmdpermission <= permission;
+            }
+            else
+                throw new InvalidOperationException("Command not found.");
+        }
+
+        #endregion
+
     }
 }

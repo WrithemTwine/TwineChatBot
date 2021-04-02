@@ -32,9 +32,9 @@ namespace ChatBot_Net5.Data {
         
         private CommandsDataTable tableCommands;
         
-        private CurrencyAccruedDataTable tableCurrencyAccrued;
-        
         private CurrencyDataTable tableCurrency;
+        
+        private CurrencyTypeDataTable tableCurrencyType;
         
         private FollowersDataTable tableFollowers;
         
@@ -86,11 +86,11 @@ namespace ChatBot_Net5.Data {
                 if ((ds.Tables["Commands"] != null)) {
                     base.Tables.Add(new CommandsDataTable(ds.Tables["Commands"]));
                 }
-                if ((ds.Tables["CurrencyAccrued"] != null)) {
-                    base.Tables.Add(new CurrencyAccruedDataTable(ds.Tables["CurrencyAccrued"]));
-                }
                 if ((ds.Tables["Currency"] != null)) {
                     base.Tables.Add(new CurrencyDataTable(ds.Tables["Currency"]));
+                }
+                if ((ds.Tables["CurrencyType"] != null)) {
+                    base.Tables.Add(new CurrencyTypeDataTable(ds.Tables["CurrencyType"]));
                 }
                 if ((ds.Tables["Followers"] != null)) {
                     base.Tables.Add(new FollowersDataTable(ds.Tables["Followers"]));
@@ -160,9 +160,9 @@ namespace ChatBot_Net5.Data {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public CurrencyAccruedDataTable CurrencyAccrued {
+        public CurrencyDataTable Currency {
             get {
-                return this.tableCurrencyAccrued;
+                return this.tableCurrency;
             }
         }
         
@@ -170,9 +170,9 @@ namespace ChatBot_Net5.Data {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public CurrencyDataTable Currency {
+        public CurrencyTypeDataTable CurrencyType {
             get {
-                return this.tableCurrency;
+                return this.tableCurrencyType;
             }
         }
         
@@ -275,11 +275,11 @@ namespace ChatBot_Net5.Data {
                 if ((ds.Tables["Commands"] != null)) {
                     base.Tables.Add(new CommandsDataTable(ds.Tables["Commands"]));
                 }
-                if ((ds.Tables["CurrencyAccrued"] != null)) {
-                    base.Tables.Add(new CurrencyAccruedDataTable(ds.Tables["CurrencyAccrued"]));
-                }
                 if ((ds.Tables["Currency"] != null)) {
                     base.Tables.Add(new CurrencyDataTable(ds.Tables["Currency"]));
+                }
+                if ((ds.Tables["CurrencyType"] != null)) {
+                    base.Tables.Add(new CurrencyTypeDataTable(ds.Tables["CurrencyType"]));
                 }
                 if ((ds.Tables["Followers"] != null)) {
                     base.Tables.Add(new FollowersDataTable(ds.Tables["Followers"]));
@@ -344,16 +344,16 @@ namespace ChatBot_Net5.Data {
                     this.tableCommands.InitVars();
                 }
             }
-            this.tableCurrencyAccrued = ((CurrencyAccruedDataTable)(base.Tables["CurrencyAccrued"]));
-            if ((initTable == true)) {
-                if ((this.tableCurrencyAccrued != null)) {
-                    this.tableCurrencyAccrued.InitVars();
-                }
-            }
             this.tableCurrency = ((CurrencyDataTable)(base.Tables["Currency"]));
             if ((initTable == true)) {
                 if ((this.tableCurrency != null)) {
                     this.tableCurrency.InitVars();
+                }
+            }
+            this.tableCurrencyType = ((CurrencyTypeDataTable)(base.Tables["CurrencyType"]));
+            if ((initTable == true)) {
+                if ((this.tableCurrencyType != null)) {
+                    this.tableCurrencyType.InitVars();
                 }
             }
             this.tableFollowers = ((FollowersDataTable)(base.Tables["Followers"]));
@@ -389,10 +389,10 @@ namespace ChatBot_Net5.Data {
             base.Tables.Add(this.tableUsers);
             this.tableCommands = new CommandsDataTable();
             base.Tables.Add(this.tableCommands);
-            this.tableCurrencyAccrued = new CurrencyAccruedDataTable();
-            base.Tables.Add(this.tableCurrencyAccrued);
             this.tableCurrency = new CurrencyDataTable();
             base.Tables.Add(this.tableCurrency);
+            this.tableCurrencyType = new CurrencyTypeDataTable();
+            base.Tables.Add(this.tableCurrencyType);
             this.tableFollowers = new FollowersDataTable();
             base.Tables.Add(this.tableFollowers);
             this.tableStreamStats = new StreamStatsDataTable();
@@ -403,11 +403,11 @@ namespace ChatBot_Net5.Data {
             this.Relations.Add(this.relationUsers_Followers);
             this.relationUsers_CurrencyAccrued = new global::System.Data.DataRelation("Users_CurrencyAccrued", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrencyAccrued.IdColumn}, false);
+                        this.tableCurrency.IdColumn}, false);
             this.Relations.Add(this.relationUsers_CurrencyAccrued);
             this.relationCurrency_CurrencyAccrued = new global::System.Data.DataRelation("Currency_CurrencyAccrued", new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrencyAccrued.CurrencyNameColumn}, false);
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyAccrued);
         }
         
@@ -437,13 +437,13 @@ namespace ChatBot_Net5.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        private bool ShouldSerializeCurrencyAccrued() {
+        private bool ShouldSerializeCurrency() {
             return false;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        private bool ShouldSerializeCurrency() {
+        private bool ShouldSerializeCurrencyType() {
             return false;
         }
         
@@ -527,10 +527,10 @@ namespace ChatBot_Net5.Data {
         public delegate void CommandsRowChangeEventHandler(object sender, CommandsRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public delegate void CurrencyAccruedRowChangeEventHandler(object sender, CurrencyAccruedRowChangeEvent e);
+        public delegate void CurrencyRowChangeEventHandler(object sender, CurrencyRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public delegate void CurrencyRowChangeEventHandler(object sender, CurrencyRowChangeEvent e);
+        public delegate void CurrencyTypeRowChangeEventHandler(object sender, CurrencyTypeRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void FollowersRowChangeEventHandler(object sender, FollowersRowChangeEvent e);
@@ -1034,6 +1034,7 @@ namespace ChatBot_Net5.Data {
                 this.columnIsEnabled.AllowDBNull = false;
                 this.columnIsEnabled.DefaultValue = ((bool)(true));
                 this.columnMsgStr.Caption = "Message";
+                this.columnCommands.ReadOnly = true;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1512,9 +1513,13 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnCmdName;
             
-            private global::System.Data.DataColumn columnBuiltIn;
+            private global::System.Data.DataColumn columnPermission;
             
             private global::System.Data.DataColumn columnMessage;
+            
+            private global::System.Data.DataColumn columnRepeatTimer;
+            
+            private global::System.Data.DataColumn columnParams;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -1567,9 +1572,9 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn BuiltInColumn {
+            public global::System.Data.DataColumn PermissionColumn {
                 get {
-                    return this.columnBuiltIn;
+                    return this.columnPermission;
                 }
             }
             
@@ -1578,6 +1583,22 @@ namespace ChatBot_Net5.Data {
             public global::System.Data.DataColumn MessageColumn {
                 get {
                     return this.columnMessage;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RepeatTimerColumn {
+                get {
+                    return this.columnRepeatTimer;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ParamsColumn {
+                get {
+                    return this.columnParams;
                 }
             }
             
@@ -1618,13 +1639,15 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CommandsRow AddCommandsRow(string CmdName, string BuiltIn, string Message) {
+            public CommandsRow AddCommandsRow(string CmdName, string Permission, string Message, int RepeatTimer, string Params) {
                 CommandsRow rowCommandsRow = ((CommandsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         CmdName,
-                        BuiltIn,
-                        Message};
+                        Permission,
+                        Message,
+                        RepeatTimer,
+                        Params};
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
                 return rowCommandsRow;
@@ -1649,8 +1672,10 @@ namespace ChatBot_Net5.Data {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnCmdName = base.Columns["CmdName"];
-                this.columnBuiltIn = base.Columns["BuiltIn"];
+                this.columnPermission = base.Columns["Permission"];
                 this.columnMessage = base.Columns["Message"];
+                this.columnRepeatTimer = base.Columns["RepeatTimer"];
+                this.columnParams = base.Columns["Params"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1660,10 +1685,14 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnId);
                 this.columnCmdName = new global::System.Data.DataColumn("CmdName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCmdName);
-                this.columnBuiltIn = new global::System.Data.DataColumn("BuiltIn", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnBuiltIn);
+                this.columnPermission = new global::System.Data.DataColumn("Permission", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPermission);
                 this.columnMessage = new global::System.Data.DataColumn("Message", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMessage);
+                this.columnRepeatTimer = new global::System.Data.DataColumn("RepeatTimer", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRepeatTimer);
+                this.columnParams = new global::System.Data.DataColumn("Params", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnParams);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -1676,7 +1705,8 @@ namespace ChatBot_Net5.Data {
                 this.columnCmdName.ReadOnly = true;
                 this.columnCmdName.Unique = true;
                 this.columnCmdName.Caption = "Command Name";
-                this.columnBuiltIn.ReadOnly = true;
+                this.columnPermission.Caption = "Lowest Level of Permission for Command";
+                this.columnRepeatTimer.Caption = "Seconds between Repeat Events";
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1808,7 +1838,7 @@ namespace ChatBot_Net5.Data {
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class CurrencyAccruedDataTable : global::System.Data.TypedTableBase<CurrencyAccruedRow> {
+        public partial class CurrencyDataTable : global::System.Data.TypedTableBase<CurrencyRow> {
             
             private global::System.Data.DataColumn columnId;
             
@@ -1820,8 +1850,8 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedDataTable() {
-                this.TableName = "CurrencyAccrued";
+            public CurrencyDataTable() {
+                this.TableName = "Currency";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
@@ -1829,7 +1859,7 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal CurrencyAccruedDataTable(global::System.Data.DataTable table) {
+            internal CurrencyDataTable(global::System.Data.DataTable table) {
                 this.TableName = table.TableName;
                 if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
                     this.CaseSensitive = table.CaseSensitive;
@@ -1846,7 +1876,7 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected CurrencyAccruedDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+            protected CurrencyDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
             }
@@ -1894,34 +1924,34 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow this[int index] {
+            public CurrencyRow this[int index] {
                 get {
-                    return ((CurrencyAccruedRow)(this.Rows[index]));
+                    return ((CurrencyRow)(this.Rows[index]));
                 }
             }
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyAccruedRowChangeEventHandler CurrencyAccruedRowChanging;
+            public event CurrencyRowChangeEventHandler CurrencyRowChanging;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyAccruedRowChangeEventHandler CurrencyAccruedRowChanged;
+            public event CurrencyRowChangeEventHandler CurrencyRowChanged;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyAccruedRowChangeEventHandler CurrencyAccruedRowDeleting;
+            public event CurrencyRowChangeEventHandler CurrencyRowDeleting;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyAccruedRowChangeEventHandler CurrencyAccruedRowDeleted;
+            public event CurrencyRowChangeEventHandler CurrencyRowDeleted;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void AddCurrencyAccruedRow(CurrencyAccruedRow row) {
+            public void AddCurrencyRow(CurrencyRow row) {
                 this.Rows.Add(row);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow AddCurrencyAccruedRow(UsersRow parentUsersRowByUsers_CurrencyAccrued, string UserName, CurrencyRow parentCurrencyRowByCurrency_CurrencyAccrued, double Value) {
-                CurrencyAccruedRow rowCurrencyAccruedRow = ((CurrencyAccruedRow)(this.NewRow()));
+            public CurrencyRow AddCurrencyRow(UsersRow parentUsersRowByUsers_CurrencyAccrued, string UserName, CurrencyTypeRow parentCurrencyTypeRowByCurrency_CurrencyAccrued, double Value) {
+                CurrencyRow rowCurrencyRow = ((CurrencyRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         UserName,
@@ -1930,25 +1960,25 @@ namespace ChatBot_Net5.Data {
                 if ((parentUsersRowByUsers_CurrencyAccrued != null)) {
                     columnValuesArray[0] = parentUsersRowByUsers_CurrencyAccrued[0];
                 }
-                if ((parentCurrencyRowByCurrency_CurrencyAccrued != null)) {
-                    columnValuesArray[2] = parentCurrencyRowByCurrency_CurrencyAccrued[1];
+                if ((parentCurrencyTypeRowByCurrency_CurrencyAccrued != null)) {
+                    columnValuesArray[2] = parentCurrencyTypeRowByCurrency_CurrencyAccrued[1];
                 }
-                rowCurrencyAccruedRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowCurrencyAccruedRow);
-                return rowCurrencyAccruedRow;
+                rowCurrencyRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowCurrencyRow);
+                return rowCurrencyRow;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow FindByUserName(string UserName) {
-                return ((CurrencyAccruedRow)(this.Rows.Find(new object[] {
+            public CurrencyRow FindByUserName(string UserName) {
+                return ((CurrencyRow)(this.Rows.Find(new object[] {
                             UserName})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
-                CurrencyAccruedDataTable cln = ((CurrencyAccruedDataTable)(base.Clone()));
+                CurrencyDataTable cln = ((CurrencyDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
@@ -1956,7 +1986,7 @@ namespace ChatBot_Net5.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Data.DataTable CreateInstance() {
-                return new CurrencyAccruedDataTable();
+                return new CurrencyDataTable();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1988,292 +2018,6 @@ namespace ChatBot_Net5.Data {
                 this.columnUserName.Unique = true;
                 this.columnUserName.Caption = "User Name";
                 this.columnCurrencyName.Caption = "Currency Name";
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow NewCurrencyAccruedRow() {
-                return ((CurrencyAccruedRow)(this.NewRow()));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new CurrencyAccruedRow(builder);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override global::System.Type GetRowType() {
-                return typeof(CurrencyAccruedRow);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowChanged(e);
-                if ((this.CurrencyAccruedRowChanged != null)) {
-                    this.CurrencyAccruedRowChanged(this, new CurrencyAccruedRowChangeEvent(((CurrencyAccruedRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowChanging(e);
-                if ((this.CurrencyAccruedRowChanging != null)) {
-                    this.CurrencyAccruedRowChanging(this, new CurrencyAccruedRowChangeEvent(((CurrencyAccruedRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowDeleted(e);
-                if ((this.CurrencyAccruedRowDeleted != null)) {
-                    this.CurrencyAccruedRowDeleted(this, new CurrencyAccruedRowChangeEvent(((CurrencyAccruedRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowDeleting(e);
-                if ((this.CurrencyAccruedRowDeleting != null)) {
-                    this.CurrencyAccruedRowDeleting(this, new CurrencyAccruedRowChangeEvent(((CurrencyAccruedRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void RemoveCurrencyAccruedRow(CurrencyAccruedRow row) {
-                this.Rows.Remove(row);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
-                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                DataSource ds = new DataSource();
-                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
-                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
-                any1.MinOccurs = new decimal(0);
-                any1.MaxOccurs = decimal.MaxValue;
-                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
-                sequence.Items.Add(any1);
-                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
-                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
-                any2.MinOccurs = new decimal(1);
-                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
-                sequence.Items.Add(any2);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
-                attribute1.Name = "namespace";
-                attribute1.FixedValue = ds.Namespace;
-                type.Attributes.Add(attribute1);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
-                attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "CurrencyAccruedDataTable";
-                type.Attributes.Add(attribute2);
-                type.Particle = sequence;
-                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
-                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
-                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
-                        global::System.Xml.Schema.XmlSchema schema = null;
-                        dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
-                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
-                            s2.SetLength(0);
-                            schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
-                                s1.Position = 0;
-                                s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
-                                    ;
-                                }
-                                if ((s1.Position == s1.Length)) {
-                                    return type;
-                                }
-                            }
-                        }
-                    }
-                    finally {
-                        if ((s1 != null)) {
-                            s1.Close();
-                        }
-                        if ((s2 != null)) {
-                            s2.Close();
-                        }
-                    }
-                }
-                xs.Add(dsSchema);
-                return type;
-            }
-        }
-        
-        /// <summary>
-        ///Represents the strongly named DataTable class.
-        ///</summary>
-        [global::System.Serializable()]
-        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class CurrencyDataTable : global::System.Data.TypedTableBase<CurrencyRow> {
-            
-            private global::System.Data.DataColumn columnId;
-            
-            private global::System.Data.DataColumn columnCurrencyName;
-            
-            private global::System.Data.DataColumn columnAccrueRate;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyDataTable() {
-                this.TableName = "Currency";
-                this.BeginInit();
-                this.InitClass();
-                this.EndInit();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal CurrencyDataTable(global::System.Data.DataTable table) {
-                this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
-                    this.CaseSensitive = table.CaseSensitive;
-                }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
-                    this.Locale = table.Locale;
-                }
-                if ((table.Namespace != table.DataSet.Namespace)) {
-                    this.Namespace = table.Namespace;
-                }
-                this.Prefix = table.Prefix;
-                this.MinimumCapacity = table.MinimumCapacity;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected CurrencyDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
-                this.InitVars();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn IdColumn {
-                get {
-                    return this.columnId;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn CurrencyNameColumn {
-                get {
-                    return this.columnCurrencyName;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn AccrueRateColumn {
-                get {
-                    return this.columnAccrueRate;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
-                    return this.Rows.Count;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRow this[int index] {
-                get {
-                    return ((CurrencyRow)(this.Rows[index]));
-                }
-            }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyRowChangeEventHandler CurrencyRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyRowChangeEventHandler CurrencyRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyRowChangeEventHandler CurrencyRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event CurrencyRowChangeEventHandler CurrencyRowDeleted;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void AddCurrencyRow(CurrencyRow row) {
-                this.Rows.Add(row);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRow AddCurrencyRow(string CurrencyName, double AccrueRate) {
-                CurrencyRow rowCurrencyRow = ((CurrencyRow)(this.NewRow()));
-                object[] columnValuesArray = new object[] {
-                        null,
-                        CurrencyName,
-                        AccrueRate};
-                rowCurrencyRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowCurrencyRow);
-                return rowCurrencyRow;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
-                CurrencyDataTable cln = ((CurrencyDataTable)(base.Clone()));
-                cln.InitVars();
-                return cln;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
-                return new CurrencyDataTable();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal void InitVars() {
-                this.columnId = base.Columns["Id"];
-                this.columnCurrencyName = base.Columns["CurrencyName"];
-                this.columnAccrueRate = base.Columns["AccrueRate"];
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            private void InitClass() {
-                this.columnId = new global::System.Data.DataColumn("Id", typeof(long), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnId);
-                this.columnCurrencyName = new global::System.Data.DataColumn("CurrencyName", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnCurrencyName);
-                this.columnAccrueRate = new global::System.Data.DataColumn("AccrueRate", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnAccrueRate);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnCurrencyName}, false));
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
-                                this.columnId}, false));
-                this.columnId.AutoIncrement = true;
-                this.columnId.AutoIncrementSeed = 1;
-                this.columnId.ReadOnly = true;
-                this.columnId.Unique = true;
-                this.columnCurrencyName.Unique = true;
-                this.columnCurrencyName.Caption = "Currency Name";
-                this.columnAccrueRate.Caption = "Accrue Rate per Hr";
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2360,6 +2104,292 @@ namespace ChatBot_Net5.Data {
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
                 attribute2.FixedValue = "CurrencyDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class CurrencyTypeDataTable : global::System.Data.TypedTableBase<CurrencyTypeRow> {
+            
+            private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnCurrencyName;
+            
+            private global::System.Data.DataColumn columnAccrueRate;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeDataTable() {
+                this.TableName = "CurrencyType";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal CurrencyTypeDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected CurrencyTypeDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn CurrencyNameColumn {
+                get {
+                    return this.columnCurrencyName;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn AccrueRateColumn {
+                get {
+                    return this.columnAccrueRate;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow this[int index] {
+                get {
+                    return ((CurrencyTypeRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CurrencyTypeRowChangeEventHandler CurrencyTypeRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CurrencyTypeRowChangeEventHandler CurrencyTypeRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CurrencyTypeRowChangeEventHandler CurrencyTypeRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CurrencyTypeRowChangeEventHandler CurrencyTypeRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddCurrencyTypeRow(CurrencyTypeRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow AddCurrencyTypeRow(string CurrencyName, double AccrueRate) {
+                CurrencyTypeRow rowCurrencyTypeRow = ((CurrencyTypeRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        null,
+                        CurrencyName,
+                        AccrueRate};
+                rowCurrencyTypeRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowCurrencyTypeRow);
+                return rowCurrencyTypeRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                CurrencyTypeDataTable cln = ((CurrencyTypeDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new CurrencyTypeDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars() {
+                this.columnId = base.Columns["Id"];
+                this.columnCurrencyName = base.Columns["CurrencyName"];
+                this.columnAccrueRate = base.Columns["AccrueRate"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass() {
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(long), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
+                this.columnCurrencyName = new global::System.Data.DataColumn("CurrencyName", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCurrencyName);
+                this.columnAccrueRate = new global::System.Data.DataColumn("AccrueRate", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAccrueRate);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnCurrencyName}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnId}, false));
+                this.columnId.AutoIncrement = true;
+                this.columnId.AutoIncrementSeed = 1;
+                this.columnId.ReadOnly = true;
+                this.columnId.Unique = true;
+                this.columnCurrencyName.Unique = true;
+                this.columnCurrencyName.Caption = "Currency Name";
+                this.columnAccrueRate.Caption = "Accrue Rate per Hr";
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow NewCurrencyTypeRow() {
+                return ((CurrencyTypeRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new CurrencyTypeRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(CurrencyTypeRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.CurrencyTypeRowChanged != null)) {
+                    this.CurrencyTypeRowChanged(this, new CurrencyTypeRowChangeEvent(((CurrencyTypeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.CurrencyTypeRowChanging != null)) {
+                    this.CurrencyTypeRowChanging(this, new CurrencyTypeRowChangeEvent(((CurrencyTypeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.CurrencyTypeRowDeleted != null)) {
+                    this.CurrencyTypeRowDeleted(this, new CurrencyTypeRowChangeEvent(((CurrencyTypeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.CurrencyTypeRowDeleting != null)) {
+                    this.CurrencyTypeRowDeleting(this, new CurrencyTypeRowChangeEvent(((CurrencyTypeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveCurrencyTypeRow(CurrencyTypeRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DataSource ds = new DataSource();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "CurrencyTypeDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -3698,12 +3728,12 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow[] GetCurrencyAccruedRows() {
+            public CurrencyRow[] GetCurrencyRows() {
                 if ((this.Table.ChildRelations["Users_CurrencyAccrued"] == null)) {
-                    return new CurrencyAccruedRow[0];
+                    return new CurrencyRow[0];
                 }
                 else {
-                    return ((CurrencyAccruedRow[])(base.GetChildRows(this.Table.ChildRelations["Users_CurrencyAccrued"])));
+                    return ((CurrencyRow[])(base.GetChildRows(this.Table.ChildRelations["Users_CurrencyAccrued"])));
                 }
             }
         }
@@ -3751,17 +3781,17 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public string BuiltIn {
+            public string Permission {
                 get {
                     try {
-                        return ((string)(this[this.tableCommands.BuiltInColumn]));
+                        return ((string)(this[this.tableCommands.PermissionColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'BuiltIn\' in table \'Commands\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Permission\' in table \'Commands\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableCommands.BuiltInColumn] = value;
+                    this[this.tableCommands.PermissionColumn] = value;
                 }
             }
             
@@ -3783,6 +3813,38 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int RepeatTimer {
+                get {
+                    try {
+                        return ((int)(this[this.tableCommands.RepeatTimerColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RepeatTimer\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.RepeatTimerColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Params {
+                get {
+                    try {
+                        return ((string)(this[this.tableCommands.ParamsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Params\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.ParamsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsIdNull() {
                 return this.IsNull(this.tableCommands.IdColumn);
             }
@@ -3795,14 +3857,14 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsBuiltInNull() {
-                return this.IsNull(this.tableCommands.BuiltInColumn);
+            public bool IsPermissionNull() {
+                return this.IsNull(this.tableCommands.PermissionColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetBuiltInNull() {
-                this[this.tableCommands.BuiltInColumn] = global::System.Convert.DBNull;
+            public void SetPermissionNull() {
+                this[this.tableCommands.PermissionColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3816,137 +3878,29 @@ namespace ChatBot_Net5.Data {
             public void SetMessageNull() {
                 this[this.tableCommands.MessageColumn] = global::System.Convert.DBNull;
             }
-        }
-        
-        /// <summary>
-        ///Represents strongly named DataRow class.
-        ///</summary>
-        public partial class CurrencyAccruedRow : global::System.Data.DataRow {
-            
-            private CurrencyAccruedDataTable tableCurrencyAccrued;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal CurrencyAccruedRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
-                this.tableCurrencyAccrued = ((CurrencyAccruedDataTable)(this.Table));
+            public bool IsRepeatTimerNull() {
+                return this.IsNull(this.tableCommands.RepeatTimerColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public long Id {
-                get {
-                    try {
-                        return ((long)(this[this.tableCurrencyAccrued.IdColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'CurrencyAccrued\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableCurrencyAccrued.IdColumn] = value;
-                }
+            public void SetRepeatTimerNull() {
+                this[this.tableCommands.RepeatTimerColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public string UserName {
-                get {
-                    return ((string)(this[this.tableCurrencyAccrued.UserNameColumn]));
-                }
-                set {
-                    this[this.tableCurrencyAccrued.UserNameColumn] = value;
-                }
+            public bool IsParamsNull() {
+                return this.IsNull(this.tableCommands.ParamsColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public string CurrencyName {
-                get {
-                    try {
-                        return ((string)(this[this.tableCurrencyAccrued.CurrencyNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'CurrencyName\' in table \'CurrencyAccrued\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableCurrencyAccrued.CurrencyNameColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double Value {
-                get {
-                    try {
-                        return ((double)(this[this.tableCurrencyAccrued.ValueColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Value\' in table \'CurrencyAccrued\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableCurrencyAccrued.ValueColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["Users_CurrencyAccrued"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["Users_CurrencyAccrued"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRow CurrencyRow {
-                get {
-                    return ((CurrencyRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyAccrued"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyAccrued"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsIdNull() {
-                return this.IsNull(this.tableCurrencyAccrued.IdColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetIdNull() {
-                this[this.tableCurrencyAccrued.IdColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsCurrencyNameNull() {
-                return this.IsNull(this.tableCurrencyAccrued.CurrencyNameColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetCurrencyNameNull() {
-                this[this.tableCurrencyAccrued.CurrencyNameColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsValueNull() {
-                return this.IsNull(this.tableCurrencyAccrued.ValueColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetValueNull() {
-                this[this.tableCurrencyAccrued.ValueColumn] = global::System.Convert.DBNull;
+            public void SetParamsNull() {
+                this[this.tableCommands.ParamsColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -3982,6 +3936,17 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string UserName {
+                get {
+                    return ((string)(this[this.tableCurrency.UserNameColumn]));
+                }
+                set {
+                    this[this.tableCurrency.UserNameColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string CurrencyName {
                 get {
                     try {
@@ -3998,17 +3963,39 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double AccrueRate {
+            public double Value {
                 get {
                     try {
-                        return ((double)(this[this.tableCurrency.AccrueRateColumn]));
+                        return ((double)(this[this.tableCurrency.ValueColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'AccrueRate\' in table \'Currency\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Value\' in table \'Currency\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableCurrency.AccrueRateColumn] = value;
+                    this[this.tableCurrency.ValueColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["Users_CurrencyAccrued"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["Users_CurrencyAccrued"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow CurrencyTypeRow {
+                get {
+                    return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyAccrued"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyAccrued"]);
                 }
             }
             
@@ -4038,24 +4025,123 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsValueNull() {
+                return this.IsNull(this.tableCurrency.ValueColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetValueNull() {
+                this[this.tableCurrency.ValueColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class CurrencyTypeRow : global::System.Data.DataRow {
+            
+            private CurrencyTypeDataTable tableCurrencyType;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal CurrencyTypeRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableCurrencyType = ((CurrencyTypeDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public long Id {
+                get {
+                    try {
+                        return ((long)(this[this.tableCurrencyType.IdColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'CurrencyType\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCurrencyType.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string CurrencyName {
+                get {
+                    try {
+                        return ((string)(this[this.tableCurrencyType.CurrencyNameColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'CurrencyName\' in table \'CurrencyType\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCurrencyType.CurrencyNameColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public double AccrueRate {
+                get {
+                    try {
+                        return ((double)(this[this.tableCurrencyType.AccrueRateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AccrueRate\' in table \'CurrencyType\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCurrencyType.AccrueRateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsIdNull() {
+                return this.IsNull(this.tableCurrencyType.IdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetIdNull() {
+                this[this.tableCurrencyType.IdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsCurrencyNameNull() {
+                return this.IsNull(this.tableCurrencyType.CurrencyNameColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetCurrencyNameNull() {
+                this[this.tableCurrencyType.CurrencyNameColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsAccrueRateNull() {
-                return this.IsNull(this.tableCurrency.AccrueRateColumn);
+                return this.IsNull(this.tableCurrencyType.AccrueRateColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetAccrueRateNull() {
-                this[this.tableCurrency.AccrueRateColumn] = global::System.Convert.DBNull;
+                this[this.tableCurrencyType.AccrueRateColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow[] GetCurrencyAccruedRows() {
+            public CurrencyRow[] GetCurrencyAccruedRows() {
                 if ((this.Table.ChildRelations["Currency_CurrencyAccrued"] == null)) {
-                    return new CurrencyAccruedRow[0];
+                    return new CurrencyRow[0];
                 }
                 else {
-                    return ((CurrencyAccruedRow[])(base.GetChildRows(this.Table.ChildRelations["Currency_CurrencyAccrued"])));
+                    return ((CurrencyRow[])(base.GetChildRows(this.Table.ChildRelations["Currency_CurrencyAccrued"])));
                 }
             }
         }
@@ -4946,22 +5032,22 @@ namespace ChatBot_Net5.Data {
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public class CurrencyAccruedRowChangeEvent : global::System.EventArgs {
+        public class CurrencyRowChangeEvent : global::System.EventArgs {
             
-            private CurrencyAccruedRow eventRow;
+            private CurrencyRow eventRow;
             
             private global::System.Data.DataRowAction eventAction;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRowChangeEvent(CurrencyAccruedRow row, global::System.Data.DataRowAction action) {
+            public CurrencyRowChangeEvent(CurrencyRow row, global::System.Data.DataRowAction action) {
                 this.eventRow = row;
                 this.eventAction = action;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyAccruedRow Row {
+            public CurrencyRow Row {
                 get {
                     return this.eventRow;
                 }
@@ -4980,22 +5066,22 @@ namespace ChatBot_Net5.Data {
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public class CurrencyRowChangeEvent : global::System.EventArgs {
+        public class CurrencyTypeRowChangeEvent : global::System.EventArgs {
             
-            private CurrencyRow eventRow;
+            private CurrencyTypeRow eventRow;
             
             private global::System.Data.DataRowAction eventAction;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRowChangeEvent(CurrencyRow row, global::System.Data.DataRowAction action) {
+            public CurrencyTypeRowChangeEvent(CurrencyTypeRow row, global::System.Data.DataRowAction action) {
                 this.eventRow = row;
                 this.eventAction = action;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRow Row {
+            public CurrencyTypeRow Row {
                 get {
                     return this.eventRow;
                 }
