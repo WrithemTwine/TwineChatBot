@@ -144,15 +144,6 @@ namespace ChatBot_Net5
 
             switch (dg.Name)
             {
-                case "DG_CommonMsgs":
-                    foreach (DataGridColumn dc in dg.Columns)
-                    {
-                        if (dc.Header.ToString() == "Name")
-                        {
-                            dc.IsReadOnly = true;
-                        }
-                    }
-                    break;
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {

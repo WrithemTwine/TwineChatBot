@@ -25,7 +25,7 @@ namespace ChatBot_Net5.Interfaces
         //    }
         //}
 
-        internal static IEnumerable<XElement> ConvertXElement(this BindingList<CommandAction> bl)
+        internal static IEnumerable<XElement> ConvertXElement(this BindingList<ChannelEventActions> bl)
         {
             foreach (object a in bl)
             {

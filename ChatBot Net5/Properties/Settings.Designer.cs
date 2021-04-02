@@ -109,7 +109,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public double TwitchFrequency {
             get {
                 return ((double)(this["TwitchFrequency"]));
@@ -128,6 +128,66 @@ namespace ChatBot_Net5.Properties {
             }
             set {
                 this["BotConnectionMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AddFollowersStart {
+            get {
+                return ((bool)(this["AddFollowersStart"]));
+            }
+            set {
+                this["AddFollowersStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public double TwitchGoLiveFrequency {
+            get {
+                return ((double)(this["TwitchGoLiveFrequency"]));
+            }
+            set {
+                this["TwitchGoLiveFrequency"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PostMultiLive {
+            get {
+                return ((bool)(this["PostMultiLive"]));
+            }
+            set {
+                this["PostMultiLive"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool InsertMeToMsg {
+            get {
+                return ((bool)(this["InsertMeToMsg"]));
+            }
+            set {
+                this["InsertMeToMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool WelcomeChatMsg {
+            get {
+                return ((bool)(this["WelcomeChatMsg"]));
+            }
+            set {
+                this["WelcomeChatMsg"] = value;
             }
         }
     }
