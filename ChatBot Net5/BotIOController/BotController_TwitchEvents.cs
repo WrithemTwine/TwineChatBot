@@ -535,7 +535,8 @@ namespace ChatBot_Net5.BotIOController
 
             try
             {
-                ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
+                string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
+                Send(response);
             }
             catch (InvalidOperationException InvalidOp)
             {

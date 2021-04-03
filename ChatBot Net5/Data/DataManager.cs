@@ -41,17 +41,17 @@ namespace ChatBot_Net5.Data
             {
                 string filter = string.Empty;
 
-                foreach(DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
+                foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
                 {
                     filter += "'" + d.ToString() + "',";
                 }
 
-                foreach(DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
                 {
                     filter += "'" + s.ToString() + "',";
-                }             
+                }
 
-                return filter==string.Empty ? "" : filter.Substring(0,filter.Length-1);
+                return filter == string.Empty ? "" : filter.Substring(0, filter.Length - 1);
             }
 
 
@@ -62,7 +62,7 @@ namespace ChatBot_Net5.Data
             Users = new(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
             Followers = new(_DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
             Discord = _DataSource.Discord.DefaultView;
-            CurrencyType = new (_DataSource.CurrencyType, null, "Id", DataViewRowState.CurrentRows);
+            CurrencyType = new(_DataSource.CurrencyType, null, "Id", DataViewRowState.CurrentRows);
             Currency = new(_DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
             BuiltInCommands = new(_DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
@@ -115,16 +115,16 @@ namespace ChatBot_Net5.Data
 
             Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
-                {ChannelEventActions.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
-                {ChannelEventActions.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
-                {ChannelEventActions.CommunitySubs, new("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
-                {ChannelEventActions.Follow, new("Thanks #user for the follow!", "#user") },
-                {ChannelEventActions.GiftSub, new("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
-                {ChannelEventActions.Live, new("@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
-                {ChannelEventActions.Raid, new("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
-                {ChannelEventActions.Resubscribe, new("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
-                {ChannelEventActions.Subscribe, new("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") },
-                {ChannelEventActions.UserJoined, new("Welcome #user! Glad you could make it to the stream. How are you?", "#user") }
+                { ChannelEventActions.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
+                { ChannelEventActions.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
+                { ChannelEventActions.CommunitySubs, new("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
+                { ChannelEventActions.Follow, new("Thanks #user for the follow!", "#user") },
+                { ChannelEventActions.GiftSub, new("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
+                { ChannelEventActions.Live, new("@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
+                { ChannelEventActions.Raid, new("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
+                { ChannelEventActions.Resubscribe, new("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
+                { ChannelEventActions.Subscribe, new("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") },
+                { ChannelEventActions.UserJoined, new("Welcome #user! Glad you could make it to the stream. How are you?", "#user") }
             };
 
             foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
@@ -372,9 +372,9 @@ namespace ChatBot_Net5.Data
 
                 DataSource.StreamStatsRow statsRow = null;
 
-                foreach(DataSource.StreamStatsRow s in statsRowAll) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
+                foreach (DataSource.StreamStatsRow s in statsRowAll) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
                 {
-                    if(s.StreamStart == streamStat.StreamStart)
+                    if (s.StreamStart == streamStat.StreamStart)
                     {
                         statsRow = s;
                         break;
@@ -454,9 +454,13 @@ switches:
 -a:<action>
 -u:<allow other user>
 -timer:<seconds>
+-use:<usage message>
+
 
 <message> -> The message to display, may include parameters (e.g. #user, #field).
          */
+
+        private readonly string DefaulSocialMsg = "Social media url here";
 
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
@@ -465,29 +469,33 @@ switches:
         {
             bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
 
-               // command name     // msg   // params
-            Dictionary<string,Tuple<string, string>> DefCommandsDictionary = new()
+            // command name     // msg   // params  
+            Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
             {
-                { DefaultCommand.addcommand.ToString(), new("Command added","-p:Mod")},
-                { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC")},
-                { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine", "")},
-                { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "")},
-                { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!","")},
-                { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "")},
-                { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "")}
+                { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand !command <switches-optional> <message>. See documentation for <switches>.") },
+                { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC -use:!commands") },
+                { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/", "-use:!bot") },
+                { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "-use:!lurk") },
+                { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
+                { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
+                { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
+                { DefaultCommand.so.ToString(), new("", "-p:Mod -u:true -use:!so user, only mods can use !so.") },
+                { DefaultCommand.join.ToString(), new("The message isn't used in response.","") },
+                { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "") },
+                { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") }
             };
 
-            foreach(DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+            foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
             {
-                DefCommandsDictionary.Add(social.ToString(), new("Social media url here", ""));
+                DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social name>, use !socials for all available."));
             }
 
-            foreach(string key in DefCommandsDictionary.Keys)
+            foreach (string key in DefCommandsDictionary.Keys)
             {
                 if (CheckName(key))
                 {
                     CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                    _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, DefCommandsDictionary[key].Item2);
+                    _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage);
                 }
             }
         }
@@ -497,7 +505,13 @@ switches:
         /// </summary>
         /// <param name="table">The table name to check.</param>
         /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
-        internal bool CheckTable(string table) => _DataSource.Tables.Contains(table);
+        internal bool CheckTable(string table)
+        {
+            lock (_DataSource)
+            {
+                return _DataSource.Tables.Contains(table);
+            }
+        }
 
         /// <summary>
         /// Check if the provided field is part of the supplied table.
@@ -505,7 +519,13 @@ switches:
         /// <param name="table">The table to check.</param>
         /// <param name="field">The field within the table to see if it exists.</param>
         /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
-        internal bool CheckField(string table, string field) => _DataSource.Tables[table].Columns.Contains(field);
+        internal bool CheckField(string table, string field)
+        {
+            lock (_DataSource)
+            {
+                return _DataSource.Tables[table].Columns.Contains(field);
+            }
+        }
 
         /// <summary>
         /// Determine if the user invoking the command has permission to access the command.
@@ -516,17 +536,120 @@ switches:
         /// <exception cref="InvalidOperationException">The command is not found.</exception>
         internal bool CheckPermission(string cmd, ViewerTypes permission)
         {
-           DataSource.CommandsRow[] rows =  (DataSource.CommandsRow[]) _DataSource.Commands.Select("CmdName='" + cmd +"'");
-
-            if (rows != null)
+            lock (_DataSource.Commands)
             {
-                ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+                DataSource.CommandsRow[] rows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
 
-                return cmdpermission <= permission;
+                if (rows != null)
+                {
+                    ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+
+                    return cmdpermission <= permission;
+                }
+                else
+                    throw new InvalidOperationException("Command not found.");
             }
-            else
-                throw new InvalidOperationException("Command not found.");
         }
+
+        internal string AddCommand(string cmd, CommandParams Params)
+        {
+            string strParams = Params.DBParamsString();
+
+            lock (_DataSource.Commands)
+            {
+                _DataSource.Commands.AddCommandsRow(cmd, Params.Permission.ToString(), Params.Message, Params.Timer, strParams, Params.AllowUser, Params.Usage);
+            }
+            return "Command added!";
+        }
+
+        internal string GetSocials()
+        {
+            string filter = "";
+
+            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+            {
+                filter += "'" + s.ToString() + "',";
+            }
+
+            DataSource.CommandsRow[] socialrows = null;
+
+            lock (_DataSource.Commands)
+            {
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter.Substring(0, filter.Length - 1) + ")");
+            }
+
+            lock (_DataSource.Commands)
+            {
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='socials'");
+            }
+
+            string socials = socialrows[0].Message;
+
+            foreach (DataSource.CommandsRow com in socialrows)
+            {
+                if (com.Message != DefaulSocialMsg || com.Message != string.Empty)
+                {
+                    socials += com.Message + " ";
+                }
+            }
+
+            return socials.Trim();
+        }
+
+        internal string GetUsage(string command)
+        {
+            lock (_DataSource.Commands)
+            {
+                DataSource.CommandsRow[] usagerows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + command + "'");
+
+                return usagerows[0]?.Usage ?? "No usage available.";
+            }
+        }
+
+        internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList)
+        {
+            DataSource.CommandsRow[] comrow = null;
+
+            lock (_DataSource.Commands)
+            {
+                comrow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
+            }
+
+            if (comrow == null || comrow.Length == 0)
+            {
+                return "Command not found.";
+            }
+
+            object[] value = comrow[0].Params != string.Empty ? PerformQuery(comrow[0], InvokedUser, ParamUser) : null;
+
+
+            Dictionary<string, string> datavalues = new()
+            {
+                { "#user", comrow[0].AllowUser ? ParamUser : InvokedUser },
+                { "#url", "http://www.twitch.tv/" + (comrow[0].AllowUser ? ParamUser : InvokedUser) }
+            };
+
+            return BotIOController.BotController.ParseReplace(comrow[0].Message, datavalues);
+        }
+
+        private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)
+        {
+            CommandParams query = CommandParams.Parse(row.Params);
+            DataRow[] result = null;
+
+            lock (_DataSource)
+            {
+                result = _DataSource.Tables[query.Table].Select("UserName='" + (row.AllowUser ? ParamUser : InvokedUser) + "'");
+
+                if (query.Currency == string.Empty)
+                {
+
+                }
+            }
+
+            return null;
+        }
+
 
         #endregion
 

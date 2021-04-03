@@ -294,7 +294,15 @@
                                 <Grid>
                                     <TextBlock>
                                         The 'BuiltInCommands' are those established within the bot. <LineBreak />
-                                        The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. "Visit me on Twitter at: http://wwww.twitter.com/myuser".<LineBreak />
+                                        The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. "Visit me on Twitter at: http://wwww.twitter.com/myuser". The command will show all socials except messages that are blank or the default 'Social media url here'.
+                                        <LineBreak />
+                                        <LineBreak />
+                                        The variables within message to format a custom response:<LineBreak />
+                                        #user: the user specific to the command; either 'command invoker' user or parameter to the command<LineBreak />
+                                        #url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command<LineBreak />
+                                        #fieldvalue: placeholder for the value from a table lookup<LineBreak />
+                                        #currencyname: placeholder for the currency name - extracted from table<LineBreak />
+                                        #currencyvalue: the value of a currency<LineBreak />
                                     </TextBlock>
                                 </Grid>
                             </TabItem>
@@ -331,7 +339,7 @@
                             <DataGrid x:Name="DG_JoinList" AutoGenerateColumns="False" 
                             ItemsSource="{Binding JoinCollection}" 
                             VerticalContentAlignment="Stretch" 
-                            MaxWidth="290" >
+                            MaxWidth="290" DataContext="{Binding ProcessCommands, Mode=OneWay}" >
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Binding="{Binding Remove}">
                                         <DataGridCheckBoxColumn.Header>

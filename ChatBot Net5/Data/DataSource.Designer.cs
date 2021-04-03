@@ -1521,6 +1521,10 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnParams;
             
+            private global::System.Data.DataColumn columnAllowUser;
+            
+            private global::System.Data.DataColumn columnUsage;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public CommandsDataTable() {
@@ -1604,6 +1608,22 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn AllowUserColumn {
+                get {
+                    return this.columnAllowUser;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UsageColumn {
+                get {
+                    return this.columnUsage;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1639,7 +1659,7 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CommandsRow AddCommandsRow(string CmdName, string Permission, string Message, int RepeatTimer, string Params) {
+            public CommandsRow AddCommandsRow(string CmdName, string Permission, string Message, int RepeatTimer, string Params, bool AllowUser, string Usage) {
                 CommandsRow rowCommandsRow = ((CommandsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -1647,7 +1667,9 @@ namespace ChatBot_Net5.Data {
                         Permission,
                         Message,
                         RepeatTimer,
-                        Params};
+                        Params,
+                        AllowUser,
+                        Usage};
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
                 return rowCommandsRow;
@@ -1676,6 +1698,8 @@ namespace ChatBot_Net5.Data {
                 this.columnMessage = base.Columns["Message"];
                 this.columnRepeatTimer = base.Columns["RepeatTimer"];
                 this.columnParams = base.Columns["Params"];
+                this.columnAllowUser = base.Columns["AllowUser"];
+                this.columnUsage = base.Columns["Usage"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1693,6 +1717,10 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnRepeatTimer);
                 this.columnParams = new global::System.Data.DataColumn("Params", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnParams);
+                this.columnAllowUser = new global::System.Data.DataColumn("AllowUser", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAllowUser);
+                this.columnUsage = new global::System.Data.DataColumn("Usage", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUsage);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -1707,6 +1735,7 @@ namespace ChatBot_Net5.Data {
                 this.columnCmdName.Caption = "Command Name";
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events";
+                this.columnAllowUser.DefaultValue = ((bool)(false));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3845,6 +3874,38 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool AllowUser {
+                get {
+                    try {
+                        return ((bool)(this[this.tableCommands.AllowUserColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AllowUser\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.AllowUserColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Usage {
+                get {
+                    try {
+                        return ((string)(this[this.tableCommands.UsageColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Usage\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.UsageColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsIdNull() {
                 return this.IsNull(this.tableCommands.IdColumn);
             }
@@ -3901,6 +3962,30 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetParamsNull() {
                 this[this.tableCommands.ParamsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsAllowUserNull() {
+                return this.IsNull(this.tableCommands.AllowUserColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetAllowUserNull() {
+                this[this.tableCommands.AllowUserColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsUsageNull() {
+                return this.IsNull(this.tableCommands.UsageColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetUsageNull() {
+                this[this.tableCommands.UsageColumn] = global::System.Convert.DBNull;
             }
         }
         
