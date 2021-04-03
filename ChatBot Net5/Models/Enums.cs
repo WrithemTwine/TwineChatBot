@@ -9,7 +9,7 @@
     public enum ResponseType { Channel, Whisper, Both }
     public enum CurrencyType { JoinChannel, LeaveChannel, Chat, Emoticon, GiftSub, Bits, Points }
     
-    public enum DefaultCommand { commands, addcommand, lurk, unlurk, worklurk, socials, bot }
+    public enum DefaultCommand { commands, addcommand, lurk, unlurk, worklurk, socials, bot, so, join, leave, queue }
 
     public enum DefaultSocials { twitter, youtube, instagram, discord, facebook, parlor, gab, telegram, rumble, tiktok }
 

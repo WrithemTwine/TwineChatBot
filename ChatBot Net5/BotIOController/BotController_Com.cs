@@ -13,8 +13,6 @@ namespace ChatBot_Net5.BotIOController
 {
     public partial class BotController
     {
-        public ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
-
         public FlowDocument ChatData { get; private set; } = new();
 
         private delegate void ProcMessage(ChatMessage message);

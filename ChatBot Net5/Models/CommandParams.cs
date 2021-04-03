@@ -5,16 +5,18 @@ namespace ChatBot_Net5.Models
 {
     internal class CommandParams
     {
-        internal string Table { get; set; }
-        internal string Field { get; set; }
-        internal string Currency { get; set; }
-        internal string Unit { get; set; }
+        internal string Table { get; set; } = string.Empty;
+        internal string Field { get; set; } = string.Empty;
+        internal string Currency { get; set; } = string.Empty;
+        internal string Unit { get; set; } = string.Empty;
         internal ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
         internal int Top { get; set; } = 1;
-        internal string Sort { get; set; }
+        internal string Sort { get; set; } = string.Empty;
         internal string Action { get; set; } = "Get";
         internal bool AllowUser { get; set; } = false;
         internal int Timer { get; set; } = 0;
+        internal string Usage { get; set; } = "!<command>";
+        internal string Message { get; set; } = string.Empty;
 
         internal static CommandParams Parse(string ParamString)
         {
@@ -44,6 +46,8 @@ namespace ChatBot_Net5.Models
                 {
                     throw new InvalidOperationException("Table not specified.");
                 }
+
+                bool checkUsage = false;
 
                 foreach (string param in ParamList)
                 {
@@ -81,11 +85,54 @@ namespace ChatBot_Net5.Models
                         case "-timer":
                             data.Timer = int.Parse(keyvalue[1]);
                             break;
+                        case "-usage":
+                            checkUsage = true;
+                            data.Usage = keyvalue[1];
+                            break;
+                        default:
+                            data.Message = keyvalue[0];
+                            break;
                     }
+                }
+
+                if (!checkUsage)
+                {
+                    data.Usage = "!<command>" + (data.AllowUser ? " displayname" : "");
                 }
             }
 
             return data;
+        }
+
+        internal string DBParamsString()
+        {
+            string Combine(string key, string value) => key + ":" + value + " ";
+
+            string param = "";
+
+            Dictionary<string, string> paramdictionary = new()
+            {
+                { "-t", Table },
+                { "-f", Field },
+                { "-c", Currency },
+                { "-unit", Unit },
+                //{ "-p", Permission.ToString() },
+                { "-top", Top.ToString() },
+                { "-s", Sort },
+                { "-a", Action },
+                //{ "-u", AllowUser.ToString() },
+                //{ "-timer", Timer.ToString() }
+            };
+
+            foreach(string k in paramdictionary.Keys)
+            {
+                if(paramdictionary[k] != string.Empty && paramdictionary[k] != ViewerTypes.Viewer.ToString() && paramdictionary[k] != "Get" && paramdictionary[k] != "0")
+                {
+                    param += Combine(k, paramdictionary[k]);
+                }
+            }
+
+            return param.Trim();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace ChatBot_Net5.BotIOController
                 }
 
                 dictionary.TryGetValue(hit, out string value);
-                return key.Replace(hit, (hit == "#user" ? "@" : "") + value) ?? "";
+                return key.Replace(hit, (hit == codekey+"user" ? "@" : "") + value) ?? "";
             }
 
             // review the incoming string message for all of the keys in the dictionary, replace with paired value

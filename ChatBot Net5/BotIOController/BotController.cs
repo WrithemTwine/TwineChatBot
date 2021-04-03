@@ -76,7 +76,7 @@ namespace ChatBot_Net5.BotIOController
             IOModuleList.Add(TwitchIO);
 
             Stats = new(DataManage);
-            ProcessCommands = new(DataManage);
+
             FirstFollowerProcess = Settings.Default.AddFollowersStart;
             FirstUserJoinedMsg = Settings.Default.WelcomeChatMsg;
             AddMeMsg = Settings.Default.InsertMeToMsg;
@@ -95,6 +95,7 @@ namespace ChatBot_Net5.BotIOController
 
             ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             SetThread();
+            ProcessCommands = new(DataManage, ProcessOps);
 
             foreach (IOModule i in IOModuleList)
             {
