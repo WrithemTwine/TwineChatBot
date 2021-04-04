@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.Models;
+using ChatBot_Net5.BotIOController;
 
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace ChatBot_Net5.Data
 
         public DataManager()
         {
-            string ComFilter()
+            static string ComFilter()
             {
                 string filter = string.Empty;
 
@@ -355,12 +356,23 @@ namespace ChatBot_Net5.Data
         #endregion Discord and Webhooks
 
         #region Stream Statistics
-        internal void AddStream(DateTime StreamStart)
+        internal bool AddStream(DateTime StreamStart)
         {
             lock (_DataSource.StreamStats)
             {
+                DataSource.StreamStatsRow[] streamStatsRows = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();                
+
+                foreach (DataSource.StreamStatsRow s in streamStatsRows)
+                {
+                    if (s.StreamStart == StreamStart)
+                    {
+                        return false;
+                    }
+                }
+
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 _DataSource.StreamStats.AcceptChanges();
+                return true;
             }
         }
 
@@ -370,46 +382,39 @@ namespace ChatBot_Net5.Data
             {
                 DataSource.StreamStatsRow[] statsRowAll = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
 
-                DataSource.StreamStatsRow statsRow = null;
-
                 foreach (DataSource.StreamStatsRow s in statsRowAll) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
                 {
                     if (s.StreamStart == streamStat.StreamStart)
                     {
-                        statsRow = s;
-                        break;
+                        s.StreamStart = streamStat.StreamStart;
+                        s.StreamEnd = streamStat.StreamEnd;
+                        s.NewFollows = streamStat.NewFollows;
+                        s.NewSubscribers = streamStat.NewSubs;
+                        s.GiftSubs = streamStat.GiftSubs;
+                        s.Bits = streamStat.Bits;
+                        s.Raids = streamStat.Raids;
+                        s.Hosted = streamStat.Hosted;
+                        s.UsersBanned = streamStat.UsersBanned;
+                        s.UsersTimedOut = streamStat.UsersTimedOut;
+                        s.ModeratorsPresent = streamStat.ModsPresent;
+                        s.SubsPresent = streamStat.SubsPresent;
+                        s.VIPsPresent = streamStat.VIPsPresent;
+                        s.TotalChats = streamStat.TotalChats;
+                        s.Commands = streamStat.Commands;
+                        s.AutomatedEvents = streamStat.AutoEvents;
+                        s.AutomatedCommands = streamStat.AutoCommands;
+                        s.DiscordMsgs = streamStat.DiscordMsgs;
+                        s.ClipsMade = streamStat.ClipsMade;
+                        s.ChannelPtCount = streamStat.ChannelPtCount;
+                        s.ChannelChallenge = streamStat.ChannelChallenge;
+                        s.MaxUsers = streamStat.MaxUsers;
+
+                        _DataSource.StreamStats.AcceptChanges();
+                        return;
                     }
                 }
 
-                if (statsRow == null)
-                {
-                    _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
-                }
-                else
-                {
-                    statsRow.StreamStart = streamStat.StreamStart;
-                    statsRow.StreamEnd = streamStat.StreamEnd;
-                    statsRow.NewFollows = streamStat.NewFollows;
-                    statsRow.NewSubscribers = streamStat.NewSubs;
-                    statsRow.GiftSubs = streamStat.GiftSubs;
-                    statsRow.Bits = streamStat.Bits;
-                    statsRow.Raids = streamStat.Raids;
-                    statsRow.Hosted = streamStat.Hosted;
-                    statsRow.UsersBanned = streamStat.UsersBanned;
-                    statsRow.UsersTimedOut = streamStat.UsersTimedOut;
-                    statsRow.ModeratorsPresent = streamStat.ModsPresent;
-                    statsRow.SubsPresent = streamStat.SubsPresent;
-                    statsRow.VIPsPresent = streamStat.VIPsPresent;
-                    statsRow.TotalChats = streamStat.TotalChats;
-                    statsRow.Commands = streamStat.Commands;
-                    statsRow.AutomatedEvents = streamStat.AutoEvents;
-                    statsRow.AutomatedCommands = streamStat.AutoCommands;
-                    statsRow.DiscordMsgs = streamStat.DiscordMsgs;
-                    statsRow.ClipsMade = streamStat.ClipsMade;
-                    statsRow.ChannelPtCount = streamStat.ChannelPtCount;
-                    statsRow.ChannelChallenge = streamStat.ChannelChallenge;
-                    statsRow.MaxUsers = streamStat.MaxUsers;
-                }
+                _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
 
                 _DataSource.StreamStats.AcceptChanges();
             }
@@ -456,8 +461,7 @@ switches:
 -timer:<seconds>
 -use:<usage message>
 
-
-<message> -> The message to display, may include parameters (e.g. #user, #field).
+-m:<message> -> The message to display, may include parameters (e.g. #user, #field).
          */
 
         private readonly string DefaulSocialMsg = "Social media url here";
@@ -479,15 +483,16 @@ switches:
                 { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
                 { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
                 { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
-                { DefaultCommand.so.ToString(), new("", "-p:Mod -u:true -use:!so user, only mods can use !so.") },
+                { DefaultCommand.so.ToString(), new("", "-p:Mod -u:true -use:!so_user, only mods can use !so.") },
                 { DefaultCommand.join.ToString(), new("The message isn't used in response.","") },
                 { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "") },
-                { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") }
+                { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") },
+                { "blank", new("blank command.","")}
             };
 
             foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
             {
-                DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social name>, use !socials for all available."));
+                DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name>"));
             }
 
             foreach (string key in DefCommandsDictionary.Keys)
@@ -540,11 +545,11 @@ switches:
             {
                 DataSource.CommandsRow[] rows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
 
-                if (rows != null)
+                if (rows != null && rows.Length>0)
                 {
                     ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
 
-                    return cmdpermission <= permission;
+                    return cmdpermission >= permission;
                 }
                 else
                     throw new InvalidOperationException("Command not found.");
@@ -572,12 +577,6 @@ switches:
             }
 
             DataSource.CommandsRow[] socialrows = null;
-
-            lock (_DataSource.Commands)
-            {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter.Substring(0, filter.Length - 1) + ")");
-            }
-
             lock (_DataSource.Commands)
             {
                 socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='socials'");
@@ -585,9 +584,14 @@ switches:
 
             string socials = socialrows[0].Message;
 
+            lock (_DataSource.Commands)
+            {
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter.Substring(0, filter.Length - 1) + ")");
+            }
+
             foreach (DataSource.CommandsRow com in socialrows)
             {
-                if (com.Message != DefaulSocialMsg || com.Message != string.Empty)
+                if (com.Message != DefaulSocialMsg && com.Message != string.Empty)
                 {
                     socials += com.Message + " ";
                 }
@@ -620,16 +624,21 @@ switches:
                 return "Command not found.";
             }
 
-            object[] value = comrow[0].Params != string.Empty ? PerformQuery(comrow[0], InvokedUser, ParamUser) : null;
+            //object[] value = comrow[0].Params != string.Empty ? PerformQuery(comrow[0], InvokedUser, ParamUser) : null;
 
+            string user = (comrow[0].AllowUser ? ParamUser : InvokedUser);
+            if (user.Contains('@'))
+            {
+                user = user.Remove(0,1);
+            }
 
             Dictionary<string, string> datavalues = new()
             {
-                { "#user", comrow[0].AllowUser ? ParamUser : InvokedUser },
-                { "#url", "http://www.twitch.tv/" + (comrow[0].AllowUser ? ParamUser : InvokedUser) }
+                { "#user", user },
+                { "#url", "http://www.twitch.tv/" + user }
             };
 
-            return BotIOController.BotController.ParseReplace(comrow[0].Message, datavalues);
+            return BotController.ParseReplace(comrow[0].Message, datavalues);
         }
 
         private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)

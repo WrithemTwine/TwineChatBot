@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
 {
+
     // see "BotController_Events.cs for partial class implementation
     public sealed partial class BotController
     {
@@ -93,9 +94,9 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
 #endif
 
-            ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
+            ThreadFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             SetThread();
-            ProcessCommands = new(DataManage, ProcessOps);
+            ProcessCommands = new(DataManage);
 
             foreach (IOModule i in IOModuleList)
             {
@@ -126,7 +127,7 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
 #endif
 
-            ProcessOps = false;
+            ThreadFlags.ProcessOps = false;
             SendThread?.Join();
 
             foreach (IOModule i in IOModuleList)
@@ -150,7 +151,7 @@ namespace ChatBot_Net5.BotIOController
                     {
                         foreach (IOModule i in IOModuleList)
                         {
-                            i.Send( (AddMeMsg?"\\me ": "") + s);
+                            i.Send( (AddMeMsg?"/me ": "") + s);
                         }
                     }
                 ));

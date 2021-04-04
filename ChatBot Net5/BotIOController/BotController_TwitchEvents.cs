@@ -140,7 +140,7 @@ namespace ChatBot_Net5.BotIOController
 
             Stats.StreamOnline();
 
-            if (PostMultiLive || Stats.StartStreamOnline(e.Stream.StartedAt))
+            if (PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
             {
                 // get message, set a default if otherwise deleted/unavailable
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
@@ -161,6 +161,8 @@ namespace ChatBot_Net5.BotIOController
                     Stats.AddDiscord();
                 }
             }
+            Stats.StartStreamOnline(e.Stream.StartedAt);
+
         }
         #endregion Stream On, Off, Updated
 

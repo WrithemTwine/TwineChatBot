@@ -1,8 +1,10 @@
-﻿using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -16,20 +18,17 @@ namespace ChatBot_Net5.Data
     {
         private DataManager datamanager;
 
-        public ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
+        public ObservableCollection<UserJoin> JoinCollection { get; private set; } = new();
 
-        private bool ProcessOp;
-
-        internal CommandSystem(DataManager dataManager, bool Process)
+        internal CommandSystem(DataManager dataManager)
         {
             datamanager = dataManager;
-            ProcessOp = Process;
             new Thread(new ThreadStart(MonitorJoinCollection)).Start();
         }
 
         private void MonitorJoinCollection()
         {
-            while(ProcessOp)
+            while (ThreadFlags.ProcessOps)
             {
                 List<UserJoin> removelist = new();
 
@@ -40,7 +39,7 @@ namespace ChatBot_Net5.Data
                         if(u.Remove) { removelist.Add(u); }
                     }
 
-                    foreach(UserJoin u in removelist)
+                    foreach (UserJoin u in removelist)
                     {
                         JoinCollection.Remove(u);
                     }
@@ -86,7 +85,7 @@ namespace ChatBot_Net5.Data
             }
             else
             {
-                string comuser = arglist[0].Contains('@') ? arglist[0] : string.Empty;
+                string comuser = arglist.Count>0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
                 return datamanager.PerformCommand(command, chatMessage.DisplayName, comuser, arglist);
             }
