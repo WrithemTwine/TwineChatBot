@@ -92,13 +92,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="img\" />
     <Folder Include="Learning\" />
     <Folder Include="WebServer\" />
   </ItemGroup>
 
   <ItemGroup>
-    <SplashScreen Include="Info\SplashScreen1.png" />
+    <SplashScreen Include="img\SplashScreen1.png" />
   </ItemGroup>
 
 </Project>

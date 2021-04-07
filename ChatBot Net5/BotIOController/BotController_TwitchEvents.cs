@@ -758,18 +758,27 @@ namespace ChatBot_Net5.BotIOController
             }
 
 #endif
-            if( Stats.UserJoined(e.Username, DateTime.Now) )
+            if (Stats.UserJoined(e.Username, DateTime.Now))
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
-                msg ??= "Thanks #user for the subscribing!";
-
-                Dictionary<string, string> dictionary = new()
+                if (FirstUserJoinedMsg)
                 {
-                    { "#user", e.Username }
-                };
+                    string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
+                    msg ??= "Thanks #user for stopping by the channel!";
 
-                Send(ParseReplace(msg, dictionary));
-            }        
+                    Dictionary<string, string> dictionary = new()
+                    {
+                        { "#user", e.Username }
+                    };
+
+                    Send(ParseReplace(msg, dictionary));
+                }
+
+                if (AutoShout)
+                {
+                    bool output = ProcessCommands.CheckShout(e.Username, TwitchIO.BotUserName, out string response);
+                    if (output) Send(response);
+                }
+            }
         }
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e)

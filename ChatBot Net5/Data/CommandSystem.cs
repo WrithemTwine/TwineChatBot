@@ -4,11 +4,7 @@ using ChatBot_Net5.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Client.Models;
 
@@ -47,6 +43,17 @@ namespace ChatBot_Net5.Data
 
                 Thread.Sleep(5000);
             }
+        }
+
+        public bool CheckShout(string UserName, string InvokedUserName, out string response)
+        {
+            response = "";
+            if (datamanager.CheckShoutName(UserName))
+            {
+                response = datamanager.PerformCommand("so", InvokedUserName, UserName, new());
+                return true;
+            } else
+            return false;
         }
 
         /// <summary>

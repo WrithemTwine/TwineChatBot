@@ -1,5 +1,5 @@
-﻿using ChatBot_Net5.Models;
-using ChatBot_Net5.BotIOController;
+﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,6 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using System.Xml;
-using System.Linq;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
@@ -33,6 +32,7 @@ namespace ChatBot_Net5.Data
         public DataView BuiltInCommands { get; private set; } // DataSource.CommandsDataTable
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
         public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
+        public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
 
         #endregion DataSource
 
@@ -68,6 +68,7 @@ namespace ChatBot_Net5.Data
             BuiltInCommands = new(_DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             StreamStats = new(_DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
+            ShoutOuts = new(_DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -356,20 +357,25 @@ namespace ChatBot_Net5.Data
         #endregion Discord and Webhooks
 
         #region Stream Statistics
-        internal bool AddStream(DateTime StreamStart)
+        internal DataSource.StreamStatsRow[] GetAllStreamData()
         {
             lock (_DataSource.StreamStats)
             {
-                DataSource.StreamStatsRow[] streamStatsRows = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();                
+                return (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
+            }
+        }
 
-                foreach (DataSource.StreamStatsRow s in streamStatsRows)
+        internal bool AddStream(DateTime StreamStart)
+        {
+            foreach (DataSource.StreamStatsRow s in GetAllStreamData())
+            {
+                if (s.StreamStart == StreamStart)
                 {
-                    if (s.StreamStart == StreamStart)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-
+            }
+            lock (_DataSource.StreamStats)
+            {
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 _DataSource.StreamStats.AcceptChanges();
                 return true;
@@ -380,9 +386,7 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.StreamStats)
             {
-                DataSource.StreamStatsRow[] statsRowAll = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
-
-                foreach (DataSource.StreamStatsRow s in statsRowAll) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
+                foreach (DataSource.StreamStatsRow s in GetAllStreamData()) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
                 {
                     if (s.StreamStart == streamStat.StreamStart)
                     {
@@ -414,6 +418,7 @@ namespace ChatBot_Net5.Data
                     }
                 }
 
+
                 _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
 
                 _DataSource.StreamStats.AcceptChanges();
@@ -422,13 +427,7 @@ namespace ChatBot_Net5.Data
 
         internal bool GetTodayStream(DateTime CurrTime)
         {
-            DataSource.StreamStatsRow[] streamStatsRows = null;
-            lock (_DataSource.StreamStats)
-            {
-                streamStatsRows = (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
-            }
-
-            foreach (DataSource.StreamStatsRow s in streamStatsRows)
+            foreach (DataSource.StreamStatsRow s in GetAllStreamData())
             {
                 if (s.StreamStart.Date == CurrTime.Date)
                 {
@@ -553,6 +552,20 @@ switches:
                 }
                 else
                     throw new InvalidOperationException("Command not found.");
+            }
+        }
+
+        /// <summary>
+        /// Verify if the provided UserName is within the ShoutOut table.
+        /// </summary>
+        /// <param name="UserName">The UserName to shoutout.</param>
+        /// <returns>true if in the ShoutOut table.</returns>
+        /// <remarks>Thread-safe</remarks>
+        internal bool CheckShoutName(string UserName)
+        {
+            lock (_DataSource.ShoutOuts)
+            {
+                return _DataSource.ShoutOuts.Select("UserName='" + UserName + "'").Length > 0;
             }
         }
 
