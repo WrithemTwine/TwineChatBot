@@ -1769,7 +1769,7 @@ namespace ChatBot_Net5.Data {
                 this.columnCmdName.Unique = true;
                 this.columnCmdName.Caption = "Command Name";
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
-                this.columnRepeatTimer.Caption = "Seconds between Repeat Events";
+                this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
                 this.columnAllowUser.DefaultValue = ((bool)(false));
             }
             

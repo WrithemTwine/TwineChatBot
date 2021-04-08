@@ -316,12 +316,22 @@
                             </TabItem>
                             <TabItem Header="Built-In Commands">
                                 <Grid>
-                                    <DataGrid x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command."/>
+                                    <DataGrid Grid.Row="1" x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" />
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Commands">
                                 <Grid>
-                                    <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command."/>
+                                    <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Auto-SO">

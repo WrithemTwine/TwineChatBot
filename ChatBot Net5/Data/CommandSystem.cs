@@ -15,11 +15,17 @@ namespace ChatBot_Net5.Data
         private DataManager datamanager;
 
         public ObservableCollection<UserJoin> JoinCollection { get; private set; } = new();
+        private string BotUserName;
 
-        internal CommandSystem(DataManager dataManager)
+        internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
+
+        internal CommandSystem(DataManager dataManager, string BotName)
         {
             datamanager = dataManager;
+            BotUserName = BotName;
+
             new Thread(new ThreadStart(MonitorJoinCollection)).Start();
+            new Thread(new ThreadStart(ElapsedCommandTimers)).Start();
         }
 
         private void MonitorJoinCollection()
@@ -42,6 +48,42 @@ namespace ChatBot_Net5.Data
                 }
 
                 Thread.Sleep(5000);
+            }
+        }
+
+        private void ElapsedCommandTimers()
+        {
+            List<TimerCommand> RepeatList = new();
+
+            foreach(Tuple<string, int> Timers in datamanager.GetTimerCommands())
+            {
+                RepeatList.Add(new(Timers));
+            }
+
+            while (ThreadFlags.ProcessOps)
+            {
+                foreach(TimerCommand timer in RepeatList)
+                {
+                    if (timer.CheckFireTime())
+                    {
+                        timer.UpdateTime();
+                        string output = datamanager.PerformCommand(timer.Command, BotUserName, BotUserName );
+
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
+                    }
+                }
+
+                // check if any commands are added to the repeat timers, does not remove until bot is stopped and started again
+                foreach (Tuple<string, int> Timers in datamanager.GetTimerCommands())
+                {
+                    TimerCommand command = new(Timers);
+                    if (!RepeatList.Contains(command))
+                    {
+                        RepeatList.Add(command);
+                    }
+                }
+
+                Thread.Sleep(5000); // wait for awhile before checking commands again
             }
         }
 
@@ -73,6 +115,11 @@ namespace ChatBot_Net5.Data
                 throw new InvalidOperationException("No permission to invoke this command.");
             }
 
+            return PerformCommand(command, arglist, chatMessage);
+        }
+
+        private string PerformCommand(string command, List<string> arglist, ChatMessage chatMessage)
+        {
             if (command == "addcommand")
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
@@ -92,7 +139,7 @@ namespace ChatBot_Net5.Data
             }
             else
             {
-                string comuser = arglist.Count>0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
+                string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
                 return datamanager.PerformCommand(command, chatMessage.DisplayName, comuser, arglist);
             }

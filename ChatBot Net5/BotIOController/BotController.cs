@@ -99,7 +99,8 @@ namespace ChatBot_Net5.BotIOController
 
             ThreadFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             SetThread();
-            ProcessCommands = new(DataManage);
+            ProcessCommands = new(DataManage, TwitchIO.BotUserName);
+            ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
 
             foreach (IOModule i in IOModuleList)
             {

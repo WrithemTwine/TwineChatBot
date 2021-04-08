@@ -623,7 +623,7 @@ switches:
             }
         }
 
-        internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList)
+        internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList=null)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -672,6 +672,18 @@ switches:
             return null;
         }
 
+        internal List<Tuple<string, int>> GetTimerCommands()
+        {
+            lock (_DataSource.Commands)
+            {
+                List<Tuple<string, int>> TimerList = new();
+                foreach (DataSource.CommandsRow row in (DataSource.CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0"))
+                {
+                    TimerList.Add(new(row.CmdName, row.RepeatTimer));
+                }
+                return TimerList;
+            }
+        }
 
         #endregion
 
