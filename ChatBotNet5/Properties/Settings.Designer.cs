@@ -202,5 +202,17 @@ namespace ChatBot_Net5.Properties {
                 this["AutoShout"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatTimerCommands {
+            get {
+                return ((bool)(this["RepeatTimerCommands"]));
+            }
+            set {
+                this["RepeatTimerCommands"] = value;
+            }
+        }
     }
 }

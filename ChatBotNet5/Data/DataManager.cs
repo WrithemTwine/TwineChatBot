@@ -486,7 +486,6 @@ switches:
                 { DefaultCommand.join.ToString(), new("The message isn't used in response.","") },
                 { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "") },
                 { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") },
-                { "blank", new("blank command.","")}
             };
 
             foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))

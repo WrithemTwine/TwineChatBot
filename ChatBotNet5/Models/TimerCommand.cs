@@ -17,7 +17,7 @@ namespace ChatBot_Net5.Models
 
         internal void UpdateTime()
         {
-            NextRun = NextRun.AddSeconds(RepeatTime);
+            NextRun = DateTime.Now.AddSeconds(RepeatTime);
         }
 
         internal bool CheckFireTime()
@@ -32,7 +32,12 @@ namespace ChatBot_Net5.Models
 
         public bool Equals(TimerCommand other)
         {
-            return Command==other.Command && RepeatTime==other.RepeatTime;
+            return Command==other.Command;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as TimerCommand);
         }
     }
 }

@@ -523,7 +523,10 @@ namespace ChatBot_Net5.BotIOController
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
-            Send(e.Message);
+          if(RepeatTimer)
+            {
+                Send(e.Message);
+            }
         }
 
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)

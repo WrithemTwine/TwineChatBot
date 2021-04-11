@@ -67,7 +67,7 @@ namespace ChatBot_Net5.Data
                     if (timer.CheckFireTime())
                     {
                         timer.UpdateTime();
-                        string output = datamanager.PerformCommand(timer.Command, BotUserName, BotUserName );
+                        string output = PerformCommand(timer.Command, new(), null );
 
                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
                     }
@@ -80,6 +80,10 @@ namespace ChatBot_Net5.Data
                     if (!RepeatList.Contains(command))
                     {
                         RepeatList.Add(command);
+                    }
+                    else
+                    {
+                        RepeatList.Find((a) => a.Command == command.Command).RepeatTime = command.RepeatTime;
                     }
                 }
 
@@ -108,15 +112,28 @@ namespace ChatBot_Net5.Data
         /// <returns>The resulting value of the command.</returns>
         public string ParseCommand(string command, List<string> arglist, ChatMessage chatMessage)
         {
-            ViewerTypes Chatter = ParsePermission(chatMessage);
+            ViewerTypes InvokerPermission = ParsePermission(chatMessage);
 
-            if (!datamanager.CheckPermission(command, Chatter))
+            // no permission, stop processing
+            if (!CheckPermission(command, InvokerPermission))
             {
                 throw new InvalidOperationException("No permission to invoke this command.");
             }
 
             return PerformCommand(command, arglist, chatMessage);
         }
+
+        /// <summary>
+        /// Review the permission of the invoker to activate the command
+        /// </summary>
+        /// <param name="command">the command to check</param>
+        /// <param name="chatMessage">From the invoker, contains different flags indicating permission.</param>
+        /// <returns></returns>
+        private bool CheckPermission(string command, ViewerTypes InvokerPermission)
+        {
+            return datamanager.CheckPermission(command, InvokerPermission);            
+        }
+
 
         private string PerformCommand(string command, List<string> arglist, ChatMessage chatMessage)
         {
@@ -141,7 +158,7 @@ namespace ChatBot_Net5.Data
             {
                 string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
-                return datamanager.PerformCommand(command, chatMessage.DisplayName, comuser, arglist);
+                return datamanager.PerformCommand(command, chatMessage.DisplayName ?? BotUserName, comuser, arglist);
             }
 
             return "not finished";

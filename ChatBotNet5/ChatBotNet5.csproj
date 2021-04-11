@@ -7,15 +7,20 @@
     <UseWPF>true</UseWPF>
     <Authors>WrithemTwine</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
-    <AssemblyVersion>1.2.1.0</AssemblyVersion>
-    <FileVersion>1.2.1.0</FileVersion>
+    <AssemblyVersion>1.2.2.0</AssemblyVersion>
+    <FileVersion>1.2.2.0</FileVersion>
     <Version>1.1.2</Version>
-    <PackageId></PackageId>
+    <PackageId>Twine_ChatBot</PackageId>
     <AssemblyName>TwineChatBot</AssemblyName>
     <Company>ChatBot</Company>
     <Product />
-    <PackageLicenseExpression>MIT license, except not for sale per Visual Studio Community license regarding developed code.</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A chat bot for Twitch using the C# TwitchLib library.</Description>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

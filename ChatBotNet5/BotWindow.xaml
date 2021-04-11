@@ -296,6 +296,9 @@
                                     <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" LostFocus="Settings_LostFocus">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream. Add names to "Auto SO" tab.</TextBlock>
                                     </CheckBox>
+                                    <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable repeating commands based on the seconds timer. Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
+                                    </CheckBox>
                                 </StackPanel>
                             </TabItem>
                             <TabItem Header="Help">

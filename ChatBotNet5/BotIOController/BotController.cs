@@ -62,6 +62,7 @@ namespace ChatBot_Net5.BotIOController
         public bool FirstUserJoinedMsg { get; set; }
         public bool AddMeMsg { get; set; }
         public bool AutoShout { get; set; }
+        public bool RepeatTimer { get; set; }
         #endregion Bot Services
 
         #endregion properties
@@ -84,6 +85,7 @@ namespace ChatBot_Net5.BotIOController
             FirstUserJoinedMsg = Settings.Default.WelcomeChatMsg;
             AddMeMsg = Settings.Default.InsertMeToMsg;
             AutoShout = Settings.Default.AutoShout;
+            RepeatTimer = Settings.Default.RepeatTimerCommands;
         }
 
         /// <summary>
