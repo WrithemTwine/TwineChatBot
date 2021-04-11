@@ -9,7 +9,6 @@ namespace ChatBot_Net5.BotIOController
     public sealed partial class BotController
     {
         #region Process Bot Operations
-        private bool ProcessOps { get; set; } = false;  // whether to process ops or not
 
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
@@ -39,7 +38,7 @@ namespace ChatBot_Net5.BotIOController
         private void ProcMsgs()
         {
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
-            while (ProcessOps || Operations.Count > 0) 
+            while (ThreadFlags.ProcessOps || Operations.Count > 0) 
             {
                 Task temp = null;
                 lock (Operations)

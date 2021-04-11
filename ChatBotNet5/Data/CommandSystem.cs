@@ -1,12 +1,10 @@
-﻿using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Client.Models;
 
@@ -16,20 +14,23 @@ namespace ChatBot_Net5.Data
     {
         private DataManager datamanager;
 
-        public ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
+        public ObservableCollection<UserJoin> JoinCollection { get; private set; } = new();
+        private string BotUserName;
 
-        private bool ProcessOp;
+        internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
 
-        internal CommandSystem(DataManager dataManager, bool Process)
+        internal CommandSystem(DataManager dataManager, string BotName)
         {
             datamanager = dataManager;
-            ProcessOp = Process;
+            BotUserName = BotName;
+
             new Thread(new ThreadStart(MonitorJoinCollection)).Start();
+            new Thread(new ThreadStart(ElapsedCommandTimers)).Start();
         }
 
         private void MonitorJoinCollection()
         {
-            while(ProcessOp)
+            while (ThreadFlags.ProcessOps)
             {
                 List<UserJoin> removelist = new();
 
@@ -40,7 +41,7 @@ namespace ChatBot_Net5.Data
                         if(u.Remove) { removelist.Add(u); }
                     }
 
-                    foreach(UserJoin u in removelist)
+                    foreach (UserJoin u in removelist)
                     {
                         JoinCollection.Remove(u);
                     }
@@ -48,6 +49,57 @@ namespace ChatBot_Net5.Data
 
                 Thread.Sleep(5000);
             }
+        }
+
+        private void ElapsedCommandTimers()
+        {
+            List<TimerCommand> RepeatList = new();
+
+            foreach(Tuple<string, int> Timers in datamanager.GetTimerCommands())
+            {
+                RepeatList.Add(new(Timers));
+            }
+
+            while (ThreadFlags.ProcessOps)
+            {
+                foreach(TimerCommand timer in RepeatList)
+                {
+                    if (timer.CheckFireTime())
+                    {
+                        timer.UpdateTime();
+                        string output = PerformCommand(timer.Command, new(), null );
+
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
+                    }
+                }
+
+                // check if any commands are added to the repeat timers, does not remove until bot is stopped and started again
+                foreach (Tuple<string, int> Timers in datamanager.GetTimerCommands())
+                {
+                    TimerCommand command = new(Timers);
+                    if (!RepeatList.Contains(command))
+                    {
+                        RepeatList.Add(command);
+                    }
+                    else
+                    {
+                        RepeatList.Find((a) => a.Command == command.Command).RepeatTime = command.RepeatTime;
+                    }
+                }
+
+                Thread.Sleep(5000); // wait for awhile before checking commands again
+            }
+        }
+
+        public bool CheckShout(string UserName, string InvokedUserName, out string response)
+        {
+            response = "";
+            if (datamanager.CheckShoutName(UserName))
+            {
+                response = datamanager.PerformCommand("so", InvokedUserName, UserName, new());
+                return true;
+            } else
+            return false;
         }
 
         /// <summary>
@@ -60,13 +112,31 @@ namespace ChatBot_Net5.Data
         /// <returns>The resulting value of the command.</returns>
         public string ParseCommand(string command, List<string> arglist, ChatMessage chatMessage)
         {
-            ViewerTypes Chatter = ParsePermission(chatMessage);
+            ViewerTypes InvokerPermission = ParsePermission(chatMessage);
 
-            if (!datamanager.CheckPermission(command, Chatter))
+            // no permission, stop processing
+            if (!CheckPermission(command, InvokerPermission))
             {
                 throw new InvalidOperationException("No permission to invoke this command.");
             }
 
+            return PerformCommand(command, arglist, chatMessage);
+        }
+
+        /// <summary>
+        /// Review the permission of the invoker to activate the command
+        /// </summary>
+        /// <param name="command">the command to check</param>
+        /// <param name="chatMessage">From the invoker, contains different flags indicating permission.</param>
+        /// <returns></returns>
+        private bool CheckPermission(string command, ViewerTypes InvokerPermission)
+        {
+            return datamanager.CheckPermission(command, InvokerPermission);            
+        }
+
+
+        private string PerformCommand(string command, List<string> arglist, ChatMessage chatMessage)
+        {
             if (command == "addcommand")
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
@@ -86,9 +156,9 @@ namespace ChatBot_Net5.Data
             }
             else
             {
-                string comuser = arglist[0].Contains('@') ? arglist[0] : string.Empty;
+                string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
-                return datamanager.PerformCommand(command, chatMessage.DisplayName, comuser, arglist);
+                return datamanager.PerformCommand(command, chatMessage.DisplayName ?? BotUserName, comuser, arglist);
             }
 
             return "not finished";

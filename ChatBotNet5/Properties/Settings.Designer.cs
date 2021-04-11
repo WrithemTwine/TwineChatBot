@@ -190,5 +190,29 @@ namespace ChatBot_Net5.Properties {
                 this["WelcomeChatMsg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoShout {
+            get {
+                return ((bool)(this["AutoShout"]));
+            }
+            set {
+                this["AutoShout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatTimerCommands {
+            get {
+                return ((bool)(this["RepeatTimerCommands"]));
+            }
+            set {
+                this["RepeatTimerCommands"] = value;
+            }
+        }
     }
 }

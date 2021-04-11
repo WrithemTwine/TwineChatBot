@@ -52,7 +52,7 @@
               <xs:element name="CmdName" msdata:ReadOnly="true" msdata:Caption="Command Name" msprop:Generator_ColumnVarNameInTable="columnCmdName" msprop:Generator_ColumnPropNameInRow="CmdName" msprop:Generator_ColumnPropNameInTable="CmdNameColumn" msprop:Generator_UserColumnName="CmdName" type="xs:string" />
               <xs:element name="Permission" msdata:Caption="Lowest Level of Permission for Command" msprop:Generator_ColumnVarNameInTable="columnPermission" msprop:Generator_ColumnPropNameInRow="Permission" msprop:Generator_ColumnPropNameInTable="PermissionColumn" msprop:Generator_UserColumnName="Permission" type="xs:string" minOccurs="0" />
               <xs:element name="Message" msprop:Generator_ColumnVarNameInTable="columnMessage" msprop:Generator_ColumnPropNameInRow="Message" msprop:Generator_ColumnPropNameInTable="MessageColumn" msprop:Generator_UserColumnName="Message" type="xs:string" minOccurs="0" />
-              <xs:element name="RepeatTimer" msdata:Caption="Seconds between Repeat Events" msprop:Generator_ColumnVarNameInTable="columnRepeatTimer" msprop:Generator_ColumnPropNameInRow="RepeatTimer" msprop:Generator_ColumnPropNameInTable="RepeatTimerColumn" msprop:Generator_UserColumnName="RepeatTimer" type="xs:int" minOccurs="0" />
+              <xs:element name="RepeatTimer" msdata:Caption="Seconds between Repeat Events-works best with commands without input arguments" msprop:Generator_ColumnVarNameInTable="columnRepeatTimer" msprop:Generator_ColumnPropNameInRow="RepeatTimer" msprop:Generator_ColumnPropNameInTable="RepeatTimerColumn" msprop:Generator_UserColumnName="RepeatTimer" type="xs:int" minOccurs="0" />
               <xs:element name="Params" msprop:Generator_ColumnVarNameInTable="columnParams" msprop:Generator_ColumnPropNameInRow="Params" msprop:Generator_ColumnPropNameInTable="ParamsColumn" msprop:Generator_UserColumnName="Params" type="xs:string" minOccurs="0" />
               <xs:element name="AllowUser" msprop:Generator_ColumnVarNameInTable="columnAllowUser" msprop:Generator_ColumnPropNameInRow="AllowUser" msprop:Generator_ColumnPropNameInTable="AllowUserColumn" msprop:Generator_UserColumnName="AllowUser" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="Usage" msprop:Generator_ColumnVarNameInTable="columnUsage" msprop:Generator_ColumnPropNameInRow="Usage" msprop:Generator_ColumnPropNameInTable="UsageColumn" msprop:Generator_UserColumnName="Usage" type="xs:string" minOccurs="0" />
@@ -117,6 +117,14 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="ShoutOuts" msprop:Generator_TableClassName="ShoutOutsDataTable" msprop:Generator_TableVarName="tableShoutOuts" msprop:Generator_RowChangedName="ShoutOutsRowChanged" msprop:Generator_TablePropName="ShoutOuts" msprop:Generator_RowDeletingName="ShoutOutsRowDeleting" msprop:Generator_RowChangingName="ShoutOutsRowChanging" msprop:Generator_RowEvHandlerName="ShoutOutsRowChangeEventHandler" msprop:Generator_RowDeletedName="ShoutOutsRowDeleted" msprop:Generator_RowClassName="ShoutOutsRow" msprop:Generator_UserTableName="ShoutOuts" msprop:Generator_RowEvArgName="ShoutOutsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Constraint1">
@@ -174,6 +182,14 @@
     <xs:unique name="StreamStats_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:StreamStats" />
       <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="ShoutOuts_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:ShoutOuts" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="ShoutOuts_Constraint2" msdata:ConstraintName="Constraint2">
+      <xs:selector xpath=".//mstns:ShoutOuts" />
+      <xs:field xpath="mstns:UserName" />
     </xs:unique>
   </xs:element>
   <xs:annotation>

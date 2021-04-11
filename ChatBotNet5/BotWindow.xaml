@@ -75,15 +75,7 @@
                                         </StackPanel>
                                     </GroupBox>
 
-                                    <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding InsertMeToCommand, Mode=TwoWay}" LostFocus="Settings_LostFocus">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable /me for bot messages.</TextBlock>
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable welcome message to users joining the channel. Only appears on first login.</TextBlock>
-                                    </CheckBox>
+                                    
                                 </StackPanel>
                                 <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" Margin="0,10,0,0" Height="100" Width="150" BorderBrush="#FF212D34" DataContext="{DynamicResource ControlBot}">
                                     <StackPanel Orientation="Vertical">
@@ -290,6 +282,25 @@
                     </TabItem>
                     <TabItem Header="Command System">
                         <TabControl>
+                            <TabItem Header="Options">
+                                <StackPanel Margin="10"  DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
+                                    <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
+                                    </CheckBox>
+                                    <CheckBox IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable /me for bot messages.</TextBlock>
+                                    </CheckBox>
+                                    <CheckBox IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable welcome message to users joining the channel. Only appears on first login.</TextBlock>
+                                    </CheckBox>
+                                    <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream. Add names to "Auto SO" tab.</TextBlock>
+                                    </CheckBox>
+                                    <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" LostFocus="Settings_LostFocus">
+                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable repeating commands based on the seconds timer. Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
+                                    </CheckBox>
+                                </StackPanel>
+                            </TabItem>
                             <TabItem Header="Help">
                                 <Grid>
                                     <TextBlock>
@@ -308,12 +319,27 @@
                             </TabItem>
                             <TabItem Header="Built-In Commands">
                                 <Grid>
-                                    <DataGrid x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command."/>
+                                    <DataGrid Grid.Row="1" x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" />
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Commands">
                                 <Grid>
-                                    <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command."/>
+                                    <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Auto-SO">
+                                <Grid>
+                                    <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
                             </TabItem>
                         </TabControl>
@@ -336,20 +362,21 @@
                         </StackPanel>
                         <StackPanel>
                             <Label Content="Join List" HorizontalContentAlignment="Center" />
-                            <DataGrid x:Name="DG_JoinList" AutoGenerateColumns="False" 
-                            ItemsSource="{Binding JoinCollection}" 
-                            VerticalContentAlignment="Stretch" 
-                            MaxWidth="290" DataContext="{Binding ProcessCommands, Mode=OneWay}" >
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Binding="{Binding Remove}">
-                                        <DataGridCheckBoxColumn.Header>
-                                            <TextBlock Text="Remove" ToolTip="The user to remove out of the list. Bot checks regularly." />
-                                        </DataGridCheckBoxColumn.Header>
-                                    </DataGridCheckBoxColumn>
-                                    <DataGridTextColumn Header="GameTag UserName" Binding="{Binding GameUserName}" Width="150"/>
-                                    <DataGridTextColumn Header="Chat User" Binding="{Binding ChatUser}" Width="150" />
-                                </DataGrid.Columns>
-                            </DataGrid>
+
+                            <ListView x:Name="LV_JoinList" DataContext="{Binding ProcessCommands}"          
+                            ItemsSource="{Binding JoinCollection, Mode=TwoWay}" >
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Remove}">
+                                            <GridViewColumn.Header>
+                                                <TextBlock Text="Remove" ToolTip="The user to remove out of the list. Bot checks regularly." />
+                                            </GridViewColumn.Header>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="GameTag UserName" DisplayMemberBinding="{Binding Path=GameUserName}" />
+                                        <GridViewColumn Header="Chat User" DisplayMemberBinding="{Binding Path=ChatUser}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
                         </StackPanel>
                     </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Left" Width="448" Background="#FF2B2929" >

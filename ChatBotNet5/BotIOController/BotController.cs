@@ -8,6 +8,7 @@ using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
 using ChatBot_Net5.Properties;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
 {
+
     // see "BotController_Events.cs for partial class implementation
     public sealed partial class BotController
     {
@@ -59,6 +61,8 @@ namespace ChatBot_Net5.BotIOController
         public bool FirstFollowerProcess { get; set; }
         public bool FirstUserJoinedMsg { get; set; }
         public bool AddMeMsg { get; set; }
+        public bool AutoShout { get; set; }
+        public bool RepeatTimer { get; set; }
         #endregion Bot Services
 
         #endregion properties
@@ -80,6 +84,8 @@ namespace ChatBot_Net5.BotIOController
             FirstFollowerProcess = Settings.Default.AddFollowersStart;
             FirstUserJoinedMsg = Settings.Default.WelcomeChatMsg;
             AddMeMsg = Settings.Default.InsertMeToMsg;
+            AutoShout = Settings.Default.AutoShout;
+            RepeatTimer = Settings.Default.RepeatTimerCommands;
         }
 
         /// <summary>
@@ -93,9 +99,10 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
 #endif
 
-            ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
+            ThreadFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             SetThread();
-            ProcessCommands = new(DataManage, ProcessOps);
+            ProcessCommands = new(DataManage, TwitchIO.BotUserName);
+            ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
 
             foreach (IOModule i in IOModuleList)
             {
@@ -112,7 +119,17 @@ namespace ChatBot_Net5.BotIOController
                 BeginAddFollowers(); // begin adding followers back to the data table
             }
 
+#if DEBUG
+            //Test();
+#endif
             return true;
+        }
+
+        private void Test()
+        {
+            Stats.StartStreamOnline(DateTime.Now);
+            System.Threading.Thread.Sleep(20000);
+            Stats.StreamOffline(DateTime.Now);
         }
 
         /// <summary>
@@ -126,7 +143,7 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
 #endif
 
-            ProcessOps = false;
+            ThreadFlags.ProcessOps = false;
             SendThread?.Join();
 
             foreach (IOModule i in IOModuleList)
@@ -150,7 +167,7 @@ namespace ChatBot_Net5.BotIOController
                     {
                         foreach (IOModule i in IOModuleList)
                         {
-                            i.Send( (AddMeMsg?"\\me ": "") + s);
+                            i.Send( (AddMeMsg?"/me ": "") + s);
                         }
                     }
                 ));

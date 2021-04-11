@@ -5,22 +5,22 @@ namespace ChatBot_Net5.Models
 {
     internal class CommandParams
     {
-        internal string Table { get; set; } = string.Empty;
-        internal string Field { get; set; } = string.Empty;
-        internal string Currency { get; set; } = string.Empty;
-        internal string Unit { get; set; } = string.Empty;
+        internal string Table { get; set; }
+        internal string Field { get; set; }
+        internal string Currency { get; set; }
+        internal string Unit { get; set; }
         internal ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        internal int Top { get; set; } = 1;
-        internal string Sort { get; set; } = string.Empty;
+        internal int Top { get; set; }
+        internal string Sort { get; set; } = "ASC";
         internal string Action { get; set; } = "Get";
         internal bool AllowUser { get; set; } = false;
         internal int Timer { get; set; } = 0;
         internal string Usage { get; set; } = "!<command>";
-        internal string Message { get; set; } = string.Empty;
+        internal string Message { get; set; }
 
         internal static CommandParams Parse(string ParamString)
         {
-            List<string> list = new( ParamString.Split(' ') );
+            List<string> list = new( ParamString.Split('-') );
             return Parse(list);
         }
 
@@ -32,10 +32,10 @@ namespace ChatBot_Net5.Models
 
             if (ParamList.Count > 0)
             {
-                bool c = CheckList("-c");
-                bool f = CheckList("-f");
-                bool t = CheckList("-t");
-                bool u = CheckList("-unit");
+                bool c = CheckList("c");
+                bool f = CheckList("f");
+                bool t = CheckList("t");
+                bool u = CheckList("unit");
 
                 if ((c || u) && !(f && t))
                 {
@@ -55,41 +55,41 @@ namespace ChatBot_Net5.Models
 
                     switch (keyvalue[0])
                     {
-                        case "-t":
+                        case "t":
                             data.Table = keyvalue[1];
                             break;
-                        case "-f":
+                        case "f":
                             data.Field = keyvalue[1];
                             break;
-                        case "-c":
+                        case "c":
                             data.Currency = keyvalue[1];
                             break;
-                        case "-unit":
+                        case "unit":
                             data.Unit = keyvalue[1];
                             break;
-                        case "-p":
+                        case "p":
                             data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), keyvalue[1]);
                             break;
-                        case "-top":
+                        case "top":
                             data.Top = int.Parse(keyvalue[1]);
                             break;
-                        case "-s":
+                        case "s":
                             data.Sort = keyvalue[1];
                             break;
-                        case "-a":
+                        case "a":
                             data.Action = keyvalue[1];
                             break;
-                        case "-u":
+                        case "u":
                             data.AllowUser = bool.Parse(keyvalue[1]);
                             break;
-                        case "-timer":
+                        case "timer":
                             data.Timer = int.Parse(keyvalue[1]);
                             break;
-                        case "-usage":
+                        case "usage":
                             checkUsage = true;
                             data.Usage = keyvalue[1];
                             break;
-                        default:
+                        case "m":
                             data.Message = keyvalue[0];
                             break;
                     }
@@ -106,22 +106,22 @@ namespace ChatBot_Net5.Models
 
         internal string DBParamsString()
         {
-            string Combine(string key, string value) => key + ":" + value + " ";
+            static string Combine(string key, string value) => key + ":" + value + " ";
 
             string param = "";
 
             Dictionary<string, string> paramdictionary = new()
             {
-                { "-t", Table },
-                { "-f", Field },
-                { "-c", Currency },
-                { "-unit", Unit },
-                //{ "-p", Permission.ToString() },
-                { "-top", Top.ToString() },
-                { "-s", Sort },
-                { "-a", Action },
-                //{ "-u", AllowUser.ToString() },
-                //{ "-timer", Timer.ToString() }
+                { "t", Table },
+                { "f", Field },
+                { "c", Currency },
+                { "unit", Unit },
+                //{ "p", Permission.ToString() },
+                { "top", Top.ToString() },
+                { "s", Sort },
+                { "a", Action },
+                //{ "u", AllowUser.ToString() },
+                //{ "timer", Timer.ToString() }
             };
 
             foreach(string k in paramdictionary.Keys)
