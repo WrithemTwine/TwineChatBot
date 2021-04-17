@@ -1765,12 +1765,13 @@ namespace ChatBot_Net5.Data {
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnCmdName.AllowDBNull = false;
-                this.columnCmdName.ReadOnly = true;
                 this.columnCmdName.Unique = true;
                 this.columnCmdName.Caption = "Command Name";
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
+                this.columnParams.DefaultValue = ((string)(" "));
                 this.columnAllowUser.DefaultValue = ((bool)(false));
+                this.columnUsage.DefaultValue = ((string)(" "));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

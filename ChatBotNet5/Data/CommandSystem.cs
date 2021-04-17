@@ -51,6 +51,9 @@ namespace ChatBot_Net5.Data
             }
         }
 
+        /// <summary>
+        /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
+        /// </summary>
         private void ElapsedCommandTimers()
         {
             List<TimerCommand> RepeatList = new();
@@ -62,12 +65,12 @@ namespace ChatBot_Net5.Data
 
             while (ThreadFlags.ProcessOps)
             {
-                foreach(TimerCommand timer in RepeatList)
+                foreach (TimerCommand timer in RepeatList)
                 {
                     if (timer.CheckFireTime())
                     {
                         timer.UpdateTime();
-                        string output = PerformCommand(timer.Command, new(), null );
+                        string output = PerformCommand(timer.Command, BotUserName, null);
 
                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
                     }
@@ -80,10 +83,21 @@ namespace ChatBot_Net5.Data
                     if (!RepeatList.Contains(command))
                     {
                         RepeatList.Add(command);
+                        string output = PerformCommand(command.Command, BotUserName, null);
+
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
                     }
                     else
                     {
                         RepeatList.Find((a) => a.Command == command.Command).RepeatTime = command.RepeatTime;
+                    }
+                }
+
+                for (int x = RepeatList.Count; x==0; x--)
+                {
+                    if (RepeatList[x].RepeatTime == 0)
+                    {
+                        RepeatList.RemoveAt(x);
                     }
                 }
 
@@ -120,7 +134,7 @@ namespace ChatBot_Net5.Data
                 throw new InvalidOperationException("No permission to invoke this command.");
             }
 
-            return PerformCommand(command, arglist, chatMessage);
+            return PerformCommand(command, chatMessage.DisplayName, arglist);
         }
 
         /// <summary>
@@ -134,8 +148,7 @@ namespace ChatBot_Net5.Data
             return datamanager.CheckPermission(command, InvokerPermission);            
         }
 
-
-        private string PerformCommand(string command, List<string> arglist, ChatMessage chatMessage)
+        private string PerformCommand(string command, string DisplayName, List<string> arglist)
         {
             if (command == "addcommand")
             {
@@ -152,19 +165,41 @@ namespace ChatBot_Net5.Data
             }
             else if (command == "join" || command == "leave" || command == "queue")
             {
-                return UserParty(command, arglist, chatMessage);
+                return UserParty(command, arglist, DisplayName);
             }
-            else
+            else 
             {
-                string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
+                //string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
-                return datamanager.PerformCommand(command, chatMessage.DisplayName ?? BotUserName, comuser, arglist);
+                //return datamanager.PerformCommand(command, DisplayName ?? BotUserName, comuser, arglist);
+
+                datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowUser);
+
+                string user = AllowUser && arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : DisplayName;
+
+                Dictionary<string, string> datavalues = new()
+                {
+                    { "#user", user },
+                    { "#url", "http://www.twitch.tv/" + user },
+                    { "#time", DateTime.Now.TimeOfDay.ToString() },
+                    { "#date", DateTime.Now.Date.ToString() }
+                };
+
+                object[] comparam = null;
+                if (ParamQuery != null || ParamQuery != string.Empty)
+                {
+                    CommandParams query = CommandParams.Parse(ParamQuery);
+
+
+                }
+
+                return BotController.ParseReplace(Message, datavalues);
             }
 
             return "not finished";
         }
 
-        internal string UserParty(string command, List<string> arglist, ChatMessage chatMessage)
+        internal string UserParty(string command, List<string> arglist, string UserName)
         {
             lock (JoinCollection)
             {
@@ -174,17 +209,17 @@ namespace ChatBot_Net5.Data
                         int x = 1;
                         foreach (UserJoin u in JoinCollection)
                         {
-                            if (u.ChatUser == chatMessage.Username) { return "You have already joined. You are currently number " + x.ToString() + "."; }
+                            if (u.ChatUser == UserName) { return "You have already joined. You are currently number " + x.ToString() + "."; }
                             x++;
                         }
-                        JoinCollection.Add(new UserJoin() { ChatUser = chatMessage.Username, GameUserName = (arglist.Count > 0 ? arglist[0] : chatMessage.Username) });
+                        JoinCollection.Add(new UserJoin() { ChatUser = UserName, GameUserName = (arglist.Count > 0 ? arglist[0] : UserName) });
                         return "You have joined the queue. You are currently " + JoinCollection.Count + ".";
 
                     case "leave":
                         UserJoin remove = null;
                         foreach (UserJoin u in JoinCollection)
                         {
-                            if (u.ChatUser == chatMessage.Username) { remove = u; }
+                            if (u.ChatUser == UserName) { remove = u; }
                         }
                         if (remove == null)
                         {
