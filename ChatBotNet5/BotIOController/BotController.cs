@@ -81,6 +81,11 @@ namespace ChatBot_Net5.BotIOController
 
             Stats = new(DataManage);
 
+            SetSettings();
+        }
+
+        public void SetSettings()
+        {
             FirstFollowerProcess = Settings.Default.AddFollowersStart;
             FirstUserJoinedMsg = Settings.Default.WelcomeChatMsg;
             AddMeMsg = Settings.Default.InsertMeToMsg;

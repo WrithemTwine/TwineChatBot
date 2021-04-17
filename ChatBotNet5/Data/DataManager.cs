@@ -633,7 +633,7 @@ switches:
 
             if (comrow == null || comrow.Length == 0)
             {
-                return "Command not found.";
+                throw new KeyNotFoundException( "Command not found." );
             }
 
             //object[] value = comrow[0].Params != string.Empty ? PerformQuery(comrow[0], InvokedUser, ParamUser) : null;
@@ -651,6 +651,26 @@ switches:
             };
 
             return BotController.ParseReplace(comrow[0].Message, datavalues);
+        }
+
+        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowUser)
+        {
+            DataSource.CommandsRow[] comrow = null;
+
+            lock (_DataSource.Commands)
+            {
+                comrow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
+            }
+
+            if (comrow == null || comrow.Length == 0)
+            {
+                throw new KeyNotFoundException("Command not found.");
+            }
+
+            Usage = comrow[0].Usage;
+            Message = comrow[0].Message;
+            ParamQuery = comrow[0].Params;
+            AllowUser = comrow[0].AllowUser;
         }
 
         private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)
@@ -671,6 +691,10 @@ switches:
             return null;
         }
 
+        /// <summary>
+        /// Retrieves the commands with a timer setting > 0 seconds.
+        /// </summary>
+        /// <returns>The list of commands and the seconds to repeat the command.</returns>
         internal List<Tuple<string, int>> GetTimerCommands()
         {
             lock (_DataSource.Commands)

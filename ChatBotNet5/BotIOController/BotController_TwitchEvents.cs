@@ -768,24 +768,29 @@ namespace ChatBot_Net5.BotIOController
 #endif
             if (Stats.UserJoined(e.Username, DateTime.Now))
             {
-                if (FirstUserJoinedMsg)
+                RegisterJoinedUser(e.Username);
+            }
+        }
+
+        private void RegisterJoinedUser(string Username)
+        {
+            if (FirstUserJoinedMsg)
+            {
+                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
+                msg ??= "Thanks #user for stopping by the channel!";
+
+                Dictionary<string, string> dictionary = new()
                 {
-                    string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
-                    msg ??= "Thanks #user for stopping by the channel!";
+                    { "#user", Username }
+                };
 
-                    Dictionary<string, string> dictionary = new()
-                    {
-                        { "#user", e.Username }
-                    };
+                Send(ParseReplace(msg, dictionary));
+            }
 
-                    Send(ParseReplace(msg, dictionary));
-                }
-
-                if (AutoShout)
-                {
-                    bool output = ProcessCommands.CheckShout(e.Username, TwitchIO.BotUserName, out string response);
-                    if (output) Send(response);
-                }
+            if (AutoShout)
+            {
+                bool output = ProcessCommands.CheckShout(Username, TwitchIO.BotUserName, out string response);
+                if (output) Send(response);
             }
         }
 
@@ -856,7 +861,10 @@ namespace ChatBot_Net5.BotIOController
 
             foreach (string user in e.Users)
             {
-                Stats.UserJoined(user, DateTime.Now);               
+                if (Stats.UserJoined(user, DateTime.Now))
+                {
+                    RegisterJoinedUser(user);
+                }
             }
         }
 

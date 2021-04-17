@@ -150,14 +150,14 @@ namespace ChatBot_Net5
                     {
                         if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "FirstDateSeen" && dc.Header.ToString() != "CurrLoginDate" && dc.Header.ToString() != "LastDateSeen" && dc.Header.ToString() != "WatchTime")
                         {
-                            dc.Visibility = Visibility.Collapsed ;
+                            dc.Visibility = Visibility.Collapsed;
                         }
                     }
                     break;
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "IsFollower" && dc.Header.ToString() != "FollowedDate" )
+                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "IsFollower" && dc.Header.ToString() != "FollowedDate")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -181,8 +181,17 @@ namespace ChatBot_Net5
                         }
                     }
                     break;
-            }
 
+                case "DG_BuiltInCommands":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() == "CmdName")
+                        {
+                            dc.IsReadOnly = true;
+                        }
+                    }
+                    break;
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
@@ -198,6 +207,12 @@ namespace ChatBot_Net5
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Save();
+            (Resources["ControlBot"] as BotController).SetSettings();
         }
     }
 }
