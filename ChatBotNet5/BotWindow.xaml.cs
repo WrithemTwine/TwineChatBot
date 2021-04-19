@@ -212,7 +212,7 @@ namespace ChatBot_Net5
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.Save();
-            (Resources["ControlBot"] as BotController).SetSettings();
+            OptionFlags.SetSettings();
         }
     }
 }

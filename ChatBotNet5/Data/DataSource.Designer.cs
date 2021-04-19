@@ -1556,7 +1556,7 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnParams;
             
-            private global::System.Data.DataColumn columnAllowUser;
+            private global::System.Data.DataColumn columnAllowParam;
             
             private global::System.Data.DataColumn columnUsage;
             
@@ -1643,9 +1643,9 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn AllowUserColumn {
+            public global::System.Data.DataColumn AllowParamColumn {
                 get {
-                    return this.columnAllowUser;
+                    return this.columnAllowParam;
                 }
             }
             
@@ -1694,7 +1694,7 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CommandsRow AddCommandsRow(string CmdName, string Permission, string Message, int RepeatTimer, string Params, bool AllowUser, string Usage) {
+            public CommandsRow AddCommandsRow(string CmdName, string Permission, string Message, int RepeatTimer, string Params, bool AllowParam, string Usage) {
                 CommandsRow rowCommandsRow = ((CommandsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -1703,7 +1703,7 @@ namespace ChatBot_Net5.Data {
                         Message,
                         RepeatTimer,
                         Params,
-                        AllowUser,
+                        AllowParam,
                         Usage};
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
@@ -1733,7 +1733,7 @@ namespace ChatBot_Net5.Data {
                 this.columnMessage = base.Columns["Message"];
                 this.columnRepeatTimer = base.Columns["RepeatTimer"];
                 this.columnParams = base.Columns["Params"];
-                this.columnAllowUser = base.Columns["AllowUser"];
+                this.columnAllowParam = base.Columns["AllowParam"];
                 this.columnUsage = base.Columns["Usage"];
             }
             
@@ -1752,8 +1752,8 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnRepeatTimer);
                 this.columnParams = new global::System.Data.DataColumn("Params", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnParams);
-                this.columnAllowUser = new global::System.Data.DataColumn("AllowUser", typeof(bool), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnAllowUser);
+                this.columnAllowParam = new global::System.Data.DataColumn("AllowParam", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAllowParam);
                 this.columnUsage = new global::System.Data.DataColumn("Usage", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUsage);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
@@ -1770,7 +1770,8 @@ namespace ChatBot_Net5.Data {
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
                 this.columnParams.DefaultValue = ((string)(" "));
-                this.columnAllowUser.DefaultValue = ((bool)(false));
+                this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
+                this.columnAllowParam.DefaultValue = ((bool)(false));
                 this.columnUsage.DefaultValue = ((string)(" "));
             }
             
@@ -4179,17 +4180,17 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool AllowUser {
+            public bool AllowParam {
                 get {
                     try {
-                        return ((bool)(this[this.tableCommands.AllowUserColumn]));
+                        return ((bool)(this[this.tableCommands.AllowParamColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'AllowUser\' in table \'Commands\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'AllowParam\' in table \'Commands\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableCommands.AllowUserColumn] = value;
+                    this[this.tableCommands.AllowParamColumn] = value;
                 }
             }
             
@@ -4271,14 +4272,14 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsAllowUserNull() {
-                return this.IsNull(this.tableCommands.AllowUserColumn);
+            public bool IsAllowParamNull() {
+                return this.IsNull(this.tableCommands.AllowParamColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetAllowUserNull() {
-                this[this.tableCommands.AllowUserColumn] = global::System.Convert.DBNull;
+            public void SetAllowParamNull() {
+                this[this.tableCommands.AllowParamColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

@@ -30,7 +30,7 @@ namespace ChatBot_Net5.Data
 
         private void MonitorJoinCollection()
         {
-            while (ThreadFlags.ProcessOps)
+            while (OptionFlags.ProcessOps)
             {
                 List<UserJoin> removelist = new();
 
@@ -63,7 +63,7 @@ namespace ChatBot_Net5.Data
                 RepeatList.Add(new(Timers));
             }
 
-            while (ThreadFlags.ProcessOps)
+            while (OptionFlags.ProcessOps)
             {
                 foreach (TimerCommand timer in RepeatList)
                 {
@@ -105,12 +105,12 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        public bool CheckShout(string UserName, string InvokedUserName, out string response)
+        public bool CheckShout(string UserName, out string response)
         {
             response = "";
             if (datamanager.CheckShoutName(UserName))
             {
-                response = datamanager.PerformCommand("so", InvokedUserName, UserName, new());
+                response = PerformCommand("so", UserName, new());
                 return true;
             } else
             return false;
@@ -181,8 +181,8 @@ namespace ChatBot_Net5.Data
                 {
                     { "#user", user },
                     { "#url", "http://www.twitch.tv/" + user },
-                    { "#time", DateTime.Now.TimeOfDay.ToString() },
-                    { "#date", DateTime.Now.Date.ToString() }
+                    { "#time", DateTime.Now.TimeOfDay.ToString("hh:mm") },
+                    { "#date", DateTime.Now.Date.ToString("MM/dd/yyyy") }
                 };
 
                 object[] comparam = null;
