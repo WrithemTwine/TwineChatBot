@@ -5,18 +5,19 @@ namespace ChatBot_Net5.Models
 {
     internal class CommandParams
     {
-        internal string Table { get; set; }
-        internal string Field { get; set; }
-        internal string Currency { get; set; }
-        internal string Unit { get; set; }
+        internal string Table { get; set; } = string.Empty;
+        internal string Field { get; set; } = string.Empty;
+        internal string Currency { get; set; } = string.Empty;
+        internal string Unit { get; set; } = string.Empty;
         internal ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        internal int Top { get; set; }
+        internal int Top { get; set; } = 0;
         internal string Sort { get; set; } = "ASC";
         internal string Action { get; set; } = "Get";
         internal bool AllowUser { get; set; } = false;
         internal int Timer { get; set; } = 0;
         internal string Usage { get; set; } = "!<command>";
-        internal string Message { get; set; }
+        internal string Message { get; set; } = string.Empty;
+        internal bool Empty { get; set; } = false;
 
         internal static CommandParams Parse(string ParamString)
         {
@@ -30,7 +31,11 @@ namespace ChatBot_Net5.Models
 
             CommandParams data = new();
 
-            if (ParamList.Count > 0)
+            if (ParamList[0] == " ")
+            {
+                data.Empty = true;
+            }
+            else if (ParamList.Count > 0)
             {
                 bool c = CheckList("c");
                 bool f = CheckList("f");
@@ -108,27 +113,30 @@ namespace ChatBot_Net5.Models
         {
             static string Combine(string key, string value) => key + ":" + value + " ";
 
-            string param = "";
+            string param = " ";
 
-            Dictionary<string, string> paramdictionary = new()
+            if (!Empty)
             {
-                { "t", Table },
-                { "f", Field },
-                { "c", Currency },
-                { "unit", Unit },
-                //{ "p", Permission.ToString() },
-                { "top", Top.ToString() },
-                { "s", Sort },
-                { "a", Action },
-                //{ "u", AllowUser.ToString() },
-                //{ "timer", Timer.ToString() }
-            };
-
-            foreach(string k in paramdictionary.Keys)
-            {
-                if(paramdictionary[k] != string.Empty && paramdictionary[k] != ViewerTypes.Viewer.ToString() && paramdictionary[k] != "Get" && paramdictionary[k] != "0")
+                Dictionary<string, string> paramdictionary = new()
                 {
-                    param += Combine(k, paramdictionary[k]);
+                    { "t", Table },
+                    { "f", Field },
+                    { "c", Currency },
+                    { "unit", Unit },
+                    //{ "p", Permission.ToString() },
+                    { "top", Top.ToString() },
+                    { "s", Sort },
+                    { "a", Action },
+                    //{ "u", AllowUser.ToString() },
+                    //{ "timer", Timer.ToString() }
+                };
+
+                foreach (string k in paramdictionary.Keys)
+                {
+                    if ((paramdictionary[k] != string.Empty) || (paramdictionary["t"] != string.Empty && (k == "f" || k == "top" || k == "s" || k == "a")))
+                    {
+                        param += Combine(k, paramdictionary[k]);
+                    }
                 }
             }
 

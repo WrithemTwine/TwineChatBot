@@ -4,6 +4,8 @@ using ChatBot_Net5.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 using TwitchLib.Client.Models;
@@ -14,7 +16,7 @@ namespace ChatBot_Net5.Data
     {
         private DataManager datamanager;
 
-        public ObservableCollection<UserJoin> JoinCollection { get; private set; } = new();
+        public ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
         private string BotUserName;
 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
@@ -36,9 +38,12 @@ namespace ChatBot_Net5.Data
 
                 lock (JoinCollection)
                 {
-                    foreach(UserJoin u in JoinCollection)
+                    foreach (UserJoin u in JoinCollection)
                     {
-                        if(u.Remove) { removelist.Add(u); }
+                        if (u.Remove)
+                        {
+                            removelist.Add(u);
+                        }
                     }
 
                     foreach (UserJoin u in removelist)
@@ -173,16 +178,16 @@ namespace ChatBot_Net5.Data
 
                 //return datamanager.PerformCommand(command, DisplayName ?? BotUserName, comuser, arglist);
 
-                datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowUser);
+                datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam);
 
-                string user = AllowUser && arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : DisplayName;
+                string user = AllowParam && arglist[0]?.Contains('@')==true ? arglist[0].Remove(0, 1) : DisplayName;
 
                 Dictionary<string, string> datavalues = new()
                 {
                     { "#user", user },
                     { "#url", "http://www.twitch.tv/" + user },
-                    { "#time", DateTime.Now.TimeOfDay.ToString("hh:mm") },
-                    { "#date", DateTime.Now.Date.ToString("MM/dd/yyyy") }
+                    { "#time", DateTime.Now.TimeOfDay.ToString() },
+                    { "#date", DateTime.Now.Date.ToString() }
                 };
 
                 object[] comparam = null;

@@ -375,7 +375,7 @@ namespace ChatBot_Net5.Data
         {
             foreach (DataSource.StreamStatsRow s in GetAllStreamData())
             {
-                if (s.StreamStart == StreamStart)
+                if (DateCheckEqual(s.StreamStart, StreamStart))
                 {
                     return false;
                 }
@@ -389,13 +389,15 @@ namespace ChatBot_Net5.Data
             }
         }
 
+        private bool DateCheckEqual(DateTime first, DateTime second) => first.Day == second.Day && first.Month == second.Month && first.Year == second.Year && first.Hour == second.Hour && first.Minute == second.Minute;
+
         internal void PostStreamStat(StreamStat streamStat)
         {
             lock (_DataSource.StreamStats)
             {
                 foreach (DataSource.StreamStatsRow s in GetAllStreamData()) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
                 {
-                    if (s.StreamStart == streamStat.StreamStart)
+                    if (DateCheckEqual(s.StreamStart, streamStat.StreamStart))
                     {
                         s.StreamStart = streamStat.StreamStart;
                         s.StreamEnd = streamStat.StreamEnd;
@@ -491,9 +493,10 @@ switches:
                     { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
                     { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
                     { DefaultCommand.so.ToString(), new("", "-p:Mod -u:true -use:!so_user, only mods can use !so.") },
-                    { DefaultCommand.join.ToString(), new("The message isn't used in response.", "") },
-                    { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "") },
+                    { DefaultCommand.join.ToString(), new("The message isn't used in response.", " ") },
+                    { DefaultCommand.leave.ToString(), new("The message isn't used in response.", " ") },
                     { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") },
+                    { DefaultCommand.qinfo.ToString(), new("Use -!join 'gamertag'- to join the queue, and !leave to leave the queue."," ") }
                 };
 
                 foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
@@ -665,7 +668,7 @@ switches:
         //    return BotController.ParseReplace(comrow[0].Message, datavalues);
         //}
 
-        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowUser)
+        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowParam)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -682,7 +685,7 @@ switches:
             Usage = comrow[0].Usage;
             Message = comrow[0].Message;
             ParamQuery = comrow[0].Params;
-            AllowUser = comrow[0].AllowParam;
+            AllowParam = comrow[0].AllowParam;
         }
 
         private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)

@@ -39,5 +39,10 @@ namespace ChatBot_Net5.Models
         {
             return Equals(obj as TimerCommand);
         }
+
+        public override int GetHashCode()
+        {
+            return (Command+RepeatTime.ToString()).GetHashCode();
+        }
     }
 }

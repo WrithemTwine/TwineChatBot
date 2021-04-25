@@ -535,7 +535,6 @@ namespace ChatBot_Net5.BotIOController
             }
 #endif
 
-            AddChatString(e.Command.ChatMessage);
             Stats.AddCommands();
             AddChat(e.Command.ChatMessage.DisplayName);
 
@@ -543,6 +542,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
                 Send(response);
+                //AddChatString(response);
             }
             catch (InvalidOperationException InvalidOp)
             {

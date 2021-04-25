@@ -94,7 +94,11 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool StopBot()
         {
+            return true;
+        }
 
+        public virtual bool RefreshSettings()
+        {
             return true;
         }
 

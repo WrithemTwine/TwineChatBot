@@ -35,15 +35,15 @@
                                 <Expander Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Client Id" Width="110" />
+                                            <Label Content="Client Id" Width="120" />
                                             <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Access Token" Width="110" />
+                                            <Label Content="Access OAuth Token" Width="120" />
                                             <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Refresh Token" Width="110" />
+                                            <Label Content="Refresh Token" Width="120" />
                                             <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
                                         </StackPanel>
 
@@ -135,7 +135,7 @@
                                             </ListItem>
                                             <ListItem>
                                                 <Paragraph>Visit:
-                                                    <Hyperlink NavigateUri="https://dev.twitch.tv/console" RequestNavigate="Hyperlink_RequestNavigate" >https://dev.twitch.tv/console</Hyperlink> and "Register Your Application" under the account the bot will use.
+                                                    <Italic>https://dev.twitch.tv/console</Italic> and "Register Your Application" under the account the bot will use.
                                                     <LineBreak/> *Note, the Twitch account needs 2-factor authentication set-up to register applications.*
                                                 </Paragraph>
                                                 <List>
@@ -160,7 +160,7 @@
                                             <ListItem>
                                                 <Paragraph>One such site to generate the access tokens is at:
                                                     <LineBreak />
-                                                    <Hyperlink NavigateUri="https://twitchapps.com/tokengen/" RequestNavigate="Hyperlink_RequestNavigate" >https://twitchapps.com/tokengen/</Hyperlink>
+                                                    <Italic>https://twitchapps.com/tokengen/</Italic>
                                                 </Paragraph>
                                                 <List>
                                                     <ListItem>
@@ -371,33 +371,38 @@
             </TabItem>
             <TabItem Header="Bot Chat">
                 <DockPanel>
-                    <DockPanel LastChildFill="True" DockPanel.Dock="Right" >
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" HorizontalAlignment="Center">
-                            <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" />
-                            <GroupBox Header="Pop-out Opacity" Margin="5,0">
-                                <Slider x:Name="Slider_PopOut_Opacity" Width="150" TickPlacement="Both" IsSnapToTickEnabled="True" />
-                            </GroupBox>
-                        </StackPanel>
+                    <DockPanel LastChildFill="True" DockPanel.Dock="Right" DataContext="{Binding ProcessCommands}" >
                         <StackPanel>
                             <Label Content="Join List" HorizontalContentAlignment="Center" />
 
-                            <ListView x:Name="LV_JoinList" DataContext="{Binding ProcessCommands}"          
-                            ItemsSource="{Binding JoinCollection, Mode=TwoWay}" >
+                            <ListView x:Name="LV_JoinList" Height="675" Width="329" 
+                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" >
+                                <ListView.Resources>
+                                    <DataTemplate x:Key="GridColCheck">
+                                        <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </ListView.Resources>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Remove}">
+                                        <GridViewColumn CellTemplate="{DynamicResource GridColCheck}" >
                                             <GridViewColumn.Header>
                                                 <TextBlock Text="Remove" ToolTip="The user to remove out of the list. Bot checks regularly." />
-                                            </GridViewColumn.Header>
+                                            </GridViewColumn.Header>                                            
                                         </GridViewColumn>
-                                        <GridViewColumn Header="GameTag UserName" DisplayMemberBinding="{Binding Path=GameUserName}" />
-                                        <GridViewColumn Header="Chat User" DisplayMemberBinding="{Binding Path=ChatUser}" />
+                                        <GridViewColumn Header="GameTag UserName" DisplayMemberBinding="{Binding Path=GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                        <GridViewColumn Header="Chat User" DisplayMemberBinding="{Binding Path=ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>
                         </StackPanel>
                     </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Left" Width="448" Background="#FF2B2929" >
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
+                            <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" />
+                            <GroupBox Header="Pop-out Opacity" Margin="5,0" Width="252" Height="50">
+                                <Slider x:Name="Slider_PopOut_Opacity" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Height="25"  />
+                            </GroupBox>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,4,15,4">
                             <TextBox Width="365" />
                             <Button Content="Send" Margin="10,0,0,0" Padding="8,2" />
