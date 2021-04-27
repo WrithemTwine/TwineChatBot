@@ -7,6 +7,7 @@ namespace ChatBot_Net5.Data
     {
         private List<string> CurrUsers = new();
         private List<string> UniqueUserJoined = new();
+        private List<string> UniqueUserChat = new();
         private List<string> ModUsers = new();
         private List<string> SubUsers = new();
         private List<string> VIPUsers = new();
@@ -39,6 +40,19 @@ namespace ChatBot_Net5.Data
                 if (!UniqueUserJoined.Contains(User))
                 {
                     UniqueUserJoined.Add(User);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool UserChat(string User)
+        {
+            if (_StreamOnline)
+            {
+                if (!UniqueUserChat.Contains(User))
+                {
+                    UniqueUserChat.Add(User);
                     return true;
                 }
             }
@@ -128,6 +142,8 @@ namespace ChatBot_Net5.Data
             ModUsers.Clear();
             SubUsers.Clear();
             VIPUsers.Clear();
+            UniqueUserJoined.Clear();
+            UniqueUserChat.Clear();
         }
 
         #region Stream Stat Methods

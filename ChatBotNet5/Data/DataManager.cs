@@ -1,5 +1,4 @@
-﻿using ChatBot_Net5.BotIOController;
-using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
@@ -99,7 +98,7 @@ namespace ChatBot_Net5.Data
         /// <summary>
         /// Save data to file upon exit
         /// </summary>
-        public void ExitSave()
+        public void SaveData()
         {
             _DataSource.AcceptChanges();
 
@@ -140,9 +139,10 @@ namespace ChatBot_Net5.Data
                         _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), true, values.Item1, values.Item2);
                     }
                 }
-
             }
 
+            _DataSource.ChannelEvents.AcceptChanges();
+            SaveData();
         }
         #endregion Regular Channel Events
 
@@ -211,6 +211,7 @@ namespace ChatBot_Net5.Data
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
                 _DataSource.AcceptChanges();
+                SaveData();
             }
         }
 
@@ -221,6 +222,7 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 user.LastDateSeen = LastSeen;
                 _DataSource.AcceptChanges();
+                SaveData();
             }
         }
 
@@ -232,6 +234,7 @@ namespace ChatBot_Net5.Data
                 user.WatchTime = user.WatchTime.Add(CurrTime - user.LastDateSeen);
                 user.LastDateSeen = CurrTime;
                 _DataSource.AcceptChanges();
+                SaveData();
             }
         }
 
@@ -281,7 +284,7 @@ namespace ChatBot_Net5.Data
                     _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
                 }
                 _DataSource.AcceptChanges();
-
+                SaveData();
                 return newfollow;
             }
         }
@@ -299,7 +302,8 @@ namespace ChatBot_Net5.Data
                 if (_DataSource.Users.FindByUserName(User) == null)
                 {
                     DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-
+                    _DataSource.Users.AcceptChanges();
+                    SaveData();
                     return output;
                 }
             }
@@ -324,7 +328,9 @@ namespace ChatBot_Net5.Data
             {
                 UpdatingFollowers = true; lock (_DataSource.Followers) { List<DataSource.FollowersRow> temp = new(); temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select()); temp.ForEach((f) => f.IsFollower = false); }
                 if (follows[ChannelName].Count > 1) { foreach (Follow f in follows[ChannelName]) { AddFollower(f.FromUserName, f.FollowedAt); } }
-                _DataSource.AcceptChanges(); UpdatingFollowers = false;
+                _DataSource.AcceptChanges();
+                UpdatingFollowers = false;
+                SaveData();
             }));
 
             followerThread.Start();
@@ -369,7 +375,7 @@ namespace ChatBot_Net5.Data
         {
             foreach (DataSource.StreamStatsRow s in GetAllStreamData())
             {
-                if (s.StreamStart == StreamStart)
+                if (DateCheckEqual(s.StreamStart, StreamStart))
                 {
                     return false;
                 }
@@ -378,9 +384,12 @@ namespace ChatBot_Net5.Data
             {
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 _DataSource.StreamStats.AcceptChanges();
+                SaveData();
                 return true;
             }
         }
+
+        private bool DateCheckEqual(DateTime first, DateTime second) => first.Day == second.Day && first.Month == second.Month && first.Year == second.Year && first.Hour == second.Hour && first.Minute == second.Minute;
 
         internal void PostStreamStat(StreamStat streamStat)
         {
@@ -388,7 +397,7 @@ namespace ChatBot_Net5.Data
             {
                 foreach (DataSource.StreamStatsRow s in GetAllStreamData()) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
                 {
-                    if (s.StreamStart == streamStat.StreamStart)
+                    if (DateCheckEqual(s.StreamStart, streamStat.StreamStart))
                     {
                         s.StreamStart = streamStat.StreamStart;
                         s.StreamEnd = streamStat.StreamEnd;
@@ -413,15 +422,14 @@ namespace ChatBot_Net5.Data
                         s.ChannelChallenge = streamStat.ChannelChallenge;
                         s.MaxUsers = streamStat.MaxUsers;
 
-                        _DataSource.StreamStats.AcceptChanges();
+                        SaveData();
                         return;
                     }
                 }
 
-
                 _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
 
-                _DataSource.StreamStats.AcceptChanges();
+                SaveData();
             }
         }
 
@@ -470,36 +478,45 @@ switches:
         /// </summary>
         private void SetDefaultCommandsTable()
         {
-            bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
-
-            // command name     // msg   // params  
-            Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
+            lock (_DataSource.Commands)
             {
-                { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand !command <switches-optional> <message>. See documentation for <switches>.") },
-                { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC -use:!commands") },
-                { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/", "-use:!bot") },
-                { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "-use:!lurk") },
-                { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
-                { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
-                { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
-                { DefaultCommand.so.ToString(), new("", "-p:Mod -u:true -use:!so_user, only mods can use !so.") },
-                { DefaultCommand.join.ToString(), new("The message isn't used in response.","") },
-                { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "") },
-                { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") },
-            };
+                bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
 
-            foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
-            {
-                DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name>"));
-            }
-
-            foreach (string key in DefCommandsDictionary.Keys)
-            {
-                if (CheckName(key))
+                // command name     // msg   // params  
+                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
                 {
-                    CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                    _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage);
+                    { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
+                    { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC -use:!commands") },
+                    { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/", "-use:!bot") },
+                    { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "-use:!lurk") },
+                    { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
+                    { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
+                    { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
+                    { DefaultCommand.so.ToString(), new("Go check a great streamer #user, at #url!", "-p:Mod -u:true -use:!so user, only mods can use !so.") },
+                    { DefaultCommand.join.ToString(), new("The message isn't used in response.", " ") },
+                    { DefaultCommand.leave.ToString(), new("The message isn't used in response.", " ") },
+                    { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") },
+                    { DefaultCommand.qinfo.ToString(), new("Use -!join 'gamertag'- to join the queue, and !leave to leave the queue.", " ") },
+                    { DefaultCommand.qstart.ToString(), new("The queue list to join me in the game has started!", "-p:Mod") },
+                    { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod") },
+                    { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", " ") }
+                };
+
+                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+                {
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name>"));
                 }
+
+                foreach (string key in DefCommandsDictionary.Keys)
+                {
+                    if (CheckName(key))
+                    {
+                        CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
+                        _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage);
+                    }
+                }
+
+                SaveData();
             }
         }
 
@@ -575,6 +592,7 @@ switches:
             lock (_DataSource.Commands)
             {
                 _DataSource.Commands.AddCommandsRow(cmd, Params.Permission.ToString(), Params.Message, Params.Timer, strParams, Params.AllowUser, Params.Usage);
+                SaveData();
             }
             return "Command added!";
         }
@@ -622,38 +640,38 @@ switches:
             }
         }
 
-        internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList=null)
-        {
-            DataSource.CommandsRow[] comrow = null;
+        //internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList=null)
+        //{
+        //    DataSource.CommandsRow[] comrow = null;
 
-            lock (_DataSource.Commands)
-            {
-                comrow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
-            }
+        //    lock (_DataSource.Commands)
+        //    {
+        //        comrow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
+        //    }
 
-            if (comrow == null || comrow.Length == 0)
-            {
-                throw new KeyNotFoundException( "Command not found." );
-            }
+        //    if (comrow == null || comrow.Length == 0)
+        //    {
+        //        throw new KeyNotFoundException( "Command not found." );
+        //    }
 
-            //object[] value = comrow[0].Params != string.Empty ? PerformQuery(comrow[0], InvokedUser, ParamUser) : null;
+        //    //object[] value = comrow[0].Params != string.Empty ? PerformQuery(comrow[0], InvokedUser, ParamUser) : null;
 
-            string user = (comrow[0].AllowUser ? ParamUser : InvokedUser);
-            if (user.Contains('@'))
-            {
-                user = user.Remove(0,1);
-            }
+        //    string user = (comrow[0].AllowParam ? ParamUser : InvokedUser);
+        //    if (user.Contains('@'))
+        //    {
+        //        user = user.Remove(0,1);
+        //    }
 
-            Dictionary<string, string> datavalues = new()
-            {
-                { "#user", user },
-                { "#url", "http://www.twitch.tv/" + user }
-            };
+        //    Dictionary<string, string> datavalues = new()
+        //    {
+        //        { "#user", user },
+        //        { "#url", "http://www.twitch.tv/" + user }
+        //    };
 
-            return BotController.ParseReplace(comrow[0].Message, datavalues);
-        }
+        //    return BotController.ParseReplace(comrow[0].Message, datavalues);
+        //}
 
-        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowUser)
+        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowParam)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -670,7 +688,7 @@ switches:
             Usage = comrow[0].Usage;
             Message = comrow[0].Message;
             ParamQuery = comrow[0].Params;
-            AllowUser = comrow[0].AllowUser;
+            AllowParam = comrow[0].AllowParam;
         }
 
         private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)
@@ -680,7 +698,7 @@ switches:
 
             lock (_DataSource)
             {
-                result = _DataSource.Tables[query.Table].Select("UserName='" + (row.AllowUser ? ParamUser : InvokedUser) + "'");
+                result = _DataSource.Tables[query.Table].Select("UserName='" + (row.AllowParam ? ParamUser : InvokedUser) + "'");
 
                 if (query.Currency == string.Empty)
                 {

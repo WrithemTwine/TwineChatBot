@@ -38,7 +38,7 @@ namespace ChatBot_Net5.BotIOController
         private void ProcMsgs()
         {
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
-            while (ThreadFlags.ProcessOps || Operations.Count > 0) 
+            while (OptionFlags.ProcessOps || Operations.Count > 0) 
             {
                 Task temp = null;
                 lock (Operations)

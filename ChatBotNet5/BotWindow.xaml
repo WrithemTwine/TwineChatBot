@@ -27,26 +27,26 @@
                                     <Label Content="Bot User Name" Width="110" />
                                     <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
                                 </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" LostFocus="Settings_LostFocus" />
-                                            <Label Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
-                                        </StackPanel>
-                                
+                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                    <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" LostFocus="Settings_LostFocus" />
+                                    <Label Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
+                                </StackPanel>
+
                                 <Expander Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Client Id" Width="110" />
+                                            <Label Content="Client Id" Width="120" />
                                             <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Access Token" Width="110" />
+                                            <Label Content="Access OAuth Token" Width="120" />
                                             <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Refresh Token" Width="110" />
+                                            <Label Content="Refresh Token" Width="120" />
                                             <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
                                         </StackPanel>
-                                        
+
                                     </StackPanel>
                                 </Expander>
                                 <StackPanel>
@@ -58,7 +58,7 @@
                                             </StackPanel>
 
                                             <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers, and change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
-                                            <CheckBox IsChecked="{Binding AddFollowersStart, Mode=TwoWay}" LostFocus="Settings_LostFocus" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
+                                            <CheckBox IsChecked="{Binding AddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock Padding="5" TextWrapping="Wrap">Enable adding all followers when bot starts, i.e. click 'Start Bot'.</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
@@ -66,7 +66,7 @@
 
                                     <GroupBox Header="Setup Go-Live Notifications">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding PostMultiLive, Mode=OneWay}" Content="Enable posting to social media (e.g. Discord) multiple live messages in same day." />
+                                            <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click" Content="Enable posting to social media (e.g. Discord) multiple live messages in same day." />
                                             <StackPanel Orientation="Horizontal">
                                                 <Label Content="Seconds between checking for going live: " />
                                                 <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
@@ -75,7 +75,7 @@
                                         </StackPanel>
                                     </GroupBox>
 
-                                    
+
                                 </StackPanel>
                                 <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" Margin="0,10,0,0" Height="100" Width="150" BorderBrush="#FF212D34" DataContext="{DynamicResource ControlBot}">
                                     <StackPanel Orientation="Vertical">
@@ -135,7 +135,7 @@
                                             </ListItem>
                                             <ListItem>
                                                 <Paragraph>Visit:
-                                                    <Hyperlink NavigateUri="https://dev.twitch.tv/console" RequestNavigate="Hyperlink_RequestNavigate" >https://dev.twitch.tv/console</Hyperlink> and "Register Your Application" under the account the bot will use.
+                                                    <Italic>https://dev.twitch.tv/console</Italic> and "Register Your Application" under the account the bot will use.
                                                     <LineBreak/> *Note, the Twitch account needs 2-factor authentication set-up to register applications.*
                                                 </Paragraph>
                                                 <List>
@@ -160,7 +160,7 @@
                                             <ListItem>
                                                 <Paragraph>One such site to generate the access tokens is at:
                                                     <LineBreak />
-                                                    <Hyperlink NavigateUri="https://twitchapps.com/tokengen/" RequestNavigate="Hyperlink_RequestNavigate" >https://twitchapps.com/tokengen/</Hyperlink>
+                                                    <Italic>https://twitchapps.com/tokengen/</Italic>
                                                 </Paragraph>
                                                 <List>
                                                     <ListItem>
@@ -283,20 +283,30 @@
                     <TabItem Header="Command System">
                         <TabControl>
                             <TabItem Header="Options">
-                                <StackPanel Margin="10"  DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
-                                    <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=OneWayToSource, NotifyOnTargetUpdated=True}" Click="CheckBox_Click">
+                                <StackPanel Margin="10"  DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                                    <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
                                     </CheckBox>
-                                    <CheckBox IsChecked="{Binding InsertMeToMsg, Mode=OneWayToSource, NotifyOnTargetUpdated=True}" Click="CheckBox_Click">
+                                    <CheckBox IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Enable /me for bot messages.</TextBlock>
                                     </CheckBox>
-                                    <CheckBox IsChecked="{Binding WelcomeChatMsg, Mode=OneWayToSource, NotifyOnTargetUpdated=True}" Click="CheckBox_Click">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable welcome message to users joining the channel. Only appears on first login.</TextBlock>
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding AutoShout, Mode=OneWayToSource, NotifyOnTargetUpdated=True}" Click="CheckBox_Click">
+                                    <GroupBox Header="Welcome Users - Only once per user per active stream (no repeats)">
+                                        <StackPanel Margin="5">
+                                            <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click">
+                                                <TextBlock>Disabled</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
+                                                <TextBlock TextWrapping="Wrap">Enable when viewer joins the channel</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
+                                                <TextBlock TextWrapping="Wrap">Enable when a viewer first chats</TextBlock>
+                                            </RadioButton>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream. Add names to "Auto SO" tab.</TextBlock>
                                     </CheckBox>
-                                    <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=OneWayToSource, NotifyOnTargetUpdated=True}" Click="CheckBox_Click">
+                                    <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Enable repeating commands based on the seconds timer. Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
                                     </CheckBox>
                                 </StackPanel>
@@ -314,6 +324,9 @@
                                         #fieldvalue: placeholder for the value from a table lookup<LineBreak />
                                         #currencyname: placeholder for the currency name - extracted from table<LineBreak />
                                         #currencyvalue: the value of a currency<LineBreak />
+                                        <LineBreak />
+                                        #date: the current date<LineBreak />
+                                        #time: the current time<LineBreak />
                                     </TextBlock>
                                 </Grid>
                             </TabItem>
@@ -323,8 +336,8 @@
                                         <RowDefinition Height="50" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command."/>
-                                    <DataGrid Grid.Row="1" x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" />
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat commands. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds"/>
+                                    <DataGrid Grid.Row="1" x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" MaxColumnWidth="253" />
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Commands">
@@ -333,13 +346,22 @@
                                         <RowDefinition Height="50" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command."/>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds"/>
                                     <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Auto-SO">
                                 <Grid>
-                                    <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="35" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="450" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
+                                    <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
                             </TabItem>
                         </TabControl>
@@ -353,33 +375,52 @@
             </TabItem>
             <TabItem Header="Bot Chat">
                 <DockPanel>
-                    <DockPanel LastChildFill="True" DockPanel.Dock="Right" >
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" HorizontalAlignment="Center">
-                            <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" />
-                            <GroupBox Header="Pop-out Opacity" Margin="5,0">
-                                <Slider x:Name="Slider_PopOut_Opacity" Width="150" TickPlacement="Both" IsSnapToTickEnabled="True" />
+                    <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="25"/>
+                                <RowDefinition Height="100"/>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Content="Join List to organize playing games with your viewers." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
+                            <Label Grid.Row="1" Content="Click the 'remove' box next to the user name to remove from this list." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
+                            <GroupBox Grid.Row="2" Padding="10" Header="Join List Status" Grid.RowSpan="3" >
+                                <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="RadioButton">
+                                            <Setter Property="Margin" Value="3" />
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <RadioButton Content="Start Join List" IsChecked="{Binding UserPartyStart, Mode=TwoWay}" Click="CheckBox_Click" />
+                                    <RadioButton Content="Stop Join List" IsChecked="{Binding UserPartyStop, Mode=TwoWay}" Click="CheckBox_Click" />
+                                </StackPanel>
                             </GroupBox>
-                        </StackPanel>
-                        <StackPanel>
-                            <Label Content="Join List" HorizontalContentAlignment="Center" />
 
-                            <ListView x:Name="LV_JoinList" DataContext="{Binding ProcessCommands}"          
-                            ItemsSource="{Binding JoinCollection, Mode=TwoWay}" >
+                            <ListView Grid.Row="3"  x:Name="LV_JoinList" MaxWidth="500" 
+                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" SelectedItem="{Binding JoinCollection}" Margin="0,0,0,10">
+                                <ListView.Resources>
+                                    <DataTemplate x:Key="GridColCheck">
+                                        <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Checked="JoinCollectionCheckBox_Checked" AutomationProperties.IsRowHeader="False" />
+                                    </DataTemplate>
+                                </ListView.Resources>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Remove}">
-                                            <GridViewColumn.Header>
-                                                <TextBlock Text="Remove" ToolTip="The user to remove out of the list. Bot checks regularly." />
-                                            </GridViewColumn.Header>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="GameTag UserName" DisplayMemberBinding="{Binding Path=GameUserName}" />
-                                        <GridViewColumn Header="Chat User" DisplayMemberBinding="{Binding Path=ChatUser}" />
+                                        <GridViewColumn Header="Remove" Width="70" CellTemplate="{DynamicResource GridColCheck}" />
+                                        <GridViewColumn Header="GameTag UserName" Width="200" DisplayMemberBinding="{Binding Path=GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                        <GridViewColumn Header="Chat User" Width="200" DisplayMemberBinding="{Binding Path=ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                        </StackPanel>
+                        </Grid>
                     </DockPanel>
-                    <DockPanel LastChildFill="True" DockPanel.Dock="Left" Width="448" Background="#FF2B2929" >
+                    <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
+                            <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" />
+                            <GroupBox Header="Pop-out Opacity" Margin="5,0" Width="252" Height="50">
+                                <Slider x:Name="Slider_PopOut_Opacity" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Height="25"  />
+                            </GroupBox>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,4,15,4">
                             <TextBox Width="365" />
                             <Button Content="Send" Margin="10,0,0,0" Padding="8,2" />

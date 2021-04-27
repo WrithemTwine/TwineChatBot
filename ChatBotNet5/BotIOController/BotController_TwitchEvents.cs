@@ -1,15 +1,15 @@
 ﻿#if DEBUG
-#define LOGGING
+//#define LOGGING
 #endif
 
 using ChatBot_Net5.Clients;
 using ChatBot_Net5.Models;
-using ChatBot_Net5.Properties;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Windows;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
@@ -20,10 +20,6 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
-        /// <summary>
-        /// Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
-        /// </summary>
-        public bool PostMultiLive { get; set; } = Settings.Default.PostMultiLive;
 
         /// <summary>
         /// Register event handlers for the chat services
@@ -140,7 +136,7 @@ namespace ChatBot_Net5.BotIOController
 
             Stats.StreamOnline();
 
-            if (PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
+            if (OptionFlags.PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
             {
                 // get message, set a default if otherwise deleted/unavailable
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
@@ -521,14 +517,6 @@ namespace ChatBot_Net5.BotIOController
 
         }
 
-        private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
-        {
-          if(RepeatTimer)
-            {
-                Send(e.Message);
-            }
-        }
-
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
 #if LOGGING
@@ -540,13 +528,17 @@ namespace ChatBot_Net5.BotIOController
             }
 #endif
 
-            AddChatString(e.Command.ChatMessage);
             Stats.AddCommands();
+            AddChat(e.Command.ChatMessage.DisplayName);
 
             try
             {
                 string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
-                Send(response);
+                if (response != "")
+                {
+                    Send(response);
+                }
+                //AddChatString(response);
             }
             catch (InvalidOperationException InvalidOp)
             {
@@ -596,6 +588,8 @@ namespace ChatBot_Net5.BotIOController
                     Stats.AddAutoEvents();
                 }
             }
+
+            AddChat(e.ChatMessage.DisplayName);            
         }
 
         private void Client_OnMessageThrottled(object sender, TwitchLib.Communication.Events.OnMessageThrottledEventArgs e)
@@ -660,7 +654,7 @@ namespace ChatBot_Net5.BotIOController
                 _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
             }
 #endif
-
+            AddChat(e.RitualNewChatter.DisplayName);
         }
 
         #region Chat changes
@@ -768,13 +762,27 @@ namespace ChatBot_Net5.BotIOController
 #endif
             if (Stats.UserJoined(e.Username, DateTime.Now))
             {
-                RegisterJoinedUser(e.Username);
+                if (OptionFlags.FirstUserJoinedMsg)
+                {
+                    RegisterJoinedUser(e.Username);
+                }
+            }
+        }
+
+        private void AddChat(string Username)
+        {
+            if (Stats.UserChat(Username))
+            {
+                if (OptionFlags.FirstUserChatMsg)
+                {
+                    RegisterJoinedUser(Username);
+                }
             }
         }
 
         private void RegisterJoinedUser(string Username)
         {
-            if (FirstUserJoinedMsg)
+            if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
                 msg ??= "Thanks #user for stopping by the channel!";
@@ -787,9 +795,9 @@ namespace ChatBot_Net5.BotIOController
                 Send(ParseReplace(msg, dictionary));
             }
 
-            if (AutoShout)
+            if (OptionFlags.AutoShout)
             {
-                bool output = ProcessCommands.CheckShout(Username, TwitchIO.BotUserName, out string response);
+                bool output = ProcessCommands.CheckShout(Username, out string response);
                 if (output) Send(response);
             }
         }

@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Data;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Properties;
 
@@ -8,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ChatBot_Net5
 {
@@ -112,7 +114,7 @@ namespace ChatBot_Net5
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            //Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
 
@@ -196,12 +198,6 @@ namespace ChatBot_Net5
 
         private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
 
-        private void RichTextBox_ChatBox_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            RichTextBox r = (sender as RichTextBox);
-            r.Document = (r.DataContext as FlowDocument);
-        }
-
         private void TextBlock_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
 
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -212,7 +208,12 @@ namespace ChatBot_Net5
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.Save();
-            (Resources["ControlBot"] as BotController).SetSettings();
+            OptionFlags.SetSettings();
+        }
+
+        private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ((BotController)LV_JoinList.DataContext).JoinCollection.Remove((sender as CheckBox).DataContext as UserJoin);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using ChatBot_Net5.Properties;
+﻿using ChatBot_Net5.Properties;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
@@ -67,7 +66,7 @@ namespace ChatBot_Net5.Clients
         {
             ChatClientName = "Twitch";
 
-            ClientOptions options = new ClientOptions()
+            ClientOptions options = new()
             {
                 UseSsl = true,
                 ClientType = TwitchLib.Communication.Enums.ClientType.Chat,
@@ -102,15 +101,7 @@ namespace ChatBot_Net5.Clients
             TwitchChat = new TwitchClient(new WebSocketClient(options), TwitchLib.Client.Enums.ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
 
-            AccessToken = Settings.Default.TwitchAccessToken;
-            BotUserName = Settings.Default.TwitchBotUserName;
-            ChannelName = Settings.Default.TwitchChannelName;
-            ClientID = Settings.Default.TwitchClientID;
-            FrequencyFollowerTime = Settings.Default.TwitchFrequency;
-            FrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
-            RefreshToken = Settings.Default.TwitchRefreshToken;
-            RefreshDate = Settings.Default.TwitchRefreshDate;
-            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
+            RefreshSettings();
         }
 
         /// <summary>
@@ -141,6 +132,7 @@ namespace ChatBot_Net5.Clients
         /// <returns>True for a successful connection.</returns>
         public override bool Connect()
         {
+            RefreshSettings();
             ConnectionCredentials credentials = new ConnectionCredentials(BotUserName, AccessToken);
             if (ChannelName == null)
             {
@@ -173,7 +165,7 @@ namespace ChatBot_Net5.Clients
         {
             try
             {
-                SaveParams();
+                RefreshSettings();
                 StartServices();
 
                 return true;
@@ -195,7 +187,7 @@ namespace ChatBot_Net5.Clients
             {
                 TwitchChat.Disconnect();
                 StopServices();
-                //SaveParams();
+                RefreshSettings();
             }
             return true;
         }
@@ -260,6 +252,21 @@ namespace ChatBot_Net5.Clients
         {
             FollowerService.Stop();
             LiveStreamMonitor.Stop();
+        }
+
+        public override bool RefreshSettings()
+        {
+            SaveParams();
+            AccessToken = Settings.Default.TwitchAccessToken;
+            BotUserName = Settings.Default.TwitchBotUserName;
+            ChannelName = Settings.Default.TwitchChannelName;
+            ClientID = Settings.Default.TwitchClientID;
+            FrequencyFollowerTime = Settings.Default.TwitchFrequency;
+            FrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
+            RefreshToken = Settings.Default.TwitchRefreshToken;
+            RefreshDate = Settings.Default.TwitchRefreshDate;
+            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
+            return true;
         }
 
         internal async Task<List<Follow>> GetAllFollowersAsync()
