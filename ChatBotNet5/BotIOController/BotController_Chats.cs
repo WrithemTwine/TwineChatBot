@@ -1,11 +1,7 @@
-﻿using ChatBot_Net5.Models;
-
+﻿
 using System;
-using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media;
 
 using TwitchLib.Client.Models;
 

@@ -485,18 +485,21 @@ switches:
                 // command name     // msg   // params  
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
                 {
-                    { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand !command <switches-optional> <message>. See documentation for <switches>.") },
+                    { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
                     { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC -use:!commands") },
                     { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/", "-use:!bot") },
                     { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "-use:!lurk") },
                     { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
                     { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
                     { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
-                    { DefaultCommand.so.ToString(), new("", "-p:Mod -u:true -use:!so_user, only mods can use !so.") },
+                    { DefaultCommand.so.ToString(), new("Go check a great streamer #user, at #url!", "-p:Mod -u:true -use:!so user, only mods can use !so.") },
                     { DefaultCommand.join.ToString(), new("The message isn't used in response.", " ") },
                     { DefaultCommand.leave.ToString(), new("The message isn't used in response.", " ") },
                     { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod") },
-                    { DefaultCommand.qinfo.ToString(), new("Use -!join 'gamertag'- to join the queue, and !leave to leave the queue."," ") }
+                    { DefaultCommand.qinfo.ToString(), new("Use -!join 'gamertag'- to join the queue, and !leave to leave the queue.", " ") },
+                    { DefaultCommand.qstart.ToString(), new("The queue list to join me in the game has started!", "-p:Mod") },
+                    { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod") },
+                    { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", " ") }
                 };
 
                 foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))

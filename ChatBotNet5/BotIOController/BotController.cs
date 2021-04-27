@@ -6,6 +6,7 @@
 using ChatBot_Net5.BotIOController.Models;
 using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
@@ -43,8 +44,6 @@ namespace ChatBot_Net5.BotIOController
         /// Manages statistics as the chat bot runs.
         /// </summary>
         public Statistics Stats { get; private set; }
-
-        public CommandSystem ProcessCommands { get; private set; }
 
         #region Bot Services
         /// <summary>
@@ -91,8 +90,7 @@ namespace ChatBot_Net5.BotIOController
 
             OptionFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             SetThread();
-            ProcessCommands = new(DataManage, TwitchIO.BotUserName);
-            ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
+            SetProcessCommands();
 
             foreach (IOModule i in IOModuleList)
             {

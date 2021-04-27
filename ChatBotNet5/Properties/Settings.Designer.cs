@@ -238,5 +238,53 @@ namespace ChatBot_Net5.Properties {
                 this["WelcomeDisabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NoMeMsg {
+            get {
+                return ((bool)(this["NoMeMsg"]));
+            }
+            set {
+                this["NoMeMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerComMeMsg {
+            get {
+                return ((bool)(this["PerComMeMsg"]));
+            }
+            set {
+                this["PerComMeMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UserPartyStart {
+            get {
+                return ((bool)(this["UserPartyStart"]));
+            }
+            set {
+                this["UserPartyStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UserPartyStop {
+            get {
+                return ((bool)(this["UserPartyStop"]));
+            }
+            set {
+                this["UserPartyStop"] = value;
+            }
+        }
     }
 }

@@ -3,58 +3,38 @@ using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 using TwitchLib.Client.Models;
 
 namespace ChatBot_Net5.Data
 {
-    public class CommandSystem
+    public class CommandSystem : INotifyPropertyChanged
     {
         private DataManager datamanager;
 
-        public ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
+        //private ObservableCollection<UserJoin> JoinCollection;
+
         private string BotUserName;
 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
+        internal event EventHandler<UserJoinArgs> UserJoinCommand;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        internal void NotifyPropertyChanged(string ParamName="" )
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
+        }
 
         internal CommandSystem(DataManager dataManager, string BotName)
         {
             datamanager = dataManager;
             BotUserName = BotName;
 
-            new Thread(new ThreadStart(MonitorJoinCollection)).Start();
             new Thread(new ThreadStart(ElapsedCommandTimers)).Start();
         }
 
-        private void MonitorJoinCollection()
-        {
-            while (OptionFlags.ProcessOps)
-            {
-                List<UserJoin> removelist = new();
-
-                lock (JoinCollection)
-                {
-                    foreach (UserJoin u in JoinCollection)
-                    {
-                        if (u.Remove)
-                        {
-                            removelist.Add(u);
-                        }
-                    }
-
-                    foreach (UserJoin u in removelist)
-                    {
-                        JoinCollection.Remove(u);
-                    }
-                }
-
-                Thread.Sleep(5000);
-            }
-        }
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
@@ -98,7 +78,7 @@ namespace ChatBot_Net5.Data
                     }
                 }
 
-                for (int x = RepeatList.Count; x==0; x--)
+                for (int x = RepeatList.Count; x==0 && RepeatList.Count>0; x--)
                 {
                     if (RepeatList[x].RepeatTime == 0)
                     {
@@ -170,17 +150,43 @@ namespace ChatBot_Net5.Data
             }
             else if (command == "join" || command == "leave" || command == "queue")
             {
-                return UserParty(command, arglist, DisplayName);
+                UserParty(command, arglist, DisplayName);
+                return ""; // the message is handled in the GUI thread
             }
             else 
             {
+                if(command=="qinfo" && OptionFlags.UserPartyStop)
+                {
+                    return ""; // skip the queue info if it's a recurring message
+                }
+
+                if (command == "qstart" || command == "qstop")
+                {
+                    OptionFlags.SetParty(command == "qstart");
+                    NotifyPropertyChanged("UserPartyStart");
+                    NotifyPropertyChanged("UserPartyStop");
+                }
                 //string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
                 //return datamanager.PerformCommand(command, DisplayName ?? BotUserName, comuser, arglist);
 
                 datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam);
 
-                string user = AllowParam && arglist[0]?.Contains('@')==true ? arglist[0].Remove(0, 1) : DisplayName;
+                string user = "";
+
+                if (AllowParam)
+                {
+                    if(arglist==null || arglist.Count == 0 || arglist[0] == string.Empty)
+                    {
+                        user = DisplayName;
+                    } else if (arglist[0].Contains('@'))
+                    {
+                        user = arglist[0].Remove(0, 1);
+                    } else
+                    {
+                        user = arglist[0];
+                    }
+                }
 
                 Dictionary<string, string> datavalues = new()
                 {
@@ -194,8 +200,6 @@ namespace ChatBot_Net5.Data
                 if (ParamQuery != null || ParamQuery != string.Empty)
                 {
                     CommandParams query = CommandParams.Parse(ParamQuery);
-
-
                 }
 
                 return BotController.ParseReplace(Message, datavalues);
@@ -204,49 +208,14 @@ namespace ChatBot_Net5.Data
             return "not finished";
         }
 
-        internal string UserParty(string command, List<string> arglist, string UserName)
+        internal void UserParty(string command, List<string> arglist, string UserName)
         {
-            lock (JoinCollection)
-            {
-                switch (command)
-                {
-                    case "join":
-                        int x = 1;
-                        foreach (UserJoin u in JoinCollection)
-                        {
-                            if (u.ChatUser == UserName) { return "You have already joined. You are currently number " + x.ToString() + "."; }
-                            x++;
-                        }
-                        JoinCollection.Add(new UserJoin() { ChatUser = UserName, GameUserName = (arglist.Count > 0 ? arglist[0] : UserName) });
-                        return "You have joined the queue. You are currently " + JoinCollection.Count + ".";
+            UserJoinArgs userJoinArgs = new UserJoinArgs();
+            userJoinArgs.Command = command;
+            userJoinArgs.ChatUser = UserName;
+            userJoinArgs.GameUserName = arglist.Count == 0 ? UserName : arglist[0];
 
-                    case "leave":
-                        UserJoin remove = null;
-                        foreach (UserJoin u in JoinCollection)
-                        {
-                            if (u.ChatUser == UserName) { remove = u; }
-                        }
-                        if (remove == null)
-                        {
-                            return "You are not in the queue.";
-                        }
-                        else
-                        {
-                            JoinCollection.Remove(remove);
-                            return "You are no longer in the queue.";
-                        }
-                    case "queue":
-                        int y = 1;
-                        string queuelist = string.Empty;
-                        foreach (UserJoin u in JoinCollection)
-                        {
-                            queuelist += y.ToString() + ". " + u.ChatUser + " ";
-                            y++;
-                        }
-                        return "The current users in the join queue: " + (queuelist == string.Empty ? "no users!" : queuelist);
-                }
-            }
-            return "You have reached an unknown spot.";
+            UserJoinCommand?.Invoke(this, userJoinArgs);
         }
 
         /// <summary>

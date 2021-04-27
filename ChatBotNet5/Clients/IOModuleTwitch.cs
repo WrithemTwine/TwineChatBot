@@ -1,6 +1,4 @@
-﻿
-using ChatBot_Net5.Interfaces;
-using ChatBot_Net5.Properties;
+﻿using ChatBot_Net5.Properties;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;

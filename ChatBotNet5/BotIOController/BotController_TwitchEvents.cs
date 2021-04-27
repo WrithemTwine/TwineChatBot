@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Windows;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
@@ -516,14 +517,6 @@ namespace ChatBot_Net5.BotIOController
 
         }
 
-        private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
-        {
-          if(OptionFlags.RepeatTimer)
-            {
-                Send(e.Message);
-            }
-        }
-
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
 #if LOGGING
@@ -541,7 +534,10 @@ namespace ChatBot_Net5.BotIOController
             try
             {
                 string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
-                Send(response);
+                if (response != "")
+                {
+                    Send(response);
+                }
                 //AddChatString(response);
             }
             catch (InvalidOperationException InvalidOp)

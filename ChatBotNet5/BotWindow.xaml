@@ -353,9 +353,13 @@
                             <TabItem Header="Auto-SO">
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="50" />
-                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="35" />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="450" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
                                     <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
@@ -371,32 +375,46 @@
             </TabItem>
             <TabItem Header="Bot Chat">
                 <DockPanel>
-                    <DockPanel LastChildFill="True" DockPanel.Dock="Right" DataContext="{Binding ProcessCommands}" >
-                        <StackPanel>
-                            <Label Content="Join List" HorizontalContentAlignment="Center" />
+                    <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="25"/>
+                                <RowDefinition Height="100"/>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Content="Join List to organize playing games with your viewers." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
+                            <Label Grid.Row="1" Content="Click the 'remove' box next to the user name to remove from this list." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
+                            <GroupBox Grid.Row="2" Padding="10" Header="Join List Status" Grid.RowSpan="3" >
+                                <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="RadioButton">
+                                            <Setter Property="Margin" Value="3" />
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <RadioButton Content="Start Join List" IsChecked="{Binding UserPartyStart, Mode=TwoWay}" Click="CheckBox_Click" />
+                                    <RadioButton Content="Stop Join List" IsChecked="{Binding UserPartyStop, Mode=TwoWay}" Click="CheckBox_Click" />
+                                </StackPanel>
+                            </GroupBox>
 
-                            <ListView x:Name="LV_JoinList" Height="675" Width="329" 
-                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" >
+                            <ListView Grid.Row="3"  x:Name="LV_JoinList" MaxWidth="500" 
+                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" SelectedItem="{Binding JoinCollection}" Margin="0,0,0,10">
                                 <ListView.Resources>
                                     <DataTemplate x:Key="GridColCheck">
-                                        <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" />
+                                        <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Checked="JoinCollectionCheckBox_Checked" AutomationProperties.IsRowHeader="False" />
                                     </DataTemplate>
                                 </ListView.Resources>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn CellTemplate="{DynamicResource GridColCheck}" >
-                                            <GridViewColumn.Header>
-                                                <TextBlock Text="Remove" ToolTip="The user to remove out of the list. Bot checks regularly." />
-                                            </GridViewColumn.Header>                                            
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="GameTag UserName" DisplayMemberBinding="{Binding Path=GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
-                                        <GridViewColumn Header="Chat User" DisplayMemberBinding="{Binding Path=ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                        <GridViewColumn Header="Remove" Width="70" CellTemplate="{DynamicResource GridColCheck}" />
+                                        <GridViewColumn Header="GameTag UserName" Width="200" DisplayMemberBinding="{Binding Path=GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                        <GridViewColumn Header="Chat User" Width="200" DisplayMemberBinding="{Binding Path=ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                        </StackPanel>
+                        </Grid>
                     </DockPanel>
-                    <DockPanel LastChildFill="True" DockPanel.Dock="Left" Width="448" Background="#FF2B2929" >
+                    <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
                             <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" />
                             <GroupBox Header="Pop-out Opacity" Margin="5,0" Width="252" Height="50">
