@@ -17,6 +17,7 @@ namespace ChatBot_Net5.Models
         internal int Timer { get; set; } = 0;
         internal string Usage { get; set; } = "!<command>";
         internal string Message { get; set; } = string.Empty;
+        internal bool AddMe { get; set; } = false;
         internal bool Empty { get; set; } = false;
 
         internal static CommandParams Parse(string ParamString)
@@ -97,6 +98,9 @@ namespace ChatBot_Net5.Models
                         case "m":
                             data.Message = keyvalue[0];
                             break;
+                        case "addme":
+                            data.AddMe = bool.Parse(keyvalue[1]);
+                            break;
                     }
                 }
 
@@ -119,24 +123,16 @@ namespace ChatBot_Net5.Models
             {
                 Dictionary<string, string> paramdictionary = new()
                 {
-                    { "t", Table },
-                    { "f", Field },
                     { "c", Currency },
                     { "unit", Unit },
-                    //{ "p", Permission.ToString() },
                     { "top", Top.ToString() },
                     { "s", Sort },
-                    { "a", Action },
-                    //{ "u", AllowUser.ToString() },
-                    //{ "timer", Timer.ToString() }
+                    { "a", Action }
                 };
 
                 foreach (string k in paramdictionary.Keys)
                 {
-                    if ((paramdictionary[k] != string.Empty) || (paramdictionary["t"] != string.Empty && (k == "f" || k == "top" || k == "s" || k == "a")))
-                    {
-                        param += Combine(k, paramdictionary[k]);
-                    }
+                    param += Combine(k, paramdictionary[k]);
                 }
             }
 

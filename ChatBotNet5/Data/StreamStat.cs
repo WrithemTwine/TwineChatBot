@@ -4,8 +4,10 @@ namespace ChatBot_Net5.Data
 {
     internal class StreamStat
     {
-        internal DateTime StreamStart { get; set; } = DateTime.Parse("1/1/1990");
-        internal DateTime StreamEnd { get; set; } = DateTime.Parse("1/1/1990");
+        internal static readonly string DefaultTime = "1/1/1990";
+
+        internal DateTime StreamStart { get; set; } = DateTime.Parse(DefaultTime);
+        internal DateTime StreamEnd { get; set; } = DateTime.Parse(DefaultTime);
         internal int NewFollows { get; set; } = 0;
         internal int NewSubs { get; set; } = 0;
         internal int GiftSubs { get; set; } = 0;
@@ -29,8 +31,8 @@ namespace ChatBot_Net5.Data
 
         public void Clear()
         {
-            StreamStart = DateTime.Parse("1/1/1990");
-            StreamEnd = DateTime.Parse("1/1/1990");
+            StreamStart = DateTime.Parse(DefaultTime);
+            StreamEnd = DateTime.Parse(DefaultTime);
             NewFollows = 0;
             NewSubs = 0;
             GiftSubs = 0;

@@ -30,6 +30,7 @@
               <xs:element name="IsEnabled" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_UserColumnName="IsEnabled" type="xs:boolean" default="true" />
               <xs:element name="MsgStr" msdata:Caption="Message" msprop:Generator_ColumnVarNameInTable="columnMsgStr" msprop:Generator_ColumnPropNameInRow="MsgStr" msprop:Generator_ColumnPropNameInTable="MsgStrColumn" msprop:Generator_UserColumnName="MsgStr" type="xs:string" minOccurs="0" />
               <xs:element name="Commands" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnCommands" msprop:Generator_ColumnPropNameInRow="Commands" msprop:Generator_ColumnPropNameInTable="CommandsColumn" msprop:Generator_UserColumnName="Commands" type="xs:string" minOccurs="0" />
+              <xs:element name="AddMe" msdata:Caption="AddMe to chat for specific commands - only with setting for individual" msprop:Generator_ColumnVarNameInTable="columnAddMe" msprop:Generator_ColumnPropNameInRow="AddMe" msprop:Generator_ColumnPropNameInTable="AddMeColumn" msprop:Generator_UserColumnName="AddMe" type="xs:boolean" default="false" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -56,6 +57,10 @@
               <xs:element name="Params" msprop:Generator_ColumnVarNameInTable="columnParams" msprop:Generator_ColumnPropNameInRow="Params" msprop:Generator_ColumnPropNameInTable="ParamsColumn" msprop:Generator_UserColumnName="Params" type="xs:string" default=" " minOccurs="0" />
               <xs:element name="AllowParam" msdata:Caption="AllowParam - permit a parameter, such as another user" msprop:Generator_ColumnVarNameInTable="columnAllowParam" msprop:Generator_ColumnPropNameInRow="AllowParam" msprop:Generator_ColumnPropNameInTable="AllowParamColumn" msprop:Generator_UserColumnName="AllowParam" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="Usage" msprop:Generator_ColumnVarNameInTable="columnUsage" msprop:Generator_ColumnPropNameInRow="Usage" msprop:Generator_ColumnPropNameInTable="UsageColumn" msprop:Generator_UserColumnName="Usage" type="xs:string" default=" " minOccurs="0" />
+              <xs:element name="table" msprop:Generator_ColumnVarNameInTable="columntable" msprop:Generator_ColumnPropNameInRow="table" msprop:Generator_ColumnPropNameInTable="tableColumn" msprop:Generator_UserColumnName="table" type="xs:string" minOccurs="0" />
+              <xs:element name="key_field" msprop:Generator_ColumnVarNameInTable="columnkey_field" msprop:Generator_ColumnPropNameInRow="key_field" msprop:Generator_ColumnPropNameInTable="key_fieldColumn" msprop:Generator_UserColumnName="key_field" type="xs:string" minOccurs="0" />
+              <xs:element name="data_field" msprop:Generator_ColumnVarNameInTable="columndata_field" msprop:Generator_ColumnPropNameInRow="data_field" msprop:Generator_ColumnPropNameInTable="data_fieldColumn" msprop:Generator_UserColumnName="data_field" type="xs:string" minOccurs="0" />
+              <xs:element name="AddMe" msdata:Caption="AddMe to chat for specific commands - only with setting for individual" msprop:Generator_ColumnVarNameInTable="columnAddMe" msprop:Generator_ColumnPropNameInRow="AddMe" msprop:Generator_ColumnPropNameInTable="AddMeColumn" msprop:Generator_UserColumnName="AddMe" type="xs:boolean" default="false" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

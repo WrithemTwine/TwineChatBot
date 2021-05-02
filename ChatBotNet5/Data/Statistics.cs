@@ -13,7 +13,6 @@ namespace ChatBot_Net5.Data
         private List<string> VIPUsers = new();
         private bool _StreamOnline;
         private DataManager datamanager;
-        internal DateTime defaultDate = DateTime.Parse("01/01/1900");
         private StreamStat CurrStream { get; set; } = new();
 
         public Statistics(DataManager dataManager)
@@ -122,8 +121,10 @@ namespace ChatBot_Net5.Data
 
         public void StartStreamOnline(DateTime Started)
         {
-            CurrStream.Clear();
-            CurrStream.StreamStart = Started;
+            if (CurrStream.StreamStart == DateTime.Parse(StreamStat.DefaultTime))
+            {
+                CurrStream.StreamStart = Started.ToLocalTime();
+            }
             datamanager.AddStream(Started);
         }
 
@@ -133,11 +134,12 @@ namespace ChatBot_Net5.Data
         {
             UpdateWatchTime();
             _StreamOnline = false;
-            CurrStream.StreamEnd = Stopped;
+            CurrStream.StreamEnd = Stopped.ToLocalTime();
             CurrStream.ModsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
             datamanager.PostStreamStat(CurrStream);
+            CurrStream.Clear();
 
             ModUsers.Clear();
             SubUsers.Clear();

@@ -49,6 +49,7 @@ namespace ChatBot_Net5.BotIOController
                 {
                     case "join":
                         int x = 1;
+                        
                         foreach (UserJoin u in JoinCollection)
                         {
                             if (u.ChatUser == e.ChatUser)
@@ -59,7 +60,7 @@ namespace ChatBot_Net5.BotIOController
                             x++;
                         }
 
-                        response = "You have joined the queue. You are currently " + JoinCollection.Count + 1 + ".";
+                        response = "You have joined the queue. You are currently " + (JoinCollection.Count + 1) + ".";
                         UpdateUsers AddUpdate = AddJoinUser;
                         Application.Current.Dispatcher.BeginInvoke(AddUpdate, new UserJoin() { ChatUser = e.ChatUser, GameUserName = e.GameUserName });
                         break;
@@ -83,10 +84,13 @@ namespace ChatBot_Net5.BotIOController
                     case "queue":
                         int y = 1;
                         string queuelist = string.Empty;
-                        foreach (UserJoin u in JoinCollection)
+                        if (JoinCollection != null)
                         {
-                            queuelist += y.ToString() + ". " + u.ChatUser + " ";
-                            y++;
+                            foreach (UserJoin u in JoinCollection)
+                            {
+                                queuelist += y.ToString() + ". " + u.ChatUser + " ";
+                                y++;
+                            }
                         }
                         response = "The current users in the join queue: " + (queuelist == string.Empty ? "no users!" : queuelist);
                         break;

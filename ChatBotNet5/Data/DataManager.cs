@@ -136,7 +136,7 @@ namespace ChatBot_Net5.Data
                     Tuple<string, string> values = dictionary[command];
                     lock (_DataSource)
                     {
-                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), true, values.Item1, values.Item2);
+                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), true, values.Item1, values.Item2, false);
                     }
                 }
             }
@@ -397,7 +397,7 @@ namespace ChatBot_Net5.Data
             {
                 foreach (DataSource.StreamStatsRow s in GetAllStreamData()) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
                 {
-                    if (DateCheckEqual(s.StreamStart, streamStat.StreamStart))
+                    if (DateCheckEqual(s.StreamStart, s.StreamStart))
                     {
                         s.StreamStart = streamStat.StreamStart;
                         s.StreamEnd = streamStat.StreamEnd;
@@ -512,7 +512,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage);
+                        _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage, param.Table, GetKey(param.Table), param.Field, false);
                     }
                 }
 
@@ -585,13 +585,36 @@ switches:
             }
         }
 
+        internal string GetKey(string Table)
+        {
+            string key="";
+
+            DataColumn[] k = _DataSource.Tables[Table].PrimaryKey;
+            if (k.Length > 1)
+            {
+                foreach (DataColumn d in k)
+                {
+                    if (d.ColumnName != "Id")
+                    {
+                        key = d.ColumnName;
+                    }
+                }
+            }
+            else
+            {
+                key = k[0].ColumnName;
+            }
+
+            return key;
+        }
+
         internal string AddCommand(string cmd, CommandParams Params)
         {
             string strParams = Params.DBParamsString();
 
             lock (_DataSource.Commands)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.Permission.ToString(), Params.Message, Params.Timer, strParams, Params.AllowUser, Params.Usage);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.Permission.ToString(), Params.Message, Params.Timer, strParams, Params.AllowUser, Params.Usage, Params.Table, GetKey(Params.Table), Params.Field, false);
                 SaveData();
             }
             return "Command added!";
@@ -671,7 +694,7 @@ switches:
         //    return BotController.ParseReplace(comrow[0].Message, datavalues);
         //}
 
-        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowParam)
+        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -689,6 +712,7 @@ switches:
             Message = comrow[0].Message;
             ParamQuery = comrow[0].Params;
             AllowParam = comrow[0].AllowParam;
+            AddMe = comrow[0].AddMe;
         }
 
         private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)
