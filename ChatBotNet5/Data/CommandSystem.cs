@@ -218,11 +218,15 @@ namespace ChatBot_Net5.Data
 
         internal void UserParty(string command, List<string> arglist, string UserName)
         {
-            UserJoinArgs userJoinArgs = new UserJoinArgs();
+            datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe);
+
+            UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;
+            userJoinArgs.AddMe = AddMe;
             userJoinArgs.ChatUser = UserName;
             userJoinArgs.GameUserName = arglist.Count == 0 ? UserName : arglist[0];
 
+            // we have to invoke an event, because the GUI thread must be used to manipulate the data collection for the user list
             UserJoinCommand?.Invoke(this, userJoinArgs);
         }
 

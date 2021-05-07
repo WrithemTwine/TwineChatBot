@@ -36,12 +36,18 @@ namespace ChatBot_Net5.BotIOController
             if (OptionFlags.RepeatTimer)
             {
                 Send(e.Message);
+                Stats.AddAutoCommands();
             }
         }
 
         private void ProcessCommands_UserJoinCommand(object sender, UserJoinArgs e)
         {
-            string response;
+            string response = "";
+
+            if(OptionFlags.PerComMeMsg==true && e.AddMe)
+            {
+                response = "/me ";
+            }
 
             if (OptionFlags.UserPartyStart)
             {

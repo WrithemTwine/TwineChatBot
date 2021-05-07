@@ -704,6 +704,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public DiscordRow FindById(int Id) {
+                return ((DiscordRow)(this.Rows.Find(new object[] {
+                            Id})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 DiscordDataTable cln = ((DiscordDataTable)(base.Clone()));
                 cln.InitVars();
@@ -737,7 +744,7 @@ namespace ChatBot_Net5.Data {
                 this.columnWebhook = new global::System.Data.DataColumn("Webhook", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnWebhook);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnId}, false));
+                                this.columnId}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AutoIncrementSeed = 1;
                 this.columnId.AllowDBNull = false;
@@ -1772,6 +1779,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CommandsRow FindByCmdName(string CmdName) {
+                return ((CommandsRow)(this.Rows.Find(new object[] {
+                            CmdName})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 CommandsDataTable cln = ((CommandsDataTable)(base.Clone()));
                 cln.InitVars();
@@ -1831,7 +1845,7 @@ namespace ChatBot_Net5.Data {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
-                                this.columnCmdName}, false));
+                                this.columnCmdName}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AutoIncrementSeed = 1;
                 this.columnId.ReadOnly = true;
@@ -2404,6 +2418,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow FindByCurrencyName(string CurrencyName) {
+                return ((CurrencyTypeRow)(this.Rows.Find(new object[] {
+                            CurrencyName})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 CurrencyTypeDataTable cln = ((CurrencyTypeDataTable)(base.Clone()));
                 cln.InitVars();
@@ -2434,13 +2455,14 @@ namespace ChatBot_Net5.Data {
                 this.columnAccrueRate = new global::System.Data.DataColumn("AccrueRate", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAccrueRate);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnCurrencyName}, false));
+                                this.columnCurrencyName}, true));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AutoIncrementSeed = 1;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnCurrencyName.AllowDBNull = false;
                 this.columnCurrencyName.Unique = true;
                 this.columnCurrencyName.Caption = "Currency Name";
                 this.columnAccrueRate.Caption = "Accrue Rate per Hr";
@@ -2704,6 +2726,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public FollowersRow FindByUserName(string UserName) {
+                return ((FollowersRow)(this.Rows.Find(new object[] {
+                            UserName})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 FollowersDataTable cln = ((FollowersDataTable)(base.Clone()));
                 cln.InitVars();
@@ -2739,7 +2768,7 @@ namespace ChatBot_Net5.Data {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
-                                this.columnUserName}, false));
+                                this.columnUserName}, true));
                 this.columnId.AllowDBNull = false;
                 this.columnId.Unique = true;
                 this.columnUserName.AllowDBNull = false;
@@ -3240,6 +3269,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public StreamStatsRow FindById(long Id) {
+                return ((StreamStatsRow)(this.Rows.Find(new object[] {
+                            Id})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 StreamStatsDataTable cln = ((StreamStatsDataTable)(base.Clone()));
                 cln.InitVars();
@@ -3330,7 +3366,7 @@ namespace ChatBot_Net5.Data {
                 this.columnMaxUsers = new global::System.Data.DataColumn("MaxUsers", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMaxUsers);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnId}, false));
+                                this.columnId}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AutoIncrementSeed = 1;
                 this.columnId.AllowDBNull = false;
@@ -3602,6 +3638,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public ShoutOutsRow FindByUserName(string UserName) {
+                return ((ShoutOutsRow)(this.Rows.Find(new object[] {
+                            UserName})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 ShoutOutsDataTable cln = ((ShoutOutsDataTable)(base.Clone()));
                 cln.InitVars();
@@ -3631,7 +3674,7 @@ namespace ChatBot_Net5.Data {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
-                                this.columnUserName}, false));
+                                this.columnUserName}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.Unique = true;
                 this.columnUserName.AllowDBNull = false;
@@ -4675,12 +4718,7 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string CurrencyName {
                 get {
-                    try {
-                        return ((string)(this[this.tableCurrencyType.CurrencyNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'CurrencyName\' in table \'CurrencyType\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableCurrencyType.CurrencyNameColumn]));
                 }
                 set {
                     this[this.tableCurrencyType.CurrencyNameColumn] = value;
@@ -4713,18 +4751,6 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetIdNull() {
                 this[this.tableCurrencyType.IdColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsCurrencyNameNull() {
-                return this.IsNull(this.tableCurrencyType.CurrencyNameColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetCurrencyNameNull() {
-                this[this.tableCurrencyType.CurrencyNameColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
