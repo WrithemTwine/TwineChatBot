@@ -170,22 +170,28 @@ namespace ChatBot_Net5.Data
 
                 //return datamanager.PerformCommand(command, DisplayName ?? BotUserName, comuser, arglist);
 
-                datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam);
+                datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe);
 
                 string user = "";
 
                 if (AllowParam)
                 {
-                    if(arglist==null || arglist.Count == 0 || arglist[0] == string.Empty)
+                    if (arglist == null || arglist.Count == 0 || arglist[0] == string.Empty)
                     {
                         user = DisplayName;
-                    } else if (arglist[0].Contains('@'))
+                    }
+                    else if (arglist[0].Contains('@'))
                     {
                         user = arglist[0].Remove(0, 1);
-                    } else
+                    }
+                    else
                     {
                         user = arglist[0];
                     }
+                }
+                else
+                {
+                    user = DisplayName;
                 }
 
                 Dictionary<string, string> datavalues = new()
@@ -202,7 +208,9 @@ namespace ChatBot_Net5.Data
                     CommandParams query = CommandParams.Parse(ParamQuery);
                 }
 
-                return BotController.ParseReplace(Message, datavalues);
+                string response = BotController.ParseReplace(Message, datavalues);
+
+                return (OptionFlags.PerComMeMsg && AddMe ? "/me " : "" ) + response;
             }
 
             return "not finished";
@@ -210,11 +218,15 @@ namespace ChatBot_Net5.Data
 
         internal void UserParty(string command, List<string> arglist, string UserName)
         {
-            UserJoinArgs userJoinArgs = new UserJoinArgs();
+            datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe);
+
+            UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;
+            userJoinArgs.AddMe = AddMe;
             userJoinArgs.ChatUser = UserName;
             userJoinArgs.GameUserName = arglist.Count == 0 ? UserName : arglist[0];
 
+            // we have to invoke an event, because the GUI thread must be used to manipulate the data collection for the user list
             UserJoinCommand?.Invoke(this, userJoinArgs);
         }
 

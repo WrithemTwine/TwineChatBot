@@ -4,5 +4,6 @@
     {
         // without command prefix; default '!'
         public string Command { get; set; }
+        public bool AddMe { get; set; } = false;
     }
 }

@@ -12,7 +12,7 @@ namespace TestProject1
 {
     public class UnitTestStreamStats
     {
-        private static DateTime TestStart = DateTime.Parse("04/18/2021 15:00:00");
+        private static readonly DateTime TestStart = DateTime.Parse("04/18/2021 15:00:00");
 
         [Fact]
         public void TestAddEndStream()

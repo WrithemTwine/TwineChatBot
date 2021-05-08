@@ -155,7 +155,7 @@ namespace ChatBot_Net5.BotIOController
                     {
                         foreach (IOModule i in IOModuleList)
                         {
-                            i.Send( (OptionFlags.AddMeMsg ?"/me ": "") + s);
+                            i.Send( (OptionFlags.AddMeMsg ? "/me ": "") + s);
                         }
                     }
                 ));

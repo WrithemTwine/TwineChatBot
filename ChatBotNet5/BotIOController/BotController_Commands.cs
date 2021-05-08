@@ -36,12 +36,18 @@ namespace ChatBot_Net5.BotIOController
             if (OptionFlags.RepeatTimer)
             {
                 Send(e.Message);
+                Stats.AddAutoCommands();
             }
         }
 
         private void ProcessCommands_UserJoinCommand(object sender, UserJoinArgs e)
         {
-            string response;
+            string response = "";
+
+            if(OptionFlags.PerComMeMsg==true && e.AddMe)
+            {
+                response = "/me ";
+            }
 
             if (OptionFlags.UserPartyStart)
             {
@@ -49,6 +55,7 @@ namespace ChatBot_Net5.BotIOController
                 {
                     case "join":
                         int x = 1;
+                        
                         foreach (UserJoin u in JoinCollection)
                         {
                             if (u.ChatUser == e.ChatUser)
@@ -59,7 +66,7 @@ namespace ChatBot_Net5.BotIOController
                             x++;
                         }
 
-                        response = "You have joined the queue. You are currently " + JoinCollection.Count + 1 + ".";
+                        response = "You have joined the queue. You are currently " + (JoinCollection.Count + 1) + ".";
                         UpdateUsers AddUpdate = AddJoinUser;
                         Application.Current.Dispatcher.BeginInvoke(AddUpdate, new UserJoin() { ChatUser = e.ChatUser, GameUserName = e.GameUserName });
                         break;
@@ -83,10 +90,13 @@ namespace ChatBot_Net5.BotIOController
                     case "queue":
                         int y = 1;
                         string queuelist = string.Empty;
-                        foreach (UserJoin u in JoinCollection)
+                        if (JoinCollection != null)
                         {
-                            queuelist += y.ToString() + ". " + u.ChatUser + " ";
-                            y++;
+                            foreach (UserJoin u in JoinCollection)
+                            {
+                                queuelist += y.ToString() + ". " + u.ChatUser + " ";
+                                y++;
+                            }
                         }
                         response = "The current users in the join queue: " + (queuelist == string.Empty ? "no users!" : queuelist);
                         break;

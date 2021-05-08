@@ -55,7 +55,7 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public bool ShowConnectionMsg { get; set; }
 
-        internal IOModule()
+        public IOModule()
         {
 
         }
@@ -102,7 +102,7 @@ namespace ChatBot_Net5.Clients
             return true;
         }
 
-        internal virtual bool SaveParams() { Settings.Default.Save(); return true; }
+        public virtual bool SaveParams() { Settings.Default.Save(); return true; }
         #endregion
 
     }

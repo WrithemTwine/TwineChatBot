@@ -84,6 +84,7 @@
                                     </StackPanel>
                                 </GroupBox>
                             </StackPanel>
+                                                       
                             <FlowDocumentScrollViewer DockPanel.Dock="Right" Margin="10" VerticalScrollBarVisibility="Auto">
                                 <FlowDocument FontSize="12" PagePadding="5">
                                     <Section>
@@ -145,8 +146,7 @@
                                                     <ListItem>
                                                         <Paragraph>Add:
                                                             <LineBreak />
-                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">https://twitchapps.com/tokengen/</TextBox>
-                                                            <LineBreak /> as the OAuth Redirect URLs. Select "Chat Bot" category (or add the token generator website you're using to generate tokens).
+                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">https://twitchapps.com/tokengen/</TextBox> as the OAuth Redirect URLs. Select "Chat Bot" category (or add the token generator website you're using to generate tokens).
                                                         </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
@@ -164,7 +164,8 @@
                                                 </Paragraph>
                                                 <List>
                                                     <ListItem>
-                                                        <Paragraph>Paste the 'Client Id' from .</Paragraph>
+                                                        <Paragraph>Paste the 'Client Id' generated from above at:
+                                                            <Italic>https://dev.twitch.tv/console</Italic> .</Paragraph>
                                                     </ListItem>
                                                     <ListItem>
                                                         <Paragraph>For "Scopes", paste exactly
@@ -287,27 +288,39 @@
                                     <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
                                     </CheckBox>
-                                    <CheckBox IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Click="CheckBox_Click">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable /me for bot messages.</TextBlock>
-                                    </CheckBox>
-                                    <GroupBox Header="Welcome Users - Only once per user per active stream (no repeats)">
-                                        <StackPanel Margin="5">
-                                            <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click">
-                                                <TextBlock>Disabled</TextBlock>
-                                            </RadioButton>
-                                            <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
-                                                <TextBlock TextWrapping="Wrap">Enable when viewer joins the channel</TextBlock>
-                                            </RadioButton>
-                                            <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
-                                                <TextBlock TextWrapping="Wrap">Enable when a viewer first chats</TextBlock>
-                                            </RadioButton>
-                                        </StackPanel>
-                                    </GroupBox>
+
+                                    <StackPanel Orientation="Horizontal">
+
+                                        <GroupBox Header="Add /me in front of Bot messages" Margin="4">
+                                            <StackPanel Margin="5">
+                                                <Label Content="/me changes message to all italics" />
+                                                <RadioButton IsChecked="{Binding NoMeMsg, Mode=TwoWay}" Content="Disabled" Margin="0,5,0,0"/>
+                                                <RadioButton IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Content="Enable /me for all commands" Margin="0,5,0,0" />
+                                                <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command" Margin="0,5,0,0" />
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Welcome Users" Margin="4">
+                                            <StackPanel Margin="5">
+                                                <Label Content="Only once per user per active stream (no repeats)" />
+                                                <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
+                                                    <TextBlock>Disabled</TextBlock>
+                                                </RadioButton>
+                                                <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
+                                                    <TextBlock TextWrapping="Wrap">Enable when viewer joins the channel</TextBlock>
+                                                </RadioButton>
+                                                <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click" Margin="0,5,0,0">
+                                                    <TextBlock TextWrapping="Wrap">Enable when a viewer first chats</TextBlock>
+                                                </RadioButton>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+
                                     <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock Padding="5" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream. Add names to "Auto SO" tab.</TextBlock>
                                     </CheckBox>
                                     <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable repeating commands based on the seconds timer. Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
+                                        <TextBlock Padding="5" Width="600" TextWrapping="Wrap">Enable repeating commands based on the seconds timer. Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
                                     </CheckBox>
                                 </StackPanel>
                             </TabItem>
@@ -398,7 +411,7 @@
                             </GroupBox>
 
                             <ListView Grid.Row="3"  x:Name="LV_JoinList" MaxWidth="500" 
-                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" SelectedItem="{Binding JoinCollection}" Margin="0,0,0,10">
+                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" Margin="0,0,0,10">
                                 <ListView.Resources>
                                     <DataTemplate x:Key="GridColCheck">
                                         <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Checked="JoinCollectionCheckBox_Checked" AutomationProperties.IsRowHeader="False" />
@@ -407,8 +420,8 @@
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="Remove" Width="70" CellTemplate="{DynamicResource GridColCheck}" />
-                                        <GridViewColumn Header="GameTag UserName" Width="200" DisplayMemberBinding="{Binding Path=GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
-                                        <GridViewColumn Header="Chat User" Width="200" DisplayMemberBinding="{Binding Path=ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                        <GridViewColumn Header="GameTag UserName" Width="200" DisplayMemberBinding="{Binding GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                        <GridViewColumn Header="Chat User" Width="200" DisplayMemberBinding="{Binding ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>

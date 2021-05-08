@@ -1,4 +1,5 @@
-﻿using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
@@ -86,13 +87,10 @@ namespace ChatBot_Net5.Data
                 _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
             }
 
-            // check all default ChannelEvents names
-            SetDefaultChannelEventsTable();
+            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
+            SetDefaultCommandsTable(); // check all default Commands
 
-            // check all default Commands
-            SetDefaultCommandsTable();
-
-            _DataSource.AcceptChanges();
+            SaveData();
         }
 
         /// <summary>
@@ -100,9 +98,11 @@ namespace ChatBot_Net5.Data
         /// </summary>
         public void SaveData()
         {
-            _DataSource.AcceptChanges();
-
-            _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram);
+            lock (_DataSource)
+            {
+                _DataSource.AcceptChanges();
+                _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram);
+            }
         }
         #endregion
 
@@ -136,13 +136,12 @@ namespace ChatBot_Net5.Data
                     Tuple<string, string> values = dictionary[command];
                     lock (_DataSource)
                     {
-                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), true, values.Item1, values.Item2);
+                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), true, values.Item1, values.Item2, false);
                     }
                 }
             }
 
             _DataSource.ChannelEvents.AcceptChanges();
-            SaveData();
         }
         #endregion Regular Channel Events
 
@@ -363,6 +362,8 @@ namespace ChatBot_Net5.Data
         #endregion Discord and Webhooks
 
         #region Stream Statistics
+        private DataSource.StreamStatsRow CurrStreamStatRow;
+
         internal DataSource.StreamStatsRow[] GetAllStreamData()
         {
             lock (_DataSource.StreamStats)
@@ -371,80 +372,77 @@ namespace ChatBot_Net5.Data
             }
         }
 
+        internal DataSource.StreamStatsRow GetAllStreamData(DateTime dateTime)
+        {
+            foreach(DataSource.StreamStatsRow streamStatsRow in GetAllStreamData())
+            {
+                if (streamStatsRow.StreamStart == dateTime)
+                {
+                    return streamStatsRow;
+                }
+            }
+
+            return null;
+        }
+
         internal bool AddStream(DateTime StreamStart)
         {
-            foreach (DataSource.StreamStatsRow s in GetAllStreamData())
+            if (GetTodayStream(StreamStart))
             {
-                if (DateCheckEqual(s.StreamStart, StreamStart))
-                {
-                    return false;
-                }
+                return false;
             }
             lock (_DataSource.StreamStats)
             {
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 _DataSource.StreamStats.AcceptChanges();
                 SaveData();
+
+                CurrStreamStatRow = GetAllStreamData(StreamStart);
+
                 return true;
             }
         }
-
-        private bool DateCheckEqual(DateTime first, DateTime second) => first.Day == second.Day && first.Month == second.Month && first.Year == second.Year && first.Hour == second.Hour && first.Minute == second.Minute;
 
         internal void PostStreamStat(StreamStat streamStat)
         {
             lock (_DataSource.StreamStats)
             {
-                foreach (DataSource.StreamStatsRow s in GetAllStreamData()) // loop through each data item because a date string causes a data format exception in .Select( ...DateTime.ToString() );
+                CurrStreamStatRow ??= GetAllStreamData(streamStat.StreamStart);
+
+                if (CurrStreamStatRow == null)
                 {
-                    if (DateCheckEqual(s.StreamStart, streamStat.StreamStart))
-                    {
-                        s.StreamStart = streamStat.StreamStart;
-                        s.StreamEnd = streamStat.StreamEnd;
-                        s.NewFollows = streamStat.NewFollows;
-                        s.NewSubscribers = streamStat.NewSubs;
-                        s.GiftSubs = streamStat.GiftSubs;
-                        s.Bits = streamStat.Bits;
-                        s.Raids = streamStat.Raids;
-                        s.Hosted = streamStat.Hosted;
-                        s.UsersBanned = streamStat.UsersBanned;
-                        s.UsersTimedOut = streamStat.UsersTimedOut;
-                        s.ModeratorsPresent = streamStat.ModsPresent;
-                        s.SubsPresent = streamStat.SubsPresent;
-                        s.VIPsPresent = streamStat.VIPsPresent;
-                        s.TotalChats = streamStat.TotalChats;
-                        s.Commands = streamStat.Commands;
-                        s.AutomatedEvents = streamStat.AutoEvents;
-                        s.AutomatedCommands = streamStat.AutoCommands;
-                        s.DiscordMsgs = streamStat.DiscordMsgs;
-                        s.ClipsMade = streamStat.ClipsMade;
-                        s.ChannelPtCount = streamStat.ChannelPtCount;
-                        s.ChannelChallenge = streamStat.ChannelChallenge;
-                        s.MaxUsers = streamStat.MaxUsers;
-
-                        SaveData();
-                        return;
-                    }
+                    _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
                 }
-
-                _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
-
+                else
+                {
+                    CurrStreamStatRow.StreamStart = streamStat.StreamStart;
+                    CurrStreamStatRow.StreamEnd = streamStat.StreamEnd;
+                    CurrStreamStatRow.NewFollows = streamStat.NewFollows;
+                    CurrStreamStatRow.NewSubscribers = streamStat.NewSubs;
+                    CurrStreamStatRow.GiftSubs = streamStat.GiftSubs;
+                    CurrStreamStatRow.Bits = streamStat.Bits;
+                    CurrStreamStatRow.Raids = streamStat.Raids;
+                    CurrStreamStatRow.Hosted = streamStat.Hosted;
+                    CurrStreamStatRow.UsersBanned = streamStat.UsersBanned;
+                    CurrStreamStatRow.UsersTimedOut = streamStat.UsersTimedOut;
+                    CurrStreamStatRow.ModeratorsPresent = streamStat.ModsPresent;
+                    CurrStreamStatRow.SubsPresent = streamStat.SubsPresent;
+                    CurrStreamStatRow.VIPsPresent = streamStat.VIPsPresent;
+                    CurrStreamStatRow.TotalChats = streamStat.TotalChats;
+                    CurrStreamStatRow.Commands = streamStat.Commands;
+                    CurrStreamStatRow.AutomatedEvents = streamStat.AutoEvents;
+                    CurrStreamStatRow.AutomatedCommands = streamStat.AutoCommands;
+                    CurrStreamStatRow.DiscordMsgs = streamStat.DiscordMsgs;
+                    CurrStreamStatRow.ClipsMade = streamStat.ClipsMade;
+                    CurrStreamStatRow.ChannelPtCount = streamStat.ChannelPtCount;
+                    CurrStreamStatRow.ChannelChallenge = streamStat.ChannelChallenge;
+                    CurrStreamStatRow.MaxUsers = streamStat.MaxUsers;
+                }
                 SaveData();
             }
         }
 
-        internal bool GetTodayStream(DateTime CurrTime)
-        {
-            foreach (DataSource.StreamStatsRow s in GetAllStreamData())
-            {
-                if (s.StreamStart.Date == CurrTime.Date)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        internal bool GetTodayStream(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
 
         #endregion
 
@@ -512,11 +510,9 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage);
+                        _DataSource.Commands.AddCommandsRow(key, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.DBParamsString(), param.AllowUser, param.Usage, param.Table, GetKey(param.Table), param.Field, false);
                     }
                 }
-
-                SaveData();
             }
         }
 
@@ -585,13 +581,38 @@ switches:
             }
         }
 
+        internal string GetKey(string Table)
+        {
+            string key="";
+
+            if (Table != "")
+            {
+                DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
+                if ( k?.Length > 1)
+                {
+                    foreach (DataColumn d in k)
+                    {
+                        if (d.ColumnName != "Id")
+                        {
+                            key = d.ColumnName;
+                        }
+                    }
+                }
+                else
+                {
+                    key = k!=null ? k[0].ColumnName : null;
+                }
+            }
+            return key;
+        }
+
         internal string AddCommand(string cmd, CommandParams Params)
         {
             string strParams = Params.DBParamsString();
 
             lock (_DataSource.Commands)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.Permission.ToString(), Params.Message, Params.Timer, strParams, Params.AllowUser, Params.Usage);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.Permission.ToString(), Params.Message, Params.Timer, strParams, Params.AllowUser, Params.Usage, Params.Table, GetKey(Params.Table), Params.Field, Params.AddMe=false);
                 SaveData();
             }
             return "Command added!";
@@ -613,6 +634,11 @@ switches:
             }
 
             string socials = socialrows[0].Message;
+
+            if (OptionFlags.PerComMeMsg == true && socialrows[0].AddMe == true)
+            {
+                socials = "/me " + socialrows[0].Message;
+            }
 
             lock (_DataSource.Commands)
             {
@@ -671,7 +697,7 @@ switches:
         //    return BotController.ParseReplace(comrow[0].Message, datavalues);
         //}
 
-        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowParam)
+        internal void GetCommand(string cmd, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -689,6 +715,7 @@ switches:
             Message = comrow[0].Message;
             ParamQuery = comrow[0].Params;
             AllowParam = comrow[0].AllowParam;
+            AddMe = comrow[0].AddMe==true;
         }
 
         private object[] PerformQuery(DataSource.CommandsRow row, string InvokedUser, string ParamUser)
