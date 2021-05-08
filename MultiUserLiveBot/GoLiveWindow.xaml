@@ -44,7 +44,7 @@
             </StatusBarItem>
         </StatusBar>
         <TabControl>
-            <TabItem Header="Twitch Bot Setup">
+            <TabItem x:Name="Tab_Setup" Header="Twitch Bot Setup">
                 <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                         <StackPanel Orientation="Vertical">
@@ -248,11 +248,11 @@
                     </FlowDocumentScrollViewer>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="Channels">
+            <TabItem x:Name="Tab_Channels" Header="Channels">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
-                        <RowDefinition Height="41" />
+                        <RowDefinition Height="68" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -272,18 +272,19 @@
                                 </TextBlock>
                             </Label>
                     </TextBlock>
-                    
+
                     <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" BorderBrush="#FF212D34" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,0,5,0" DataContext="{DynamicResource TwitchLiveBot}">
                         <StackPanel Orientation="Vertical">
-                             <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StartBot" IsEnabled="False"  />
-                            <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StopBot" IsChecked="True" IsEnabled="False" />
-                           
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StartBot" IsEnabled="False" Width="70"  />
+                                <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap">Setup tab is disabled once bot starts until restarted. Researching Issue (crash) when changing tabs and live data posts to the right.</TextBlock>
                         </StackPanel>
-                        
                     </GroupBox>
 
                     <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
-                    <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" VerticalAlignment="Bottom" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus">
+                    <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="#user" Click="MenuItem_Click" />

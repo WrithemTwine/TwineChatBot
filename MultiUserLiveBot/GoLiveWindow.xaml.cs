@@ -153,6 +153,7 @@ namespace MultiUserLiveBot
                     Radio_Twitch_StartBot.IsEnabled = false;
                     Radio_Twitch_StartBot.IsChecked = true;
                     Radio_Twitch_StopBot.IsEnabled = true;
+                    Tab_Setup.IsEnabled = false;
                 }
             }
         }
