@@ -1,5 +1,6 @@
 ﻿using ChatBot_Net5.Clients;
 
+using MultiUserLiveBot.Data;
 using MultiUserLiveBot.Properties;
 
 using System;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
-using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Services;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
@@ -20,12 +20,8 @@ namespace MultiUserLiveBot.Clients
         /// </summary>
         public static LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
-        public event EventHandler<LiveAlertArgs> OnLiveNotification;
 
-        private void LiveAlertHandler(Stream stream)
-        {
-            OnLiveNotification?.Invoke(this, new() { ChannelStream = stream });
-        }
+        public DataManager DataManage { get; set; }
 
         public TwitchLiveBot()
         {
@@ -34,8 +30,34 @@ namespace MultiUserLiveBot.Clients
         }
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
-        {
-            LiveAlertHandler(e.Stream);
+        { 
+
+            string msg = Settings.Default.LiveMsg != "" ? Settings.Default.LiveMsg : "#user is now live streaming #category - #title! Come join and say hi at: #url";
+
+            Dictionary<string, string> dictionary = new()
+            {
+                { "#user", e.Stream.UserName },
+                { "#category", e.Stream.GameName },
+                { "#title", e.Stream.Title },
+                { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
+            };
+
+            // true posted new event, false did not post
+            bool PostedLive = DataManage.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
+
+            if (PostedLive)
+            {
+                // false if the date didn't match, true if an event matches
+                bool MultiLive = DataManage.CheckStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
+
+                if ((Settings.Default.PostMultiLive && MultiLive) || !MultiLive)
+                {
+                    foreach (Uri u in DataManage.GetDiscordLinks())
+                    {
+                        DiscordWebhook.SendLiveMessage(u, GoLiveWindow.ParseReplace(msg, dictionary)).Wait();
+                    }
+                }
+            }
         }
 
         public bool Connect(List<string> ChannelList)
@@ -61,15 +83,19 @@ namespace MultiUserLiveBot.Clients
             return true;
         }
 
-        public override bool StartBot()
+        public bool StartBot(List<string> ChannelList)
         {
-            LiveStreamMonitor.Start();
+            Connect(ChannelList);
+            LiveStreamMonitor?.Start();
             return true;
         }
 
         public override bool StopBot()
         {
-            LiveStreamMonitor.Stop();
+            if (LiveStreamMonitor?.Enabled==true)
+            {
+                LiveStreamMonitor.Stop();
+            }
             return true;
         }
     }

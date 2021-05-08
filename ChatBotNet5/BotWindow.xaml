@@ -84,6 +84,7 @@
                                     </StackPanel>
                                 </GroupBox>
                             </StackPanel>
+                                                       
                             <FlowDocumentScrollViewer DockPanel.Dock="Right" Margin="10" VerticalScrollBarVisibility="Auto">
                                 <FlowDocument FontSize="12" PagePadding="5">
                                     <Section>

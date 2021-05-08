@@ -118,5 +118,17 @@ namespace MultiUserLiveBot.Properties {
                 this["PostMultiLive"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#user is now live streaming #category - #title! Come join and say hi at: #url")]
+        public string LiveMsg {
+            get {
+                return ((string)(this["LiveMsg"]));
+            }
+            set {
+                this["LiveMsg"] = value;
+            }
+        }
     }
 }

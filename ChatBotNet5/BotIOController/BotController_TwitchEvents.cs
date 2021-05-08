@@ -140,7 +140,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 // get message, set a default if otherwise deleted/unavailable
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
-                msg ??= "@everyone, #user is now live streaming #category - #title! &lt;br/&gt; Come join and say hi at: #url";
+                msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
 
                 // keys for exchanging codes for representative names
                 Dictionary<string, string> dictionary = new()

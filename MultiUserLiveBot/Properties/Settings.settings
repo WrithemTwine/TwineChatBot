@@ -26,5 +26,8 @@
     <Setting Name="PostMultiLive" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="LiveMsg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#user is now live streaming #category - #title! Come join and say hi at: #url</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -376,7 +376,7 @@ namespace ChatBot_Net5.Data
         {
             foreach(DataSource.StreamStatsRow streamStatsRow in GetAllStreamData())
             {
-                if(DateCheckEqual(streamStatsRow.StreamStart, dateTime))
+                if (streamStatsRow.StreamStart == dateTime)
                 {
                     return streamStatsRow;
                 }
@@ -402,8 +402,6 @@ namespace ChatBot_Net5.Data
                 return true;
             }
         }
-
-        private bool DateCheckEqual(DateTime first, DateTime second) => first.Day == second.Day && first.Month == second.Month && first.Year == second.Year && first.Hour == second.Hour && first.Minute == second.Minute;
 
         internal void PostStreamStat(StreamStat streamStat)
         {

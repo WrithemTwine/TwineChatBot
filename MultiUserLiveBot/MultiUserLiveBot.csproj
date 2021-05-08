@@ -5,6 +5,10 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>MultiUserLiveBot.App</StartupObject>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
+    <Copyright>MIT</Copyright>
+    <Description>A bot monitoring multiple channels for when they go live. Currently posts to Discord through WebHook URLs.</Description>
   </PropertyGroup>
 
   <ItemGroup>

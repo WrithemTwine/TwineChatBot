@@ -124,7 +124,7 @@ namespace ChatBot_Net5.Data
             if (CurrStream.StreamStart == DateTime.Parse(StreamStat.DefaultTime))
             {
                 CurrStream.StreamStart = Started.ToLocalTime();
-                datamanager.AddStream(Started);
+                datamanager.AddStream(CurrStream.StreamStart);
             }
         }
 

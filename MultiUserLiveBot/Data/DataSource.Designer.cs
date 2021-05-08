@@ -359,6 +359,8 @@ namespace MultiUserLiveBot.Data {
             
             private global::System.Data.DataColumn columnId;
             
+            private global::System.Data.DataColumn columnServer;
+            
             private global::System.Data.DataColumn columnType;
             
             private global::System.Data.DataColumn columnURL;
@@ -401,6 +403,14 @@ namespace MultiUserLiveBot.Data {
             public global::System.Data.DataColumn IdColumn {
                 get {
                     return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ServerColumn {
+                get {
+                    return this.columnServer;
                 }
             }
             
@@ -457,10 +467,11 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow AddDiscordRow(string Type, string URL) {
+            public DiscordRow AddDiscordRow(string Server, string Type, string URL) {
                 DiscordRow rowDiscordRow = ((DiscordRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
+                        Server,
                         Type,
                         URL};
                 rowDiscordRow.ItemArray = columnValuesArray;
@@ -493,6 +504,7 @@ namespace MultiUserLiveBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
+                this.columnServer = base.Columns["Server"];
                 this.columnType = base.Columns["Type"];
                 this.columnURL = base.Columns["URL"];
             }
@@ -502,6 +514,8 @@ namespace MultiUserLiveBot.Data {
             private void InitClass() {
                 this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
+                this.columnServer = new global::System.Data.DataColumn("Server", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnServer);
                 this.columnType = new global::System.Data.DataColumn("Type", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnType);
                 this.columnURL = new global::System.Data.DataColumn("URL", typeof(string), null, global::System.Data.MappingType.Element);
@@ -512,7 +526,7 @@ namespace MultiUserLiveBot.Data {
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
-                this.columnType.DefaultValue = ((string)("Live"));
+                this.columnType.DefaultValue = ((string)("Discord"));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1222,6 +1236,22 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Server {
+                get {
+                    try {
+                        return ((string)(this[this.tableDiscord.ServerColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Server\' in table \'Discord\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDiscord.ServerColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Type {
                 get {
                     try {
@@ -1250,6 +1280,18 @@ namespace MultiUserLiveBot.Data {
                 set {
                     this[this.tableDiscord.URLColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsServerNull() {
+                return this.IsNull(this.tableDiscord.ServerColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetServerNull() {
+                this[this.tableDiscord.ServerColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

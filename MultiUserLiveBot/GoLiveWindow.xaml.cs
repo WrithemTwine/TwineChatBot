@@ -4,6 +4,7 @@ using MultiUserLiveBot.Properties;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,8 +29,10 @@ namespace MultiUserLiveBot
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
             }
+            (Resources["TwitchLiveBot"] as TwitchLiveBot).DataManage = (Resources["DataManager"] as DataManager);
         }
 
+        #region static string helpers
         private const string codekey = "#";
 
         /// <summary>
@@ -94,8 +97,12 @@ namespace MultiUserLiveBot
         {
             return src.ToString(CultureInfo.CurrentCulture) + " " + (src != 1 ? plural : single);
         }
+        #endregion static string helpers
 
-
+        #region GUI events and helpers
+        /// <summary>
+        /// Verify certain text fields contain data for the bot login to permit the radio button to be enabled for user to click start
+        /// </summary>
         internal void CheckFocus()
         {
             if (TB_Twitch_BotUser.Text.Length != 0
@@ -103,7 +110,7 @@ namespace MultiUserLiveBot
                 && TB_Twitch_AccessToken.Text.Length != 0)
             {
                 Radio_Twitch_StartBot.IsEnabled = true;
-                Radio_Twitch_StopBot.IsEnabled = true;
+                //Radio_Twitch_StopBot.IsEnabled = true;
             }
         }
 
@@ -114,6 +121,7 @@ namespace MultiUserLiveBot
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
             Settings.Default.Save();
+            CheckFocus();
         }
 
         /// <summary>
@@ -133,12 +141,19 @@ namespace MultiUserLiveBot
         {
             if (!IsBotEnabled)
             {
-                TwitchLiveBot io = (sender as RadioButton).DataContext as TwitchLiveBot;
-                io.StartBot();
-                ToggleInputEnabled();
-                IsBotEnabled = !IsBotEnabled;
-                Radio_Twitch_StartBot.IsEnabled = false;
-                Radio_Twitch_StopBot.IsEnabled = true;
+                DataManager data = (Resources["DataManager"] as DataManager);
+                List<string> names = data.GetChannelNames();
+
+                if (names.Count > 0)
+                {
+                    TwitchLiveBot io = (sender as RadioButton).DataContext as TwitchLiveBot;
+                    io.StartBot(names);
+                    ToggleInputEnabled();
+                    IsBotEnabled = !IsBotEnabled;
+                    Radio_Twitch_StartBot.IsEnabled = false;
+                    Radio_Twitch_StartBot.IsChecked = true;
+                    Radio_Twitch_StopBot.IsEnabled = true;
+                }
             }
         }
 
@@ -161,36 +176,32 @@ namespace MultiUserLiveBot
                 ToggleInputEnabled();
                 IsBotEnabled = !IsBotEnabled;
                 Radio_Twitch_StartBot.IsEnabled = true;
+                Radio_Twitch_StopBot.IsChecked = true;
                 Radio_Twitch_StopBot.IsEnabled = false;
             }
         }
 
-        private void FollowBot_OnLiveNotification(object sender, LiveAlertArgs e)
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
+            int start = TB_LiveMsg.SelectionStart;
 
-
-            //string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
-            string msg = "@everyone, #user is now live streaming #category - #title! &lt;br/&gt; Come join and say hi at: #url";
-
-            Dictionary<string, string> dictionary = new()
+            if (TB_LiveMsg.SelectionLength > 0)
             {
-                { "#user", e.ChannelStream.UserName },
-                { "#category", e.ChannelStream.GameName },
-                { "#title", e.ChannelStream.Title },
-                { "#url", "https://www.twitch.tv/" + e.ChannelStream.UserName }
-            };
-
-            foreach (Uri u in (Resources["DataManager"] as DataManager).Discord)
-            {
-                DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+                TB_LiveMsg.Text = TB_LiveMsg.Text.Remove(start, TB_LiveMsg.SelectionLength);
             }
 
+            TB_LiveMsg.Text = TB_LiveMsg.Text.Insert(start, (sender as MenuItem).Header.ToString());
+            TB_LiveMsg.SelectionStart = start;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DataManager data = Resources["DataManager"] as DataManager;
-            data.SaveData();
+            (Resources["DataManager"] as DataManager).SaveData();
+            (Resources["TwitchLiveBot"] as TwitchLiveBot).StopBot();
+            
+            Settings.Default.Save();
         }
+        #endregion GUI events and helpers
+
     }
 }
