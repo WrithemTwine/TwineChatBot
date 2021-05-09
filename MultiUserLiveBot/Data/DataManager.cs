@@ -9,7 +9,7 @@ namespace MultiUserLiveBot.Data
 {
     public class DataManager : INotifyPropertyChanged
     {
-        private static readonly string DataFileName = "MultiChatbotData.xml";
+        private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "MultiChatbotData.xml");
 
         private DataSource _DataSource;
 
