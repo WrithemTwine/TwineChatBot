@@ -10,10 +10,11 @@ namespace ChatBot_Net5.Models
         internal string Currency { get; set; } = string.Empty;
         internal string Unit { get; set; } = string.Empty;
         internal ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        internal int Top { get; set; } = 0;
-        internal string Sort { get; set; } = "ASC";
-        internal string Action { get; set; } = "Get";
-        internal bool AllowUser { get; set; } = false;
+        internal long Top { get; set; } = 0;
+        internal string Sort { get; set; } = CommandSort.ASC.ToString();
+        internal string Action { get; set; } = CommandAction.Get.ToString();
+        internal bool AllowParam { get; set; } = false;
+        internal bool LookupData { get; set; } = false;
         internal int Timer { get; set; } = 0;
         internal string Usage { get; set; } = "!<command>";
         internal string Message { get; set; } = string.Empty;
@@ -58,85 +59,103 @@ namespace ChatBot_Net5.Models
                 foreach (string param in ParamList)
                 {
                     string[] keyvalue = param.Split(':');
+                    string value = (keyvalue.Length > 1) ? keyvalue[1].Trim() : "";
 
                     switch (keyvalue[0])
                     {
                         case "t":
-                            data.Table = keyvalue[1];
+                            data.Table = value;
                             break;
                         case "f":
-                            data.Field = keyvalue[1];
+                            data.Field = value;
                             break;
                         case "c":
-                            data.Currency = keyvalue[1];
+                            data.Currency = value;
                             break;
                         case "unit":
-                            data.Unit = keyvalue[1];
+                            data.Unit = value;
                             break;
                         case "p":
-                            data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), keyvalue[1]);
+                            data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), value);
                             break;
                         case "top":
-                            data.Top = int.Parse(keyvalue[1]);
+                            data.Top = int.Parse(value);
                             break;
                         case "s":
-                            data.Sort = keyvalue[1];
+                            data.Sort = Validate(value, typeof(CommandSort));
                             break;
                         case "a":
-                            data.Action = keyvalue[1];
+                            data.Action = Validate(value, typeof(CommandAction));
                             break;
-                        case "u":
-                            data.AllowUser = bool.Parse(keyvalue[1]);
+                        case "param":
+                            data.AllowParam = bool.Parse(value);
                             break;
                         case "timer":
-                            data.Timer = int.Parse(keyvalue[1]);
+                            data.Timer = int.Parse(value);
                             break;
-                        case "usage":
+                        case "use":
                             checkUsage = true;
-                            data.Usage = keyvalue[1];
+                            data.Usage = value;
                             break;
                         case "m":
                             data.Message = keyvalue[0];
                             break;
                         case "addme":
-                            data.AddMe = bool.Parse(keyvalue[1]);
+                            data.AddMe = bool.Parse(value);
                             break;
                     }
                 }
 
                 if (!checkUsage)
                 {
-                    data.Usage = "!<command>" + (data.AllowUser ? " displayname" : "");
+                    data.Usage = "!<command>" + (data.AllowParam ? " displayname" : "");
                 }
             }
+
+            data.LookupData = !(data.Table == string.Empty);
 
             return data;
         }
 
-        internal string DBParamsString()
+        private static string Validate(string v, Type type)
         {
-            static string Combine(string key, string value) => key + ":" + value + " ";
-
-            string param = " ";
-
-            if (!Empty)
+            foreach (string enumvalue in type.GetEnumNames())
             {
-                Dictionary<string, string> paramdictionary = new()
+                if (enumvalue == v)
                 {
-                    { "c", Currency },
-                    { "unit", Unit },
-                    { "top", Top.ToString() },
-                    { "s", Sort },
-                    { "a", Action }
-                };
-
-                foreach (string k in paramdictionary.Keys)
-                {
-                    param += Combine(k, paramdictionary[k]);
+                    return enumvalue;
                 }
             }
 
-            return param.Trim();
+            throw new ArgumentException(string.Format("The supplied value {0} is not included within the acceptable list: {1}", v, type.GetEnumNames().ToString()));
         }
+
+
+
+        //internal string DBParamsString()
+        //{
+        //    static string Combine(string key, string value) => key + ":" + value + " ";
+
+        //    string param = " ";
+
+        //    if (!Empty)
+        //    {
+        //        Dictionary<string, string> paramdictionary = new()
+        //        {
+        //            { "c", Currency },
+        //            { "unit", Unit },
+        //            { "top", Top.ToString() },
+        //            { "s", Sort },
+        //            { "a", Action }
+        //        };
+
+        //        foreach (string k in paramdictionary.Keys)
+        //        {
+        //            param += Combine(k, paramdictionary[k]);
+        //        }
+        //    }
+
+        //    return param.Trim();
+        //}
     }
 }

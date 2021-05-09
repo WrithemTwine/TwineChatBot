@@ -166,51 +166,79 @@ namespace ChatBot_Net5.Data
                     NotifyPropertyChanged("UserPartyStart");
                     NotifyPropertyChanged("UserPartyStop");
                 }
-                //string comuser = arglist.Count > 0 ? (arglist[0].Contains('@') ? arglist[0] : string.Empty) : null;
 
-                //return datamanager.PerformCommand(command, DisplayName ?? BotUserName, comuser, arglist);
+                datamanager.GetCommand(command, out DataSource.CommandsRow CommData);
 
-                datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe);
+                string paramvalue;
 
-                string user = "";
-
-                if (AllowParam)
+                if (CommData.AllowParam)
                 {
                     if (arglist == null || arglist.Count == 0 || arglist[0] == string.Empty)
                     {
-                        user = DisplayName;
+                        paramvalue = DisplayName;
                     }
                     else if (arglist[0].Contains('@'))
                     {
-                        user = arglist[0].Remove(0, 1);
+                        paramvalue = arglist[0].Remove(0, 1);
                     }
                     else
                     {
-                        user = arglist[0];
+                        paramvalue = arglist[0];
                     }
                 }
                 else
                 {
-                    user = DisplayName;
+                    paramvalue = DisplayName;
                 }
 
                 Dictionary<string, string> datavalues = new()
                 {
-                    { "#user", user },
-                    { "#url", "http://www.twitch.tv/" + user },
+                    { "#user", paramvalue },
+                    { "#url", "http://www.twitch.tv/" + paramvalue },
                     { "#time", DateTime.Now.TimeOfDay.ToString() },
                     { "#date", DateTime.Now.Date.ToString() }
                 };
 
-                object[] comparam = null;
-                if (ParamQuery != null || ParamQuery != string.Empty)
+                object querydata = null;
+
+                if (CommData.lookupdata)
                 {
-                    CommandParams query = CommandParams.Parse(ParamQuery);
+                    if (CommData.top > 0)
+                    {
+                        if (CommData.action != CommandAction.Get.ToString())
+                        {
+                            throw new InvalidOperationException(string.Format("The command {0} is configured for {1}, but can only perform {2}", CommData.CmdName, CommData.action, CommandAction.Get.ToString()));
+                        }
+                    }
+                    else
+                    {
+                        querydata = datamanager.PerformQuery(CommData, paramvalue);
+
+                        string output = "";
+                        if (querydata.GetType() == typeof(string))
+                        {
+                            output = (string)querydata;
+                        }
+                        else if (querydata.GetType() == typeof(TimeSpan))
+                        {
+                            output = BotController.FormatTimes((TimeSpan)querydata);
+                        }
+                        else if (querydata.GetType() == typeof(DateTime))
+                        {
+                            output = ((DateTime)querydata).ToShortDateString();
+                        }
+                        else if (querydata.GetType() == typeof(int))
+                        {
+                            output = querydata.ToString();
+                        }
+
+                        datavalues.Add("#query", output);
+                    }
                 }
 
-                string response = BotController.ParseReplace(Message, datavalues);
+                string response = BotController.ParseReplace(CommData.Message, datavalues);
 
-                return (OptionFlags.PerComMeMsg && AddMe ? "/me " : "" ) + response;
+                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "" ) + response;
             }
 
             return "not finished";
@@ -218,11 +246,11 @@ namespace ChatBot_Net5.Data
 
         internal void UserParty(string command, List<string> arglist, string UserName)
         {
-            datamanager.GetCommand(command, out string Usage, out string Message, out string ParamQuery, out bool AllowParam, out bool AddMe);
+            datamanager.GetCommand(command, out DataSource.CommandsRow CommData);
 
             UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;
-            userJoinArgs.AddMe = AddMe;
+            userJoinArgs.AddMe = CommData.AddMe;
             userJoinArgs.ChatUser = UserName;
             userJoinArgs.GameUserName = arglist.Count == 0 ? UserName : arglist[0];
 

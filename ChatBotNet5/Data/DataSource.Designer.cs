@@ -888,13 +888,13 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnName;
             
+            private global::System.Data.DataColumn columnAddMe;
+            
             private global::System.Data.DataColumn columnIsEnabled;
             
             private global::System.Data.DataColumn columnMsgStr;
             
             private global::System.Data.DataColumn columnCommands;
-            
-            private global::System.Data.DataColumn columnAddMe;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -947,6 +947,14 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn AddMeColumn {
+                get {
+                    return this.columnAddMe;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public global::System.Data.DataColumn IsEnabledColumn {
                 get {
                     return this.columnIsEnabled;
@@ -966,14 +974,6 @@ namespace ChatBot_Net5.Data {
             public global::System.Data.DataColumn CommandsColumn {
                 get {
                     return this.columnCommands;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn AddMeColumn {
-                get {
-                    return this.columnAddMe;
                 }
             }
             
@@ -1014,15 +1014,15 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public ChannelEventsRow AddChannelEventsRow(string Name, bool IsEnabled, string MsgStr, string Commands, bool AddMe) {
+            public ChannelEventsRow AddChannelEventsRow(string Name, bool AddMe, bool IsEnabled, string MsgStr, string Commands) {
                 ChannelEventsRow rowChannelEventsRow = ((ChannelEventsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         Name,
+                        AddMe,
                         IsEnabled,
                         MsgStr,
-                        Commands,
-                        AddMe};
+                        Commands};
                 rowChannelEventsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowChannelEventsRow);
                 return rowChannelEventsRow;
@@ -1054,10 +1054,10 @@ namespace ChatBot_Net5.Data {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnName = base.Columns["Name"];
+                this.columnAddMe = base.Columns["AddMe"];
                 this.columnIsEnabled = base.Columns["IsEnabled"];
                 this.columnMsgStr = base.Columns["MsgStr"];
                 this.columnCommands = base.Columns["Commands"];
-                this.columnAddMe = base.Columns["AddMe"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1067,14 +1067,14 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnId);
                 this.columnName = new global::System.Data.DataColumn("Name", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnName);
+                this.columnAddMe = new global::System.Data.DataColumn("AddMe", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAddMe);
                 this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIsEnabled);
                 this.columnMsgStr = new global::System.Data.DataColumn("MsgStr", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMsgStr);
                 this.columnCommands = new global::System.Data.DataColumn("Commands", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCommands);
-                this.columnAddMe = new global::System.Data.DataColumn("AddMe", typeof(bool), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnAddMe);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -1087,12 +1087,11 @@ namespace ChatBot_Net5.Data {
                 this.columnName.AllowDBNull = false;
                 this.columnName.ReadOnly = true;
                 this.columnName.Unique = true;
+                this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnIsEnabled.AllowDBNull = false;
                 this.columnIsEnabled.DefaultValue = ((bool)(true));
                 this.columnMsgStr.Caption = "Message";
                 this.columnCommands.ReadOnly = true;
-                this.columnAddMe.Caption = "AddMe to chat for specific commands - only with setting for individual";
-                this.columnAddMe.DefaultValue = ((bool)(false));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1571,17 +1570,19 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnCmdName;
             
+            private global::System.Data.DataColumn columnAddMe;
+            
             private global::System.Data.DataColumn columnPermission;
             
             private global::System.Data.DataColumn columnMessage;
             
             private global::System.Data.DataColumn columnRepeatTimer;
             
-            private global::System.Data.DataColumn columnParams;
-            
             private global::System.Data.DataColumn columnAllowParam;
             
             private global::System.Data.DataColumn columnUsage;
+            
+            private global::System.Data.DataColumn columnlookupdata;
             
             private global::System.Data.DataColumn columntable;
             
@@ -1589,7 +1590,15 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columndata_field;
             
-            private global::System.Data.DataColumn columnAddMe;
+            private global::System.Data.DataColumn columncurrency_field;
+            
+            private global::System.Data.DataColumn columnunit;
+            
+            private global::System.Data.DataColumn columnaction;
+            
+            private global::System.Data.DataColumn columntop;
+            
+            private global::System.Data.DataColumn columnsort;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -1642,6 +1651,14 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn AddMeColumn {
+                get {
+                    return this.columnAddMe;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public global::System.Data.DataColumn PermissionColumn {
                 get {
                     return this.columnPermission;
@@ -1666,14 +1683,6 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn ParamsColumn {
-                get {
-                    return this.columnParams;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public global::System.Data.DataColumn AllowParamColumn {
                 get {
                     return this.columnAllowParam;
@@ -1685,6 +1694,14 @@ namespace ChatBot_Net5.Data {
             public global::System.Data.DataColumn UsageColumn {
                 get {
                     return this.columnUsage;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn lookupdataColumn {
+                get {
+                    return this.columnlookupdata;
                 }
             }
             
@@ -1714,9 +1731,41 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn AddMeColumn {
+            public global::System.Data.DataColumn currency_fieldColumn {
                 get {
-                    return this.columnAddMe;
+                    return this.columncurrency_field;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn unitColumn {
+                get {
+                    return this.columnunit;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn actionColumn {
+                get {
+                    return this.columnaction;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn topColumn {
+                get {
+                    return this.columntop;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn sortColumn {
+                get {
+                    return this.columnsort;
                 }
             }
             
@@ -1757,21 +1806,42 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CommandsRow AddCommandsRow(string CmdName, string Permission, string Message, int RepeatTimer, string Params, bool AllowParam, string Usage, string table, string key_field, string data_field, bool AddMe) {
+            public CommandsRow AddCommandsRow(
+                        string CmdName, 
+                        bool AddMe, 
+                        string Permission, 
+                        string Message, 
+                        int RepeatTimer, 
+                        bool AllowParam, 
+                        string Usage, 
+                        bool lookupdata, 
+                        string table, 
+                        string key_field, 
+                        string data_field, 
+                        string currency_field, 
+                        string unit, 
+                        string action, 
+                        long top, 
+                        string sort) {
                 CommandsRow rowCommandsRow = ((CommandsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         CmdName,
+                        AddMe,
                         Permission,
                         Message,
                         RepeatTimer,
-                        Params,
                         AllowParam,
                         Usage,
+                        lookupdata,
                         table,
                         key_field,
                         data_field,
-                        AddMe};
+                        currency_field,
+                        unit,
+                        action,
+                        top,
+                        sort};
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
                 return rowCommandsRow;
@@ -1803,16 +1873,21 @@ namespace ChatBot_Net5.Data {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnCmdName = base.Columns["CmdName"];
+                this.columnAddMe = base.Columns["AddMe"];
                 this.columnPermission = base.Columns["Permission"];
                 this.columnMessage = base.Columns["Message"];
                 this.columnRepeatTimer = base.Columns["RepeatTimer"];
-                this.columnParams = base.Columns["Params"];
                 this.columnAllowParam = base.Columns["AllowParam"];
                 this.columnUsage = base.Columns["Usage"];
+                this.columnlookupdata = base.Columns["lookupdata"];
                 this.columntable = base.Columns["table"];
                 this.columnkey_field = base.Columns["key_field"];
                 this.columndata_field = base.Columns["data_field"];
-                this.columnAddMe = base.Columns["AddMe"];
+                this.columncurrency_field = base.Columns["currency_field"];
+                this.columnunit = base.Columns["unit"];
+                this.columnaction = base.Columns["action"];
+                this.columntop = base.Columns["top"];
+                this.columnsort = base.Columns["sort"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1822,26 +1897,36 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnId);
                 this.columnCmdName = new global::System.Data.DataColumn("CmdName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCmdName);
+                this.columnAddMe = new global::System.Data.DataColumn("AddMe", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnAddMe);
                 this.columnPermission = new global::System.Data.DataColumn("Permission", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnPermission);
                 this.columnMessage = new global::System.Data.DataColumn("Message", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMessage);
                 this.columnRepeatTimer = new global::System.Data.DataColumn("RepeatTimer", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnRepeatTimer);
-                this.columnParams = new global::System.Data.DataColumn("Params", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnParams);
                 this.columnAllowParam = new global::System.Data.DataColumn("AllowParam", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAllowParam);
                 this.columnUsage = new global::System.Data.DataColumn("Usage", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUsage);
+                this.columnlookupdata = new global::System.Data.DataColumn("lookupdata", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnlookupdata);
                 this.columntable = new global::System.Data.DataColumn("table", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columntable);
                 this.columnkey_field = new global::System.Data.DataColumn("key_field", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnkey_field);
                 this.columndata_field = new global::System.Data.DataColumn("data_field", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columndata_field);
-                this.columnAddMe = new global::System.Data.DataColumn("AddMe", typeof(bool), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnAddMe);
+                this.columncurrency_field = new global::System.Data.DataColumn("currency_field", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncurrency_field);
+                this.columnunit = new global::System.Data.DataColumn("unit", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnunit);
+                this.columnaction = new global::System.Data.DataColumn("action", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnaction);
+                this.columntop = new global::System.Data.DataColumn("top", typeof(long), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntop);
+                this.columnsort = new global::System.Data.DataColumn("sort", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnsort);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -1853,14 +1938,23 @@ namespace ChatBot_Net5.Data {
                 this.columnCmdName.AllowDBNull = false;
                 this.columnCmdName.Unique = true;
                 this.columnCmdName.Caption = "Command Name";
+                this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
-                this.columnParams.DefaultValue = ((string)(" "));
                 this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
                 this.columnAllowParam.DefaultValue = ((bool)(false));
                 this.columnUsage.DefaultValue = ((string)(" "));
-                this.columnAddMe.Caption = "AddMe to chat for specific commands - only with setting for individual";
-                this.columnAddMe.DefaultValue = ((bool)(false));
+                this.columnlookupdata.DefaultValue = ((bool)(false));
+                this.columntable.DefaultValue = ((string)(" "));
+                this.columnkey_field.DefaultValue = ((string)(" "));
+                this.columndata_field.DefaultValue = ((string)(" "));
+                this.columncurrency_field.DefaultValue = ((string)(" "));
+                this.columnunit.DefaultValue = ((string)(" "));
+                this.columnaction.Caption = "action - Get, Post, Update";
+                this.columnaction.DefaultValue = ((string)("Get"));
+                this.columntop.DefaultValue = ((long)(0));
+                this.columnsort.Caption = "sort- ASC or DESC";
+                this.columnsort.DefaultValue = ((string)("ASC"));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3953,6 +4047,22 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool AddMe {
+                get {
+                    try {
+                        return ((bool)(this[this.tableChannelEvents.AddMeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AddMe\' in table \'ChannelEvents\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableChannelEvents.AddMeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsEnabled {
                 get {
                     return ((bool)(this[this.tableChannelEvents.IsEnabledColumn]));
@@ -3996,18 +4106,14 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool AddMe {
-                get {
-                    try {
-                        return ((bool)(this[this.tableChannelEvents.AddMeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'AddMe\' in table \'ChannelEvents\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableChannelEvents.AddMeColumn] = value;
-                }
+            public bool IsAddMeNull() {
+                return this.IsNull(this.tableChannelEvents.AddMeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetAddMeNull() {
+                this[this.tableChannelEvents.AddMeColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4032,18 +4138,6 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetCommandsNull() {
                 this[this.tableChannelEvents.CommandsColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsAddMeNull() {
-                return this.IsNull(this.tableChannelEvents.AddMeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetAddMeNull() {
-                this[this.tableChannelEvents.AddMeColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -4261,6 +4355,22 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool AddMe {
+                get {
+                    try {
+                        return ((bool)(this[this.tableCommands.AddMeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AddMe\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.AddMeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Permission {
                 get {
                     try {
@@ -4309,22 +4419,6 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public string Params {
-                get {
-                    try {
-                        return ((string)(this[this.tableCommands.ParamsColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Params\' in table \'Commands\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableCommands.ParamsColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool AllowParam {
                 get {
                     try {
@@ -4352,6 +4446,22 @@ namespace ChatBot_Net5.Data {
                 }
                 set {
                     this[this.tableCommands.UsageColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool lookupdata {
+                get {
+                    try {
+                        return ((bool)(this[this.tableCommands.lookupdataColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'lookupdata\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.lookupdataColumn] = value;
                 }
             }
             
@@ -4405,17 +4515,81 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool AddMe {
+            public string currency_field {
                 get {
                     try {
-                        return ((bool)(this[this.tableCommands.AddMeColumn]));
+                        return ((string)(this[this.tableCommands.currency_fieldColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'AddMe\' in table \'Commands\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'currency_field\' in table \'Commands\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableCommands.AddMeColumn] = value;
+                    this[this.tableCommands.currency_fieldColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string unit {
+                get {
+                    try {
+                        return ((string)(this[this.tableCommands.unitColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'unit\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.unitColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string action {
+                get {
+                    try {
+                        return ((string)(this[this.tableCommands.actionColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'action\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.actionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public long top {
+                get {
+                    try {
+                        return ((long)(this[this.tableCommands.topColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'top\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.topColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string sort {
+                get {
+                    try {
+                        return ((string)(this[this.tableCommands.sortColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'sort\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.sortColumn] = value;
                 }
             }
             
@@ -4429,6 +4603,18 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetIdNull() {
                 this[this.tableCommands.IdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsAddMeNull() {
+                return this.IsNull(this.tableCommands.AddMeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetAddMeNull() {
+                this[this.tableCommands.AddMeColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4469,18 +4655,6 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsParamsNull() {
-                return this.IsNull(this.tableCommands.ParamsColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetParamsNull() {
-                this[this.tableCommands.ParamsColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsAllowParamNull() {
                 return this.IsNull(this.tableCommands.AllowParamColumn);
             }
@@ -4501,6 +4675,18 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetUsageNull() {
                 this[this.tableCommands.UsageColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IslookupdataNull() {
+                return this.IsNull(this.tableCommands.lookupdataColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetlookupdataNull() {
+                this[this.tableCommands.lookupdataColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4541,14 +4727,62 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsAddMeNull() {
-                return this.IsNull(this.tableCommands.AddMeColumn);
+            public bool Iscurrency_fieldNull() {
+                return this.IsNull(this.tableCommands.currency_fieldColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetAddMeNull() {
-                this[this.tableCommands.AddMeColumn] = global::System.Convert.DBNull;
+            public void Setcurrency_fieldNull() {
+                this[this.tableCommands.currency_fieldColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsunitNull() {
+                return this.IsNull(this.tableCommands.unitColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetunitNull() {
+                this[this.tableCommands.unitColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsactionNull() {
+                return this.IsNull(this.tableCommands.actionColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetactionNull() {
+                this[this.tableCommands.actionColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IstopNull() {
+                return this.IsNull(this.tableCommands.topColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SettopNull() {
+                this[this.tableCommands.topColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IssortNull() {
+                return this.IsNull(this.tableCommands.sortColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetsortNull() {
+                this[this.tableCommands.sortColumn] = global::System.Convert.DBNull;
             }
         }
         
