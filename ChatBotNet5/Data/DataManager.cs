@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
+using System.Windows;
 using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -16,7 +17,7 @@ namespace ChatBot_Net5.Data
     {
         #region DataSource
 
-        private static readonly string DataFileName = "ChatDataStore.xml"; // Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
+        private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
         private DataSource _DataSource;
         private Thread followerThread;
 

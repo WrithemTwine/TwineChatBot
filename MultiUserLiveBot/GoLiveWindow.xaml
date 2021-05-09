@@ -314,7 +314,7 @@
                     <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5"  
                               DataContext="{DynamicResource DataManager}" ItemsSource="{Binding Channels, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" MaxColumnWidth="160" />
                     <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" 
-                              DataContext="{DynamicResource DataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" MaxColumnWidth="160" />
+                              DataContext="{DynamicResource DataManager}" ItemsSource="{Binding LiveStream, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" MaxColumnWidth="160" />
                 </Grid>
             </TabItem>
         </TabControl>

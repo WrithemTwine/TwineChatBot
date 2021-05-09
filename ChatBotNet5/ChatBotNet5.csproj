@@ -7,8 +7,8 @@
     <UseWPF>true</UseWPF>
     <Authors>WrithemTwine</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
-    <AssemblyVersion>1.2.5.0</AssemblyVersion>
-    <FileVersion>1.2.5.0</FileVersion>
+    <AssemblyVersion>1.2.6.0</AssemblyVersion>
+    <FileVersion>1.2.6.0</FileVersion>
     <Version>1.2.5</Version>
     <PackageId>Twine_ChatBot</PackageId>
     <AssemblyName>TwineChatBot</AssemblyName>
