@@ -135,6 +135,8 @@ namespace ChatBot_Net5.Data
 
         private string PerformCommand(string command, string DisplayName, List<string> arglist)
         {
+            arglist.ForEach((s) => s = s.Trim());
+
             if (command == "addcommand")
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
