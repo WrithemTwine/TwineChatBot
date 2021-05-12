@@ -1,21 +1,20 @@
 ﻿<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:s="clr-namespace:MultiUserLiveBot.Properties"
-        xmlns:Data="clr-namespace:MultiUserLiveBot.Data" 
-        xmlns:Clients ="clr-namespace:MultiUserLiveBot.Clients"
-        x:Class="MultiUserLiveBot.GoLiveWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Clients="clr-namespace:MultiUserLiveBot.Clients"
+    xmlns:s="clr-namespace:MultiUserLiveBot.Properties"
+    x:Class="MultiUserLiveBot.GoLiveWindow"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         
-        Title="Go Live Bot" Height="700" MaxWidth="1000" Width="1000" Closing="Window_Closing">
+        Title="Multi-Channel Go Live Bot" Height="700" MaxWidth="1000" Width="1000" Closing="Window_Closing">
     <Window.Resources>
-        <Data:DataManager x:Key="DataManager" x:Name="DataManager" />
+        <!--<Data:DataManager x:Key="DataManager" x:Name="DataManager" />-->
         <Clients:TwitchLiveBot x:Key="TwitchLiveBot" x:Name="TwitchLiveBot" />
     </Window.Resources>
-    <DockPanel>
+    <DockPanel DataContext="{DynamicResource TwitchLiveBot}">
         <StatusBar DockPanel.Dock="Bottom" Height="25">
             <StatusBar.Resources>
                 <Style TargetType="Label" >
@@ -25,21 +24,21 @@
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Added Channels: " />
-                    <Label DataContext="{DynamicResource DataManager}" Content="{Binding Path=Channels.Count, NotifyOnSourceUpdated=True}" />
+                    <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Discord Links: " />
-                    <Label DataContext="{DynamicResource DataManager}" Content="{Binding Path=Discord.Count, NotifyOnSourceUpdated=True}" />
+                    <Label DataContext="{Binding ElementName=DG_Discord, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Live Events: " />
-                    <Label DataContext="{DynamicResource DataManager}" Content="{Binding Path=LiveStream.Count, NotifyOnSourceUpdated=True}" />
+                    <Label DataContext="{Binding ElementName=DG_LiveStreamStats, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
@@ -48,7 +47,6 @@
                 <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Width="400" Text="* Currently, this Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
                             <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                 <Label Content="Bot User Name" Width="110" />
                                 <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
@@ -93,7 +91,7 @@
                             </GroupBox>
                         </StackPanel>
                     </StackPanel>
-                    <FlowDocumentScrollViewer DockPanel.Dock="Bottom" Margin="10" VerticalScrollBarVisibility="Auto" BorderBrush="#FF040404" BorderThickness="0,1,0,0">
+                    <FlowDocumentScrollViewer DockPanel.Dock="Top" Margin="10" VerticalScrollBarVisibility="Auto" BorderBrush="#FF040404" BorderThickness="0,1,0,0">
                         <FlowDocument FontSize="12" PagePadding="5">
                             <Section>
                                 <Paragraph>
@@ -102,13 +100,12 @@
                                     <LineBreak/>
                                     <Run Text="The settings are saved at: "/>
                                     <Italic>
-                                        <Run Text="C:\Users\{username}\AppData\Local\ChatBot"/>
+                                        <Run Text="C:\Users\{username}\AppData\Local\MultiUserLiveBot"/>
+                                        <LineBreak />
+                                        <Run Text="If you need to move the settings, ensure the application is closed first." />
                                     </Italic>
                                 </Paragraph>
-                                <Section Padding="15,0,15,0">
-                                    <Paragraph>
-                                        <Run Text="Be sure to update the application into the same folder to keep the settings maintained between versions. If you do need to move the application or if installed into another folder and you want to move the settings already saved to the application, run the application to establish a new folder with settings at the above path and look at the folder timestamps. The last part of the folder name, all the jumbled letters, is a hash code based on the application's folder path."/>
-                                    </Paragraph>
+                                <!--<Section Padding="15,0,15,0">
                                     <Table>
                                         <TableRowGroup>
                                             <TableRow>
@@ -137,7 +134,7 @@
                                             </TableRow>
                                         </TableRowGroup>
                                     </Table>
-                                </Section>
+                                </Section>-->
                                 <Paragraph>
                                     <Run Text="Bots need an &quot;Access Token&quot; to authorize it to post to Twitch. Per the OAuth requirements, the &quot;Access Token&quot; must be paired with the &quot;Client Id&quot; used to generate the &quot;Access Token&quot;."/>
                                     <LineBreak />
@@ -156,9 +153,9 @@
                                     </ListItem>
                                     <ListItem>
                                         <Paragraph>
-                                            <Run Text="Visit: "/>
+                                            <Run Text="Visit (logged in as the bot account): "/>
                                             <Italic>
-                                                <Run Text="https://dev.twitch.tv/console"/>
+                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://dev.twitch.tv/console"/>
                                             </Italic>
                                             <Run Text=" and &quot;Register Your Application&quot; under the account the bot will use."/>
                                             <LineBreak/>
@@ -173,11 +170,15 @@
                                             <ListItem>
                                                 <Paragraph>
                                                     <Run Text="Add:"/>
-                                                    <LineBreak />
                                                     <InlineUIContainer>
                                                         <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://twitchapps.com/tokengen/"/>
                                                     </InlineUIContainer>
-                                                    <Run Text=" as the OAuth Redirect URLs. Select &quot;Chat Bot&quot; category (or add the token generator website you're using to generate tokens)."/>
+                                                    <Run Text=" as the OAuth Redirect URLs."/>
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    <Run Text="Select &quot;Chat Bot&quot; category (or add the token generator website you're using to generate tokens)." />
                                                 </Paragraph>
                                             </ListItem>
                                             <ListItem>
@@ -187,7 +188,7 @@
                                             </ListItem>
                                             <ListItem>
                                                 <Paragraph>
-                                                    <Run Text="View the application entry to get the 'Client Id'. You can save it in your files and add to the left credential box."/>
+                                                    <Run Text="View the application entry to get the 'Client Id'. You can save it in your files and add to the above credential box."/>
                                                 </Paragraph>
                                             </ListItem>
                                         </List>
@@ -195,17 +196,16 @@
                                     <ListItem>
                                         <Paragraph>
                                             <Run Text="One such site to generate the access tokens is at:"/>
-                                            <LineBreak />
                                             <Italic>
-                                                <Run Text="https://twitchapps.com/tokengen/"/>
+                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://twitchapps.com/tokengen/"/>
                                             </Italic>
                                         </Paragraph>
                                         <List>
                                             <ListItem>
                                                 <Paragraph>
-                                                    <Run Text="Paste the 'Client Id' generated from above at: "/>
+                                                    <Run Text="Paste the generated 'Client Id' from: "/>
                                                     <Italic>
-                                                        <Run Text="https://dev.twitch.tv/console"/>
+                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://dev.twitch.tv/console"/>
                                                     </Italic>
                                                     <Run Text=" ."/>
                                                 </Paragraph>
@@ -235,7 +235,7 @@
                                     </ListItem>
                                     <ListItem>
                                         <Paragraph>
-                                            <Run Text="View the other tabs to setup your bot messages to events and commands."/>
+                                            <Run Text="View the other tab to setup your bot for the social media links, channels to monitor, the message to post, and when channels go online."/>
                                             <LineBreak/>
                                             <LineBreak/>
                                             <LineBreak/>
@@ -252,7 +252,6 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
-                        <RowDefinition Height="68" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -263,28 +262,23 @@
                         <ColumnDefinition Width="293*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock TextWrapping="Wrap" Grid.Row="0">
+                    <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3">
                         Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord.
-                        
-                        <Label FontSize="10" Foreground="Red">
-                                <TextBlock TextWrapping="Wrap">
-                                    The bot starts with the current channel list. Restart bot to add more channels.
-                                </TextBlock>
-                            </Label>
                     </TextBlock>
 
-                    <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" BorderBrush="#FF212D34" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,0,5,0" DataContext="{DynamicResource TwitchLiveBot}">
+                    <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" BorderBrush="#FF212D34" Grid.Column="1"  Grid.ColumnSpan="3" Margin="0,0,5,0">
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
                                 <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StartBot" IsEnabled="False" Width="70"  />
                                 <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
                             </StackPanel>
-                            <TextBlock TextWrapping="Wrap">Setup tab is disabled once bot starts until restarted. Researching Issue (crash) when changing tabs and live data posts to the right.</TextBlock>
                         </StackPanel>
                     </GroupBox>
 
                     <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
-                    <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
+                    <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
+                             DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" 
+                             TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
                         <TextBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="#user" Click="MenuItem_Click" />
@@ -308,13 +302,17 @@
                         </TextBox.ToolTip>
                     </TextBox>
 
+                    <DataGrid x:Name="DG_Discord" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
+                              ItemsSource="{Binding Discord, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
+                              AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" />
+                    <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
+                              ItemsSource="{Binding Channels, Mode=OneWay}" MaxColumnWidth="160"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" RowEditEnding="DG_ChannelNames_RowEditEnding" />
+                    <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" MaxColumnWidth="160" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
-                    <DataGrid x:Name="DG_Discord" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" 
-                              DataContext="{DynamicResource DataManager}" ItemsSource="{Binding Discord, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" MaxColumnWidth="160" />
-                    <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5"  
-                              DataContext="{DynamicResource DataManager}" ItemsSource="{Binding Channels, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" MaxColumnWidth="160" />
-                    <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" 
-                              DataContext="{DynamicResource DataManager}" ItemsSource="{Binding LiveStream, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" MaxColumnWidth="160" />
+                    <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
+                        <Label DockPanel.Dock="Top" Height="25" Content="Log of Bot Activity:" />
+                        <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding StatusLog}" />
+                    </DockPanel>
                 </Grid>
             </TabItem>
         </TabControl>

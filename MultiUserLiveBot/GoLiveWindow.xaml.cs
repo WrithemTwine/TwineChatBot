@@ -19,6 +19,8 @@ namespace MultiUserLiveBot
     {
         private bool IsBotEnabled; // prevent bot from starting twice
 
+        private readonly TwitchLiveBot TwitchLiveBot;
+
         public GoLiveWindow()
         {
             InitializeComponent();
@@ -28,7 +30,8 @@ namespace MultiUserLiveBot
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
             }
-            (Resources["TwitchLiveBot"] as TwitchLiveBot).DataManage = (Resources["DataManager"] as DataManager);
+
+            TwitchLiveBot = (Resources["TwitchLiveBot"] as TwitchLiveBot);
         }
 
         #region static string helpers
@@ -109,18 +112,7 @@ namespace MultiUserLiveBot
                 && TB_Twitch_AccessToken.Text.Length != 0)
             {
                 Radio_Twitch_StartBot.IsEnabled = true;
-                //Radio_Twitch_StopBot.IsEnabled = true;
             }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
-        private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e) => CheckFocus();
-        private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
-
-        private void Settings_LostFocus(object sender, RoutedEventArgs e)
-        {
-            Settings.Default.Save();
-            CheckFocus();
         }
 
         /// <summary>
@@ -136,48 +128,52 @@ namespace MultiUserLiveBot
             Slider_TimeGoLivePollSeconds.IsEnabled = !Slider_TimeGoLivePollSeconds.IsEnabled;
         }
 
+        // event handlers from the GUI/UIElements
+
+        private void Settings_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Save();
+            CheckFocus();
+        }
+
         private void BC_Twitch_StartBot(object sender, MouseButtonEventArgs e)
         {
             if (!IsBotEnabled)
             {
-                DataManager data = (Resources["DataManager"] as DataManager);
-                List<string> names = data.GetChannelNames();
+                List<string> names = TwitchLiveBot.DataManage.GetChannelNames();
 
                 if (names.Count > 0)
                 {
-                    TwitchLiveBot io = (sender as RadioButton).DataContext as TwitchLiveBot;
-                    io.StartBot(names);
+                    TwitchLiveBot.StartBot(names);
                     ToggleInputEnabled();
                     IsBotEnabled = !IsBotEnabled;
                     Radio_Twitch_StartBot.IsEnabled = false;
                     Radio_Twitch_StartBot.IsChecked = true;
                     Radio_Twitch_StopBot.IsEnabled = true;
-                    Tab_Setup.IsEnabled = false;
+
+                    DG_LiveStreamStats.ItemsSource = null;
+                    DG_LiveStreamStats.Visibility = Visibility.Collapsed;
+
+                    Panel_BotActivity.Visibility = Visibility.Visible;
                 }
             }
-        }
-
-        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
-        {
-            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
-        }
-
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            Settings.Default.Save();
         }
 
         private void BC_Twitch_StopBot(object sender, MouseButtonEventArgs e)
         {
             if (IsBotEnabled)
             {
-                TwitchLiveBot io = (sender as RadioButton).DataContext as TwitchLiveBot;
-                io.StopBot();
+                TwitchLiveBot.StopBot();
                 ToggleInputEnabled();
                 IsBotEnabled = !IsBotEnabled;
                 Radio_Twitch_StartBot.IsEnabled = true;
                 Radio_Twitch_StopBot.IsChecked = true;
                 Radio_Twitch_StopBot.IsEnabled = false;
+
+                DG_LiveStreamStats.ItemsSource = (DG_LiveStreamStats.DataContext as DataManager).LiveStream;
+                DG_LiveStreamStats.Visibility = Visibility.Visible;
+
+                Panel_BotActivity.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -196,12 +192,19 @@ namespace MultiUserLiveBot
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            (Resources["DataManager"] as DataManager).SaveData();
-            (Resources["TwitchLiveBot"] as TwitchLiveBot).StopBot();
+            TwitchLiveBot.DataManage.SaveData();
+            TwitchLiveBot.StopBot();
             
             Settings.Default.Save();
         }
-        #endregion GUI events and helpers
 
+        private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+        private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e) => CheckFocus();
+        private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
+        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e) => await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
+        private void CheckBox_Click(object sender, RoutedEventArgs e) => Settings.Default.Save();
+        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e) => TwitchLiveBot.UpdateChannelList();
+        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
+        #endregion GUI events and helpers
     }
 }

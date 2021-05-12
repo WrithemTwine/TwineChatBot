@@ -57,7 +57,7 @@
                                                 <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
                                             </StackPanel>
 
-                                            <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers, and change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
+                                            <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
                                             <CheckBox IsChecked="{Binding AddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock Padding="5" TextWrapping="Wrap">Enable adding all followers when bot starts, i.e. click 'Start Bot'.</TextBlock>
                                             </CheckBox>
@@ -71,11 +71,9 @@
                                                 <Label Content="Seconds between checking for going live: " />
                                                 <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                             </StackPanel>
-                                            <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="5" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
+                                            <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10" />
                                         </StackPanel>
                                     </GroupBox>
-
-
                                 </StackPanel>
                                 <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" Margin="0,10,0,0" Height="100" Width="150" BorderBrush="#FF212D34" DataContext="{DynamicResource ControlBot}">
                                     <StackPanel Orientation="Vertical">
@@ -209,7 +207,7 @@
                     </TabItem>
                     <TabItem Header="Bot Status Log">
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Margin="2,2,2,2">
-                            <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBlock_TwitchBotLog_TextChanged" />
+                            <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                         </GroupBox>
                     </TabItem>
                 </TabControl>

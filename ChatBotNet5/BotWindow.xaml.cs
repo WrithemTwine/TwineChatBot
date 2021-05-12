@@ -192,7 +192,7 @@ namespace ChatBot_Net5
 
         private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
 
-        private void TextBlock_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
+        private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
 
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {

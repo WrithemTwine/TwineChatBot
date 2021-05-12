@@ -7,31 +7,24 @@ using System.Xml;
 
 namespace MultiUserLiveBot.Data
 {
-    public class DataManager : INotifyPropertyChanged
+    public class DataManager
     {
-        private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "MultiChatbotData.xml");
+        private static readonly string DataFileName = "MultiChatbotData.xml";
 
         private DataSource _DataSource;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public DataView Channels { get; private set; }
-        public DataView Discord { get; private set; }
-        public DataView LiveStream { get; private set; }
+        public DataView Channels { get; set; }
+        public DataView Discord { get; set; }
+        public DataView LiveStream { get; set; } 
         
         public DataManager()
         {
             _DataSource = new();
             LoadData();
-            
-            Channels = new(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
-            Discord = new(_DataSource.Discord, null, "Id", DataViewRowState.CurrentRows);
-            LiveStream = new(_DataSource.LiveStream, null, "ChannelName", DataViewRowState.CurrentRows);
-        }
 
-        private void NotifyPropertyChanged(string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            Channels = new DataView(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
+            Discord = new DataView(_DataSource.Discord, null, "Id", DataViewRowState.CurrentRows);
+            LiveStream = new DataView(_DataSource.LiveStream, null, "ChannelName", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -49,8 +42,6 @@ namespace MultiUserLiveBot.Data
             {
                 _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
             }
-
-            SaveData();
         }
 
         /// <summary>
@@ -66,11 +57,6 @@ namespace MultiUserLiveBot.Data
         }
         #endregion
 
-        private DataSource.LiveStreamRow[] GetLiveStreamRows(string ChannelName)
-        {
-            return (DataSource.LiveStreamRow[])_DataSource.LiveStream.Select();
-        }
-
         /// <summary>
         /// Checks if the channel has already posted a stream for today.
         /// </summary>
@@ -80,7 +66,7 @@ namespace MultiUserLiveBot.Data
         public bool CheckStreamDate(string ChannelName, DateTime dateTime)
         {
             int x = 0;
-            foreach(DataSource.LiveStreamRow liveStreamRow in GetLiveStreamRows(ChannelName))
+            foreach(DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select())
             {
                 if (liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString()==dateTime.ToShortDateString())
                 {
@@ -90,7 +76,6 @@ namespace MultiUserLiveBot.Data
 
             return x > 1;
         }
-
         /// <summary>
         /// Will post the channel and date event. Checks for not duplicating the event, i.e. same channel same date&time.
         /// </summary>
@@ -99,7 +84,7 @@ namespace MultiUserLiveBot.Data
         /// <returns>true if the event posted. false if the date & time duplicates.</returns>
         public bool PostStreamDate(string ChannelName, DateTime dateTime)
         {
-            foreach (DataSource.LiveStreamRow liveStreamRow in GetLiveStreamRows(ChannelName))
+            foreach (DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select())
             {
                 if (liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime)
                 {
@@ -108,25 +93,33 @@ namespace MultiUserLiveBot.Data
             }
 
             _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
-            _DataSource.AcceptChanges();
             SaveData();
-            NotifyPropertyChanged("LiveStream");
+
+//            NotifyPropertyChanged("LiveStream");
+
             return true;
         }
 
+        /// <summary>
+        /// Retrieves the list of channel names from the Channels table.
+        /// </summary>
+        /// <returns>A list of strings from the Channels table.</returns>
         public List<string> GetChannelNames()
         {
-            DataSource.ChannelsRow[] channels = (DataSource.ChannelsRow[])_DataSource.Channels.Select();
-            List<string> list = new();
+            List<string> channels = new();
 
-            foreach(DataSource.ChannelsRow row in channels)
+            foreach (DataSource.ChannelsRow c in _DataSource.Channels.Select())
             {
-                list.Add(row.ChannelName);
+                channels.Add(c.ChannelName);
             }
 
-            return list;
+            return channels;
         }
 
+        /// <summary>
+        /// Retrieve the Discrod links where the user wants to post live messages.
+        /// </summary>
+        /// <returns>A list of URI objects for the Discord links.</returns>
         public List<Uri> GetDiscordLinks()
         {
             List<Uri> links = new();

@@ -85,14 +85,14 @@ namespace ChatBot_Net5.BotIOController
             {
                 { "day", timeSpan.Days },
                 { "hour", timeSpan.Hours },
-                { "mminute", timeSpan.Minutes }
+                { "minute", timeSpan.Minutes }
             };
 
             foreach(string k in datakeys.Keys)
             {
                 if(datakeys[k] != 0)
                 {
-                    output = Plurality(datakeys[k], k, k + "s") + ", ";
+                    output += Plurality(datakeys[k], k, k + "s") + ", ";
                 }
             }
 

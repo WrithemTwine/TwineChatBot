@@ -9,7 +9,7 @@
     public enum ResponseType { Channel, Whisper, Both }
     public enum CurrencyType { JoinChannel, LeaveChannel, Chat, Emoticon, GiftSub, Bits, Points }
     
-    public enum DefaultCommand { commands, addcommand, lurk, unlurk, worklurk, socials, bot, so, join, leave, queue, qinfo, qstart, qstop, follow }
+    public enum DefaultCommand { commands, addcommand, lurk, unlurk, worklurk, socials, bot, so, join, leave, queue, qinfo, qstart, qstop, follow, watchtime }
 
     public enum DefaultSocials { twitter, youtube, instagram, discord, facebook, parlor, gab, telegram, rumble, tiktok, bitchute }
 
@@ -23,4 +23,7 @@
     public enum DataRetrieve { EventMessage, EventEnabled }
 
     public enum ViewerTypes { Broadcaster, Mod, VIP, Follower, Sub, Viewer }
+
+    public enum CommandAction { Get, Post, Update }
+    public enum CommandSort { ASC, DESC }
 }
