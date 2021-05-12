@@ -107,24 +107,24 @@ namespace MultiUserLiveBot.Clients
     {
         //private const int max_embeds = 10;
 
-        public string content { get; private set; }
-        public string username { get; private set; }
-        public string avatar_url { get; private set; }
-        public bool tts { get; private set; }
-        public object file { get; private set; } = null;
-        public object[] embeds { get; private set; } = null; // Discord expects to remove in future API updates
-        public string payload_json { get; private set; }
-        public AllowedMentions allowed_mentions { get; private set; }
+        public string Content { get; private set; }
+        public string Username { get; private set; }
+        public string Avatar_url { get; private set; }
+        public bool Tts { get; private set; }
+        public object File { get; private set; } = null;
+        public object[] Embeds { get; private set; } = null; // Discord expects to remove in future API updates
+        public string Payload_json { get; private set; }
+        public AllowedMentions Allowed_mentions { get; private set; }
 
         public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username=null, string Avatar_Url=null, bool TTS=false,
             string Payload_Json=null)
         {
-            content = Content;
-            allowed_mentions = Allowed_Mentions;
-            username = Username;
-            avatar_url = Avatar_Url;
-            tts = TTS;
-            payload_json = Payload_Json;
+            this.Content = Content;
+            Allowed_mentions = Allowed_Mentions;
+            this.Username = Username;
+            Avatar_url = Avatar_Url;
+            Tts = TTS;
+            Payload_json = Payload_Json;
         }
     }
 

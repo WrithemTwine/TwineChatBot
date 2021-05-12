@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
-using System.Windows;
 using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -398,7 +397,7 @@ namespace ChatBot_Net5.Data
                 _DataSource.StreamStats.AcceptChanges();
                 SaveData();
 
-                CurrStreamStatRow = GetAllStreamData(StreamStart);
+                //CurrStreamStatRow = GetAllStreamData(StreamStart);
 
                 return true;
             }
@@ -408,7 +407,7 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.StreamStats)
             {
-                CurrStreamStatRow ??= GetAllStreamData(streamStat.StreamStart);
+                CurrStreamStatRow = GetAllStreamData(streamStat.StreamStart);
 
                 if (CurrStreamStatRow == null)
                 {
@@ -481,7 +480,7 @@ switches:
             {
                 bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
 
-                // command name     // msg   // params  
+                     // command name     // msg   // params  
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
                 {
                     { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
