@@ -544,6 +544,10 @@ namespace ChatBot_Net5.BotIOController
             {
                 Send(InvalidOp.Message);
             }
+            catch (NullReferenceException NullRef)
+            {
+                Send(NullRef.Message);
+            }
 
         }
 

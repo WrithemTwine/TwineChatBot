@@ -23,18 +23,18 @@
             </StatusBar.Resources>
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Added Channels: " />
-                    <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
-                </StackPanel>
-            </StatusBarItem>
-            <Separator />
-            <StatusBarItem>
-                <StackPanel Orientation="Horizontal">
                     <Label Content="Discord Links: " />
                     <Label DataContext="{Binding ElementName=DG_Discord, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator />
+             <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Added Channels: " />
+                    <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator />  
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Live Events: " />

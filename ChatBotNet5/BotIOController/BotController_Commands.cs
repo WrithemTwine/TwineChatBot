@@ -33,7 +33,8 @@ namespace ChatBot_Net5.BotIOController
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
-            if (OptionFlags.RepeatTimer)
+
+            if (OptionFlags.RepeatTimer && (OptionFlags.RepeatWhenLive ? Stats.IsStreamOnline : true))
             {
                 Send(e.Message);
                 Stats.AddAutoCommands();

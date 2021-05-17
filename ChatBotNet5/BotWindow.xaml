@@ -82,7 +82,7 @@
                                     </StackPanel>
                                 </GroupBox>
                             </StackPanel>
-                                                       
+
                             <FlowDocumentScrollViewer DockPanel.Dock="Right" Margin="10" VerticalScrollBarVisibility="Auto">
                                 <FlowDocument FontSize="12" PagePadding="5">
                                     <Section>
@@ -163,7 +163,8 @@
                                                 <List>
                                                     <ListItem>
                                                         <Paragraph>Paste the 'Client Id' generated from above at:
-                                                            <Italic>https://dev.twitch.tv/console</Italic> .</Paragraph>
+                                                            <Italic>https://dev.twitch.tv/console</Italic> .
+                                                        </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
                                                         <Paragraph>For "Scopes", paste exactly
@@ -284,11 +285,13 @@
                             <TabItem Header="Options">
                                 <StackPanel Margin="10"  DataContext="{Binding Source={x:Static s:Settings.Default}}">
                                     <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
+                                        <TextBlock Padding="5,0" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
                                     </CheckBox>
-
-                                    <StackPanel Orientation="Horizontal">
-
+                                    <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click">
+                                        <TextBlock Padding="5,0" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to "Auto SO" tab.</TextBlock>
+                                    </CheckBox>
+                                    
+                                    <WrapPanel Orientation="Horizontal">
                                         <GroupBox Header="Add /me in front of Bot messages" Margin="4">
                                             <StackPanel Margin="5">
                                                 <Label Content="/me changes message to all italics" />
@@ -297,7 +300,6 @@
                                                 <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command" Margin="0,5,0,0" />
                                             </StackPanel>
                                         </GroupBox>
-
                                         <GroupBox Header="Welcome Users" Margin="4">
                                             <StackPanel Margin="5">
                                                 <Label Content="Only once per user per active stream (no repeats)" />
@@ -312,14 +314,17 @@
                                                 </RadioButton>
                                             </StackPanel>
                                         </GroupBox>
-                                    </StackPanel>
-
-                                    <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click">
-                                        <TextBlock Padding="5" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream. Add names to "Auto SO" tab.</TextBlock>
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click">
-                                        <TextBlock Padding="5" Width="600" TextWrapping="Wrap">Enable repeating commands based on the seconds timer. Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
-                                    </CheckBox>
+                                        <GroupBox Header="Automatic Commands - Set by Timer" Margin="4">
+                                            <StackPanel Margin="5">
+                                                <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click" >
+                                                    <TextBlock Padding="5,0">Enable Repeat commands only when live.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
+                                                    <TextBlock Padding="5,0" TextWrapping="Wrap">Enable repeating commands.</TextBlock>
+                                                </CheckBox>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </WrapPanel>
                                 </StackPanel>
                             </TabItem>
                             <TabItem Header="Help">
@@ -347,7 +352,7 @@
                                         <RowDefinition Height="50" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat commands. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds"/>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat commands. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC" />
                                     <DataGrid Grid.Row="1" x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" MaxColumnWidth="253" />
                                 </Grid>
                             </TabItem>
@@ -357,7 +362,7 @@
                                         <RowDefinition Height="50" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds"/>
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC"/>
                                     <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
                             </TabItem>

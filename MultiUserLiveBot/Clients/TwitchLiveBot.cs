@@ -142,19 +142,25 @@ namespace MultiUserLiveBot.Clients
         /// <returns>true: if there are channels in the database to monitor; false: there are no channels to update.</returns>
         public bool UpdateChannelList()
         {
-            List<string> channels = DataManage.GetChannelNames();
-
-            if (channels.Count > 0)
+            if (LiveStreamMonitor != null)
             {
-                LogEntry(string.Format("Channels updated! Was monitoring {0} channels, now monitoring {1} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
+                DataManage.SaveData();
+                List<string> channels = DataManage.GetChannelNames();
 
-                LiveStreamMonitor.SetChannelsByName(channels);
-                return true;
-            } else
-            {
-                LogEntry(string.Format("There are no channels to monitor. Please add channels to the table.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
-                return false;
+                if (channels.Count > 0)
+                {
+                    LogEntry(string.Format("Channels updated! Was monitoring {0} channels, now monitoring {1} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
+
+                    LiveStreamMonitor.SetChannelsByName(channels);
+                    return true;
+                }
+                else
+                {
+                    LogEntry($"There are no channels to monitor. Please add channels to the table.", DateTime.Now);
+                    return false;
+                }
             }
+            return false;
         }
     }
 }
