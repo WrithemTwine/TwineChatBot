@@ -8,12 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
-using TwitchLib.Api;
-using TwitchLib.Api.Core;
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
-using TwitchLib.Api.Services;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
@@ -29,22 +24,11 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         internal TwitchClient TwitchChat { get; private set; } // chat bot
 
-        /// <summary>
-        /// Listens for new followers.
-        /// </summary>
-        internal static FullFollowerService FollowerService { get; private set; } 
-
-        /// <summary>
-        /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
-        /// </summary>
-        internal static LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
-
         private Logger<TwitchClient> LogData { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
-
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …
         //20 per 30 seconds Users sending commands or messages to channels in which they do not have Moderator or Operator status
@@ -61,17 +45,16 @@ namespace ChatBot_Net5.Clients
         //500 accounts per day Known bots
         //20 per second, up to 1200 per minute
         //100,000 accounts per day Verified bots
-
         public IOModuleTwitch()
         {
-            ChatClientName = "Twitch";
+            ChatClientName = "TwitchChat";
 
             ClientOptions options = new()
             {
                 UseSsl = true,
                 ClientType = TwitchLib.Communication.Enums.ClientType.Chat,
 
-                MessagesAllowedInPeriod = ClientID == ChannelName ? 100 : 20,
+                MessagesAllowedInPeriod = TwitchClientID == TwitchChannelName ? 100 : 20,
                 ThrottlingPeriod = TimeSpan.FromSeconds(30),
                 SendQueueCapacity = 100,
                 SendDelay = 5,
@@ -103,8 +86,7 @@ namespace ChatBot_Net5.Clients
 
             RefreshSettings();
         }
-
-        /// <summary>
+                /// <summary>
         /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -120,7 +102,7 @@ namespace ChatBot_Net5.Clients
             {
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
-            
+
             StatusLog += e.DateTime.ToString() + " " + e.Data + "\n";
 
             NotifyPropertyChanged(nameof(StatusLog));
@@ -132,9 +114,8 @@ namespace ChatBot_Net5.Clients
         /// <returns>True for a successful connection.</returns>
         public override bool Connect()
         {
-            RefreshSettings();
-            ConnectionCredentials credentials = new ConnectionCredentials(BotUserName, AccessToken);
-            if (ChannelName == null)
+            ConnectionCredentials credentials = new(TwitchBotUserName, TwitchAccessToken);
+            if (TwitchChannelName == null)
             {
                 throw new NoUserDataException();
             }
@@ -142,16 +123,9 @@ namespace ChatBot_Net5.Clients
             {
                 if (TwitchChat.ConnectionCredentials == null)
                 {
-                    TwitchChat.Initialize(credentials, ChannelName);
+                    TwitchChat.Initialize(credentials, TwitchChannelName);
                 }
-
-                TwitchChat.OverrideBeingHostedCheck = (ChannelName != BotUserName);
-
-                if (!TwitchChat.IsConnected)
-                {
-                    TwitchChat.Connect();
-                }
-                ConnectServices();
+                TwitchChat.OverrideBeingHostedCheck = (TwitchChannelName != TwitchBotUserName);
             }
 
             return true;
@@ -166,10 +140,15 @@ namespace ChatBot_Net5.Clients
             try
             {
                 RefreshSettings();
-                StartServices();
-
+                Connect();
+                if (!TwitchChat.IsConnected)
+                {
+                    TwitchChat.Connect();
+                }
+                IsStarted = true;
+                InvokeBotStarted();
                 return true;
-            } 
+            }
             catch (Exception ex)
             {
                 string s = ex.Message;
@@ -186,8 +165,9 @@ namespace ChatBot_Net5.Clients
             if (TwitchChat.IsConnected)
             {
                 TwitchChat.Disconnect();
-                StopServices();
+                IsStarted = false;
                 RefreshSettings();
+                InvokeBotStopped();
             }
             return true;
         }
@@ -210,68 +190,19 @@ namespace ChatBot_Net5.Clients
         /// <returns>True when message is sent.</returns>
         public override bool Send(string s)
         {
-            if(TwitchChat.IsConnected == false)
+            if (TwitchChat.IsConnected == false)
             {
                 TwitchChat.Reconnect();
             }
 
-            foreach (JoinedChannel j in TwitchChat.JoinedChannels)
+            if (IsStarted)
             {
-                TwitchChat.SendMessage(j, s);
+                foreach (JoinedChannel j in TwitchChat.JoinedChannels)
+                {
+                    TwitchChat.SendMessage(j, s);
+                }
             }
             return true;
-        }
-
-        /// <summary>
-        /// Establish all of the services attached to this Twitch client.
-        /// </summary>
-        internal void ConnectServices()
-        {
-            ApiSettings apifollow = new() { AccessToken = AccessToken, ClientId = ClientID };
-            FollowerService = new FullFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(FrequencyFollowerTime, 0));
-            FollowerService.SetChannelsByName(new List<string>() { ChannelName });
-            
-            ApiSettings apilive = new() { AccessToken = AccessToken, ClientId = ClientID };
-            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(FrequencyLiveNotifyTime, 0));
-            LiveStreamMonitor.SetChannelsByName(new List<string>() { ChannelName });
-        }
-
-        /// <summary>
-        /// Start all of the services attached to the client.
-        /// </summary>
-        internal static void StartServices()
-        {
-            FollowerService.Start();
-            LiveStreamMonitor.Start();
-        }
-
-        /// <summary>
-        /// Stop all of the services attached to the client.
-        /// </summary>
-        internal static void StopServices()
-        {
-            FollowerService.Stop();
-            LiveStreamMonitor.Stop();
-        }
-
-        public override bool RefreshSettings()
-        {
-            SaveParams();
-            AccessToken = Settings.Default.TwitchAccessToken;
-            BotUserName = Settings.Default.TwitchBotUserName;
-            ChannelName = Settings.Default.TwitchChannelName;
-            ClientID = Settings.Default.TwitchClientID;
-            FrequencyFollowerTime = Settings.Default.TwitchFrequency;
-            FrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
-            RefreshToken = Settings.Default.TwitchRefreshToken;
-            RefreshDate = Settings.Default.TwitchRefreshDate;
-            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
-            return true;
-        }
-
-        internal async Task<List<Follow>> GetAllFollowersAsync()
-        {
-            return await FollowerService.GetAllFollowers(ChannelName);
         }
     }
 }

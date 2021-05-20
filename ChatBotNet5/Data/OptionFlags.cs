@@ -20,6 +20,7 @@ namespace ChatBot_Net5.BotIOController
 
         internal static bool AutoShout { get; set; }
         internal static bool RepeatTimer { get; set; }
+        internal static bool RepeatWhenLive { get; set; }
 
         internal static bool UserPartyStart { get; set; }
         internal static bool UserPartyStop { get; set; }
@@ -39,6 +40,7 @@ namespace ChatBot_Net5.BotIOController
             
             AutoShout = Settings.Default.AutoShout;
             RepeatTimer = Settings.Default.RepeatTimerCommands;
+            RepeatWhenLive = Settings.Default.RepeatWhenLive;
 
             UserPartyStart = Settings.Default.UserPartyStart;
             UserPartyStop = Settings.Default.UserPartyStop;

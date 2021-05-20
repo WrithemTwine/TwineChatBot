@@ -15,6 +15,8 @@ namespace ChatBot_Net5.Data
         private DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
 
+        public bool IsStreamOnline { get { return _StreamOnline; } }
+
         public Statistics(DataManager dataManager)
         {
             datamanager = dataManager;

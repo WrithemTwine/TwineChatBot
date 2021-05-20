@@ -1,4 +1,5 @@
-﻿using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.Clients;
+using ChatBot_Net5.Data;
 using ChatBot_Net5.Models;
 
 using System.Collections.ObjectModel;
@@ -14,7 +15,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void SetProcessCommands()
         {
-            ProcessCommands = new(DataManage, TwitchIO.BotUserName);
+            ProcessCommands = new(DataManage, IOModule.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
         }
@@ -33,7 +34,8 @@ namespace ChatBot_Net5.BotIOController
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
-            if (OptionFlags.RepeatTimer)
+
+            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || Stats.IsStreamOnline))
             {
                 Send(e.Message);
                 Stats.AddAutoCommands();

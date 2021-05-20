@@ -29,7 +29,7 @@ namespace MultiUserLiveBot.Clients
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += e.DateTime.ToString() + " " + e.Data + "\n";
+            StatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
 
             NotifyPropertyChanged(nameof(StatusLog));
         }

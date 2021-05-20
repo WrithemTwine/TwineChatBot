@@ -23,18 +23,18 @@
             </StatusBar.Resources>
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Added Channels: " />
-                    <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
-                </StackPanel>
-            </StatusBarItem>
-            <Separator />
-            <StatusBarItem>
-                <StackPanel Orientation="Horizontal">
                     <Label Content="Discord Links: " />
                     <Label DataContext="{Binding ElementName=DG_Discord, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator />
+             <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Added Channels: " />
+                    <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator />  
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Live Events: " />
@@ -43,7 +43,7 @@
             </StatusBarItem>
         </StatusBar>
         <TabControl>
-            <TabItem x:Name="Tab_Setup" Header="Twitch Bot Setup">
+            <TabItem x:Name="Tab_Setup" Header="Twitch Bot Setup" GotFocus="TabItem_Twitch_GotFocus">
                 <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                         <StackPanel Orientation="Vertical">

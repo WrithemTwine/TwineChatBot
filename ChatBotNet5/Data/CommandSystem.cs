@@ -14,8 +14,6 @@ namespace ChatBot_Net5.Data
     {
         private DataManager datamanager;
 
-        //private ObservableCollection<UserJoin> JoinCollection;
-
         private string BotUserName;
 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
@@ -34,7 +32,6 @@ namespace ChatBot_Net5.Data
 
             new Thread(new ThreadStart(ElapsedCommandTimers)).Start();
         }
-
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
@@ -102,12 +99,14 @@ namespace ChatBot_Net5.Data
         }
 
         /// <summary>
-        /// Parses the command and performs the operation of the command.
+        /// Parses the command and performs the operation of the command. Some exceptions can bubble up from underlying database.
         /// </summary>
         /// <param name="command"></param>
         /// <param name="arglist"></param>
         /// <param name="chatMessage"></param>
         /// <exception cref="InvalidOperationException">The user calling the chat command does not have permission.</exception>
+        /// <exception cref="NullReferenceException">A referenced object is null and cannot be accessed.</exception>
+        /// <exception cref="KeyNotFoundException">Command is not found in the command listing.</exception>
         /// <returns>The resulting value of the command.</returns>
         public string ParseCommand(string command, List<string> arglist, ChatMessage chatMessage)
         {
@@ -135,7 +134,7 @@ namespace ChatBot_Net5.Data
 
         private string PerformCommand(string command, string DisplayName, List<string> arglist)
         {
-            arglist.ForEach((s) => s = s.Trim());
+            arglist?.ForEach((s) => s = s.Trim());
 
             if (command == "addcommand")
             {
@@ -144,7 +143,7 @@ namespace ChatBot_Net5.Data
 
                 CommandParams addparams = CommandParams.Parse(arglist);
 
-                datamanager.AddCommand(newcom.Substring(1), addparams);
+                return datamanager.AddCommand(newcom[1..], addparams);
             }
             else if (command == "socials")
             {
@@ -169,7 +168,7 @@ namespace ChatBot_Net5.Data
                     NotifyPropertyChanged("UserPartyStop");
                 }
 
-                datamanager.GetCommand(command, out DataSource.CommandsRow CommData);
+                DataSource.CommandsRow CommData = datamanager.GetCommand(command);
 
                 string paramvalue;
 
@@ -205,12 +204,26 @@ namespace ChatBot_Net5.Data
 
                 if (CommData.lookupdata)
                 {
-                    if (CommData.top > 0)
+                    if (CommData.top > 0 || CommData.top == -1)
                     {
                         if (CommData.action != CommandAction.Get.ToString())
                         {
                             throw new InvalidOperationException(string.Format("The command {0} is configured for {1}, but can only perform {2}", CommData.CmdName, CommData.action, CommandAction.Get.ToString()));
                         }
+
+                        // convert multi-row output to a string
+                        string queryoutput = "";
+
+                        foreach(object r in datamanager.PerformQuery(CommData, paramvalue, CommData.top))
+                        {
+                            Tuple<object, object> bundle = (r as Tuple<object, object>);
+                            if (bundle.Item1 == bundle.Item2)
+                            {
+                                queryoutput += bundle.Item1 + ", ";
+                            }
+                        }
+                        queryoutput = queryoutput.Remove(queryoutput.LastIndexOf(','));
+                        datavalues.Add("#query", queryoutput);
                     }
                     else
                     {
@@ -243,12 +256,12 @@ namespace ChatBot_Net5.Data
                 return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "" ) + response;
             }
 
-            return "not finished";
+            //return "not finished";
         }
 
         internal void UserParty(string command, List<string> arglist, string UserName)
         {
-            datamanager.GetCommand(command, out DataSource.CommandsRow CommData);
+           DataSource.CommandsRow CommData = datamanager.GetCommand(command );
 
             UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;

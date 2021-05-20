@@ -1821,7 +1821,7 @@ namespace ChatBot_Net5.Data {
                         string currency_field, 
                         string unit, 
                         string action, 
-                        long top, 
+                        int top, 
                         string sort) {
                 CommandsRow rowCommandsRow = ((CommandsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
@@ -1923,7 +1923,7 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnunit);
                 this.columnaction = new global::System.Data.DataColumn("action", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnaction);
-                this.columntop = new global::System.Data.DataColumn("top", typeof(long), null, global::System.Data.MappingType.Element);
+                this.columntop = new global::System.Data.DataColumn("top", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columntop);
                 this.columnsort = new global::System.Data.DataColumn("sort", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnsort);
@@ -1952,7 +1952,7 @@ namespace ChatBot_Net5.Data {
                 this.columnunit.DefaultValue = ((string)(" "));
                 this.columnaction.Caption = "action - Get, Post, Update";
                 this.columnaction.DefaultValue = ((string)("Get"));
-                this.columntop.DefaultValue = ((long)(0));
+                this.columntop.DefaultValue = ((int)(0));
                 this.columnsort.Caption = "sort- ASC or DESC";
                 this.columnsort.DefaultValue = ((string)("ASC"));
             }
@@ -4563,10 +4563,10 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public long top {
+            public int top {
                 get {
                     try {
-                        return ((long)(this[this.tableCommands.topColumn]));
+                        return ((int)(this[this.tableCommands.topColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'top\' in table \'Commands\' is DBNull.", e);

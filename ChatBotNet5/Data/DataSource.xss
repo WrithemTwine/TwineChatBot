@@ -9,7 +9,7 @@
     <Shape ID="DesignTable:Discord" ZOrder="5" X="154" Y="589" Height="125" Width="105" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="121" />
     <Shape ID="DesignTable:ChannelEvents" ZOrder="4" X="147" Y="377" Height="163" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="159" />
     <Shape ID="DesignTable:Users" ZOrder="8" X="147" Y="152" Height="163" Width="116" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="159" />
-    <Shape ID="DesignTable:Commands" ZOrder="3" X="524" Y="376" Height="372" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="368" />
+    <Shape ID="DesignTable:Commands" ZOrder="3" X="524" Y="376" Height="391" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="387" />
     <Shape ID="DesignTable:Currency" ZOrder="6" X="531" Y="59" Height="125" Width="118" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="121" />
     <Shape ID="DesignTable:CurrencyType" ZOrder="7" X="148" Y="24" Height="106" Width="133" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="102" />
     <Shape ID="DesignTable:Followers" ZOrder="9" X="533" Y="207" Height="125" Width="109" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="121" />

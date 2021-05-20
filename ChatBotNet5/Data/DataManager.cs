@@ -52,7 +52,7 @@ namespace ChatBot_Net5.Data
                     filter += "'" + s.ToString() + "',";
                 }
 
-                return filter == string.Empty ? "" : filter.Substring(0, filter.Length - 1);
+                return filter == string.Empty ? "" : filter[0..^1];
             }
 
 
@@ -484,13 +484,14 @@ switches:
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
                 {
                     { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
-                    { DefaultCommand.commands.ToString(), new("", "-t:Commands -f:CmdName -s:ASC -use:!commands") },
+                    // '-top:-1' means all items
+                    { DefaultCommand.commands.ToString(), new("The list of commands: #query", "-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands") },
                     { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/", "-use:!bot") },
                     { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "-use:!lurk") },
                     { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
                     { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
                     { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
-                    { DefaultCommand.so.ToString(), new("Go check a great streamer #user, at #url!", "-p:Mod -param:true -use:!so user, only mods can use !so.") },
+                    { DefaultCommand.so.ToString(), new("Go check a great streamer #user, at #url!", "-p:Mod -param:true -use:!so username - only mods can use !so.") },
                     { DefaultCommand.join.ToString(), new("The message isn't used in response.", "-use:!join") },
                     { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "-use:!leave") },
                     { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod -use:!queue mods only") },
@@ -616,7 +617,7 @@ switches:
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage,Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
             }
-            return "Command added!";
+            return string.Format("Command {0} added!", cmd);
         }
 
         internal string GetSocials()
@@ -643,7 +644,7 @@ switches:
 
             lock (_DataSource.Commands)
             {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter.Substring(0, filter.Length - 1) + ")");
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter[0..^1] + ")");
             }
 
             foreach (DataSource.CommandsRow com in socialrows)
@@ -667,6 +668,7 @@ switches:
             }
         }
 
+        // older code
         //internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList=null)
         //{
         //    DataSource.CommandsRow[] comrow = null;
@@ -698,7 +700,7 @@ switches:
         //    return BotController.ParseReplace(comrow[0].Message, datavalues);
         //}
 
-        internal void GetCommand(string cmd, out DataSource.CommandsRow CommData)
+        internal DataSource.CommandsRow GetCommand(string cmd)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -712,7 +714,7 @@ switches:
                 throw new KeyNotFoundException("Command not found.");
             }
 
-            CommData = comrow[0];
+            return comrow[0];
         }
 
         internal object PerformQuery(DataSource.CommandsRow row, string ParamValue)
@@ -734,6 +736,7 @@ switches:
 
             Type resulttype = result.GetType();
 
+            // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
             if (resulttype == typeof(DataSource.UsersRow))
             {
                 DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
@@ -760,12 +763,40 @@ switches:
             }
 
 
-            return null;
+            return result;
         }
 
         internal object[] PerformQuery(DataSource.CommandsRow row, string ParamValue, int Top=0)
         {
-            return null;
+            DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
+            DataRow[] output;
+            List<Tuple<object,object>> outlist = new();
+
+            lock (_DataSource)
+            {
+                if (Top < 0)
+                {
+                    output = tabledata.Select();
+                }
+                else
+                {
+                    output = tabledata.Select(null, row.key_field + " " + row.sort);
+                }
+
+                foreach (DataRow d in output)
+                {
+                    outlist.Add(new(d[row.key_field],d[row.data_field]));
+                }
+            }
+
+            if (Top > 0)
+            {
+                outlist.RemoveRange(Top, outlist.Count - Top);
+            }
+
+            outlist.Sort();
+
+            return outlist.ToArray();
         }
 
         /// <summary>

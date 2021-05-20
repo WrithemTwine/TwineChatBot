@@ -1,13 +1,13 @@
 ﻿using ChatBot_Net5.BotIOController;
-using ChatBot_Net5.Data;
+using ChatBot_Net5.Clients;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Properties;
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -18,91 +18,75 @@ namespace ChatBot_Net5
     /// </summary>
     public partial class BotWindow : Window
     {
-#if !DEBUG // active in the release version
-        private int SelectedDataTabIndex;
-#endif
-
         private readonly ChatPopup CP;
-        private bool IsBotEnabled; // prevent bot from starting twice
+        private const string MultiLiveName = "MultiUserLiveBot";
+
+        private BotController controller;
 
         public BotWindow()
         {
             // move settings to the newest version, if the application version upgrades
             if (Settings.Default.UpgradeRequired)
-            { 
+            {
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
             }
 
             InitializeComponent();
-            IsBotEnabled = false;
 
             CP = new();
-            CP.Page_ChatPopup_FlowDocViewer.Document = FlowDoc_ChatBox.Document;            
-            CP.Page_ChatPopup_FlowDocViewer.Opacity = Slider_PopOut_Opacity.Value;            
+            CP.Page_ChatPopup_FlowDocViewer.Document = FlowDoc_ChatBox.Document;
+            CP.Page_ChatPopup_FlowDocViewer.Opacity = Slider_PopOut_Opacity.Value;
+
+            WatchProcessOps = true;
+            ProcChange = false;
+
+            new Thread(new ThreadStart(ProcessWatcher)).Start();
+
+            controller = (Resources["ControlBot"] as BotController);
+        }
+
+        #region Events
+        #region Windows & Tab Ops
+        private void Window_Loaded(object sender, RoutedEventArgs e) 
+        {             
+            CheckFocus(); 
+            
+            if(Settings.Default.TwitchChatBotAutoStart && Radio_Twitch_StartBot.IsEnabled)
+            {
+                HelperStartBot(Radio_Twitch_StartBot);
+            }
+
+            if(Settings.Default.TwitchFollowerSvcAutoStart && Radio_Twitch_FollowBotStart.IsEnabled)
+            {
+                HelperStartBot(Radio_Twitch_FollowBotStart);
+            }
+
+            if(Settings.Default.TwitchLiveStreamSvcAutoStart && Radio_Twitch_LiveBotStart.IsEnabled)
+            {
+                HelperStartBot(Radio_Twitch_LiveBotStart);
+            }
+
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            WatchProcessOps = false;
             (Resources["ControlBot"] as BotController).ExitSave();
             Settings.Default.Save();
         }
 
-        private void BC_Twitch_StartBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void TabItem_Twitch_GotFocus(object sender, RoutedEventArgs e)
         {
-            // ignore the following block if using debug build
-#if !DEBUG
-            TabItem_Users.Visibility = Visibility.Collapsed;
-            TabItem_Followers.Visibility = Visibility.Collapsed;
-            SelectedDataTabIndex = TabControl_DataTabs.SelectedIndex;
-            if (SelectedDataTabIndex < 2) TabControl_DataTabs.SelectedIndex = 2;
-#endif
-
-            if (!IsBotEnabled)
+            if ((DateTime.Parse(Twitch_RefreshDate.Content.ToString()) - DateTime.Now) <= new TimeSpan(14, 0, 0, 0))
             {
-                BotController io = (sender as RadioButton).DataContext as BotController;
-                io.StartBot();
-                ToggleInputEnabled();
-                IsBotEnabled = !IsBotEnabled;
-                //Radio_Twitch_StartBot.IsEnabled = false;
-                //Radio_Twitch_StopBot.IsEnabled = true;
+                Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
             }
-        }
-
-        /// <summary>
-        /// Disable or Enable UIElements to prevent user changes while bot is active.
-        /// Same method takes the opposite value for the start then stop then start, i.e. toggling start/stop bot operations.
-        /// </summary>
-        private void ToggleInputEnabled()
-        {
-            TB_Twitch_AccessToken.IsEnabled = !TB_Twitch_AccessToken.IsEnabled;
-            TB_Twitch_BotUser.IsEnabled = !TB_Twitch_BotUser.IsEnabled;
-            TB_Twitch_Channel.IsEnabled = !TB_Twitch_Channel.IsEnabled;
-            TB_Twitch_ClientID.IsEnabled = !TB_Twitch_ClientID.IsEnabled;
-            Btn_Twitch_RefreshDate.IsEnabled = !Btn_Twitch_RefreshDate.IsEnabled;
-            Slider_TimeFollowerPollSeconds.IsEnabled = !Slider_TimeFollowerPollSeconds.IsEnabled;
-            Slider_TimeGoLivePollSeconds.IsEnabled = !Slider_TimeGoLivePollSeconds.IsEnabled;
-        }
-
-        private void BC_Twitch_StopBot(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (IsBotEnabled)
+            else
             {
-                BotController io = (sender as RadioButton).DataContext as BotController;
-                io.StopBot();
-                ToggleInputEnabled();
-                IsBotEnabled = !IsBotEnabled;
-                //Radio_Twitch_StartBot.IsEnabled = true;
-                //Radio_Twitch_StopBot.IsEnabled = false;
+                Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
             }
-
-            // ignore the following block if using debug build
-#if !DEBUG
-            TabItem_Users.Visibility = Visibility.Visible;
-            TabItem_Followers.Visibility = Visibility.Visible;
-            TabControl_DataTabs.SelectedIndex = SelectedDataTabIndex;
-#endif
         }
 
         private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
@@ -112,7 +96,7 @@ namespace ChatBot_Net5
             CP.Width = 300;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+        #endregion
 
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -120,19 +104,67 @@ namespace ChatBot_Net5
             Settings.Default.Save();
         }
 
-        /// <summary>
-        /// Check the conditions for starting the bot, where the data fields require data before the bot can be successfully started.
-        /// </summary>
-        internal void CheckFocus()
+        private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
-            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0)
-            {
-                Radio_Twitch_StartBot.IsEnabled = true;
-                Radio_Twitch_StopBot.IsEnabled = true;
-            }
+            Settings.Default.Save();
+            OptionFlags.SetSettings();
+        }
+
+        private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ((BotController)LV_JoinList.DataContext).JoinCollection.Remove((sender as CheckBox).DataContext as UserJoin);
         }
 
         private void TextBox_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) => CheckFocus();
+
+        private void RefreshButton_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+
+        private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
+
+        private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            RadioButton rb = (sender as RadioButton);
+
+            HelperStartBot(rb);
+        }
+
+        private void HelperStartBot(RadioButton rb)
+        {
+            if (rb.IsEnabled)
+            {
+                rb.IsChecked = true;
+                (rb.DataContext as IOModule)?.StartBot();
+                ToggleInputEnabled(false);
+
+                foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
+                {
+                    if (child.GetType() == typeof(RadioButton))
+                    {
+                        (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked == true ? false : true;
+                    }
+                }
+            }
+        }
+
+        private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            RadioButton rb = (sender as RadioButton);
+
+            if (rb.IsEnabled)
+            {
+                rb.IsChecked = true;
+                (rb.DataContext as IOModule)?.StopBot();
+                ToggleInputEnabled(true);
+
+                foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
+                {
+                    if (child.GetType() == typeof(RadioButton))
+                    {
+                        (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked == true ? false : true;
+                    }
+                }
+            }
+        }
 
         private void DG_CommonMsgs_AutoGeneratedColumns(object sender, EventArgs e)
         {
@@ -190,24 +222,80 @@ namespace ChatBot_Net5
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
-
-        private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
-
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
 
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Disable or Enable UIElements to prevent user changes while bot is active.
+        /// Same method takes the opposite value for the start then stop then start, i.e. toggling start/stop bot operations.
+        /// </summary>
+        private void ToggleInputEnabled(bool setvalue=true)
         {
-            Settings.Default.Save();
-            OptionFlags.SetSettings();
+            TB_Twitch_AccessToken.IsEnabled = setvalue;
+            TB_Twitch_BotUser.IsEnabled = setvalue;
+            TB_Twitch_Channel.IsEnabled = setvalue;
+            TB_Twitch_ClientID.IsEnabled = setvalue;
+            Btn_Twitch_RefreshDate.IsEnabled = setvalue;
+            Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
+            Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
         }
 
-        private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Check the conditions for starting the bot, where the data fields require data before the bot can be successfully started.
+        /// </summary>
+        private void CheckFocus()
         {
-            ((BotController)LV_JoinList.DataContext).JoinCollection.Remove((sender as CheckBox).DataContext as UserJoin);
+            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0)
+            {
+                Radio_Twitch_StartBot.IsEnabled = true;
+                Radio_Twitch_FollowBotStart.IsEnabled = true;
+                Radio_Twitch_LiveBotStart.IsEnabled = true;
+            }
         }
+
+        private void SetMultiLiveLabel(bool ProcessFound = false)
+        {
+            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        #endregion
+
+        #region WatcherTools
+        
+        private bool WatchProcessOps;
+        private bool ProcChange;
+        private delegate void ProcWatch(bool IsActive);
+
+        private void UpdateProc(bool IsActive)
+        {
+            ProcWatch watch = SetMultiLiveLabel;
+            Application.Current.Dispatcher.BeginInvoke(watch, IsActive);
+            controller.TwitchLiveMonitor.IsMultiLiveBotActive = IsActive;
+        }
+
+        private void ProcessWatcher()
+        {
+            while (WatchProcessOps)
+            {
+                Process[] processes = Process.GetProcessesByName(MultiLiveName);
+                if ((processes.Length > 0) != ProcChange)
+                {
+                    UpdateProc(processes.Length > 0);
+                    ProcChange = (processes.Length > 0);
+                }
+
+                Thread.Sleep(5000);
+            }
+        }
+
+        #endregion
+
+  
     }
 }

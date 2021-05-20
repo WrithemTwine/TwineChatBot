@@ -10,7 +10,7 @@ namespace ChatBot_Net5.Models
         internal string Currency { get; set; } = string.Empty;
         internal string Unit { get; set; } = string.Empty;
         internal ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        internal long Top { get; set; } = 0;
+        internal int Top { get; set; } = 0;
         internal string Sort { get; set; } = CommandSort.ASC.ToString();
         internal string Action { get; set; } = CommandAction.Get.ToString();
         internal bool AllowParam { get; set; } = false;

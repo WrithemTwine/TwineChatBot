@@ -13,47 +13,63 @@ namespace ChatBot_Net5.Clients
         /// <summary>
         /// User name used in the connection
         /// </summary>
-        public string ClientID { get; set; }
+        public static string TwitchClientID { get; set; }
 
         /// <summary>
         /// Name of the Bot Account
         /// </summary>
-        public string BotUserName { get; set; }
+        public static string TwitchBotUserName { get; set; }
 
         /// <summary>
         /// Channel name used in the connection
         /// </summary>
-        public string ChannelName { get; set; }
+        public static string TwitchChannelName { get; set; }
 
         /// <summary>
         /// Token used for the connection.
         /// </summary>
-        public string AccessToken { get; set; }
+        public static string TwitchAccessToken { get; set; }
 
         /// <summary>
         /// Refresh token used to generate a new access token.
         /// </summary>
-        public string RefreshToken { get; set; }
+        public static string TwitchRefreshToken { get; set; }
 
         /// <summary>
         /// the date by which to generate/refresh a new access token.
         /// </summary>
-        public DateTime RefreshDate { get; set; }
+        public static DateTime TwitchRefreshDate { get; set; }
 
         /// <summary>
         /// The poll time in seconds to check the channel for new followers
         /// </summary>
-        public double FrequencyFollowerTime { get; set; }
+        public static double TwitchFrequencyFollowerTime { get; set; }
 
         /// <summary>
         /// The poll time in seconds to check for channel going live
         /// </summary>
-        public double FrequencyLiveNotifyTime { get; set; }
+        public static double TwitchFrequencyLiveNotifyTime { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.
         /// </summary>
-        public bool ShowConnectionMsg { get; set; }
+        public static bool ShowConnectionMsg { get; set; }
+
+        public bool IsStarted { get; set; }
+        public bool HandlersAdded { get; set; }
+
+        public event EventHandler OnBotStarted;
+        public event EventHandler OnBotStopped;
+
+        protected void InvokeBotStarted()
+        {
+            OnBotStarted?.Invoke(this, new EventArgs());
+        }
+
+        protected void InvokeBotStopped()
+        {
+            OnBotStopped?.Invoke(this, new EventArgs());
+        }
 
         public IOModule()
         {
@@ -79,7 +95,7 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool Send(string s)
         {
-            throw new();
+            return false;
         }
 
         public virtual bool SendWhisper(string user, string s)
@@ -99,6 +115,16 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool RefreshSettings()
         {
+            SaveParams();
+            TwitchAccessToken = Settings.Default.TwitchAccessToken;
+            TwitchBotUserName = Settings.Default.TwitchBotUserName;
+            TwitchChannelName = Settings.Default.TwitchChannelName;
+            TwitchClientID = Settings.Default.TwitchClientID;
+            TwitchFrequencyFollowerTime = Settings.Default.TwitchFrequency;
+            TwitchFrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
+            TwitchRefreshToken = Settings.Default.TwitchRefreshToken;
+            TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
+            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
             return true;
         }
 
