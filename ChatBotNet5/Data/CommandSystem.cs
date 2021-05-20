@@ -143,7 +143,7 @@ namespace ChatBot_Net5.Data
 
                 CommandParams addparams = CommandParams.Parse(arglist);
 
-                return datamanager.AddCommand(newcom.Substring(1), addparams);
+                return datamanager.AddCommand(newcom[1..], addparams);
             }
             else if (command == "socials")
             {

@@ -43,7 +43,7 @@
             </StatusBarItem>
         </StatusBar>
         <TabControl>
-            <TabItem x:Name="Tab_Setup" Header="Twitch Bot Setup">
+            <TabItem x:Name="Tab_Setup" Header="Twitch Bot Setup" GotFocus="TabItem_Twitch_GotFocus">
                 <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                         <StackPanel Orientation="Vertical">

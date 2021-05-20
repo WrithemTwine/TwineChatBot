@@ -56,6 +56,10 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public IOModuleTwitch TwitchIO { get; private set; }
 
+        public IOModuleTwitch_FollowerSvc TwitchFollower { get; private set; }
+
+        public IOModuleTwitch_LiveMonitorSvc TwitchLiveMonitor { get; private set; }
+
         #endregion Bot Services
 
         #endregion properties
@@ -69,56 +73,24 @@ namespace ChatBot_Net5.BotIOController
             _TraceLogWriter.AutoFlush = true;
 #endif
 
-            TwitchIO = new ();
+            TwitchIO = new();
+            TwitchFollower = new();
+            TwitchLiveMonitor = new();
             IOModuleList.Add(TwitchIO);
+            IOModuleList.Add(TwitchFollower);
+            IOModuleList.Add(TwitchLiveMonitor);
+
+            TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
+            TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;
+            TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
+            TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
 
             Stats = new(DataManage);
 
             OptionFlags.SetSettings();
         }
 
-        /// <summary>
-        /// Start all of the bots attached to this controller.
-        /// </summary>
-        /// <returns>True when completed.</returns>
-        public bool StartBot()
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-#endif
 
-            OptionFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
-            SetThread();
-            SetProcessCommands();
-
-            foreach (IOModule i in IOModuleList)
-            {
-                i.Connect();
-
-                // perform loading steps
-                RegisterHandlers();
-
-                i.StartBot();
-            }
-
-            if (OptionFlags.FirstFollowerProcess)
-            {
-                BeginAddFollowers(); // begin adding followers back to the data table
-            }
-
-#if DEBUG
-            //Test();
-#endif
-            return true;
-        }
-
-        private void Test()
-        {
-            Stats.StartStreamOnline(DateTime.Now);
-            System.Threading.Thread.Sleep(20000);
-            Stats.StreamOffline(DateTime.Now);
-        }
 
         /// <summary>
         /// Set all of the attached bots into a stopped state.
@@ -126,14 +98,6 @@ namespace ChatBot_Net5.BotIOController
         /// <returns>True when successful.</returns>
         public bool StopBot()
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-#endif
-
-            OptionFlags.ProcessOps = false;
-            SendThread?.Join();
-
             foreach (IOModule i in IOModuleList)
             {
                 i.StopBot();

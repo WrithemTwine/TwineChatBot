@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ChatBot_Net5.Clients;
+
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,9 +71,9 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void ProcessFollows()
         {
-            string ChannelName = TwitchIO.ChannelName;
+            string ChannelName = IOModule.TwitchChannelName;
 
-            Follows = TwitchIO.GetAllFollowersAsync().Result;
+            Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
             DataManage.UpdateFollowers(ChannelName, new Dictionary<string, List<Follow>>() { { ChannelName, Follows } });
         }

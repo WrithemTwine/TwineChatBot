@@ -52,7 +52,7 @@ namespace ChatBot_Net5.Data
                     filter += "'" + s.ToString() + "',";
                 }
 
-                return filter == string.Empty ? "" : filter.Substring(0, filter.Length - 1);
+                return filter == string.Empty ? "" : filter[0..^1];
             }
 
 
@@ -644,7 +644,7 @@ switches:
 
             lock (_DataSource.Commands)
             {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter.Substring(0, filter.Length - 1) + ")");
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter[0..^1] + ")");
             }
 
             foreach (DataSource.CommandsRow com in socialrows)

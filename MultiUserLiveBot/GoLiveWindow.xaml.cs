@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MultiUserLiveBot
 {
@@ -102,6 +103,19 @@ namespace MultiUserLiveBot
         #endregion static string helpers
 
         #region GUI events and helpers
+
+        private void TabItem_Twitch_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if ((DateTime.Parse(Twitch_RefreshDate.Content.ToString()) - DateTime.Now) <= new TimeSpan(14, 0, 0, 0))
+            {
+                Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            }
+            else
+            {
+                Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            }
+        }
+
         /// <summary>
         /// Verify certain text fields contain data for the bot login to permit the radio button to be enabled for user to click start
         /// </summary>

@@ -26,58 +26,74 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void RegisterHandlers()
         {
-            TwitchIO.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
-            TwitchIO.TwitchChat.OnChannelStateChanged += Client_OnChannelStateChanged;
-            TwitchIO.TwitchChat.OnChatCleared += Client_OnChatCleared;
-            TwitchIO.TwitchChat.OnChatColorChanged += Client_OnChatColorChanged;
-            TwitchIO.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
-            TwitchIO.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
-            TwitchIO.TwitchChat.OnConnected += Client_OnConnected;
-            TwitchIO.TwitchChat.OnConnectionError += Client_OnConnectionError;
-            TwitchIO.TwitchChat.OnDisconnected += Client_OnDisconnected;
-            TwitchIO.TwitchChat.OnError += Client_OnError;
-            TwitchIO.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
-            TwitchIO.TwitchChat.OnFailureToReceiveJoinConfirmation += Client_OnFailureToReceiveJoinConfirmation;
-            TwitchIO.TwitchChat.OnGiftedSubscription += Client_OnGiftedSubscription;
-            TwitchIO.TwitchChat.OnHostingStarted += Client_OnHostingStarted;
-            TwitchIO.TwitchChat.OnHostingStopped += Client_OnHostingStopped;
-            TwitchIO.TwitchChat.OnHostLeft += Client_OnHostLeft;
-            TwitchIO.TwitchChat.OnIncorrectLogin += Client_OnIncorrectLogin;
-            TwitchIO.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
-            TwitchIO.TwitchChat.OnLeftChannel += Client_OnLeftChannel;
-            TwitchIO.TwitchChat.OnMessageCleared += Client_OnMessageCleared;
-            TwitchIO.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
-            TwitchIO.TwitchChat.OnMessageSent += Client_OnMessageSent;
-            TwitchIO.TwitchChat.OnMessageThrottled += Client_OnMessageThrottled;
-            TwitchIO.TwitchChat.OnModeratorJoined += Client_OnModeratorJoined;
-            TwitchIO.TwitchChat.OnModeratorLeft += Client_OnModeratorLeft;
-            TwitchIO.TwitchChat.OnModeratorsReceived += Client_OnModeratorsReceived;
-            TwitchIO.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
-            TwitchIO.TwitchChat.OnNoPermissionError += Client_OnNoPermissionError;
-            TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
-            TwitchIO.TwitchChat.OnRaidedChannelIsMatureAudience += Client_OnRaidedChannelIsMatureAudience;
-            TwitchIO.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
-            TwitchIO.TwitchChat.OnReconnected += Client_OnReconnected;
-            TwitchIO.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
-            TwitchIO.TwitchChat.OnRitualNewChatter += Client_OnRitualNewChatter;
-            TwitchIO.TwitchChat.OnSelfRaidError += Client_OnSelfRaidError;
-            TwitchIO.TwitchChat.OnSendReceiveData += Client_OnSendReceiveData;
-            TwitchIO.TwitchChat.OnUnaccountedFor += Client_OnUnaccountedFor;
-            TwitchIO.TwitchChat.OnUserBanned += Client_OnUserBanned;
-            TwitchIO.TwitchChat.OnUserJoined += Client_OnUserJoined;
-            TwitchIO.TwitchChat.OnUserLeft += Client_OnUserLeft;
-            TwitchIO.TwitchChat.OnUserStateChanged += Client_OnUserStateChanged;
-            TwitchIO.TwitchChat.OnUserTimedout += Client_OnUserTimedout;
-            TwitchIO.TwitchChat.OnVIPsReceived += Client_OnVIPsReceived;
-            TwitchIO.TwitchChat.OnWhisperCommandReceived += Client_OnWhisperCommandReceived;
-            TwitchIO.TwitchChat.OnWhisperReceived += Client_OnWhisperReceived;
-            TwitchIO.TwitchChat.OnWhisperSent += Client_OnWhisperSent;
-            TwitchIO.TwitchChat.OnWhisperThrottled += Client_OnWhisperThrottled;
+            if (TwitchIO.IsStarted && !TwitchIO.HandlersAdded)
+            {
+                TwitchIO.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
+                TwitchIO.TwitchChat.OnChannelStateChanged += Client_OnChannelStateChanged;
+                TwitchIO.TwitchChat.OnChatCleared += Client_OnChatCleared;
+                TwitchIO.TwitchChat.OnChatColorChanged += Client_OnChatColorChanged;
+                TwitchIO.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
+                TwitchIO.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
+                TwitchIO.TwitchChat.OnConnected += Client_OnConnected;
+                TwitchIO.TwitchChat.OnConnectionError += Client_OnConnectionError;
+                TwitchIO.TwitchChat.OnDisconnected += Client_OnDisconnected;
+                TwitchIO.TwitchChat.OnError += Client_OnError;
+                TwitchIO.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
+                TwitchIO.TwitchChat.OnFailureToReceiveJoinConfirmation += Client_OnFailureToReceiveJoinConfirmation;
+                TwitchIO.TwitchChat.OnGiftedSubscription += Client_OnGiftedSubscription;
+                TwitchIO.TwitchChat.OnHostingStarted += Client_OnHostingStarted;
+                TwitchIO.TwitchChat.OnHostingStopped += Client_OnHostingStopped;
+                TwitchIO.TwitchChat.OnHostLeft += Client_OnHostLeft;
+                TwitchIO.TwitchChat.OnIncorrectLogin += Client_OnIncorrectLogin;
+                TwitchIO.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
+                TwitchIO.TwitchChat.OnLeftChannel += Client_OnLeftChannel;
+                TwitchIO.TwitchChat.OnMessageCleared += Client_OnMessageCleared;
+                TwitchIO.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
+                TwitchIO.TwitchChat.OnMessageSent += Client_OnMessageSent;
+                TwitchIO.TwitchChat.OnMessageThrottled += Client_OnMessageThrottled;
+                TwitchIO.TwitchChat.OnModeratorJoined += Client_OnModeratorJoined;
+                TwitchIO.TwitchChat.OnModeratorLeft += Client_OnModeratorLeft;
+                TwitchIO.TwitchChat.OnModeratorsReceived += Client_OnModeratorsReceived;
+                TwitchIO.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
+                TwitchIO.TwitchChat.OnNoPermissionError += Client_OnNoPermissionError;
+                TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
+                TwitchIO.TwitchChat.OnRaidedChannelIsMatureAudience += Client_OnRaidedChannelIsMatureAudience;
+                TwitchIO.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
+                TwitchIO.TwitchChat.OnReconnected += Client_OnReconnected;
+                TwitchIO.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
+                TwitchIO.TwitchChat.OnRitualNewChatter += Client_OnRitualNewChatter;
+                TwitchIO.TwitchChat.OnSelfRaidError += Client_OnSelfRaidError;
+                TwitchIO.TwitchChat.OnSendReceiveData += Client_OnSendReceiveData;
+                TwitchIO.TwitchChat.OnUnaccountedFor += Client_OnUnaccountedFor;
+                TwitchIO.TwitchChat.OnUserBanned += Client_OnUserBanned;
+                TwitchIO.TwitchChat.OnUserJoined += Client_OnUserJoined;
+                TwitchIO.TwitchChat.OnUserLeft += Client_OnUserLeft;
+                TwitchIO.TwitchChat.OnUserStateChanged += Client_OnUserStateChanged;
+                TwitchIO.TwitchChat.OnUserTimedout += Client_OnUserTimedout;
+                TwitchIO.TwitchChat.OnVIPsReceived += Client_OnVIPsReceived;
+                TwitchIO.TwitchChat.OnWhisperCommandReceived += Client_OnWhisperCommandReceived;
+                TwitchIO.TwitchChat.OnWhisperReceived += Client_OnWhisperReceived;
+                TwitchIO.TwitchChat.OnWhisperSent += Client_OnWhisperSent;
+                TwitchIO.TwitchChat.OnWhisperThrottled += Client_OnWhisperThrottled;
 
-            IOModuleTwitch.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
-            IOModuleTwitch.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
-            IOModuleTwitch.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
-            IOModuleTwitch.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
+                TwitchIO.HandlersAdded = true;
+            }
+
+            if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
+            {
+                TwitchFollower.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
+
+                TwitchFollower.HandlersAdded = true;
+            }
+
+            if (TwitchLiveMonitor.IsStarted && !TwitchLiveMonitor.HandlersAdded)
+            {
+                TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
+                TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
+                TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
+
+                TwitchLiveMonitor.HandlersAdded = true;
+            }
         }
 
         #region Stream On, Off, Updated
@@ -133,31 +149,34 @@ namespace ChatBot_Net5.BotIOController
                 _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
             }
 #endif
-
-            Stats.StreamOnline();
-
-            if (OptionFlags.PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
+            try
             {
-                // get message, set a default if otherwise deleted/unavailable
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
-                msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+                Stats.StreamOnline();
 
-                // keys for exchanging codes for representative names
-                Dictionary<string, string> dictionary = new()
+                if (OptionFlags.PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
                 {
-                    { "#user", e.Stream.UserName },
-                    { "#category", e.Stream.GameName },
-                    { "#title", e.Stream.Title },
-                    { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
-                };
+                    // get message, set a default if otherwise deleted/unavailable
+                    string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
+                    msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
 
-                foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
-                {
-                    DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
-                    Stats.AddDiscord();
+                    // keys for exchanging codes for representative names
+                    Dictionary<string, string> dictionary = new()
+                    {
+                        { "#user", e.Stream.UserName },
+                        { "#category", e.Stream.GameName },
+                        { "#title", e.Stream.Title },
+                        { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
+                    };
+
+                    foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
+                    {
+                        DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+                        Stats.AddDiscord();
+                    }
                 }
-            }
-            Stats.StartStreamOnline(e.Stream.StartedAt);
+                Stats.StartStreamOnline(e.Stream.StartedAt);
+            } 
+            catch (Exception ex) { }
 
         }
         #endregion Stream On, Off, Updated
@@ -538,7 +557,6 @@ namespace ChatBot_Net5.BotIOController
                 {
                     Send(response);
                 }
-                //AddChatString(response);
             }
             catch (InvalidOperationException InvalidOp)
             {
@@ -896,7 +914,7 @@ namespace ChatBot_Net5.BotIOController
             }
 #endif
 
-            if (TwitchIO.ShowConnectionMsg)
+            if (IOModule.ShowConnectionMsg)
             {
                 Version version = Assembly.GetEntryAssembly().GetName().Version;
                 string s = "Twine Chatbot by WrithemTwine, version " + string.Format(CultureInfo.CurrentCulture, "{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision) + ", is now connected!";

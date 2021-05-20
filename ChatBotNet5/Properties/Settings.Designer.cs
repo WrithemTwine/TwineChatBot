@@ -298,5 +298,41 @@ namespace ChatBot_Net5.Properties {
                 this["RepeatWhenLive"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchChatBotAutoStart {
+            get {
+                return ((bool)(this["TwitchChatBotAutoStart"]));
+            }
+            set {
+                this["TwitchChatBotAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchLiveStreamSvcAutoStart {
+            get {
+                return ((bool)(this["TwitchLiveStreamSvcAutoStart"]));
+            }
+            set {
+                this["TwitchLiveStreamSvcAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerSvcAutoStart {
+            get {
+                return ((bool)(this["TwitchFollowerSvcAutoStart"]));
+            }
+            set {
+                this["TwitchFollowerSvcAutoStart"] = value;
+            }
+        }
     }
 }
