@@ -121,16 +121,12 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        public void StartStreamOnline(DateTime Started)
+        public bool StreamOnline(DateTime Started)
         {
-            if (CurrStream.StreamStart == DateTime.Parse(StreamStat.DefaultTime))
-            {
-                CurrStream.StreamStart = Started.ToLocalTime();
-                datamanager.AddStream(CurrStream.StreamStart);
-            }
+            _StreamOnline = true;
+            CurrStream.StreamStart = Started.ToLocalTime();
+            return datamanager.AddStream(CurrStream.StreamStart);
         }
-
-        public void StreamOnline() => _StreamOnline = true;
 
         public void StreamOffline(DateTime Stopped)
         {

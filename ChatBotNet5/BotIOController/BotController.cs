@@ -1,33 +1,16 @@
-﻿//#if DEBUG
-//#define LOGGING
-//#endif
-
-
-using ChatBot_Net5.BotIOController.Models;
+﻿using ChatBot_Net5.BotIOController.Models;
 using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
-using ChatBot_Net5.Models;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
 {
-
-    // see "BotController_Events.cs for partial class implementation
-    public sealed partial class BotController
+    // see "BotController_*.cs for partial class implementation
+    public partial class BotController
     {
-        #region logging actions
-#if LOGGING
-        readonly StreamWriter _TraceLogWriter = new StreamWriter("LogCalledEvents.txt", true);
-#else
-        readonly StreamWriter _TraceLogWriter = null;
-#endif
-        #endregion logging actions
-
         #region properties
 
         /// <summary>
@@ -69,10 +52,6 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public BotController()
         {
-#if LOGGING
-            _TraceLogWriter.AutoFlush = true;
-#endif
-
             TwitchIO = new();
             TwitchFollower = new();
             TwitchLiveMonitor = new();
@@ -83,14 +62,14 @@ namespace ChatBot_Net5.BotIOController
             TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
             TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
+            TwitchFollower.OnBotStopped += TwitchFollower_OnBotStopped;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
+            TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
 
             Stats = new(DataManage);
 
             OptionFlags.SetSettings();
         }
-
-
 
         /// <summary>
         /// Set all of the attached bots into a stopped state.
@@ -132,11 +111,6 @@ namespace ChatBot_Net5.BotIOController
         /// <returns>The string names array of the bots within this controller.</returns>
         public string[] GetProviderNames()
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-#endif
-
             List<string> Names = new();
             
             foreach (IOModule a in IOModuleList)
@@ -154,17 +128,8 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-#endif
-
             StopBot();              // stop all the bot processes
             DataManage.SaveData();  // save data
-
-#if LOGGING
-            _TraceLogWriter.Close();
-#endif
         }
     }
 }

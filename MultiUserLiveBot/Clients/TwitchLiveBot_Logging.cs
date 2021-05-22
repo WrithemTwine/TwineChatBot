@@ -2,13 +2,15 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+using TwitchLib.Client.Events;
+
 namespace MultiUserLiveBot.Clients
 {
     public partial class TwitchLiveBot : INotifyPropertyChanged
     {
         private const int maxlength = 8000;
 
-        public string StatusLog { get; set; } = "";
+        public string MultiLiveStatusLog { get; set; } = "";
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -17,26 +19,26 @@ namespace MultiUserLiveBot.Clients
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The payload of the event.</param>
-        private void TwitchChat_OnLog(object sender, TwitchLib.Client.Events.OnLogArgs e)
+        private void TwitchChat_OnLog(object sender, OnLogArgs e)
         {
             void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            if (StatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
+            if (MultiLiveStatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
             {
-                StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
+                MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
+            MultiLiveStatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
 
-            NotifyPropertyChanged(nameof(StatusLog));
+            NotifyPropertyChanged(nameof(MultiLiveStatusLog));
         }
 
         public void LogEntry(string data, DateTime dateTime)
         {
-            TwitchChat_OnLog(this, new TwitchLib.Client.Events.OnLogArgs() { Data = data, DateTime = dateTime });
+            TwitchChat_OnLog(this, new OnLogArgs() { Data = data, DateTime = dateTime });
         }
     }
 }

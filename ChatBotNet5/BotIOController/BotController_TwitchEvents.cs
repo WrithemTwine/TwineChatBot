@@ -1,26 +1,22 @@
-﻿#if DEBUG
-//#define LOGGING
-#endif
-
-using ChatBot_Net5.Clients;
+﻿using ChatBot_Net5.Clients;
 using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
-using System.Windows;
+using System.Threading;
 
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
+using TwitchLib.Communication.Events;
 
 namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
-
         /// <summary>
         /// Register event handlers for the chat services
         /// </summary>
@@ -102,19 +98,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         /// <param name="sender">The calling object.</param>
         /// <param name="e">Contains the offline arguments.</param>
-        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.Stream.ToString());
-            }
-#endif
-
-            Stats.StreamOffline(DateTime.Now);
-        }
+        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e) => Stats.StreamOffline(DateTime.Now);
 
         /// <summary>
         /// Event called when the stream is detected to be updated.
@@ -123,15 +107,6 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         /// <summary>
@@ -141,75 +116,67 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the online arguments.</param>
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
             try
             {
-                Stats.StreamOnline();
-
-                if (OptionFlags.PostMultiLive || !DataManage.GetTodayStream(e.Stream.StartedAt))
+                if (e.Channel != TwitchLiveMonitor.ChatClientName)
                 {
-                    // get message, set a default if otherwise deleted/unavailable
-                    string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
-                    msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+                    SendMultiLiveMsg(e);
+                }
+                else
+                {
+                    bool Started = Stats.StreamOnline(e.Stream.StartedAt);
 
-                    // keys for exchanging codes for representative names
-                    Dictionary<string, string> dictionary = new()
+                    if (Started)
                     {
-                        { "#user", e.Stream.UserName },
-                        { "#category", e.Stream.GameName },
-                        { "#title", e.Stream.Title },
-                        { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
-                    };
+                        bool MultiLive = DataManage.CheckMultiStreams(e.Stream.StartedAt);
 
-                    foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
-                    {
-                        DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
-                        Stats.AddDiscord();
+                        if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
+                        {
+                            // get message, set a default if otherwise deleted/unavailable
+                            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
+                            msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+
+                            // keys for exchanging codes for representative names
+                            Dictionary<string, string> dictionary = new()
+                            {
+                                { "#user", e.Stream.UserName },
+                                { "#category", e.Stream.GameName },
+                                { "#title", e.Stream.Title },
+                                { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
+                            };
+
+                            foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
+                            {
+                                DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+                                Stats.AddDiscord();
+                            }
+                        }
                     }
                 }
-                Stats.StartStreamOnline(e.Stream.StartedAt);
-            } 
-            catch (Exception ex) { }
 
+            }
+            catch { }
         }
+
         #endregion Stream On, Off, Updated
 
         #region Followers
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
             bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Follow);
 
             string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Follow);
             msg ??= "Thanks #user for the follow!";
-
-            foreach (Follow f in e.NewFollowers)
+            foreach (var f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt) && !DataManage.UpdatingFollowers))
             {
-                if (DataManage.AddFollower(f.FromUserName, f.FollowedAt) && !DataManage.UpdatingFollowers)
+                if (FollowEnabled)
                 {
-                    if (FollowEnabled)
-                    {
-                        Send(msg.Replace("#user", "@" + f.FromUserName));
-                    }
-                    Stats.AddFollow();
-                    Stats.AddAutoEvents();
+                    Send(msg.Replace("#user", "@" + f.FromUserName));
                 }
+
+                Stats.AddFollow();
+                Stats.AddAutoEvents();
             }
-            
         }
 
         #endregion Followers
@@ -217,15 +184,6 @@ namespace ChatBot_Net5.BotIOController
         #region Subscriptions
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Subscribe))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Subscribe);
@@ -247,15 +205,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Resubscribe))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Resubscribe);
@@ -284,15 +233,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.GiftSub))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.GiftSub);
@@ -315,14 +255,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.CommunitySubs))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.CommunitySubs);
@@ -346,15 +278,6 @@ namespace ChatBot_Net5.BotIOController
         #region Hosting
         private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-
-#endif
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.BeingHosted))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.BeingHosted);
@@ -376,69 +299,24 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnHostLeft(object sender, EventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnHostingStopped(object sender, OnHostingStoppedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnHostingStarted(object sender, OnHostingStartedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
         #endregion Hosting
 
         #region Raid events
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Raid))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Raid);
@@ -457,96 +335,33 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnSelfRaidError(object sender, EventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnRaidedChannelIsMatureAudience(object sender, EventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         #endregion Raid events
 
         #region Msg IO
-        private void Client_OnWhisperThrottled(object sender, TwitchLib.Communication.Events.OnWhisperThrottledEventArgs e)
+        private void Client_OnWhisperThrottled(object sender, OnWhisperThrottledEventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnWhisperSent(object sender, OnWhisperSentArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnWhisperCommandReceived(object sender, OnWhisperCommandReceivedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             Stats.AddCommands();
             AddChat(e.Command.ChatMessage.DisplayName);
 
@@ -566,20 +381,12 @@ namespace ChatBot_Net5.BotIOController
             {
                 Send(NullRef.Message);
             }
+            catch { }
 
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             AddChatString(e.ChatMessage);
             Stats.AddTotalChats();
 
@@ -593,117 +400,50 @@ namespace ChatBot_Net5.BotIOController
             }
 
             // handle bit cheers
-            if (e.ChatMessage.Bits > 0)
+            if (e.ChatMessage.Bits > 0 && (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Bits))
             {
-                if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Bits))
+                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Bits);
+                msg ??= "Thanks #user for giving #bits!";
+
+                Dictionary<string, string> dictionary = new()
                 {
-                    string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Bits);
-                    msg ??= "Thanks #user for giving #bits!";
-
-                    Dictionary<string, string> dictionary = new() {
                     { "#user", e.ChatMessage.DisplayName },
-                    { "#bits", Plurality(e.ChatMessage.Bits, "bit", "bits" ) }
-                    };
+                    { "#bits", Plurality(e.ChatMessage.Bits, "bit", "bits") }
+                };
 
-                    Send(ParseReplace(msg, dictionary));
-                    Stats.AddBits(e.ChatMessage.Bits);
-                    Stats.AddAutoEvents();
-                }
+                Send(ParseReplace(msg, dictionary));
+                Stats.AddBits(e.ChatMessage.Bits);
+                Stats.AddAutoEvents();
             }
 
             AddChat(e.ChatMessage.DisplayName);            
         }
 
-        private void Client_OnMessageThrottled(object sender, TwitchLib.Communication.Events.OnMessageThrottledEventArgs e)
+        private void Client_OnMessageThrottled(object sender, OnMessageThrottledEventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnSendReceiveData(object sender, OnSendReceiveDataArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
-        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-            AddChat(e.RitualNewChatter.DisplayName);
-        }
+        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e) => AddChat(e.RitualNewChatter.DisplayName);
 
         #region Chat changes
         private void Client_OnChatColorChanged(object sender, OnChatColorChangedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnChatCleared(object sender, OnChatClearedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         #endregion
@@ -715,90 +455,36 @@ namespace ChatBot_Net5.BotIOController
         #region badge changes
         private void Client_OnVIPsReceived(object sender, OnVIPsReceivedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnModeratorsReceived(object sender, OnModeratorsReceivedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
-
 
         #endregion
 
         #region Moderators
 
-        private void Client_OnModeratorJoined(object sender, OnModeratorJoinedArgs e)
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-            Stats.ModJoined(e.Username);
-        }
+        private void Client_OnModeratorJoined(object sender, OnModeratorJoinedArgs e) => Stats.ModJoined(e.Username);
 
         private void Client_OnModeratorLeft(object sender, OnModeratorLeftArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
         #endregion
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
+            if (Stats.UserJoined(e.Username, DateTime.Now) && OptionFlags.FirstUserJoinedMsg)
             {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-
-#endif
-            if (Stats.UserJoined(e.Username, DateTime.Now))
-            {
-                if (OptionFlags.FirstUserJoinedMsg)
-                {
-                    RegisterJoinedUser(e.Username);
-                }
+                RegisterJoinedUser(e.Username);
             }
         }
 
         private void AddChat(string Username)
         {
-            if (Stats.UserChat(Username))
+            if (Stats.UserChat(Username) && OptionFlags.FirstUserChatMsg)
             {
-                if (OptionFlags.FirstUserChatMsg)
-                {
-                    RegisterJoinedUser(Username);
-                }
+                RegisterJoinedUser(Username);
             }
         }
 
@@ -824,77 +510,23 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
-        private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
+        private void Client_OnUserLeft(object sender, OnUserLeftArgs e) => Stats.UserLeft(e.Username, DateTime.Now);
 
-            Stats.UserLeft(e.Username, DateTime.Now);
-        }
-
-        private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-            Stats.AddUserBanned();
-
-
-        }
+        private void Client_OnUserBanned(object sender, OnUserBannedArgs e) => Stats.AddUserBanned();
 
         private void Client_OnUserStateChanged(object sender, OnUserStateChangedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
         }
 
-        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
-        {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-            Stats.AddUserTimedOut();
-        }
+        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e) => Stats.AddUserTimedOut();
 
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
+            foreach (var user in from string user in e.Users
+                                 where Stats.UserJoined(user, DateTime.Now)
+                                 select user)
             {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
-            foreach (string user in e.Users)
-            {
-                if (Stats.UserJoined(user, DateTime.Now))
-                {
-                    RegisterJoinedUser(user);
-                }
+                RegisterJoinedUser(user);
             }
         }
 
@@ -905,15 +537,6 @@ namespace ChatBot_Net5.BotIOController
         #region Channel Join Leave
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
             if (IOModule.ShowConnectionMsg)
             {
                 Version version = Assembly.GetEntryAssembly().GetName().Version;
@@ -925,15 +548,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnLeftChannel(object sender, OnLeftChannelArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         #endregion
@@ -942,135 +556,52 @@ namespace ChatBot_Net5.BotIOController
         #region Connecting
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.AutoJoinChannel + " " + e.BotUsername);
-            }
-#endif
-
         }
 
-        private void Client_OnReconnected(object sender, TwitchLib.Communication.Events.OnReconnectedEventArgs e)
+        private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
-        private void Client_OnDisconnected(object sender, TwitchLib.Communication.Events.OnDisconnectedEventArgs e)
+        private void Client_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
+            // the TwitchClient reports disconnected but user didn't click the 'start bot' button
+            // the client should be started but is now disconnected
+            // check is required so the bot doesn't keep restarting when the user actually clicked stop
+            if (TwitchIO.IsStarted) 
             {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
+                TwitchIO.Connect();    // restart the bot
             }
-#endif
-
         }
 
         #endregion
 
         private void Client_OnChannelStateChanged(object sender, OnChannelStateChangedArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ChannelState.ToString());
-            }
-#endif
-
         }
 
         #region Error checking
         private void Client_OnNoPermissionError(object sender, EventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
-        private void Client_OnError(object sender, TwitchLib.Communication.Events.OnErrorEventArgs e)
+        private void Client_OnError(object sender, OnErrorEventArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnIncorrectLogin(object sender, OnIncorrectLoginArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnFailureToReceiveJoinConfirmation(object sender, OnFailureToReceiveJoinConfirmationArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         private void Client_OnUnaccountedFor(object sender, OnUnaccountedForArgs e)
         {
-#if LOGGING
-            MethodBase b = MethodBase.GetCurrentMethod();
-            _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Method Name: " + b.Name);
-            if (b.GetParameters().Length > 0)
-            {
-                _TraceLogWriter?.WriteLine(DateTime.Now.ToString() + " Parameter: e " + e.ToString());
-            }
-#endif
-
         }
 
         #endregion

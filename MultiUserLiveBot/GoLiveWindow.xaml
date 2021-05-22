@@ -302,15 +302,15 @@
                         </TextBox.ToolTip>
                     </TextBox>
 
-                    <DataGrid x:Name="DG_Discord" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
-                              ItemsSource="{Binding Discord, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
+                    <DataGrid x:Name="DG_WebHooks" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
+                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
                               AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" />
                     <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
                               ItemsSource="{Binding Channels, Mode=OneWay}" MaxColumnWidth="160"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" RowEditEnding="DG_ChannelNames_RowEditEnding" />
                     <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" MaxColumnWidth="160" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
                     <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
-                        <Label DockPanel.Dock="Top" Height="25" Content="Log of Bot Activity:" />
+                        <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
                         <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding StatusLog}" />
                     </DockPanel>
                 </Grid>

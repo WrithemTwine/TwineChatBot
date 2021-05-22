@@ -12,7 +12,7 @@
   <xs:element name="DataSource" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DataSource" msprop:Generator_UserDSName="DataSource">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="Discord" msprop:Generator_TableClassName="DiscordDataTable" msprop:Generator_TableVarName="tableDiscord" msprop:Generator_RowChangedName="DiscordRowChanged" msprop:Generator_TablePropName="Discord" msprop:Generator_RowDeletingName="DiscordRowDeleting" msprop:Generator_RowChangingName="DiscordRowChanging" msprop:Generator_RowEvHandlerName="DiscordRowChangeEventHandler" msprop:Generator_RowDeletedName="DiscordRowDeleted" msprop:Generator_RowClassName="DiscordRow" msprop:Generator_UserTableName="Discord" msprop:Generator_RowEvArgName="DiscordRowChangeEvent">
+        <xs:element name="MsgEndPoints" msprop:Generator_TableClassName="MsgEndPointsDataTable" msprop:Generator_TableVarName="tableMsgEndPoints" msprop:Generator_TablePropName="MsgEndPoints" msprop:Generator_RowDeletingName="MsgEndPointsRowDeleting" msprop:Generator_RowChangingName="MsgEndPointsRowChanging" msprop:Generator_RowEvHandlerName="MsgEndPointsRowChangeEventHandler" msprop:Generator_RowDeletedName="MsgEndPointsRowDeleted" msprop:Generator_UserTableName="MsgEndPoints" msprop:Generator_RowChangedName="MsgEndPointsRowChanged" msprop:Generator_RowEvArgName="MsgEndPointsRowChangeEvent" msprop:Generator_RowClassName="MsgEndPointsRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" />
@@ -22,7 +22,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Channels" msprop:Generator_TableClassName="ChannelsDataTable" msprop:Generator_TableVarName="tableChannels" msprop:Generator_RowChangedName="ChannelsRowChanged" msprop:Generator_TablePropName="Channels" msprop:Generator_RowDeletingName="ChannelsRowDeleting" msprop:Generator_RowChangingName="ChannelsRowChanging" msprop:Generator_RowEvHandlerName="ChannelsRowChangeEventHandler" msprop:Generator_RowDeletedName="ChannelsRowDeleted" msprop:Generator_RowClassName="ChannelsRow" msprop:Generator_UserTableName="Channels" msprop:Generator_RowEvArgName="ChannelsRowChangeEvent">
+        <xs:element name="Channels" msprop:Generator_TableClassName="ChannelsDataTable" msprop:Generator_TableVarName="tableChannels" msprop:Generator_TablePropName="Channels" msprop:Generator_RowDeletingName="ChannelsRowDeleting" msprop:Generator_RowChangingName="ChannelsRowChanging" msprop:Generator_RowEvHandlerName="ChannelsRowChangeEventHandler" msprop:Generator_RowDeletedName="ChannelsRowDeleted" msprop:Generator_UserTableName="Channels" msprop:Generator_RowChangedName="ChannelsRowChanged" msprop:Generator_RowEvArgName="ChannelsRowChangeEvent" msprop:Generator_RowClassName="ChannelsRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" />
@@ -30,7 +30,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="LiveStream" msprop:Generator_TableClassName="LiveStreamDataTable" msprop:Generator_TableVarName="tableLiveStream" msprop:Generator_RowChangedName="LiveStreamRowChanged" msprop:Generator_TablePropName="LiveStream" msprop:Generator_RowDeletingName="LiveStreamRowDeleting" msprop:Generator_RowChangingName="LiveStreamRowChanging" msprop:Generator_RowEvHandlerName="LiveStreamRowChangeEventHandler" msprop:Generator_RowDeletedName="LiveStreamRowDeleted" msprop:Generator_RowClassName="LiveStreamRow" msprop:Generator_UserTableName="LiveStream" msprop:Generator_RowEvArgName="LiveStreamRowChangeEvent">
+        <xs:element name="LiveStream" msprop:Generator_TableClassName="LiveStreamDataTable" msprop:Generator_TableVarName="tableLiveStream" msprop:Generator_TablePropName="LiveStream" msprop:Generator_RowDeletingName="LiveStreamRowDeleting" msprop:Generator_RowChangingName="LiveStreamRowChanging" msprop:Generator_RowEvHandlerName="LiveStreamRowChangeEventHandler" msprop:Generator_RowDeletedName="LiveStreamRowDeleted" msprop:Generator_UserTableName="LiveStream" msprop:Generator_RowChangedName="LiveStreamRowChanged" msprop:Generator_RowEvArgName="LiveStreamRowChangeEvent" msprop:Generator_RowClassName="LiveStreamRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
@@ -42,7 +42,7 @@
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//mstns:Discord" />
+      <xs:selector xpath=".//mstns:MsgEndPoints" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
     <xs:unique name="Channels_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">

@@ -17,7 +17,7 @@ namespace ChatBot_Net5.Data
         #region DataSource
 
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
-        private DataSource _DataSource;
+        private readonly DataSource _DataSource;
         private Thread followerThread;
 
         public bool UpdatingFollowers { get; set; } = false;
@@ -385,9 +385,23 @@ namespace ChatBot_Net5.Data
             return null;
         }
 
+        internal bool CheckMultiStreams(DateTime dateTime)
+        {
+            int x = 0;
+            foreach(DataSource.StreamStatsRow row in GetAllStreamData())
+            {
+                if (row.StreamStart.ToShortDateString() == dateTime.ToShortDateString())
+                {
+                    x++;
+                }
+            }
+
+            return x > 1;
+        }
+
         internal bool AddStream(DateTime StreamStart)
         {
-            if (GetTodayStream(StreamStart))
+            if (CheckStreamTime(StreamStart))
             {
                 return false;
             }
@@ -442,7 +456,7 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        internal bool GetTodayStream(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
+        internal bool CheckStreamTime(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
 
         #endregion
 
@@ -499,12 +513,12 @@ switches:
                     { DefaultCommand.qstart.ToString(), new("The queue list to join me in the game has started!", "-p:Mod -use:!qstart mod only") },
                     { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
                     { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
-                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>")}
+                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") }
                 };
 
                 foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
                 {
-                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name>"));
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name> -top:0"));
                 }
 
                 foreach (string key in DefCommandsDictionary.Keys)
@@ -766,11 +780,13 @@ switches:
             return result;
         }
 
-        internal object[] PerformQuery(DataSource.CommandsRow row, string ParamValue, int Top=0)
+        internal object[] PerformQuery(DataSource.CommandsRow row, string ParamValue=null, int Top=0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
             DataRow[] output;
             List<Tuple<object,object>> outlist = new();
+
+            string temp = ParamValue;
 
             lock (_DataSource)
             {

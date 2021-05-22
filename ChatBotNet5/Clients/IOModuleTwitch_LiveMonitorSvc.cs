@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 using TwitchLib.Api;
@@ -15,9 +16,12 @@ namespace ChatBot_Net5.Clients
         internal LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
         public bool IsMultiLiveBotActive { get; set; }
+        public bool IsMultiConnected { get; set; }
         public IOModuleTwitch_LiveMonitorSvc()
         {
             ChatClientName = "TwitchLiveMonitorService";
+            IsStarted = false;
+            IsStopped = false;
         }
 
         internal void ConnectLiveMonitorService()
@@ -25,17 +29,21 @@ namespace ChatBot_Net5.Clients
             RefreshSettings();
             ApiSettings apilive = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+            SetLiveMonitorChannels(new());
         }
-
         /// <summary>
         /// Adds and updates the channels to monitor for if the streamer goes live.
         /// </summary>
         /// <param name="ChannelList">The channel names to monitor - the chat bot channel will automatically add to this monitor list.</param>
         internal void SetLiveMonitorChannels(List<string> ChannelList)
         {
-            if (!ChannelList.Contains(TwitchChannelName)) { ChannelList.Add(TwitchChannelName); }
+            string s = "";
+            lock (s)
+            {
+                if (!ChannelList.Contains(TwitchChannelName)) { ChannelList.Add(TwitchChannelName); }
 
-            LiveStreamMonitor.SetChannelsByName(ChannelList);
+                LiveStreamMonitor.SetChannelsByName(ChannelList);
+            }
         }
 
         /// <summary>
@@ -43,11 +51,20 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StartBot()
         {
-            ConnectLiveMonitorService();
-            LiveStreamMonitor.Start();
-            IsStarted = true;
-            InvokeBotStarted();
+            if (!IsStarted)
+            {
+                ConnectLiveMonitorService();
 
+                if (LiveStreamMonitor.ChannelsToMonitor.Count < 1)
+                {
+                    SetLiveMonitorChannels(new() { TwitchChannelName });
+                }
+
+                LiveStreamMonitor.Start();
+                IsStarted = true;
+                IsStopped = false;
+                InvokeBotStarted();
+            }
             return true;
         }
 
@@ -56,12 +73,15 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StopBot()
         {
-            LiveStreamMonitor?.Stop();
-            IsStarted = false;
-            InvokeBotStopped();
+            if (!IsStopped)
+            {
+                LiveStreamMonitor.Stop();
+                IsStarted = false;
+                IsStopped = true;
+                InvokeBotStopped();
+            }
             return true;
         }
-
 
     }
 }

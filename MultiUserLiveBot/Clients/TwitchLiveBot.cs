@@ -1,4 +1,4 @@
-﻿
+﻿using MultiUserLiveBot.Clients.TwitchLib;
 using MultiUserLiveBot.Data;
 using MultiUserLiveBot.Properties;
 
@@ -7,7 +7,6 @@ using System.Collections.Generic;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
-using TwitchLib.Api.Services;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
 namespace MultiUserLiveBot.Clients
@@ -17,7 +16,7 @@ namespace MultiUserLiveBot.Clients
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
-        public static LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
+        public static ExtLiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
         /// <summary>
         /// The backend database object for the bot to store data.
@@ -39,33 +38,35 @@ namespace MultiUserLiveBot.Clients
         /// <param name="sender">Object invoking the event.</param>
         /// <param name="e">The params for the event, stream details.</param>
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
-        { 
-
-            string msg = Settings.Default.LiveMsg != "" ? Settings.Default.LiveMsg : "#user is now live streaming #category - #title! Come join and say hi at: #url";
-
-            Dictionary<string, string> dictionary = new()
-            {
-                { "#user", e.Stream.UserName },
-                { "#category", e.Stream.GameName },
-                { "#title", e.Stream.Title },
-                { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
-            };
-
+        {
             // true posted new event, false did not post
             bool PostedLive = DataManage.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
 
             if (PostedLive)
             {
+                string msg = Settings.Default.LiveMsg != "" ? Settings.Default.LiveMsg : "#user is now live streaming #category - #title! Come join and say hi at: #url";
+
+                Dictionary<string, string> dictionary = new()
+                {
+                    { "#user", e.Stream.UserName },
+                    { "#category", e.Stream.GameName },
+                    { "#title", e.Stream.Title },
+                    { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
+                };
+
                 // false if the date didn't match, true if an event matches
                 bool MultiLive = DataManage.CheckStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
 
                 if ((Settings.Default.PostMultiLive && MultiLive) || !MultiLive)
                 {
                     LogEntry(GoLiveWindow.ParseReplace(msg, dictionary), e.Stream.StartedAt);
-                    foreach (Uri u in DataManage.GetDiscordLinks())
+                    foreach (Tuple<string, Uri> u in DataManage.GetWebLinks())
                     {
 #if !DEBUG
-                        DiscordWebhook.SendLiveMessage(u, GoLiveWindow.ParseReplace(msg, dictionary)).Wait();
+                        if (u.Item1 == "Discord")
+                        {
+                            DiscordWebhook.SendLiveMessage(u.Item2, GoLiveWindow.ParseReplace(msg, dictionary)).Wait();
+                        }
 #endif
                     }
                 }
@@ -80,7 +81,7 @@ namespace MultiUserLiveBot.Clients
         public bool Connect(List<string> ChannelList)
         {
             ApiSettings apilive = new() { AccessToken = AccessToken, ClientId = ClientID };
-            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(FrequencyLiveNotifyTime, 0));
+            LiveStreamMonitor = new ExtLiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(FrequencyLiveNotifyTime, 0));
             if (ChannelList.Count > 100)
             {
                 ChannelList.RemoveRange(100, ChannelList.Count - 100);
@@ -161,6 +162,13 @@ namespace MultiUserLiveBot.Clients
                 }
             }
             return false;
+        }
+
+        public void ExitSave()
+        {
+            DataManage.SaveData();
+            StopBot();
+            SaveParams();
         }
     }
 }

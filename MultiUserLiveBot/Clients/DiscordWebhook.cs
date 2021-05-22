@@ -8,7 +8,7 @@ namespace MultiUserLiveBot.Clients
 {
     public static class DiscordWebhook
     {
-        private static HttpClient client = new();
+        private static readonly HttpClient client = new();
 
         /// <summary>
         /// Send a message to provided Webhooks

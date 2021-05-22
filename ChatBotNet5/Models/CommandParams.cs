@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ChatBot_Net5.Models
 {
@@ -21,17 +22,14 @@ namespace ChatBot_Net5.Models
         internal bool AddMe { get; set; } = false;
         internal bool Empty { get; set; } = false;
 
-        internal static CommandParams Parse(string ParamString)
-        {
-            List<string> list = new( ParamString.Split('-') );
-            return Parse(list);
-        }
+        internal static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
 
         internal static CommandParams Parse(List<string> ParamList)
         {
             bool CheckList(string a) => ParamList.Exists((s) => s.StartsWith(a));
 
             CommandParams data = new();
+            ParamList.RemoveAll((s) => s.StartsWith(" -") || s == string.Empty);
 
             if (ParamList[0] == " ")
             {

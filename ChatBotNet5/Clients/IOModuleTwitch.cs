@@ -1,5 +1,4 @@
-﻿using ChatBot_Net5.Properties;
-
+﻿
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -10,9 +9,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 using TwitchLib.Client;
+using TwitchLib.Client.Enums;
+using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
+using TwitchLib.Communication.Enums;
 
 
 namespace ChatBot_Net5.Clients
@@ -52,7 +54,7 @@ namespace ChatBot_Net5.Clients
             ClientOptions options = new()
             {
                 UseSsl = true,
-                ClientType = TwitchLib.Communication.Enums.ClientType.Chat,
+                ClientType = ClientType.Chat,
 
                 MessagesAllowedInPeriod = TwitchClientID == TwitchChannelName ? 100 : 20,
                 ThrottlingPeriod = TimeSpan.FromSeconds(30),
@@ -81,7 +83,7 @@ namespace ChatBot_Net5.Clients
                     )
                 );
 
-            TwitchChat = new TwitchClient(new WebSocketClient(options), TwitchLib.Client.Enums.ClientProtocol.WebSocket, LogData);
+            TwitchChat = new TwitchClient(new WebSocketClient(options), ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
 
             RefreshSettings();
@@ -91,7 +93,7 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The payload of the event.</param>
-        private void TwitchChat_OnLog(object sender, TwitchLib.Client.Events.OnLogArgs e)
+        private void TwitchChat_OnLog(object sender, OnLogArgs e)
         {
             void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
@@ -103,7 +105,7 @@ namespace ChatBot_Net5.Clients
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += e.DateTime.ToString() + " " + e.Data + "\n";
+            StatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
 
             NotifyPropertyChanged(nameof(StatusLog));
         }
@@ -121,11 +123,9 @@ namespace ChatBot_Net5.Clients
             }
             else
             {
-                if (TwitchChat.ConnectionCredentials == null)
-                {
-                    TwitchChat.Initialize(credentials, TwitchChannelName);
-                }
+                TwitchChat.Initialize(credentials, TwitchChannelName);
                 TwitchChat.OverrideBeingHostedCheck = (TwitchChannelName != TwitchBotUserName);
+                TwitchChat.Connect();
             }
 
             return true;
@@ -141,19 +141,13 @@ namespace ChatBot_Net5.Clients
             {
                 RefreshSettings();
                 Connect();
-                if (!TwitchChat.IsConnected)
-                {
-                    TwitchChat.Connect();
-                }
                 IsStarted = true;
+                IsStopped = false;
                 InvokeBotStarted();
                 return true;
             }
-            catch (Exception ex)
-            {
-                string s = ex.Message;
-                return s.Length == 0;
-            }
+            catch 
+            { return false; }
         }
 
         /// <summary>
@@ -166,6 +160,7 @@ namespace ChatBot_Net5.Clients
             {
                 TwitchChat.Disconnect();
                 IsStarted = false;
+                IsStopped = true;
                 RefreshSettings();
                 InvokeBotStopped();
             }

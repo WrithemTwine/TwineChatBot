@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:BotIOController ="clr-namespace:ChatBot_Net5.BotIOController"
+        xmlns:MultiLive="clr-namespace:MultiUserLiveBot.Clients;assembly=MultiUserLiveBot"
         xmlns:s="clr-namespace:ChatBot_Net5.Properties"
         mc:Ignorable="d"
         Title="Chat Bot Manager" Height="771" Width="1000" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
@@ -16,10 +17,11 @@
             <TabItem Header="Bot Setup">
                 <TabControl>
                     <TabItem Header="Bot Actions">
-                        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <DockPanel VerticalAlignment="Top">
                             <DockPanel.Resources>
                                 <Style TargetType="GroupBox">
                                     <Setter Property="Margin" Value="5" />
+
                                 </Style>
                                 <Style TargetType="CheckBox">
                                     <Setter Property="Margin" Value="5" />
@@ -30,51 +32,93 @@
                             </DockPanel.Resources>
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
 
-                            <GroupBox Header="Twitch">
+                            <GroupBox Header="Twitch" HorizontalAlignment="Center">
                                 <StackPanel>
                                     <StackPanel.Resources>
                                         <Style TargetType="GroupBox">
-                                        <Setter Property="Width" Value="220" />
-                                    </Style>
+                                            <Setter Property="Width" Value="230" />
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
                                     </StackPanel.Resources>
                                     <Label>
                                         <TextBlock TextWrapping="Wrap">
                                             The bot credentials form needs to be completed with at least client id and access token.
                                         <LineBreak />
-                                            The LiveStreamMonitor Service will not monitor multiple channels if the "MultiUserLiveBot" is running.
+                                            The LiveStreamMonitor Service will not monitor multiple channels and stops if the "MultiUserLiveBot" is running or started.
                                         </TextBlock>
                                     </Label>
                                     <WrapPanel>
-                                        <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot" Width="250" BorderBrush="#FF212D34">
+                                        <WrapPanel.Resources>
+                                            <Style TargetType="Label">
+                                                <Setter Property="Height" Value="50" />
+                                            </Style>
+                                        </WrapPanel.Resources>
+                                        <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot" BorderBrush="#FF212D34">
                                             <WrapPanel Orientation="Horizontal" >
-                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchChatBotAutoStart}" Content="Auto-start when application starts" />
+                                                <Label x:Name="Label_TwitchChat_Start" Foreground="Green" Visibility="Collapsed">
+                                                    <TextBlock TextWrapping="Wrap">The Twitch Chat Client is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
+                                                    <TextBlock TextWrapping="Wrap">The Twitch Chat Client is stopped!</TextBlock>
+                                                </Label>
+                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchChatBotAutoStart}" >
+                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                             </WrapPanel>
                                         </GroupBox>
-                                        <GroupBox Header="LiveStream Monitor Service">
-                                            <WrapPanel>
-                                                <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Red" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap">The MultiUserLiveBot is active, single channel activated.
-                                                    </TextBlock>
-                                                </Label>
-                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" Content="Auto-start when application starts" />
-                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                            </WrapPanel>
-                                        </GroupBox>
                                         <GroupBox Header="Follower Service">
                                             <WrapPanel>
-                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchFollowerSvcAutoStart}" Content="Auto-start when application starts"/>
+                                                <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
+                                                    <TextBlock TextWrapping="Wrap">The Twitch Follower Client is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
+                                                    <TextBlock TextWrapping="Wrap">The Twitch Follower Client is stopped!</TextBlock>
+                                                </Label>
+                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
+                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop"  Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                             </WrapPanel>
                                         </GroupBox>
+                                        <GroupBox Header="LiveStream Monitor Service">
+                                            <StackPanel Orientation="Vertical">
+                                                <WrapPanel>
+                                                    <Label x:Name="Label_TwitchMultiLive_Start" Foreground="Green" Visibility="Collapsed">
+                                                        <TextBlock TextWrapping="Wrap">The Twitch LiveStream Monitor Client is started!</TextBlock>
+                                                    </Label>
+                                                    <Label x:Name="Label_TwitchMultiLive_Stop" Foreground="Maroon" Visibility="Visible">
+                                                        <TextBlock TextWrapping="Wrap">The Twitch LiveStream Monitor Client is stopped!</TextBlock>
+                                                    </Label>
+                                                    <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
+                                                        <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                    </CheckBox>
+                                                    <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
+                                                    <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
+                                                    <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Red" Visibility="Hidden">
+                                                        <TextBlock TextWrapping="Wrap">The MultiUserLiveBot is active, single channel activated.
+                                                        </TextBlock>
+                                                    </Label>
+                                                </WrapPanel>
+                                                <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
+                                                    <StackPanel Orientation="Vertical">
+                                                        <WrapPanel>
+                                                            <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
+                                                                <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                            </CheckBox>
+                                                            <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
+                                                            <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
+                                                        </WrapPanel>
+                                                    </StackPanel>
+                                                </GroupBox>
+                                            </StackPanel>
+                                        </GroupBox>
+
                                     </WrapPanel>
                                 </StackPanel>
                             </GroupBox>
-
-
                         </DockPanel>
                     </TabItem>
                     <TabItem Header="Twitch Setup" GotFocus="TabItem_Twitch_GotFocus">
@@ -437,6 +481,65 @@
                     <TabItem Header="Stream Stats">
                         <Grid>
                             <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem IsEnabled="False" />
+                    <TabItem Header="MultiLive Monitor">
+                        <Grid x:Name="TabItem_MultiUserLiveMonitor">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="298*" />
+                                <ColumnDefinition Width="52"/>
+                                <ColumnDefinition Width="100"  />
+                                <ColumnDefinition Width="52"/>
+                                <ColumnDefinition Width="293*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3">
+                        Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord.
+                            </TextBlock>
+
+                            <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
+                            <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
+                             DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" 
+                             TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
+                                <TextBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="#user" Click="MenuItem_Click" />
+                                        <MenuItem Header="#category" Click="MenuItem_Click" />
+                                        <MenuItem Header="#title" Click="MenuItem_Click" />
+                                        <MenuItem Header="#url" Click="MenuItem_Click" />
+                                    </ContextMenu>
+                                </TextBox.ContextMenu>
+                                <TextBox.ToolTip>
+                                    <TextBlock>
+                               
+                            Use these tags within the message and it'll be replaced before sending the posted live message. <LineBreak />
+                             Available by right-click menu - insert at cursor. <LineBreak />    
+                             "#user" - channel name of the user<LineBreak />
+                             "#category" - the category of the stream<LineBreak />
+                             "#title" - the title of the stream when it goes live<LineBreak />
+                             "#url" - to send someone to the Twitch channel, it's already prepared " twitch.tv/user "<LineBreak />
+                            <LineBreak />
+                            Example: @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url
+                                    </TextBlock>
+                                </TextBox.ToolTip>
+                            </TextBox>
+
+                            <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding MultiLiveDataManager}" 
+                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
+                              AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" />
+                            <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" DataContext="{Binding MultiLiveDataManager}" 
+                              ItemsSource="{Binding Channels, Mode=OneWay}" MaxColumnWidth="160"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" RowEditEnding="DG_ChannelNames_RowEditEnding" />
+                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" MaxColumnWidth="160" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
+
+                            <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
+                                <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
+                                <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}" />
+                            </DockPanel>
                         </Grid>
                     </TabItem>
                 </TabControl>

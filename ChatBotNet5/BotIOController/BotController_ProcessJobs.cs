@@ -24,7 +24,7 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// Initialize a thread to process sending messages back to each chat bot and start the message processing thread.
         /// </summary>
-        private void SetThread()
+        private void StartProcMsgThread()
         {
             SendThread = new(new ThreadStart(ProcMsgs));
             SendThread.Start();

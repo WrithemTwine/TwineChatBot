@@ -334,5 +334,29 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchFollowerSvcAutoStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#user is now live streaming #category - #title! Come join and say hi at: #url")]
+        public string LiveMsg {
+            get {
+                return ((string)(this["LiveMsg"]));
+            }
+            set {
+                this["LiveMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchMultiLiveAutoStart {
+            get {
+                return ((bool)(this["TwitchMultiLiveAutoStart"]));
+            }
+            set {
+                this["TwitchMultiLiveAutoStart"] = value;
+            }
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChatBot_Net5.Clients.TwitchLib;
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +15,7 @@ namespace ChatBot_Net5.Clients
         /// <summary>
         /// Listens for new followers.
         /// </summary>
-        internal FullFollowerService FollowerService { get; private set; }
+        internal ExtFollowerService FollowerService { get; private set; }
 
         public IOModuleTwitch_FollowerSvc()
         {
@@ -27,7 +29,7 @@ namespace ChatBot_Net5.Clients
         {
             RefreshSettings();
             ApiSettings apifollow = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
-            FollowerService = new FullFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));            
+            FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));            
             FollowerService.SetChannelsByName(new List<string>() { TwitchChannelName });
         }
 
@@ -39,6 +41,7 @@ namespace ChatBot_Net5.Clients
             ConnectFollowerService();
             FollowerService?.Start();
             IsStarted = true;
+            IsStopped = false;
             InvokeBotStarted();
             return true;
         }
@@ -48,9 +51,13 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StopBot()
         {
-            FollowerService?.Stop();
-            IsStarted = false;
-            InvokeBotStopped();
+            if (!IsStopped)
+            {
+                FollowerService?.Stop();
+                IsStarted = false;
+                IsStopped = true;
+                InvokeBotStopped();
+            }
             return true;
         }
 

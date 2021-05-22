@@ -11,11 +11,11 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.Clients.TwitchLib
 {
-    internal class FullFollowerService : FollowerService
+    internal class ExtFollowerService : FollowerService
     {
-        public FullFollowerService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 300) : base(api, checkIntervalInSeconds, queryCountPerRequest, cacheSize)
+        public ExtFollowerService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 300) : base(api, checkIntervalInSeconds, queryCountPerRequest, cacheSize)
         { 
         }
 
@@ -23,9 +23,9 @@ namespace ChatBot_Net5.Clients
         {
             Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
 
-            List<Follow> allfollows = new List<Follow>();
+            List<Follow> allfollows = new();
 
-            string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { ChannelName })).Users.FirstOrDefault()?.Id;
+            string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
 
             GetUsersFollowsResponse followsResponse = null;
 
@@ -36,10 +36,7 @@ namespace ChatBot_Net5.Clients
                     followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch (Exception ex)
-                {
-
-                }
+                catch { }
                 finally
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
@@ -48,17 +45,14 @@ namespace ChatBot_Net5.Clients
 
             }
 
-            while(followsResponse?.Follows.Length == 100)
+            while (followsResponse?.Follows.Length == 100)
             {
                 try
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch (Exception ex)
-                {
-
-                }
+                catch { }
             }
 
             return allfollows;
