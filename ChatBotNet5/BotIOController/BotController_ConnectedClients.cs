@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChatBot_Net5.Data;
+
+using System;
 
 namespace ChatBot_Net5.BotIOController
 {

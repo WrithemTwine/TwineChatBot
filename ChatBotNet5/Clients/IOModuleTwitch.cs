@@ -15,7 +15,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Enums;
-
+using ChatBot_Net5.Exceptions;
 
 namespace ChatBot_Net5.Clients
 {
@@ -158,9 +158,9 @@ namespace ChatBot_Net5.Clients
         {
             if (TwitchChat.IsConnected)
             {
-                TwitchChat.Disconnect();
                 IsStarted = false;
                 IsStopped = true;
+                TwitchChat.Disconnect();
                 RefreshSettings();
                 InvokeBotStopped();
             }
@@ -185,10 +185,10 @@ namespace ChatBot_Net5.Clients
         /// <returns>True when message is sent.</returns>
         public override bool Send(string s)
         {
-            if (TwitchChat.IsConnected == false)
-            {
-                TwitchChat.Reconnect();
-            }
+            //if (TwitchChat.IsConnected == false && IsStarted)
+            //{
+            //    TwitchChat.Reconnect();
+            //}
 
             if (IsStarted)
             {

@@ -1,4 +1,6 @@
 ﻿using ChatBot_Net5.Clients;
+using ChatBot_Net5.Data;
+using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
 
 using System;
@@ -6,7 +8,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -367,7 +368,7 @@ namespace ChatBot_Net5.BotIOController
 
             try
             {
-                string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
+                string response = ProcessCommands.ParseCommand(e.Command.CommandText.ToLower(), e.Command.ArgumentsAsList, e.Command.ChatMessage);
                 if (response != "")
                 {
                     Send(response);

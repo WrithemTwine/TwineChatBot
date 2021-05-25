@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-using TwitchLib.Client.Events;
-
 namespace MultiUserLiveBot.Clients
 {
     public partial class TwitchLiveBot : INotifyPropertyChanged
@@ -19,26 +17,21 @@ namespace MultiUserLiveBot.Clients
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The payload of the event.</param>
-        private void TwitchChat_OnLog(object sender, OnLogArgs e)
+        public void LogEntry(string data, DateTime dateTime)
         {
             void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            if (MultiLiveStatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
+            if (MultiLiveStatusLog.Length + dateTime.ToLocalTime().ToString().Length + data.Length + 2 >= maxlength)
             {
                 MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
             }
 
-            MultiLiveStatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
+            MultiLiveStatusLog += dateTime.ToLocalTime().ToString() + " " + data + "\n";
 
             NotifyPropertyChanged(nameof(MultiLiveStatusLog));
-        }
-
-        public void LogEntry(string data, DateTime dateTime)
-        {
-            TwitchChat_OnLog(this, new OnLogArgs() { Data = data, DateTime = dateTime });
         }
     }
 }

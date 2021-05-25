@@ -4,7 +4,7 @@
 
 using ChatBot_Net5.Properties;
 
-namespace ChatBot_Net5.BotIOController
+namespace ChatBot_Net5.Data
 {
     internal static class OptionFlags
     {

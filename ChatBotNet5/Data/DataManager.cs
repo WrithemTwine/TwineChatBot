@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
 
 using System;
@@ -22,7 +23,7 @@ namespace ChatBot_Net5.Data
 
         public bool UpdatingFollowers { get; set; } = false;
 
-        public List<string> KindsWebhooks { get; private set; } = new(Enum.GetNames(typeof(WebhooksKind)));
+        public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
@@ -42,12 +43,12 @@ namespace ChatBot_Net5.Data
             {
                 string filter = string.Empty;
 
-                foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
+                foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
                 {
                     filter += "'" + d.ToString() + "',";
                 }
 
-                foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
                 {
                     filter += "'" + s.ToString() + "',";
                 }
@@ -128,7 +129,7 @@ namespace ChatBot_Net5.Data
                 { ChannelEventActions.UserJoined, new("Welcome #user! Glad you could make it to the stream. How are you?", "#user") }
             };
 
-            foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
+            foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
             {
                 // consider only the values in the dictionary, check if data is already defined in the data table
                 if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
@@ -513,10 +514,11 @@ switches:
                     { DefaultCommand.qstart.ToString(), new("The queue list to join me in the game has started!", "-p:Mod -use:!qstart mod only") },
                     { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
                     { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
-                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") }
+                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
+                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime")}
                 };
 
-                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
                 {
                     DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name> -top:0"));
                 }
@@ -574,7 +576,7 @@ switches:
 
                 if (rows != null && rows.Length > 0)
                 {
-                    ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+                    ViewerTypes cmdpermission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
 
                     return cmdpermission >= permission;
                 }
@@ -638,7 +640,7 @@ switches:
         {
             string filter = "";
 
-            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+            foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
             {
                 filter += "'" + s.ToString() + "',";
             }

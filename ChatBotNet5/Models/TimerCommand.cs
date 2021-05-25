@@ -15,34 +15,16 @@ namespace ChatBot_Net5.Models
             UpdateTime();
         }
 
-        internal void UpdateTime()
-        {
-            NextRun = DateTime.Now.AddSeconds(RepeatTime);
-        }
+        internal void UpdateTime() => NextRun = DateTime.Now.AddSeconds(RepeatTime);
 
-        internal bool CheckFireTime()
-        {
-            return DateTime.Now > NextRun;
-        }
+        internal bool CheckFireTime() => DateTime.Now > NextRun;
 
-        public int CompareTo(TimerCommand obj)
-        {
-            return RepeatTime.CompareTo(obj.RepeatTime);
-        }
+        public int CompareTo(TimerCommand obj) => RepeatTime.CompareTo(obj.RepeatTime);
 
-        public bool Equals(TimerCommand other)
-        {
-            return Command==other.Command;
-        }
+        public bool Equals(TimerCommand other) => Command == other.Command;
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as TimerCommand);
-        }
+        public override bool Equals(object obj) => Equals(obj as TimerCommand);
 
-        public override int GetHashCode()
-        {
-            return (Command+RepeatTime.ToString()).GetHashCode();
-        }
+        public override int GetHashCode() => (Command + RepeatTime.ToString()).GetHashCode();
     }
 }

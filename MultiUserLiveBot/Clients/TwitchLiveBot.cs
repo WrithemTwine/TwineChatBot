@@ -1,5 +1,4 @@
-﻿using MultiUserLiveBot.Clients.TwitchLib;
-using MultiUserLiveBot.Data;
+﻿using MultiUserLiveBot.Data;
 using MultiUserLiveBot.Properties;
 
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Services;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
 namespace MultiUserLiveBot.Clients
@@ -16,7 +16,7 @@ namespace MultiUserLiveBot.Clients
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
-        public static ExtLiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
+        public static LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
         /// <summary>
         /// The backend database object for the bot to store data.
@@ -81,7 +81,7 @@ namespace MultiUserLiveBot.Clients
         public bool Connect(List<string> ChannelList)
         {
             ApiSettings apilive = new() { AccessToken = AccessToken, ClientId = ClientID };
-            LiveStreamMonitor = new ExtLiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(FrequencyLiveNotifyTime, 0));
+            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(FrequencyLiveNotifyTime, 0));
             if (ChannelList.Count > 100)
             {
                 ChannelList.RemoveRange(100, ChannelList.Count - 100);

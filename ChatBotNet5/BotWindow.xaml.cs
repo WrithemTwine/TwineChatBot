@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Data;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Properties;
 
@@ -371,7 +372,10 @@ namespace ChatBot_Net5
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
                      Radio_MultiLiveTwitch_StopBot.IsChecked = true;
 
-                    DG_Multi_LiveStreamStats.ItemsSource = controller.MultiLiveDataManager.LiveStream;
+                    if (IsMultiProcActive == true)
+                    {
+                        DG_Multi_LiveStreamStats.ItemsSource = controller.MultiLiveDataManager.LiveStream;
+                    }
                     DG_Multi_LiveStreamStats.Visibility = Visibility.Visible;
 
                     Panel_BotActivity.Visibility = Visibility.Collapsed;

@@ -8,7 +8,7 @@ namespace ChatBot_Net5.Clients
 {
     public static class DiscordWebhook
     {
-        private static HttpClient client = new();
+        private static readonly HttpClient client = new();
 
         /// <summary>
         /// Send a message to provided Webhooks
@@ -102,7 +102,7 @@ namespace ChatBot_Net5.Clients
         }
     }
 
-
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Names are required in this case because of the Discord/Webhook JSON specification.")]
     public class WebhookJSON
     {
         //private const int max_embeds = 10;
@@ -111,6 +111,7 @@ namespace ChatBot_Net5.Clients
         public string username { get; private set; }
         public string avatar_url { get; private set; }
         public bool tts { get; private set; }
+
         public object file { get; private set; } = null;
         public object[] embeds { get; private set; } = null; // Discord expects to remove in future API updates
         public string payload_json { get; private set; }

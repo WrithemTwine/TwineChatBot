@@ -1,4 +1,7 @@
 ﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Clients;
+using ChatBot_Net5.Enum;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 
 using System;
@@ -12,12 +15,12 @@ namespace ChatBot_Net5.Data
 {
     public class CommandSystem : INotifyPropertyChanged
     {
-        private DataManager datamanager;
-
-        private string BotUserName;
+        private readonly DataManager datamanager;
+        private readonly string BotUserName;
 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         internal event EventHandler<UserJoinArgs> UserJoinCommand;
+        internal event EventHandler<UpTimeCommandArgs> GetUpTimeCommand;
         public event PropertyChangedEventHandler PropertyChanged;
 
         internal void NotifyPropertyChanged(string ParamName="" )
@@ -149,14 +152,19 @@ namespace ChatBot_Net5.Data
             {
                 return datamanager.GetSocials();
             }
+            else if (command == "uptime")
+            {
+                GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = IOModule.TwitchChannelName });
+                return ""; // the message is handled at the botcontroller
+            }
             else if (command == "join" || command == "leave" || command == "queue")
             {
                 UserParty(command, arglist, DisplayName);
                 return ""; // the message is handled in the GUI thread
             }
-            else 
+            else
             {
-                if(command=="qinfo" && OptionFlags.UserPartyStop)
+                if (command == "qinfo" && OptionFlags.UserPartyStop)
                 {
                     return ""; // skip the queue info if it's a recurring message
                 }
@@ -214,7 +222,7 @@ namespace ChatBot_Net5.Data
                         // convert multi-row output to a string
                         string queryoutput = "";
 
-                        foreach(object r in datamanager.PerformQuery(CommData, paramvalue, CommData.top))
+                        foreach (object r in datamanager.PerformQuery(CommData, paramvalue, CommData.top))
                         {
                             Tuple<object, object> bundle = (r as Tuple<object, object>);
                             if (bundle.Item1 == bundle.Item2)
@@ -253,7 +261,7 @@ namespace ChatBot_Net5.Data
 
                 string response = BotController.ParseReplace(CommData.Message, datavalues);
 
-                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "" ) + response;
+                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
             }
 
             //return "not finished";

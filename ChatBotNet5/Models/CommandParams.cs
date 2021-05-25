@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChatBot_Net5.Enum;
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -74,7 +76,7 @@ namespace ChatBot_Net5.Models
                             data.Unit = value;
                             break;
                         case "p":
-                            data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), value);
+                            data.Permission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), value);
                             break;
                         case "top":
                             data.Top = int.Parse(value);
