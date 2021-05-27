@@ -29,6 +29,10 @@ namespace ChatBot_Net5.Data
         internal static bool PostMultiLive { get; set; }
         internal static string LiveMsg { get; set; }
 
+        internal static bool ManageUsers { get; set; }
+        internal static bool ManageFollowers { get; set; }
+        internal static bool ManageStreamStats { get; set; }
+
         internal static void SetSettings()
         {
             string s = "";
@@ -54,6 +58,10 @@ namespace ChatBot_Net5.Data
 
                 PostMultiLive = Settings.Default.PostMultiLive;
                 LiveMsg = Settings.Default.LiveMsg;
+
+                ManageUsers = Settings.Default.ManageUsers;
+                ManageFollowers = Settings.Default.ManageFollowers;
+                ManageStreamStats = Settings.Default.ManageStreamStats;
             }
         }
 

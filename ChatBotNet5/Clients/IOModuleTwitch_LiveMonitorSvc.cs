@@ -73,7 +73,7 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StopBot()
         {
-            if (!IsStopped)
+            if (!IsStopped && IsStarted)
             {
                 LiveStreamMonitor.Stop();
                 IsStarted = false;

@@ -257,6 +257,28 @@ namespace ChatBot_Net5.Data
         }
 
         /// <summary>
+        /// Remove all Users from the database.
+        /// </summary>
+        internal void RemoveAllUsers()
+        {
+            lock (_DataSource.Users)
+            {
+                _DataSource.Users.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Remove all Followers from the database.
+        /// </summary>
+        internal void RemoveAllFollowers()
+        {
+            lock (_DataSource.Followers)
+            {
+                _DataSource.Followers.Clear();
+            }
+        }
+
+        /// <summary>
         /// Add a new follower to the data table.
         /// </summary>
         /// <param name="User">The Username of the new Follow</param>
@@ -458,6 +480,14 @@ namespace ChatBot_Net5.Data
         }
 
         internal bool CheckStreamTime(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
+
+        internal void RemoveAllStreamStats()
+        {
+            lock (_DataSource.StreamStats)
+            {
+                _DataSource.StreamStats.Clear();
+            }
+        }
 
         #endregion
 
@@ -782,13 +812,11 @@ switches:
             return result;
         }
 
-        internal object[] PerformQuery(DataSource.CommandsRow row, string ParamValue=null, int Top=0)
+        internal object[] PerformQuery(DataSource.CommandsRow row, int Top=0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
             DataRow[] output;
             List<Tuple<object,object>> outlist = new();
-
-            string temp = ParamValue;
 
             lock (_DataSource)
             {

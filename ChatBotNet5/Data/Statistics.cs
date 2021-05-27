@@ -30,7 +30,11 @@ namespace ChatBot_Net5.Data
         public bool UserJoined(string User, DateTime CurrTime)
         {
             CurrUsers.Add(User);
-            datamanager.UserJoined(User, CurrTime);
+
+            if (OptionFlags.ManageUsers)
+            {
+                datamanager.UserJoined(User, CurrTime);
+            }
 
             if (IsStreamOnline)
             {
@@ -85,16 +89,20 @@ namespace ChatBot_Net5.Data
         public void UserLeft(string User, DateTime CurrTime)
         {
             UpdateWatchTime(User);
-            datamanager.UserLeft(User, CurrTime);
+            if (OptionFlags.ManageUsers)
+            {
+                datamanager.UserLeft(User, CurrTime);
+            }
             CurrUsers.Remove(User);
         }
-                /// <summary>
+
+        /// <summary>
         /// Default to all users or a specific user to register "DateTime.Now" as the current watch date.
         /// </summary>
         /// <param name="User">User to update "Now" or null to update all users watch time.</param>
         public void UpdateWatchTime(string User = null)
         {
-            if (IsStreamOnline)
+            if (IsStreamOnline && OptionFlags.ManageUsers)
             {
                 UpdateWatchTime(User, DateTime.Now);
             }
@@ -102,7 +110,7 @@ namespace ChatBot_Net5.Data
 
         public void UpdateWatchTime(string User, DateTime Seen)
         {
-            if (IsStreamOnline)
+            if (IsStreamOnline && OptionFlags.ManageUsers)
             {
                 if (User != null)
                 {
@@ -122,7 +130,9 @@ namespace ChatBot_Net5.Data
         {
             IsStreamOnline = true;
             CurrStream.StreamStart = Started.ToLocalTime();
-            return datamanager.AddStream(CurrStream.StreamStart);
+
+            // setting if user wants to save Stream Stat data
+            return OptionFlags.ManageStreamStats && datamanager.AddStream(CurrStream.StreamStart);
         }
 
         public void StreamOffline(DateTime Stopped)
@@ -133,9 +143,14 @@ namespace ChatBot_Net5.Data
             CurrStream.ModsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
-            datamanager.PostStreamStat(CurrStream);
-            CurrStream.Clear();
 
+            // setting if user wants to save Stream Stat data
+            if (OptionFlags.ManageStreamStats)
+            {
+                datamanager.PostStreamStat(CurrStream);
+            }
+
+            CurrStream.Clear();
             ModUsers.Clear();
             SubUsers.Clear();
             VIPUsers.Clear();

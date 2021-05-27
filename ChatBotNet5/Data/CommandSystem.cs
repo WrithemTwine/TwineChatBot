@@ -222,7 +222,7 @@ namespace ChatBot_Net5.Data
                         // convert multi-row output to a string
                         string queryoutput = "";
 
-                        foreach (object r in datamanager.PerformQuery(CommData, paramvalue, CommData.top))
+                        foreach (object r in datamanager.PerformQuery(CommData, CommData.top))
                         {
                             Tuple<object, object> bundle = (r as Tuple<object, object>);
                             if (bundle.Item1 == bundle.Item2)

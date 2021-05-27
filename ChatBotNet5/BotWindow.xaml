@@ -14,32 +14,30 @@
     <DockPanel SnapsToDevicePixels="True" DataContext="{DynamicResource ControlBot}">
         <StatusBar Height="25" DockPanel.Dock="Bottom" />
         <TabControl>
+            <TabControl.Resources>
+                <Style TargetType="GroupBox">
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="Width" Value="230" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="CheckBox">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+                <Style TargetType="RadioButton">
+                    <Setter Property="Margin" Value="10,5,0,5" />
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                    <Setter Property="Padding" Value="5,0" />
+                </Style>
+            </TabControl.Resources>
             <TabItem Header="Bot Setup">
                 <TabControl>
                     <TabItem Header="Bot Actions">
                         <DockPanel VerticalAlignment="Top">
-                            <DockPanel.Resources>
-                                <Style TargetType="GroupBox">
-                                    <Setter Property="Margin" Value="5" />
-
-                                </Style>
-                                <Style TargetType="CheckBox">
-                                    <Setter Property="Margin" Value="5" />
-                                </Style>
-                                <Style TargetType="RadioButton">
-                                    <Setter Property="Margin" Value="10,5,0,5" />
-                                </Style>
-                            </DockPanel.Resources>
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
-
-                            <GroupBox Header="Twitch" HorizontalAlignment="Center">
+                            <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
-                                    <StackPanel.Resources>
-                                        <Style TargetType="GroupBox">
-                                            <Setter Property="Width" Value="230" />
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        </Style>
-                                    </StackPanel.Resources>
                                     <Label>
                                         <TextBlock TextWrapping="Wrap">
                                             The bot credentials form needs to be completed with at least client id and access token.
@@ -164,15 +162,13 @@
                                             </StackPanel>
 
                                             <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
-                                            <CheckBox IsChecked="{Binding AddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
-                                                <TextBlock Padding="5" TextWrapping="Wrap">Enable adding all followers when bot starts, i.e. click 'Start Bot'.</TextBlock>
-                                            </CheckBox>
+
                                         </StackPanel>
                                     </GroupBox>
 
                                     <GroupBox Header="Setup Go-Live Notifications">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Content="Enable posting to social media (e.g. Discord) multiple live messages in same day." />
+                                            
                                             <StackPanel Orientation="Horizontal">
                                                 <Label Content="Seconds between checking for going live: " />
                                                 <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
@@ -311,6 +307,79 @@
             </TabItem>
             <TabItem Header="Data &amp; Messages">
                 <TabControl x:Name="TabControl_DataTabs">
+                    <TabItem Header="Options">
+                        <StackPanel Margin="10" DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                            <WrapPanel>
+                                <GroupBox Header="Twitch - Bot Management">
+                                    <WrapPanel>
+                                        <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Enable chat message when bot connects to a channel.</TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Enable posting to social media (e.g. Discord) multiple live messages in same day.</TextBlock></CheckBox>
+                                    </WrapPanel>
+                                </GroupBox>
+                                <GroupBox Header="Twitch - Format Bot messages">
+                                    <StackPanel Margin="5">
+                                        <Label Content="/me changes message to all italics" />
+                                        <RadioButton IsChecked="{Binding NoMeMsg, Mode=TwoWay}" Content="Disabled" />
+                                        <RadioButton IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Content="Enable /me for all commands" />
+                                        <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command"  />
+                                    </StackPanel>
+                                </GroupBox>
+                                 <GroupBox Header="Any - Automatic Commands by Timer">
+                                    <StackPanel Margin="5">
+                                        <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
+                                            <TextBlock>Enable Repeat commands only when live.</TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
+                                            <TextBlock>Enable repeating commands.</TextBlock>
+                                        </CheckBox>
+                                    </StackPanel>
+                                </GroupBox>
+                               <GroupBox Header="Any - Welcome Users">
+                                    <StackPanel Margin="5">
+                                        <Label Content="Only once per user per active stream (no repeats)" />
+                                        <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Disabled</TextBlock>
+                                        </RadioButton>
+                                        <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Enable when viewer joins the channel</TextBlock>
+                                        </RadioButton>
+                                        <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Enable when a viewer first chats</TextBlock>
+                                        </RadioButton>
+                                        <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to "Auto SO" tab.</TextBlock>
+                                        </CheckBox>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Any - Data Management">
+                                    <WrapPanel>
+                                        <Label>
+                                            <TextBlock Foreground="Red">*Unchecking these settings will remove this data from the database.*</TextBlock>
+                                        </Label>
+                                        <CheckBox IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
+                                            <TextBlock TextWrapping="Wrap">Manage channel viewers in the database, including their watchtime.*</TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
+                                            <TextBlock TextWrapping="Wrap">Manage channel followers in the database, including their followage.*</TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
+                                            <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream.*</TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding AddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
+                                            <TextBlock TextWrapping="Wrap">Enable adding all followers when bot starts, i.e. click 'Start Bot'.</TextBlock>
+                                        </CheckBox>
+                                        <Label>
+                                            <TextBlock Foreground="Red">*Unchecking these settings will remove this data from the database.*</TextBlock>
+                                        </Label>
+                                    </WrapPanel>
+                                </GroupBox>
+                                
+                            </WrapPanel>
+                        </StackPanel>
+                    </TabItem>
                     <TabItem Header="Users" Name="TabItem_Users">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -378,51 +447,6 @@
                     </TabItem>
                     <TabItem Header="Command System">
                         <TabControl>
-                            <TabItem Header="Options">
-                                <StackPanel Margin="10"  DataContext="{Binding Source={x:Static s:Settings.Default}}">
-                                    <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                        <TextBlock Padding="5,0" TextWrapping="Wrap">Enable chat message when bot connects to a channel.</TextBlock>
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                        <TextBlock Padding="5,0" TextWrapping="Wrap">Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to "Auto SO" tab.</TextBlock>
-                                    </CheckBox>
-
-                                    <WrapPanel Orientation="Horizontal">
-                                        <GroupBox Header="Add /me in front of Bot messages" Margin="4">
-                                            <StackPanel Margin="5">
-                                                <Label Content="/me changes message to all italics" />
-                                                <RadioButton IsChecked="{Binding NoMeMsg, Mode=TwoWay}" Content="Disabled" Margin="0,5,0,0"/>
-                                                <RadioButton IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Content="Enable /me for all commands" Margin="0,5,0,0" />
-                                                <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command" Margin="0,5,0,0" />
-                                            </StackPanel>
-                                        </GroupBox>
-                                        <GroupBox Header="Welcome Users" Margin="4">
-                                            <StackPanel Margin="5">
-                                                <Label Content="Only once per user per active stream (no repeats)" />
-                                                <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Margin="0,5,0,0">
-                                                    <TextBlock>Disabled</TextBlock>
-                                                </RadioButton>
-                                                <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Margin="0,5,0,0">
-                                                    <TextBlock TextWrapping="Wrap">Enable when viewer joins the channel</TextBlock>
-                                                </RadioButton>
-                                                <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Margin="0,5,0,0">
-                                                    <TextBlock TextWrapping="Wrap">Enable when a viewer first chats</TextBlock>
-                                                </RadioButton>
-                                            </StackPanel>
-                                        </GroupBox>
-                                        <GroupBox Header="Automatic Commands - Set by Timer" Margin="4">
-                                            <StackPanel Margin="5">
-                                                <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
-                                                    <TextBlock Padding="5,0">Enable Repeat commands only when live.</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
-                                                    <TextBlock Padding="5,0" TextWrapping="Wrap">Enable repeating commands.</TextBlock>
-                                                </CheckBox>
-                                            </StackPanel>
-                                        </GroupBox>
-                                    </WrapPanel>
-                                </StackPanel>
-                            </TabItem>
                             <TabItem Header="Help">
                                 <Grid>
                                     <TextBlock>
@@ -478,7 +502,7 @@
                             </TabItem>
                         </TabControl>
                     </TabItem>
-                    <TabItem Header="Stream Stats">
+                    <TabItem Header="Stream Stats" Name="TabItem_StreamStats">
                         <Grid>
                             <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                         </Grid>

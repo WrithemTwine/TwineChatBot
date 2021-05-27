@@ -36,7 +36,10 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void BeginAddFollowers()
         {
-            new Thread(new ThreadStart(ProcessFollows)).Start();
+            if (OptionFlags.ManageFollowers)
+            {
+                new Thread(new ThreadStart(ProcessFollows)).Start();
+            }
         }
 
         /// <summary>

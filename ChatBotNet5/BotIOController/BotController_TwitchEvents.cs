@@ -164,19 +164,25 @@ namespace ChatBot_Net5.BotIOController
         #region Followers
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Follow);
-
-            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Follow);
-            msg ??= "Thanks #user for the follow!";
-            foreach (var f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt) && !DataManage.UpdatingFollowers))
+            if (OptionFlags.ManageFollowers)
             {
-                if (FollowEnabled)
-                {
-                    Send(msg.Replace("#user", "@" + f.FromUserName));
-                }
+                bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Follow);
 
-                Stats.AddFollow();
-                Stats.AddAutoEvents();
+                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Follow);
+                msg ??= "Thanks #user for the follow!";
+
+                while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+                foreach (var f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt)))
+                {
+                    if (FollowEnabled)
+                    {
+                        Send(msg.Replace("#user", "@" + f.FromUserName));
+                    }
+
+                    Stats.AddFollow();
+                    Stats.AddAutoEvents();
+                }
             }
         }
 

@@ -39,6 +39,8 @@ namespace ChatBot_Net5
 
             InitializeComponent();
 
+            OptionFlags.SetSettings();
+
             CP = new();
             CP.Page_ChatPopup_FlowDocViewer.Document = FlowDoc_ChatBox.Document;
             CP.Page_ChatPopup_FlowDocViewer.Opacity = Slider_PopOut_Opacity.Value;
@@ -258,6 +260,16 @@ namespace ChatBot_Net5
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
 
+        private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
+        {
+            static Visibility SetVisibility(bool Check) { return (Check ? Visibility.Visible : Visibility.Collapsed); }
+
+            TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
+            TabItem_Followers.Visibility = SetVisibility(OptionFlags.ManageFollowers);
+            TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
+
+            controller.ManageDatabase();
+        }
         #endregion
 
         #region Helpers
