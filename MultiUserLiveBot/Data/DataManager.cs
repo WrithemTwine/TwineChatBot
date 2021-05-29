@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Xml;
@@ -11,10 +10,10 @@ namespace MultiUserLiveBot.Data
     {
         private static readonly string DataFileName = "MultiChatbotData.xml";
 
-        private DataSource _DataSource;
+        private readonly DataSource _DataSource;
 
         public DataView Channels { get; set; }
-        public DataView Discord { get; set; }
+        public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; } 
         
         public DataManager()
@@ -23,7 +22,7 @@ namespace MultiUserLiveBot.Data
             LoadData();
 
             Channels = new DataView(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
-            Discord = new DataView(_DataSource.Discord, null, "Id", DataViewRowState.CurrentRows);
+            MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, "Id", DataViewRowState.CurrentRows);
             LiveStream = new DataView(_DataSource.LiveStream, null, "ChannelName", DataViewRowState.CurrentRows);
         }
 
@@ -38,10 +37,8 @@ namespace MultiUserLiveBot.Data
                 _DataSource.WriteXml(DataFileName);
             }
 
-            using (XmlReader xmlreader = new XmlTextReader(DataFileName))
-            {
-                _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
-            }
+            using XmlReader xmlreader = new XmlTextReader(DataFileName);
+            _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
         }
 
         /// <summary>
@@ -117,16 +114,16 @@ namespace MultiUserLiveBot.Data
         }
 
         /// <summary>
-        /// Retrieve the Discrod links where the user wants to post live messages.
+        /// Retrieve the Endpoints links where the user wants to post live messages.
         /// </summary>
-        /// <returns>A list of URI objects for the Discord links.</returns>
-        public List<Uri> GetDiscordLinks()
+        /// <returns>A list of URI objects for the Endpoint links.</returns>
+        public List<Tuple<string,Uri>> GetWebLinks()
         {
-            List<Uri> links = new();
+            List<Tuple<string,Uri>> links = new();
 
-            foreach( DataSource.DiscordRow discordRow in (DataSource.DiscordRow[]) _DataSource.Discord.Select())
+            foreach( DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[]) _DataSource.MsgEndPoints.Select())
             {
-                links.Add(new(discordRow.URL));
+                links.Add(new(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
             }
 
             return links;

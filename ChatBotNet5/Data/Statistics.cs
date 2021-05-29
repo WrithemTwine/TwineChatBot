@@ -5,25 +5,23 @@ namespace ChatBot_Net5.Data
 {
     public class Statistics
     {
-        private List<string> CurrUsers = new();
-        private List<string> UniqueUserJoined = new();
-        private List<string> UniqueUserChat = new();
-        private List<string> ModUsers = new();
-        private List<string> SubUsers = new();
-        private List<string> VIPUsers = new();
-        private bool _StreamOnline;
-        private DataManager datamanager;
+        private readonly List<string> CurrUsers = new();
+        private readonly List<string> UniqueUserJoined = new();
+        private readonly List<string> UniqueUserChat = new();
+        private readonly List<string> ModUsers = new();
+        private readonly List<string> SubUsers = new();
+        private readonly List<string> VIPUsers = new();
+        private readonly DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
 
-        public bool IsStreamOnline { get { return _StreamOnline; } }
+        public bool IsStreamOnline { get; private set; }
 
         public Statistics(DataManager dataManager)
         {
             datamanager = dataManager;
-            _StreamOnline = false;
+            IsStreamOnline = false;
         }
-
-        /// <summary>
+                /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel
         /// </summary>
         /// <param name="User">User's DisplayName</param>
@@ -32,9 +30,13 @@ namespace ChatBot_Net5.Data
         public bool UserJoined(string User, DateTime CurrTime)
         {
             CurrUsers.Add(User);
-            datamanager.UserJoined(User, CurrTime);
 
-            if (_StreamOnline)
+            if (OptionFlags.ManageUsers)
+            {
+                datamanager.UserJoined(User, CurrTime);
+            }
+
+            if (IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
 
@@ -49,7 +51,7 @@ namespace ChatBot_Net5.Data
 
         public bool UserChat(string User)
         {
-            if (_StreamOnline)
+            if (IsStreamOnline)
             {
                 if (!UniqueUserChat.Contains(User))
                 {
@@ -62,7 +64,7 @@ namespace ChatBot_Net5.Data
 
         public void ModJoined(string User)
         {
-            if (_StreamOnline && !ModUsers.Contains(User))
+            if (IsStreamOnline && !ModUsers.Contains(User))
             {
                 ModUsers.Add(User);
             }
@@ -70,7 +72,7 @@ namespace ChatBot_Net5.Data
 
         public void SubJoined(string User)
         {
-            if (_StreamOnline && !SubUsers.Contains(User))
+            if (IsStreamOnline && !SubUsers.Contains(User))
             {
                 SubUsers.Add(User);
             }
@@ -78,7 +80,7 @@ namespace ChatBot_Net5.Data
 
         public void VIPJoined(string User)
         {
-            if (_StreamOnline && !VIPUsers.Contains(User))
+            if (IsStreamOnline && !VIPUsers.Contains(User))
             {
                 VIPUsers.Add(User);
             }
@@ -87,7 +89,10 @@ namespace ChatBot_Net5.Data
         public void UserLeft(string User, DateTime CurrTime)
         {
             UpdateWatchTime(User);
-            datamanager.UserLeft(User, CurrTime);
+            if (OptionFlags.ManageUsers)
+            {
+                datamanager.UserLeft(User, CurrTime);
+            }
             CurrUsers.Remove(User);
         }
 
@@ -97,7 +102,7 @@ namespace ChatBot_Net5.Data
         /// <param name="User">User to update "Now" or null to update all users watch time.</param>
         public void UpdateWatchTime(string User = null)
         {
-            if (_StreamOnline)
+            if (IsStreamOnline && OptionFlags.ManageUsers)
             {
                 UpdateWatchTime(User, DateTime.Now);
             }
@@ -105,7 +110,7 @@ namespace ChatBot_Net5.Data
 
         public void UpdateWatchTime(string User, DateTime Seen)
         {
-            if (_StreamOnline)
+            if (IsStreamOnline && OptionFlags.ManageUsers)
             {
                 if (User != null)
                 {
@@ -121,34 +126,39 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        public void StartStreamOnline(DateTime Started)
+        public bool StreamOnline(DateTime Started)
         {
-            if (CurrStream.StreamStart == DateTime.Parse(StreamStat.DefaultTime))
-            {
-                CurrStream.StreamStart = Started.ToLocalTime();
-                datamanager.AddStream(CurrStream.StreamStart);
-            }
-        }
+            IsStreamOnline = true;
+            CurrStream.StreamStart = Started.ToLocalTime();
 
-        public void StreamOnline() => _StreamOnline = true;
+            // setting if user wants to save Stream Stat data
+            return OptionFlags.ManageStreamStats && datamanager.AddStream(CurrStream.StreamStart);
+        }
 
         public void StreamOffline(DateTime Stopped)
         {
             UpdateWatchTime();
-            _StreamOnline = false;
+            IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped.ToLocalTime();
             CurrStream.ModsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
-            datamanager.PostStreamStat(CurrStream);
-            CurrStream.Clear();
 
+            // setting if user wants to save Stream Stat data
+            if (OptionFlags.ManageStreamStats)
+            {
+                datamanager.PostStreamStat(CurrStream);
+            }
+
+            CurrStream.Clear();
             ModUsers.Clear();
             SubUsers.Clear();
             VIPUsers.Clear();
             UniqueUserJoined.Clear();
             UniqueUserChat.Clear();
         }
+
+        public DateTime GetCurrentStreamStart() => CurrStream.StreamStart;
 
         #region Stream Stat Methods
         public void AddFollow() => CurrStream.NewFollows++;

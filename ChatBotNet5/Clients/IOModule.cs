@@ -55,8 +55,9 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public static bool ShowConnectionMsg { get; set; }
 
-        public bool IsStarted { get; set; }
-        public bool HandlersAdded { get; set; }
+        public bool IsStarted { get; set; } = false;
+        public bool HandlersAdded { get; set; } = false;
+        public bool IsStopped { get; set; } = false;
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;

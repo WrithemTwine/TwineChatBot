@@ -8,7 +8,7 @@ namespace MultiUserLiveBot.Clients
     {
         private const int maxlength = 8000;
 
-        public string StatusLog { get; set; } = "";
+        public string MultiLiveStatusLog { get; set; } = "";
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -17,26 +17,21 @@ namespace MultiUserLiveBot.Clients
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The payload of the event.</param>
-        private void TwitchChat_OnLog(object sender, TwitchLib.Client.Events.OnLogArgs e)
+        public void LogEntry(string data, DateTime dateTime)
         {
             void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            if (StatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
+            if (MultiLiveStatusLog.Length + dateTime.ToLocalTime().ToString().Length + data.Length + 2 >= maxlength)
             {
-                StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
+                MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
+            MultiLiveStatusLog += dateTime.ToLocalTime().ToString() + " " + data + "\n";
 
-            NotifyPropertyChanged(nameof(StatusLog));
-        }
-
-        public void LogEntry(string data, DateTime dateTime)
-        {
-            TwitchChat_OnLog(this, new TwitchLib.Client.Events.OnLogArgs() { Data = data, DateTime = dateTime });
+            NotifyPropertyChanged(nameof(MultiLiveStatusLog));
         }
     }
 }

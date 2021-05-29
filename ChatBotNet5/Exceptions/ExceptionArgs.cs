@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.Exceptions
 {
     [Serializable]
     public class NoUserDataException : Exception

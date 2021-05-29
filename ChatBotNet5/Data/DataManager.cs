@@ -1,8 +1,10 @@
 ﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -12,17 +14,17 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.Data
 {
-    public class DataManager
+    public class DataManager : INotifyPropertyChanged
     {
         #region DataSource
 
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
-        private DataSource _DataSource;
+        private readonly DataSource _DataSource;
         private Thread followerThread;
 
         public bool UpdatingFollowers { get; set; } = false;
 
-        public List<string> KindsWebhooks { get; private set; } = new(Enum.GetNames(typeof(WebhooksKind)));
+        public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
@@ -34,6 +36,13 @@ namespace ChatBot_Net5.Data
         public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string PropName)
+        {
+            PropertyChanged?.Invoke(this, new(PropName));
+        }
+
         #endregion DataSource
 
         public DataManager()
@@ -42,12 +51,12 @@ namespace ChatBot_Net5.Data
             {
                 string filter = string.Empty;
 
-                foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
+                foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
                 {
                     filter += "'" + d.ToString() + "',";
                 }
 
-                foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
                 {
                     filter += "'" + s.ToString() + "',";
                 }
@@ -128,7 +137,7 @@ namespace ChatBot_Net5.Data
                 { ChannelEventActions.UserJoined, new("Welcome #user! Glad you could make it to the stream. How are you?", "#user") }
             };
 
-            foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
+            foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
             {
                 // consider only the values in the dictionary, check if data is already defined in the data table
                 if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
@@ -211,6 +220,7 @@ namespace ChatBot_Net5.Data
                 user.LastDateSeen = NowSeen;
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Users));
             }
         }
 
@@ -222,6 +232,7 @@ namespace ChatBot_Net5.Data
                 user.LastDateSeen = LastSeen;
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Users));
             }
         }
 
@@ -234,6 +245,7 @@ namespace ChatBot_Net5.Data
                 user.LastDateSeen = CurrTime;
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Users));
             }
         }
 
@@ -253,6 +265,31 @@ namespace ChatBot_Net5.Data
                     return followers.IsFollower;
                 }
             }
+        }
+
+        /// <summary>
+        /// Remove all Users from the database.
+        /// </summary>
+        internal void RemoveAllUsers()
+        {
+            lock (_DataSource.Users)
+            {
+                _DataSource.Users.Clear();
+            }
+            OnPropertyChanged(nameof(Users));
+
+        }
+
+        /// <summary>
+        /// Remove all Followers from the database.
+        /// </summary>
+        internal void RemoveAllFollowers()
+        {
+            lock (_DataSource.Followers)
+            {
+                _DataSource.Followers.Clear();
+            }
+            OnPropertyChanged(nameof(Followers));
         }
 
         /// <summary>
@@ -284,6 +321,7 @@ namespace ChatBot_Net5.Data
                 }
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Followers));
                 return newfollow;
             }
         }
@@ -325,8 +363,19 @@ namespace ChatBot_Net5.Data
         {
             followerThread = new(new ThreadStart(() =>
             {
-                UpdatingFollowers = true; lock (_DataSource.Followers) { List<DataSource.FollowersRow> temp = new(); temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select()); temp.ForEach((f) => f.IsFollower = false); }
-                if (follows[ChannelName].Count > 1) { foreach (Follow f in follows[ChannelName]) { AddFollower(f.FromUserName, f.FollowedAt); } }
+                UpdatingFollowers = true; lock (_DataSource.Followers)
+                {
+                    List<DataSource.FollowersRow> temp = new();
+                    temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
+                    temp.ForEach((f) => f.IsFollower = false);
+                }
+                if (follows[ChannelName].Count > 1)
+                {
+                    foreach (Follow f in follows[ChannelName])
+                    {
+                        AddFollower(f.FromUserName, f.FollowedAt);
+                    }
+                }
                 _DataSource.AcceptChanges();
                 UpdatingFollowers = false;
                 SaveData();
@@ -385,9 +434,23 @@ namespace ChatBot_Net5.Data
             return null;
         }
 
+        internal bool CheckMultiStreams(DateTime dateTime)
+        {
+            int x = 0;
+            foreach(DataSource.StreamStatsRow row in GetAllStreamData())
+            {
+                if (row.StreamStart.ToShortDateString() == dateTime.ToShortDateString())
+                {
+                    x++;
+                }
+            }
+
+            return x > 1;
+        }
+
         internal bool AddStream(DateTime StreamStart)
         {
-            if (GetTodayStream(StreamStart))
+            if (CheckStreamTime(StreamStart))
             {
                 return false;
             }
@@ -398,6 +461,7 @@ namespace ChatBot_Net5.Data
                 SaveData();
 
                 //CurrStreamStatRow = GetAllStreamData(StreamStart);
+                OnPropertyChanged(nameof(StreamStats));
 
                 return true;
             }
@@ -440,9 +504,20 @@ namespace ChatBot_Net5.Data
                 }
                 SaveData();
             }
+            OnPropertyChanged(nameof(StreamStats));
         }
 
-        internal bool GetTodayStream(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
+        internal bool CheckStreamTime(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
+
+        internal void RemoveAllStreamStats()
+        {
+            lock (_DataSource.StreamStats)
+            {
+                _DataSource.StreamStats.Clear();
+            }
+            OnPropertyChanged(nameof(StreamStats));
+
+        }
 
         #endregion
 
@@ -470,6 +545,7 @@ switches:
          */
 
         private readonly string DefaulSocialMsg = "Social media url here";
+
 
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
@@ -499,12 +575,13 @@ switches:
                     { DefaultCommand.qstart.ToString(), new("The queue list to join me in the game has started!", "-p:Mod -use:!qstart mod only") },
                     { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
                     { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
-                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>")}
+                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
+                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime")}
                 };
 
-                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
                 {
-                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name>"));
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name> -top:0"));
                 }
 
                 foreach (string key in DefCommandsDictionary.Keys)
@@ -560,7 +637,7 @@ switches:
 
                 if (rows != null && rows.Length > 0)
                 {
-                    ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+                    ViewerTypes cmdpermission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
 
                     return cmdpermission >= permission;
                 }
@@ -616,6 +693,7 @@ switches:
             {
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage,Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
+                OnPropertyChanged(nameof(Commands));
             }
             return string.Format("Command {0} added!", cmd);
         }
@@ -624,7 +702,7 @@ switches:
         {
             string filter = "";
 
-            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+            foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
             {
                 filter += "'" + s.ToString() + "',";
             }
@@ -766,7 +844,7 @@ switches:
             return result;
         }
 
-        internal object[] PerformQuery(DataSource.CommandsRow row, string ParamValue, int Top=0)
+        internal object[] PerformQuery(DataSource.CommandsRow row, int Top=0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
             DataRow[] output;

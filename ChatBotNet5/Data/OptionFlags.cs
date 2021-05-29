@@ -4,7 +4,7 @@
 
 using ChatBot_Net5.Properties;
 
-namespace ChatBot_Net5.BotIOController
+namespace ChatBot_Net5.Data
 {
     internal static class OptionFlags
     {
@@ -27,25 +27,42 @@ namespace ChatBot_Net5.BotIOController
 
         // Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
         internal static bool PostMultiLive { get; set; }
+        internal static string LiveMsg { get; set; }
+
+        internal static bool ManageUsers { get; set; }
+        internal static bool ManageFollowers { get; set; }
+        internal static bool ManageStreamStats { get; set; }
 
         internal static void SetSettings()
         {
-            FirstFollowerProcess = Settings.Default.AddFollowersStart;
-            FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
-            FirstUserChatMsg = Settings.Default.WelcomeChatMsg;
-            
-            AddMeMsg = Settings.Default.InsertMeToMsg;
-            NoMeMsg = Settings.Default.NoMeMsg;
-            PerComMeMsg = Settings.Default.PerComMeMsg;
-            
-            AutoShout = Settings.Default.AutoShout;
-            RepeatTimer = Settings.Default.RepeatTimerCommands;
-            RepeatWhenLive = Settings.Default.RepeatWhenLive;
+            string s = "";
 
-            UserPartyStart = Settings.Default.UserPartyStart;
-            UserPartyStop = Settings.Default.UserPartyStop;
-            
-            PostMultiLive = Settings.Default.PostMultiLive;
+            lock (s)
+            {
+                Settings.Default.Save();
+
+                FirstFollowerProcess = Settings.Default.AddFollowersStart;
+                FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
+                FirstUserChatMsg = Settings.Default.WelcomeChatMsg;
+
+                AddMeMsg = Settings.Default.InsertMeToMsg;
+                NoMeMsg = Settings.Default.NoMeMsg;
+                PerComMeMsg = Settings.Default.PerComMeMsg;
+
+                AutoShout = Settings.Default.AutoShout;
+                RepeatTimer = Settings.Default.RepeatTimerCommands;
+                RepeatWhenLive = Settings.Default.RepeatWhenLive;
+
+                UserPartyStart = Settings.Default.UserPartyStart;
+                UserPartyStop = Settings.Default.UserPartyStop;
+
+                PostMultiLive = Settings.Default.PostMultiLive;
+                LiveMsg = Settings.Default.LiveMsg;
+
+                ManageUsers = Settings.Default.ManageUsers;
+                ManageFollowers = Settings.Default.ManageFollowers;
+                ManageStreamStats = Settings.Default.ManageStreamStats;
+            }
         }
 
         internal static void SetParty(bool Start = true)

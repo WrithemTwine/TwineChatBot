@@ -334,5 +334,65 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchFollowerSvcAutoStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#user is now live streaming #category - #title! Come join and say hi at: #url")]
+        public string LiveMsg {
+            get {
+                return ((string)(this["LiveMsg"]));
+            }
+            set {
+                this["LiveMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchMultiLiveAutoStart {
+            get {
+                return ((bool)(this["TwitchMultiLiveAutoStart"]));
+            }
+            set {
+                this["TwitchMultiLiveAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ManageUsers {
+            get {
+                return ((bool)(this["ManageUsers"]));
+            }
+            set {
+                this["ManageUsers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ManageFollowers {
+            get {
+                return ((bool)(this["ManageFollowers"]));
+            }
+            set {
+                this["ManageFollowers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ManageStreamStats {
+            get {
+                return ((bool)(this["ManageStreamStats"]));
+            }
+            set {
+                this["ManageStreamStats"] = value;
+            }
+        }
     }
 }

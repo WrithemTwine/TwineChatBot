@@ -13,6 +13,9 @@
     <Window.Resources>
         <!--<Data:DataManager x:Key="DataManager" x:Name="DataManager" />-->
         <Clients:TwitchLiveBot x:Key="TwitchLiveBot" x:Name="TwitchLiveBot" />
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="5" />
+        </Style>
     </Window.Resources>
     <DockPanel DataContext="{DynamicResource TwitchLiveBot}">
         <StatusBar DockPanel.Dock="Bottom" Height="25">
@@ -28,13 +31,13 @@
                 </StackPanel>
             </StatusBarItem>
             <Separator />
-             <StatusBarItem>
+            <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Added Channels: " />
                     <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
-            <Separator />  
+            <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Live Events: " />
@@ -45,57 +48,67 @@
         <TabControl>
             <TabItem x:Name="Tab_Setup" Header="Twitch Bot Setup" GotFocus="TabItem_Twitch_GotFocus">
                 <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                <Label Content="Bot User Name" Width="110" />
-                                <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
+                    <DockPanel.Resources>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Width" Value="250" />
+                            <EventSetter Event="LostFocus" Handler="Settings_LostFocus" />
+                        </Style>
+                        <Style TargetType="Label">
+                            <Setter Property="Width" Value="120" />
+                        </Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Height" Value="25" />
+                            <Setter Property="Margin" Value="10" />
+                        </Style>
+                    </DockPanel.Resources>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Height="Auto">
+                        <StackPanel Orientation="Vertical" Height="Auto">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Bot User Name" />
+                                <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" />
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                            <StackPanel Orientation="Horizontal">
                                 <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="Button_Click" LostFocus="Settings_LostFocus" />
                                 <Label x:Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
                             </StackPanel>
                             <Expander x:Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                        <Label Content="Client Id" Width="120" />
-                                        <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                <StackPanel Height="Auto">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="Client Id" />
+                                        <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" ToolTip="The client ID for the bot user account." InputScope="Password" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                        <Label Content="Access OAuth Token" Width="120" />
-                                        <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                        <Label Content="Access OAuth Token" />
+                                        <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" InputScope="Password" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                        <Label Content="Refresh Token" Width="120" />
-                                        <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
+                                        <Label Content="Refresh Token" />
+                                        <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" InputScope="Password"/>
                                     </StackPanel>
-
                                 </StackPanel>
                             </Expander>
-
                         </StackPanel>
-                        <StackPanel>
-                            <GroupBox Header="Setup Go-Live Notifications" Width="365">
-                                <StackPanel>
+                        <StackPanel Height="Auto">
+                            <GroupBox Header="Setup Go-Live Notifications" Width="500">
+                                <StackPanel Height="Auto">
                                     <CheckBox x:Name="CB_PostMultiple" IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click">
                                         <TextBlock TextWrapping="Wrap">
                                         Enable posting to social media (e.g. Discord) multiple live messages in same day.
                                         </TextBlock>
                                     </CheckBox>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label Content="Seconds between checking for going live: " />
+                                    <StackPanel Orientation="Horizontal" Height="Auto">
+                                        <Label Content="Seconds between checking for going live: " Width="Auto" />
                                         <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                     </StackPanel>
-                                    <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="300" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="5" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
+                                    <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="450" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="5" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
-                    </StackPanel>
-                    <FlowDocumentScrollViewer DockPanel.Dock="Top" Margin="10" VerticalScrollBarVisibility="Auto" BorderBrush="#FF040404" BorderThickness="0,1,0,0">
+                    </StackPanel>                    <FlowDocumentScrollViewer DockPanel.Dock="Top" Margin="10" VerticalScrollBarVisibility="Auto" BorderBrush="#FF040404" BorderThickness="0,1,0,0">
                         <FlowDocument FontSize="12" PagePadding="5">
                             <Section>
                                 <Paragraph>
-                                    <Run Text="*The 'Credentials' are in the expander to the left for privacy when the bot starts. Click to expand to enter and view the credentials. The data is saved after the textbox, slider, or checkbox loses focus."/>
+                                    <Run Text="*The 'Credentials' are in the expander to the above left for privacy when the bot starts. Click to expand to enter and view the credentials. The data is saved after the textbox, slider, or checkbox loses focus."/>
                                     <LineBreak/>
                                     <LineBreak/>
                                     <Run Text="The settings are saved at: "/>
@@ -136,7 +149,7 @@
                                     </Table>
                                 </Section>-->
                                 <Paragraph>
-                                    <Run Text="Bots need an &quot;Access Token&quot; to authorize it to post to Twitch. Per the OAuth requirements, the &quot;Access Token&quot; must be paired with the &quot;Client Id&quot; used to generate the &quot;Access Token&quot;."/>
+                                    <Run Text="Bots need an &quot;Access Token&quot; to interact with Twitch. Per the OAuth requirements, the &quot;Access Token&quot; must be paired with the &quot;Client Id&quot; used to generate the &quot;Access Token&quot;."/>
                                     <LineBreak />
                                     <LineBreak />
                                     <Run Text="*Until this application supports creating and refreshing access tokens, the user will need to manually perform this task."/>
@@ -251,44 +264,62 @@
             <TabItem x:Name="Tab_Channels" Header="Channels">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
+                        <RowDefinition Height="70" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="298*" />
-                        <ColumnDefinition Width="52"/>
-                        <ColumnDefinition Width="100"  />
-                        <ColumnDefinition Width="52"/>
+                        <ColumnDefinition Width="220"/>
                         <ColumnDefinition Width="293*"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="5" />
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                        <Style TargetType="DataGrid">
+                            <Setter Property="Margin" Value="5"/>
+                            <Setter Property="MaxColumnWidth" Value="160" />
+                            <Setter Property="AlternationCount" Value="1" />
+                            <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4" />
+                            <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+                        </Style>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="Margin" Value="5" />
+                        </Style>
 
-                    <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3">
-                        Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord.
+                    </Grid.Resources>
+                    <TextBlock Grid.Row="0">
+                        Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord.<LineBreak/>
+                        The channel list must contain at least one item to start the bot.
                     </TextBlock>
-
-                    <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" BorderBrush="#FF212D34" Grid.Column="1"  Grid.ColumnSpan="3" Margin="0,0,5,0">
+                    <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" BorderBrush="#FF212D34" Grid.Column="1">
                         <StackPanel Orientation="Vertical">
+                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" Click="CheckBox_Click">
+                                <TextBlock Margin="0">Automatically Start Bot with App</TextBlock>
+                            </CheckBox>
                             <StackPanel Orientation="Horizontal">
-                                <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StartBot" IsEnabled="False" Width="70"  />
-                                <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" Margin="10,10,0,5" PreviewMouseDown="BC_Twitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
+                                <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" PreviewMouseDown="BC_Twitch_StartStopBot" />
+                                <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" PreviewMouseDown="BC_Twitch_StartStopBot" IsChecked="True"  />
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
-
-                    <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
-                    <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
+                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical">
+                        <TextBlock Text="Message for Live Notification:" />
+                        <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Top" 
                              DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" 
-                             TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
-                        <TextBox.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="#user" Click="MenuItem_Click" />
-                                <MenuItem Header="#category" Click="MenuItem_Click" />
-                                <MenuItem Header="#title" Click="MenuItem_Click" />
-                                <MenuItem Header="#url" Click="MenuItem_Click" />
-                            </ContextMenu>
-                        </TextBox.ContextMenu>
-                        <TextBox.ToolTip>
-                            <TextBlock>
+                             TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus">
+                            <TextBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="#user" Click="MenuItem_Click" />
+                                    <MenuItem Header="#category" Click="MenuItem_Click" />
+                                    <MenuItem Header="#title" Click="MenuItem_Click" />
+                                    <MenuItem Header="#url" Click="MenuItem_Click" />
+                                </ContextMenu>
+                            </TextBox.ContextMenu>
+                            <TextBox.ToolTip>
+                                <TextBlock>
                                
                             Use these tags within the message and it'll be replaced before sending the posted live message. <LineBreak />
                              Available by right-click menu - insert at cursor. <LineBreak />    
@@ -298,20 +329,18 @@
                              "#url" - to send someone to the Twitch channel, it's already prepared " twitch.tv/user "<LineBreak />
                             <LineBreak />
                             Example: @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url
-                            </TextBlock>
-                        </TextBox.ToolTip>
-                    </TextBox>
+                                </TextBlock>
+                            </TextBox.ToolTip>
+                        </TextBox>
+                    </StackPanel>
 
-                    <DataGrid x:Name="DG_Discord" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
-                              ItemsSource="{Binding Discord, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
-                              AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" />
-                    <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" DataContext="{Binding DataManage}" 
-                              ItemsSource="{Binding Channels, Mode=OneWay}" MaxColumnWidth="160"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" RowEditEnding="DG_ChannelNames_RowEditEnding" />
-                    <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" MaxColumnWidth="160" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
+                    <DataGrid x:Name="DG_WebHooks" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" />
+                    <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" />
+                    <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="2" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
-                    <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
-                        <Label DockPanel.Dock="Top" Height="25" Content="Log of Bot Activity:" />
-                        <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding StatusLog}" />
+                    <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="2" Visibility="Collapsed">
+                        <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
+                        <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}" />
                     </DockPanel>
                 </Grid>
             </TabItem>

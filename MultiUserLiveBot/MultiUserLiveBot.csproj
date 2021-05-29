@@ -10,13 +10,23 @@
     <Copyright>MIT</Copyright>
     <Description>A bot monitoring multiple channels for when they go live. Currently posts to Discord through WebHook URLs.</Description>
     <ApplicationIcon>MultiBot.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\ChatBotNet5\ChatBotNet5.csproj" />
+    <PackageReference Include="TwitchLib" Version="3.2.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.2.3" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.2.3" />
   </ItemGroup>
 
   <ItemGroup>

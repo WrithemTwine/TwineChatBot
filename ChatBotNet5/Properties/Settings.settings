@@ -80,5 +80,20 @@
     <Setting Name="TwitchFollowerSvcAutoStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="LiveMsg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#user is now live streaming #category - #title! Come join and say hi at: #url</Value>
+    </Setting>
+    <Setting Name="TwitchMultiLiveAutoStart" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ManageUsers" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ManageFollowers" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ManageStreamStats" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

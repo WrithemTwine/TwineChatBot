@@ -24,7 +24,7 @@ namespace MultiUserLiveBot.Data {
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.DataSet")]
     internal partial class DataSource : global::System.Data.DataSet {
         
-        private DiscordDataTable tableDiscord;
+        private MsgEndPointsDataTable tableMsgEndPoints;
         
         private ChannelsDataTable tableChannels;
         
@@ -58,8 +58,8 @@ namespace MultiUserLiveBot.Data {
             if ((this.DetermineSchemaSerializationMode(info, context) == global::System.Data.SchemaSerializationMode.IncludeSchema)) {
                 global::System.Data.DataSet ds = new global::System.Data.DataSet();
                 ds.ReadXmlSchema(new global::System.Xml.XmlTextReader(new global::System.IO.StringReader(strSchema)));
-                if ((ds.Tables["Discord"] != null)) {
-                    base.Tables.Add(new DiscordDataTable(ds.Tables["Discord"]));
+                if ((ds.Tables["MsgEndPoints"] != null)) {
+                    base.Tables.Add(new MsgEndPointsDataTable(ds.Tables["MsgEndPoints"]));
                 }
                 if ((ds.Tables["Channels"] != null)) {
                     base.Tables.Add(new ChannelsDataTable(ds.Tables["Channels"]));
@@ -89,9 +89,9 @@ namespace MultiUserLiveBot.Data {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public DiscordDataTable Discord {
+        public MsgEndPointsDataTable MsgEndPoints {
             get {
-                return this.tableDiscord;
+                return this.tableMsgEndPoints;
             }
         }
         
@@ -182,8 +182,8 @@ namespace MultiUserLiveBot.Data {
                 this.Reset();
                 global::System.Data.DataSet ds = new global::System.Data.DataSet();
                 ds.ReadXml(reader);
-                if ((ds.Tables["Discord"] != null)) {
-                    base.Tables.Add(new DiscordDataTable(ds.Tables["Discord"]));
+                if ((ds.Tables["MsgEndPoints"] != null)) {
+                    base.Tables.Add(new MsgEndPointsDataTable(ds.Tables["MsgEndPoints"]));
                 }
                 if ((ds.Tables["Channels"] != null)) {
                     base.Tables.Add(new ChannelsDataTable(ds.Tables["Channels"]));
@@ -224,10 +224,10 @@ namespace MultiUserLiveBot.Data {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         internal void InitVars(bool initTable) {
-            this.tableDiscord = ((DiscordDataTable)(base.Tables["Discord"]));
+            this.tableMsgEndPoints = ((MsgEndPointsDataTable)(base.Tables["MsgEndPoints"]));
             if ((initTable == true)) {
-                if ((this.tableDiscord != null)) {
-                    this.tableDiscord.InitVars();
+                if ((this.tableMsgEndPoints != null)) {
+                    this.tableMsgEndPoints.InitVars();
                 }
             }
             this.tableChannels = ((ChannelsDataTable)(base.Tables["Channels"]));
@@ -252,8 +252,8 @@ namespace MultiUserLiveBot.Data {
             this.Namespace = "http://tempuri.org/DataSource.xsd";
             this.EnforceConstraints = true;
             this.SchemaSerializationMode = global::System.Data.SchemaSerializationMode.ExcludeSchema;
-            this.tableDiscord = new DiscordDataTable();
-            base.Tables.Add(this.tableDiscord);
+            this.tableMsgEndPoints = new MsgEndPointsDataTable();
+            base.Tables.Add(this.tableMsgEndPoints);
             this.tableChannels = new ChannelsDataTable();
             base.Tables.Add(this.tableChannels);
             this.tableLiveStream = new LiveStreamDataTable();
@@ -270,7 +270,7 @@ namespace MultiUserLiveBot.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        private bool ShouldSerializeDiscord() {
+        private bool ShouldSerializeMsgEndPoints() {
             return false;
         }
         
@@ -342,7 +342,7 @@ namespace MultiUserLiveBot.Data {
         }
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public delegate void DiscordRowChangeEventHandler(object sender, DiscordRowChangeEvent e);
+        public delegate void MsgEndPointsRowChangeEventHandler(object sender, MsgEndPointsRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void ChannelsRowChangeEventHandler(object sender, ChannelsRowChangeEvent e);
@@ -355,7 +355,7 @@ namespace MultiUserLiveBot.Data {
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class DiscordDataTable : global::System.Data.TypedTableBase<DiscordRow> {
+        public partial class MsgEndPointsDataTable : global::System.Data.TypedTableBase<MsgEndPointsRow> {
             
             private global::System.Data.DataColumn columnId;
             
@@ -367,8 +367,8 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordDataTable() {
-                this.TableName = "Discord";
+            public MsgEndPointsDataTable() {
+                this.TableName = "MsgEndPoints";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
@@ -376,7 +376,7 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal DiscordDataTable(global::System.Data.DataTable table) {
+            internal MsgEndPointsDataTable(global::System.Data.DataTable table) {
                 this.TableName = table.TableName;
                 if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
                     this.CaseSensitive = table.CaseSensitive;
@@ -393,7 +393,7 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected DiscordDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+            protected MsgEndPointsDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
             }
@@ -441,55 +441,55 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow this[int index] {
+            public MsgEndPointsRow this[int index] {
                 get {
-                    return ((DiscordRow)(this.Rows[index]));
+                    return ((MsgEndPointsRow)(this.Rows[index]));
                 }
             }
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event DiscordRowChangeEventHandler DiscordRowChanging;
+            public event MsgEndPointsRowChangeEventHandler MsgEndPointsRowChanging;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event DiscordRowChangeEventHandler DiscordRowChanged;
+            public event MsgEndPointsRowChangeEventHandler MsgEndPointsRowChanged;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event DiscordRowChangeEventHandler DiscordRowDeleting;
+            public event MsgEndPointsRowChangeEventHandler MsgEndPointsRowDeleting;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event DiscordRowChangeEventHandler DiscordRowDeleted;
+            public event MsgEndPointsRowChangeEventHandler MsgEndPointsRowDeleted;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void AddDiscordRow(DiscordRow row) {
+            public void AddMsgEndPointsRow(MsgEndPointsRow row) {
                 this.Rows.Add(row);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow AddDiscordRow(string Server, string Type, string URL) {
-                DiscordRow rowDiscordRow = ((DiscordRow)(this.NewRow()));
+            public MsgEndPointsRow AddMsgEndPointsRow(string Server, string Type, string URL) {
+                MsgEndPointsRow rowMsgEndPointsRow = ((MsgEndPointsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         Server,
                         Type,
                         URL};
-                rowDiscordRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowDiscordRow);
-                return rowDiscordRow;
+                rowMsgEndPointsRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowMsgEndPointsRow);
+                return rowMsgEndPointsRow;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow FindById(int Id) {
-                return ((DiscordRow)(this.Rows.Find(new object[] {
+            public MsgEndPointsRow FindById(int Id) {
+                return ((MsgEndPointsRow)(this.Rows.Find(new object[] {
                             Id})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
-                DiscordDataTable cln = ((DiscordDataTable)(base.Clone()));
+                MsgEndPointsDataTable cln = ((MsgEndPointsDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
@@ -497,7 +497,7 @@ namespace MultiUserLiveBot.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Data.DataTable CreateInstance() {
-                return new DiscordDataTable();
+                return new MsgEndPointsDataTable();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -531,28 +531,28 @@ namespace MultiUserLiveBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow NewDiscordRow() {
-                return ((DiscordRow)(this.NewRow()));
+            public MsgEndPointsRow NewMsgEndPointsRow() {
+                return ((MsgEndPointsRow)(this.NewRow()));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new DiscordRow(builder);
+                return new MsgEndPointsRow(builder);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Type GetRowType() {
-                return typeof(DiscordRow);
+                return typeof(MsgEndPointsRow);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanged(e);
-                if ((this.DiscordRowChanged != null)) {
-                    this.DiscordRowChanged(this, new DiscordRowChangeEvent(((DiscordRow)(e.Row)), e.Action));
+                if ((this.MsgEndPointsRowChanged != null)) {
+                    this.MsgEndPointsRowChanged(this, new MsgEndPointsRowChangeEvent(((MsgEndPointsRow)(e.Row)), e.Action));
                 }
             }
             
@@ -560,8 +560,8 @@ namespace MultiUserLiveBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanging(e);
-                if ((this.DiscordRowChanging != null)) {
-                    this.DiscordRowChanging(this, new DiscordRowChangeEvent(((DiscordRow)(e.Row)), e.Action));
+                if ((this.MsgEndPointsRowChanging != null)) {
+                    this.MsgEndPointsRowChanging(this, new MsgEndPointsRowChangeEvent(((MsgEndPointsRow)(e.Row)), e.Action));
                 }
             }
             
@@ -569,8 +569,8 @@ namespace MultiUserLiveBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleted(e);
-                if ((this.DiscordRowDeleted != null)) {
-                    this.DiscordRowDeleted(this, new DiscordRowChangeEvent(((DiscordRow)(e.Row)), e.Action));
+                if ((this.MsgEndPointsRowDeleted != null)) {
+                    this.MsgEndPointsRowDeleted(this, new MsgEndPointsRowChangeEvent(((MsgEndPointsRow)(e.Row)), e.Action));
                 }
             }
             
@@ -578,14 +578,14 @@ namespace MultiUserLiveBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleting(e);
-                if ((this.DiscordRowDeleting != null)) {
-                    this.DiscordRowDeleting(this, new DiscordRowChangeEvent(((DiscordRow)(e.Row)), e.Action));
+                if ((this.MsgEndPointsRowDeleting != null)) {
+                    this.MsgEndPointsRowDeleting(this, new MsgEndPointsRowChangeEvent(((MsgEndPointsRow)(e.Row)), e.Action));
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void RemoveDiscordRow(DiscordRow row) {
+            public void RemoveMsgEndPointsRow(MsgEndPointsRow row) {
                 this.Rows.Remove(row);
             }
             
@@ -612,7 +612,7 @@ namespace MultiUserLiveBot.Data {
                 type.Attributes.Add(attribute1);
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "DiscordDataTable";
+                attribute2.FixedValue = "MsgEndPointsDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -1212,25 +1212,25 @@ namespace MultiUserLiveBot.Data {
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class DiscordRow : global::System.Data.DataRow {
+        public partial class MsgEndPointsRow : global::System.Data.DataRow {
             
-            private DiscordDataTable tableDiscord;
+            private MsgEndPointsDataTable tableMsgEndPoints;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal DiscordRow(global::System.Data.DataRowBuilder rb) : 
+            internal MsgEndPointsRow(global::System.Data.DataRowBuilder rb) : 
                     base(rb) {
-                this.tableDiscord = ((DiscordDataTable)(this.Table));
+                this.tableMsgEndPoints = ((MsgEndPointsDataTable)(this.Table));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public int Id {
                 get {
-                    return ((int)(this[this.tableDiscord.IdColumn]));
+                    return ((int)(this[this.tableMsgEndPoints.IdColumn]));
                 }
                 set {
-                    this[this.tableDiscord.IdColumn] = value;
+                    this[this.tableMsgEndPoints.IdColumn] = value;
                 }
             }
             
@@ -1239,14 +1239,14 @@ namespace MultiUserLiveBot.Data {
             public string Server {
                 get {
                     try {
-                        return ((string)(this[this.tableDiscord.ServerColumn]));
+                        return ((string)(this[this.tableMsgEndPoints.ServerColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Server\' in table \'Discord\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Server\' in table \'MsgEndPoints\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableDiscord.ServerColumn] = value;
+                    this[this.tableMsgEndPoints.ServerColumn] = value;
                 }
             }
             
@@ -1255,14 +1255,14 @@ namespace MultiUserLiveBot.Data {
             public string Type {
                 get {
                     try {
-                        return ((string)(this[this.tableDiscord.TypeColumn]));
+                        return ((string)(this[this.tableMsgEndPoints.TypeColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Type\' in table \'Discord\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Type\' in table \'MsgEndPoints\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableDiscord.TypeColumn] = value;
+                    this[this.tableMsgEndPoints.TypeColumn] = value;
                 }
             }
             
@@ -1271,51 +1271,51 @@ namespace MultiUserLiveBot.Data {
             public string URL {
                 get {
                     try {
-                        return ((string)(this[this.tableDiscord.URLColumn]));
+                        return ((string)(this[this.tableMsgEndPoints.URLColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'URL\' in table \'Discord\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'URL\' in table \'MsgEndPoints\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableDiscord.URLColumn] = value;
+                    this[this.tableMsgEndPoints.URLColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsServerNull() {
-                return this.IsNull(this.tableDiscord.ServerColumn);
+                return this.IsNull(this.tableMsgEndPoints.ServerColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetServerNull() {
-                this[this.tableDiscord.ServerColumn] = global::System.Convert.DBNull;
+                this[this.tableMsgEndPoints.ServerColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsTypeNull() {
-                return this.IsNull(this.tableDiscord.TypeColumn);
+                return this.IsNull(this.tableMsgEndPoints.TypeColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetTypeNull() {
-                this[this.tableDiscord.TypeColumn] = global::System.Convert.DBNull;
+                this[this.tableMsgEndPoints.TypeColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsURLNull() {
-                return this.IsNull(this.tableDiscord.URLColumn);
+                return this.IsNull(this.tableMsgEndPoints.URLColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetURLNull() {
-                this[this.tableDiscord.URLColumn] = global::System.Convert.DBNull;
+                this[this.tableMsgEndPoints.URLColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -1476,22 +1476,22 @@ namespace MultiUserLiveBot.Data {
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public class DiscordRowChangeEvent : global::System.EventArgs {
+        public class MsgEndPointsRowChangeEvent : global::System.EventArgs {
             
-            private DiscordRow eventRow;
+            private MsgEndPointsRow eventRow;
             
             private global::System.Data.DataRowAction eventAction;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRowChangeEvent(DiscordRow row, global::System.Data.DataRowAction action) {
+            public MsgEndPointsRowChangeEvent(MsgEndPointsRow row, global::System.Data.DataRowAction action) {
                 this.eventRow = row;
                 this.eventAction = action;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow Row {
+            public MsgEndPointsRow Row {
                 get {
                     return this.eventRow;
                 }

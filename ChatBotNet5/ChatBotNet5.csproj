@@ -16,8 +16,8 @@
     <Product />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A chat bot for Twitch using the C# TwitchLib library.</Description>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>TwineChatBot_SignCert.pfx</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
     <PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
@@ -25,6 +25,11 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +42,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="TwitchLib" Version="3.2.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.2.3" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.2.3" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.2.3" />
+    <PackageReference Include="TwitchLib.Client" Version="3.2.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -87,6 +96,10 @@
   <ItemGroup>
     <Folder Include="Learning\" />
     <Folder Include="WebServer\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
   </ItemGroup>
 
   <ItemGroup>

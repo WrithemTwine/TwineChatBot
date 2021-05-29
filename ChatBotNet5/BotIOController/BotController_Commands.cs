@@ -1,7 +1,9 @@
 ﻿using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -18,6 +20,20 @@ namespace ChatBot_Net5.BotIOController
             ProcessCommands = new(DataManage, IOModule.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
+            ProcessCommands.GetUpTimeCommand += ProcessCommands_GetUpTimeCommand;
+        }
+
+        private void ProcessCommands_GetUpTimeCommand(object sender, UpTimeCommandArgs e)
+        {
+            string msg = Stats.IsStreamOnline? e.Message ?? "#user has been streaming for #uptime." : "The stream is not online." ;
+
+            Dictionary<string, string> dictionary = new()
+            {
+                { "#user", e.User },
+                { "#uptime", FormatTimes(Stats.GetCurrentStreamStart()) }
+            };
+
+            Send(ParseReplace(msg, dictionary));
         }
 
         private delegate void UpdateUsers(UserJoin userJoin);
@@ -57,7 +73,7 @@ namespace ChatBot_Net5.BotIOController
                 {
                     case "join":
                         int x = 1;
-                        
+
                         foreach (UserJoin u in JoinCollection)
                         {
                             if (u.ChatUser == e.ChatUser)
@@ -106,7 +122,8 @@ namespace ChatBot_Net5.BotIOController
                         response = "Command not understood!";
                         break;
                 }
-            } else
+            }
+            else
             {
                 response = "The join queue list is not started.";
             }

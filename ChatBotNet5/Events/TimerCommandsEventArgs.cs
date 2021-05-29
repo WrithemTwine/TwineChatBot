@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChatBot_Net5.Models
+namespace ChatBot_Net5.Events
 {
     internal class TimerCommandsEventArgs : EventArgs
     {

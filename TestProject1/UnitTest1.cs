@@ -1,10 +1,8 @@
+using ChatBot_Net5.Data;
+
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading;
-
-using ChatBot_Net5;
-using ChatBot_Net5.Data;
 
 using Xunit;
 
@@ -20,14 +18,12 @@ namespace TestProject1
             DataManager dataManager = new();
             Statistics test = new(dataManager);
 
-            test.StreamOnline();
-
-            int chats = (int)(new Random().NextDouble()*100);
+            int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
 
             DateTime nowstart = DateTime.Now;
 
-            test.StartStreamOnline(nowstart);
+            test.StreamOnline(nowstart);
 
             DataSource.StreamStatsRow[] teststart = (DataSource.StreamStatsRow[]) dataManager.StreamStats.Table.Select();
             DataSource.StreamStatsRow findstart = null;
@@ -79,15 +75,13 @@ namespace TestProject1
             DataManager dataManager = new();
             Statistics test = new(dataManager);
 
-            DateTime nowstart = TestStart;
+            DateTime nowstart = TestStart.ToLocalTime();
 
-            test.StartStreamOnline(nowstart);
-
-            DataSource.StreamStatsRow[] teststart = (DataSource.StreamStatsRow[])dataManager.StreamStats.Table.Select();
-            
+            test.StreamOnline(nowstart);
+           
             List<DataSource.StreamStatsRow> findstart = new();
 
-            foreach (DataSource.StreamStatsRow d in teststart)
+            foreach (DataSource.StreamStatsRow d in (DataSource.StreamStatsRow[])dataManager.StreamStats.Table.Select())
             {
                 if (d.StreamStart == nowstart)
                 {
@@ -95,7 +89,7 @@ namespace TestProject1
                 }
             }
 
-            Assert.Single(findstart);
+            Assert.NotEmpty(findstart);
         }
 
         [Fact]
@@ -104,19 +98,16 @@ namespace TestProject1
             DataManager dataManager = new();
             Statistics test = new(dataManager);
 
-            test.StreamOnline();
-
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
 
-            DateTime nowstart = TestStart;
+            DateTime nowstart = TestStart.ToLocalTime();
 
-            test.StartStreamOnline(nowstart);
+            test.StreamOnline(nowstart);
 
-            DataSource.StreamStatsRow[] teststart = (DataSource.StreamStatsRow[])dataManager.StreamStats.Table.Select();
             List<DataSource.StreamStatsRow> findstart = new();
 
-            foreach (DataSource.StreamStatsRow d in teststart)
+            foreach (DataSource.StreamStatsRow d in (DataSource.StreamStatsRow[])dataManager.StreamStats.Table.Select())
             {
                 if (d.StreamStart == nowstart)
                 {
@@ -124,7 +115,7 @@ namespace TestProject1
                 }
             }
 
-            Assert.Single(findstart);
+            Assert.NotEmpty(findstart);
 
             for (int i = 0; i < chats; i++)
             {

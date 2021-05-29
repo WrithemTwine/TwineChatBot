@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.Clients;
+using ChatBot_Net5.Data;
 
 using System.Collections.Generic;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// Initialize a thread to process sending messages back to each chat bot and start the message processing thread.
         /// </summary>
-        private void SetThread()
+        private void StartProcMsgThread()
         {
             SendThread = new(new ThreadStart(ProcMsgs));
             SendThread.Start();
@@ -35,7 +36,10 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void BeginAddFollowers()
         {
-            new Thread(new ThreadStart(ProcessFollows)).Start();
+            if (OptionFlags.ManageFollowers)
+            {
+                new Thread(new ThreadStart(ProcessFollows)).Start();
+            }
         }
 
         /// <summary>

@@ -1,4 +1,7 @@
 ﻿using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Clients;
+using ChatBot_Net5.Enum;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 
 using System;
@@ -12,12 +15,12 @@ namespace ChatBot_Net5.Data
 {
     public class CommandSystem : INotifyPropertyChanged
     {
-        private DataManager datamanager;
-
-        private string BotUserName;
+        private readonly DataManager datamanager;
+        private readonly string BotUserName;
 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         internal event EventHandler<UserJoinArgs> UserJoinCommand;
+        internal event EventHandler<UpTimeCommandArgs> GetUpTimeCommand;
         public event PropertyChangedEventHandler PropertyChanged;
 
         internal void NotifyPropertyChanged(string ParamName="" )
@@ -149,18 +152,18 @@ namespace ChatBot_Net5.Data
             {
                 return datamanager.GetSocials();
             }
-            else if (command == "join" || command == "leave" || command == "queue")
+            else if (command == "uptime")
+            {
+                GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = IOModule.TwitchChannelName });
+                return ""; // the message is handled at the botcontroller
+            }
+            else if (command == "join" || command == "leave" || command == "queue" || (command == "qinfo" && OptionFlags.UserPartyStop))
             {
                 UserParty(command, arglist, DisplayName);
                 return ""; // the message is handled in the GUI thread
             }
-            else 
+            else
             {
-                if(command=="qinfo" && OptionFlags.UserPartyStop)
-                {
-                    return ""; // skip the queue info if it's a recurring message
-                }
-
                 if (command == "qstart" || command == "qstop")
                 {
                     OptionFlags.SetParty(command == "qstart");
@@ -192,6 +195,7 @@ namespace ChatBot_Net5.Data
                     paramvalue = DisplayName;
                 }
 
+                //TODO: research and consider a dictionary static class to keep these keys uniform and scalable
                 Dictionary<string, string> datavalues = new()
                 {
                     { "#user", paramvalue },
@@ -201,6 +205,8 @@ namespace ChatBot_Net5.Data
                 };
 
                 object querydata = null;
+
+                //TODO: the commands with data lookup needs a lot of work!
 
                 if (CommData.lookupdata)
                 {
@@ -214,7 +220,7 @@ namespace ChatBot_Net5.Data
                         // convert multi-row output to a string
                         string queryoutput = "";
 
-                        foreach(object r in datamanager.PerformQuery(CommData, paramvalue, CommData.top))
+                        foreach (object r in datamanager.PerformQuery(CommData, CommData.top))
                         {
                             Tuple<object, object> bundle = (r as Tuple<object, object>);
                             if (bundle.Item1 == bundle.Item2)
@@ -253,7 +259,7 @@ namespace ChatBot_Net5.Data
 
                 string response = BotController.ParseReplace(CommData.Message, datavalues);
 
-                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "" ) + response;
+                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
             }
 
             //return "not finished";
@@ -261,7 +267,7 @@ namespace ChatBot_Net5.Data
 
         internal void UserParty(string command, List<string> arglist, string UserName)
         {
-           DataSource.CommandsRow CommData = datamanager.GetCommand(command );
+           DataSource.CommandsRow CommData = datamanager.GetCommand(command);
 
             UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;

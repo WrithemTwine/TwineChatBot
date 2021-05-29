@@ -1,4 +1,6 @@
-﻿namespace ChatBot_Net5.Models
+﻿using ChatBot_Net5.Models;
+
+namespace ChatBot_Net5.Events
 {
     public class UserJoinArgs : UserJoin
     {

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatBotNet5", "ChatBotNet5\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject1", "TestProject1\TestProject1.csproj", "{ED1755FF-74AF-4913-90B4-8BD825A0D82D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiUserLiveBot", "MultiUserLiveBot\MultiUserLiveBot.csproj", "{BC756E65-DBF5-4AFB-9100-9528BE698765}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiUserLiveBot", "MultiUserLiveBot\MultiUserLiveBot.csproj", "{BC756E65-DBF5-4AFB-9100-9528BE698765}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
