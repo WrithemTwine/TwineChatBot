@@ -4,6 +4,7 @@ using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -13,7 +14,7 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.Data
 {
-    public class DataManager
+    public class DataManager : INotifyPropertyChanged
     {
         #region DataSource
 
@@ -34,6 +35,13 @@ namespace ChatBot_Net5.Data
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
         public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string PropName)
+        {
+            PropertyChanged?.Invoke(this, new(PropName));
+        }
 
         #endregion DataSource
 
@@ -212,6 +220,7 @@ namespace ChatBot_Net5.Data
                 user.LastDateSeen = NowSeen;
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Users));
             }
         }
 
@@ -223,6 +232,7 @@ namespace ChatBot_Net5.Data
                 user.LastDateSeen = LastSeen;
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Users));
             }
         }
 
@@ -235,6 +245,7 @@ namespace ChatBot_Net5.Data
                 user.LastDateSeen = CurrTime;
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Users));
             }
         }
 
@@ -265,6 +276,8 @@ namespace ChatBot_Net5.Data
             {
                 _DataSource.Users.Clear();
             }
+            OnPropertyChanged(nameof(Users));
+
         }
 
         /// <summary>
@@ -276,6 +289,7 @@ namespace ChatBot_Net5.Data
             {
                 _DataSource.Followers.Clear();
             }
+            OnPropertyChanged(nameof(Followers));
         }
 
         /// <summary>
@@ -307,6 +321,7 @@ namespace ChatBot_Net5.Data
                 }
                 _DataSource.AcceptChanges();
                 SaveData();
+                OnPropertyChanged(nameof(Followers));
                 return newfollow;
             }
         }
@@ -348,8 +363,19 @@ namespace ChatBot_Net5.Data
         {
             followerThread = new(new ThreadStart(() =>
             {
-                UpdatingFollowers = true; lock (_DataSource.Followers) { List<DataSource.FollowersRow> temp = new(); temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select()); temp.ForEach((f) => f.IsFollower = false); }
-                if (follows[ChannelName].Count > 1) { foreach (Follow f in follows[ChannelName]) { AddFollower(f.FromUserName, f.FollowedAt); } }
+                UpdatingFollowers = true; lock (_DataSource.Followers)
+                {
+                    List<DataSource.FollowersRow> temp = new();
+                    temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
+                    temp.ForEach((f) => f.IsFollower = false);
+                }
+                if (follows[ChannelName].Count > 1)
+                {
+                    foreach (Follow f in follows[ChannelName])
+                    {
+                        AddFollower(f.FromUserName, f.FollowedAt);
+                    }
+                }
                 _DataSource.AcceptChanges();
                 UpdatingFollowers = false;
                 SaveData();
@@ -435,6 +461,7 @@ namespace ChatBot_Net5.Data
                 SaveData();
 
                 //CurrStreamStatRow = GetAllStreamData(StreamStart);
+                OnPropertyChanged(nameof(StreamStats));
 
                 return true;
             }
@@ -477,6 +504,7 @@ namespace ChatBot_Net5.Data
                 }
                 SaveData();
             }
+            OnPropertyChanged(nameof(StreamStats));
         }
 
         internal bool CheckStreamTime(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
@@ -487,6 +515,8 @@ namespace ChatBot_Net5.Data
             {
                 _DataSource.StreamStats.Clear();
             }
+            OnPropertyChanged(nameof(StreamStats));
+
         }
 
         #endregion
@@ -515,6 +545,7 @@ switches:
          */
 
         private readonly string DefaulSocialMsg = "Social media url here";
+
 
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
@@ -662,6 +693,7 @@ switches:
             {
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage,Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
+                OnPropertyChanged(nameof(Commands));
             }
             return string.Format("Command {0} added!", cmd);
         }

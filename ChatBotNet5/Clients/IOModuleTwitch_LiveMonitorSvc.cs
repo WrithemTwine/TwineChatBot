@@ -78,6 +78,7 @@ namespace ChatBot_Net5.Clients
                 LiveStreamMonitor.Stop();
                 IsStarted = false;
                 IsStopped = true;
+                HandlersAdded = false;
                 InvokeBotStopped();
             }
             return true;

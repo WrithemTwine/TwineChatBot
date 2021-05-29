@@ -73,7 +73,7 @@ namespace ChatBot_Net5.BotIOController
                 {
                     case "join":
                         int x = 1;
-                        
+
                         foreach (UserJoin u in JoinCollection)
                         {
                             if (u.ChatUser == e.ChatUser)
@@ -122,7 +122,8 @@ namespace ChatBot_Net5.BotIOController
                         response = "Command not understood!";
                         break;
                 }
-            } else
+            }
+            else
             {
                 response = "The join queue list is not started.";
             }
