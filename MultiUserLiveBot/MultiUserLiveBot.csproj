@@ -10,8 +10,8 @@
     <Copyright>MIT</Copyright>
     <Description>A bot monitoring multiple channels for when they go live. Currently posts to Discord through WebHook URLs.</Description>
     <ApplicationIcon>MultiBot.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
 

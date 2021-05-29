@@ -324,6 +324,7 @@ namespace ChatBot_Net5.BotIOController
         #region Raid events
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
+            //TODO: Add shoutout setting
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Raid))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Raid);

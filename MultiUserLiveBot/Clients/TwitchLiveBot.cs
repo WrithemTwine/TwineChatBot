@@ -62,12 +62,10 @@ namespace MultiUserLiveBot.Clients
                     LogEntry(GoLiveWindow.ParseReplace(msg, dictionary), e.Stream.StartedAt);
                     foreach (Tuple<string, Uri> u in DataManage.GetWebLinks())
                     {
-#if !DEBUG
                         if (u.Item1 == "Discord")
                         {
                             DiscordWebhook.SendLiveMessage(u.Item2, GoLiveWindow.ParseReplace(msg, dictionary)).Wait();
                         }
-#endif
                     }
                 }
             }
@@ -112,13 +110,16 @@ namespace MultiUserLiveBot.Clients
         /// <summary>
         /// Start the bot, which establishes the connection.
         /// </summary>
-        /// <param name="ChannelList">The list of strings containing the names of the channels to monitor.</param>
         /// <returns>true: for the bot beings started.</returns>
-        public bool StartBot(List<string> ChannelList)
-        {
-            Connect(ChannelList);
+        public override bool StartBot()
+        {                
+            List<string> names = DataManage.GetChannelNames();
+
+            if (names.Count == 0) return false;
+
+            Connect(names);
             LiveStreamMonitor?.Start();
-            LogEntry(string.Format("Bot started and monitoring {0} channels." , ChannelList.Count.ToString()) , DateTime.Now);
+            LogEntry(string.Format("Bot started and monitoring {0} channels." , names.Count.ToString()) , DateTime.Now);
             return true;
         }
 

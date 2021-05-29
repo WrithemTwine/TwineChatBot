@@ -18,19 +18,19 @@ namespace MultiUserLiveBot
     /// </summary>
     public partial class GoLiveWindow : Window
     {
-        private bool IsBotEnabled; // prevent bot from starting twice
+        private bool IsBotEnabled = false; // prevent bot from starting twice
 
         private readonly TwitchLiveBot TwitchLiveBot;
 
         public GoLiveWindow()
         {
-            InitializeComponent();
-
             if (Settings.Default.UpgradeRequired)
             {
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
             }
+
+            InitializeComponent();
 
             TwitchLiveBot = (Resources["TwitchLiveBot"] as TwitchLiveBot);
         }
@@ -150,17 +150,16 @@ namespace MultiUserLiveBot
             CheckFocus();
         }
 
-        private void BC_Twitch_StartBot(object sender, MouseButtonEventArgs e)
+        private void BC_Twitch_StartStopBot(object sender, MouseButtonEventArgs e) => StartStopBot();
+
+        private void StartStopBot()
         {
             if (!IsBotEnabled)
             {
-                List<string> names = TwitchLiveBot.DataManage.GetChannelNames();
-
-                if (names.Count > 0)
+                if (TwitchLiveBot.StartBot())
                 {
-                    TwitchLiveBot.StartBot(names);
                     ToggleInputEnabled();
-                    IsBotEnabled = !IsBotEnabled;
+                    IsBotEnabled = true;
                     Radio_Twitch_StartBot.IsEnabled = false;
                     Radio_Twitch_StartBot.IsChecked = true;
                     Radio_Twitch_StopBot.IsEnabled = true;
@@ -171,15 +170,11 @@ namespace MultiUserLiveBot
                     Panel_BotActivity.Visibility = Visibility.Visible;
                 }
             }
-        }
-
-        private void BC_Twitch_StopBot(object sender, MouseButtonEventArgs e)
-        {
-            if (IsBotEnabled)
+            else if (IsBotEnabled)
             {
                 TwitchLiveBot.StopBot();
                 ToggleInputEnabled();
-                IsBotEnabled = !IsBotEnabled;
+                IsBotEnabled = false;
                 Radio_Twitch_StartBot.IsEnabled = true;
                 Radio_Twitch_StopBot.IsChecked = true;
                 Radio_Twitch_StopBot.IsEnabled = false;
@@ -204,6 +199,16 @@ namespace MultiUserLiveBot
             TB_LiveMsg.SelectionStart = start;
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckFocus();
+
+            if (Settings.Default.TwitchLiveStreamSvcAutoStart && Radio_Twitch_StartBot.IsEnabled)
+            {
+                StartStopBot();
+            }
+        }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TwitchLiveBot.DataManage.SaveData();
@@ -213,8 +218,6 @@ namespace MultiUserLiveBot
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
-        private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e) => CheckFocus();
-        private void Window_Loaded(object sender, RoutedEventArgs e) => CheckFocus();
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e) => await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         private void CheckBox_Click(object sender, RoutedEventArgs e) => Settings.Default.Save();
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e) => TwitchLiveBot.UpdateChannelList();

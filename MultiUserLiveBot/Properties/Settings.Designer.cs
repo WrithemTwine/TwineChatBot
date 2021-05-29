@@ -130,5 +130,17 @@ namespace MultiUserLiveBot.Properties {
                 this["LiveMsg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchLiveStreamSvcAutoStart {
+            get {
+                return ((bool)(this["TwitchLiveStreamSvcAutoStart"]));
+            }
+            set {
+                this["TwitchLiveStreamSvcAutoStart"] = value;
+            }
+        }
     }
 }
