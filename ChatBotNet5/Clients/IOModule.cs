@@ -6,7 +6,7 @@ using System;
 
 namespace ChatBot_Net5.Clients
 {
-    public abstract class IOModule : IIOModule 
+    public abstract class IOModule : IIOModule
     {
         public string ChatClientName { get; set; }
 
@@ -129,10 +129,17 @@ namespace ChatBot_Net5.Clients
             return true;
         }
 
-        public virtual bool SaveParams() { Settings.Default.Save(); return true; }
-        #endregion
+        public virtual bool SaveParams()
+        {
+            Settings.Default.Save();
+            return true;
+        }
 
+        public virtual bool ExitBot()
+        {
+            return true;
+        }
+        #endregion
     }
 
-   
 }

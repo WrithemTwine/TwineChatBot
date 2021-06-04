@@ -27,6 +27,7 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         internal void ConnectFollowerService()
         {
+            FollowerService?.Stop();
             RefreshSettings();
             ApiSettings apifollow = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));            
@@ -64,6 +65,13 @@ namespace ChatBot_Net5.Clients
         internal async Task<List<Follow>> GetAllFollowersAsync()
         {
             return await FollowerService.GetAllFollowers(TwitchChannelName);
+        }
+
+        public override bool ExitBot()
+        {
+            FollowerService?.Stop();
+            FollowerService = null;
+            return base.ExitBot();
         }
     }
 }

@@ -75,11 +75,11 @@ namespace ChatBot_Net5.BotIOController
         /// Set all of the attached bots into a stopped state.
         /// </summary>
         /// <returns>True when successful.</returns>
-        public bool StopBot()
+        public bool ExitAllBot()
         {
             foreach (IOModule i in IOModuleList)
             {
-                i.StopBot();
+                i.ExitBot();
             }
             return true;
         }
@@ -128,7 +128,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
-            StopBot();              // stop all the bot processes
+            ExitAllBot();              // stop all the bot processes
             DataManage.SaveData();  // save data
         }
     }

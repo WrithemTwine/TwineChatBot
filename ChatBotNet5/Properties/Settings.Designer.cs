@@ -394,5 +394,17 @@ namespace ChatBot_Net5.Properties {
                 this["ManageStreamStats"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchRaidShoutOut {
+            get {
+                return ((bool)(this["TwitchRaidShoutOut"]));
+            }
+            set {
+                this["TwitchRaidShoutOut"] = value;
+            }
+        }
     }
 }

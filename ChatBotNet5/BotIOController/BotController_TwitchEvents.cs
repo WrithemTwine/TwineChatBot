@@ -1,7 +1,6 @@
 ﻿using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
 using ChatBot_Net5.Enum;
-using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
@@ -31,9 +30,7 @@ namespace ChatBot_Net5.BotIOController
                 TwitchIO.TwitchChat.OnChatColorChanged += Client_OnChatColorChanged;
                 TwitchIO.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
                 TwitchIO.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
-                TwitchIO.TwitchChat.OnConnected += Client_OnConnected;
                 TwitchIO.TwitchChat.OnConnectionError += Client_OnConnectionError;
-                TwitchIO.TwitchChat.OnDisconnected += Client_OnDisconnected;
                 TwitchIO.TwitchChat.OnError += Client_OnError;
                 TwitchIO.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
                 TwitchIO.TwitchChat.OnFailureToReceiveJoinConfirmation += Client_OnFailureToReceiveJoinConfirmation;
@@ -56,7 +53,6 @@ namespace ChatBot_Net5.BotIOController
                 TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 TwitchIO.TwitchChat.OnRaidedChannelIsMatureAudience += Client_OnRaidedChannelIsMatureAudience;
                 TwitchIO.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
-                TwitchIO.TwitchChat.OnReconnected += Client_OnReconnected;
                 TwitchIO.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
                 TwitchIO.TwitchChat.OnRitualNewChatter += Client_OnRitualNewChatter;
                 TwitchIO.TwitchChat.OnSelfRaidError += Client_OnSelfRaidError;
@@ -324,7 +320,6 @@ namespace ChatBot_Net5.BotIOController
         #region Raid events
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-            //TODO: Add shoutout setting
             if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Raid))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Raid);
@@ -339,6 +334,15 @@ namespace ChatBot_Net5.BotIOController
             }
             Stats.AddRaids();
             Stats.AddAutoEvents();
+
+            if (OptionFlags.TwitchRaidShoutOut)
+            {
+                Stats.UserJoined(e.RaidNotification.DisplayName, DateTime.Now);
+                bool output = ProcessCommands.CheckShout(e.RaidNotification.DisplayName, out string response, false);
+                RegisterJoinedUser(e.RaidNotification.DisplayName);
+                if (output) Send(response);
+                Stats.UserLeft(e.RaidNotification.DisplayName, DateTime.Now);
+            }
         }
 
         private void Client_OnSelfRaidError(object sender, EventArgs e)
@@ -375,7 +379,7 @@ namespace ChatBot_Net5.BotIOController
 
             try
             {
-                string response = ProcessCommands.ParseCommand(e.Command.CommandText.ToLower(), e.Command.ArgumentsAsList, e.Command.ChatMessage);
+                string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
                 if (response != "")
                 {
                     Send(response);
@@ -556,29 +560,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnLeftChannel(object sender, OnLeftChannelArgs e)
         {
-        }
-
-        #endregion
-
-
-        #region Connecting
-        private void Client_OnConnected(object sender, OnConnectedArgs e)
-        {
-        }
-
-        private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
-        {
-        }
-
-        private void Client_OnDisconnected(object sender, OnDisconnectedEventArgs e)
-        {
-            // the TwitchClient reports disconnected but user didn't click the 'start bot' button
-            // the client should be started but is now disconnected
-            // check is required so the bot doesn't keep restarting when the user actually clicked stop
-            if (TwitchIO.IsStarted) 
-            {
-                TwitchIO.Connect();    // restart the bot
-            }
         }
 
         #endregion

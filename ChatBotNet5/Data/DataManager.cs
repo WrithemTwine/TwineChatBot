@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Xml;
@@ -695,7 +696,7 @@ switches:
                 SaveData();
                 OnPropertyChanged(nameof(Commands));
             }
-            return string.Format("Command {0} added!", cmd);
+            return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
         }
 
         internal string GetSocials()
@@ -804,42 +805,42 @@ switches:
             {
                 DataRow[] temp = _DataSource.Tables[row.table].Select(row.key_field + "='" + ParamValue + "'");
 
-                result = temp.Length>0 ? temp[0] : null;
+                result = temp.Length > 0 ? temp[0] : null;
+
+
+                if (result == null)
+                {
+                    return "data not found.";
+                }
+
+                Type resulttype = result.GetType();
+
+                // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
+                if (resulttype == typeof(DataSource.UsersRow))
+                {
+                    DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
+                    UpdateWatchTime(ParamValue, DateTime.Now);
+                    return usersRow[row.data_field];
+                }
+                else if (resulttype == typeof(DataSource.FollowersRow))
+                {
+                    DataSource.FollowersRow follower = (DataSource.FollowersRow)result;
+
+                    return follower.IsFollower ? follower.FollowedDate : "not a follower.";
+                }
+                else if (resulttype == typeof(DataSource.CurrencyRow))
+                {
+
+                }
+                else if (resulttype == typeof(DataSource.CurrencyTypeRow))
+                {
+
+                }
+                else if (resulttype == typeof(DataSource.CommandsRow))
+                {
+
+                }
             }
-
-            if (result == null)
-            {
-                return "data not found.";
-            }
-
-            Type resulttype = result.GetType();
-
-            // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
-            if (resulttype == typeof(DataSource.UsersRow))
-            {
-                DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
-
-                return usersRow[row.data_field];
-            }
-            else if (resulttype == typeof(DataSource.FollowersRow))
-            {
-                DataSource.FollowersRow follower = (DataSource.FollowersRow)result;
-
-                return follower.IsFollower ? follower.FollowedDate : "not a follower.";
-            }
-            else if (resulttype == typeof(DataSource.CurrencyRow))
-            {
-
-            }
-            else if (resulttype == typeof(DataSource.CurrencyTypeRow))
-            {
-
-            }
-            else if (resulttype == typeof(DataSource.CommandsRow))
-            {
-
-            }
-
 
             return result;
         }

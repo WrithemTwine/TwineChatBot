@@ -22,6 +22,11 @@ namespace ChatBot_Net5.BotIOController
 
         private List<Follow> Follows { get; set; }
 
+        private void StartThreads()
+        {
+            StartProcMsgThread();
+        }
+
         /// <summary>
         /// Initialize a thread to process sending messages back to each chat bot and start the message processing thread.
         /// </summary>
@@ -74,7 +79,7 @@ namespace ChatBot_Net5.BotIOController
         /// Process all of the followers from the reviewing channel
         /// </summary>
         private void ProcessFollows()
-        {
+        {//TODO:Add option to prune non-followers after the update
             string ChannelName = IOModule.TwitchChannelName;
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;

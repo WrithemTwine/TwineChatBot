@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace ChatBot_Net5.Models
@@ -127,7 +128,7 @@ namespace ChatBot_Net5.Models
                 }
             }
 
-            throw new ArgumentException(string.Format("The supplied value {0} is not included within the acceptable list: {1}", v, type.GetEnumNames().ToString()));
+            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The supplied value {0} is not included within the acceptable list: {1}", v, type.GetEnumNames().ToString()));
         }
 
 

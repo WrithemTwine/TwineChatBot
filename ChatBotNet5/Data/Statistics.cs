@@ -36,23 +36,14 @@ namespace ChatBot_Net5.Data
                 datamanager.UserJoined(User, CurrTime);
             }
 
-            if (IsStreamOnline)
-            {
-                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
-
-                if (!UniqueUserJoined.Contains(User))
-                {
-                    UniqueUserJoined.Add(User);
-                    return true;
-                }
-            }
-            return false;
+            return UserChat(User);
         }
 
         public bool UserChat(string User)
         {
             if (IsStreamOnline)
             {
+                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
                 if (!UniqueUserChat.Contains(User))
                 {
                     UniqueUserChat.Add(User);

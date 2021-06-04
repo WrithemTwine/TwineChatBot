@@ -1,4 +1,4 @@
-﻿<Page x:Class="ChatBot_Net5.ChatPopup"
+﻿<Window x:Class="ChatBot_Net5.ChatPopup"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,9 +6,9 @@
       xmlns:local="clr-namespace:ChatBot_Net5"
       mc:Ignorable="d" 
       MinHeight="450" MinWidth="230"
-      Title="ChatPopup" SnapsToDevicePixels="True" Unloaded="Page_Unloaded" UseLayoutRounding="True">
+      Title="ChatPopup" SnapsToDevicePixels="True" Unloaded="Page_Unloaded" UseLayoutRounding="True" WindowStyle="ToolWindow" Topmost="True">
 
     <DockPanel>
-        <FlowDocumentScrollViewer Name="Page_ChatPopup_FlowDocViewer" Opacity="50" DockPanel.Dock="Top" BorderBrush="#FF020202" BorderThickness="1,1,1,1" />
+        <FlowDocumentScrollViewer Name="Page_ChatPopup_FlowDocViewer" DockPanel.Dock="Top" BorderBrush="#FF020202" BorderThickness="1,1,1,1" />
     </DockPanel>
-</Page>
+</Window>

@@ -338,7 +338,7 @@
                     <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" />
                     <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="2" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
-                    <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="2" Visibility="Collapsed">
+                    <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="2" Visibility="Collapsed" Margin="5">
                         <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
                         <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}" />
                     </DockPanel>

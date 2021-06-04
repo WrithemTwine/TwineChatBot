@@ -19,6 +19,8 @@ namespace ChatBot_Net5.Data
         internal static bool PerComMeMsg { get; set; }
 
         internal static bool AutoShout { get; set; }
+        internal static bool TwitchRaidShoutOut { get; set; }
+
         internal static bool RepeatTimer { get; set; }
         internal static bool RepeatWhenLive { get; set; }
 
@@ -35,9 +37,7 @@ namespace ChatBot_Net5.Data
 
         internal static void SetSettings()
         {
-            string s = "";
-
-            lock (s)
+            lock (Settings.Default)
             {
                 Settings.Default.Save();
 
@@ -50,6 +50,8 @@ namespace ChatBot_Net5.Data
                 PerComMeMsg = Settings.Default.PerComMeMsg;
 
                 AutoShout = Settings.Default.AutoShout;
+                TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
+
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
 

@@ -317,6 +317,7 @@
                                         </CheckBox>
                                         <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                             <TextBlock>Enable posting to social media (e.g. Discord) multiple live messages in same day.</TextBlock></CheckBox>
+                                        
                                     </WrapPanel>
                                 </GroupBox>
                                 <GroupBox Header="Twitch - Format Bot messages">
@@ -348,9 +349,16 @@
                                         </RadioButton>
                                         <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                             <TextBlock>Enable when a viewer first chats</TextBlock>
-                                        </RadioButton>
+                                        </RadioButton>                                       
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Twitch - Shout Out Users">
+                                    <StackPanel Margin="5">
                                         <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                             <TextBlock>Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to "Auto SO" tab.</TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding TwitchRaidShoutOut}">
+                                            <TextBlock>Enable auto shoutout for incoming channel raid streamers.</TextBlock>
                                         </CheckBox>
                                     </StackPanel>
                                 </GroupBox>
@@ -615,7 +623,7 @@
                         </Grid>
                     </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410" Opacity="0.9">
                             <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" />
                             <GroupBox Header="Pop-out Opacity" Margin="5,0" Width="252" Height="50">
                                 <Slider x:Name="Slider_PopOut_Opacity" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Height="25"  />
@@ -626,7 +634,7 @@
                             <Button Content="Send" Margin="10,0,0,0" Padding="8,2" />
                         </StackPanel>
 
-                        <FlowDocumentScrollViewer DockPanel.Dock="Top" BorderThickness="1,1,1,1" x:Name="FlowDoc_ChatBox" ScrollViewer.CanContentScroll="True" DataContext="{Binding ChatData, Mode=OneWay}" Document="{Binding}" Foreground="#FFC5C3C3" />
+                        <FlowDocumentScrollViewer DockPanel.Dock="Top" BorderThickness="1,1,1,1" x:Name="FlowDoc_ChatBox" ScrollViewer.CanContentScroll="True" DataContext="{Binding ChatData, Mode=OneWay}" Document="{Binding Mode=OneWay, NotifyOnSourceUpdated=True}" Foreground="#FFC5C3C3" />
                     </DockPanel>
                 </DockPanel>
             </TabItem>

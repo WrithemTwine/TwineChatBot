@@ -3,6 +3,7 @@ using MultiUserLiveBot.Properties;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -29,7 +30,7 @@ namespace MultiUserLiveBot.Clients
         public TwitchLiveBot()
         {
             ChatClientName = "Twitch";
-            RefreshSettings();
+            _ = RefreshSettings();
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace MultiUserLiveBot.Clients
         /// <returns>true: for refreshing the settings.</returns>
         public override bool RefreshSettings()
         {
-            SaveParams();
+            _ = SaveParams();
             AccessToken = Settings.Default.TwitchAccessToken;
             BotUserName = Settings.Default.TwitchBotUserName;
             ClientID = Settings.Default.TwitchClientID;
@@ -112,14 +113,17 @@ namespace MultiUserLiveBot.Clients
         /// </summary>
         /// <returns>true: for the bot beings started.</returns>
         public override bool StartBot()
-        {                
+        {
             List<string> names = DataManage.GetChannelNames();
 
-            if (names.Count == 0) return false;
+            if (names.Count == 0)
+            {
+                return false;
+            }
 
             Connect(names);
             LiveStreamMonitor?.Start();
-            LogEntry(string.Format("Bot started and monitoring {0} channels." , names.Count.ToString()) , DateTime.Now);
+            LogEntry(string.Format(CultureInfo.CurrentCulture, "Bot started and monitoring {0} channels.", names.Count.ToString()), DateTime.Now);
             return true;
         }
 
@@ -151,7 +155,7 @@ namespace MultiUserLiveBot.Clients
 
                 if (channels.Count > 0)
                 {
-                    LogEntry(string.Format("Channels updated! Was monitoring {0} channels, now monitoring {1} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
+                    LogEntry(string.Format(CultureInfo.CurrentCulture, "Channels updated! Was monitoring {0} channels, now monitoring {1} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
 
                     LiveStreamMonitor.SetChannelsByName(channels);
                     return true;

@@ -70,5 +70,8 @@ namespace ChatBot_Net5.Interfaces
         bool StopBot();
 
         bool RefreshSettings();
+
+        // Procedures for full app exit
+        bool ExitBot();
     }
 }
