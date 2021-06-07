@@ -6,33 +6,33 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="TwitchClientID" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">From registered bot at https://dev.twitch.tv/console</Value>
     </Setting>
     <Setting Name="TwitchChannelName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Twitch channel the bot will monitor</Value>
     </Setting>
     <Setting Name="TwitchAccessToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Specify the OAuth access token for bot authentication</Value>
     </Setting>
     <Setting Name="TwitchRefreshToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Optional, some sites provide this token to refresh an OAuth access token</Value>
     </Setting>
     <Setting Name="TwitchRefreshDate" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">1900-01-01</Value>
     </Setting>
     <Setting Name="TwitchBotUserName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Twitch account the bot will use to post</Value>
     </Setting>
-    <Setting Name="TwitchFrequency" Type="System.Double" Scope="User">
+    <Setting Name="TwitchFrequency" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">30</Value>
     </Setting>
     <Setting Name="BotConnectionMsg" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="AddFollowersStart" Type="System.Boolean" Scope="User">
+    <Setting Name="TwitchAddFollowersStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="TwitchGoLiveFrequency" Type="System.Double" Scope="User">
+    <Setting Name="TwitchGoLiveFrequency" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">300</Value>
     </Setting>
     <Setting Name="PostMultiLive" Type="System.Boolean" Scope="User">
@@ -96,6 +96,21 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="TwitchRaidShoutOut" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ChatPopOutOpacity" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">0.5</Value>
+    </Setting>
+    <Setting Name="TwitchFollowerFollowBack" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchRaidFollowBack" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchPruneNonFollowers" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchAddFollowerNotification" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

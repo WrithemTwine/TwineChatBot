@@ -1,4 +1,4 @@
-﻿<Window x:Class="ChatBot_Net5.BotWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,8 +6,9 @@
         xmlns:BotIOController ="clr-namespace:ChatBot_Net5.BotIOController"
         xmlns:MultiLive="clr-namespace:MultiUserLiveBot.Clients;assembly=MultiUserLiveBot"
         xmlns:s="clr-namespace:ChatBot_Net5.Properties"
+        xmlns:local="clr-namespace:ChatBot_Net5" x:Class="ChatBot_Net5.BotWindow"
         mc:Ignorable="d"
-        Title="Chat Bot Manager" Height="771" Width="1000" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
+        Title="Chat Bot Manager" Height="771" Width="1020" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
         <BotIOController:BotController x:Name="ControlBot" x:Key="ControlBot" />
     </Window.Resources>
@@ -15,18 +16,18 @@
         <StatusBar Height="25" DockPanel.Dock="Bottom" />
         <TabControl>
             <TabControl.Resources>
-                <Style TargetType="GroupBox">
+                <Style TargetType="{x:Type GroupBox}">
                     <Setter Property="Margin" Value="5" />
                     <Setter Property="Width" Value="230" />
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 </Style>
-                <Style TargetType="CheckBox">
+                <Style TargetType="{x:Type CheckBox}">
                     <Setter Property="Margin" Value="5" />
                 </Style>
-                <Style TargetType="RadioButton">
+                <Style TargetType="{x:Type RadioButton}">
                     <Setter Property="Margin" Value="10,5,0,5" />
                 </Style>
-                <Style TargetType="TextBlock">
+                <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="TextWrapping" Value="Wrap" />
                     <Setter Property="Padding" Value="5,0" />
                 </Style>
@@ -39,28 +40,24 @@
                             <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
                                     <Label>
-                                        <TextBlock TextWrapping="Wrap">
-                                            The bot credentials form needs to be completed with at least client id and access token.
-                                        <LineBreak />
-                                            The LiveStreamMonitor Service will not monitor multiple channels and stops if the "MultiUserLiveBot" is running or started.
-                                        </TextBlock>
+                                        <TextBlock TextWrapping="Wrap"><Run Text="The bot credentials form needs to be completed with at least client id and access token."/><LineBreak /><Run Text="The LiveStreamMonitor Service will not monitor multiple channels and stops if the &quot;MultiUserLiveBot&quot; is running or started."/></TextBlock>
                                     </Label>
                                     <WrapPanel>
                                         <WrapPanel.Resources>
-                                            <Style TargetType="Label">
+                                            <Style TargetType="{x:Type Label}">
                                                 <Setter Property="Height" Value="50" />
                                             </Style>
                                         </WrapPanel.Resources>
                                         <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot" BorderBrush="#FF212D34">
                                             <WrapPanel Orientation="Horizontal" >
                                                 <Label x:Name="Label_TwitchChat_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap">The Twitch Chat Client is started!</TextBlock>
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Chat Client is started!"/></TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock TextWrapping="Wrap">The Twitch Chat Client is stopped!</TextBlock>
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Chat Client is stopped!"/></TextBlock>
                                                 </Label>
-                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchChatBotAutoStart}" >
-                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" >
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
@@ -69,13 +66,13 @@
                                         <GroupBox Header="Follower Service">
                                             <WrapPanel>
                                                 <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap">The Twitch Follower Client is started!</TextBlock>
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock TextWrapping="Wrap">The Twitch Follower Client is stopped!</TextBlock>
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
                                                 </Label>
-                                                <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
-                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop"  Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
@@ -85,26 +82,25 @@
                                             <StackPanel Orientation="Vertical">
                                                 <WrapPanel>
                                                     <Label x:Name="Label_TwitchMultiLive_Start" Foreground="Green" Visibility="Collapsed">
-                                                        <TextBlock TextWrapping="Wrap">The Twitch LiveStream Monitor Client is started!</TextBlock>
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="The Twitch LiveStream Monitor Client is started!"/></TextBlock>
                                                     </Label>
                                                     <Label x:Name="Label_TwitchMultiLive_Stop" Foreground="Maroon" Visibility="Visible">
-                                                        <TextBlock TextWrapping="Wrap">The Twitch LiveStream Monitor Client is stopped!</TextBlock>
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="The Twitch LiveStream Monitor Client is stopped!"/></TextBlock>
                                                     </Label>
-                                                    <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
-                                                        <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                                     </CheckBox>
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
                                                     <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Red" Visibility="Hidden">
-                                                        <TextBlock TextWrapping="Wrap">The MultiUserLiveBot is active, single channel activated.
-                                                        </TextBlock>
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
                                                     </Label>
                                                 </WrapPanel>
                                                 <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
                                                     <StackPanel Orientation="Vertical">
                                                         <WrapPanel>
-                                                            <CheckBox DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
-                                                                <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
+                                                                <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                                             </CheckBox>
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
@@ -120,8 +116,8 @@
                         </DockPanel>
                     </TabItem>
                     <TabItem Header="Twitch Setup" GotFocus="TabItem_Twitch_GotFocus">
-                        <DockPanel LastChildFill="False" Name="DockPanel_BotSetup_Twitch">
-                            <StackPanel DockPanel.Dock="Left" DataContext="{Binding Source={x:Static s:Settings.Default}, Mode=OneWay}">
+                        <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
+                            <StackPanel DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                                 <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                     <Label Content="Channel Name" Width="110" />
                                     <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
@@ -133,10 +129,10 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                     <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
-                                    <Label Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
+                                    <Label x:Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
                                 </StackPanel>
 
-                                <Expander Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
+                                <Expander x:Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                             <Label Content="Client Id" Width="120" />
@@ -154,24 +150,21 @@
                                     </StackPanel>
                                 </Expander>
                                 <StackPanel>
-                                    <GroupBox Header="Setup Follower Operations">
+                                    <GroupBox Header="Setup Follower Operations" Width="Auto">
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
-                                                <Label Content="Seconds between checking for new follows: " />
-                                                <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
+                                                <Label Content="Seconds between checking for new follows:"/>
+                                                <TextBlock Text="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
                                             </StackPanel>
-
                                             <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
 
                                         </StackPanel>
                                     </GroupBox>
-
-                                    <GroupBox Header="Setup Go-Live Notifications">
+                                    <GroupBox Header="Setup Go-Live Notifications" Width="Auto">
                                         <StackPanel>
-                                            
                                             <StackPanel Orientation="Horizontal">
                                                 <Label Content="Seconds between checking for going live: " />
-                                                <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
+                                                <TextBlock Text="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                             </StackPanel>
                                             <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10" />
                                         </StackPanel>
@@ -184,11 +177,13 @@
                                 <FlowDocument FontSize="12" PagePadding="5">
                                     <Section>
                                         <Paragraph>
-                                            *The 'Credentials' are in the expander to the left for privacy when the bot starts. Click to expand to enter and view the credentials. The data is saved after the textbox, slider, or checkbox loses focus.
+                                            <Run Text="*The 'Credentials' are in the expander to the left for privacy when the bot starts. Click to expand to enter and view the credentials. The data is saved after the textbox, slider, or checkbox loses focus."/>
                                             <LineBreak/>
                                             <LineBreak/>
-                                            The settings are saved at:
-                                            <Italic>C:\Users\{username}\AppData\Local\ChatBot</Italic>
+                                            <Run Text="The settings are saved at: "/>
+                                            <Italic>
+                                                <Run Text="C:\Users\{username}\AppData\Local\ChatBot"/>
+                                            </Italic>
                                         </Paragraph>
                                         <!--<Section Padding="15,0,15,0">
                                             <Paragraph>
@@ -216,69 +211,102 @@
                                             </Table>
                                         </Section>-->
                                         <Paragraph>
-                                            Bots need an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token".
+                                            <Run Text="Bots need an &quot;Access Token&quot; to authorize it to post to Twitch. Per the OAuth requirements, the &quot;Access Token&quot; must be paired with the &quot;Client Id&quot; used to generate the &quot;Access Token&quot;."/>
                                             <LineBreak />
                                             <LineBreak />
-                                            *Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.
+                                            <Run Text="*Until this application supports creating and refreshing access tokens, the user will need to manually perform this task."/>
                                         </Paragraph>
                                     </Section>
                                     <Section>
                                         <List>
                                             <ListItem>
-                                                <Paragraph>Get the bot account to use within this chat bot.
-                                                    <LineBreak/> *The recommendation is to create a separate Twitch account for this bot to use.
+                                                <Paragraph>
+                                                    <Run Text="Get the bot account to use within this chat bot."/>
+                                                    <LineBreak/>
+                                                    <Run Text="*The recommendation is to create a separate Twitch account for this bot to use."/>
                                                 </Paragraph>
                                             </ListItem>
                                             <ListItem>
-                                                <Paragraph>Visit:
-                                                    <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">https://dev.twitch.tv/console</TextBox> and "Register Your Application" under the account the bot will use.
-                                                    <LineBreak/> *Note, the Twitch account needs 2-factor authentication set-up to register applications.*
+                                                <Paragraph>
+                                                    <Run Text="Visit: "/>
+                                                    <InlineUIContainer>
+                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://dev.twitch.tv/console"/>
+                                                    </InlineUIContainer>
+                                                    <Run Text=" and &quot;Register Your Application&quot; under the account the bot will use."/>
+                                                    <LineBreak/>
+                                                    <Run Text="*Note, the Twitch account needs 2-factor authentication set-up to register applications.*"/>
                                                 </Paragraph>
                                                 <List>
                                                     <ListItem>
-                                                        <Paragraph>Give the application a name (it's just a reference when you look at the listing).</Paragraph>
-                                                    </ListItem>
-                                                    <ListItem>
-                                                        <Paragraph>Add:
-                                                            <LineBreak />
-                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">https://twitchapps.com/tokengen/</TextBox> as the OAuth Redirect URLs. Select "Chat Bot" category (or add the token generator website you're using to generate tokens).
+                                                        <Paragraph>
+                                                            <Run Text="Give the application a name (it's just a reference when you look at the listing)."/>
                                                         </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
-                                                        <Paragraph>Complete the reCaptcha and click 'Create'.</Paragraph>
+                                                        <Paragraph>
+                                                            <Run Text="Add:"/>
+                                                            <LineBreak />
+                                                            <InlineUIContainer>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://twitchapps.com/tokengen/"/>
+                                                            </InlineUIContainer>
+                                                            <Run Text=" as the OAuth Redirect URLs. Select &quot;Chat Bot&quot; category (or add the token generator website you're using to generate tokens)."/>
+                                                        </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
-                                                        <Paragraph>View the application entry to get the 'Client Id'. You can save it in your files and add to the left credential box.</Paragraph>
+                                                        <Paragraph>
+                                                            <Run Text="Complete the reCaptcha and click 'Create'."/>
+                                                        </Paragraph>
+                                                    </ListItem>
+                                                    <ListItem>
+                                                        <Paragraph>
+                                                            <Run Text="View the application entry to get the 'Client Id'. You can save it in your files and add to the left credential box."/>
+                                                        </Paragraph>
                                                     </ListItem>
                                                 </List>
                                             </ListItem>
                                             <ListItem>
-                                                <Paragraph>One such site to generate the access tokens is at:
-                                                    <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">https://twitchapps.com/tokengen/</TextBox>
+                                                <Paragraph>
+                                                    <Run Text="One such site to generate the access tokens is at: "/>
+                                                    <InlineUIContainer>
+                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="https://twitchapps.com/tokengen/"/>
+                                                    </InlineUIContainer>
                                                 </Paragraph>
                                                 <List>
                                                     <ListItem>
-                                                        <Paragraph>Paste the 'Client Id' generated from above at:
-                                                            <Italic>https://dev.twitch.tv/console</Italic> .
+                                                        <Paragraph>
+                                                            <Run Text="Paste the 'Client Id' generated from above at: "/>
+                                                            <Italic>
+                                                                <Run Text="https://dev.twitch.tv/console"/>
+                                                            </Italic>
+                                                            <Run Text=" ."/>
                                                         </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
-                                                        <Paragraph>For "Scopes", paste exactly
+                                                        <Paragraph>
+                                                            <Run Text="For &quot;Scopes&quot;, paste exactly"/>
                                                             <LineBreak />
-                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows</TextBox>
-                                                            <LineBreak /> *This permits specific access for the app functions. Please add these scopes. Currently, the app doesn't adjust to what user scopes you've selected if you don't want specific features enabled.
+                                                            <InlineUIContainer>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows"/>
+                                                            </InlineUIContainer>
+                                                            <LineBreak />
+                                                            <Run Text="*This permits specific access for the app functions. Please add these scopes. Currently, the app doesn't adjust to what user scopes you've selected if you don't want specific features enabled."/>
                                                         </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
-                                                        <Paragraph>Click 'Connect' and copy the resulting "Access Token". You can save it to your local files and paste it to the left credential box.</Paragraph>
+                                                        <Paragraph>
+                                                            <Run Text="Click 'Connect' and copy the resulting &quot;Access Token&quot;. You can save it to your local files and paste it to the left credential box."/>
+                                                        </Paragraph>
                                                     </ListItem>
                                                     <ListItem>
-                                                        <Paragraph>Be sure to click "Refresh Date" here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform step 3 for a new 'access token'.</Paragraph>
+                                                        <Paragraph>
+                                                            <Run Text="Be sure to click &quot;Refresh Date&quot; here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform step 3 for a new 'access token'."/>
+                                                        </Paragraph>
                                                     </ListItem>
                                                 </List>
                                             </ListItem>
                                             <ListItem>
-                                                <Paragraph>View the other tabs to setup your bot messages to events and commands.
+                                                <Paragraph>
+                                                    <Run Text="View the other tabs to setup your bot messages to events and commands."/>
                                                 </Paragraph>
                                             </ListItem>
                                         </List>
@@ -289,12 +317,10 @@
                     </TabItem>
                     <TabItem Header="Discord" DataContext="{Binding DataManage}">
                         <StackPanel>
-                            <TextBlock IsEnabled="False">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
-                              Current implemented <LineBreak /> 'Kind':
-                            </TextBlock>
+                            <TextBlock IsEnabled="False"><Run Text="Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification."/><LineBreak /><Run Text="Current implemented"/><LineBreak /><Run Text="'Kind':"/></TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single"  />
-                                <DataGrid Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}"/>
+                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}"/>
                             </StackPanel>
                         </StackPanel>
                     </TabItem>
@@ -307,87 +333,129 @@
             </TabItem>
             <TabItem Header="Data &amp; Messages">
                 <TabControl x:Name="TabControl_DataTabs">
-                    <TabItem Header="Options">
-                        <StackPanel Margin="10" DataContext="{Binding Source={x:Static s:Settings.Default}}">
-                            <WrapPanel>
-                                <GroupBox Header="Twitch - Bot Management">
-                                    <WrapPanel>
-                                        <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Enable chat message when bot connects to a channel.</TextBlock>
-                                        </CheckBox>
-                                        <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Enable posting to social media (e.g. Discord) multiple live messages in same day.</TextBlock></CheckBox>
-                                        
-                                    </WrapPanel>
-                                </GroupBox>
-                                <GroupBox Header="Twitch - Format Bot messages">
-                                    <StackPanel Margin="5">
-                                        <Label Content="/me changes message to all italics" />
-                                        <RadioButton IsChecked="{Binding NoMeMsg, Mode=TwoWay}" Content="Disabled" />
-                                        <RadioButton IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Content="Enable /me for all commands" />
-                                        <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command"  />
-                                    </StackPanel>
-                                </GroupBox>
-                                 <GroupBox Header="Any - Automatic Commands by Timer">
-                                    <StackPanel Margin="5">
-                                        <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
-                                            <TextBlock>Enable Repeat commands only when live.</TextBlock>
-                                        </CheckBox>
-                                        <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
-                                            <TextBlock>Enable repeating commands.</TextBlock>
-                                        </CheckBox>
-                                    </StackPanel>
-                                </GroupBox>
-                               <GroupBox Header="Any - Welcome Users">
-                                    <StackPanel Margin="5">
-                                        <Label Content="Only once per user per active stream (no repeats)" />
-                                        <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Disabled</TextBlock>
-                                        </RadioButton>
-                                        <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Enable when viewer joins the channel</TextBlock>
-                                        </RadioButton>
-                                        <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Enable when a viewer first chats</TextBlock>
-                                        </RadioButton>                                       
-                                    </StackPanel>
-                                </GroupBox>
-                                <GroupBox Header="Twitch - Shout Out Users">
-                                    <StackPanel Margin="5">
-                                        <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to "Auto SO" tab.</TextBlock>
-                                        </CheckBox>
-                                        <CheckBox IsChecked="{Binding TwitchRaidShoutOut}">
-                                            <TextBlock>Enable auto shoutout for incoming channel raid streamers.</TextBlock>
-                                        </CheckBox>
-                                    </StackPanel>
-                                </GroupBox>
-                                <GroupBox Header="Any - Data Management">
-                                    <WrapPanel>
-                                        <Label>
-                                            <TextBlock Foreground="Red">*Unchecking these settings will remove this data from the database.*</TextBlock>
-                                        </Label>
-                                        <CheckBox IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
-                                            <TextBlock TextWrapping="Wrap">Manage channel viewers in the database, including their watchtime.*</TextBlock>
-                                        </CheckBox>
-                                        <CheckBox IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
-                                            <TextBlock TextWrapping="Wrap">Manage channel followers in the database, including their followage.*</TextBlock>
-                                        </CheckBox>
-                                        <CheckBox IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
-                                            <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream.*</TextBlock>
-                                        </CheckBox>
-                                         <Label>
-                                            <TextBlock Foreground="Red">*Unchecking these settings will remove this data from the database.*</TextBlock>
-                                        </Label>
-                                        <CheckBox IsChecked="{Binding AddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
-                                            <TextBlock TextWrapping="Wrap">Enable adding all followers when bot starts, i.e. click 'Start Bot'.</TextBlock>
-                                        </CheckBox>
+                    <TabItem x:Name="TabItem_DataOptions" Header="Options">
+                        <TabItem.Resources>
+                            <Style TargetType="{x:Type StackPanel}">
+                                <Setter Property="Margin" Value="5" />
+                            </Style>
+                        </TabItem.Resources>
+                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DockPanel Margin="20" DataContext="{Binding Source={x:Static s:Settings.Default}}" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
+                                <WrapPanel Orientation="Horizontal">
+                                    <GroupBox Header="Twitch - Bot Management">
+                                        <StackPanel>
+                                            <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable chat message when this bot connects to a channel."/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable posting to social media (e.g. Discord) multiple live messages in same day."/></TextBlock>
+                                            </CheckBox>
 
-                                    </WrapPanel>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Twitch - Format Bot messages">
+                                        <StackPanel>
+                                            <Label Content="/me changes message to all italics" />
+                                            <RadioButton IsChecked="{Binding NoMeMsg, Mode=TwoWay}" Content="Disabled" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Any - Automatic Commands by Timer">
+                                        <StackPanel Margin="5">
+                                            <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
+                                                <TextBlock><Run Text="Enable Repeat commands only when live."/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
+                                                <TextBlock><Run Text="Enable repeating commands."/></TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Any - Welcome Users">
+                                        <StackPanel>
+                                            <Label Content="Only once per user per active stream (no repeats)" />
+                                            <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Disabled"/></TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable when viewer joins the channel"/></TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable when a viewer first chats"/></TextBlock>
+                                            </RadioButton>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Twitch - Shout Out Users">
+                                        <StackPanel>
+                                            <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to &quot;Auto SO&quot; tab."/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable auto shoutout for incoming channel raid streamers."/></TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Twitch - Follow Options">
+                                        <StackPanel>
+                                            <CheckBox IsChecked="{Binding TwitchAddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Enable adding all followers when bot starts."/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Enable action to remove non-followers from the Follower list when bot starts."/></TextBlock>
+                                            </CheckBox>
+
+                                            <Line Fill="Black" StrokeThickness="2" Stroke="Black" X2="200" HorizontalAlignment="Center" />
+                                            <Label Content="Automatic Follow"/>
+                                            <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
+                                                <TextBlock><Run Text="Enable follow-back new followers"/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable follow-back incoming raider"/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable notifications for follow-back"/></TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Any - Data Management">
+                                        <StackPanel>
+                                            <Label>
+                                                <TextBlock Foreground="Red"><Run Text="*Unchecking will remove data from database.*"/></TextBlock>
+                                            </Label>
+                                            <CheckBox IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel viewers in the database, including their watchtime.*"/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel followers in the database, including their followage.*"/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Record Stream Stats for each stream.*"/></TextBlock>
+                                            </CheckBox>
+                                            <Label>
+                                                <TextBlock Foreground="Red"><Run Text="*Unchecking will remove data from database.*"/></TextBlock>
+                                            </Label>
+                                        </StackPanel>
+                                    </GroupBox>
+
+
+                                    <!-- Settings Template
+                                
+                                <GroupBox Header="Twitch -">
+                                    <StackPanel>
+                                        <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Auto </TextBlock>
+                                        </CheckBox>
+                                        <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
+                                            <TextBlock>Enable </TextBlock>
+                                        </CheckBox>
+                                    </StackPanel>
                                 </GroupBox>
                                 
-                            </WrapPanel>
-                        </StackPanel>
+                                -->
+
+                                </WrapPanel>
+                            </DockPanel>
+                        </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Auto-SO">
                         <Grid>
@@ -403,7 +471,7 @@
                             <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Users" Name="TabItem_Users">
+                    <TabItem Header="Users" x:Name="TabItem_Users">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25" />
@@ -413,7 +481,7 @@
                             <DataGrid x:Name="DG_Users" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Users, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Followers" Name="TabItem_Followers">
+                    <TabItem Header="Followers" x:Name="TabItem_Followers">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25" />
@@ -439,54 +507,34 @@
                                 <RowDefinition Height="55" />
                                 <RowDefinition Height="100*" />
                             </Grid.RowDefinitions>
-                            <TextBlock TextWrapping="Wrap" Grid.Row="0">Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values.<LineBreak/>
-                                'Live' is a message to Discord/other services.</TextBlock>
+                            <TextBlock TextWrapping="Wrap" Grid.Row="0"><Run Text="Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values."/><LineBreak/><Run Text="'Live' is a message to Discord/other services."/></TextBlock>
                             <DataGrid x:Name="DG_CommonMsgs" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" DockPanel.Dock="Bottom" CanUserAddRows="False" CanUserDeleteRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1">
                                 <DataGrid.ToolTip>
-                                    <TextBlock TextWrapping="Wrap" Width="500">The name column is readonly. These are for channel events the bot recognizes and responds with the specified message. 
-                                    <LineBreak /><LineBreak />         
-                                    You can edit the message to customize a response fitting your channel!
-                                    <LineBreak />
-                                    Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before  the parameter, e.g. "the #user followed", the " #" needs to be the first character in the word.
-                                    </TextBlock>
+                                    <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;, the &quot; #&quot; needs to be the first character in the word."/></TextBlock>
                                 </DataGrid.ToolTip>
                             </DataGrid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Currency Types">
                         <Grid>
-                            <DataGrid Name="DG_Currency" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                            <DataGrid x:Name="DG_Currency" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Currency" Name="TabItem_CurrencyAccrual">
+                    <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <!--<Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />-->
-                            <DataGrid Name="DG_CurrencyAccrual" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
+                            <DataGrid x:Name="DG_CurrencyAccrual" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Command System">
                         <TabControl>
                             <TabItem Header="Help">
                                 <Grid>
-                                    <TextBlock>
-                                        The 'BuiltInCommands' are those established within the bot. <LineBreak />
-                                        The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. "Visit me on Twitter at: http://wwww.twitter.com/myuser". The command will show all socials except messages that are blank or the default 'Social media url here'.
-                                        <LineBreak />
-                                        <LineBreak />
-                                        The variables within message to format a custom response:<LineBreak />
-                                        #user: the user specific to the command; either 'command invoker' user or parameter to the command<LineBreak />
-                                        #url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command<LineBreak />
-                                        #fieldvalue: placeholder for the value from a table lookup<LineBreak />
-                                        #currencyname: placeholder for the currency name - extracted from table<LineBreak />
-                                        #currencyvalue: the value of a currency<LineBreak />
-                                        <LineBreak />
-                                        #date: the current date<LineBreak />
-                                        #time: the current time<LineBreak />
-                                    </TextBlock>
+                                    <TextBlock><Run Text="The 'BuiltInCommands' are those established within the bot."/><LineBreak /><Run Text="The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. &quot;Visit me on Twitter at: http://wwww.twitter.com/myuser&quot;. The command will show all socials except messages that are blank or the default 'Social media url here'."/><LineBreak /><LineBreak /><Run Text="The variables within message to format a custom response:"/><LineBreak /><Run Text="#user: the user specific to the command; either 'command invoker' user or parameter to the command"/><LineBreak /><Run Text="#url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command"/><LineBreak /><Run Text="#fieldvalue: placeholder for the value from a table lookup"/><LineBreak /><Run Text="#currencyname: placeholder for the currency name - extracted from table"/><LineBreak /><Run Text="#currencyvalue: the value of a currency"/><LineBreak /><LineBreak /><Run Text="#date: the current date"/><LineBreak /><Run Text="#time: the current time"/><LineBreak /></TextBlock>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Built-In Commands">
@@ -512,7 +560,7 @@
 
                         </TabControl>
                     </TabItem>
-                    <TabItem Header="Stream Stats" Name="TabItem_StreamStats">
+                    <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
                         <Grid>
                             <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                         </Grid>
@@ -532,12 +580,9 @@
                                 <ColumnDefinition Width="293*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3">
-                        Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord.
-                            </TextBlock>
+                            <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3"><Run Text="Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
                             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Foreground="Red" Visibility="{Binding Visibility, ElementName=Label_LiveStream_MultiLiveActiveMsg}">
-                                <TextBlock TextWrapping="Wrap">The MultiUserLiveBot is active, single channel activated.
-                                </TextBlock>
+                                <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
                             </Label>
                             <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
                             <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
@@ -552,17 +597,7 @@
                                     </ContextMenu>
                                 </TextBox.ContextMenu>
                                 <TextBox.ToolTip>
-                                    <TextBlock>
-                               
-                            Use these tags within the message and it'll be replaced before sending the posted live message. <LineBreak />
-                             Available by right-click menu - insert at cursor. <LineBreak />    
-                             "#user" - channel name of the user<LineBreak />
-                             "#category" - the category of the stream<LineBreak />
-                             "#title" - the title of the stream when it goes live<LineBreak />
-                             "#url" - to send someone to the Twitch channel, it's already prepared " twitch.tv/user "<LineBreak />
-                            <LineBreak />
-                            Example: @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url
-                                    </TextBlock>
+                                    <TextBlock><Run Text="Use these tags within the message and it'll be replaced before sending the posted live message."/><LineBreak /><Run Text="Available by right-click menu - insert at cursor."/><LineBreak /><Run Text="&quot;#user&quot; - channel name of the user"/><LineBreak /><Run Text="&quot;#category&quot; - the category of the stream"/><LineBreak /><Run Text="&quot;#title&quot; - the title of the stream when it goes live"/><LineBreak /><Run Text="&quot;#url&quot; - to send someone to the Twitch channel, it's already prepared &quot; twitch.tv/user &quot;"/><LineBreak /><LineBreak /><Run Text="Example: @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url"/></TextBlock>
                                 </TextBox.ToolTip>
                             </TextBox>
 
@@ -596,7 +631,7 @@
                             <GroupBox Grid.Row="2" Padding="10" Header="Join List Status" Grid.RowSpan="3" >
                                 <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
                                     <StackPanel.Resources>
-                                        <Style TargetType="RadioButton">
+                                        <Style TargetType="{x:Type RadioButton}">
                                             <Setter Property="Margin" Value="3" />
                                         </Style>
                                     </StackPanel.Resources>
@@ -623,17 +658,17 @@
                         </Grid>
                     </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410" Opacity="0.9">
-                            <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" />
-                            <GroupBox Header="Pop-out Opacity" Margin="5,0" Width="252" Height="50">
-                                <Slider x:Name="Slider_PopOut_Opacity" TickPlacement="TopLeft" IsSnapToTickEnabled="True" Height="25"  />
-                            </GroupBox>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
+                            <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" Opacity="1" IsEnabled="False" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Label Padding="0" Content="Pop-out Opacity"/>
+                                <TextBlock Text="50%"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,4,15,4">
                             <TextBox Width="365" />
                             <Button Content="Send" Margin="10,0,0,0" Padding="8,2" />
                         </StackPanel>
-
                         <FlowDocumentScrollViewer DockPanel.Dock="Top" BorderThickness="1,1,1,1" x:Name="FlowDoc_ChatBox" ScrollViewer.CanContentScroll="True" DataContext="{Binding ChatData, Mode=OneWay}" Document="{Binding Mode=OneWay, NotifyOnSourceUpdated=True}" Foreground="#FFC5C3C3" />
                     </DockPanel>
                 </DockPanel>

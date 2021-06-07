@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +14,7 @@ namespace ChatBot_Net5.Clients.TwitchLib
     internal class ExtFollowerService : FollowerService
     {
         public ExtFollowerService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 300) : base(api, checkIntervalInSeconds, queryCountPerRequest, cacheSize)
-        { 
+        {
         }
 
         public async Task<List<Follow>> GetAllFollowers(string ChannelName)
@@ -56,6 +54,41 @@ namespace ChatBot_Net5.Clients.TwitchLib
             }
 
             return allfollows;
+        }
+
+        /// <summary>
+        /// Create the follow based on the user IDs
+        /// </summary>
+        /// <param name="from_id">The ID to follow another channel</param>
+        /// <param name="to_id">The ID of the channel to follow</param>
+        /// <param name="allownotification">Specifies whether to notify when the channel goes live</param>
+        public async void CreateUserFollowerId(string from_id, string to_id, bool? allownotification = null)
+        {
+            Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
+
+            // get user followers to the other channel
+            GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(fromId: from_id, toId: to_id);
+
+            if (followsResponse.Follows.Length == 0) // if not following, create the follow
+            {
+                // add the follow
+                await followers.CreateUserFollows(from_id, to_id, allownotification, _api.Settings.AccessToken);
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Accepts the user names for the 'from' and 'to' and will convert them to IDs for creating the user follow
+        /// </summary>
+        /// <param name="from_username">The username wanting to follow another channel</param>
+        /// <param name="to_username">The username of the channel to follow</param>
+        /// <param name="allownotification">Specifies whether to enable notifications when the channel goes live</param>
+        public async void CreateUserFollowerName(string from_username, string to_username, bool? allownotification = null)
+        {
+            string fromid = (await _api.Helix.Users.GetUsersAsync(logins: new() { from_username })).Users.FirstOrDefault()?.Id;
+            string toid = (await _api.Helix.Users.GetUsersAsync(logins: new() { to_username })).Users.FirstOrDefault()?.Id;
+            CreateUserFollowerId(fromid, toid, allownotification);
+            return;
         }
 
     }

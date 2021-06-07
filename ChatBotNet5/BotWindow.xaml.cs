@@ -5,6 +5,7 @@ using ChatBot_Net5.Properties;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
@@ -18,7 +19,7 @@ namespace ChatBot_Net5
     /// <summary>
     /// Interaction logic for BotWindow.xaml
     /// </summary>
-    public partial class BotWindow : Window
+    public partial class BotWindow : Window, INotifyPropertyChanged
     {
         private ChatPopup CP;
         private const string MultiLiveName = "MultiUserLiveBot";
@@ -41,13 +42,19 @@ namespace ChatBot_Net5
             InitializeComponent();
 
             OptionFlags.SetSettings();
+            controller = Resources["ControlBot"] as BotController;
 
-
+            CP = new();
+            CP.Closing += CP_Closing;
+            CP.DataContext = this;
+            //CP.Page_ChatPopup_FlowDocViewer.SetBinding(System.Windows.Controls.Primitives.DocumentViewerBase.DocumentProperty, new Binding("Document") { Source = FlowDoc_ChatBox, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            //CP.SetBinding(OpacityProperty, new Binding("Opacity") { Source = Slider_PopOut_Opacity, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
 
-            controller = Resources["ControlBot"] as BotController;
         }
+
+
 
         #region Events
         #region Windows & Tab Ops
@@ -83,6 +90,7 @@ namespace ChatBot_Net5
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             WatchProcessOps = false;
+            IsAppClosing = true;
             CP.Close();
             controller.ExitSave();
             OptionFlags.SetSettings();
@@ -100,15 +108,35 @@ namespace ChatBot_Net5
             }
         }
 
+        #endregion
+
+        #region PopOut Chat Window
         private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
         {
-            CP = new();
-            CP.Page_ChatPopup_FlowDocViewer.SetBinding(System.Windows.Controls.Primitives.DocumentViewerBase.DocumentProperty, new Binding("Document") { Source = FlowDoc_ChatBox, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-            CP.SetBinding(OpacityProperty, new Binding("Opacity") { Source = Slider_PopOut_Opacity, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-
-            CP.Visibility = Visibility.Visible;
+            CP.Show();
             CP.Height = 500;
             CP.Width = 300;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propname)
+        {
+            PropertyChanged?.Invoke(this, new(propname));
+        }
+
+        private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            OnPropertyChanged("Opacity");
+        }
+
+        private bool IsAppClosing = false;
+        private void CP_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!IsAppClosing) // flag to really close the window
+            {
+                e.Cancel = true;
+                CP.Hide();
+            }
         }
 
         #endregion
@@ -338,6 +366,7 @@ namespace ChatBot_Net5
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
         private bool? IsMultiProcActive;
+
         private delegate void ProcWatch(bool IsActive);
 
         private void UpdateProc(bool IsActive)

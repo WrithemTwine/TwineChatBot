@@ -1,7 +1,9 @@
 ﻿using ChatBot_Net5.Clients.TwitchLib;
+using ChatBot_Net5.Data;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TwitchLib.Api;
@@ -30,7 +32,7 @@ namespace ChatBot_Net5.Clients
             FollowerService?.Stop();
             RefreshSettings();
             ApiSettings apifollow = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
-            FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));            
+            FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
             FollowerService.SetChannelsByName(new List<string>() { TwitchChannelName });
         }
 
@@ -72,6 +74,14 @@ namespace ChatBot_Net5.Clients
             FollowerService?.Stop();
             FollowerService = null;
             return base.ExitBot();
+        }
+
+        internal void FollowBack(string ToUserName)
+        {
+            new Thread(new ThreadStart(() =>
+           {
+               FollowerService.CreateUserFollowerName(TwitchChannelName, ToUserName, OptionFlags.TwitchAddFollowerNotification);
+           })).Start();
         }
     }
 }

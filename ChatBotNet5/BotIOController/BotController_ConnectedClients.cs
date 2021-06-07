@@ -22,7 +22,7 @@ namespace ChatBot_Net5.BotIOController
             // perform loading steps every time, because service is a new object when started
             RegisterHandlers();
 
-            if (OptionFlags.FirstFollowerProcess && TwitchFollower.IsStarted)
+            if (OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
             {
                 BeginAddFollowers(); // begin adding followers back to the data table
             }
@@ -36,7 +36,7 @@ namespace ChatBot_Net5.BotIOController
         private void TwitchIO_OnBotStarted(object sender, EventArgs e)
         {
             // perform loading steps
-            if (!TwitchIO.HandlersAdded) RegisterHandlers();
+            if (!TwitchIO.HandlersAdded) { RegisterHandlers(); }
 
             OptionFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             StartThreads(); // messages can be sent now the chat client is connected

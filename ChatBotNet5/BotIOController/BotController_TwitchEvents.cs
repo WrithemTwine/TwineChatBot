@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
+using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
@@ -17,6 +18,8 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
+        // TODO: Add Twitch Clips Service-posting to Discord, including getting a clip message, Discord clip link
+
         /// <summary>
         /// Register event handlers for the chat services
         /// </summary>
@@ -160,16 +163,16 @@ namespace ChatBot_Net5.BotIOController
         #region Followers
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            if (OptionFlags.ManageFollowers)
+            bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Follow);
+
+            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Follow);
+            msg ??= "Thanks #user for the follow!";
+
+            while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt)))
             {
-                bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Follow);
-
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Follow);
-                msg ??= "Thanks #user for the follow!";
-
-                while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
-
-                foreach (var f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt)))
+                if (OptionFlags.ManageFollowers)
                 {
                     if (FollowEnabled)
                     {
@@ -178,6 +181,11 @@ namespace ChatBot_Net5.BotIOController
 
                     Stats.AddFollow();
                     Stats.AddAutoEvents();
+                }
+
+                if (OptionFlags.TwitchFollowerFollowBack)
+                {
+                    TwitchFollower.FollowBack(f.FromUserName);
                 }
             }
         }
@@ -334,6 +342,11 @@ namespace ChatBot_Net5.BotIOController
             }
             Stats.AddRaids();
             Stats.AddAutoEvents();
+
+            if (OptionFlags.TwitchRaidFollowBack)
+            {
+                TwitchFollower.FollowBack(e.RaidNotification.DisplayName);
+            }
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
