@@ -44,14 +44,13 @@ namespace ChatBot_Net5
             OptionFlags.SetSettings();
             controller = Resources["ControlBot"] as BotController;
 
-            CP = new();
-            CP.Closing += CP_Closing;
-            CP.DataContext = this;
+            //CP = new();
+            //CP.Closing += CP_Closing;
+            //CP.DataContext = this;
             //CP.Page_ChatPopup_FlowDocViewer.SetBinding(System.Windows.Controls.Primitives.DocumentViewerBase.DocumentProperty, new Binding("Document") { Source = FlowDoc_ChatBox, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
             //CP.SetBinding(OpacityProperty, new Binding("Opacity") { Source = Slider_PopOut_Opacity, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
-
         }
 
 
@@ -91,7 +90,8 @@ namespace ChatBot_Net5
         {
             WatchProcessOps = false;
             IsAppClosing = true;
-            CP.Close();
+            OptionFlags.ProcessOps = false;
+            //CP.Close();
             controller.ExitSave();
             OptionFlags.SetSettings();
         }

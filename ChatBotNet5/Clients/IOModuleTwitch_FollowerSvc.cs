@@ -29,7 +29,6 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         internal void ConnectFollowerService()
         {
-            FollowerService?.Stop();
             RefreshSettings();
             ApiSettings apifollow = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
@@ -60,6 +59,7 @@ namespace ChatBot_Net5.Clients
                 IsStarted = false;
                 IsStopped = true;
                 InvokeBotStopped();
+                FollowerService = null;
             }
             return true;
         }
