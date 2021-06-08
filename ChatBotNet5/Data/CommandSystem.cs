@@ -10,6 +10,8 @@ using System.ComponentModel;
 using System.Threading;
 
 using TwitchLib.Client.Models;
+using System.Linq;
+using System.Globalization;
 
 namespace ChatBot_Net5.Data
 {
@@ -17,13 +19,14 @@ namespace ChatBot_Net5.Data
     {
         private readonly DataManager datamanager;
         private readonly string BotUserName;
+        private Thread ElapsedThread;
 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         internal event EventHandler<UserJoinArgs> UserJoinCommand;
         internal event EventHandler<UpTimeCommandArgs> GetUpTimeCommand;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal void NotifyPropertyChanged(string ParamName="" )
+        internal void NotifyPropertyChanged(string ParamName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
@@ -33,7 +36,18 @@ namespace ChatBot_Net5.Data
             datamanager = dataManager;
             BotUserName = BotName;
 
-            new Thread(new ThreadStart(ElapsedCommandTimers)).Start();
+            StartElapsedTimerThread();
+        }
+
+        private void StartElapsedTimerThread()
+        {
+            ElapsedThread = new Thread(new ThreadStart(ElapsedCommandTimers));
+            ElapsedThread.Start();
+        }
+
+        public void StopElapsedTimerThread()
+        {
+            ElapsedThread.Join();
         }
 
         /// <summary>
@@ -43,7 +57,7 @@ namespace ChatBot_Net5.Data
         {
             List<TimerCommand> RepeatList = new();
 
-            foreach(Tuple<string, int> Timers in datamanager.GetTimerCommands())
+            foreach (Tuple<string, int> Timers in datamanager.GetTimerCommands())
             {
                 RepeatList.Add(new(Timers));
             }
@@ -55,7 +69,7 @@ namespace ChatBot_Net5.Data
                     if (timer.CheckFireTime())
                     {
                         timer.UpdateTime();
-                        string output = PerformCommand(timer.Command, BotUserName, null);
+                        string output = PerformCommand(timer.Command, BotUserName, null, true);
 
                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
                     }
@@ -68,17 +82,18 @@ namespace ChatBot_Net5.Data
                     if (!RepeatList.Contains(command))
                     {
                         RepeatList.Add(command);
-                        string output = PerformCommand(command.Command, BotUserName, null);
+                        string output = PerformCommand(command.Command, BotUserName, null, true);
 
                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
                     }
                     else
                     {
-                        RepeatList.Find((a) => a.Command == command.Command).RepeatTime = command.RepeatTime;
+                        TimerCommand update = RepeatList.Find((a) => a.Command == command.Command);
+                        update.RepeatTime = command.RepeatTime;
                     }
                 }
 
-                for (int x = RepeatList.Count; x==0 && RepeatList.Count>0; x--)
+                for (int x = RepeatList.Count - 1; x >= 0 && RepeatList.Count > 0; x--)
                 {
                     if (RepeatList[x].RepeatTime == 0)
                     {
@@ -90,15 +105,18 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        public bool CheckShout(string UserName, out string response)
+        public bool CheckShout(string UserName, out string response, bool AutoShout = true)
         {
             response = "";
-            if (datamanager.CheckShoutName(UserName))
+            if (datamanager.CheckShoutName(UserName) || !AutoShout)
             {
                 response = PerformCommand("so", UserName, new());
                 return true;
-            } else
-            return false;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -132,14 +150,78 @@ namespace ChatBot_Net5.Data
         /// <returns></returns>
         private bool CheckPermission(string command, ViewerTypes InvokerPermission)
         {
-            return datamanager.CheckPermission(command, InvokerPermission);            
+            return datamanager.CheckPermission(command, InvokerPermission);
         }
 
-        private string PerformCommand(string command, string DisplayName, List<string> arglist)
+        private string PerformCommand(string command, string DisplayName, List<string> arglist, bool ElapsedTimer = false)
         {
             arglist?.ForEach((s) => s = s.Trim());
 
-            if (command == "addcommand")
+            switch (command)
+            {
+                case "addcommand":
+                    {
+                        string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
+                        arglist.RemoveAt(0);
+
+                        return datamanager.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+                    }
+
+                case "socials":
+                    return datamanager.GetSocials();
+                case "uptime":
+                    GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = IOModule.TwitchChannelName });
+                    return ""; // the message is handled at the botcontroller
+                case "join":
+                case "leave":
+                case "queue":
+                case "qinfo" when OptionFlags.UserPartyStop && !ElapsedTimer:
+                    UserParty(command, arglist, DisplayName);
+                    return ""; // the message is handled in the GUI thread
+                default:
+                    {
+                        switch (command) // case when an elapsed timer tries to invoke the qinfo for stopped queue, just blank-no response
+                        {
+                            case "qinfo" when OptionFlags.UserPartyStop:
+                                return ""; // skip the queue info if it's a recurring message
+                            case "qstart":
+                            case "qstop":
+                                OptionFlags.SetParty(command == "qstart");
+                                NotifyPropertyChanged("UserPartyStart");
+                                NotifyPropertyChanged("UserPartyStop");
+                                break;
+                        }
+
+                        DataSource.CommandsRow CommData = datamanager.GetCommand(command);
+
+                        string paramvalue = CommData.AllowParam
+                            ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                                ? DisplayName
+                                : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                            : DisplayName;
+
+                        //TODO: research and consider a dictionary static class to keep these keys uniform and scalable
+                        Dictionary<string, string> datavalues = new()
+                        {
+                            { "#user", paramvalue },
+                            { "#url", "http://www.twitch.tv/" + paramvalue },
+                            { "#time", DateTime.Now.TimeOfDay.ToString() },
+                            { "#date", DateTime.Now.Date.ToString() }
+                        };
+
+                        if (CommData.lookupdata)
+                        {
+                            LookupQuery(CommData, paramvalue, ref datavalues);
+                        }
+
+                        string response = BotController.ParseReplace(CommData.Message, datavalues);
+
+                        return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
+                    }
+            }
+
+            /*
+             if (command == "addcommand")
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
@@ -157,13 +239,21 @@ namespace ChatBot_Net5.Data
                 GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = IOModule.TwitchChannelName });
                 return ""; // the message is handled at the botcontroller
             }
-            else if (command == "join" || command == "leave" || command == "queue" || (command == "qinfo" && OptionFlags.UserPartyStop))
+            else if (command == "join"
+                     || command == "leave"
+                     || command == "queue"
+                     || (command == "qinfo" && OptionFlags.UserPartyStop && !ElapsedTimer)) // handle case when a viewer tries to view qinfo--it's not started
             {
                 UserParty(command, arglist, DisplayName);
                 return ""; // the message is handled in the GUI thread
             }
             else
             {
+                if (command == "qinfo" && OptionFlags.UserPartyStop) // case when an elapsed timer tries to invoke the qinfo for stopped queue, just blank-no response
+                {
+                    return ""; // skip the queue info if it's a recurring message
+                }
+
                 if (command == "qstart" || command == "qstop")
                 {
                     OptionFlags.SetParty(command == "qstart");
@@ -173,27 +263,11 @@ namespace ChatBot_Net5.Data
 
                 DataSource.CommandsRow CommData = datamanager.GetCommand(command);
 
-                string paramvalue;
-
-                if (CommData.AllowParam)
-                {
-                    if (arglist == null || arglist.Count == 0 || arglist[0] == string.Empty)
-                    {
-                        paramvalue = DisplayName;
-                    }
-                    else if (arglist[0].Contains('@'))
-                    {
-                        paramvalue = arglist[0].Remove(0, 1);
-                    }
-                    else
-                    {
-                        paramvalue = arglist[0];
-                    }
-                }
-                else
-                {
-                    paramvalue = DisplayName;
-                }
+                string paramvalue = CommData.AllowParam
+                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                        ? DisplayName
+                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                    : DisplayName;
 
                 //TODO: research and consider a dictionary static class to keep these keys uniform and scalable
                 Dictionary<string, string> datavalues = new()
@@ -204,36 +278,52 @@ namespace ChatBot_Net5.Data
                     { "#date", DateTime.Now.Date.ToString() }
                 };
 
-                object querydata = null;
-
-                //TODO: the commands with data lookup needs a lot of work!
-
                 if (CommData.lookupdata)
                 {
-                    if (CommData.top > 0 || CommData.top == -1)
+                    LookupQuery(CommData, paramvalue, ref datavalues);
+                }
+
+                string response = BotController.ParseReplace(CommData.Message, datavalues);
+
+                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
+            } 
+             */
+
+            //return "not finished";
+        }
+
+        private void LookupQuery(DataSource.CommandsRow CommData, string paramvalue, ref Dictionary<string, string> datavalues)
+        {
+            //TODO: the commands with data lookup needs a lot of work!
+
+            switch (CommData.top)
+            {
+                case > 0:
+                case -1:
                     {
                         if (CommData.action != CommandAction.Get.ToString())
                         {
-                            throw new InvalidOperationException(string.Format("The command {0} is configured for {1}, but can only perform {2}", CommData.CmdName, CommData.action, CommandAction.Get.ToString()));
+                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The command {0} is configured for {1}, but can only perform {2}", CommData.CmdName, CommData.action, CommandAction.Get.ToString()));
                         }
 
                         // convert multi-row output to a string
                         string queryoutput = "";
-
-                        foreach (object r in datamanager.PerformQuery(CommData, CommData.top))
+                        foreach (Tuple<object, object> bundle in from object r in datamanager.PerformQuery(CommData, CommData.top)
+                                               let bundle = r as Tuple<object, object>
+                                               where bundle.Item1 == bundle.Item2
+                                               select bundle)
                         {
-                            Tuple<object, object> bundle = (r as Tuple<object, object>);
-                            if (bundle.Item1 == bundle.Item2)
-                            {
-                                queryoutput += bundle.Item1 + ", ";
-                            }
+                            queryoutput += bundle.Item1 + ", ";
                         }
+
                         queryoutput = queryoutput.Remove(queryoutput.LastIndexOf(','));
                         datavalues.Add("#query", queryoutput);
+                        break;
                     }
-                    else
+
+                default:
                     {
-                        querydata = datamanager.PerformQuery(CommData, paramvalue);
+                        var querydata = datamanager.PerformQuery(CommData, paramvalue);
 
                         string output = "";
                         if (querydata.GetType() == typeof(string))
@@ -254,26 +344,20 @@ namespace ChatBot_Net5.Data
                         }
 
                         datavalues.Add("#query", output);
+                        break;
                     }
-                }
-
-                string response = BotController.ParseReplace(CommData.Message, datavalues);
-
-                return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
             }
-
-            //return "not finished";
         }
 
         internal void UserParty(string command, List<string> arglist, string UserName)
         {
-           DataSource.CommandsRow CommData = datamanager.GetCommand(command);
+            DataSource.CommandsRow CommData = datamanager.GetCommand(command);
 
             UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;
             userJoinArgs.AddMe = CommData.AddMe;
             userJoinArgs.ChatUser = UserName;
-            userJoinArgs.GameUserName = arglist.Count == 0 ? UserName : arglist[0];
+            userJoinArgs.GameUserName = arglist == null || arglist.Count == 0 ? UserName : arglist[0];
 
             // we have to invoke an event, because the GUI thread must be used to manipulate the data collection for the user list
             UserJoinCommand?.Invoke(this, userJoinArgs);

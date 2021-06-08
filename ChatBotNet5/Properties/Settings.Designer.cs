@@ -12,7 +12,7 @@ namespace ChatBot_Net5.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -37,7 +37,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("From registered bot at https://dev.twitch.tv/console")]
         public string TwitchClientID {
             get {
                 return ((string)(this["TwitchClientID"]));
@@ -49,7 +49,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Twitch channel the bot will monitor")]
         public string TwitchChannelName {
             get {
                 return ((string)(this["TwitchChannelName"]));
@@ -61,7 +61,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Specify the OAuth access token for bot authentication")]
         public string TwitchAccessToken {
             get {
                 return ((string)(this["TwitchAccessToken"]));
@@ -73,7 +73,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Optional, some sites provide this token to refresh an OAuth access token")]
         public string TwitchRefreshToken {
             get {
                 return ((string)(this["TwitchRefreshToken"]));
@@ -97,7 +97,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Twitch account the bot will use to post")]
         public string TwitchBotUserName {
             get {
                 return ((string)(this["TwitchBotUserName"]));
@@ -110,9 +110,9 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public double TwitchFrequency {
+        public int TwitchFrequency {
             get {
-                return ((double)(this["TwitchFrequency"]));
+                return ((int)(this["TwitchFrequency"]));
             }
             set {
                 this["TwitchFrequency"] = value;
@@ -134,21 +134,21 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AddFollowersStart {
+        public bool TwitchAddFollowersStart {
             get {
-                return ((bool)(this["AddFollowersStart"]));
+                return ((bool)(this["TwitchAddFollowersStart"]));
             }
             set {
-                this["AddFollowersStart"] = value;
+                this["TwitchAddFollowersStart"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("300")]
-        public double TwitchGoLiveFrequency {
+        public int TwitchGoLiveFrequency {
             get {
-                return ((double)(this["TwitchGoLiveFrequency"]));
+                return ((int)(this["TwitchGoLiveFrequency"]));
             }
             set {
                 this["TwitchGoLiveFrequency"] = value;
@@ -392,6 +392,78 @@ namespace ChatBot_Net5.Properties {
             }
             set {
                 this["ManageStreamStats"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchRaidShoutOut {
+            get {
+                return ((bool)(this["TwitchRaidShoutOut"]));
+            }
+            set {
+                this["TwitchRaidShoutOut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        public decimal ChatPopOutOpacity {
+            get {
+                return ((decimal)(this["ChatPopOutOpacity"]));
+            }
+            set {
+                this["ChatPopOutOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerFollowBack {
+            get {
+                return ((bool)(this["TwitchFollowerFollowBack"]));
+            }
+            set {
+                this["TwitchFollowerFollowBack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchRaidFollowBack {
+            get {
+                return ((bool)(this["TwitchRaidFollowBack"]));
+            }
+            set {
+                this["TwitchRaidFollowBack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchPruneNonFollowers {
+            get {
+                return ((bool)(this["TwitchPruneNonFollowers"]));
+            }
+            set {
+                this["TwitchPruneNonFollowers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchAddFollowerNotification {
+            get {
+                return ((bool)(this["TwitchAddFollowerNotification"]));
+            }
+            set {
+                this["TwitchAddFollowerNotification"] = value;
             }
         }
     }

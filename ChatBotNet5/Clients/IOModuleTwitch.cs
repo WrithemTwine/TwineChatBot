@@ -16,6 +16,7 @@ using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Enums;
 using ChatBot_Net5.Exceptions;
+using TwitchLib.Communication.Events;
 
 namespace ChatBot_Net5.Clients
 {
@@ -85,10 +86,12 @@ namespace ChatBot_Net5.Clients
 
             TwitchChat = new TwitchClient(new WebSocketClient(options), ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
+            TwitchChat.OnDisconnected += TwitchChat_OnDisconnected;
 
             RefreshSettings();
         }
-                /// <summary>
+
+        /// <summary>
         /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -124,7 +127,7 @@ namespace ChatBot_Net5.Clients
             else
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
-                TwitchChat.OverrideBeingHostedCheck = (TwitchChannelName != TwitchBotUserName);
+                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 TwitchChat.Connect();
             }
 
@@ -146,7 +149,7 @@ namespace ChatBot_Net5.Clients
                 InvokeBotStarted();
                 return true;
             }
-            catch 
+            catch
             { return false; }
         }
 
@@ -185,11 +188,6 @@ namespace ChatBot_Net5.Clients
         /// <returns>True when message is sent.</returns>
         public override bool Send(string s)
         {
-            //if (TwitchChat.IsConnected == false && IsStarted)
-            //{
-            //    TwitchChat.Reconnect();
-            //}
-
             if (IsStarted)
             {
                 foreach (JoinedChannel j in TwitchChat.JoinedChannels)
@@ -198,6 +196,29 @@ namespace ChatBot_Net5.Clients
                 }
             }
             return true;
+        }
+
+        public override bool ExitBot()
+        {
+            if (TwitchChat.IsConnected)
+            {
+                TwitchChat.Disconnect();
+            }
+            TwitchChat = null;
+
+            return base.ExitBot();
+        }
+
+
+        private void TwitchChat_OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        {
+            // the TwitchClient reports disconnected but user didn't click the 'start bot' button
+            // the client should be started but is now disconnected
+            // check is required so the bot doesn't keep restarting when the user actually clicked stop
+            if (IsStarted) 
+            {
+                Connect();    // restart the bot
+            }
         }
     }
 }

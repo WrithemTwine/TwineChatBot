@@ -21,11 +21,16 @@ namespace ChatBot_Net5.Clients
         {
             ChatClientName = "TwitchLiveMonitorService";
             IsStarted = false;
-            IsStopped = false;
+            IsStopped = true;
         }
 
         internal void ConnectLiveMonitorService()
         {
+            if (IsStarted)
+            {
+                LiveStreamMonitor?.Stop();
+            }
+            LiveStreamMonitor = null;
             RefreshSettings();
             ApiSettings apilive = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
@@ -51,7 +56,7 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StartBot()
         {
-            if (!IsStarted)
+            if (!IsStarted || !IsStopped)
             {
                 ConnectLiveMonitorService();
 
@@ -84,5 +89,14 @@ namespace ChatBot_Net5.Clients
             return true;
         }
 
+        public override bool ExitBot()
+        {
+            if (IsStarted)
+            {
+                LiveStreamMonitor?.Stop();
+            }
+            LiveStreamMonitor = null;
+            return base.ExitBot();
+        }
     }
 }

@@ -10,7 +10,12 @@ namespace ChatBot_Net5.Data
     {
         internal static bool ProcessOps { get; set; } = false;  // whether to process ops or not
 
-        internal static bool FirstFollowerProcess { get; set; }
+        internal static bool TwitchAddFollowersStart { get; set; }
+        internal static bool TwitchPruneNonFollowers { get; set; }
+        internal static bool TwitchFollowerFollowBack { get; set; }
+        internal static bool TwitchRaidFollowBack { get; set; }
+        internal static bool TwitchAddFollowerNotification { get; set; }
+
         internal static bool FirstUserJoinedMsg { get; set; }
         internal static bool FirstUserChatMsg { get; set; }
         
@@ -19,6 +24,8 @@ namespace ChatBot_Net5.Data
         internal static bool PerComMeMsg { get; set; }
 
         internal static bool AutoShout { get; set; }
+        internal static bool TwitchRaidShoutOut { get; set; }
+
         internal static bool RepeatTimer { get; set; }
         internal static bool RepeatWhenLive { get; set; }
 
@@ -35,13 +42,16 @@ namespace ChatBot_Net5.Data
 
         internal static void SetSettings()
         {
-            string s = "";
-
-            lock (s)
+            lock (Settings.Default)
             {
                 Settings.Default.Save();
 
-                FirstFollowerProcess = Settings.Default.AddFollowersStart;
+                TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
+                TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
+                TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
+                TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
+                TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
+
                 FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
                 FirstUserChatMsg = Settings.Default.WelcomeChatMsg;
 
@@ -50,6 +60,8 @@ namespace ChatBot_Net5.Data
                 PerComMeMsg = Settings.Default.PerComMeMsg;
 
                 AutoShout = Settings.Default.AutoShout;
+                TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
+
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
 

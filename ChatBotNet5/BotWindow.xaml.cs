@@ -5,10 +5,12 @@ using ChatBot_Net5.Properties;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -17,9 +19,9 @@ namespace ChatBot_Net5
     /// <summary>
     /// Interaction logic for BotWindow.xaml
     /// </summary>
-    public partial class BotWindow : Window
+    public partial class BotWindow : Window, INotifyPropertyChanged
     {
-        private readonly ChatPopup CP;
+        private ChatPopup CP;
         private const string MultiLiveName = "MultiUserLiveBot";
 
         private readonly BotController controller;
@@ -40,16 +42,18 @@ namespace ChatBot_Net5
             InitializeComponent();
 
             OptionFlags.SetSettings();
+            controller = Resources["ControlBot"] as BotController;
 
-            CP = new();
-            CP.Page_ChatPopup_FlowDocViewer.Document = FlowDoc_ChatBox.Document;
-            CP.Page_ChatPopup_FlowDocViewer.Opacity = Slider_PopOut_Opacity.Value;
-
+            //CP = new();
+            //CP.Closing += CP_Closing;
+            //CP.DataContext = this;
+            //CP.Page_ChatPopup_FlowDocViewer.SetBinding(System.Windows.Controls.Primitives.DocumentViewerBase.DocumentProperty, new Binding("Document") { Source = FlowDoc_ChatBox, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            //CP.SetBinding(OpacityProperty, new Binding("Opacity") { Source = Slider_PopOut_Opacity, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
-
-            controller = Resources["ControlBot"] as BotController;
         }
+
+
 
         #region Events
         #region Windows & Tab Ops
@@ -67,14 +71,17 @@ namespace ChatBot_Net5
 
             foreach (Tuple<bool, RadioButton> tuple in BotOps)
             {
-                if (tuple.Item1 && tuple.Item2.IsEnabled && tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                if (tuple.Item1 && tuple.Item2.IsEnabled)
                 {
-                    HelperStartBot(tuple.Item2);
-                }
-                else if (tuple.Item1 && tuple.Item2.IsEnabled)
-                {
-                    SetMultiLiveButtons();
-                    MultiBotRadio(true);
+                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                    {
+                        HelperStartBot(tuple.Item2);
+                    }
+                    else
+                    {
+                        SetMultiLiveButtons();
+                        MultiBotRadio(true);
+                    }
                 }
             }
         }
@@ -82,8 +89,11 @@ namespace ChatBot_Net5
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             WatchProcessOps = false;
+            IsAppClosing = true;
+            OptionFlags.ProcessOps = false;
+            //CP.Close();
             controller.ExitSave();
-            Settings.Default.Save();
+            OptionFlags.SetSettings();
         }
 
         private void TabItem_Twitch_GotFocus(object sender, RoutedEventArgs e)
@@ -98,11 +108,35 @@ namespace ChatBot_Net5
             }
         }
 
+        #endregion
+
+        #region PopOut Chat Window
         private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
         {
-            CP.Visibility = Visibility.Visible;
+            CP.Show();
             CP.Height = 500;
             CP.Width = 300;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propname)
+        {
+            PropertyChanged?.Invoke(this, new(propname));
+        }
+
+        private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            OnPropertyChanged("Opacity");
+        }
+
+        private bool IsAppClosing = false;
+        private void CP_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!IsAppClosing) // flag to really close the window
+            {
+                e.Cancel = true;
+                CP.Hide();
+            }
         }
 
         #endregion
@@ -131,9 +165,7 @@ namespace ChatBot_Net5
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            RadioButton rb = (sender as RadioButton);
-
-            HelperStartBot(rb);
+            HelperStartBot(sender as RadioButton);
         }
 
         private void HelperStartBot(RadioButton rb)
@@ -278,7 +310,7 @@ namespace ChatBot_Net5
         /// Disable or Enable UIElements to prevent user changes while bot is active.
         /// Same method takes the opposite value for the start then stop then start, i.e. toggling start/stop bot operations.
         /// </summary>
-        private void ToggleInputEnabled(bool setvalue=true)
+        private void ToggleInputEnabled(bool setvalue = true)
         {
             TB_Twitch_AccessToken.IsEnabled = setvalue;
             TB_Twitch_BotUser.IsEnabled = setvalue;
@@ -310,26 +342,31 @@ namespace ChatBot_Net5
 
         private void SetMultiLiveButtons()
         {
-            if (IsMultiProcActive==false)
+            if (IsMultiProcActive == false)
             {
                 controller.MultiConnect();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
+                Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
             }
-            else if(IsMultiProcActive==true)
+            else if (IsMultiProcActive == true)
             {
                 MultiBotRadio();
                 controller.MultiDisconnect();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                Radio_Twitch_LiveBotStop.IsEnabled = false;
             }
         }
 
         #endregion
 
         #region WatcherTools
-        
+
         private bool WatchProcessOps;
+
+        /// <summary>
+        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
+        /// </summary>
         private bool? IsMultiProcActive;
+
         private delegate void ProcWatch(bool IsActive);
 
         private void UpdateProc(bool IsActive)
@@ -343,7 +380,7 @@ namespace ChatBot_Net5
             while (WatchProcessOps)
             {
                 Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                if ((processes.Length > 0) != IsMultiProcActive)
+                if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
                 {
                     UpdateProc(processes.Length > 0);
                     IsMultiProcActive = (processes.Length > 0);
@@ -356,16 +393,31 @@ namespace ChatBot_Net5
         #endregion
 
         #region MultiLive
-        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e) => Radio_MultiLiveTwitch_StartBot.IsEnabled = IsMultiProcActive == false && ((sender as RadioButton).IsChecked ?? false);
-        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e) => MultiBotRadio();
-        private void BC_MultiLiveTwitch_StartBot(object sender, MouseButtonEventArgs e) => MultiBotRadio(true);
-        private void BC_MultiLiveTwitch_StopBot(object sender, MouseButtonEventArgs e) => MultiBotRadio();
+        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
+        {
+            Radio_MultiLiveTwitch_StartBot.IsEnabled = IsMultiProcActive == false && ((sender as RadioButton).IsChecked ?? false);
+        }
+
+        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
+        {
+            MultiBotRadio();
+        }
+
+        private void BC_MultiLiveTwitch_StartBot(object sender, MouseButtonEventArgs e)
+        {
+            MultiBotRadio(true);
+        }
+
+        private void BC_MultiLiveTwitch_StopBot(object sender, MouseButtonEventArgs e)
+        {
+            MultiBotRadio();
+        }
 
         private void MultiBotRadio(bool Start = false)
         {
             if (controller != null && controller.TwitchLiveMonitor.IsMultiConnected)
             {
-                if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled == true && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
+                if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
                 {
                     controller.StartMultiLive();
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
@@ -382,7 +434,7 @@ namespace ChatBot_Net5
                     controller.StopMultiLive();
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-                     Radio_MultiLiveTwitch_StopBot.IsChecked = true;
+                    Radio_MultiLiveTwitch_StopBot.IsChecked = true;
 
                     if (IsMultiProcActive == true)
                     {
@@ -408,8 +460,15 @@ namespace ChatBot_Net5
             TB_LiveMsg.SelectionStart = start;
         }
 
-        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
-        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e) => controller.UpdateChannels();
+        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox).ScrollToEnd();
+        }
+
+        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            controller.UpdateChannels();
+        }
 
         #endregion
 

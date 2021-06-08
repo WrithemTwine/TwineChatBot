@@ -14,8 +14,8 @@ namespace MultiUserLiveBot.Data
 
         public DataView Channels { get; set; }
         public DataView MsgEndPoints { get; set; }
-        public DataView LiveStream { get; set; } 
-        
+        public DataView LiveStream { get; set; }
+
         public DataManager()
         {
             _DataSource = new();
@@ -63,9 +63,9 @@ namespace MultiUserLiveBot.Data
         public bool CheckStreamDate(string ChannelName, DateTime dateTime)
         {
             int x = 0;
-            foreach(DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select())
+            foreach (DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select())
             {
-                if (liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString()==dateTime.ToShortDateString())
+                if (liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString() == dateTime.ToShortDateString())
                 {
                     x++;
                 }
@@ -92,7 +92,7 @@ namespace MultiUserLiveBot.Data
             _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
             SaveData();
 
-//            NotifyPropertyChanged("LiveStream");
+            //            NotifyPropertyChanged("LiveStream");
 
             return true;
         }
@@ -117,11 +117,11 @@ namespace MultiUserLiveBot.Data
         /// Retrieve the Endpoints links where the user wants to post live messages.
         /// </summary>
         /// <returns>A list of URI objects for the Endpoint links.</returns>
-        public List<Tuple<string,Uri>> GetWebLinks()
+        public List<Tuple<string, Uri>> GetWebLinks()
         {
-            List<Tuple<string,Uri>> links = new();
+            List<Tuple<string, Uri>> links = new();
 
-            foreach( DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[]) _DataSource.MsgEndPoints.Select())
+            foreach (DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[])_DataSource.MsgEndPoints.Select())
             {
                 links.Add(new(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
             }

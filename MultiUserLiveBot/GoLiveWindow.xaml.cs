@@ -32,7 +32,7 @@ namespace MultiUserLiveBot
 
             InitializeComponent();
 
-            TwitchLiveBot = (Resources["TwitchLiveBot"] as TwitchLiveBot);
+            TwitchLiveBot = Resources["TwitchLiveBot"] as TwitchLiveBot;
         }
 
         #region static string helpers
@@ -213,15 +213,33 @@ namespace MultiUserLiveBot
         {
             TwitchLiveBot.DataManage.SaveData();
             TwitchLiveBot.StopBot();
-            
+
             Settings.Default.Save();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
-        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e) => await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
+        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e) => await Application.Current.Dispatcher.InvokeAsync(((TextBox)sender).SelectAll);
         private void CheckBox_Click(object sender, RoutedEventArgs e) => Settings.Default.Save();
-        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e) => TwitchLiveBot.UpdateChannelList();
+        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit) { TwitchLiveBot.UpdateChannelList(); }
+        }
         private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
         #endregion GUI events and helpers
+
+        private void DataGrid_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ((DataGrid)sender).CanUserAddRows = true;
+        }
+
+        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((DataGrid)sender).CanUserAddRows = false;
+        }
+
+        private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            ((DataGrid)sender).CanUserAddRows = true;
+        }
     }
 }

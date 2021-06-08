@@ -1,16 +1,17 @@
-﻿using ChatBot_Net5.BotIOController;
-using ChatBot_Net5.Enum;
+﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
+using System.Linq;
 
 namespace ChatBot_Net5.Data
 {
@@ -363,7 +364,8 @@ namespace ChatBot_Net5.Data
         {
             followerThread = new(new ThreadStart(() =>
             {
-                UpdatingFollowers = true; lock (_DataSource.Followers)
+                UpdatingFollowers = true;
+                lock (_DataSource.Followers)
                 {
                     List<DataSource.FollowersRow> temp = new();
                     temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
@@ -376,6 +378,22 @@ namespace ChatBot_Net5.Data
                         AddFollower(f.FromUserName, f.FollowedAt);
                     }
                 }
+
+                if (OptionFlags.TwitchPruneNonFollowers)
+                {
+                    lock (_DataSource.Followers)
+                    {
+                        List<DataSource.FollowersRow> temp = new();
+                        temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
+                        foreach (DataSource.FollowersRow f in from DataSource.FollowersRow f in temp
+                                                              where !f.IsFollower
+                                                              select f)
+                        {
+                            _DataSource.Followers.RemoveFollowersRow(f);
+                        }
+                    }
+                }
+
                 _DataSource.AcceptChanges();
                 UpdatingFollowers = false;
                 SaveData();
@@ -437,7 +455,7 @@ namespace ChatBot_Net5.Data
         internal bool CheckMultiStreams(DateTime dateTime)
         {
             int x = 0;
-            foreach(DataSource.StreamStatsRow row in GetAllStreamData())
+            foreach (DataSource.StreamStatsRow row in GetAllStreamData())
             {
                 if (row.StreamStart.ToShortDateString() == dateTime.ToShortDateString())
                 {
@@ -556,7 +574,7 @@ switches:
             {
                 bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
 
-                     // command name     // msg   // params  
+                // command name     // msg   // params  
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
                 {
                     { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
@@ -576,7 +594,7 @@ switches:
                     { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
                     { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
                     { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
-                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime")}
+                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime") }
                 };
 
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
@@ -691,11 +709,11 @@ switches:
 
             lock (_DataSource.Commands)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage,Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
                 OnPropertyChanged(nameof(Commands));
             }
-            return string.Format("Command {0} added!", cmd);
+            return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
         }
 
         internal string GetSocials()
@@ -804,51 +822,51 @@ switches:
             {
                 DataRow[] temp = _DataSource.Tables[row.table].Select(row.key_field + "='" + ParamValue + "'");
 
-                result = temp.Length>0 ? temp[0] : null;
+                result = temp.Length > 0 ? temp[0] : null;
+
+
+                if (result == null)
+                {
+                    return "data not found.";
+                }
+
+                Type resulttype = result.GetType();
+
+                // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
+                if (resulttype == typeof(DataSource.UsersRow))
+                {
+                    DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
+                    UpdateWatchTime(ParamValue, DateTime.Now);
+                    return usersRow[row.data_field];
+                }
+                else if (resulttype == typeof(DataSource.FollowersRow))
+                {
+                    DataSource.FollowersRow follower = (DataSource.FollowersRow)result;
+
+                    return follower.IsFollower ? follower.FollowedDate : "not a follower.";
+                }
+                else if (resulttype == typeof(DataSource.CurrencyRow))
+                {
+
+                }
+                else if (resulttype == typeof(DataSource.CurrencyTypeRow))
+                {
+
+                }
+                else if (resulttype == typeof(DataSource.CommandsRow))
+                {
+
+                }
             }
-
-            if (result == null)
-            {
-                return "data not found.";
-            }
-
-            Type resulttype = result.GetType();
-
-            // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
-            if (resulttype == typeof(DataSource.UsersRow))
-            {
-                DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
-
-                return usersRow[row.data_field];
-            }
-            else if (resulttype == typeof(DataSource.FollowersRow))
-            {
-                DataSource.FollowersRow follower = (DataSource.FollowersRow)result;
-
-                return follower.IsFollower ? follower.FollowedDate : "not a follower.";
-            }
-            else if (resulttype == typeof(DataSource.CurrencyRow))
-            {
-
-            }
-            else if (resulttype == typeof(DataSource.CurrencyTypeRow))
-            {
-
-            }
-            else if (resulttype == typeof(DataSource.CommandsRow))
-            {
-
-            }
-
 
             return result;
         }
 
-        internal object[] PerformQuery(DataSource.CommandsRow row, int Top=0)
+        internal object[] PerformQuery(DataSource.CommandsRow row, int Top = 0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
             DataRow[] output;
-            List<Tuple<object,object>> outlist = new();
+            List<Tuple<object, object>> outlist = new();
 
             lock (_DataSource)
             {
@@ -863,7 +881,7 @@ switches:
 
                 foreach (DataRow d in output)
                 {
-                    outlist.Add(new(d[row.key_field],d[row.data_field]));
+                    outlist.Add(new(d[row.key_field], d[row.data_field]));
                 }
             }
 

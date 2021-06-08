@@ -4,6 +4,7 @@ using ChatBot_Net5.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -46,7 +47,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 TwitchLiveMonitor.SetLiveMonitorChannels(new());
             }
-            LogEntry(string.Format("MultiLive Bot started and monitoring {0} channels.", TwitchLiveMonitor.LiveStreamMonitor.ChannelsToMonitor.Count.ToString()), DateTime.Now);
+            LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", TwitchLiveMonitor.LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now);
         }
 
         public void StartMultiLive()
