@@ -1,0 +1,406 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical">
+  <Class Name="ChatBot_Net5.BotIOController.BotController" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="ChatBot_Net5.BotIOController.BotController.ProcMessage" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BotIOController\BotController_Com.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="ChatBot_Net5.BotIOController.BotController.UpdateUsers" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BotIOController\BotController_Commands.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>YpE6IoRCsHIEIaIA0GUkwwF2okypahYhFOgVhEQ1FRc=</HashCode>
+      <FileName>BotIOController\BotController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ChatBot_Net5.Clients.DiscordWebhook" Collapsed="true">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Clients\DiscordWebhook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Clients.IOModule" Collapsed="true">
+    <Position X="3.75" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AARAAAAAIAACEEAACEgAYIACAwJAEAIIABABBAEAUAA=</HashCode>
+      <FileName>Clients\IOModule.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ChatBot_Net5.Clients.IOModuleTwitch" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Events" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAIAAGAAAKAAggAAAAAAABAQAAEAAAA=</HashCode>
+      <FileName>Clients\IOModuleTwitch.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ChatBot_Net5.Data.DataManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Events" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEQAIqAggAByIwgiYwwLRAQQqAAFgYBIQAWAAABAAAA=</HashCode>
+      <FileName>Data\DataManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ChatBot_Net5.Data.DataSource" Collapsed="true">
+    <Position X="14.75" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ChatBot_Net5.Data.DataSource.DiscordDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CurrencyTypeRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CommandsRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.CurrencyRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.FollowersRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="ChatBot_Net5.Data.DataSource.CurrencyRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CommandsRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.ShoutOutsRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.CurrencyTypeRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.DiscordRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="ChatBot_Net5.Data.DataSource.CurrencyRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.CommandsRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.StreamStatsRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="ChatBot_Net5.Data.DataSource.ChannelEventsRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.FollowersRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.StreamStatsRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CommandsDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.UsersRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.ChannelEventsRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="ChatBot_Net5.Data.DataSource.FollowersRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.UsersDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CurrencyDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.ChannelEventsDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CurrencyTypeDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.ChannelEventsRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.FollowersDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.StreamStatsRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.CurrencyTypeRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.DiscordRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.DiscordRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.UsersRow" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="ChatBot_Net5.Data.DataSource.ShoutOutsRowChangeEvent" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.ShoutOutsRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="ChatBot_Net5.Data.DataSource.ShoutOutsDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Delegate Name="ChatBot_Net5.Data.DataSource.UsersRowChangeEventHandler" Collapsed="true">
+        <TypeIdentifier />
+      </Delegate>
+      <Class Name="ChatBot_Net5.Data.DataSource.StreamStatsDataTable" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AIAAAqAgAxDBgAJgBAgAQCEEDAgCZJkIQAAAAAMEBFA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.BotIOController.Models.Command" Collapsed="true">
+    <Position X="14.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Models\Commands.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.BotIOController.Models.CommandCollection" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Models\Commands.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ChatBot_Net5.Models.UserJoin" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAIAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\UserJoin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.BotWindow" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="ChatBot_Net5.BotWindow.ProcWatch" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BotWindow.xaml.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AYEAAAIiwJCGgAEAAIGABgiCgAARYAAQAAAAUQgBAAI=</HashCode>
+      <FileName>BotWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ChatBot_Net5.ChatPopup" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChatPopup.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ChatBot_Net5.Models.CommandParams" Collapsed="true">
+    <Position X="11.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAACCAAAAAIAIQQAgECAAoAAAACAAAIAAEgAQ=</HashCode>
+      <FileName>Models\CommandParams.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Clients.IOModuleTwitch_FollowerSvc" Collapsed="true">
+    <Position X="3" Y="1.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAAAgAIAAAAAAIAAAEAAAA=</HashCode>
+      <FileName>Clients\IOModuleTwitch_FollowerSvc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Clients.IOModuleTwitch_LiveMonitorSvc" Collapsed="true">
+    <Position X="6" Y="1.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAEQAAAAAAgAAAQABAAAAAAEAAAA=</HashCode>
+      <FileName>Clients\IOModuleTwitch_LiveMonitorSvc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Data.OptionFlags" Collapsed="true">
+    <Position X="13" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAAAAAAoBAAAAgAAAAQQAASAAAAAAgAgiAgCACAgAQg=</HashCode>
+      <FileName>Data\OptionFlags.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Data.Statistics" Collapsed="true">
+    <Position X="14.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAVDAAAAAIJgMIAIAgII0gCAEAgAACABCIKAACogARA=</HashCode>
+      <FileName>Data\Statistics.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Data.StreamStat" Collapsed="true">
+    <Position X="9.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAIQgCAAwAAAAAgAEBAgAAAAEQQkAUAECAQAABABgA=</HashCode>
+      <FileName>Data\StreamStat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Events.TimerCommandsEventArgs" Collapsed="true">
+    <Position X="11.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Events\TimerCommandsEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Events.UpTimeCommandArgs" Collapsed="true">
+    <Position X="13" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Events\UpTimeCommandArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Events.UserJoinArgs" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Events\UserJoinArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ChatBot_Net5.Exceptions.NoUserDataException" Collapsed="true">
+    <Position X="11.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\ExceptionArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="ChatBot_Net5.Enum.ChannelEventActions" Collapsed="true">
+    <Position X="9.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAQAAAQgAEAAAAAAAEEAChAAAAACAAABBAAE=</HashCode>
+      <FileName>Enum\ChannelEventActions.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.ChatClient" Collapsed="true">
+    <Position X="11.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAQ=</HashCode>
+      <FileName>Enum\ChatClient.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.CommandAction" Collapsed="true">
+    <Position X="13" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAABAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enum\CommandAction.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.CommandSort" Collapsed="true">
+    <Position X="14.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Enum\CommandSort.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.CommandType" Collapsed="true">
+    <Position X="9.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enum\CommandType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.CurrencyType" Collapsed="true">
+    <Position X="11.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAgAAAEAAABAAAAEAAgAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Enum\CurrencyType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.DataRetrieve" Collapsed="true">
+    <Position X="13" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enum\DataRetrieve.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.DataSourceTableName" Collapsed="true">
+    <Position X="14.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAABAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enum\DataSourceTableName.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.DefaultCommand" Collapsed="true">
+    <Position X="9.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAACAAIAAAACAEBIAgABAAAAABABBIAAAQgAAII=</HashCode>
+      <FileName>Enum\DefaultCommand.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.DefaultSocials" Collapsed="true">
+    <Position X="11.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgBBAAAAAAIAAAAAAAEAAAAIIAAAGAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Enum\DefaultSocials.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.ResponseType" Collapsed="true">
+    <Position X="13" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAgAAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enum\ResponseType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.ViewerTypes" Collapsed="true">
+    <Position X="14.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAgAAAAAAAAAAQAgAAAAAAAAAAAAgQ=</HashCode>
+      <FileName>Enum\ViewerTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ChatBot_Net5.Enum.WebhooksKind" Collapsed="true">
+    <Position X="9.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Enum\WebhooksKind.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
