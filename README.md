@@ -30,7 +30,6 @@ Database management to organize:
 	- Statistics for the current live stream
 	Responses to events occuring in the channel:
 		 - Messages to viewer actions and events: welcome a viewer message, incoming raids, subscriptions and resubscriptions, gifted subscriptions, bits (Twitch), new follower, hosting messages, and going live messages
-
 		 - Command system 
 			- built-in commands with editable response messages, includes social media link messages, uptime, watchtime, all commands list, and shout-out users
 			- user-defined commands - set your own messages
@@ -44,7 +43,6 @@ Database management to organize:
 Options to manage bot actions (enable or disable):
 	- saving bot authentication tokens, with a reminder for refreshing the token
 	- (future feature?) automatically update Twitch access tokens
-	
 	App Features:
 		- Manage channel viewers - saving in the database
 		- Manage channel followers - saving in the database
