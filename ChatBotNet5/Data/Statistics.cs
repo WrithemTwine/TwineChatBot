@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChatBot_Net5.Models;
+
+using System;
 using System.Collections.Generic;
 
 namespace ChatBot_Net5.Data

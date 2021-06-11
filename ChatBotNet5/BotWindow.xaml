@@ -1,19 +1,56 @@
 ﻿<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:BotIOController ="clr-namespace:ChatBot_Net5.BotIOController"
-        xmlns:MultiLive="clr-namespace:MultiUserLiveBot.Clients;assembly=MultiUserLiveBot"
-        xmlns:s="clr-namespace:ChatBot_Net5.Properties"
-        xmlns:local="clr-namespace:ChatBot_Net5" x:Class="ChatBot_Net5.BotWindow"
-        mc:Ignorable="d"
-        Title="Chat Bot Manager" Height="771" Width="1020" Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:BotIOController="clr-namespace:ChatBot_Net5.BotIOController"
+    xmlns:s="clr-namespace:ChatBot_Net5.Properties"
+    x:Class="ChatBot_Net5.BotWindow" mc:Ignorable="d" Title="Chat Bot Manager" Height="771" Width="1020" 
+    Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
-        <BotIOController:BotController x:Name="ControlBot" x:Key="ControlBot" />
+        <ResourceDictionary>
+            <BotIOController:BotController x:Name="ControlBot" x:Key="ControlBot" />
+        </ResourceDictionary>
     </Window.Resources>
     <DockPanel SnapsToDevicePixels="True" DataContext="{DynamicResource ControlBot}">
-        <StatusBar Height="25" DockPanel.Dock="Bottom" />
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                </Style>
+            </StatusBar.Resources>
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>All Viewers (Users):</Label>
+                    <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding Users.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>
+                        <Label.ToolTip>When a viewers stops following, not currently updated real-time. Bot startup option manages followers.</Label.ToolTip>
+                        <Label.Content>Followers:</Label.Content>
+                    </Label>
+                    <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding Followers.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>Built-in Commands:</Label>
+                    <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>Defined Commands:</Label>
+                    <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
+            <ComboBoxItem x:Name="StatusBar_GoLiveCombo" IsEnabled="False" Visibility="Collapsed" />
+        </StatusBar>
         <TabControl>
             <TabControl.Resources>
                 <Style TargetType="{x:Type GroupBox}">
@@ -154,7 +191,7 @@
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <Label Content="Seconds between checking for new follows:"/>
-                                                <TextBlock Text="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
+                                                <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
                                             </StackPanel>
                                             <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
 
@@ -164,7 +201,7 @@
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <Label Content="Seconds between checking for going live: " />
-                                                <TextBlock Text="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
+                                                <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                             </StackPanel>
                                             <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10" />
                                         </StackPanel>
@@ -184,7 +221,7 @@
                                             <Italic>
                                                 <Run Text="C:\Users\{username}\AppData\Local\ChatBot"/>
                                             </Italic>
-                                        </Paragraph>                                        
+                                        </Paragraph>
                                         <Paragraph>
                                             <Run Text="Bots need an &quot;Access Token&quot; to authorize it to post to Twitch. Per the OAuth requirements, the &quot;Access Token&quot; must be paired with the &quot;Client Id&quot; used to generate the &quot;Access Token&quot;."/>
                                             <LineBreak />
@@ -294,8 +331,8 @@
                         <StackPanel>
                             <TextBlock IsEnabled="False"><Run Text="Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification."/><LineBreak /><Run Text="Current implemented"/><LineBreak /><Run Text="'Kind':"/></TextBlock>
                             <StackPanel Orientation="Horizontal">
-                                <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single"  />
-                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}"/>
+                                <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single" />
+                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True"/>
                             </StackPanel>
                         </StackPanel>
                     </TabItem>
@@ -317,10 +354,10 @@
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <DockPanel Margin="20" DataContext="{Binding Source={x:Static s:Settings.Default}}" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Horizontal">
-                                    <GroupBox Header="Twitch - Bot Management">
+                                    <GroupBox Header="Any - Bot Management">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable chat message when this bot connects to a channel."/></TextBlock>
+                                                <TextBlock><Run Text="Enable chat message when a bot connects to a channel."/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Enable posting to social media (e.g. Discord) multiple live messages in same day."/></TextBlock>
@@ -346,7 +383,7 @@
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Any - Welcome Users">
+                                    <GroupBox Header="Any - Welcome Viewers">
                                         <StackPanel>
                                             <Label Content="Only once per user per active stream (no repeats)" />
                                             <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
@@ -360,13 +397,15 @@
                                             </RadioButton>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Twitch - Shout Out Users">
+                                    <GroupBox Header="Twitch - Shout Out Viewers">
                                         <StackPanel>
+                                            <Label>
+                                                <TextBlock>Active when channel is live</TextBlock></Label>
                                             <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Auto shoutout users when they first appear in your live stream (tied to 'Welcome Users'. Add names to &quot;Auto SO&quot; tab."/></TextBlock>
+                                                <TextBlock><Run Text="Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab."/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable auto shoutout for incoming channel raid streamers."/></TextBlock>
+                                                <TextBlock><Run Text="Enable auto shoutout for incoming channel raid streamers"/></TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
@@ -380,7 +419,7 @@
                                             </CheckBox>
 
                                             <Line Fill="Black" StrokeThickness="2" Stroke="Black" X2="200" HorizontalAlignment="Center" />
-                                            <Label Content="Automatic Follow"/>
+                                            <Label Content="Automatic Follow other Viewers"/>
                                             <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
                                                 <TextBlock><Run Text="Enable follow-back new followers"/></TextBlock>
                                             </CheckBox>
@@ -388,7 +427,7 @@
                                                 <TextBlock><Run Text="Enable follow-back incoming raider"/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable notifications for follow-back"/></TextBlock>
+                                                <TextBlock><Run Text="Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live"/></TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
@@ -432,7 +471,15 @@
                             </DockPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="Auto-SO">
+                    <TabItem Header="Auto-SO" RenderTransformOrigin="0.5,0.5">
+                        <TabItem.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-3.134"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TabItem.RenderTransform>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35" />
@@ -532,7 +579,6 @@
                                     <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
                                 </Grid>
                             </TabItem>
-
                         </TabControl>
                     </TabItem>
                     <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
