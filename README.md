@@ -26,6 +26,7 @@ Implements:
    - Twitch Chat bot
    - Twitch Live bot
    - Twitch Follower bot
+
 (future scalability) the app setup allows adding more Twitch bots (different Twitch functions) and other platforms
    - Twitch "Clip" bot (planned future feature)
 
