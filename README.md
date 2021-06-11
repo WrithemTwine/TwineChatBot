@@ -15,13 +15,14 @@ The user can add:
    - Live Stream Stats - can view/edit the data the bot monitors, disabled while the bot is active (the updates don't refresh and crash the GUI)
 
 ----------------------------------
-# Application - Twine Chat Bot (updated periodically, may not reflect actual current feature set)
+# Application - Twine Chat Bot 
+(documentation updated periodically, may not reflect actual current feature set)
 
 Features: This bot utilizes .NET 5.0 and TwitchLib and implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file.
 
 The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
 
-Implements bots:
+Implements:
    - Twitch Chat bot
    - Twitch Live bot
    - Twitch Follower bot
@@ -73,6 +74,7 @@ Options to manage bot actions (enable or disable):
       - To your channel:
          - Update followers when bot starts
          - Remove non-followers from Followers table
+         - Notification message for new follows
        - To other channels:
          - Auto follow back when a viewer follows you
          - Auto follow when a raider arrives
