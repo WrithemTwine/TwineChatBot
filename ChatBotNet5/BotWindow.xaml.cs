@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -21,7 +20,7 @@ namespace ChatBot_Net5
     /// </summary>
     public partial class BotWindow : Window, INotifyPropertyChanged
     {
-        private ChatPopup CP;
+        private readonly ChatPopup CP;
         private const string MultiLiveName = "MultiUserLiveBot";
 
         private readonly BotController controller;
@@ -294,11 +293,20 @@ namespace ChatBot_Net5
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
         {
-            static Visibility SetVisibility(bool Check) { return (Check ? Visibility.Visible : Visibility.Collapsed); }
+            static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
 
             TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
             TabItem_Followers.Visibility = SetVisibility(OptionFlags.ManageFollowers);
             TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
+
+            if (CheckBox_ManageUsers.IsChecked == true)
+            {
+                CheckBox_ManageFollowers.IsEnabled = true;
+            } else
+            {
+                CheckBox_ManageFollowers.IsEnabled = false;
+                CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
+            }
 
             controller.ManageDatabase();
         }

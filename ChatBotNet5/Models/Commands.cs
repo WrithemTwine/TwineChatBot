@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ChatBot_Net5.BotIOController.Models
 {
+    [DebuggerDisplay("Parameter={Parameter}, Value={Value}")]
     public class Command
     {
         public string Parameter { get; set; }

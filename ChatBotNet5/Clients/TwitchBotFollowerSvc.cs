@@ -12,14 +12,14 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.Clients
 {
-    public class IOModuleTwitch_FollowerSvc : IOModule
+    public class TwitchBotFollowerSvc : TwitchBots
     {
         /// <summary>
         /// Listens for new followers.
         /// </summary>
         internal ExtFollowerService FollowerService { get; private set; }
 
-        public IOModuleTwitch_FollowerSvc()
+        public TwitchBotFollowerSvc()
         {
             ChatClientName = "TwitchFollowerService";
         }

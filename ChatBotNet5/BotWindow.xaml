@@ -77,7 +77,7 @@
                             <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
                                     <Label>
-                                        <TextBlock TextWrapping="Wrap"><Run Text="The bot credentials form needs to be completed with at least client id and access token."/><LineBreak /><Run Text="The LiveStreamMonitor Service will not monitor multiple channels and stops if the &quot;MultiUserLiveBot&quot; is running or started."/></TextBlock>
+                                        <TextBlock TextWrapping="Wrap">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will not monitor multiple channels and stops if the &quot;MultiUserLiveBot&quot; is running or started.</TextBlock>
                                     </Label>
                                     <WrapPanel>
                                         <WrapPanel.Resources>
@@ -94,7 +94,7 @@
                                                     <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Chat Client is stopped!"/></TextBlock>
                                                 </Label>
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" >
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
+                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
@@ -112,7 +112,7 @@
                                                     <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop"  Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                             </WrapPanel>
                                         </GroupBox>
                                         <GroupBox Header="LiveStream Monitor Service">
@@ -137,7 +137,7 @@
                                                     <StackPanel Orientation="Vertical">
                                                         <WrapPanel>
                                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
-                                                                <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
+                                                                <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
                                                             </CheckBox>
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
@@ -418,7 +418,7 @@
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Enable action to remove non-followers from the Follower list when bot starts."/></TextBlock>
                                             </CheckBox>
 
-                                            <Line Fill="Black" StrokeThickness="2" Stroke="Black" X2="200" HorizontalAlignment="Center" />
+                                            <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
                                             <Label Content="Automatic Follow other Viewers"/>
                                             <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
                                                 <TextBlock><Run Text="Enable follow-back new followers"/></TextBlock>
@@ -436,11 +436,11 @@
                                             <Label>
                                                 <TextBlock Foreground="Red"><Run Text="*Unchecking will remove data from database.*"/></TextBlock>
                                             </Label>
-                                            <CheckBox IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel viewers in the database, including their watchtime.*"/></TextBlock>
+                                            <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel viewers, including their watchtime.*"/></TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel followers in the database, including their followage.*"/></TextBlock>
+                                            <CheckBox x:Name="CheckBox_ManageFollowers" IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
+                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel followers, including their followage. Requires User data.*"/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Record Stream Stats for each stream.*"/></TextBlock>

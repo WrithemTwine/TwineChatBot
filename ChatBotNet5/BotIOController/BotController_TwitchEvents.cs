@@ -118,7 +118,7 @@ namespace ChatBot_Net5.BotIOController
         {
             try
             {
-                if (e.Channel != IOModule.TwitchChannelName)
+                if (e.Channel != TwitchBots.TwitchChannelName)
                 {
                     SendMultiLiveMsg(e);
                 }

@@ -12,6 +12,7 @@ using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChatBot_Net5.Data
 {
@@ -22,6 +23,10 @@ namespace ChatBot_Net5.Data
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
         private readonly DataSource _DataSource;
         private Thread followerThread;
+
+        private readonly Queue<Task> SaveTasks = new();
+        private bool SaveThreadStarted = false;
+        private const int SaveThreadWait = 1500;
 
         public bool UpdatingFollowers { get; set; } = false;
 
@@ -38,7 +43,6 @@ namespace ChatBot_Net5.Data
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
 
         public event PropertyChangedEventHandler PropertyChanged;
-
         private void OnPropertyChanged(string PropName)
         {
             PropertyChanged?.Invoke(this, new(PropName));
@@ -104,16 +108,67 @@ namespace ChatBot_Net5.Data
         }
 
         /// <summary>
-        /// Save data to file upon exit
+        /// Save data to file upon exit and after data changes. Pauses for 15 seconds (unless exiting) to slow down multiple saves in a short time.
         /// </summary>
         public void SaveData()
         {
-            lock (_DataSource)
+            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
             {
-                _DataSource.AcceptChanges();
-                _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram);
+                if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                {
+                    SaveThreadStarted = true;
+                    new Thread(new ThreadStart(PerformSaveOp)).Start();
+                }
+
+
+                SaveTasks.Enqueue(new(() =>
+                {
+                    string result = Path.GetRandomFileName();
+
+                    lock (_DataSource)
+                    {
+                        _DataSource.AcceptChanges();
+
+                        try
+                        {
+                            _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
+
+                            DataSource testinput = new();
+                            using (XmlReader xmlReader = new XmlTextReader(result))
+                            {
+                                // test load
+                                testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                            }
+
+                            File.Move(result, DataFileName);
+
+                        }
+                        catch { }
+                    }
+                }));
             }
         }
+
+        private void PerformSaveOp()
+        {
+            if(OptionFlags.ProcessOps) // don't sleep if exiting app
+            {
+                Thread.Sleep(SaveThreadWait);
+            }
+
+            lock (SaveTasks) // in case save actions arrive during save try
+            {
+                if (SaveTasks.Count >= 1)
+                {
+                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
+                }
+
+                SaveTasks.Clear();
+                SaveThreadStarted = false; // indicate start another thread to save data
+            }
+        }
+        
+
         #endregion
 
         #region Regular Channel Events
@@ -335,6 +390,8 @@ namespace ChatBot_Net5.Data
         /// <returns>True if the user is added, else false if the user already existed.</returns>
         private DataSource.UsersRow AddNewUser(string User, DateTime FirstSeen)
         {
+            DataSource.UsersRow usersRow = null;
+
             lock (_DataSource.Users)
             {
                 if (_DataSource.Users.FindByUserName(User) == null)
@@ -346,7 +403,6 @@ namespace ChatBot_Net5.Data
                 }
             }
 
-            DataSource.UsersRow usersRow = null;
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock (_DataSource.Users)
             {
@@ -357,6 +413,7 @@ namespace ChatBot_Net5.Data
                     usersRow.FirstDateSeen = FirstSeen;
                 }
             }
+
             return usersRow;
         }
 

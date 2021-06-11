@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace ChatBot_Net5.Models
 {
+    [DebuggerDisplay("Table={Table}, Field={Field}")]
     internal class CommandParams
     {
         internal string Table { get; set; } = string.Empty;

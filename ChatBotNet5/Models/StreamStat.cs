@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ChatBot_Net5.Models
 {
+    [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
     internal class StreamStat
     {
         internal static readonly string DefaultTime = "1/1/1990";

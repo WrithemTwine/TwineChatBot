@@ -4,6 +4,7 @@ using ChatBot_Net5.Data;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
@@ -37,11 +38,11 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        public IOModuleTwitch TwitchIO { get; private set; }
+        public TwitchBotChatClient TwitchIO { get; private set; }
 
-        public IOModuleTwitch_FollowerSvc TwitchFollower { get; private set; }
+        public TwitchBotFollowerSvc TwitchFollower { get; private set; }
 
-        public IOModuleTwitch_LiveMonitorSvc TwitchLiveMonitor { get; private set; }
+        public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
 
         #endregion Bot Services
 
@@ -75,7 +76,7 @@ namespace ChatBot_Net5.BotIOController
         /// Set all of the attached bots into a stopped state.
         /// </summary>
         /// <returns>True when successful.</returns>
-        public bool ExitAllBot()
+        public bool ExitAllBots()
         {
             foreach (IOModule i in IOModuleList)
             {
@@ -128,7 +129,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
-            ExitAllBot();              // stop all the bot processes
+            ExitAllBots();              // stop all the bot processes
             DataManage.SaveData();  // save data
         }
     }

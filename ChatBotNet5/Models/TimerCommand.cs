@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ChatBot_Net5.Models
 {
+    [DebuggerDisplay("Command={Command}, RepeatTime={RepeatTime}, NextRun={NextRun}")]
     internal class TimerCommand : IComparable<TimerCommand>, IEquatable<TimerCommand>
     {
         internal string Command { get; set; }

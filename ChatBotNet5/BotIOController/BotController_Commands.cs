@@ -17,7 +17,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void SetProcessCommands()
         {
-            ProcessCommands = new(DataManage, IOModule.TwitchBotUserName);
+            ProcessCommands = new(DataManage, TwitchBots.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
             ProcessCommands.GetUpTimeCommand += ProcessCommands_GetUpTimeCommand;

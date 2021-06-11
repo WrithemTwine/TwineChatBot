@@ -170,7 +170,7 @@ namespace ChatBot_Net5.Data
                 case "socials":
                     return datamanager.GetSocials();
                 case "uptime":
-                    GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = IOModule.TwitchChannelName });
+                    GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = TwitchBots.TwitchChannelName });
                     return ""; // the message is handled at the botcontroller
                 case "join":
                 case "leave":
