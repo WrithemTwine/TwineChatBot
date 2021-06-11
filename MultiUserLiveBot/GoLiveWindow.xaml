@@ -30,14 +30,14 @@
                     <Label DataContext="{Binding ElementName=DG_WebHooks, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
-            <Separator />
+            <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Added Channels: " />
                     <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
                 </StackPanel>
             </StatusBarItem>
-            <Separator />
+            <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Live Events: " />
