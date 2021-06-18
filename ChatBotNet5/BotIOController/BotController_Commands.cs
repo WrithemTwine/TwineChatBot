@@ -17,15 +17,14 @@ namespace ChatBot_Net5.BotIOController
 
         private void SetProcessCommands()
         {
-            ProcessCommands = new(DataManage, TwitchBots.TwitchBotUserName);
+            ProcessCommands = new(DataManage, Stats, TwitchBots.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
-            ProcessCommands.GetUpTimeCommand += ProcessCommands_GetUpTimeCommand;
         }
 
         private void ProcessCommands_GetUpTimeCommand(object sender, UpTimeCommandArgs e)
         {
-            string msg = Stats.IsStreamOnline? e.Message ?? "#user has been streaming for #uptime." : "The stream is not online." ;
+            string msg = OptionFlags.IsStreamOnline ? e.Message ?? "#user has been streaming for #uptime." : "The stream is not online." ;
 
             Dictionary<string, string> dictionary = new()
             {
@@ -51,7 +50,7 @@ namespace ChatBot_Net5.BotIOController
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
 
-            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || Stats.IsStreamOnline))
+            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 Send(e.Message);
                 Stats.AddAutoCommands();
@@ -62,7 +61,7 @@ namespace ChatBot_Net5.BotIOController
         {
             string response = "";
 
-            if(OptionFlags.PerComMeMsg==true && e.AddMe)
+            if(OptionFlags.MsgPerComMe==true && e.AddMe)
             {
                 response = "/me ";
             }

@@ -26,7 +26,7 @@
     <Setting Name="TwitchFrequency" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">30</Value>
     </Setting>
-    <Setting Name="BotConnectionMsg" Type="System.Boolean" Scope="User">
+    <Setting Name="MsgBotConnection" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="TwitchAddFollowersStart" Type="System.Boolean" Scope="User">
@@ -38,13 +38,13 @@
     <Setting Name="PostMultiLive" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="InsertMeToMsg" Type="System.Boolean" Scope="User">
+    <Setting Name="MsgInsertMe" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="WelcomeChatMsg" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="AutoShout" Type="System.Boolean" Scope="User">
+    <Setting Name="MsgAutoShout" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="RepeatTimerCommands" Type="System.Boolean" Scope="User">
@@ -56,10 +56,10 @@
     <Setting Name="WelcomeDisabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="NoMeMsg" Type="System.Boolean" Scope="User">
+    <Setting Name="MsgNoMe" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="PerComMeMsg" Type="System.Boolean" Scope="User">
+    <Setting Name="MsgPerComMe" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="UserPartyStart" Type="System.Boolean" Scope="User">
@@ -80,7 +80,7 @@
     <Setting Name="TwitchFollowerSvcAutoStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="LiveMsg" Type="System.String" Scope="User">
+    <Setting Name="MsgLive" Type="System.String" Scope="User">
       <Value Profile="(Default)">#user is now live streaming #category - #title! Come join and say hi at: #url</Value>
     </Setting>
     <Setting Name="TwitchMultiLiveAutoStart" Type="System.Boolean" Scope="User">

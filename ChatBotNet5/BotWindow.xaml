@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:BotIOController="clr-namespace:ChatBot_Net5.BotIOController"
     xmlns:s="clr-namespace:ChatBot_Net5.Properties"
-    x:Class="ChatBot_Net5.BotWindow" mc:Ignorable="d" Title="Chat Bot Manager" Height="771" Width="1020" 
+    x:Class="ChatBot_Net5.BotWindow" mc:Ignorable="d" Title="Twine Chat Bot Manager" Height="771" Width="1020" 
     Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
         <ResourceDictionary>
@@ -129,13 +129,14 @@
                                                     </CheckBox>
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
-                                                    <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Red" Visibility="Hidden">
-                                                        <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
-                                                    </Label>
+                                                    
                                                 </WrapPanel>
                                                 <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
                                                     <StackPanel Orientation="Vertical">
                                                         <WrapPanel>
+                                                            <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Hidden">
+                                                                <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
+                                                            </Label>
                                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
                                                                 <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
                                                             </CheckBox>
@@ -356,21 +357,20 @@
                                 <WrapPanel Orientation="Horizontal">
                                     <GroupBox Header="Any - Bot Management">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding BotConnectionMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable chat message when a bot connects to a channel."/></TextBlock>
+                                            <CheckBox IsChecked="{Binding MsgBotConnection, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable bot welcome message when connected to stream channel."/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Enable posting to social media (e.g. Discord) multiple live messages in same day."/></TextBlock>
                                             </CheckBox>
-
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Format Bot messages">
                                         <StackPanel>
                                             <Label Content="/me changes message to all italics" />
-                                            <RadioButton IsChecked="{Binding NoMeMsg, Mode=TwoWay}" Content="Disabled" Click="CheckBox_Click_SaveSettings" />
-                                            <RadioButton IsChecked="{Binding InsertMeToMsg, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
-                                            <RadioButton IsChecked="{Binding PerComMeMsg, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Content="Disabled" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Automatic Commands by Timer">
@@ -401,7 +401,7 @@
                                         <StackPanel>
                                             <Label>
                                                 <TextBlock>Active when channel is live</TextBlock></Label>
-                                            <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding MsgAutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab."/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
@@ -471,15 +471,7 @@
                             </DockPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="Auto-SO" RenderTransformOrigin="0.5,0.5">
-                        <TabItem.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform/>
-                                <SkewTransform/>
-                                <RotateTransform Angle="-3.134"/>
-                                <TranslateTransform/>
-                            </TransformGroup>
-                        </TabItem.RenderTransform>
+                    <TabItem Header="Auto-SO">                        
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35" />
@@ -607,7 +599,7 @@
                             </Label>
                             <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
                             <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
-                             DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding LiveMsg}" 
+                             DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding MsgLive}" 
                              TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
                                 <TextBox.ContextMenu>
                                     <ContextMenu>

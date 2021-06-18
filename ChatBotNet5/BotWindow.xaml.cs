@@ -83,6 +83,9 @@ namespace ChatBot_Net5
                     }
                 }
             }
+
+            // TODO: add follower service online, offline, and repeat timers to re-run service
+            // TODO: turn off bots & prevent starting if the token is expired - research auto-refreshing token
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -18,12 +18,16 @@ namespace ChatBot_Net5.Data
     public class CommandSystem : INotifyPropertyChanged
     {
         private readonly DataManager datamanager;
+        private readonly Statistics StatData;
         private readonly string BotUserName;
         private Thread ElapsedThread;
 
+        // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
+        
+        // bubble up the user request for joining the game queue list
         internal event EventHandler<UserJoinArgs> UserJoinCommand;
-        internal event EventHandler<UpTimeCommandArgs> GetUpTimeCommand;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         internal void NotifyPropertyChanged(string ParamName = "")
@@ -31,9 +35,10 @@ namespace ChatBot_Net5.Data
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
-        internal CommandSystem(DataManager dataManager, string BotName)
+        internal CommandSystem(DataManager dataManager, Statistics statistics, string BotName)
         {
             datamanager = dataManager;
+            StatData = statistics;
             BotUserName = BotName;
 
             StartElapsedTimerThread();
@@ -55,6 +60,8 @@ namespace ChatBot_Net5.Data
         /// </summary>
         private void ElapsedCommandTimers()
         {
+            // TODO: consider slower timers (dilute timers, make them longer) when channel isn't as active
+            // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
             foreach (Tuple<string, int> Timers in datamanager.GetTimerCommands())
@@ -105,6 +112,13 @@ namespace ChatBot_Net5.Data
             }
         }
 
+        /// <summary>
+        /// See if the user is part of the user's auto-shout out list to determine if the message should be called
+        /// </summary>
+        /// <param name="UserName">The user to check</param>
+        /// <param name="response">the response message template</param>
+        /// <param name="AutoShout">true-check if the user is on the autoshout list, false-the method call is from a command, no autoshout check</param>
+        /// <returns></returns>
         public bool CheckShout(string UserName, out string response, bool AutoShout = true)
         {
             response = "";
@@ -170,8 +184,15 @@ namespace ChatBot_Net5.Data
                 case "socials":
                     return datamanager.GetSocials();
                 case "uptime":
-                    GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = TwitchBots.TwitchChannelName });
-                    return ""; // the message is handled at the botcontroller
+                    string msg = OptionFlags.IsStreamOnline ? datamanager.GetCommand(command).Message ?? "#user has been streaming for #uptime." : "The stream is not online.";
+
+                    Dictionary<string, string> dictionary = new()
+                    {
+                        { "#user", TwitchBots.TwitchChannelName },
+                        { "#uptime", BotController.FormatTimes(StatData.GetCurrentStreamStart()) }
+                    };
+
+                    return BotController.ParseReplace(msg, dictionary); // the message is handled at the botcontroller
                 case "join":
                 case "leave":
                 case "queue":
@@ -216,7 +237,7 @@ namespace ChatBot_Net5.Data
 
                         string response = BotController.ParseReplace(CommData.Message, datavalues);
 
-                        return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
+                        return (OptionFlags.MsgPerComMe && CommData.AddMe ? "/me " : "") + response;
                     }
             }
 

@@ -98,7 +98,7 @@ namespace ChatBot_Net5.Data
 
             using (XmlReader xmlreader = new XmlTextReader(DataFileName))
             {
-                _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
             }
 
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
@@ -120,7 +120,6 @@ namespace ChatBot_Net5.Data
                     new Thread(new ThreadStart(PerformSaveOp)).Start();
                 }
 
-
                 SaveTasks.Enqueue(new(() =>
                 {
                     string result = Path.GetRandomFileName();
@@ -137,11 +136,11 @@ namespace ChatBot_Net5.Data
                             using (XmlReader xmlReader = new XmlTextReader(result))
                             {
                                 // test load
-                                testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                                _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
                             }
 
-                            File.Move(result, DataFileName);
-
+                            File.Move(result, DataFileName, true);
+                            File.Delete(result);
                         }
                         catch { }
                     }
@@ -790,7 +789,7 @@ switches:
 
             string socials = socialrows[0].Message;
 
-            if (OptionFlags.PerComMeMsg == true && socialrows[0].AddMe == true)
+            if (OptionFlags.MsgPerComMe == true && socialrows[0].AddMe == true)
             {
                 socials = "/me " + socialrows[0].Message;
             }
@@ -927,14 +926,7 @@ switches:
 
             lock (_DataSource)
             {
-                if (Top < 0)
-                {
-                    output = tabledata.Select();
-                }
-                else
-                {
-                    output = tabledata.Select(null, row.key_field + " " + row.sort);
-                }
+                output = Top < 0 ? tabledata.Select() : tabledata.Select(null, row.key_field + " " + row.sort);
 
                 foreach (DataRow d in output)
                 {

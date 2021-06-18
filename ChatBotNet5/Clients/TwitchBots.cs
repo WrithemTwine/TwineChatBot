@@ -60,7 +60,7 @@ namespace ChatBot_Net5.Clients
             TwitchFrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
             TwitchRefreshToken = Settings.Default.TwitchRefreshToken;
             TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
-            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
+            ShowConnectionMsg = Settings.Default.MsgBotConnection;
             return true;
         }
     }

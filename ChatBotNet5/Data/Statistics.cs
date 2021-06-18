@@ -16,14 +16,12 @@ namespace ChatBot_Net5.Data
         private readonly DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
 
-        public bool IsStreamOnline { get; private set; }
-
         public Statistics(DataManager dataManager)
         {
             datamanager = dataManager;
-            IsStreamOnline = false;
         }
-                /// <summary>
+
+        /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel
         /// </summary>
         /// <param name="User">User's DisplayName</param>
@@ -33,7 +31,7 @@ namespace ChatBot_Net5.Data
         {
             CurrUsers.Add(User);
 
-            if (OptionFlags.ManageUsers)
+            if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
                 datamanager.UserJoined(User, CurrTime);
             }
@@ -43,7 +41,7 @@ namespace ChatBot_Net5.Data
 
         public bool UserChat(string User)
         {
-            if (IsStreamOnline)
+            if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
                 if (!UniqueUserChat.Contains(User))
@@ -57,7 +55,7 @@ namespace ChatBot_Net5.Data
 
         public void ModJoined(string User)
         {
-            if (IsStreamOnline && !ModUsers.Contains(User))
+            if (OptionFlags.IsStreamOnline && !ModUsers.Contains(User))
             {
                 ModUsers.Add(User);
             }
@@ -65,7 +63,7 @@ namespace ChatBot_Net5.Data
 
         public void SubJoined(string User)
         {
-            if (IsStreamOnline && !SubUsers.Contains(User))
+            if (OptionFlags.IsStreamOnline && !SubUsers.Contains(User))
             {
                 SubUsers.Add(User);
             }
@@ -73,7 +71,7 @@ namespace ChatBot_Net5.Data
 
         public void VIPJoined(string User)
         {
-            if (IsStreamOnline && !VIPUsers.Contains(User))
+            if (OptionFlags.IsStreamOnline && !VIPUsers.Contains(User))
             {
                 VIPUsers.Add(User);
             }
@@ -82,7 +80,7 @@ namespace ChatBot_Net5.Data
         public void UserLeft(string User, DateTime CurrTime)
         {
             UpdateWatchTime(User);
-            if (OptionFlags.ManageUsers)
+            if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
                 datamanager.UserLeft(User, CurrTime);
             }
@@ -95,7 +93,7 @@ namespace ChatBot_Net5.Data
         /// <param name="User">User to update "Now" or null to update all users watch time.</param>
         public void UpdateWatchTime(string User = null)
         {
-            if (IsStreamOnline && OptionFlags.ManageUsers)
+            if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
             {
                 UpdateWatchTime(User, DateTime.Now);
             }
@@ -103,7 +101,7 @@ namespace ChatBot_Net5.Data
 
         public void UpdateWatchTime(string User, DateTime Seen)
         {
-            if (IsStreamOnline && OptionFlags.ManageUsers)
+            if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
             {
                 if (User != null)
                 {
@@ -121,7 +119,7 @@ namespace ChatBot_Net5.Data
 
         public bool StreamOnline(DateTime Started)
         {
-            IsStreamOnline = true;
+            OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started.ToLocalTime();
 
             // setting if user wants to save Stream Stat data
@@ -131,7 +129,7 @@ namespace ChatBot_Net5.Data
         public void StreamOffline(DateTime Stopped)
         {
             UpdateWatchTime();
-            IsStreamOnline = false;
+            OptionFlags.IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped.ToLocalTime();
             CurrStream.ModsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;
@@ -156,7 +154,7 @@ namespace ChatBot_Net5.Data
         #region Stream Stat Methods
         public void AddFollow() => CurrStream.NewFollows++;
         public void AddSub() => CurrStream.NewSubs++;
-        public void AddGiftSubs(int Gifted=1) => CurrStream.GiftSubs += Gifted;
+        public void AddGiftSubs(int Gifted = 1) => CurrStream.GiftSubs += Gifted;
         public void AddBits(int BitCount) => CurrStream.Bits += BitCount;
         public void AddRaids() => CurrStream.Raids++;
         public void AddHosted() => CurrStream.Hosted++;
