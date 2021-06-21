@@ -77,7 +77,7 @@ namespace ChatBot_Net5.Data
             {
                 foreach (TimerCommand timer in RepeatList)
                 {
-                    if (timer.CheckFireTime() && (timer.CategoryList.Contains(StatData.Category) || timer.CategoryList.Count==0))
+                    if (timer.CheckFireTime() && (timer.CategoryList.Contains(StatData.Category) || timer.CategoryList.Contains("All")) )
                     {
                         timer.UpdateTime();
                         string output = PerformCommand(timer.Command, BotUserName, null, true);
@@ -90,7 +90,7 @@ namespace ChatBot_Net5.Data
                 foreach (Tuple<string, int, string[]> Timers in datamanager.GetTimerCommands())
                 {
                     TimerCommand command = new(Timers);
-                    if (command.CategoryList.Contains(StatData.Category) || command.CategoryList.Count == 0)
+                    if (command.CategoryList.Contains(StatData.Category) || command.CategoryList.Contains("All"))
                     {
                         if (!RepeatList.Contains(command))
                         {
@@ -109,7 +109,7 @@ namespace ChatBot_Net5.Data
 
                 for (int x = RepeatList.Count - 1; x >= 0 && RepeatList.Count > 0; x--)
                 {
-                    if (RepeatList[x].RepeatTime == 0 || !RepeatList[x].CategoryList.Contains(StatData.Category))
+                    if (RepeatList[x].RepeatTime == 0 || !RepeatList[x].CategoryList.Contains(StatData.Category) || !RepeatList[x].CategoryList.Contains("All"))
                     {
                         RepeatList.RemoveAt(x);
                     }

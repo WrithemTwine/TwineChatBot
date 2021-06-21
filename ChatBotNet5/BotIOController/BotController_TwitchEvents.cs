@@ -182,7 +182,7 @@ namespace ChatBot_Net5.BotIOController
                 {
                     if (FollowEnabled)
                     {
-                        Send(msg.Replace("#user", "@" + f.FromUserName));
+                        Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[] { new("user", "@" + f.FromUserName) })));
                     }
 
                     Stats.AddFollow();

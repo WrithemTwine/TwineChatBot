@@ -170,11 +170,6 @@ namespace ChatBot_Net5
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             HelperStartBot(sender as RadioButton);
-
-            if (Radio_Twitch_StartBot.IsChecked == true && Radio_Twitch_FollowBotStart.IsEnabled == false)
-            {
-                Radio_Twitch_FollowBotStart.IsEnabled = true;
-            }
         }
 
         private void HelperStartBot(RadioButton rb)
@@ -214,12 +209,6 @@ namespace ChatBot_Net5
 
             if (rb.IsEnabled)
             {
-                if (Radio_Twitch_StopBot == sender && Radio_Twitch_FollowBotStart.IsChecked == true)
-                {
-                    Radio_Twitch_FollowBotStart.IsEnabled = true;
-                    RadioButton_StopBot_PreviewMoustLeftButtonDown(Radio_Twitch_FollowBotStop, new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left));
-                }
-
                 rb.IsChecked = true;
                 (rb.DataContext as Clients.IOModule)?.StopBot();
                 ToggleInputEnabled(true);
@@ -353,7 +342,7 @@ namespace ChatBot_Net5
             if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0)
             {
                 Radio_Twitch_StartBot.IsEnabled = true;
-                Radio_Twitch_FollowBotStart.IsEnabled = Radio_Twitch_StartBot.IsChecked == true;
+                Radio_Twitch_FollowBotStart.IsEnabled = true;
                 Radio_Twitch_LiveBotStart.IsEnabled = true;
             }
         }
