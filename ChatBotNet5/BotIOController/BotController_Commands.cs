@@ -2,6 +2,7 @@
 using ChatBot_Net5.Data;
 using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,10 +30,10 @@ namespace ChatBot_Net5.BotIOController
             Dictionary<string, string> dictionary = new()
             {
                 { "#user", e.User },
-                { "#uptime", FormatTimes(Stats.GetCurrentStreamStart()) }
+                { "#uptime", FormatData.FormatTimes(Stats.GetCurrentStreamStart()) }
             };
 
-            Send(ParseReplace(msg, dictionary));
+            Send(VariableParser.ParseReplace(msg, dictionary));
         }
 
         private delegate void UpdateUsers(UserJoin userJoin);

@@ -1,6 +1,7 @@
 ﻿using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
 using ChatBot_Net5.Enum;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
@@ -28,49 +29,49 @@ namespace ChatBot_Net5.BotIOController
             if (TwitchIO.IsStarted && !TwitchIO.HandlersAdded)
             {
                 TwitchIO.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
-                TwitchIO.TwitchChat.OnChannelStateChanged += Client_OnChannelStateChanged;
-                TwitchIO.TwitchChat.OnChatCleared += Client_OnChatCleared;
-                TwitchIO.TwitchChat.OnChatColorChanged += Client_OnChatColorChanged;
+                //TwitchIO.TwitchChat.OnChannelStateChanged += Client_OnChannelStateChanged;
+                //TwitchIO.TwitchChat.OnChatCleared += Client_OnChatCleared;
+                //TwitchIO.TwitchChat.OnChatColorChanged += Client_OnChatColorChanged;
                 TwitchIO.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
                 TwitchIO.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
-                TwitchIO.TwitchChat.OnConnectionError += Client_OnConnectionError;
-                TwitchIO.TwitchChat.OnError += Client_OnError;
+                //TwitchIO.TwitchChat.OnConnectionError += Client_OnConnectionError;
+                //TwitchIO.TwitchChat.OnError += Client_OnError;
                 TwitchIO.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
-                TwitchIO.TwitchChat.OnFailureToReceiveJoinConfirmation += Client_OnFailureToReceiveJoinConfirmation;
+                //TwitchIO.TwitchChat.OnFailureToReceiveJoinConfirmation += Client_OnFailureToReceiveJoinConfirmation;
                 TwitchIO.TwitchChat.OnGiftedSubscription += Client_OnGiftedSubscription;
-                TwitchIO.TwitchChat.OnHostingStarted += Client_OnHostingStarted;
-                TwitchIO.TwitchChat.OnHostingStopped += Client_OnHostingStopped;
-                TwitchIO.TwitchChat.OnHostLeft += Client_OnHostLeft;
-                TwitchIO.TwitchChat.OnIncorrectLogin += Client_OnIncorrectLogin;
+                //TwitchIO.TwitchChat.OnHostingStarted += Client_OnHostingStarted;
+                //TwitchIO.TwitchChat.OnHostingStopped += Client_OnHostingStopped;
+                //TwitchIO.TwitchChat.OnHostLeft += Client_OnHostLeft;
+                //TwitchIO.TwitchChat.OnIncorrectLogin += Client_OnIncorrectLogin;
                 TwitchIO.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
-                TwitchIO.TwitchChat.OnLeftChannel += Client_OnLeftChannel;
-                TwitchIO.TwitchChat.OnMessageCleared += Client_OnMessageCleared;
+                //TwitchIO.TwitchChat.OnLeftChannel += Client_OnLeftChannel;
+                //TwitchIO.TwitchChat.OnMessageCleared += Client_OnMessageCleared;
                 TwitchIO.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
-                TwitchIO.TwitchChat.OnMessageSent += Client_OnMessageSent;
+                //TwitchIO.TwitchChat.OnMessageSent += Client_OnMessageSent;
                 TwitchIO.TwitchChat.OnMessageThrottled += Client_OnMessageThrottled;
                 TwitchIO.TwitchChat.OnModeratorJoined += Client_OnModeratorJoined;
-                TwitchIO.TwitchChat.OnModeratorLeft += Client_OnModeratorLeft;
-                TwitchIO.TwitchChat.OnModeratorsReceived += Client_OnModeratorsReceived;
+                //TwitchIO.TwitchChat.OnModeratorLeft += Client_OnModeratorLeft;
+                //TwitchIO.TwitchChat.OnModeratorsReceived += Client_OnModeratorsReceived;
                 TwitchIO.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
-                TwitchIO.TwitchChat.OnNoPermissionError += Client_OnNoPermissionError;
-                TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
-                TwitchIO.TwitchChat.OnRaidedChannelIsMatureAudience += Client_OnRaidedChannelIsMatureAudience;
+                //TwitchIO.TwitchChat.OnNoPermissionError += Client_OnNoPermissionError;
+                //TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
+                //TwitchIO.TwitchChat.OnRaidedChannelIsMatureAudience += Client_OnRaidedChannelIsMatureAudience;
                 TwitchIO.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
                 TwitchIO.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
                 TwitchIO.TwitchChat.OnRitualNewChatter += Client_OnRitualNewChatter;
-                TwitchIO.TwitchChat.OnSelfRaidError += Client_OnSelfRaidError;
-                TwitchIO.TwitchChat.OnSendReceiveData += Client_OnSendReceiveData;
-                TwitchIO.TwitchChat.OnUnaccountedFor += Client_OnUnaccountedFor;
+                //TwitchIO.TwitchChat.OnSelfRaidError += Client_OnSelfRaidError;
+                //TwitchIO.TwitchChat.OnSendReceiveData += Client_OnSendReceiveData;
+                //TwitchIO.TwitchChat.OnUnaccountedFor += Client_OnUnaccountedFor;
                 TwitchIO.TwitchChat.OnUserBanned += Client_OnUserBanned;
                 TwitchIO.TwitchChat.OnUserJoined += Client_OnUserJoined;
                 TwitchIO.TwitchChat.OnUserLeft += Client_OnUserLeft;
-                TwitchIO.TwitchChat.OnUserStateChanged += Client_OnUserStateChanged;
+                //TwitchIO.TwitchChat.OnUserStateChanged += Client_OnUserStateChanged;
                 TwitchIO.TwitchChat.OnUserTimedout += Client_OnUserTimedout;
-                TwitchIO.TwitchChat.OnVIPsReceived += Client_OnVIPsReceived;
-                TwitchIO.TwitchChat.OnWhisperCommandReceived += Client_OnWhisperCommandReceived;
-                TwitchIO.TwitchChat.OnWhisperReceived += Client_OnWhisperReceived;
-                TwitchIO.TwitchChat.OnWhisperSent += Client_OnWhisperSent;
-                TwitchIO.TwitchChat.OnWhisperThrottled += Client_OnWhisperThrottled;
+                //TwitchIO.TwitchChat.OnVIPsReceived += Client_OnVIPsReceived;
+                //TwitchIO.TwitchChat.OnWhisperCommandReceived += Client_OnWhisperCommandReceived;
+                //TwitchIO.TwitchChat.OnWhisperReceived += Client_OnWhisperReceived;
+                //TwitchIO.TwitchChat.OnWhisperSent += Client_OnWhisperSent;
+                //TwitchIO.TwitchChat.OnWhisperThrottled += Client_OnWhisperThrottled;
 
                 TwitchIO.HandlersAdded = true;
             }
@@ -98,7 +99,10 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         /// <param name="sender">The calling object.</param>
         /// <param name="e">Contains the offline arguments.</param>
-        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e) => Stats.StreamOffline(DateTime.Now);
+        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
+        {
+            Stats.StreamOffline(DateTime.Now);
+        }
 
         /// <summary>
         /// Event called when the stream is detected to be updated.
@@ -107,6 +111,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
+            Stats.Category = e.Stream.GameName;
         }
 
         /// <summary>
@@ -125,6 +130,7 @@ namespace ChatBot_Net5.BotIOController
                 else
                 {
                     bool Started = Stats.StreamOnline(e.Stream.StartedAt);
+                    Stats.Category = e.Stream.GameName;
 
                     if (Started)
                     {
@@ -137,17 +143,17 @@ namespace ChatBot_Net5.BotIOController
                             msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
 
                             // keys for exchanging codes for representative names
-                            Dictionary<string, string> dictionary = new()
+                            Dictionary<string, string> dictionary = VariableParser.BuildDictionary( new Tuple<string, string>[]
                             {
-                                { "#user", e.Stream.UserName },
-                                { "#category", e.Stream.GameName },
-                                { "#title", e.Stream.Title },
-                                { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
-                            };
+                                new("user", e.Stream.UserName),
+                                new("category", e.Stream.GameName),
+                                new("title", e.Stream.Title),
+                                new("url", "https://www.twitch.tv/" + e.Stream.UserName)
+                            });
 
                             foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
                             {
-                                DiscordWebhook.SendLiveMessage(u, ParseReplace(msg, dictionary)).Wait();
+                                DiscordWebhook.SendLiveMessage(u, VariableParser.ParseReplace(msg, dictionary)).Wait();
                                 Stats.AddDiscord();
                             }
                         }
@@ -200,14 +206,13 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Subscribe);
                 msg ??= "Thanks #user for the subscribing!";
 
-                Dictionary<string, string> dictionary = new() {
-                { "#user", e.Subscriber.DisplayName },
-                { "#submonths", Plurality(e.Subscriber.MsgParamCumulativeMonths, "total month", "total months") },
-                { "#subplan", e.Subscriber.SubscriptionPlan.ToString() },
-                { "#subplanname", e.Subscriber.SubscriptionPlanName }
-                };
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[] {
+                new( "user", e.Subscriber.DisplayName ),
+                new( "submonths", FormatData.Plurality(e.Subscriber.MsgParamCumulativeMonths, "total month", "total months") ),
+                new( "subplan", e.Subscriber.SubscriptionPlan.ToString() ),
+                new( "subplanname", e.Subscriber.SubscriptionPlanName )
+                })));
             }
 
             Stats.AddSub();
@@ -221,21 +226,21 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Resubscribe);
                 msg ??= "Thanks #user for re-subscribing!";
 
-                Dictionary<string, string> dictionary = new() {
-                { "#user", e.ReSubscriber.DisplayName },
-                { "#months", Plurality(e.ReSubscriber.Months, "total month", "total months") },
-                { "#submonths", Plurality(e.ReSubscriber.MsgParamCumulativeMonths, "month total", "months total") },
-                { "#subplan", e.ReSubscriber.SubscriptionPlan.ToString() },
-                { "#subplanname", e.ReSubscriber.SubscriptionPlanName }
-                };
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[] {
+                new( "user", e.ReSubscriber.DisplayName ),
+                new( "months", FormatData.Plurality(e.ReSubscriber.Months, "total month", "total months") ),
+                new( "submonths", FormatData.Plurality(e.ReSubscriber.MsgParamCumulativeMonths, "month total", "months total")),
+                new( "subplan", e.ReSubscriber.SubscriptionPlan.ToString()),
+                new( "subplanname", e.ReSubscriber.SubscriptionPlanName )
+                });
 
                 // add the streak element if user wants their sub streak displayed
                 if (e.ReSubscriber.MsgParamShouldShareStreak)
                 {
-                    dictionary.Add("#streak", e.ReSubscriber.MsgParamStreakMonths);
+                    VariableParser.AddData(ref dictionary, new Tuple<string, string>[] { new("streak", e.ReSubscriber.MsgParamStreakMonths) });
                 }
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary));
             }
 
             Stats.AddSub();
@@ -249,15 +254,14 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.GiftSub);
                 msg ??= "Thanks #user for gifting a #subplan subscription to #receiveuser!";
 
-                Dictionary<string, string> dictionary = new() {
-                { "#user", e.GiftedSubscription.DisplayName },
-                { "#months", Plurality(e.GiftedSubscription.MsgParamMonths, "month", "months") },
-                { "#receiveuser", e.GiftedSubscription.MsgParamRecipientUserName },
-                { "#subplan", e.GiftedSubscription.MsgParamSubPlan.ToString() },
-                { "#subplanname", e.GiftedSubscription.MsgParamSubPlanName}
-                };
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[] {
+                    new("user", e.GiftedSubscription.DisplayName),
+                    new("months", FormatData.Plurality(e.GiftedSubscription.MsgParamMonths, "month", "months")),
+                    new("receiveuser", e.GiftedSubscription.MsgParamRecipientUserName ),
+                    new("subplan", e.GiftedSubscription.MsgParamSubPlan.ToString() ),
+                    new("subplanname", e.GiftedSubscription.MsgParamSubPlanName)
+                })));
             }
 
             Stats.AddGiftSubs();
@@ -271,13 +275,13 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.CommunitySubs);
                 msg ??= "Thanks #user for giving #count to the community!";
 
-                Dictionary<string, string> dictionary = new() {
-                { "#user", e.GiftedSubscription.DisplayName },
-                { "#count", Plurality(e.GiftedSubscription.MsgParamSenderCount, e.GiftedSubscription.MsgParamSubPlan+" subscription", e.GiftedSubscription.MsgParamSubPlan+" subscriptions") },
-                { "#subplan", e.GiftedSubscription.MsgParamSubPlan.ToString() }
-                };
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[] {
+                    new("user", e.GiftedSubscription.DisplayName),
+                    new("count", FormatData.Plurality(e.GiftedSubscription.MsgParamSenderCount, e.GiftedSubscription.MsgParamSubPlan + " subscription", e.GiftedSubscription.MsgParamSubPlan + " subscriptions")),
+                    new("subplan", e.GiftedSubscription.MsgParamSubPlan.ToString())
+                });
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary));
             }
 
             Stats.AddGiftSubs(e.GiftedSubscription.MsgParamMassGiftCount);
@@ -294,14 +298,13 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.BeingHosted);
                 msg ??= "Thanks #user for #autohost this channel!";
 
-                Dictionary<string, string> dictionary = new()
-                {
-                { "#user", e.BeingHostedNotification.HostedByChannel },
-                { "#autohost", e.BeingHostedNotification.IsAutoHosted ? "auto-hosting" : "hosting" },
-                { "#viewers", Plurality( e.BeingHostedNotification.Viewers, "viewer", "viewers" ) }
-                };
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[]
+                {
+                    new("user", e.BeingHostedNotification.HostedByChannel ),
+                    new("autohost", e.BeingHostedNotification.IsAutoHosted ? "auto-hosting" : "hosting"),
+                    new("viewers", FormatData.Plurality(e.BeingHostedNotification.Viewers, "viewer", "viewers"))
+                })));
             }
 
             Stats.AddHosted();
@@ -333,12 +336,12 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Raid);
                 msg ??= "Thanks #user for bringing #viewers and raiding the channel!";
 
-                Dictionary<string, string> dictionary = new() {
-                { "#user", e.RaidNotification.DisplayName },
-                { "#viewers", Plurality(e.RaidNotification.MsgParamViewerCount, "viewer", "viewers" ) }
-                };
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[] {
+                new("user", e.RaidNotification.DisplayName ),
+                new("viewers", FormatData.Plurality(e.RaidNotification.MsgParamViewerCount, "viewer", "viewers"))
+                });
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary));
             }
             Stats.AddRaids();
             Stats.AddAutoEvents();
@@ -352,9 +355,10 @@ namespace ChatBot_Net5.BotIOController
             {
                 Stats.UserJoined(e.RaidNotification.DisplayName, DateTime.Now);
                 bool output = ProcessCommands.CheckShout(e.RaidNotification.DisplayName, out string response, false);
-                RegisterJoinedUser(e.RaidNotification.DisplayName);
-                if (output) Send(response);
-                Stats.UserLeft(e.RaidNotification.DisplayName, DateTime.Now);
+                if (output)
+                {
+                    Send(response);
+                }
             }
         }
 
@@ -430,18 +434,18 @@ namespace ChatBot_Net5.BotIOController
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Bits);
                 msg ??= "Thanks #user for giving #bits!";
 
-                Dictionary<string, string> dictionary = new()
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[]
                 {
-                    { "#user", e.ChatMessage.DisplayName },
-                    { "#bits", Plurality(e.ChatMessage.Bits, "bit", "bits") }
-                };
+                    new("user", e.ChatMessage.DisplayName),
+                    new( "bits", FormatData.Plurality(e.ChatMessage.Bits, "bit", "bits") )
+                });
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary));
                 Stats.AddBits(e.ChatMessage.Bits);
                 Stats.AddAutoEvents();
             }
 
-            AddChat(e.ChatMessage.DisplayName);            
+            AddChat(e.ChatMessage.DisplayName);
         }
 
         private void Client_OnMessageThrottled(object sender, OnMessageThrottledEventArgs e)
@@ -460,7 +464,10 @@ namespace ChatBot_Net5.BotIOController
         {
         }
 
-        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e) => AddChat(e.RitualNewChatter.DisplayName);
+        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
+        {
+            AddChat(e.RitualNewChatter.DisplayName);
+        }
 
         #region Chat changes
         private void Client_OnChatColorChanged(object sender, OnChatColorChangedArgs e)
@@ -490,7 +497,10 @@ namespace ChatBot_Net5.BotIOController
 
         #region Moderators
 
-        private void Client_OnModeratorJoined(object sender, OnModeratorJoinedArgs e) => Stats.ModJoined(e.Username);
+        private void Client_OnModeratorJoined(object sender, OnModeratorJoinedArgs e)
+        {
+            Stats.ModJoined(e.Username);
+        }
 
         private void Client_OnModeratorLeft(object sender, OnModeratorLeftArgs e)
         {
@@ -515,23 +525,27 @@ namespace ChatBot_Net5.BotIOController
 
         private void RegisterJoinedUser(string Username)
         {
-            if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
+            // TODO: update welcome message for new user, returning viewer, and returning follower!
+            if (((Username != TwitchBots.TwitchChannelName) || (Username == TwitchBots.TwitchChannelName && OptionFlags.MsgWelcomeStreamer)) && (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg))
             {
                 string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
                 msg ??= "Thanks #user for stopping by the channel!";
 
-                Dictionary<string, string> dictionary = new()
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[]
                 {
-                    { "#user", Username }
-                };
+                    new( "user", Username )
+                });
 
-                Send(ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary));
             }
 
             if (OptionFlags.AutoShout)
             {
                 bool output = ProcessCommands.CheckShout(Username, out string response);
-                if (output) Send(response);
+                if (output)
+                {
+                    Send(response);
+                }
             }
         }
 

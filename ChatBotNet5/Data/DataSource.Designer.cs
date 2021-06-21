@@ -1578,6 +1578,8 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnRepeatTimer;
             
+            private global::System.Data.DataColumn columnCategory;
+            
             private global::System.Data.DataColumn columnAllowParam;
             
             private global::System.Data.DataColumn columnUsage;
@@ -1678,6 +1680,14 @@ namespace ChatBot_Net5.Data {
             public global::System.Data.DataColumn RepeatTimerColumn {
                 get {
                     return this.columnRepeatTimer;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn CategoryColumn {
+                get {
+                    return this.columnCategory;
                 }
             }
             
@@ -1812,6 +1822,7 @@ namespace ChatBot_Net5.Data {
                         string Permission, 
                         string Message, 
                         int RepeatTimer, 
+                        string Category, 
                         bool AllowParam, 
                         string Usage, 
                         bool lookupdata, 
@@ -1831,6 +1842,7 @@ namespace ChatBot_Net5.Data {
                         Permission,
                         Message,
                         RepeatTimer,
+                        Category,
                         AllowParam,
                         Usage,
                         lookupdata,
@@ -1877,6 +1889,7 @@ namespace ChatBot_Net5.Data {
                 this.columnPermission = base.Columns["Permission"];
                 this.columnMessage = base.Columns["Message"];
                 this.columnRepeatTimer = base.Columns["RepeatTimer"];
+                this.columnCategory = base.Columns["Category"];
                 this.columnAllowParam = base.Columns["AllowParam"];
                 this.columnUsage = base.Columns["Usage"];
                 this.columnlookupdata = base.Columns["lookupdata"];
@@ -1905,6 +1918,8 @@ namespace ChatBot_Net5.Data {
                 base.Columns.Add(this.columnMessage);
                 this.columnRepeatTimer = new global::System.Data.DataColumn("RepeatTimer", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnRepeatTimer);
+                this.columnCategory = new global::System.Data.DataColumn("Category", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCategory);
                 this.columnAllowParam = new global::System.Data.DataColumn("AllowParam", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAllowParam);
                 this.columnUsage = new global::System.Data.DataColumn("Usage", typeof(string), null, global::System.Data.MappingType.Element);
@@ -1941,6 +1956,8 @@ namespace ChatBot_Net5.Data {
                 this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
+                this.columnCategory.Caption = "Specify an array of categories for context relevant timers-only implement timers " +
+                    "per category.";
                 this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
                 this.columnAllowParam.DefaultValue = ((bool)(false));
                 this.columnUsage.DefaultValue = ((string)(" "));
@@ -4419,6 +4436,22 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Category {
+                get {
+                    try {
+                        return ((string)(this[this.tableCommands.CategoryColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Category\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.CategoryColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool AllowParam {
                 get {
                     try {
@@ -4651,6 +4684,18 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetRepeatTimerNull() {
                 this[this.tableCommands.RepeatTimerColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsCategoryNull() {
+                return this.IsNull(this.tableCommands.CategoryColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetCategoryNull() {
+                this[this.tableCommands.CategoryColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

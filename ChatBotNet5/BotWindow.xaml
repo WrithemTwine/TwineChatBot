@@ -76,9 +76,8 @@
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
                             <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
-                                    <Label>
-                                        <TextBlock TextWrapping="Wrap">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will not monitor multiple channels and stops if the &quot;MultiUserLiveBot&quot; is running or started.</TextBlock>
-                                    </Label>
+                                    <TextBlock TextWrapping="Wrap">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
+                                    <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.</TextBlock>
                                     <WrapPanel>
                                         <WrapPanel.Resources>
                                             <Style TargetType="{x:Type Label}">
@@ -129,25 +128,23 @@
                                                     </CheckBox>
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
-                                                    
                                                 </WrapPanel>
                                                 <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
-                                                    <StackPanel Orientation="Vertical">
-                                                        <WrapPanel>
-                                                            <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Hidden">
-                                                                <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
-                                                            </Label>
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
-                                                                <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
-                                                            </CheckBox>
+                                                    <WrapPanel Orientation="Vertical">
+                                                        <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
+                                                            <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
+                                                        </Label>
+                                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
+                                                            <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                        </CheckBox>
+                                                        <StackPanel Orientation="Horizontal">
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
-                                                        </WrapPanel>
-                                                    </StackPanel>
+                                                        </StackPanel>
+                                                    </WrapPanel>
                                                 </GroupBox>
                                             </StackPanel>
                                         </GroupBox>
-
                                     </WrapPanel>
                                 </StackPanel>
                             </GroupBox>
@@ -344,7 +341,7 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="Data &amp; Messages">
+            <TabItem Header="Data &amp; Msgs">
                 <TabControl x:Name="TabControl_DataTabs">
                     <TabItem x:Name="TabItem_DataOptions" Header="Options">
                         <TabItem.Resources>
@@ -395,12 +392,16 @@
                                             <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Enable when a viewer first chats"/></TextBlock>
                                             </RadioButton>
+                                            <CheckBox IsChecked="{Binding MsgWelcomeStreamer, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock><Run Text="Enable welcome message when streamer chats"/></TextBlock>
+                                            </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Shout Out Viewers">
                                         <StackPanel>
                                             <Label>
-                                                <TextBlock>Active when channel is live</TextBlock></Label>
+                                                <TextBlock>Active when channel is live</TextBlock>
+                                            </Label>
                                             <CheckBox IsChecked="{Binding MsgAutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab."/></TextBlock>
                                             </CheckBox>
@@ -417,7 +418,7 @@
                                             <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Enable action to remove non-followers from the Follower list when bot starts."/></TextBlock>
                                             </CheckBox>
-
+                                            <StackPanel Visibility="Collapsed">
                                             <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
                                             <Label Content="Automatic Follow other Viewers"/>
                                             <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
@@ -428,7 +429,7 @@
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live"/></TextBlock>
-                                            </CheckBox>
+                                            </CheckBox></StackPanel>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Data Management">
@@ -471,7 +472,7 @@
                             </DockPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="Auto-SO">                        
+                    <TabItem Header="Auto-SO">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35" />
@@ -509,8 +510,8 @@
                         <ListView DockPanel.Dock="Right" ItemsSource="{Binding CommandInfo.Collection}" >
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" />
-                                    <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="600"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -544,7 +545,7 @@
                             <DataGrid x:Name="DG_CurrencyAccrual" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Command System">
+                    <TabItem Header="Commands">
                         <TabControl>
                             <TabItem Header="Help">
                                 <Grid>

@@ -15,6 +15,7 @@ namespace ChatBot_Net5.Data
         private readonly List<string> VIPUsers = new();
         private readonly DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
+        public string Category { get; set; }
 
         public Statistics(DataManager dataManager)
         {
