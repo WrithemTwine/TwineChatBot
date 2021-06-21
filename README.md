@@ -1,10 +1,10 @@
 # TwineChatBot
 Twitch bots written using .NET 5.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib.
 
-These bot applications utilize .NET 5.0 and TwitchLib, and implements a WPF GUI. User settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file. 
-
 --------------------------
 # Application - Multi-Live Bot:
+
+This bot utilizes .NET 5.0 and TwitchLib, containing the LiveStreamMonitorService. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file. 
 
 A user can use an existing Twitch channel user name or establish a new channel user account (recommended) as a bot. The application has further detail about how to get a 'client id' and 'access token'.
 
@@ -17,6 +17,8 @@ The user can add:
 ----------------------------------
 # Application - Twine Chat Bot 
 (documentation updated periodically, may not reflect actual current feature set)
+
+Features: This bot utilizes .NET 5.0 and TwitchLib and implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file.
 
 The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
 
@@ -34,12 +36,10 @@ Database management to organize:
    - a viewer list to auto shout out viewers when they are first recognized as arrived in the channel
    - Statistics for the current live stream
 - Responses to events occuring in the channel:
-   - Messages to viewer actions and events: 
-      - welcome a viewer message, incoming raids, subscriptions and resubscriptions, gifted subscriptions, bits (Twitch), new follower, hosting messages, and going live messages
-      - message spam prevention (future feature) - help minimize bot messages to the channel
+   - Messages to viewer actions and events: welcome a viewer message, incoming raids, subscriptions and resubscriptions, gifted subscriptions, bits (Twitch), new follower, hosting messages, and going live messages
    - Command system 
       - built-in commands with editable response messages, includes social media link messages, uptime, watchtime, all commands list, and shout-out users
-      - user-defined commands - set/customize your own messages
+      - user-defined commands - set your own messages
       - types:
          - a simple text message, with certain variables to customize the message (e.g. refer to the viewer who called the command)
          - a data retrieval message - some implementation, currently updating and coding; to allow user customization for a data return message, define your own messages to get data returned from the database through a command message
@@ -67,12 +67,6 @@ Options to manage bot actions (enable or disable):
    - Auto shout out users (once per live stream)
       - when viewer first appears, tied to welcoming viewers
       - when viewer raids the channel
-   - Viewer Player Queue - Organize play with viewers in a list
-      - Start, Stop the queue, list the queue, and get queue information
-      - Viewers can join the queue to help you add them in game
-          - !join <GamerName> - adds their chat name and GamerName
-          - !join - adds chat name as both chat name and GamerName
-   - Shows bot messages - may later be disabled. Aids in diagnosing and identifying messages, currently from Twitch.
 - Twitch Features:
    - Add "/me" to messages (i.e. italicized message)
       - all messages or 
@@ -101,7 +95,7 @@ Twitch (some features depend on settings)
       - when started: retrieves followers and removes non-followers from the database
       - (future feature?) routinely retrieve followers and remove non-followers without restarting the follow bot
       - (future feature?) message spam protection for large groups of followers, and tool to remove spam bot follows
-      - implements following back the viewers who follow you or raid your channel
+      - (in debug) implements following back the viewers who follow you or raid your channel
    - Live bot
       - registers when your channel goes live or goes offline
       - monitors other channels to share when they go live
@@ -116,4 +110,3 @@ Future features not implemented - and may not be implemented:
 
 - Considering a compact webserver to provide notifications for streaming software.
 - Possibly a Twitch extension to connect to the webserver, to help provide overlays when streaming e.g. Xbox or Playstation without using a capture card to overlay a camera and notifications before sending to a streaming platform
-

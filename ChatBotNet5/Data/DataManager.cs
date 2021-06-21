@@ -142,7 +142,10 @@ namespace ChatBot_Net5.Data
                             File.Move(result, DataFileName, true);
                             File.Delete(result);
                         }
-                        catch { }
+                        catch
+                        {
+                            File.Delete(result);
+                        }
                     }
                 }));
             }
@@ -150,7 +153,7 @@ namespace ChatBot_Net5.Data
 
         private void PerformSaveOp()
         {
-            if(OptionFlags.ProcessOps) // don't sleep if exiting app
+            if (OptionFlags.ProcessOps) // don't sleep if exiting app
             {
                 Thread.Sleep(SaveThreadWait);
             }
@@ -650,7 +653,8 @@ switches:
                     { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
                     { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
                     { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
-                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime") }
+                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime") },
+                    { DefaultCommand.followage.ToString(), new("#user has followed for #query!","-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>")}
                 };
 
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
@@ -663,7 +667,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, string.Empty, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -765,7 +769,7 @@ switches:
 
             lock (_DataSource.Commands)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, string.Empty, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
                 OnPropertyChanged(nameof(Commands));
             }
@@ -948,14 +952,14 @@ switches:
         /// Retrieves the commands with a timer setting > 0 seconds.
         /// </summary>
         /// <returns>The list of commands and the seconds to repeat the command.</returns>
-        internal List<Tuple<string, int>> GetTimerCommands()
+        internal List<Tuple<string, int, string[]>> GetTimerCommands()
         {
             lock (_DataSource.Commands)
             {
-                List<Tuple<string, int>> TimerList = new();
+                List<Tuple<string, int, string[]>> TimerList = new();
                 foreach (DataSource.CommandsRow row in (DataSource.CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0"))
                 {
-                    TimerList.Add(new(row.CmdName, row.RepeatTimer));
+                    TimerList.Add(new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>()));
                 }
                 return TimerList;
             }

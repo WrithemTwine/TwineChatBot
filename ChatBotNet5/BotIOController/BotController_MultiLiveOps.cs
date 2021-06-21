@@ -1,5 +1,6 @@
 ﻿using ChatBot_Net5.Clients;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
@@ -95,12 +96,12 @@ namespace ChatBot_Net5.BotIOController
                             { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
                         };
 
-                        LogEntry(ParseReplace(msg, dictionary), e.Stream.StartedAt.ToLocalTime());
+                        LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt.ToLocalTime());
                         foreach (Tuple<string, Uri> u in MultiLiveDataManager.GetWebLinks())
                         {
                             if (u.Item1 == "Discord")
                             {
-                                DiscordWebhook.SendLiveMessage(u.Item2, ParseReplace(msg, dictionary)).Wait();
+                                DiscordWebhook.SendLiveMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary)).Wait();
                                 Stats.AddDiscord();
                             }
                         }

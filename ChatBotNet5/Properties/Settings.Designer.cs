@@ -466,5 +466,17 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchAddFollowerNotification"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MsgWelcomeStreamer {
+            get {
+                return ((bool)(this["MsgWelcomeStreamer"]));
+            }
+            set {
+                this["MsgWelcomeStreamer"] = value;
+            }
+        }
     }
 }

@@ -50,6 +50,7 @@ namespace ChatBot_Net5.Clients
             IsStarted = true;
             IsStopped = false;
             InvokeBotStarted();
+
             return true;
         }
 

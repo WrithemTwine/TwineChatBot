@@ -20,6 +20,7 @@ namespace ChatBot_Net5
     /// </summary>
     public partial class BotWindow : Window, INotifyPropertyChanged
     {
+        // TODO: Add color themes
         private readonly ChatPopup CP;
         private const string MultiLiveName = "MultiUserLiveBot";
 
@@ -43,6 +44,7 @@ namespace ChatBot_Net5
             OptionFlags.SetSettings();
             controller = Resources["ControlBot"] as BotController;
 
+            // TODO: debug ChatPopup
             //CP = new();
             //CP.Closing += CP_Closing;
             //CP.DataContext = this;
@@ -88,7 +90,7 @@ namespace ChatBot_Net5
             // TODO: turn off bots & prevent starting if the token is expired - research auto-refreshing token
         }
 
-        private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OnWindowClosing(object sender, CancelEventArgs e)
         {
             WatchProcessOps = false;
             IsAppClosing = true;
@@ -131,8 +133,8 @@ namespace ChatBot_Net5
             OnPropertyChanged("Opacity");
         }
 
-        private bool IsAppClosing = false;
-        private void CP_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private bool IsAppClosing;
+        private void CP_Closing(object sender, CancelEventArgs e)
         {
             if (!IsAppClosing) // flag to really close the window
             {
@@ -161,13 +163,18 @@ namespace ChatBot_Net5
 
         private void TextBox_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) => CheckFocus();
 
-        private void RefreshButton_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+        private void RefreshButton_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(50);
 
         private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             HelperStartBot(sender as RadioButton);
+
+            if (Radio_Twitch_StartBot.IsChecked == true && Radio_Twitch_FollowBotStart.IsEnabled == false)
+            {
+                Radio_Twitch_FollowBotStart.IsEnabled = true;
+            }
         }
 
         private void HelperStartBot(RadioButton rb)
@@ -203,10 +210,16 @@ namespace ChatBot_Net5
 
         private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            RadioButton rb = (sender as RadioButton);
+            RadioButton rb = sender as RadioButton;
 
             if (rb.IsEnabled)
             {
+                if (Radio_Twitch_StopBot == sender && Radio_Twitch_FollowBotStart.IsChecked == true)
+                {
+                    Radio_Twitch_FollowBotStart.IsEnabled = true;
+                    RadioButton_StopBot_PreviewMoustLeftButtonDown(Radio_Twitch_FollowBotStop, new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left));
+                }
+
                 rb.IsChecked = true;
                 (rb.DataContext as Clients.IOModule)?.StopBot();
                 ToggleInputEnabled(true);
@@ -340,7 +353,7 @@ namespace ChatBot_Net5
             if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0)
             {
                 Radio_Twitch_StartBot.IsEnabled = true;
-                Radio_Twitch_FollowBotStart.IsEnabled = true;
+                Radio_Twitch_FollowBotStart.IsEnabled = Radio_Twitch_StartBot.IsChecked == true;
                 Radio_Twitch_LiveBotStart.IsEnabled = true;
             }
         }
@@ -394,7 +407,7 @@ namespace ChatBot_Net5
                 if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
                 {
                     UpdateProc(processes.Length > 0);
-                    IsMultiProcActive = (processes.Length > 0);
+                    IsMultiProcActive = processes.Length > 0;
                 }
 
                 Thread.Sleep(5000);
