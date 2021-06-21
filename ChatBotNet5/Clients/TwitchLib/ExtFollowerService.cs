@@ -71,8 +71,13 @@ namespace ChatBot_Net5.Clients.TwitchLib
 
             if (followsResponse.Follows.Length == 0) // if not following, create the follow
             {
-                // add the follow
-                await followers.CreateUserFollows(from_id, to_id, allownotification, _api.Settings.AccessToken);
+                try
+                {
+                    // add the follow
+                    // TODO: Fix "CreateUserFollows" - "BadScope" exception
+                    // await followers.CreateUserFollows(from_id, to_id, allownotification);
+                }
+                catch { }
             }
             return;
         }

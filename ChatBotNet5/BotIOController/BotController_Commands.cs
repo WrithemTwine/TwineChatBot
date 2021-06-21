@@ -2,6 +2,7 @@
 using ChatBot_Net5.Data;
 using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,23 +18,22 @@ namespace ChatBot_Net5.BotIOController
 
         private void SetProcessCommands()
         {
-            ProcessCommands = new(DataManage, IOModule.TwitchBotUserName);
+            ProcessCommands = new(DataManage, Stats, TwitchBots.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
-            ProcessCommands.GetUpTimeCommand += ProcessCommands_GetUpTimeCommand;
         }
 
         private void ProcessCommands_GetUpTimeCommand(object sender, UpTimeCommandArgs e)
         {
-            string msg = Stats.IsStreamOnline? e.Message ?? "#user has been streaming for #uptime." : "The stream is not online." ;
+            string msg = OptionFlags.IsStreamOnline ? e.Message ?? "#user has been streaming for #uptime." : "The stream is not online." ;
 
             Dictionary<string, string> dictionary = new()
             {
                 { "#user", e.User },
-                { "#uptime", FormatTimes(Stats.GetCurrentStreamStart()) }
+                { "#uptime", FormatData.FormatTimes(Stats.GetCurrentStreamStart()) }
             };
 
-            Send(ParseReplace(msg, dictionary));
+            Send(VariableParser.ParseReplace(msg, dictionary));
         }
 
         private delegate void UpdateUsers(UserJoin userJoin);
@@ -51,7 +51,7 @@ namespace ChatBot_Net5.BotIOController
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
 
-            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || Stats.IsStreamOnline))
+            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 Send(e.Message);
                 Stats.AddAutoCommands();
@@ -62,7 +62,7 @@ namespace ChatBot_Net5.BotIOController
         {
             string response = "";
 
-            if(OptionFlags.PerComMeMsg==true && e.AddMe)
+            if(OptionFlags.MsgPerComMe==true && e.AddMe)
             {
                 response = "/me ";
             }

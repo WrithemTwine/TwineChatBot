@@ -1,5 +1,8 @@
-﻿namespace ChatBot_Net5.Models
+﻿using System.Diagnostics;
+
+namespace ChatBot_Net5.Models
 {
+    [DebuggerDisplay("ChatUser={ChatUser}, GameUserName={GameUserName}")]
     public class UserJoin
     {
         public bool Remove { get; set; } = false;

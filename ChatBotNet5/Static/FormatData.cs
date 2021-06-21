@@ -1,53 +1,13 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace ChatBot_Net5.BotIOController
+namespace ChatBot_Net5.Static
 {
     // specific partial class for the common messages processes
-    public sealed partial class BotController
+    public static class FormatData
     {
-        private const string codekey = "#";
-
-        /// <summary>
-        /// Replace in a message the keys from a dictionary for the matching values, must begin with the key token
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="dictionary"></param>
-        /// <returns></returns>
-        internal static string ParseReplace(string message, Dictionary<string, string> dictionary)
-        {
-            string temp = ""; // build the message to return
-
-            string[] words = message.Split(' ');    // tokenize the message by ' ' delimiters
-
-            // submethod to replace the found key with paired value
-            string Rep(string key)
-            {
-                string hit = "";
-
-                foreach (string s in dictionary.Keys)
-                {
-                    if (key.Contains(s))
-                    {
-                        hit = s;
-                        break;
-                    }
-                }
-
-                // if the value doesn't work, return the key used to try to parse - the intended phrase wasn't part of the parsing values
-                return dictionary.TryGetValue(hit, out string value) ? key.Replace(hit, (hit == codekey+"user" ? "@" : "") + value) : key;
-            }
-
-            // review the incoming string message for all of the keys in the dictionary, replace with paired value
-            for (int x = 0; x < words.Length; x++)
-            {
-                temp += (words[x].StartsWith(codekey, StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
-            }
-
-            return temp.Trim();
-        }
-
         /// <summary>
         /// Takes the incoming string integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic], 1 viewer.
         /// </summary>

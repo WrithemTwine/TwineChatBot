@@ -122,12 +122,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool BotConnectionMsg {
+        public bool MsgBotConnection {
             get {
-                return ((bool)(this["BotConnectionMsg"]));
+                return ((bool)(this["MsgBotConnection"]));
             }
             set {
-                this["BotConnectionMsg"] = value;
+                this["MsgBotConnection"] = value;
             }
         }
         
@@ -170,12 +170,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool InsertMeToMsg {
+        public bool MsgInsertMe {
             get {
-                return ((bool)(this["InsertMeToMsg"]));
+                return ((bool)(this["MsgInsertMe"]));
             }
             set {
-                this["InsertMeToMsg"] = value;
+                this["MsgInsertMe"] = value;
             }
         }
         
@@ -194,12 +194,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AutoShout {
+        public bool MsgAutoShout {
             get {
-                return ((bool)(this["AutoShout"]));
+                return ((bool)(this["MsgAutoShout"]));
             }
             set {
-                this["AutoShout"] = value;
+                this["MsgAutoShout"] = value;
             }
         }
         
@@ -242,24 +242,24 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool NoMeMsg {
+        public bool MsgNoMe {
             get {
-                return ((bool)(this["NoMeMsg"]));
+                return ((bool)(this["MsgNoMe"]));
             }
             set {
-                this["NoMeMsg"] = value;
+                this["MsgNoMe"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool PerComMeMsg {
+        public bool MsgPerComMe {
             get {
-                return ((bool)(this["PerComMeMsg"]));
+                return ((bool)(this["MsgPerComMe"]));
             }
             set {
-                this["PerComMeMsg"] = value;
+                this["MsgPerComMe"] = value;
             }
         }
         
@@ -338,12 +338,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("#user is now live streaming #category - #title! Come join and say hi at: #url")]
-        public string LiveMsg {
+        public string MsgLive {
             get {
-                return ((string)(this["LiveMsg"]));
+                return ((string)(this["MsgLive"]));
             }
             set {
-                this["LiveMsg"] = value;
+                this["MsgLive"] = value;
             }
         }
         
@@ -464,6 +464,18 @@ namespace ChatBot_Net5.Properties {
             }
             set {
                 this["TwitchAddFollowerNotification"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MsgWelcomeStreamer {
+            get {
+                return ((bool)(this["MsgWelcomeStreamer"]));
+            }
+            set {
+                this["MsgWelcomeStreamer"] = value;
             }
         }
     }

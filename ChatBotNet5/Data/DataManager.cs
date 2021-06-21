@@ -12,6 +12,7 @@ using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChatBot_Net5.Data
 {
@@ -22,6 +23,10 @@ namespace ChatBot_Net5.Data
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
         private readonly DataSource _DataSource;
         private Thread followerThread;
+
+        private readonly Queue<Task> SaveTasks = new();
+        private bool SaveThreadStarted = false;
+        private const int SaveThreadWait = 1500;
 
         public bool UpdatingFollowers { get; set; } = false;
 
@@ -38,7 +43,6 @@ namespace ChatBot_Net5.Data
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
 
         public event PropertyChangedEventHandler PropertyChanged;
-
         private void OnPropertyChanged(string PropName)
         {
             PropertyChanged?.Invoke(this, new(PropName));
@@ -94,7 +98,7 @@ namespace ChatBot_Net5.Data
 
             using (XmlReader xmlreader = new XmlTextReader(DataFileName))
             {
-                _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
             }
 
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
@@ -104,16 +108,69 @@ namespace ChatBot_Net5.Data
         }
 
         /// <summary>
-        /// Save data to file upon exit
+        /// Save data to file upon exit and after data changes. Pauses for 15 seconds (unless exiting) to slow down multiple saves in a short time.
         /// </summary>
         public void SaveData()
         {
-            lock (_DataSource)
+            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
             {
-                _DataSource.AcceptChanges();
-                _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram);
+                if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                {
+                    SaveThreadStarted = true;
+                    new Thread(new ThreadStart(PerformSaveOp)).Start();
+                }
+
+                SaveTasks.Enqueue(new(() =>
+                {
+                    string result = Path.GetRandomFileName();
+
+                    lock (_DataSource)
+                    {
+                        _DataSource.AcceptChanges();
+
+                        try
+                        {
+                            _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
+
+                            DataSource testinput = new();
+                            using (XmlReader xmlReader = new XmlTextReader(result))
+                            {
+                                // test load
+                                _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                            }
+
+                            File.Move(result, DataFileName, true);
+                            File.Delete(result);
+                        }
+                        catch
+                        {
+                            File.Delete(result);
+                        }
+                    }
+                }));
             }
         }
+
+        private void PerformSaveOp()
+        {
+            if (OptionFlags.ProcessOps) // don't sleep if exiting app
+            {
+                Thread.Sleep(SaveThreadWait);
+            }
+
+            lock (SaveTasks) // in case save actions arrive during save try
+            {
+                if (SaveTasks.Count >= 1)
+                {
+                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
+                }
+
+                SaveTasks.Clear();
+                SaveThreadStarted = false; // indicate start another thread to save data
+            }
+        }
+        
+
         #endregion
 
         #region Regular Channel Events
@@ -335,6 +392,8 @@ namespace ChatBot_Net5.Data
         /// <returns>True if the user is added, else false if the user already existed.</returns>
         private DataSource.UsersRow AddNewUser(string User, DateTime FirstSeen)
         {
+            DataSource.UsersRow usersRow = null;
+
             lock (_DataSource.Users)
             {
                 if (_DataSource.Users.FindByUserName(User) == null)
@@ -346,7 +405,6 @@ namespace ChatBot_Net5.Data
                 }
             }
 
-            DataSource.UsersRow usersRow = null;
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock (_DataSource.Users)
             {
@@ -357,6 +415,7 @@ namespace ChatBot_Net5.Data
                     usersRow.FirstDateSeen = FirstSeen;
                 }
             }
+
             return usersRow;
         }
 
@@ -594,7 +653,8 @@ switches:
                     { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
                     { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
                     { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
-                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime") }
+                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime") },
+                    { DefaultCommand.followage.ToString(), new("#user has followed for #query!","-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>")}
                 };
 
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
@@ -607,7 +667,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, string.Empty, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -709,7 +769,7 @@ switches:
 
             lock (_DataSource.Commands)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, string.Empty, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
                 OnPropertyChanged(nameof(Commands));
             }
@@ -733,7 +793,7 @@ switches:
 
             string socials = socialrows[0].Message;
 
-            if (OptionFlags.PerComMeMsg == true && socialrows[0].AddMe == true)
+            if (OptionFlags.MsgPerComMe == true && socialrows[0].AddMe == true)
             {
                 socials = "/me " + socialrows[0].Message;
             }
@@ -870,14 +930,7 @@ switches:
 
             lock (_DataSource)
             {
-                if (Top < 0)
-                {
-                    output = tabledata.Select();
-                }
-                else
-                {
-                    output = tabledata.Select(null, row.key_field + " " + row.sort);
-                }
+                output = Top < 0 ? tabledata.Select() : tabledata.Select(null, row.key_field + " " + row.sort);
 
                 foreach (DataRow d in output)
                 {
@@ -899,14 +952,14 @@ switches:
         /// Retrieves the commands with a timer setting > 0 seconds.
         /// </summary>
         /// <returns>The list of commands and the seconds to repeat the command.</returns>
-        internal List<Tuple<string, int>> GetTimerCommands()
+        internal List<Tuple<string, int, string[]>> GetTimerCommands()
         {
             lock (_DataSource.Commands)
             {
-                List<Tuple<string, int>> TimerList = new();
+                List<Tuple<string, int, string[]>> TimerList = new();
                 foreach (DataSource.CommandsRow row in (DataSource.CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0"))
                 {
-                    TimerList.Add(new(row.CmdName, row.RepeatTimer));
+                    TimerList.Add(new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>()));
                 }
                 return TimerList;
             }

@@ -6,49 +6,12 @@ using System;
 
 namespace ChatBot_Net5.Clients
 {
+    /// <summary>
+    /// Abstract base class for any bot attached to this application
+    /// </summary>
     public abstract class IOModule : IIOModule
     {
         public string ChatClientName { get; set; }
-
-        /// <summary>
-        /// User name used in the connection
-        /// </summary>
-        public static string TwitchClientID { get; set; }
-
-        /// <summary>
-        /// Name of the Bot Account
-        /// </summary>
-        public static string TwitchBotUserName { get; set; }
-
-        /// <summary>
-        /// Channel name used in the connection
-        /// </summary>
-        public static string TwitchChannelName { get; set; }
-
-        /// <summary>
-        /// Token used for the connection.
-        /// </summary>
-        public static string TwitchAccessToken { get; set; }
-
-        /// <summary>
-        /// Refresh token used to generate a new access token.
-        /// </summary>
-        public static string TwitchRefreshToken { get; set; }
-
-        /// <summary>
-        /// the date by which to generate/refresh a new access token.
-        /// </summary>
-        public static DateTime TwitchRefreshDate { get; set; }
-
-        /// <summary>
-        /// The poll time in seconds to check the channel for new followers
-        /// </summary>
-        public static double TwitchFrequencyFollowerTime { get; set; }
-
-        /// <summary>
-        /// The poll time in seconds to check for channel going live
-        /// </summary>
-        public static double TwitchFrequencyLiveNotifyTime { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.
@@ -91,7 +54,7 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool ReceiveWhisper(Action<string> ReceiveWhisperCallback)
         {
-            throw new();
+            throw new NotImplementedException();
         }
 
         public virtual bool Send(string s)
@@ -101,7 +64,7 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool SendWhisper(string user, string s)
         {
-            throw new();
+            throw new NotImplementedException();
         }
 
         public virtual bool StartBot()
@@ -116,16 +79,6 @@ namespace ChatBot_Net5.Clients
 
         public virtual bool RefreshSettings()
         {
-            SaveParams();
-            TwitchAccessToken = Settings.Default.TwitchAccessToken;
-            TwitchBotUserName = Settings.Default.TwitchBotUserName;
-            TwitchChannelName = Settings.Default.TwitchChannelName;
-            TwitchClientID = Settings.Default.TwitchClientID;
-            TwitchFrequencyFollowerTime = Settings.Default.TwitchFrequency;
-            TwitchFrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
-            TwitchRefreshToken = Settings.Default.TwitchRefreshToken;
-            TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
-            ShowConnectionMsg = Settings.Default.BotConnectionMsg;
             return true;
         }
 
@@ -141,5 +94,4 @@ namespace ChatBot_Net5.Clients
         }
         #endregion
     }
-
 }

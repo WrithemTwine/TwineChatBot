@@ -12,14 +12,14 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.Clients
 {
-    public class IOModuleTwitch_FollowerSvc : IOModule
+    public class TwitchBotFollowerSvc : TwitchBots
     {
         /// <summary>
         /// Listens for new followers.
         /// </summary>
         internal ExtFollowerService FollowerService { get; private set; }
 
-        public IOModuleTwitch_FollowerSvc()
+        public TwitchBotFollowerSvc()
         {
             ChatClientName = "TwitchFollowerService";
         }
@@ -29,6 +29,11 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         internal void ConnectFollowerService()
         {
+            if(IsStarted)
+            {
+                FollowerService.Stop();
+            }
+
             RefreshSettings();
             ApiSettings apifollow = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
@@ -45,6 +50,7 @@ namespace ChatBot_Net5.Clients
             IsStarted = true;
             IsStopped = false;
             InvokeBotStarted();
+
             return true;
         }
 

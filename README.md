@@ -95,7 +95,7 @@ Twitch (some features depend on settings)
       - when started: retrieves followers and removes non-followers from the database
       - (future feature?) routinely retrieve followers and remove non-followers without restarting the follow bot
       - (future feature?) message spam protection for large groups of followers, and tool to remove spam bot follows
-      - implements following back the viewers who follow you or raid your channel
+      - (in debug) implements following back the viewers who follow you or raid your channel
    - Live bot
       - registers when your channel goes live or goes offline
       - monitors other channels to share when they go live
@@ -110,4 +110,3 @@ Future features not implemented - and may not be implemented:
 
 - Considering a compact webserver to provide notifications for streaming software.
 - Possibly a Twitch extension to connect to the webserver, to help provide overlays when streaming e.g. Xbox or Playstation without using a capture card to overlay a camera and notifications before sending to a streaming platform
-

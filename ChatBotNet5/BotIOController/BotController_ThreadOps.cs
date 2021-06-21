@@ -80,7 +80,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void ProcessFollows()
         {
-            string ChannelName = IOModule.TwitchChannelName;
+            string ChannelName = TwitchBots.TwitchChannelName;
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 

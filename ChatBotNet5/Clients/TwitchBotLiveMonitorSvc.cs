@@ -8,7 +8,7 @@ using TwitchLib.Api.Services;
 
 namespace ChatBot_Net5.Clients
 {
-    public class IOModuleTwitch_LiveMonitorSvc : IOModule
+    public class TwitchBotLiveMonitorSvc : TwitchBots
     {
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
@@ -17,7 +17,7 @@ namespace ChatBot_Net5.Clients
 
         public bool IsMultiLiveBotActive { get; set; }
         public bool IsMultiConnected { get; set; }
-        public IOModuleTwitch_LiveMonitorSvc()
+        public TwitchBotLiveMonitorSvc()
         {
             ChatClientName = "TwitchLiveMonitorService";
             IsStarted = false;

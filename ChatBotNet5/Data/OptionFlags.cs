@@ -9,6 +9,7 @@ namespace ChatBot_Net5.Data
     internal static class OptionFlags
     {
         internal static bool ProcessOps { get; set; } = false;  // whether to process ops or not
+        internal static bool IsStreamOnline { get; set; } = false;
 
         internal static bool TwitchAddFollowersStart { get; set; }
         internal static bool TwitchPruneNonFollowers { get; set; }
@@ -19,9 +20,11 @@ namespace ChatBot_Net5.Data
         internal static bool FirstUserJoinedMsg { get; set; }
         internal static bool FirstUserChatMsg { get; set; }
         
-        internal static bool AddMeMsg { get; set; }
-        internal static bool NoMeMsg { get; set; }
-        internal static bool PerComMeMsg { get; set; }
+        internal static bool MsgAddMe { get; set; }
+        internal static bool MsgNoMe { get; set; }
+        internal static bool MsgPerComMe { get; set; }
+
+        internal static bool MsgWelcomeStreamer { get; set; }
 
         internal static bool AutoShout { get; set; }
         internal static bool TwitchRaidShoutOut { get; set; }
@@ -55,11 +58,14 @@ namespace ChatBot_Net5.Data
                 FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
                 FirstUserChatMsg = Settings.Default.WelcomeChatMsg;
 
-                AddMeMsg = Settings.Default.InsertMeToMsg;
-                NoMeMsg = Settings.Default.NoMeMsg;
-                PerComMeMsg = Settings.Default.PerComMeMsg;
+                MsgAddMe = Settings.Default.MsgInsertMe;
+                MsgNoMe = Settings.Default.MsgNoMe;
+                MsgPerComMe = Settings.Default.MsgPerComMe;
 
-                AutoShout = Settings.Default.AutoShout;
+                MsgWelcomeStreamer = Settings.Default.MsgWelcomeStreamer;
+
+                AutoShout = Settings.Default.MsgAutoShout;
+
                 TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
 
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
@@ -69,7 +75,7 @@ namespace ChatBot_Net5.Data
                 UserPartyStop = Settings.Default.UserPartyStop;
 
                 PostMultiLive = Settings.Default.PostMultiLive;
-                LiveMsg = Settings.Default.LiveMsg;
+                LiveMsg = Settings.Default.MsgLive;
 
                 ManageUsers = Settings.Default.ManageUsers;
                 ManageFollowers = Settings.Default.ManageFollowers;

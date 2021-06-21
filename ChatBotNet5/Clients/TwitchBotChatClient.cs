@@ -20,7 +20,7 @@ using TwitchLib.Communication.Events;
 
 namespace ChatBot_Net5.Clients
 {
-    public class IOModuleTwitch : IOModule, INotifyPropertyChanged
+    public class TwitchBotChatClient : TwitchBots, INotifyPropertyChanged
     {
         /// <summary>
         /// The client connection to the server.
@@ -48,7 +48,7 @@ namespace ChatBot_Net5.Clients
         //500 accounts per day Known bots
         //20 per second, up to 1200 per minute
         //100,000 accounts per day Verified bots
-        public IOModuleTwitch()
+        public TwitchBotChatClient()
         {
             ChatClientName = "TwitchChat";
 
