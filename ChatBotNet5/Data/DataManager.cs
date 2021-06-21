@@ -631,7 +631,15 @@ switches:
         {
             lock (_DataSource.Commands)
             {
-                bool CheckName(string criteria) => _DataSource.Commands.Select("CmdName='" + criteria + "'").Length == 0;
+                bool CheckName(string criteria)
+                {
+                    DataSource.CommandsRow[] datarow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + criteria + "'");
+                    if (datarow.Length > 0 && datarow[0].Category == string.Empty)
+                    {
+                        datarow[0].Category = "All";
+                    }
+                    return datarow.Length == 0;
+                }
 
                 // command name     // msg   // params  
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
@@ -667,7 +675,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, string.Empty, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, "All", param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
