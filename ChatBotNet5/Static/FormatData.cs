@@ -1,4 +1,7 @@
 ﻿
+using ChatBot_Net5.Enum;
+using ChatBot_Net5.Systems;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,15 +12,29 @@ namespace ChatBot_Net5.Static
     public static class FormatData
     {
         /// <summary>
-        /// Takes the incoming string integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic], 1 viewer.
+        /// Takes the incoming string integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic] => 1 viewer.
         /// </summary>
         /// <param name="src">Representative number</param>
         /// <param name="single">Singular version of the word to return</param>
         /// <param name="plural">Plural version of the word to return</param>
         /// <returns>The source number and the version of word to match the plurality of src.</returns>
-        internal static string Plurality(string src, string single, string plural)
+        internal static string Plurality(string src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
-            return Plurality(Convert.ToInt32(src, CultureInfo.CurrentCulture), single, plural);
+            return Plurality(Convert.ToInt32(src, CultureInfo.CurrentCulture), msgVars, Prefix, Suffix);
+        }
+
+        /// <summary>
+        /// Takes the incoming integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic] => 1 viewer in the Cultural Language format.
+        /// </summary>
+        /// <param name="src">Representative number</param>
+        /// <param name="msgVars">Specifies which resource string to use</param>
+        /// <param name="Prefix">The string to add to the beginning of the determined phrase</param>
+        /// <param name="Suffix">The string to add to the end of the determined phrase</param>
+        /// <returns>a string containing the culture adjusted plurality of the supplied number</returns>
+        internal static string Plurality(int src, MsgVars msgVars, string Prefix = null, string Suffix = null)
+        {
+            string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
+            return src.ToString(CultureInfo.CurrentCulture) + " " + (Prefix + " ") ?? string.Empty + (src != 1 ? plural[1] : plural[0]) + (" " + Suffix) ?? string.Empty;
         }
 
         /// <summary>
@@ -27,9 +44,9 @@ namespace ChatBot_Net5.Static
         /// <param name="single">Singular version of the word to return</param>
         /// <param name="plural">Plural version of the word to return</param>
         /// <returns>The source number and the version of word to match the plurality of src.</returns>
-        internal static string Plurality(int src, string single, string plural)
+        private static string Plurality(int src, string singular, string plural)
         {
-            return src.ToString(CultureInfo.CurrentCulture) + " " + (src != 1 ? plural : single);
+            return src.ToString(CultureInfo.CurrentCulture) + " " + (src != 1 ? plural : singular);
         }
 
         /// <summary>
@@ -48,15 +65,15 @@ namespace ChatBot_Net5.Static
                 { "minute", timeSpan.Minutes }
             };
 
-            foreach(string k in datakeys.Keys)
+            foreach (string k in datakeys.Keys)
             {
-                if(datakeys[k] != 0)
+                if (datakeys[k] != 0)
                 {
                     output += Plurality(datakeys[k], k, k + "s") + ", ";
                 }
             }
 
-            return output.LastIndexOf(',')==-1 ? "no time available" : output.Remove(output.LastIndexOf(','));
+            return output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(','));
         }
 
         /// <summary>
@@ -68,6 +85,5 @@ namespace ChatBot_Net5.Static
         {
             return FormatTimes(DateTime.Now - pastdate);
         }
-
     }
 }

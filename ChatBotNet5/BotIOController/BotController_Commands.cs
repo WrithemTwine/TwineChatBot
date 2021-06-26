@@ -1,10 +1,9 @@
-﻿using ChatBot_Net5.Clients;
-using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -21,19 +20,6 @@ namespace ChatBot_Net5.BotIOController
             ProcessCommands = new(DataManage, Stats, TwitchBots.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
-        }
-
-        private void ProcessCommands_GetUpTimeCommand(object sender, UpTimeCommandArgs e)
-        {
-            string msg = OptionFlags.IsStreamOnline ? e.Message ?? "#user has been streaming for #uptime." : "The stream is not online." ;
-
-            Dictionary<string, string> dictionary = new()
-            {
-                { "#user", e.User },
-                { "#uptime", FormatData.FormatTimes(Stats.GetCurrentStreamStart()) }
-            };
-
-            Send(VariableParser.ParseReplace(msg, dictionary));
         }
 
         private delegate void UpdateUsers(UserJoin userJoin);
@@ -67,6 +53,7 @@ namespace ChatBot_Net5.BotIOController
                 response = "/me ";
             }
 
+            // TODO: convert the queue join messages to localized strings
             if (OptionFlags.UserPartyStart)
             {
                 switch (e.Command)
@@ -78,7 +65,7 @@ namespace ChatBot_Net5.BotIOController
                         {
                             if (u.ChatUser == e.ChatUser)
                             {
-                                response = "You have already joined. You are currently number " + x.ToString() + ".";
+                                response = string.Format("You have already joined. You are currently number {0}." , x.ToString());
                                 break;
                             }
                             x++;

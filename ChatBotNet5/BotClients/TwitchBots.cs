@@ -1,8 +1,9 @@
-﻿using ChatBot_Net5.Properties;
+﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.Properties;
 
 using System;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     /// <summary>
     /// Abstract base class for all Twitch type Bots

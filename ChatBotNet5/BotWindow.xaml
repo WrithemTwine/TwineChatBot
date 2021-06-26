@@ -10,6 +10,9 @@
     <Window.Resources>
         <ResourceDictionary>
             <BotIOController:BotController x:Name="ControlBot" x:Key="ControlBot" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel SnapsToDevicePixels="True" DataContext="{DynamicResource ControlBot}">
@@ -38,13 +41,13 @@
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel>
-                    <Label>Built-in Commands:</Label>
+                    <Label>Commands- Built-in:</Label>
                     <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label>Defined Commands:</Label>
+                    <Label> User-Defined:</Label>
                     <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
@@ -68,6 +71,15 @@
                     <Setter Property="TextWrapping" Value="Wrap" />
                     <Setter Property="Padding" Value="5,0" />
                 </Style>
+                <Style TargetType="{x:Type DataGrid}">
+                    <Setter Property="AlternationCount" Value="1" />
+                    <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4"/>
+                    <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+                    <Setter Property="AutoGenerateColumns" Value="True" />
+                    <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+                    <Setter Property="CanUserAddRows" Value="False" />
+                    <Setter Property="CanUserDeleteRows" Value="False" />
+                </Style>
             </TabControl.Resources>
             <TabItem Header="Bot Setup">
                 <TabControl>
@@ -76,8 +88,9 @@
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
                             <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
-                                    <TextBlock TextWrapping="Wrap">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
+                                    <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.</TextBlock>
+                                    <TextBlock x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" >The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</TextBlock>
                                     <WrapPanel>
                                         <WrapPanel.Resources>
                                             <Style TargetType="{x:Type Label}">
@@ -87,16 +100,19 @@
                                         <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot" BorderBrush="#FF212D34">
                                             <WrapPanel Orientation="Horizontal" >
                                                 <Label x:Name="Label_TwitchChat_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Chat Client is started!"/></TextBlock>
+                                                    <TextBlock>The Twitch Chat Client is started!</TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Chat Client is stopped!"/></TextBlock>
+                                                    <TextBlock>The Twitch Chat Client is stopped!</TextBlock>
                                                 </Label>
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" >
-                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                    <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                    <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                </Label>
                                             </WrapPanel>
                                         </GroupBox>
                                         <GroupBox Header="Follower Service">
@@ -112,30 +128,36 @@
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
                                                 <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                    <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                </Label>
                                             </WrapPanel>
                                         </GroupBox>
                                         <GroupBox Header="LiveStream Monitor Service">
                                             <StackPanel Orientation="Vertical">
                                                 <WrapPanel>
                                                     <Label x:Name="Label_TwitchMultiLive_Start" Foreground="Green" Visibility="Collapsed">
-                                                        <TextBlock TextWrapping="Wrap"><Run Text="The Twitch LiveStream Monitor Client is started!"/></TextBlock>
+                                                        <TextBlock>The Twitch LiveStream Monitor Client is started!</TextBlock>
                                                     </Label>
                                                     <Label x:Name="Label_TwitchMultiLive_Stop" Foreground="Maroon" Visibility="Visible">
-                                                        <TextBlock TextWrapping="Wrap"><Run Text="The Twitch LiveStream Monitor Client is stopped!"/></TextBlock>
+                                                        <TextBlock>The Twitch LiveStream Monitor Client is stopped!</TextBlock>
                                                     </Label>
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
-                                                        <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
+                                                        <TextBlock>Auto-start when application starts</TextBlock>
                                                     </CheckBox>
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
                                                     <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
+                                                    <Label x:Name="Label_TwitchMultiLive_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                    <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                </Label>
                                                 </WrapPanel>
                                                 <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
                                                     <WrapPanel Orientation="Vertical">
                                                         <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
-                                                            <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
+                                                            <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
                                                         </Label>
                                                         <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
-                                                            <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                            <TextBlock>Auto-start when application starts</TextBlock>
                                                         </CheckBox>
                                                         <StackPanel Orientation="Horizontal">
                                                             <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
@@ -191,7 +213,7 @@
                                                 <Label Content="Seconds between checking for new follows:"/>
                                                 <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
                                             </StackPanel>
-                                            <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
+                                            <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="300" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="300" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
 
                                         </StackPanel>
                                     </GroupBox>
@@ -330,7 +352,7 @@
                             <TextBlock IsEnabled="False"><Run Text="Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification."/><LineBreak /><Run Text="Current implemented"/><LineBreak /><Run Text="'Kind':"/></TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single" />
-                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True"/>
+                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
                             </StackPanel>
                         </StackPanel>
                     </TabItem>
@@ -365,7 +387,7 @@
                                     <GroupBox Header="Twitch - Format Bot messages">
                                         <StackPanel>
                                             <Label Content="/me changes message to all italics" />
-                                            <RadioButton IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Content="Disabled" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Content="{DynamicResource Disabled}" />
                                             <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
                                             <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
                                         </StackPanel>
@@ -376,24 +398,33 @@
                                                 <TextBlock><Run Text="Enable Repeat commands only when live."/></TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
-                                                <TextBlock><Run Text="Enable repeating commands."/></TextBlock>
+                                                <TextBlock>Enable repeating commands.</TextBlock>
                                             </CheckBox>
+                                            <CheckBox>
+                                                <TextBlock>Enable smart slow-down to spread out (up to twice as long) repeated messages during slow chatting in stream. Will adjust to as fast as the repeat timer when chat is faster.</TextBlock>
+                                            </CheckBox>
+                                            <TextBlock>TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Welcome Viewers">
                                         <StackPanel>
                                             <Label Content="Only once per user per active stream (no repeats)" />
                                             <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Disabled"/></TextBlock>
+                                                <TextBlock Text="{DynamicResource Disabled}" />
                                             </RadioButton>
                                             <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable when viewer joins the channel"/></TextBlock>
+                                                <TextBlock Text="Enable when viewer joins the channel" />
                                             </RadioButton>
                                             <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable when a viewer first chats"/></TextBlock>
+                                                <TextBlock Text="Enable when a viewer first chats" />
                                             </RadioButton>
                                             <CheckBox IsChecked="{Binding MsgWelcomeStreamer, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable welcome message when streamer chats"/></TextBlock>
+                                                <TextBlock Text="Enable welcome message when streamer chats" />
+                                            </CheckBox>
+                                            <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Customize Welcome Messages - Welcome New Viewer, Returning Viewer, and Followers/Subscribers" />
+                                            <CheckBox IsChecked="{Binding WelcomeCustomMsg, Mode=TwoWay}">
+                                                <TextBlock Text="Enable" />
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
@@ -418,9 +449,9 @@
                                             <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Enable action to remove non-followers from the Follower list when bot starts."/></TextBlock>
                                             </CheckBox>
-                                            <StackPanel Visibility="Collapsed">
+                                            <StackPanel Visibility="Visible">
                                             <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
-                                            <Label Content="Automatic Follow other Viewers"/>
+                                            <Label Content="Automatic Follow other Viewers*:"/>
                                             <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
                                                 <TextBlock><Run Text="Enable follow-back new followers"/></TextBlock>
                                             </CheckBox>
@@ -429,7 +460,10 @@
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live"/></TextBlock>
-                                            </CheckBox></StackPanel>
+                                            </CheckBox>
+                                                <Label>
+                                                    <TextBlock>* The follow-back feature currently only adds to the bot user account, due to authentication issues. May later add ability to specifiy channel name and another token to directly add followers.</TextBlock></Label>
+                                            </StackPanel>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Data Management">
@@ -467,7 +501,6 @@
                                 </GroupBox>
                                 
                                 -->
-
                                 </WrapPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -483,27 +516,25 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                            <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                            <DataGrid Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Users" x:Name="TabItem_Users">
+                    <TabItem Header="User Data" x:Name="TabItem_Users">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <!--<Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />-->
-                            <DataGrid x:Name="DG_Users" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Users, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Followers" x:Name="TabItem_Followers">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="25" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <!--<Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />-->
-                            <DataGrid x:Name="DG_Followers" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Content="User List"/>
+                            <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
+                            <DataGrid x:Name="DG_Users" DataContext="{Binding DataManage}" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
+
+                            <DataGrid x:Name="DG_Followers" DataContext="{Binding DataManage}" ItemsSource="{Binding Followers, Mode=OneWay}" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Variable Options">
@@ -522,27 +553,35 @@
                                 <RowDefinition Height="55" />
                                 <RowDefinition Height="100*" />
                             </Grid.RowDefinitions>
-                            <TextBlock TextWrapping="Wrap" Grid.Row="0"><Run Text="Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values."/><LineBreak/><Run Text="'Live' is a message to Discord/other services."/></TextBlock>
-                            <DataGrid x:Name="DG_CommonMsgs" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" DockPanel.Dock="Bottom" CanUserAddRows="False" CanUserDeleteRows="False" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <DataGrid x:Name="DG_CategoryList" DataContext="{Binding DataManage}" ItemsSource="{Binding Category, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" />
+
+                            <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="2"><Run Text="Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values."/><LineBreak/><Run Text="'Live' is a message to Discord/other services."/></TextBlock>
+                            <DataGrid x:Name="DG_CommonMsgs" DataContext="{Binding DataManage}" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2">
                                 <DataGrid.ToolTip>
                                     <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;, the &quot; #&quot; needs to be the first character in the word."/></TextBlock>
                                 </DataGrid.ToolTip>
                             </DataGrid>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Currency Types">
-                        <Grid>
-                            <DataGrid x:Name="DG_Currency" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
+                    <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual" Visibility="Collapsed">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="25" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <!--<Label Content="This tab is disabled while the bot is started. Stop the bot to access this tab." Grid.Row="0" />-->
-                            <DataGrid x:Name="DG_CurrencyAccrual" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGenerateColumns="True" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" Grid.Row="1" />
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            
+                            <DataGrid x:Name="DG_Currency" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" />
+                            <DataGrid x:Name="DG_CurrencyAccrual" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Commands">
@@ -552,36 +591,45 @@
                                     <TextBlock><Run Text="The 'BuiltInCommands' are those established within the bot."/><LineBreak /><Run Text="The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. &quot;Visit me on Twitter at: http://wwww.twitter.com/myuser&quot;. The command will show all socials except messages that are blank or the default 'Social media url here'."/><LineBreak /><LineBreak /><Run Text="The variables within message to format a custom response:"/><LineBreak /><Run Text="#user: the user specific to the command; either 'command invoker' user or parameter to the command"/><LineBreak /><Run Text="#url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command"/><LineBreak /><Run Text="#fieldvalue: placeholder for the value from a table lookup"/><LineBreak /><Run Text="#currencyname: placeholder for the currency name - extracted from table"/><LineBreak /><Run Text="#currencyvalue: the value of a currency"/><LineBreak /><LineBreak /><Run Text="#date: the current date"/><LineBreak /><Run Text="#time: the current time"/><LineBreak /></TextBlock>
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Built-In Commands">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat commands. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC" />
-                                    <DataGrid Grid.Row="1" x:Name="DG_BuiltInCommands" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGenerateColumns="True"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" CanUserDeleteRows="False" CanUserAddRows="False" MaxColumnWidth="253" />
-                                </Grid>
-                            </TabItem>
                             <TabItem Header="Commands">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50" />
-                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="25" />
+                                        <RowDefinition />
+                                        <RowDefinition Height="5" />
+                                        <RowDefinition Height="25" />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the seconds within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC"/>
-                                    <DataGrid Grid.Row="1" IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGenerateColumns="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat commands. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC" />
+                                    <Label Content="Built-in Commands:" Grid.Row="1"/>
+                                    <DataGrid Grid.Row="2" x:Name="DG_BuiltInCommands" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" MaxColumnWidth="253" />
+                                    <Label Content="User-Defined Commands:" Grid.Row="4"/>
+                                    <DataGrid Grid.Row="5" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
                                 </Grid>
                             </TabItem>
                         </TabControl>
                     </TabItem>
                     <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
                         <Grid>
-                            <DataGrid IsSynchronizedWithCurrentItem="True" DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="True" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" ScrollViewer.CanContentScroll="True" />
+                            <DataGrid DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
                         </Grid>
                     </TabItem>
                     <TabItem IsEnabled="False" />
                     <TabItem Header="MultiLive Monitor">
                         <Grid x:Name="TabItem_MultiUserLiveMonitor">
+                            <Grid.Resources>
+                                <Style TargetType="DataGrid">
+                                    <Setter Property="Margin" Value="5"/>
+                                    <Setter Property="MaxColumnWidth" Value="160" />
+                                    <Setter Property="AlternationCount" Value="1" />
+                                    <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4" />
+                                    <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+                                    <Setter Property="CanUserAddRows" Value="False" />
+                                    <EventSetter Event="MouseEnter" Handler="DataGrid_MouseEnter" />
+                                    <EventSetter Event="MouseLeave" Handler="DataGrid_MouseLeave" />
+                                </Style>
+                            </Grid.Resources>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50" />
                                 <RowDefinition/>
@@ -615,12 +663,11 @@
                                 </TextBox.ToolTip>
                             </TextBox>
 
-                            <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
-                              AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" />
-                            <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding Channels, Mode=OneWay}" MaxColumnWidth="160"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" RowEditEnding="DG_ChannelNames_RowEditEnding" />
-                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" MaxColumnWidth="160" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
+                            <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" 
+                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}"  />
+                            <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" 
+                              ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" />
+                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
                             <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
                                 <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />

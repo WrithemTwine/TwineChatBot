@@ -55,7 +55,7 @@
               <xs:element name="Permission" msdata:Caption="Lowest Level of Permission for Command" msprop:Generator_ColumnVarNameInTable="columnPermission" msprop:Generator_ColumnPropNameInRow="Permission" msprop:Generator_ColumnPropNameInTable="PermissionColumn" msprop:Generator_UserColumnName="Permission" type="xs:string" minOccurs="0" />
               <xs:element name="Message" msprop:Generator_ColumnVarNameInTable="columnMessage" msprop:Generator_ColumnPropNameInRow="Message" msprop:Generator_ColumnPropNameInTable="MessageColumn" msprop:Generator_UserColumnName="Message" type="xs:string" minOccurs="0" />
               <xs:element name="RepeatTimer" msdata:Caption="Seconds between Repeat Events-works best with commands without input arguments" msprop:Generator_ColumnVarNameInTable="columnRepeatTimer" msprop:Generator_ColumnPropNameInRow="RepeatTimer" msprop:Generator_ColumnPropNameInTable="RepeatTimerColumn" msprop:Generator_UserColumnName="RepeatTimer" type="xs:int" minOccurs="0" />
-              <xs:element name="Category" msdata:Caption="Specify an array of categories for context relevant timers-only implement timers per category." msprop:Generator_ColumnVarNameInTable="columnCategory" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_UserColumnName="Category" type="xs:string" minOccurs="0" />
+              <xs:element name="Category" msdata:Caption="Specify an array of categories for context relevant timers-only implement timers per category." msprop:nullValue="_empty" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_UserColumnName="Category" type="xs:string" minOccurs="0" />
               <xs:element name="AllowParam" msdata:Caption="AllowParam - permit a parameter, such as another user" msprop:Generator_ColumnVarNameInTable="columnAllowParam" msprop:Generator_ColumnPropNameInRow="AllowParam" msprop:Generator_ColumnPropNameInTable="AllowParamColumn" msprop:Generator_UserColumnName="AllowParam" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="Usage" msprop:Generator_ColumnVarNameInTable="columnUsage" msprop:Generator_ColumnPropNameInRow="Usage" msprop:Generator_ColumnPropNameInTable="UsageColumn" msprop:Generator_UserColumnName="Usage" type="xs:string" default=" " minOccurs="0" />
               <xs:element name="lookupdata" msprop:Generator_ColumnVarNameInTable="columnlookupdata" msprop:Generator_ColumnPropNameInRow="lookupdata" msprop:Generator_ColumnPropNameInTable="lookupdataColumn" msprop:Generator_UserColumnName="lookupdata" type="xs:boolean" default="false" minOccurs="0" />
@@ -93,9 +93,9 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:long" />
-              <xs:element name="UserName" msdata:ReadOnly="true" msdata:Caption="User Name" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
-              <xs:element name="IsFollower" msdata:Caption="Is Follower" msprop:Generator_ColumnVarNameInTable="columnIsFollower" msprop:Generator_ColumnPropNameInRow="IsFollower" msprop:Generator_ColumnPropNameInTable="IsFollowerColumn" msprop:Generator_UserColumnName="IsFollower" type="xs:boolean" minOccurs="0" />
-              <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_UserColumnName="FollowedDate" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="UserName" msdata:ReadOnly="true" msdata:Caption="User Name" msprop:nullValue="_empty" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+              <xs:element name="IsFollower" msdata:Caption="Is Follower" msprop:Generator_ColumnVarNameInTable="columnIsFollower" msprop:Generator_ColumnPropNameInRow="IsFollower" msprop:Generator_ColumnPropNameInTable="IsFollowerColumn" msprop:Generator_UserColumnName="IsFollower" type="xs:boolean" default="false" minOccurs="0" />
+              <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_UserColumnName="FollowedDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -133,6 +133,14 @@
             <xs:sequence>
               <xs:element name="Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
               <xs:element name="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="CategoryList" msprop:Generator_TableClassName="CategoryListDataTable" msprop:Generator_TableVarName="tableCategoryList" msprop:Generator_TablePropName="CategoryList" msprop:Generator_RowDeletingName="CategoryListRowDeleting" msprop:Generator_RowChangingName="CategoryListRowChanging" msprop:Generator_RowEvHandlerName="CategoryListRowChangeEventHandler" msprop:Generator_RowDeletedName="CategoryListRowDeleted" msprop:Generator_UserTableName="CategoryList" msprop:Generator_RowChangedName="CategoryListRowChanged" msprop:Generator_RowEvArgName="CategoryListRowChangeEvent" msprop:Generator_RowClassName="CategoryListRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_UserColumnName="Category" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -202,12 +210,17 @@
       <xs:selector xpath=".//mstns:ShoutOuts" />
       <xs:field xpath="mstns:UserName" />
     </xs:unique>
+    <xs:unique name="CategoryList_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:CategoryList" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
   </xs:element>
   <xs:annotation>
     <xs:appinfo>
       <msdata:Relationship name="Users_Followers" msdata:parent="Users" msdata:child="Followers" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="Followers" msprop:Generator_ChildPropName="GetFollowersRows" msprop:Generator_UserRelationName="Users_Followers" msprop:Generator_RelationVarName="relationUsers_Followers" msprop:Generator_UserParentTable="Users" msprop:Generator_ParentPropName="UsersRow" />
       <msdata:Relationship name="Users_CurrencyAccrued" msdata:parent="Users" msdata:child="Currency" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="Currency" msprop:Generator_ChildPropName="GetCurrencyRows" msprop:Generator_UserRelationName="Users_CurrencyAccrued" msprop:Generator_RelationVarName="relationUsers_CurrencyAccrued" msprop:Generator_UserParentTable="Users" msprop:Generator_ParentPropName="UsersRow" />
       <msdata:Relationship name="Currency_CurrencyAccrued" msdata:parent="CurrencyType" msdata:child="Currency" msdata:parentkey="CurrencyName" msdata:childkey="CurrencyName" msprop:Generator_UserChildTable="Currency" msprop:Generator_ChildPropName="GetCurrencyAccruedRows" msprop:Generator_UserRelationName="Currency_CurrencyAccrued" msprop:Generator_ParentPropName="CurrencyTypeRow" msprop:Generator_RelationVarName="relationCurrency_CurrencyAccrued" msprop:Generator_UserParentTable="CurrencyType" />
+      <msdata:Relationship name="CategoryList_Commands" msdata:parent="CategoryList" msdata:child="Commands" msdata:parentkey="Category" msdata:childkey="Category" msprop:Generator_UserChildTable="Commands" msprop:Generator_ChildPropName="GetCommandsRows" msprop:Generator_UserRelationName="CategoryList_Commands" msprop:Generator_RelationVarName="relationCategoryList_Commands" msprop:Generator_UserParentTable="CategoryList" msprop:Generator_ParentPropName="CategoryListRow" />
     </xs:appinfo>
   </xs:annotation>
 </xs:schema>

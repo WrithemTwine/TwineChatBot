@@ -1,11 +1,13 @@
-﻿using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.Data;
+using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
 
-namespace ChatBot_Net5.Data
+namespace ChatBot_Net5.Systems
 {
-    public class Statistics
+    public class StatisticsSystem
     {
         private readonly List<string> CurrUsers = new();
         private readonly List<string> UniqueUserJoined = new();
@@ -15,11 +17,23 @@ namespace ChatBot_Net5.Data
         private readonly List<string> VIPUsers = new();
         private readonly DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
+
         public string Category { get; set; }
 
-        public Statistics(DataManager dataManager)
+        public StatisticsSystem(DataManager dataManager)
         {
             datamanager = dataManager;
+        }
+
+        public bool CheckStreamTime(DateTime TimeStream)
+        {
+            return datamanager.CheckMultiStreams(TimeStream);
+        }
+
+        public void SetCategory(string category)
+        {
+            Category = category;
+            datamanager.UpdateCategory(category);
         }
 
         /// <summary>
@@ -86,6 +100,16 @@ namespace ChatBot_Net5.Data
                 datamanager.UserLeft(User, CurrTime);
             }
             CurrUsers.Remove(User);
+        }
+
+        public bool IsFollower(string User)
+        {
+            return datamanager.CheckFollower(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
+        }
+
+        public bool IsReturningUser(string User)
+        {
+            return datamanager.CheckUser(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
         }
 
         /// <summary>

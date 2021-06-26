@@ -117,20 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="UDC_ParamException" xml:space="preserve">
-    <value>"UserDefinedCommands.GetHashCode received a null argument."</value>
-    <comment>Exception message for null parameter.</comment>
+  <data name="AuthorTwitch" xml:space="preserve">
+    <value>WrithemTwine</value>
   </data>
-  <data name="UDC_ParamName" xml:space="preserve">
-    <value>"obj"</value>
-    <comment>Parameter causing null exception.</comment>
-  </data>
-  <data name="UDC_SaveData_Exception" xml:space="preserve">
-    <value>"UserDefinedCommands.SaveData object is null."</value>
-    <comment>Exception message for null parameter.</comment>
-  </data>
-  <data name="UDC_SaveData_ParamName" xml:space="preserve">
-    <value>"userDefinedCommands"</value>
-    <comment>Parameter causing null exception.</comment>
+  <data name="TwitchHomepage" xml:space="preserve">
+    <value>https://twitch.tv/</value>
   </data>
 </root>

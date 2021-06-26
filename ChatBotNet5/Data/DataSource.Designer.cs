@@ -42,11 +42,15 @@ namespace ChatBot_Net5.Data {
         
         private ShoutOutsDataTable tableShoutOuts;
         
+        private CategoryListDataTable tableCategoryList;
+        
         private global::System.Data.DataRelation relationUsers_Followers;
         
         private global::System.Data.DataRelation relationUsers_CurrencyAccrued;
         
         private global::System.Data.DataRelation relationCurrency_CurrencyAccrued;
+        
+        private global::System.Data.DataRelation relationCategoryList_Commands;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.ExcludeSchema;
         
@@ -102,6 +106,9 @@ namespace ChatBot_Net5.Data {
                 }
                 if ((ds.Tables["ShoutOuts"] != null)) {
                     base.Tables.Add(new ShoutOutsDataTable(ds.Tables["ShoutOuts"]));
+                }
+                if ((ds.Tables["CategoryList"] != null)) {
+                    base.Tables.Add(new CategoryListDataTable(ds.Tables["CategoryList"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -213,6 +220,16 @@ namespace ChatBot_Net5.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public CategoryListDataTable CategoryList {
+            get {
+                return this.tableCategoryList;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.BrowsableAttribute(true)]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Visible)]
         public override global::System.Data.SchemaSerializationMode SchemaSerializationMode {
@@ -305,6 +322,9 @@ namespace ChatBot_Net5.Data {
                 if ((ds.Tables["ShoutOuts"] != null)) {
                     base.Tables.Add(new ShoutOutsDataTable(ds.Tables["ShoutOuts"]));
                 }
+                if ((ds.Tables["CategoryList"] != null)) {
+                    base.Tables.Add(new CategoryListDataTable(ds.Tables["CategoryList"]));
+                }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
                 this.Namespace = ds.Namespace;
@@ -392,9 +412,16 @@ namespace ChatBot_Net5.Data {
                     this.tableShoutOuts.InitVars();
                 }
             }
+            this.tableCategoryList = ((CategoryListDataTable)(base.Tables["CategoryList"]));
+            if ((initTable == true)) {
+                if ((this.tableCategoryList != null)) {
+                    this.tableCategoryList.InitVars();
+                }
+            }
             this.relationUsers_Followers = this.Relations["Users_Followers"];
             this.relationUsers_CurrencyAccrued = this.Relations["Users_CurrencyAccrued"];
             this.relationCurrency_CurrencyAccrued = this.Relations["Currency_CurrencyAccrued"];
+            this.relationCategoryList_Commands = this.Relations["CategoryList_Commands"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -423,6 +450,8 @@ namespace ChatBot_Net5.Data {
             base.Tables.Add(this.tableStreamStats);
             this.tableShoutOuts = new ShoutOutsDataTable();
             base.Tables.Add(this.tableShoutOuts);
+            this.tableCategoryList = new CategoryListDataTable();
+            base.Tables.Add(this.tableCategoryList);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -435,6 +464,10 @@ namespace ChatBot_Net5.Data {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyAccrued);
+            this.relationCategoryList_Commands = new global::System.Data.DataRelation("CategoryList_Commands", new global::System.Data.DataColumn[] {
+                        this.tableCategoryList.CategoryColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCommands.CategoryColumn}, false);
+            this.Relations.Add(this.relationCategoryList_Commands);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -488,6 +521,12 @@ namespace ChatBot_Net5.Data {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         private bool ShouldSerializeShoutOuts() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeCategoryList() {
             return false;
         }
         
@@ -572,6 +611,9 @@ namespace ChatBot_Net5.Data {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void ShoutOutsRowChangeEventHandler(object sender, ShoutOutsRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public delegate void CategoryListRowChangeEventHandler(object sender, CategoryListRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -1822,7 +1864,7 @@ namespace ChatBot_Net5.Data {
                         string Permission, 
                         string Message, 
                         int RepeatTimer, 
-                        string Category, 
+                        CategoryListRow parentCategoryListRowByCategoryList_Commands, 
                         bool AllowParam, 
                         string Usage, 
                         bool lookupdata, 
@@ -1842,7 +1884,7 @@ namespace ChatBot_Net5.Data {
                         Permission,
                         Message,
                         RepeatTimer,
-                        Category,
+                        null,
                         AllowParam,
                         Usage,
                         lookupdata,
@@ -1854,6 +1896,9 @@ namespace ChatBot_Net5.Data {
                         action,
                         top,
                         sort};
+                if ((parentCategoryListRowByCategoryList_Commands != null)) {
+                    columnValuesArray[6] = parentCategoryListRowByCategoryList_Commands[1];
+                }
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
                 return rowCommandsRow;
@@ -2718,6 +2763,8 @@ namespace ChatBot_Net5.Data {
             
             private global::System.Data.DataColumn columnFollowedDate;
             
+            private static System.DateTime columnFollowedDate_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public FollowersDataTable() {
@@ -2887,7 +2934,9 @@ namespace ChatBot_Net5.Data {
                 this.columnUserName.Unique = true;
                 this.columnUserName.Caption = "User Name";
                 this.columnIsFollower.Caption = "Is Follower";
+                this.columnIsFollower.DefaultValue = ((bool)(false));
                 this.columnFollowedDate.Caption = "Followed Date";
+                this.columnFollowedDate.DefaultValue = ((System.DateTime)(FollowersDataTable.columnFollowedDate_defaultValue));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3917,6 +3966,271 @@ namespace ChatBot_Net5.Data {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class CategoryListDataTable : global::System.Data.TypedTableBase<CategoryListRow> {
+            
+            private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnCategory;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListDataTable() {
+                this.TableName = "CategoryList";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal CategoryListDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected CategoryListDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn CategoryColumn {
+                get {
+                    return this.columnCategory;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListRow this[int index] {
+                get {
+                    return ((CategoryListRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CategoryListRowChangeEventHandler CategoryListRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CategoryListRowChangeEventHandler CategoryListRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CategoryListRowChangeEventHandler CategoryListRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CategoryListRowChangeEventHandler CategoryListRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddCategoryListRow(CategoryListRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListRow AddCategoryListRow(string Category) {
+                CategoryListRow rowCategoryListRow = ((CategoryListRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        null,
+                        Category};
+                rowCategoryListRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowCategoryListRow);
+                return rowCategoryListRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                CategoryListDataTable cln = ((CategoryListDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new CategoryListDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars() {
+                this.columnId = base.Columns["Id"];
+                this.columnCategory = base.Columns["Category"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass() {
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
+                this.columnCategory = new global::System.Data.DataColumn("Category", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCategory);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnId}, false));
+                this.columnId.AutoIncrement = true;
+                this.columnId.Unique = true;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListRow NewCategoryListRow() {
+                return ((CategoryListRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new CategoryListRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(CategoryListRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.CategoryListRowChanged != null)) {
+                    this.CategoryListRowChanged(this, new CategoryListRowChangeEvent(((CategoryListRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.CategoryListRowChanging != null)) {
+                    this.CategoryListRowChanging(this, new CategoryListRowChangeEvent(((CategoryListRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.CategoryListRowDeleted != null)) {
+                    this.CategoryListRowDeleted(this, new CategoryListRowChangeEvent(((CategoryListRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.CategoryListRowDeleting != null)) {
+                    this.CategoryListRowDeleting(this, new CategoryListRowChangeEvent(((CategoryListRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveCategoryListRow(CategoryListRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DataSource ds = new DataSource();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "CategoryListDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class DiscordRow : global::System.Data.DataRow {
@@ -4438,11 +4752,11 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Category {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.CategoryColumn]));
+                    if (this.IsCategoryNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Category\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.CategoryColumn]));
                     }
                 }
                 set {
@@ -4623,6 +4937,17 @@ namespace ChatBot_Net5.Data {
                 }
                 set {
                     this[this.tableCommands.sortColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListRow CategoryListRow {
+                get {
+                    return ((CategoryListRow)(this.GetParentRow(this.Table.ParentRelations["CategoryList_Commands"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["CategoryList_Commands"]);
                 }
             }
             
@@ -5857,6 +6182,88 @@ namespace ChatBot_Net5.Data {
         }
         
         /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class CategoryListRow : global::System.Data.DataRow {
+            
+            private CategoryListDataTable tableCategoryList;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal CategoryListRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableCategoryList = ((CategoryListDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int Id {
+                get {
+                    try {
+                        return ((int)(this[this.tableCategoryList.IdColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'CategoryList\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCategoryList.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Category {
+                get {
+                    try {
+                        return ((string)(this[this.tableCategoryList.CategoryColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Category\' in table \'CategoryList\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCategoryList.CategoryColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsIdNull() {
+                return this.IsNull(this.tableCategoryList.IdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetIdNull() {
+                this[this.tableCategoryList.IdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsCategoryNull() {
+                return this.IsNull(this.tableCategoryList.CategoryColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetCategoryNull() {
+                this[this.tableCategoryList.CategoryColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CommandsRow[] GetCommandsRows() {
+                if ((this.Table.ChildRelations["CategoryList_Commands"] == null)) {
+                    return new CommandsRow[0];
+                }
+                else {
+                    return ((CommandsRow[])(base.GetChildRows(this.Table.ChildRelations["CategoryList_Commands"])));
+                }
+            }
+        }
+        
+        /// <summary>
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -6148,6 +6555,40 @@ namespace ChatBot_Net5.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public ShoutOutsRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class CategoryListRowChangeEvent : global::System.EventArgs {
+            
+            private CategoryListRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListRowChangeEvent(CategoryListRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CategoryListRow Row {
                 get {
                     return this.eventRow;
                 }

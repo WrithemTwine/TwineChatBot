@@ -3,7 +3,7 @@
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients.TwitchLib
+namespace ChatBot_Net5.BotClients.TwitchLib
 {
     public class ExtLiveStreamMonitorService : LiveStreamMonitorService
     {

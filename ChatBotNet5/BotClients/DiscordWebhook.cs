@@ -1,10 +1,11 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public static class DiscordWebhook
     {
@@ -23,7 +24,7 @@ namespace ChatBot_Net5.Clients
         }
     }
 
- 
+
     // Webhook JSON format for sending data
     //
     // https://discord.com/developers/docs/resources/webhook#execute-webhook
@@ -63,7 +64,7 @@ namespace ChatBot_Net5.Clients
     {
         private const int max_data = 100;
 
-        public string[] Parse { get; private set; }        
+        public string[] Parse { get; private set; }
         public string[] Roles { get; private set; }
         public string[] Users { get; private set; }
 
@@ -77,13 +78,13 @@ namespace ChatBot_Net5.Clients
             if (tempmentions.Contains(AllowedMentionTypes.users)) temp.Add(AllowedMentionTypes.users.ToString());
 
             Parse = temp.ToArray();
-            
-            if(Roles?.Length > max_data)
+
+            if (Roles?.Length > max_data)
             {
                 List<string> temproles = new(Roles);
                 temproles.RemoveRange(max_data, temproles.Count - max_data);
                 this.Roles = temproles.ToArray();
-            } 
+            }
             else
             {
                 this.Roles = Roles;
@@ -117,8 +118,8 @@ namespace ChatBot_Net5.Clients
         public string payload_json { get; private set; }
         public AllowedMentions allowed_mentions { get; private set; }
 
-        public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username=null, string Avatar_Url=null, bool TTS=false,
-            string Payload_Json=null)
+        public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username = null, string Avatar_Url = null, bool TTS = false,
+            string Payload_Json = null)
         {
             content = Content;
             allowed_mentions = Allowed_Mentions;

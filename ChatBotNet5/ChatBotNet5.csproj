@@ -7,9 +7,9 @@
     <UseWPF>true</UseWPF>
     <Authors>WrithemTwine</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
-    <AssemblyVersion>1.4.3.0</AssemblyVersion>
-    <FileVersion>1.4.3.0</FileVersion>
-    <Version>1.4.3</Version>
+    <AssemblyVersion>1.4.5.0</AssemblyVersion>
+    <FileVersion>1.4.5.0</FileVersion>
+    <Version>1.4.5</Version>
     <PackageId>Twine_ChatBot</PackageId>
     <AssemblyName>TwineChatBot</AssemblyName>
     <Company>ChatBot</Company>
@@ -21,6 +21,7 @@
     <DelaySign>false</DelaySign>
     <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
     <PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -52,6 +53,11 @@
     <Compile Update="ChatPopup.xaml.cs">
       <DependentUpon>ChatPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Culture\Msgs.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Msgs.resx</DependentUpon>
+    </Compile>
     <Compile Update="Data\DataSource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -67,13 +73,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -104,6 +103,17 @@
 
   <ItemGroup>
     <SplashScreen Include="img\SplashScreen1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Culture\Msgs.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Msgs.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

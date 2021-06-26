@@ -18,7 +18,7 @@ using TwitchLib.Communication.Enums;
 using ChatBot_Net5.Exceptions;
 using TwitchLib.Communication.Events;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotChatClient : TwitchBots, INotifyPropertyChanged
     {
@@ -87,6 +87,7 @@ namespace ChatBot_Net5.Clients
             TwitchChat = new TwitchClient(new WebSocketClient(options), ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
             TwitchChat.OnDisconnected += TwitchChat_OnDisconnected;
+            TwitchChat.AutoReListenOnException = true;
 
             RefreshSettings();
         }
@@ -124,12 +125,13 @@ namespace ChatBot_Net5.Clients
             {
                 throw new NoUserDataException();
             }
-            else
+            else if (TwitchChat.TwitchUsername == null)
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
                 TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
-                TwitchChat.Connect();
             }
+
+            TwitchChat.Connect();
 
             return true;
         }
@@ -159,15 +161,19 @@ namespace ChatBot_Net5.Clients
         /// <returns>True when successful.</returns>
         public override bool StopBot()
         {
-            if (TwitchChat.IsConnected)
+            try
             {
-                IsStarted = false;
-                IsStopped = true;
-                TwitchChat.Disconnect();
-                RefreshSettings();
-                InvokeBotStopped();
+                if (TwitchChat.IsConnected)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    TwitchChat.Disconnect();
+                    RefreshSettings();
+                    InvokeBotStopped();
+                }
+                return true;
             }
-            return true;
+            catch { return false; }
         }
 
         /// <summary>
@@ -215,9 +221,11 @@ namespace ChatBot_Net5.Clients
             // the TwitchClient reports disconnected but user didn't click the 'start bot' button
             // the client should be started but is now disconnected
             // check is required so the bot doesn't keep restarting when the user actually clicked stop
-            if (IsStarted) 
+            if (IsStarted)
             {
-                Connect();    // restart the bot
+                //Connect();    // restart the bot
+                //HandlersAdded = false;             
+
             }
         }
     }

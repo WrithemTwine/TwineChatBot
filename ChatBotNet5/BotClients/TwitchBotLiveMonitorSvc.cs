@@ -6,7 +6,7 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotLiveMonitorSvc : TwitchBots
     {
@@ -56,21 +56,28 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StartBot()
         {
-            if (!IsStarted || !IsStopped)
+            try
             {
-                ConnectLiveMonitorService();
-
-                if (LiveStreamMonitor.ChannelsToMonitor.Count < 1)
+                if (!IsStarted || !IsStopped)
                 {
-                    SetLiveMonitorChannels(new() { TwitchChannelName });
-                }
+                    ConnectLiveMonitorService();
 
-                LiveStreamMonitor.Start();
-                IsStarted = true;
-                IsStopped = false;
-                InvokeBotStarted();
+                    if (LiveStreamMonitor.ChannelsToMonitor.Count < 1)
+                    {
+                        SetLiveMonitorChannels(new() { TwitchChannelName });
+                    }
+
+                    LiveStreamMonitor.Start();
+                    IsStarted = true;
+                    IsStopped = false;
+                    InvokeBotStarted();
+                }
+                return true;
             }
-            return true;
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -78,15 +85,19 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StopBot()
         {
-            if (!IsStopped && IsStarted)
+            try
             {
-                LiveStreamMonitor.Stop();
-                IsStarted = false;
-                IsStopped = true;
-                HandlersAdded = false;
-                InvokeBotStopped();
+                if (!IsStopped && IsStarted)
+                {
+                    LiveStreamMonitor.Stop();
+                    IsStarted = false;
+                    IsStopped = true;
+                    HandlersAdded = false;
+                    InvokeBotStopped();
+                }
+                return true;
             }
-            return true;
+            catch { return false; }
         }
 
         public override bool ExitBot()

@@ -1,10 +1,11 @@
-﻿using ChatBot_Net5.BotIOController.Models;
-using ChatBot_Net5.Clients;
+﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
@@ -17,7 +18,7 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// List of commands supported as codes within the text, replaced with an actual value.
         /// </summary>
-        public CommandCollection CommandInfo { get; private set; } = new();
+        public MsgVarHelp CommandInfo { get; private set; } = new();
 
         /// <summary>
         /// Manages data storage with the data interface to the datagram xml.
@@ -27,7 +28,7 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// Manages statistics as the chat bot runs.
         /// </summary>
-        public Statistics Stats { get; private set; }
+        public StatisticsSystem Stats { get; private set; }
 
         #region Bot Services
         /// <summary>
