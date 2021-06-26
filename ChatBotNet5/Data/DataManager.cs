@@ -13,9 +13,19 @@ using System.Xml;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 namespace ChatBot_Net5.Data
 {
+    /*
+        - DataManager should not be converted to "local culture" strings, because the data file would have problems if the system language changed
+        - Having mixed identifiers within the data file would create problems
+        - Can convert to localized GUI identifiers to aid users not comfortable with English (and their language is provided to the app)
+        - Also, the 'add command' parameters should remain
+        - A GUI to add new commands would provide more localized help, apart from names of data tables <= unless there's somehow a converter between the name they choose and the database name => could be a dictionary with keys of the localized language and the values to the data manager data table values
+    */
+
     public class DataManager : INotifyPropertyChanged
     {
         #region DataSource
@@ -71,6 +81,7 @@ namespace ChatBot_Net5.Data
 
 
             _DataSource = new();
+            LocalizedMsgSystem.SetDataManager(this);
             LoadData();
 
             ChannelEvents = _DataSource.ChannelEvents.DefaultView;
@@ -112,42 +123,45 @@ namespace ChatBot_Net5.Data
         /// </summary>
         public void SaveData()
         {
-            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+            if (!UpdatingFollowers) // block saving data until the follower updating is completed
             {
-                if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                 {
-                    SaveThreadStarted = true;
-                    new Thread(new ThreadStart(PerformSaveOp)).Start();
-                }
-
-                SaveTasks.Enqueue(new(() =>
-                {
-                    string result = Path.GetRandomFileName();
-
-                    lock (_DataSource)
+                    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
                     {
-                        _DataSource.AcceptChanges();
-
-                        try
-                        {
-                            _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
-
-                            DataSource testinput = new();
-                            using (XmlReader xmlReader = new XmlTextReader(result))
-                            {
-                                // test load
-                                _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
-                            }
-
-                            File.Move(result, DataFileName, true);
-                            File.Delete(result);
-                        }
-                        catch
-                        {
-                            File.Delete(result);
-                        }
+                        SaveThreadStarted = true;
+                        new Thread(new ThreadStart(PerformSaveOp)).Start();
                     }
-                }));
+
+                    SaveTasks.Enqueue(new(() =>
+                    {
+                        string result = Path.GetRandomFileName();
+
+                        lock (_DataSource)
+                        {
+                            _DataSource.AcceptChanges();
+
+                            try
+                            {
+                                _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
+
+                                DataSource testinput = new();
+                                using (XmlReader xmlReader = new XmlTextReader(result))
+                                {
+                                // test load
+                                    _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                                }
+
+                                File.Move(result, DataFileName, true);
+                                File.Delete(result);
+                            }
+                            catch
+                            {
+                                File.Delete(result);
+                            }
+                        }
+                    }));
+                }
             }
         }
 
@@ -179,20 +193,34 @@ namespace ChatBot_Net5.Data
         /// </summary>
         private void SetDefaultChannelEventsTable()
         {
-            bool CheckName(string criteria) => _DataSource.ChannelEvents.FindByName(criteria) == null;
+            bool CheckName(string criteria)
+            {
+                return _DataSource.ChannelEvents.FindByName(criteria) == null;
+            }
 
             Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
-                { ChannelEventActions.BeingHosted, new("Thanks #user for #autohost this channel!", "#user, #autohost, #viewers") },
-                { ChannelEventActions.Bits, new("Thanks #user for giving #bits!", "#user, #bits") },
-                { ChannelEventActions.CommunitySubs, new("Thanks #user for giving #count to the community!", "#user, #count, #subplan") },
-                { ChannelEventActions.Follow, new("Thanks #user for the follow!", "#user") },
-                { ChannelEventActions.GiftSub, new("Thanks #user for gifting a #subplan subscription to #receiveuser!", "#user, #months, #receiveuser, #subplan, #subplanname") },
-                { ChannelEventActions.Live, new("@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url", "#user, #category, #title, #url") },
-                { ChannelEventActions.Raid, new("Thanks #user for bringing #viewers and raiding the channel!", "#user, #viewers") },
-                { ChannelEventActions.Resubscribe, new("Thanks #user for re-subscribing!", "#user, #months, #submonths, #subplan, #subplanname, #streak") },
-                { ChannelEventActions.Subscribe, new("Thanks #user for subscribing!", "#user, #submonths, #subplan, #subplanname") },
-                { ChannelEventActions.UserJoined, new("Welcome #user! Glad you could make it to the stream. How are you?", "#user") }
+                { ChannelEventActions.BeingHosted, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.BeingHosted), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers })) 
+                },
+                { ChannelEventActions.Bits, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Bits), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits })) },
+                { ChannelEventActions.CommunitySubs, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.CommunitySubs), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan })) },
+                { ChannelEventActions.NewFollow, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.NewFollow), VariableParser.ConvertVars(new[] { MsgVars.user })) },
+                { ChannelEventActions.GiftSub, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.GiftSub), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname })) },
+                { ChannelEventActions.Live, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Live), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url })) },
+                { ChannelEventActions.Raid, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Raid), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers })) },
+                { ChannelEventActions.Resubscribe, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Resubscribe), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak })) },
+                { ChannelEventActions.Subscribe, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Subscribe), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname })) },
+                { ChannelEventActions.UserJoined, 
+                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.UserJoined), VariableParser.ConvertVars(new[] { MsgVars.user })) }
             };
 
             foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
@@ -287,10 +315,13 @@ namespace ChatBot_Net5.Data
             lock (_DataSource.Users)
             {
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
-                user.LastDateSeen = LastSeen;
-                _DataSource.AcceptChanges();
-                SaveData();
-                OnPropertyChanged(nameof(Users));
+                if (user != null)
+                {
+                    user.LastDateSeen = LastSeen;
+                    _DataSource.AcceptChanges();
+                    SaveData();
+                    OnPropertyChanged(nameof(Users));
+                }
             }
         }
 
@@ -299,11 +330,14 @@ namespace ChatBot_Net5.Data
             lock (_DataSource.Users)
             {
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
-                user.WatchTime = user.WatchTime.Add(CurrTime - user.LastDateSeen);
-                user.LastDateSeen = CurrTime;
-                _DataSource.AcceptChanges();
-                SaveData();
-                OnPropertyChanged(nameof(Users));
+                if (user != null)
+                {
+                    user.WatchTime = user.WatchTime.Add(CurrTime - user.LastDateSeen);
+                    user.LastDateSeen = CurrTime;
+                    _DataSource.AcceptChanges();
+                    SaveData();
+                    OnPropertyChanged(nameof(Users));
+                }
             }
         }
 
@@ -545,7 +579,7 @@ namespace ChatBot_Net5.Data
         }
 
         internal void PostStreamStat(StreamStat streamStat)
-        {
+        {// TODO: consider regularly posting stream stats in case bot crashes and loses current stream stats up to the crash
             lock (_DataSource.StreamStats)
             {
                 CurrStreamStatRow = GetAllStreamData(streamStat.StreamStart);
@@ -631,38 +665,48 @@ switches:
         {
             lock (_DataSource.Commands)
             {
+                if (_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)+"'").Length == 0)
+                {
+                    _DataSource.CategoryList.AddCategoryListRow(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
+                    _DataSource.CategoryList.AcceptChanges();
+                }
+
+                DataSource.CategoryListRow categoryListRow = (DataSource.CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
+
                 bool CheckName(string criteria)
                 {
                     DataSource.CommandsRow[] datarow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + criteria + "'");
                     if (datarow.Length > 0 && datarow[0].Category == string.Empty)
                     {
-                        datarow[0].Category = "All";
+                        datarow[0].Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
                     }
                     return datarow.Length == 0;
                 }
 
+                // Todo: convert commands table to localized strings, except the query parameters should stay in English
+
                 // command name     // msg   // params  
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
                 {
-                    { DefaultCommand.addcommand.ToString(), new("Command added", "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
+                    { DefaultCommand.addcommand.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
                     // '-top:-1' means all items
-                    { DefaultCommand.commands.ToString(), new("The list of commands: #query", "-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands") },
-                    { DefaultCommand.bot.ToString(), new("Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/", "-use:!bot") },
-                    { DefaultCommand.lurk.ToString(), new("#user is now lurking. See you soon!", "-use:!lurk") },
-                    { DefaultCommand.worklurk.ToString(), new("#user is lurking while making some moohla! See you soon!", "-use:!worklurk") },
-                    { DefaultCommand.unlurk.ToString(), new("#user has returned. Welcome back!", "-use:!unlurk") },
-                    { DefaultCommand.socials.ToString(), new("Here are all of my social media connections: ", "-use:!socials") },
-                    { DefaultCommand.so.ToString(), new("Go check a great streamer #user, at #url!", "-p:Mod -param:true -use:!so username - only mods can use !so.") },
-                    { DefaultCommand.join.ToString(), new("The message isn't used in response.", "-use:!join") },
-                    { DefaultCommand.leave.ToString(), new("The message isn't used in response.", "-use:!leave") },
-                    { DefaultCommand.queue.ToString(), new("The message isn't used in response.", "-p:Mod -use:!queue mods only") },
-                    { DefaultCommand.qinfo.ToString(), new("Use -!join 'gamertag'- to join the queue, and !leave to leave the queue.", "-use:!qinfo") },
-                    { DefaultCommand.qstart.ToString(), new("The queue list to join me in the game has started!", "-p:Mod -use:!qstart mod only") },
-                    { DefaultCommand.qstop.ToString(), new("The queue list to join me has stopped.", "-p:Mod -use:!qstop mod only") },
-                    { DefaultCommand.follow.ToString(), new("If you are enjoying the content, please hit that follow button!", "-use:!follow") },
-                    { DefaultCommand.watchtime.ToString(), new("#user has watched a total of #query.", "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
-                    { DefaultCommand.uptime.ToString(), new("#user has been streaming for #uptime.", "-use:!uptime") },
-                    { DefaultCommand.followage.ToString(), new("#user has followed for #query!","-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>")}
+                    { DefaultCommand.commands.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.commands), "-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands") },
+                    { DefaultCommand.bot.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.bot), "-use:!bot") },
+                    { DefaultCommand.lurk.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.lurk), "-use:!lurk") },
+                    { DefaultCommand.worklurk.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.worklurk), "-use:!worklurk") },
+                    { DefaultCommand.unlurk.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.unlurk), "-use:!unlurk") },
+                    { DefaultCommand.socials.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.socials), "-use:!socials") },
+                    { DefaultCommand.so.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.so), "-p:Mod -param:true -use:!so username - only mods can use !so.") },
+                    { DefaultCommand.join.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.join), "-use:!join") },
+                    { DefaultCommand.leave.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.leave), "-use:!leave") },
+                    { DefaultCommand.queue.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.queue), "-p:Mod -use:!queue mods only") },
+                    { DefaultCommand.qinfo.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qinfo), "-use:!qinfo") },
+                    { DefaultCommand.qstart.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstart), "-p:Mod -use:!qstart mod only") },
+                    { DefaultCommand.qstop.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop), "-p:Mod -use:!qstop mod only") },
+                    { DefaultCommand.follow.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.follow), "-use:!follow") },
+                    { DefaultCommand.watchtime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.watchtime), "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
+                    { DefaultCommand.uptime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime), "-use:!uptime") },
+                    { DefaultCommand.followage.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.followage), "-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>")}
                 };
 
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
@@ -675,7 +719,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, "All", param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, categoryListRow, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -728,7 +772,7 @@ switches:
                     return cmdpermission >= permission;
                 }
                 else
-                    throw new InvalidOperationException("Command not found.");
+                    throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidOpCommand));
             }
         }
 
@@ -774,10 +818,11 @@ switches:
         internal string AddCommand(string cmd, CommandParams Params)
         {
             //string strParams = Params.DBParamsString();
+            DataSource.CategoryListRow categoryListRow = (DataSource.CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
 
             lock (_DataSource.Commands)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, string.Empty, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
                 OnPropertyChanged(nameof(Commands));
             }
@@ -796,7 +841,7 @@ switches:
             DataSource.CommandsRow[] socialrows = null;
             lock (_DataSource.Commands)
             {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='socials'");
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='"+ LocalizedMsgSystem.GetVar(DefaultCommand.socials)+"'");
             }
 
             string socials = socialrows[0].Message;
@@ -828,7 +873,7 @@ switches:
             {
                 DataSource.CommandsRow[] usagerows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + command + "'");
 
-                return usagerows[0]?.Usage ?? "No usage available.";
+                return usagerows[0]?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
             }
         }
 
@@ -875,7 +920,7 @@ switches:
 
             if (comrow == null || comrow.Length == 0)
             {
-                throw new KeyNotFoundException("Command not found.");
+                throw new KeyNotFoundException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound));
             }
 
             return comrow[0];
@@ -895,7 +940,7 @@ switches:
 
                 if (result == null)
                 {
-                    return "data not found.";
+                    return LocalizedMsgSystem.GetVar(Msg.MsgDataNotFound);
                 }
 
                 Type resulttype = result.GetType();
@@ -911,7 +956,7 @@ switches:
                 {
                     DataSource.FollowersRow follower = (DataSource.FollowersRow)result;
 
-                    return follower.IsFollower ? follower.FollowedDate : "not a follower.";
+                    return follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
                 }
                 else if (resulttype == typeof(DataSource.CurrencyRow))
                 {

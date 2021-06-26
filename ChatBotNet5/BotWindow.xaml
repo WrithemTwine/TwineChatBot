@@ -38,13 +38,13 @@
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel>
-                    <Label>Built-in Commands:</Label>
+                    <Label>Commands- Built-in:</Label>
                     <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label>Defined Commands:</Label>
+                    <Label> User-Defined:</Label>
                     <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
@@ -76,8 +76,9 @@
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
                             <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
-                                    <TextBlock TextWrapping="Wrap">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
+                                    <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.</TextBlock>
+                                    <TextBlock x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" >The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</TextBlock>
                                     <WrapPanel>
                                         <WrapPanel.Resources>
                                             <Style TargetType="{x:Type Label}">
@@ -582,6 +583,18 @@
                     <TabItem IsEnabled="False" />
                     <TabItem Header="MultiLive Monitor">
                         <Grid x:Name="TabItem_MultiUserLiveMonitor">
+                            <Grid.Resources>
+                                <Style TargetType="DataGrid">
+                                    <Setter Property="Margin" Value="5"/>
+                                    <Setter Property="MaxColumnWidth" Value="160" />
+                                    <Setter Property="AlternationCount" Value="1" />
+                                    <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4" />
+                                    <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+                                    <Setter Property="CanUserAddRows" Value="False" />
+                                    <EventSetter Event="MouseEnter" Handler="DataGrid_MouseEnter" />
+                                    <EventSetter Event="MouseLeave" Handler="DataGrid_MouseLeave" />
+                                </Style>
+                            </Grid.Resources>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50" />
                                 <RowDefinition/>
@@ -615,12 +628,11 @@
                                 </TextBox.ToolTip>
                             </TextBox>
 
-                            <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" Margin="5,5,5,5" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" MaxColumnWidth="160" AlternationCount="1" 
-                              AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" />
-                            <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Margin="5,5,5,5" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding Channels, Mode=OneWay}" MaxColumnWidth="160"  AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" RowEditEnding="DG_ChannelNames_RowEditEnding" />
-                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Margin="5,5,5,5" Grid.RowSpan="2" MaxColumnWidth="160" AlternationCount="1" AlternatingRowBackground="#FFDBFFF4" IsSynchronizedWithCurrentItem="True" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
+                            <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" 
+                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}"  />
+                            <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" 
+                              ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" />
+                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
                             <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
                                 <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />

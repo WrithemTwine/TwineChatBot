@@ -1,4 +1,4 @@
-﻿using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.Static;
 
 namespace ChatBot_Net5.BotIOController
 {

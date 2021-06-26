@@ -1,10 +1,9 @@
-﻿
-using ChatBot_Net5.Interfaces;
+﻿using ChatBot_Net5.Interfaces;
 using ChatBot_Net5.Properties;
 
 using System;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     /// <summary>
     /// Abstract base class for any bot attached to this application

@@ -1,10 +1,8 @@
-﻿//#if DEBUG
-//#define LOGGING
-//#endif
+﻿using ChatBot_Net5.Properties;
 
-using ChatBot_Net5.Properties;
+using System;
 
-namespace ChatBot_Net5.Data
+namespace ChatBot_Net5.Static
 {
     internal static class OptionFlags
     {
@@ -19,7 +17,9 @@ namespace ChatBot_Net5.Data
 
         internal static bool FirstUserJoinedMsg { get; set; }
         internal static bool FirstUserChatMsg { get; set; }
-        
+
+        internal static DateTime TwitchRefreshDate { get; set; }
+
         internal static bool MsgAddMe { get; set; }
         internal static bool MsgNoMe { get; set; }
         internal static bool MsgPerComMe { get; set; }
@@ -58,6 +58,8 @@ namespace ChatBot_Net5.Data
                 FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
                 FirstUserChatMsg = Settings.Default.WelcomeChatMsg;
 
+                TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
+
                 MsgAddMe = Settings.Default.MsgInsertMe;
                 MsgNoMe = Settings.Default.MsgNoMe;
                 MsgPerComMe = Settings.Default.MsgPerComMe;
@@ -89,6 +91,11 @@ namespace ChatBot_Net5.Data
             Settings.Default.UserPartyStop = !Start;
 
             SetSettings();
+        }
+
+        internal static TimeSpan CurrentToTwitchRefreshDate()
+        {
+            return TwitchRefreshDate - DateTime.Now;
         }
 
     }

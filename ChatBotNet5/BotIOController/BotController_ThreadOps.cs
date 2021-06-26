@@ -1,5 +1,5 @@
-﻿using ChatBot_Net5.Clients;
-using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.Static;
 
 using System.Collections.Generic;
 using System.Threading;
