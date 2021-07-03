@@ -1,11 +1,13 @@
-﻿using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.Data;
+using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
 
-namespace ChatBot_Net5.Data
+namespace ChatBot_Net5.Systems
 {
-    public class Statistics
+    public class StatisticsSystem
     {
         private readonly List<string> CurrUsers = new();
         private readonly List<string> UniqueUserJoined = new();
@@ -17,10 +19,17 @@ namespace ChatBot_Net5.Data
         private StreamStat CurrStream { get; set; } = new();
         public string Category { get; set; }
 
-        public Statistics(DataManager dataManager)
+        public StatisticsSystem(DataManager dataManager)
         {
             datamanager = dataManager;
         }
+
+
+        public bool CheckStreamTime(DateTime TimeStream)
+        {
+            return datamanager.CheckMultiStreams(TimeStream);
+        }
+
 
         /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel

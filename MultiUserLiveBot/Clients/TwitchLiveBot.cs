@@ -155,7 +155,7 @@ namespace MultiUserLiveBot.Clients
 
                 if (channels.Count > 0)
                 {
-                    LogEntry(string.Format(CultureInfo.CurrentCulture, "Channels updated! Was monitoring {0} channels, now monitoring {1} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
+                    LogEntry(string.Format(CultureInfo.CurrentCulture, "Monitored channels updated!", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
 
                     LiveStreamMonitor.SetChannelsByName(channels);
                     return true;

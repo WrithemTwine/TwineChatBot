@@ -61,38 +61,20 @@ namespace ChatBot_Net5.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;UserDefinedCommands.GetHashCode received a null argument.&quot;.
+        ///   Looks up a localized string similar to WrithemTwine.
         /// </summary>
-        internal static string UDC_ParamException {
+        internal static string AuthorTwitch {
             get {
-                return ResourceManager.GetString("UDC_ParamException", resourceCulture);
+                return ResourceManager.GetString("AuthorTwitch", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;obj&quot;.
+        ///   Looks up a localized string similar to https://twitch.tv/.
         /// </summary>
-        internal static string UDC_ParamName {
+        internal static string TwitchHomepage {
             get {
-                return ResourceManager.GetString("UDC_ParamName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &quot;UserDefinedCommands.SaveData object is null.&quot;.
-        /// </summary>
-        internal static string UDC_SaveData_Exception {
-            get {
-                return ResourceManager.GetString("UDC_SaveData_Exception", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &quot;userDefinedCommands&quot;.
-        /// </summary>
-        internal static string UDC_SaveData_ParamName {
-            get {
-                return ResourceManager.GetString("UDC_SaveData_ParamName", resourceCulture);
+                return ResourceManager.GetString("TwitchHomepage", resourceCulture);
             }
         }
     }

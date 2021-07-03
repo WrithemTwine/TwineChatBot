@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.Enum;
+using ChatBot_Net5.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -49,12 +50,12 @@ namespace ChatBot_Net5.Models
 
                 if ((c || u) && !(f && t))
                 {
-                    throw new InvalidOperationException(f ? "Table not specified." : "Field not specified.");
+                    throw new InvalidOperationException(LocalizedMsgSystem.GetVar(f ? ChatBotExceptions.ExceptionInvalidOperationTable : ChatBotExceptions.ExceptionInvalidOperationField));
                 }
 
                 if (f && !t)
                 {
-                    throw new InvalidOperationException("Table not specified.");
+                    throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidOperationTable));
                 }
 
                 bool checkUsage = false;
@@ -130,7 +131,7 @@ namespace ChatBot_Net5.Models
                 }
             }
 
-            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The supplied value {0} is not included within the acceptable list: {1}", v, type.GetEnumNames().ToString()));
+            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionArgument), v, type.GetEnumNames().ToString()));
         }
 
 

@@ -6,7 +6,7 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotLiveMonitorSvc : TwitchBots
     {

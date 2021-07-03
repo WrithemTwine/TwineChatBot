@@ -1,7 +1,8 @@
-﻿using ChatBot_Net5.BotIOController;
-using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.BotIOController;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Properties;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace ChatBot_Net5
         // TODO: Add color themes
         private readonly ChatPopup CP;
         private const string MultiLiveName = "MultiUserLiveBot";
+
+        private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         private readonly BotController controller;
 
@@ -52,9 +55,8 @@ namespace ChatBot_Net5
             //CP.SetBinding(OpacityProperty, new Binding("Opacity") { Source = Slider_PopOut_Opacity, Mode = BindingMode.OneWayToSource, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
+            NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
         }
-
-
 
         #region Events
         #region Windows & Tab Ops
@@ -70,18 +72,21 @@ namespace ChatBot_Net5
                 new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot)
             };
 
-            foreach (Tuple<bool, RadioButton> tuple in BotOps)
+            if (OptionFlags.CurrentToTwitchRefreshDate() >= CheckRefreshDate)
             {
-                if (tuple.Item1 && tuple.Item2.IsEnabled)
+                foreach (Tuple<bool, RadioButton> tuple in BotOps)
                 {
-                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                    if (tuple.Item1 && tuple.Item2.IsEnabled)
                     {
-                        HelperStartBot(tuple.Item2);
-                    }
-                    else
-                    {
-                        SetMultiLiveButtons();
-                        MultiBotRadio(true);
+                        if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                        {
+                            HelperStartBot(tuple.Item2);
+                        }
+                        else
+                        {
+                            SetMultiLiveButtons();
+                            MultiBotRadio(true);
+                        }
                     }
                 }
             }
@@ -102,14 +107,37 @@ namespace ChatBot_Net5
 
         private void TabItem_Twitch_GotFocus(object sender, RoutedEventArgs e)
         {
-            if ((DateTime.Parse(Twitch_RefreshDate.Content.ToString()) - DateTime.Now) <= new TimeSpan(14, 0, 0, 0))
+            Twitch_RefreshDate.Foreground = OptionFlags.CurrentToTwitchRefreshDate() <= CheckRefreshDate
+                ? new SolidColorBrush(Color.FromRgb(255, 0, 0))
+                : new SolidColorBrush(Color.FromRgb(0, 0, 0));
+
+        }
+
+        #endregion
+
+        #region BotOps-changes in token expiration
+
+        /// <summary>
+        /// Event to handle when the Bot Credentials expire. The expiration date 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
+        {
+            List<RadioButton> BotOps = new()
             {
-                Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            }
-            else
+                Radio_MultiLiveTwitch_StopBot,
+                Radio_Twitch_FollowBotStop,
+                Radio_Twitch_LiveBotStop,
+                Radio_Twitch_StopBot
+            };
+
+            foreach (RadioButton button in BotOps)
             {
-                Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                HelperStopBot(button);
             }
+
+            CheckFocus();
         }
 
         #endregion
@@ -161,11 +189,27 @@ namespace ChatBot_Net5
             ((BotController)LV_JoinList.DataContext).JoinCollection.Remove((sender as CheckBox).DataContext as UserJoin);
         }
 
-        private void TextBox_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) => CheckFocus();
+        private void TextBox_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
+        {
+            if ((sender as TextBox).Name == "TB_Twitch_AccessToken")
+            {
+                RefreshButton_Click(this, null); // invoke date refresh when the access token is changed
+            }
 
-        private void RefreshButton_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(50);
+            CheckFocus();
+        }
 
-        private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+            TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            CheckFocus();
+        }
+
+        private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox).ScrollToEnd();
+        }
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -177,7 +221,7 @@ namespace ChatBot_Net5
             if (rb.IsEnabled)
             {
                 rb.IsChecked = true;
-                (rb.DataContext as Clients.IOModule)?.StartBot();
+                (rb.DataContext as IOModule)?.StartBot();
                 ToggleInputEnabled(false);
 
                 foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
@@ -203,14 +247,12 @@ namespace ChatBot_Net5
             }
         }
 
-        private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void HelperStopBot(RadioButton rb)
         {
-            RadioButton rb = sender as RadioButton;
-
             if (rb.IsEnabled)
             {
                 rb.IsChecked = true;
-                (rb.DataContext as Clients.IOModule)?.StopBot();
+                (rb.DataContext as IOModule)?.StopBot();
                 ToggleInputEnabled(true);
 
                 foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
@@ -233,6 +275,13 @@ namespace ChatBot_Net5
                     }
                 }
             }
+        }
+
+        private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            RadioButton rb = sender as RadioButton;
+
+            HelperStopBot(rb);
         }
 
         private void DG_CommonMsgs_AutoGeneratedColumns(object sender, EventArgs e)
@@ -288,6 +337,8 @@ namespace ChatBot_Net5
                         }
                     }
                     break;
+                default:
+                    break;
             }
         }
 
@@ -315,6 +366,7 @@ namespace ChatBot_Net5
 
             controller.ManageDatabase();
         }
+
         #endregion
 
         #region Helpers
@@ -339,11 +391,16 @@ namespace ChatBot_Net5
         /// </summary>
         private void CheckFocus()
         {
-            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0)
+            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate() >= new TimeSpan(0,0,0))
             {
                 Radio_Twitch_StartBot.IsEnabled = true;
                 Radio_Twitch_FollowBotStart.IsEnabled = true;
                 Radio_Twitch_LiveBotStart.IsEnabled = true;
+            } else
+            {
+                Radio_Twitch_StartBot.IsEnabled = false;
+                Radio_Twitch_FollowBotStart.IsEnabled = false;
+                Radio_Twitch_LiveBotStart.IsEnabled = false;
             }
         }
 
@@ -376,6 +433,11 @@ namespace ChatBot_Net5
         private bool WatchProcessOps;
 
         /// <summary>
+        /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
+        /// </summary>
+        internal event EventHandler NotifyExpiredCredentials;
+
+        /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
         private bool? IsMultiProcActive;
@@ -385,11 +447,13 @@ namespace ChatBot_Net5
         private void UpdateProc(bool IsActive)
         {
             ProcWatch watch = SetMultiLiveActive;
-            Application.Current.Dispatcher.BeginInvoke(watch, IsActive);
+            _ = Application.Current.Dispatcher.BeginInvoke(watch, IsActive);
         }
 
         private void ProcessWatcher()
         {
+            const int sleep = 5000;
+
             while (WatchProcessOps)
             {
                 Process[] processes = Process.GetProcessesByName(MultiLiveName);
@@ -399,7 +463,12 @@ namespace ChatBot_Net5
                     IsMultiProcActive = processes.Length > 0;
                 }
 
-                Thread.Sleep(5000);
+                if (OptionFlags.CurrentToTwitchRefreshDate() <= new TimeSpan(0, 5, sleep / 1000))
+                {
+                    NotifyExpiredCredentials?.Invoke(this, new());
+                }
+
+                Thread.Sleep(sleep);
             }
         }
 
@@ -481,6 +550,26 @@ namespace ChatBot_Net5
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             controller.UpdateChannels();
+        }
+
+        private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            DataGrid curr = sender as DataGrid;
+
+            if (curr.IsMouseOver)
+            {
+                curr.CanUserAddRows = true;
+            }
+        }
+
+        private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            DataGrid curr = sender as DataGrid;
+
+            if (!curr.IsMouseOver)
+            {
+                curr.CanUserAddRows = false;
+            }
         }
 
         #endregion

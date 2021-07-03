@@ -1,4 +1,5 @@
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace TestProject1
         public void TestAddEndStream()
         {
             DataManager dataManager = new();
-            Statistics test = new(dataManager);
+            StatisticsSystem test = new(dataManager);
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
@@ -73,7 +74,7 @@ namespace TestProject1
         public void AddSpecificStream1()
         {
             DataManager dataManager = new();
-            Statistics test = new(dataManager);
+            StatisticsSystem test = new(dataManager);
 
             DateTime nowstart = TestStart.ToLocalTime();
 
@@ -96,7 +97,7 @@ namespace TestProject1
         public void AddSpecificStream2()
         {
             DataManager dataManager = new();
-            Statistics test = new(dataManager);
+            StatisticsSystem test = new(dataManager);
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);

@@ -9,7 +9,7 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients.TwitchLib
+namespace ChatBot_Net5.BotClients.TwitchLib
 {
     internal class ExtFollowerService : FollowerService
     {

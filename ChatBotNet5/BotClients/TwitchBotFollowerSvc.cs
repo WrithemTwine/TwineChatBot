@@ -1,5 +1,5 @@
-﻿using ChatBot_Net5.Clients.TwitchLib;
-using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.BotClients.TwitchLib;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotFollowerSvc : TwitchBots
     {
