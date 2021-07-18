@@ -25,6 +25,12 @@ namespace ChatBot_Net5.Systems
             datamanager = dataManager;
         }
 
+
+        public bool CheckStreamTime(DateTime TimeStream)
+        {
+            return datamanager.CheckMultiStreams(TimeStream);
+        }
+
         public bool CheckStreamTime(DateTime TimeStream)
         {
             return datamanager.CheckMultiStreams(TimeStream);
