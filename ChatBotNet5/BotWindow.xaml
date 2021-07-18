@@ -400,7 +400,7 @@
                                             <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
                                                 <TextBlock>Enable repeating commands.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox>
+                                            <CheckBox Visibility="Collapsed">
                                                 <TextBlock>Enable smart slow-down to spread out (up to twice as long) repeated messages during slow chatting in stream. Will adjust to as fast as the repeat timer when chat is faster.</TextBlock>
                                             </CheckBox>
                                             <TextBlock>TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>

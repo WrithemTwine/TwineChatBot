@@ -31,11 +31,6 @@ namespace ChatBot_Net5.Systems
             return datamanager.CheckMultiStreams(TimeStream);
         }
 
-        public bool CheckStreamTime(DateTime TimeStream)
-        {
-            return datamanager.CheckMultiStreams(TimeStream);
-        }
-
         public void SetCategory(string category)
         {
             Category = category;

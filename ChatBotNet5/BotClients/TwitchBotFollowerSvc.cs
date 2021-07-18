@@ -45,13 +45,18 @@ namespace ChatBot_Net5.BotClients
         /// </summary>
         public override bool StartBot()
         {
-            ConnectFollowerService();
-            FollowerService?.Start();
-            IsStarted = true;
-            IsStopped = false;
-            InvokeBotStarted();
+            try
+            {
+                ConnectFollowerService();
+                FollowerService?.Start();
+                IsStarted = true;
+                IsStopped = false;
+                InvokeBotStarted();
 
-            return true;
+                return true;
+            }
+            catch { }
+            return false;
         }
 
         /// <summary>
@@ -59,15 +64,20 @@ namespace ChatBot_Net5.BotClients
         /// </summary>
         public override bool StopBot()
         {
-            if (!IsStopped)
+            try
             {
-                FollowerService?.Stop();
-                IsStarted = false;
-                IsStopped = true;
-                InvokeBotStopped();
-                FollowerService = null;
+                if (!IsStopped)
+                {
+                    FollowerService?.Stop();
+                    IsStarted = false;
+                    IsStopped = true;
+                    InvokeBotStopped();
+                    FollowerService = null;
+                }
+                return true;
             }
-            return true;
+            catch { }
+            return false;
         }
 
         internal async Task<List<Follow>> GetAllFollowersAsync()
