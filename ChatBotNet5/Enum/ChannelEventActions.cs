@@ -17,6 +17,8 @@
         Respond,
         Resubscribe,
         Subscribe,
-        UserJoined
+        UserJoined,
+        ReturnUserJoined,
+        SupporterJoined
     }
 }

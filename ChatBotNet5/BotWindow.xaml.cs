@@ -44,6 +44,9 @@ namespace ChatBot_Net5
 
             InitializeComponent();
 
+            ResourceDictionary language = new() { Source = new("/Culture/GUI_Msgs.xaml", UriKind.Relative)};
+            Resources.MergedDictionaries.Add(language);
+
             OptionFlags.SetSettings();
             controller = Resources["ControlBot"] as BotController;
 
@@ -220,28 +223,36 @@ namespace ChatBot_Net5
         {
             if (rb.IsEnabled)
             {
-                rb.IsChecked = true;
-                (rb.DataContext as IOModule)?.StartBot();
-                ToggleInputEnabled(false);
+                bool? started = (rb.DataContext as IOModule)?.StartBot();
 
-                foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
+                if (started == false)
                 {
-                    if (child.GetType() == typeof(RadioButton))
-                    {
-                        (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
-                    }
-                    else if (child.GetType() == typeof(Label))
-                    {
-                        Label currLabel = (Label)child;
-                        if (currLabel.Name.Contains("Start"))
-                        {
-                            currLabel.Visibility = Visibility.Visible;
-                        }
-                        else if (currLabel.Name.Contains("Stop"))
-                        {
-                            currLabel.Visibility = Visibility.Collapsed;
-                        }
+                    ToggleInputEnabled(true);
+                }
+                else if (started == true)
+                {
+                    rb.IsChecked = true;
+                    ToggleInputEnabled(false);
 
+                    foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
+                    {
+                        if (child.GetType() == typeof(RadioButton))
+                        {
+                            (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
+                        }
+                        else if (child.GetType() == typeof(Label))
+                        {
+                            Label currLabel = (Label)child;
+                            if (currLabel.Name.Contains("Start"))
+                            {
+                                currLabel.Visibility = Visibility.Visible;
+                            }
+                            else if (currLabel.Name.Contains("Stop"))
+                            {
+                                currLabel.Visibility = Visibility.Collapsed;
+                            }
+
+                        }
                     }
                 }
             }
@@ -337,6 +348,16 @@ namespace ChatBot_Net5
                         }
                     }
                     break;
+
+                case "DG_CategoryList":
+                    foreach(DataGridColumn dc in dg.Columns)
+                    {
+                        if(dc.Header.ToString() != "Category")
+                        {
+                            dc.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -352,7 +373,6 @@ namespace ChatBot_Net5
             static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
 
             TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
-            TabItem_Followers.Visibility = SetVisibility(OptionFlags.ManageFollowers);
             TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
 
             if (CheckBox_ManageUsers.IsChecked == true)

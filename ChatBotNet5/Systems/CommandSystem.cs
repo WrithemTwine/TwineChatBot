@@ -61,7 +61,6 @@ namespace ChatBot_Net5.Systems
         /// </summary>
         private void ElapsedCommandTimers()
         {
-            // TODO: consider adding gaming category so repeat timers only work when certain categories are active for the stream, or certain stream tags (if possible to get tags)
             // TODO: consider slower timers (dilute timers, make them longer) when channel isn't as active
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();

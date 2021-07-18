@@ -161,15 +161,19 @@ namespace ChatBot_Net5.BotClients
         /// <returns>True when successful.</returns>
         public override bool StopBot()
         {
-            if (TwitchChat.IsConnected)
+            try
             {
-                IsStarted = false;
-                IsStopped = true;
-                TwitchChat.Disconnect();
-                RefreshSettings();
-                InvokeBotStopped();
+                if (TwitchChat.IsConnected)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    TwitchChat.Disconnect();
+                    RefreshSettings();
+                    InvokeBotStopped();
+                }
+                return true;
             }
-            return true;
+            catch { return false; }
         }
 
         /// <summary>

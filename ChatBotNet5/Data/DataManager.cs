@@ -51,6 +51,7 @@ namespace ChatBot_Net5.Data
         public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
         public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
+        public DataView Category { get; private set; } // DataSource.CategoryTable
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string PropName)
@@ -94,6 +95,7 @@ namespace ChatBot_Net5.Data
             Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             StreamStats = new(_DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
             ShoutOuts = new(_DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
+            Category = new(_DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -200,27 +202,54 @@ namespace ChatBot_Net5.Data
 
             Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
-                { ChannelEventActions.BeingHosted, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.BeingHosted), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers })) 
+                {
+                    ChannelEventActions.BeingHosted,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers }))
                 },
-                { ChannelEventActions.Bits, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Bits), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits })) },
-                { ChannelEventActions.CommunitySubs, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.CommunitySubs), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan })) },
-                { ChannelEventActions.NewFollow, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.NewFollow), VariableParser.ConvertVars(new[] { MsgVars.user })) },
-                { ChannelEventActions.GiftSub, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.GiftSub), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname })) },
-                { ChannelEventActions.Live, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Live), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url })) },
-                { ChannelEventActions.Raid, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Raid), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers })) },
-                { ChannelEventActions.Resubscribe, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Resubscribe), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak })) },
-                { ChannelEventActions.Subscribe, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.Subscribe), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname })) },
-                { ChannelEventActions.UserJoined, 
-                    new(LocalizedMsgSystem.GetVar(ChannelEventActions.UserJoined), VariableParser.ConvertVars(new[] { MsgVars.user })) }
+                {
+                    ChannelEventActions.Bits,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits }))
+                },
+                {
+                    ChannelEventActions.CommunitySubs,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan }))
+                },
+                {
+                    ChannelEventActions.NewFollow,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                },
+                {
+                    ChannelEventActions.GiftSub,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname }))
+                },
+                {
+                    ChannelEventActions.Live,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url }))
+                },
+                {
+                    ChannelEventActions.Raid,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers }))
+                },
+                {
+                    ChannelEventActions.Resubscribe,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak }))
+                },
+                {
+                    ChannelEventActions.Subscribe,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname }))
+                },
+                {
+                    ChannelEventActions.UserJoined,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                },
+                {
+                    ChannelEventActions.ReturnUserJoined,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                },
+                {
+                    ChannelEventActions.SupporterJoined,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                }
             };
 
             foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
@@ -341,11 +370,50 @@ namespace ChatBot_Net5.Data
             }
         }
 
+        /// <summary>
+        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.
+        /// </summary>
+        /// <param name="User">The user to check in the database.</param>
+        /// <returns><c>true</c> if the user has arrived prior to DateTime.Now, <c>false</c> otherwise.</returns>
+        internal bool CheckUser(string User)
+        {
+            return CheckUser(User, DateTime.Now);
+        }
+
+        /// <summary>
+        /// Check if the <paramref name="User"/> has visited the channel prior to <paramref name="ToDateTime"/>, identified as either DateTime.Now or the current start of the stream.
+        /// </summary>
+        /// <param name="User">The user to verify.</param>
+        /// <param name="ToDateTime">Specify the date to check if the user arrived to the channel prior to this date and time.</param>
+        /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
+        internal bool CheckUser(string User, DateTime ToDateTime)
+        {
+            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+
+            return !(user == null) || user.FirstDateSeen <= ToDateTime;
+        }
+
+        /// <summary>
+        /// Check if the User is already a follower prior to now.
+        /// </summary>
+        /// <param name="User">The name of the user to check.</param>
+        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.Now.</returns>
         internal bool CheckFollower(string User)
+        {
+            return CheckFollower(User, DateTime.Now);
+        }
+
+        /// <summary>
+        /// Check if a user is a follower at or before the current date.
+        /// </summary>
+        /// <param name="User">The user to query.</param>
+        /// <param name="ToDateTime">The date to check FollowedDate <= <c>ToDateTime</c></param>
+        /// <returns></returns>
+        internal bool CheckFollower(string User, DateTime ToDateTime)
         {
             lock (_DataSource.Followers)
             {
-                DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "'");
+                DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "' && FollowedDate<='" + ToDateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture) + "'");
                 DataSource.FollowersRow followers = datafollowers.Length > 0 ? (DataSource.FollowersRow)datafollowers[0] : null;
 
                 if (followers == null)
@@ -430,7 +498,7 @@ namespace ChatBot_Net5.Data
 
             lock (_DataSource.Users)
             {
-                if (_DataSource.Users.FindByUserName(User) == null)
+                if (!CheckUser(User))
                 {
                     DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
                     _DataSource.Users.AcceptChanges();
@@ -579,7 +647,8 @@ namespace ChatBot_Net5.Data
         }
 
         internal void PostStreamStat(StreamStat streamStat)
-        {// TODO: consider regularly posting stream stats in case bot crashes and loses current stream stats up to the crash
+        {
+            // TODO: consider regularly posting stream stats in case bot crashes and loses current stream stats up to the crash
             lock (_DataSource.StreamStats)
             {
                 CurrStreamStatRow = GetAllStreamData(streamStat.StreamStart);
@@ -618,7 +687,10 @@ namespace ChatBot_Net5.Data
             OnPropertyChanged(nameof(StreamStats));
         }
 
-        internal bool CheckStreamTime(DateTime CurrTime) => GetAllStreamData(CurrTime) != null;
+        internal bool CheckStreamTime(DateTime CurrTime)
+        {
+            return GetAllStreamData(CurrTime) != null;
+        }
 
         internal void RemoveAllStreamStats()
         {
@@ -657,7 +729,6 @@ switches:
 
         private readonly string DefaulSocialMsg = "Social media url here";
 
-
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
@@ -683,7 +754,7 @@ switches:
                     return datarow.Length == 0;
                 }
 
-                // Todo: convert commands table to localized strings, except the query parameters should stay in English
+                // TODO: convert commands table to localized strings, except the query parameters should stay in English
 
                 // command name     // msg   // params  
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
@@ -846,7 +917,7 @@ switches:
 
             string socials = socialrows[0].Message;
 
-            if (OptionFlags.MsgPerComMe == true && socialrows[0].AddMe == true)
+            if (OptionFlags.MsgPerComMe && socialrows[0].AddMe == true)
             {
                 socials = "/me " + socialrows[0].Message;
             }
@@ -1020,5 +1091,21 @@ switches:
 
         #endregion
 
+        #region Category
+
+        /// <summary>
+        /// Checks for the supplied category in the category list, adds if it isn't already saved.
+        /// </summary>
+        /// <param name="newCategory">The category to add to the list if it's not available.</param>
+        internal void UpdateCategory(string newCategory)
+        {
+            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory + "'");
+
+            if (categoryList.Length == 0)
+            {
+                _DataSource.CategoryList.AddCategoryListRow(newCategory);
+            }
+        }
+        #endregion
     }
 }

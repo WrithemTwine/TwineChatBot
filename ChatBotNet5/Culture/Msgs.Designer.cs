@@ -331,6 +331,15 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message to provide when a user/viewer is returning to the stream..
+        /// </summary>
+        internal static string HelpReturnUserJoined {
+            get {
+                return ResourceManager.GetString("HelpReturnUserJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to current sub streak months, depends on user preference to share.
         /// </summary>
         internal static string Helpstreak {
@@ -372,6 +381,15 @@ namespace ChatBot_Net5.Culture {
         internal static string HelpSubscribe {
             get {
                 return ResourceManager.GetString("HelpSubscribe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message to provide when user/viewer is a follower to the stream and supporting the channel..
+        /// </summary>
+        internal static string HelpSupporterJoined {
+            get {
+                return ResourceManager.GetString("HelpSupporterJoined", resourceCulture);
             }
         }
         
@@ -718,6 +736,15 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Thanks #user for returning to the channel!.
+        /// </summary>
+        internal static string MsgReturnUserJoined {
+            get {
+                return ResourceManager.GetString("MsgReturnUserJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Go check a great streamer #user, at #url!.
         /// </summary>
         internal static string Msgso {
@@ -750,6 +777,15 @@ namespace ChatBot_Net5.Culture {
         internal static string MsgSubscribe {
             get {
                 return ResourceManager.GetString("MsgSubscribe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thanks #user for supporting the channel and welcome back to stream!.
+        /// </summary>
+        internal static string MsgSupporterJoined {
+            get {
+                return ResourceManager.GetString("MsgSupporterJoined", resourceCulture);
             }
         }
         

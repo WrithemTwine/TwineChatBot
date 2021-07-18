@@ -17,6 +17,7 @@ namespace ChatBot_Net5.Systems
         private readonly List<string> VIPUsers = new();
         private readonly DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
+
         public string Category { get; set; }
 
         public StatisticsSystem(DataManager dataManager)
@@ -30,6 +31,11 @@ namespace ChatBot_Net5.Systems
             return datamanager.CheckMultiStreams(TimeStream);
         }
 
+        public void SetCategory(string category)
+        {
+            Category = category;
+            datamanager.UpdateCategory(category);
+        }
 
         /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel
@@ -95,6 +101,16 @@ namespace ChatBot_Net5.Systems
                 datamanager.UserLeft(User, CurrTime);
             }
             CurrUsers.Remove(User);
+        }
+
+        public bool IsFollower(string User)
+        {
+            return datamanager.CheckFollower(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
+        }
+
+        public bool IsReturningUser(string User)
+        {
+            return datamanager.CheckUser(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
         }
 
         /// <summary>

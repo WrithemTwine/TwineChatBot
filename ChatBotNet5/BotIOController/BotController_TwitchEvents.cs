@@ -111,7 +111,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            Stats.Category = e.Stream.GameName;
+            Stats.SetCategory(e.Stream.GameName);
         }
 
         /// <summary>
@@ -413,6 +413,10 @@ namespace ChatBot_Net5.BotIOController
             {
                 Stats.VIPJoined(e.ChatMessage.DisplayName);
             }
+            if (e.ChatMessage.IsModerator)
+            {
+                Stats.ModJoined(e.ChatMessage.DisplayName);
+            }
 
 
             // handle bit cheers
@@ -513,12 +517,22 @@ namespace ChatBot_Net5.BotIOController
 
         private void RegisterJoinedUser(string Username)
         {
-            // TODO: update welcome message for new user, returning viewer, and returning follower!
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
                 if ((Username.ToLower(CultureInfo.CurrentCulture) != TwitchBots.TwitchChannelName.ToLower(CultureInfo.CurrentCulture)) || OptionFlags.MsgWelcomeStreamer)
                 {
-                    string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _);
+                    ChannelEventActions selected = ChannelEventActions.UserJoined;
+
+                    if (OptionFlags.WelcomeCustomMsg)
+                    {
+                        selected =
+                            Stats.IsFollower(Username) ?
+                            ChannelEventActions.SupporterJoined :
+                                Stats.IsReturningUser(Username) ?
+                                    ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
+                    }
+
+                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out _);
                     Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                         new( MsgVars.user, Username )

@@ -26,6 +26,8 @@ namespace ChatBot_Net5.Static
 
         internal static bool MsgWelcomeStreamer { get; set; }
 
+        internal static bool WelcomeCustomMsg { get; set; }
+
         internal static bool AutoShout { get; set; }
         internal static bool TwitchRaidShoutOut { get; set; }
 
@@ -65,6 +67,7 @@ namespace ChatBot_Net5.Static
                 MsgPerComMe = Settings.Default.MsgPerComMe;
 
                 MsgWelcomeStreamer = Settings.Default.MsgWelcomeStreamer;
+                WelcomeCustomMsg = Settings.Default.WelcomeCustomMsg;
 
                 AutoShout = Settings.Default.MsgAutoShout;
 

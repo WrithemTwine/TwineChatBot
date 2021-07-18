@@ -214,6 +214,9 @@
   <data name="HelpResubscribe" xml:space="preserve">
     <value>The thank you message when a user resubscribes to the channel.</value>
   </data>
+  <data name="HelpReturnUserJoined" xml:space="preserve">
+    <value>Message to provide when a user/viewer is returning to the stream.</value>
+  </data>
   <data name="Helpstreak" xml:space="preserve">
     <value>current sub streak months, depends on user preference to share</value>
   </data>
@@ -228,6 +231,9 @@
   </data>
   <data name="HelpSubscribe" xml:space="preserve">
     <value>The thank you message when a user subscribes to the channel.</value>
+  </data>
+  <data name="HelpSupporterJoined" xml:space="preserve">
+    <value>Message to provide when user/viewer is a follower to the stream and supporting the channel.</value>
   </data>
   <data name="Helptime" xml:space="preserve">
     <value>Gets the current time in your timezone</value>
@@ -355,6 +361,10 @@
     <value>Thanks #user for re-subscribing!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="MsgReturnUserJoined" xml:space="preserve">
+    <value>Thanks #user for returning to the channel!</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
   <data name="Msgso" xml:space="preserve">
     <value>Go check a great streamer #user, at #url!</value>
   </data>
@@ -367,6 +377,10 @@
   </data>
   <data name="MsgSubscribe" xml:space="preserve">
     <value>Thanks #user for the subscribing!</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="MsgSupporterJoined" xml:space="preserve">
+    <value>Thanks #user for supporting the channel and welcome back to stream!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgunlurk" xml:space="preserve">
