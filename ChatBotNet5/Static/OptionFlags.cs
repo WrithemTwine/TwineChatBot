@@ -32,6 +32,7 @@ namespace ChatBot_Net5.Static
         internal static bool TwitchRaidShoutOut { get; set; }
 
         internal static bool RepeatTimer { get; set; }
+        internal static bool RepeatTimerDilute { get; set; }
         internal static bool RepeatWhenLive { get; set; }
 
         internal static bool UserPartyStart { get; set; }
@@ -74,6 +75,7 @@ namespace ChatBot_Net5.Static
                 TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
 
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
+                RepeatTimerDilute = Settings.Default.RepeatTimerComSlowdown;
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
 
                 UserPartyStart = Settings.Default.UserPartyStart;

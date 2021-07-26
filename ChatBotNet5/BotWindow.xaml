@@ -352,7 +352,7 @@
                             <TextBlock IsEnabled="False"><Run Text="Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification."/><LineBreak /><Run Text="Current implemented"/><LineBreak /><Run Text="'Kind':"/></TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single" />
-                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
+                                <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                             </StackPanel>
                         </StackPanel>
                     </TabItem>
@@ -397,11 +397,15 @@
                                             <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
                                                 <TextBlock><Run Text="Enable Repeat commands only when live."/></TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.">
+                                            <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <CheckBox.ToolTip>
+                                                    <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock></CheckBox.ToolTip>
                                                 <TextBlock>Enable repeating commands.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox Visibility="Collapsed">
-                                                <TextBlock>Enable smart slow-down to spread out (up to twice as long) repeated messages during slow chatting in stream. Will adjust to as fast as the repeat timer when chat is faster.</TextBlock>
+                                            <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
+                                                <CheckBox.ToolTip>
+                                                    <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 10+ viewers an hour or over 20 viewer chats in 15 minutes.</TextBlock></CheckBox.ToolTip>
+                                                <TextBlock>Enable smart slow-down repeating commands</TextBlock>
                                             </CheckBox>
                                             <TextBlock>TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
                                         </StackPanel>
@@ -516,7 +520,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                            <DataGrid Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
+                            <DataGrid Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="User Data" x:Name="TabItem_Users">
@@ -605,14 +609,14 @@
                                     <Label Content="Built-in Commands:" Grid.Row="1"/>
                                     <DataGrid Grid.Row="2" x:Name="DG_BuiltInCommands" DataContext="{Binding DataManage}" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" MaxColumnWidth="253" />
                                     <Label Content="User-Defined Commands:" Grid.Row="4"/>
-                                    <DataGrid Grid.Row="5" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
+                                    <DataGrid Grid.Row="5" DataContext="{Binding DataManage}" ItemsSource="{Binding Commands, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding"/>
                                 </Grid>
                             </TabItem>
                         </TabControl>
                     </TabItem>
                     <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
                         <Grid>
-                            <DataGrid DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" />
+                            <DataGrid DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                         </Grid>
                     </TabItem>
                     <TabItem IsEnabled="False" />
@@ -664,10 +668,10 @@
                             </TextBox>
 
                             <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}"  />
+                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding"  />
                             <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" />
-                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
+                              ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
+                            <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
 
                             <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
                                 <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />

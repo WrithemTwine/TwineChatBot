@@ -14,6 +14,8 @@ using System.Threading;
 
 using TwitchLib.Client.Models;
 
+// TODO: add currency system
+
 namespace ChatBot_Net5.Systems
 {
     public class CommandSystem : INotifyPropertyChanged
@@ -61,35 +63,83 @@ namespace ChatBot_Net5.Systems
         /// </summary>
         private void ElapsedCommandTimers()
         {
-            // TODO: consider slower timers (dilute timers, make them longer) when channel isn't as active
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
+
+            DateTime chattime = DateTime.Now; // the time to check chats sent
+            DateTime viewertime = DateTime.Now; // the time to check viewers
+            int chats = StatData.GetCurrentChatCount();
+            int viewers = StatData.GetUserCount();
+
+            const int ChatCount = 20;
+            const int ViewerCount = 10;
+
+            double CheckDilute()
+            {
+                if (OptionFlags.RepeatTimerDilute)
+                {
+                    // 10+ viewers per hr, or 20chats in 15 minutes; == 1.0 dilute
+                    if (chats >= ChatCount || viewers >= ViewerCount)
+                    {
+                        return 1.0;
+                    }
+
+                    DateTime now = DateTime.Now;
+                    if (now - chattime >= new TimeSpan(0, 15, 0) || now - viewertime >= new TimeSpan(1, 0, 0))
+                    {
+                        int newchats, newviewers;
+                        if (now - chattime >= new TimeSpan(0, 15, 0)) { chattime = now; newchats = StatData.GetCurrentChatCount(); }
+                        else
+                        {
+                            newchats = chats;
+                        }
+
+                        if (now - viewertime >= new TimeSpan(1, 0, 0)) { viewertime = now; newviewers = StatData.GetUserCount(); }
+                        else
+                        {
+                            newviewers = viewers;
+                        }
+
+                        double temp = 1.0 + newchats >= ChatCount || newviewers >= ViewerCount ? 0 : (1.0 - (Math.Abs(newchats + newviewers) / (ChatCount + ViewerCount)));
+                        chats = newchats;
+                        viewers = newviewers;
+
+                        return temp;
+                    }
+                }
+                return 1.0;
+            }
+
+            double DiluteTime = CheckDilute();
+
 
             foreach (Tuple<string, int, string[]> Timers in datamanager.GetTimerCommands())
             {
                 if (Timers.Item3.Contains(StatData.Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                 {
-                    RepeatList.Add(new(Timers));
+                    RepeatList.Add(new(Timers, DiluteTime));
                 }
             }
 
             while (OptionFlags.ProcessOps)
             {
+                DiluteTime = CheckDilute();
+
                 foreach (TimerCommand timer in RepeatList)
                 {
                     if (timer.CheckFireTime() && (timer.CategoryList.Contains(StatData.Category) || timer.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry))))
                     {
-                        timer.UpdateTime();
+                        timer.UpdateTime(DiluteTime);
                         string output = PerformCommand(timer.Command, BotUserName, null, true);
 
                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
                     }
                 }
 
-                // check if any commands are added to the repeat timers, does not remove until bot is stopped and started again
+                // check if any commands are added to the repeat timers
                 foreach (Tuple<string, int, string[]> Timers in datamanager.GetTimerCommands())
                 {
-                    TimerCommand command = new(Timers);
+                    TimerCommand command = new(Timers, DiluteTime);
                     if (command.CategoryList.Contains(StatData.Category) || command.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                     {
                         if (!RepeatList.Contains(command))
@@ -109,10 +159,10 @@ namespace ChatBot_Net5.Systems
 
                 for (int x = RepeatList.Count - 1; x >= 0 && RepeatList.Count > 0; x--)
                 {
-                    if (RepeatList[x].RepeatTime == 0 && (!RepeatList[x].CategoryList.Contains(StatData.Category) || !RepeatList[x].CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry))))
+                    if (RepeatList[x].RepeatTime == 0 || !(RepeatList[x].CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)) || RepeatList[x].CategoryList.Contains(StatData.Category)))
                     {
                         RepeatList.RemoveAt(x);
-                    }
+                    } 
                 }
 
                 Thread.Sleep(5000); // wait for awhile before checking commands again
@@ -157,7 +207,7 @@ namespace ChatBot_Net5.Systems
             // no permission, stop processing
             if (!CheckPermission(command, InvokerPermission))
             {
-                throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand));
+               return (LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand));
             }
 
             return PerformCommand(command, chatMessage.DisplayName, arglist);
@@ -223,27 +273,31 @@ namespace ChatBot_Net5.Systems
                 }
 
                 DataSource.CommandsRow CommData = datamanager.GetCommand(command);
+                Dictionary<string, string> datavalues = null;
 
-                string paramvalue = CommData.AllowParam
-                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
-                        ? DisplayName
-                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
-                    : DisplayName;
+                if (CommData != null)
+                {
+                    string paramvalue = CommData.AllowParam
+                        ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                            ? DisplayName
+                            : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                        : DisplayName;
 
-                Dictionary<string, string> datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                            {
+                    datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                {
                             new( MsgVars.user, paramvalue ),
                             new( MsgVars.url, paramvalue ),
                             new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
                             new( MsgVars.date, DateTime.Now.Date.ToLocalTime().ToString() )
-                            });
+                                });
 
-                if (CommData.lookupdata)
-                {
-                    LookupQuery(CommData, paramvalue, ref datavalues);
+                    if (CommData.lookupdata)
+                    {
+                        LookupQuery(CommData, paramvalue, ref datavalues);
+                    }
                 }
 
-                return (OptionFlags.MsgPerComMe && CommData.AddMe ? "/me " : "") + VariableParser.ParseReplace(CommData.Message, datavalues);
+                return (OptionFlags.MsgPerComMe && CommData.AddMe ? "/me " : "") + VariableParser.ParseReplace(CommData?.Message ?? LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound), datavalues);
             }
         }
     
@@ -381,7 +435,7 @@ namespace ChatBot_Net5.Systems
 
             UserJoinArgs userJoinArgs = new();
             userJoinArgs.Command = command;
-            userJoinArgs.AddMe = CommData.AddMe;
+            userJoinArgs.AddMe = CommData?.AddMe ?? false;
             userJoinArgs.ChatUser = UserName;
             userJoinArgs.GameUserName = arglist == null || arglist.Count == 0 ? UserName : arglist[0];
 

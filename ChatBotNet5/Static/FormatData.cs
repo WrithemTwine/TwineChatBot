@@ -56,11 +56,16 @@ namespace ChatBot_Net5.Static
         /// <returns>A string from <paramref name="timeSpan"/> data with 'x days, y hours, and z minutes'; and the time unit is adjusted to plurality, e.g. 0 days, 1 day, 2 days etc</returns>
         internal static string FormatTimes(TimeSpan timeSpan)
         {
+            const double monthdays = 30.0;
+            const double yeardays = 365.242;
+            
             string output = "";
 
             Dictionary<string, int> datakeys = new()
             {
-                { "day", timeSpan.Days },
+                { "year", (int) Math.Floor( timeSpan.Days / yeardays ) },
+                { "month", (int) Math.Floor(timeSpan.Days/monthdays) },
+                { "day", timeSpan.Days % (int)monthdays },
                 { "hour", timeSpan.Hours },
                 { "minute", timeSpan.Minutes }
             };

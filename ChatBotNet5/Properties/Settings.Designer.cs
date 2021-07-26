@@ -490,5 +490,17 @@ namespace ChatBot_Net5.Properties {
                 this["WelcomeCustomMsg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatTimerComSlowdown {
+            get {
+                return ((bool)(this["RepeatTimerComSlowdown"]));
+            }
+            set {
+                this["RepeatTimerComSlowdown"] = value;
+            }
+        }
     }
 }
