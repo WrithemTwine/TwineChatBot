@@ -29,6 +29,8 @@ namespace ChatBot_Net5
 
         private readonly BotController controller;
 
+        private bool IsAddNewRow;
+
         public BotWindow()
         {
             // move settings to the newest version, if the application version upgrades
@@ -59,6 +61,8 @@ namespace ChatBot_Net5
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+            controller.StreamOnline += Controller_StreamOnline;
+            controller.StreamOffline += Controller_StreamOffline;
         }
 
         #region Events
@@ -95,7 +99,7 @@ namespace ChatBot_Net5
             }
 
             // TODO: add follower service online, offline, and repeat timers to re-run service
-            // TODO: turn off bots & prevent starting if the token is expired - research auto-refreshing token
+            // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
         }
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
@@ -116,7 +120,33 @@ namespace ChatBot_Net5
 
         }
 
+        /// <summary>
+        /// Determines whether the streamer channel name and token are entered, to enable the checkbox option.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Arguments from the event.</param>
+        private void CheckBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckBox FollowbackStreamer = (CheckBox)sender;
+            FollowbackStreamer.IsEnabled = false;
+
+            if(OptionFlags.TwitchStreamerChannel!=null && OptionFlags.TwitchStreamerToken!=null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
+            {
+                FollowbackStreamer.IsEnabled = true;
+            }
+        }
+
         #endregion
+
+        private void Controller_StreamOnline(object sender, EventArgs eventArgs)
+        {
+            HelperStartBot(Radio_Twitch_LiveBotStart);
+        }
+
+        private void Controller_StreamOffline(object sender, EventArgs eventArgs)
+        {
+            HelperStopBot(Radio_Twitch_StopBot);
+        }
 
         #region BotOps-changes in token expiration
 
@@ -205,6 +235,13 @@ namespace ChatBot_Net5
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+            TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            CheckFocus();
+        }
+
+        private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
+        {
+            Twitch_StreamerRefreshDate.Content = DateTime.Now.AddDays(60);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
@@ -387,6 +424,60 @@ namespace ChatBot_Net5
             controller.ManageDatabase();
         }
 
+        /// <summary>
+        /// Sets a DataGrid to accept a new row.
+        /// </summary>
+        /// <param name="sender">Object sending event.</param>
+        /// <param name="e">Mouse arguments related to sending object.</param>
+        private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            DataGrid curr = sender as DataGrid;
+
+            if (curr.IsMouseOver)
+            {
+                curr.CanUserAddRows = true;
+            }
+        }
+
+        /// <summary>
+        /// Sets a DataGrid to no longer accept a new row.
+        /// </summary>
+        /// <param name="sender">Object sending event.</param>
+        /// <param name="e">Mouse arguments related to sending object.</param>
+        private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            DataGrid curr = sender as DataGrid;
+            
+            if (!(curr.IsMouseOver || IsAddNewRow)) // check for mouse over object and check if adding new row
+            {
+                curr.CanUserAddRows = false;    // this fails if mouse leaves while user hasn't finished adding a new row - the if flag prevents this
+            }
+        }
+
+        /// <summary>
+        /// Need to call this event to manage the mouse over "Adding New Rows" event change. 
+        /// Leaving a DataGrid and trying to change "CanUserAddRows" to false while still editing a new row will throw an exception.
+        /// Sets a flag used for the "MouseLeave" to prevent DataGrid from entering an error state.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Params from the object.</param>
+        private void DataGrid_InitializingNewItem(object sender, InitializingNewItemEventArgs e)
+        {
+            IsAddNewRow = true;
+        }
+
+        /// <summary>
+        /// Need to call this event to manage the mouse over "Adding New Rows" event change. 
+        /// Leaving a DataGrid and trying to change "CanUserAddRows" to false while still editing a new row will throw an exception.
+        /// Sets a flag used for the "MouseLeave" to prevent DataGrid from entering an error state.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Params from the object.</param>
+        private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            IsAddNewRow = false;
+        }
+        
         #endregion
 
         #region Helpers
@@ -570,27 +661,9 @@ namespace ChatBot_Net5
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             controller.UpdateChannels();
+            IsAddNewRow = false;
         }
 
-        private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
-        {
-            DataGrid curr = sender as DataGrid;
-
-            if (curr.IsMouseOver)
-            {
-                curr.CanUserAddRows = true;
-            }
-        }
-
-        private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
-        {
-            DataGrid curr = sender as DataGrid;
-
-            if (!curr.IsMouseOver)
-            {
-                curr.CanUserAddRows = false;
-            }
-        }
 
         #endregion
 

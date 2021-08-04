@@ -25,7 +25,6 @@ namespace ChatBot_Net5.Systems
             datamanager = dataManager;
         }
 
-
         public bool CheckStreamTime(DateTime TimeStream)
         {
             return datamanager.CheckMultiStreams(TimeStream);
@@ -53,6 +52,24 @@ namespace ChatBot_Net5.Systems
             }
 
             return UserChat(User);
+        }
+
+        /// <summary>
+        /// Retrieves the current users within the channel during the stream.
+        /// </summary>
+        /// <returns>The current user count as of now.</returns>
+        public int GetUserCount()
+        {
+            return CurrUsers.Count;
+        }
+
+        /// <summary>
+        /// Retrieve how many chats have occurred in the current live stream to now.
+        /// </summary>
+        /// <returns>Current total chats as of now.</returns>
+        public int GetCurrentChatCount()
+        {
+            return CurrStream.TotalChats;
         }
 
         public bool UserChat(string User)
@@ -95,7 +112,6 @@ namespace ChatBot_Net5.Systems
 
         public void UserLeft(string User, DateTime CurrTime)
         {
-            UpdateWatchTime(User);
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
                 datamanager.UserLeft(User, CurrTime);
@@ -154,6 +170,8 @@ namespace ChatBot_Net5.Systems
 
         public void StreamOffline(DateTime Stopped)
         {
+            // TODO: add option to stop bot when stream goes offline
+
             UpdateWatchTime();
             OptionFlags.IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped.ToLocalTime();

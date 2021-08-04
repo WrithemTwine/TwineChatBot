@@ -119,5 +119,32 @@
     <Setting Name="WelcomeCustomMsg" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="RepeatTimerComSlowdown" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchStreamerChannel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">If different than bot account, use this to enter the account for follow-backs - needs option selected</Value>
+    </Setting>
+    <Setting Name="TwitchStreamerToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Add token for streamer channel, specifically for only follow-back</Value>
+    </Setting>
+    <Setting Name="TwitchDisconnectBot" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="TwitchStrmTokenDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">1900-01-01</Value>
+    </Setting>
+    <Setting Name="TwitchFollowbackBotChoice" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchFollowbackStreamerChoice" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchChatBotDisconnectOffline" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchChatBotConnectOnline" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

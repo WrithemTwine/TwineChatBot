@@ -333,7 +333,7 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = AddNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
-                _DataSource.AcceptChanges();
+                UpdateWatchTime(user, DateTime.Now);
                 SaveData();
                 OnPropertyChanged(nameof(Users));
             }
@@ -346,8 +346,7 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 if (user != null)
                 {
-                    user.LastDateSeen = LastSeen;
-                    _DataSource.AcceptChanges();
+                    UpdateWatchTime(user, LastSeen);
                     SaveData();
                     OnPropertyChanged(nameof(Users));
                 }
@@ -358,12 +357,18 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
-                if (user != null)
+                UpdateWatchTime(_DataSource.Users.FindByUserName(User), CurrTime);
+            }
+        }
+
+        internal void UpdateWatchTime(DataSource.UsersRow User, DateTime CurrTime)
+        {
+            lock (_DataSource.Users)
+            {
+                if (User != null)
                 {
-                    user.WatchTime = user.WatchTime.Add(CurrTime - user.LastDateSeen);
-                    user.LastDateSeen = CurrTime;
-                    _DataSource.AcceptChanges();
+                    User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
+                    User.LastDateSeen = CurrTime;
                     SaveData();
                     OnPropertyChanged(nameof(Users));
                 }
@@ -390,7 +395,7 @@ namespace ChatBot_Net5.Data
         {
             DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
 
-            return !(user == null) || user.FirstDateSeen <= ToDateTime;
+            return !(user == null) || user?.FirstDateSeen <= ToDateTime;
         }
 
         /// <summary>
@@ -413,7 +418,7 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Followers)
             {
-                DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "' && FollowedDate<='" + ToDateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture) + "'");
+                DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "' and FollowedDate<='" + ToDateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture) + "'");
                 DataSource.FollowersRow followers = datafollowers.Length > 0 ? (DataSource.FollowersRow)datafollowers[0] : null;
 
                 if (followers == null)
@@ -479,7 +484,6 @@ namespace ChatBot_Net5.Data
                     newfollow = true;
                     _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
                 }
-                _DataSource.AcceptChanges();
                 SaveData();
                 OnPropertyChanged(nameof(Followers));
                 return newfollow;
@@ -501,7 +505,6 @@ namespace ChatBot_Net5.Data
                 if (!CheckUser(User))
                 {
                     DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-                    _DataSource.Users.AcceptChanges();
                     SaveData();
                     return output;
                 }
@@ -555,7 +558,6 @@ namespace ChatBot_Net5.Data
                     }
                 }
 
-                _DataSource.AcceptChanges();
                 UpdatingFollowers = false;
                 SaveData();
             }));
@@ -636,7 +638,6 @@ namespace ChatBot_Net5.Data
             lock (_DataSource.StreamStats)
             {
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                _DataSource.StreamStats.AcceptChanges();
                 SaveData();
 
                 //CurrStreamStatRow = GetAllStreamData(StreamStart);
@@ -989,12 +990,12 @@ switches:
                 comrow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
             }
 
-            if (comrow == null || comrow.Length == 0)
-            {
-                throw new KeyNotFoundException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound));
-            }
+            //if (comrow == null || comrow.Length == 0)
+            //{
+            //    throw new KeyNotFoundException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound));
+            //}
 
-            return comrow[0];
+            return comrow?[0];
         }
 
         internal object PerformQuery(DataSource.CommandsRow row, string ParamValue)
@@ -1099,12 +1100,13 @@ switches:
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
         internal void UpdateCategory(string newCategory)
         {
-            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory + "'");
+            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'","''") + "'");
 
             if (categoryList.Length == 0)
             {
                 _DataSource.CategoryList.AddCategoryListRow(newCategory);
             }
+            SaveData();
         }
         #endregion
     }

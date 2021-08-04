@@ -70,7 +70,8 @@ namespace ChatBot_Net5.Static
             // submethod to replace the found key with paired value
             string Rep(string key)
             {
-                while (key.Contains(Prefix))
+                int prefcount = key.Split(Prefix).Length;
+                while ( prefcount > 0 ) // count and loop through the number of prefixes, sometimes there's a prefix in the message but not meant to exchange a variable. with just one prefix and no exchange, this becomes an infinite loop.
                 {
                     string hit = "";
 
@@ -91,6 +92,7 @@ namespace ChatBot_Net5.Static
                         (hit == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
                         value)
                         : key;
+                    prefcount--;
                 }
                 return key;
             }
@@ -98,7 +100,7 @@ namespace ChatBot_Net5.Static
             // review the incoming string message for all of the keys in the dictionary, replace with paired value
             for (int x = 0; x < words.Length; x++)
             {
-                temp += (words[x].StartsWith(Prefix, StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
+                temp += (words[x].StartsWith(Prefix, StringComparison.CurrentCulture) && dictionary != null ? Rep(words[x]) : words[x]) + " ";
             }
 
             return temp.Trim();

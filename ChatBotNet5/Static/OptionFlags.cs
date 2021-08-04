@@ -6,13 +6,11 @@ namespace ChatBot_Net5.Static
 {
     internal static class OptionFlags
     {
-        internal static bool ProcessOps { get; set; } = false;  // whether to process ops or not
-        internal static bool IsStreamOnline { get; set; } = false;
+        internal static bool ProcessOps { get; set; }  // whether to process ops or not
+        internal static bool IsStreamOnline { get; set; }
 
         internal static bool TwitchAddFollowersStart { get; set; }
         internal static bool TwitchPruneNonFollowers { get; set; }
-        internal static bool TwitchFollowerFollowBack { get; set; }
-        internal static bool TwitchRaidFollowBack { get; set; }
         internal static bool TwitchAddFollowerNotification { get; set; }
 
         internal static bool FirstUserJoinedMsg { get; set; }
@@ -32,6 +30,7 @@ namespace ChatBot_Net5.Static
         internal static bool TwitchRaidShoutOut { get; set; }
 
         internal static bool RepeatTimer { get; set; }
+        internal static bool RepeatTimerDilute { get; set; }
         internal static bool RepeatWhenLive { get; set; }
 
         internal static bool UserPartyStart { get; set; }
@@ -45,6 +44,18 @@ namespace ChatBot_Net5.Static
         internal static bool ManageFollowers { get; set; }
         internal static bool ManageStreamStats { get; set; }
 
+        internal static bool TwitchFollowerFollowBack { get; set; }
+        internal static bool TwitchRaidFollowBack { get; set; }
+        internal static bool TwitchFollowbackBotChoice { get; set; }
+        internal static bool TwitchFollowbackStreamerChoice { get; set; }
+
+        internal static string TwitchStreamerChannel { get; set; }
+        internal static string TwitchStreamerToken { get; set; }
+        internal static DateTime TwitchStreamTokenDate { get; set; }
+
+        internal static bool TwitchChatBotConnectOnline { get; set; }
+        internal static bool TwitchChatBotDisconnectOffline { get; set; }
+
         internal static void SetSettings()
         {
             lock (Settings.Default)
@@ -53,8 +64,6 @@ namespace ChatBot_Net5.Static
 
                 TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
                 TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
-                TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
-                TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
                 TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
 
                 FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
@@ -74,6 +83,7 @@ namespace ChatBot_Net5.Static
                 TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
 
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
+                RepeatTimerDilute = Settings.Default.RepeatTimerComSlowdown;
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
 
                 UserPartyStart = Settings.Default.UserPartyStart;
@@ -85,6 +95,18 @@ namespace ChatBot_Net5.Static
                 ManageUsers = Settings.Default.ManageUsers;
                 ManageFollowers = Settings.Default.ManageFollowers;
                 ManageStreamStats = Settings.Default.ManageStreamStats;
+
+                TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
+                TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
+
+                TwitchFollowbackBotChoice = Settings.Default.TwitchFollowbackBotChoice;
+                TwitchFollowbackStreamerChoice = Settings.Default.TwitchFollowbackStreamerChoice;
+                TwitchStreamerChannel = Settings.Default.TwitchStreamerChannel;
+                TwitchStreamerToken = Settings.Default.TwitchStreamerToken;
+                TwitchStreamTokenDate = Settings.Default.TwitchStrmTokenDate;
+
+                TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
+                TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
             }
         }
 
@@ -96,9 +118,9 @@ namespace ChatBot_Net5.Static
             SetSettings();
         }
 
-        internal static TimeSpan CurrentToTwitchRefreshDate()
+        internal static TimeSpan CurrentToTwitchRefreshDate(bool streamaccount = false)
         {
-            return TwitchRefreshDate - DateTime.Now;
+            return (streamaccount ? TwitchStreamTokenDate : TwitchRefreshDate) - DateTime.Now;
         }
 
     }
