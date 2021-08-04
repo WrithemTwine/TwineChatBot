@@ -1,10 +1,10 @@
 # TwineChatBot
-Twitch bots written using .NET 5.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib.
+Twitch bots written using .NET 5.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file. 
 
 --------------------------
 # Application - Multi-Live Bot:
 
-This bot utilizes .NET 5.0 and TwitchLib, containing the LiveStreamMonitorService. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file. 
+This bot utilizes TwitchLib containing the LiveStreamMonitorService. 
 
 A user can use an existing Twitch channel user name or establish a new channel user account (recommended) as a bot. The application has further detail about how to get a 'client id' and 'access token'.
 
@@ -18,7 +18,7 @@ The user can add:
 # Application - Twine Chat Bot 
 (documentation updated periodically, may not reflect actual current feature set)
 
-Features: This bot utilizes .NET 5.0 and TwitchLib and implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file.
+Features: This bot utilizes TwitchLib.
 
 The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
 
@@ -61,6 +61,7 @@ Options to manage bot actions (enable or disable):
    - Repeat commands on a timer (in seconds)
       - all the time
       - only when live
+      - slow down repeating when channel is slow (few viewers or chats in a timeframe)
    - Welcome viewers (only once per live stream)
       - when viewer joins channel
       - when viewer first chats
@@ -77,7 +78,7 @@ Options to manage bot actions (enable or disable):
          - Remove non-followers from Followers table
          - Notification message for new follows
        - To other channels:
-         - Auto follow back when a viewer follows you
+         - Auto follow back when a viewer follows
          - Auto follow when a raider arrives
          - Set the go live notification for the now followed channel
    - Automatically start when app starts:
@@ -89,13 +90,14 @@ Options to manage bot actions (enable or disable):
 Twitch (some features depend on settings)
    - Chat bot
       - interacts with viewers during live streams through commands and events
+      - start and/or stop bot when stream is online or offline
       - when left running, tends to the channel like thanking new followers and repeating timer commands
    - Follow bot
       - registers new follows to the channel
       - when started: retrieves followers and removes non-followers from the database
+      - implements following back the viewers who follow you or raid your channel
       - (future feature?) routinely retrieve followers and remove non-followers without restarting the follow bot
       - (future feature?) message spam protection for large groups of followers, and tool to remove spam bot follows
-      - (in debug) implements following back the viewers who follow you or raid your channel
    - Live bot
       - registers when your channel goes live or goes offline
       - monitors other channels to share when they go live
