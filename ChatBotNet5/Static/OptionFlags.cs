@@ -6,8 +6,8 @@ namespace ChatBot_Net5.Static
 {
     internal static class OptionFlags
     {
-        internal static bool ProcessOps { get; set; } = false;  // whether to process ops or not
-        internal static bool IsStreamOnline { get; set; } = false;
+        internal static bool ProcessOps { get; set; }  // whether to process ops or not
+        internal static bool IsStreamOnline { get; set; }
 
         internal static bool TwitchAddFollowersStart { get; set; }
         internal static bool TwitchPruneNonFollowers { get; set; }
@@ -44,7 +44,6 @@ namespace ChatBot_Net5.Static
         internal static bool ManageFollowers { get; set; }
         internal static bool ManageStreamStats { get; set; }
 
-
         internal static bool TwitchFollowerFollowBack { get; set; }
         internal static bool TwitchRaidFollowBack { get; set; }
         internal static bool TwitchFollowbackBotChoice { get; set; }
@@ -53,6 +52,9 @@ namespace ChatBot_Net5.Static
         internal static string TwitchStreamerChannel { get; set; }
         internal static string TwitchStreamerToken { get; set; }
         internal static DateTime TwitchStreamTokenDate { get; set; }
+
+        internal static bool TwitchChatBotConnectOnline { get; set; }
+        internal static bool TwitchChatBotDisconnectOffline { get; set; }
 
         internal static void SetSettings()
         {
@@ -102,6 +104,9 @@ namespace ChatBot_Net5.Static
                 TwitchStreamerChannel = Settings.Default.TwitchStreamerChannel;
                 TwitchStreamerToken = Settings.Default.TwitchStreamerToken;
                 TwitchStreamTokenDate = Settings.Default.TwitchStrmTokenDate;
+
+                TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
+                TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
             }
         }
 

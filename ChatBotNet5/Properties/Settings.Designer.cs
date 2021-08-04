@@ -575,5 +575,29 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchFollowbackStreamerChoice"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchChatBotDisconnectOffline {
+            get {
+                return ((bool)(this["TwitchChatBotDisconnectOffline"]));
+            }
+            set {
+                this["TwitchChatBotDisconnectOffline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchChatBotConnectOnline {
+            get {
+                return ((bool)(this["TwitchChatBotConnectOnline"]));
+            }
+            set {
+                this["TwitchChatBotConnectOnline"] = value;
+            }
+        }
     }
 }

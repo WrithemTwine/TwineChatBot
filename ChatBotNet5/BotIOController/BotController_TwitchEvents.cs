@@ -19,6 +19,9 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
+        public event EventHandler StreamOnline;
+        public event EventHandler StreamOffline;
+
         // TODO: Add Twitch Clips Service-posting to Discord, including getting a clip message, Discord clip link
 
         /// <summary>
@@ -102,6 +105,12 @@ namespace ChatBot_Net5.BotIOController
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
             Stats.StreamOffline(DateTime.Now);
+
+            if (OptionFlags.TwitchChatBotDisconnectOffline)
+            {
+                TwitchIO.StopBot();
+                StreamOffline?.Invoke(this, new());
+            }
         }
 
         /// <summary>
@@ -123,6 +132,12 @@ namespace ChatBot_Net5.BotIOController
         {
             try
             {
+                if (OptionFlags.TwitchChatBotConnectOnline)
+                {
+                    TwitchIO.StartBot();
+                    StreamOnline?.Invoke(this, new());
+                }
+
                 if (e.Channel != TwitchBots.TwitchChannelName)
                 {
                     SendMultiLiveMsg(e);

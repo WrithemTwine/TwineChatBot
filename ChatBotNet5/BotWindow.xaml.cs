@@ -61,6 +61,8 @@ namespace ChatBot_Net5
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+            controller.StreamOnline += Controller_StreamOnline;
+            controller.StreamOffline += Controller_StreamOffline;
         }
 
         #region Events
@@ -118,7 +120,33 @@ namespace ChatBot_Net5
 
         }
 
+        /// <summary>
+        /// Determines whether the streamer channel name and token are entered, to enable the checkbox option.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Arguments from the event.</param>
+        private void CheckBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckBox FollowbackStreamer = (CheckBox)sender;
+            FollowbackStreamer.IsEnabled = false;
+
+            if(OptionFlags.TwitchStreamerChannel!=null && OptionFlags.TwitchStreamerToken!=null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
+            {
+                FollowbackStreamer.IsEnabled = true;
+            }
+        }
+
         #endregion
+
+        private void Controller_StreamOnline(object sender, EventArgs eventArgs)
+        {
+            HelperStartBot(Radio_Twitch_LiveBotStart);
+        }
+
+        private void Controller_StreamOffline(object sender, EventArgs eventArgs)
+        {
+            HelperStopBot(Radio_Twitch_StopBot);
+        }
 
         #region BotOps-changes in token expiration
 

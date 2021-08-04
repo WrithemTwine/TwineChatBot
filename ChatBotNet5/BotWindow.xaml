@@ -105,7 +105,7 @@
                                                 <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
                                                     <TextBlock>The Twitch Chat Client is stopped!</TextBlock>
                                                 </Label>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" >
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
                                                     <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
                                                 <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
@@ -113,6 +113,16 @@
                                                 <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                     <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                 </Label>
+
+                                                <Label Height="Auto">
+                                                    <TextBlock TextWrapping="Wrap">Start and Stop bot when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the stream is detected online is when the Chat Bot would start.</TextBlock>
+                                                </Label>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotConnectOnline}" LostFocus="Settings_LostFocus" >
+                                                    <TextBlock>Connect bot when stream goes online</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotDisconnectOffline}" LostFocus="Settings_LostFocus" >
+                                                    <TextBlock>Disconnect bot when stream goes offline</TextBlock>
+                                                </CheckBox>
                                             </WrapPanel>
                                         </GroupBox>
                                         <GroupBox Header="Follower Service">
@@ -225,7 +235,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <Label Content="Streamer Channel Name"/>
-                                            <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" />
+                                            <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" LostFocus="Settings_LostFocus" />
                                         </StackPanel>
                                     <Expander Header="Credential (Click Me)">
                                             <StackPanel>
@@ -236,7 +246,7 @@
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <Label Content="Streamer Token"/>
-                                                <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerToken, Mode=TwoWay}" Width="340" />
+                                                    <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerToken, Mode=TwoWay}" Width="340" LostFocus="Settings_LostFocus" />
                                             </StackPanel>
                                             </StackPanel>
                                         </Expander></StackPanel>
@@ -408,7 +418,7 @@
                             </Style>
                         </TabItem.Resources>
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <DockPanel Margin="20" DataContext="{Binding Source={x:Static s:Settings.Default}}" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
+                            <DockPanel Margin="10" DataContext="{Binding Source={x:Static s:Settings.Default}}" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Horizontal">
                                     <GroupBox Header="Any - Bot Management">
                                         <StackPanel>
@@ -418,14 +428,6 @@
                                             <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock><Run Text="Enable posting to social media (e.g. Discord) multiple live messages in same day."/></TextBlock>
                                             </CheckBox>
-                                        </StackPanel>
-                                    </GroupBox>
-                                    <GroupBox Header="Twitch - Format Bot messages">
-                                        <StackPanel>
-                                            <Label Content="/me changes message to all italics" />
-                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Content="{DynamicResource Disabled}" />
-                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
-                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Automatic Commands by Timer">
@@ -438,12 +440,12 @@
                                                     <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock></CheckBox.ToolTip>
                                                 <TextBlock>Enable repeating commands.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
+                                            <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <CheckBox.ToolTip>
                                                     <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 10+ viewers an hour or over 20 viewer chats in 15 minutes.</TextBlock></CheckBox.ToolTip>
                                                 <TextBlock>Enable smart slow-down repeating commands</TextBlock>
                                             </CheckBox>
-                                            <TextBlock>TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
+                                            <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Welcome Viewers">
@@ -466,6 +468,15 @@
                                             <CheckBox IsChecked="{Binding WelcomeCustomMsg, Mode=TwoWay}">
                                                 <TextBlock Text="Enable" />
                                             </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    
+                                    <GroupBox Header="Twitch - Format Bot messages">
+                                        <StackPanel>
+                                            <Label Content="/me changes message to all italics" />
+                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Content="{DynamicResource Disabled}" />
+                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Shout Out Viewers">
@@ -495,7 +506,7 @@
                                                         <StackPanel>
                                                             <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on bot account.">
                                                                 <TextBlock>Bot Account</TextBlock></CheckBox>
-                                                            <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab.">
+                                                            <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab." Loaded="CheckBox_Loaded">
                                                                 <TextBlock>Streamer Account</TextBlock></CheckBox>
                                                         </StackPanel>
                                                     </GroupBox>
@@ -512,6 +523,7 @@
                                             </StackPanel></GroupBox>
                                         </StackPanel>
                                     </GroupBox>
+
                                     <GroupBox Header="Any - Data Management">
                                         <StackPanel>
                                             <Label>
