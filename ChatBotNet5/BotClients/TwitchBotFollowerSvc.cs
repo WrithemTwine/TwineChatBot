@@ -25,9 +25,11 @@ namespace ChatBot_Net5.BotClients
         }
 
         /// <summary>
-        /// Establish all of the services attached to this Twitch client.
+        /// Establish all of the services attached to this Twitch client. Override parameters allow connecting to another stream, such as directly to the streamer channel because any actions to add 'followers' will fail if not directly connected.
         /// </summary>
-        internal void ConnectFollowerService()
+        /// <param name="ClientName">Override the Twitch Bot account name, another name used for connecting to a different channel (such as directly to streamer)</param>
+        /// <param name="TwitchToken">Override the Twitch Bot token used and to connect to the <para>ClientName</para> channel with a specific token just for changing followers.</param>
+        internal void ConnectFollowerService(string ClientName = null, string TwitchToken = null )
         {
             if(IsStarted)
             {
@@ -35,9 +37,9 @@ namespace ChatBot_Net5.BotClients
             }
 
             RefreshSettings();
-            ApiSettings apifollow = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
+            ApiSettings apifollow = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
             FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
-            FollowerService.SetChannelsByName(new List<string>() { TwitchChannelName });
+            FollowerService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
         }
 
         /// <summary>
@@ -95,9 +97,9 @@ namespace ChatBot_Net5.BotClients
         internal void FollowBack(string ToUserName)
         {
             new Thread(new ThreadStart(() =>
-           {
-               FollowerService.CreateUserFollowerName(TwitchChannelName, ToUserName, OptionFlags.TwitchAddFollowerNotification);
-           })).Start();
+            {
+                FollowerService.CreateUserFollowerName(TwitchChannelName, ToUserName, OptionFlags.TwitchAddFollowerNotification);
+            })).Start();
         }
     }
 }

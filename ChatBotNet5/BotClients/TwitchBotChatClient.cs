@@ -136,11 +136,10 @@ namespace ChatBot_Net5.BotClients
             }
             else if (TwitchChat.TwitchUsername == null)
             {
-                TwitchChat.Initialize(credentials, TwitchChannelName);
-                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
+                TwitchChat.Initialize(credentials);
             }
-
             TwitchChat.Connect();
+            TwitchChat.JoinChannel(TwitchChannelName, TwitchChannelName != TwitchBotUserName);
 
             return true;
         }
@@ -263,11 +262,10 @@ namespace ChatBot_Net5.BotClients
             // the TwitchClient reports disconnected but user didn't click the 'start bot' button
             // the client should be started but is now disconnected
             // check is required so the bot doesn't keep restarting when the user actually clicked stop
-            if (IsStarted)
+            if (IsStarted && !TwitchChat.IsConnected)
             {
-                //Connect();    // restart the bot
-                //HandlersAdded = false;             
-
+                Connect();    // restart the bot
+                HandlersAdded = false;
             }
         }
     }

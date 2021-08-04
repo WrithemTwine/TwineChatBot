@@ -170,6 +170,8 @@ namespace ChatBot_Net5.Systems
 
         public void StreamOffline(DateTime Stopped)
         {
+            // TODO: add option to stop bot when stream goes offline
+
             UpdateWatchTime();
             OptionFlags.IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped.ToLocalTime();

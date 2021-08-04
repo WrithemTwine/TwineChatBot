@@ -90,7 +90,7 @@
                                 <StackPanel>
                                     <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.</TextBlock>
-                                    <TextBlock x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" >The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</TextBlock>
+                                    <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
                                     <WrapPanel>
                                         <WrapPanel.Resources>
                                             <Style TargetType="{x:Type Label}">
@@ -175,37 +175,73 @@
                     <TabItem Header="Twitch Setup" GotFocus="TabItem_Twitch_GotFocus">
                         <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
                             <StackPanel DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Label Content="Channel Name" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
-                                </StackPanel>
-                                <TextBlock Width="300" Text="* Currently, this Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Label Content="Bot User Name" Width="110" />
-                                    <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                    <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
-                                    <Label x:Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
-                                </StackPanel>
-
-                                <Expander x:Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
+                                <GroupBox Header="Bot Account" Width="450">
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Client Id" Width="120" />
-                                            <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                            <Label Content="Channel Name" Width="110" />
+                                            <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
+                                        </StackPanel>
+                                        <TextBlock Width="300" Text="* This Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
+                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                            <Label Content="Bot User Name" Width="110" />
+                                            <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Access OAuth Token" Width="120" />
-                                            <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Height="25" Margin="10">
-                                            <Label Content="Refresh Token" Width="120" />
-                                            <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
+                                            <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
+                                            <Label x:Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
                                         </StackPanel>
 
+                                        <Expander x:Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                    <Label Content="Client Id" Width="120" />
+                                                    <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Margin="10,0">
+                                                    <Label Content="Token Scope" />
+                                                    <TextBox BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" Width="328" Height="42" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows</TextBox>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                    <Label Content="Access OAuth Token" Width="120" />
+                                                    <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                    <Label Content="Refresh Token" Width="120" />
+                                                    <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
+                                                </StackPanel>
+
+                                            </StackPanel>
+                                        </Expander>
                                     </StackPanel>
-                                </Expander>
+                                </GroupBox>
+
+                                <GroupBox Header="Follow-Back Account - Streamer Channel" Width="450">
+                                    <StackPanel>
+                                        <TextBlock x:Uid="ExplainFollowBack" Margin="10" Text="{DynamicResource ExplainFollowBack}" />
+                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                            <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredStreamerCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
+                                            <Button Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshStreamButton_Click" LostFocus="Settings_LostFocus" />
+                                            <Label x:Name="Twitch_StreamerRefreshDate"  Content="{Binding TwitchStreamTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Streamer Channel Name"/>
+                                            <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" />
+                                        </StackPanel>
+                                    <Expander Header="Credential (Click Me)">
+                                            <StackPanel>
+                                                
+                                            <StackPanel Orientation="Horizontal" Margin="10,0">
+                                                <Label Content="Token Scope" />
+                                                    <TextBox BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" Width="116" Height="22" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">user:edit:follows</TextBox>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Label Content="Streamer Token"/>
+                                                <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerToken, Mode=TwoWay}" Width="340" />
+                                            </StackPanel>
+                                            </StackPanel>
+                                        </Expander></StackPanel>
+                                </GroupBox>
+                                
                                 <StackPanel>
                                     <GroupBox Header="Setup Follower Operations" Width="Auto">
                                         <StackPanel>
@@ -438,36 +474,42 @@
                                                 <TextBlock>Active when channel is live</TextBlock>
                                             </Label>
                                             <CheckBox IsChecked="{Binding MsgAutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab."/></TextBlock>
+                                                <TextBlock>Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab.</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable auto shoutout for incoming channel raid streamers"/></TextBlock>
+                                                <TextBlock>Enable auto shoutout for incoming channel raid streamers</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Follow Options">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding TwitchAddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Enable adding all followers when bot starts."/></TextBlock>
+                                                <TextBlock TextWrapping="Wrap">Enable adding all followers when bot starts.</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Enable action to remove non-followers from the Follower list when bot starts."/></TextBlock>
+                                                <TextBlock TextWrapping="Wrap">Enable action to remove non-followers from the Follower list when bot starts.</TextBlock>
                                             </CheckBox>
-                                            <StackPanel Visibility="Visible">
-                                            <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
-                                            <Label Content="Automatic Follow other Viewers*:"/>
+                                            <GroupBox Header="Automatic Follow other Viewers:" Visibility="Visible" Width="199">
+                                                <StackPanel>
+                                                    <GroupBox Header="Follow-back Account: " Width="165">
+                                                        <StackPanel>
+                                                            <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on bot account.">
+                                                                <TextBlock>Bot Account</TextBlock></CheckBox>
+                                                            <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab.">
+                                                                <TextBlock>Streamer Account</TextBlock></CheckBox>
+                                                        </StackPanel>
+                                                    </GroupBox>
+
                                             <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
-                                                <TextBlock><Run Text="Enable follow-back new followers"/></TextBlock>
+                                                        <TextBlock>Enable follow-back new followers</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable follow-back incoming raider"/></TextBlock>
+                                                        <TextBlock>Enable follow-back incoming raider</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
-                                                <TextBlock><Run Text="Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live"/></TextBlock>
-                                            </CheckBox>
-                                                <Label>
-                                                    <TextBlock>* The follow-back feature currently only adds to the bot user account, due to authentication issues. May later add ability to specifiy channel name and another token to directly add followers.</TextBlock></Label>
-                                            </StackPanel>
+                                                        <TextBlock>Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live</TextBlock>
+                                            </CheckBox>                                                
+                                            </StackPanel></GroupBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Data Management">

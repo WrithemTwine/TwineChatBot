@@ -190,7 +190,28 @@ namespace ChatBot_Net5.BotIOController
 
                 if (OptionFlags.TwitchFollowerFollowBack)
                 {
-                    TwitchFollower.FollowBack(f.FromUserName);
+                    FollowbackOp(f.FromUserName);
+                }
+            }
+        }
+
+
+        private void FollowbackOp(string FromName)
+        {
+            if (OptionFlags.TwitchFollowbackBotChoice)
+            {
+                TwitchFollower.FollowBack(FromName);
+            }
+
+            if (OptionFlags.TwitchFollowbackStreamerChoice) // if the bot account is not the same as the streamer account, create a new follower bot just from the streamer account
+            {
+                if (OptionFlags.TwitchStreamerChannel != null && OptionFlags.TwitchStreamerToken != null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
+                {
+                    // create a new service with the Twitch streamer account for performing the follow-back
+                    TwitchBotFollowerSvc StreamerFollowerSvc = new TwitchBotFollowerSvc();
+                    StreamerFollowerSvc.ConnectFollowerService(OptionFlags.TwitchStreamerChannel, OptionFlags.TwitchStreamerToken);
+                    StreamerFollowerSvc.FollowerService?.Start();
+                    StreamerFollowerSvc.FollowBack(FromName);
                 }
             }
         }
@@ -334,7 +355,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (OptionFlags.TwitchRaidFollowBack)
             {
-                TwitchFollower.FollowBack(e.RaidNotification.DisplayName);
+                FollowbackOp(e.RaidNotification.DisplayName);
             }
 
             if (OptionFlags.TwitchRaidShoutOut)

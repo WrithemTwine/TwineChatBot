@@ -211,6 +211,13 @@ namespace ChatBot_Net5
             CheckFocus();
         }
 
+        private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
+        {
+            Twitch_StreamerRefreshDate.Content = DateTime.Now.AddDays(60);
+            TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            CheckFocus();
+        }
+
         private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e)
         {
             (sender as TextBox).ScrollToEnd();
@@ -629,8 +636,8 @@ namespace ChatBot_Net5
             IsAddNewRow = false;
         }
 
-        #endregion
 
+        #endregion
 
     }
 }

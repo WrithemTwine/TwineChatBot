@@ -52,6 +52,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void ProcMsgs()
         {
+            // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
             while (OptionFlags.ProcessOps || Operations.Count > 0)
             {

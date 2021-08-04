@@ -11,8 +11,6 @@ namespace ChatBot_Net5.Static
 
         internal static bool TwitchAddFollowersStart { get; set; }
         internal static bool TwitchPruneNonFollowers { get; set; }
-        internal static bool TwitchFollowerFollowBack { get; set; }
-        internal static bool TwitchRaidFollowBack { get; set; }
         internal static bool TwitchAddFollowerNotification { get; set; }
 
         internal static bool FirstUserJoinedMsg { get; set; }
@@ -46,6 +44,16 @@ namespace ChatBot_Net5.Static
         internal static bool ManageFollowers { get; set; }
         internal static bool ManageStreamStats { get; set; }
 
+
+        internal static bool TwitchFollowerFollowBack { get; set; }
+        internal static bool TwitchRaidFollowBack { get; set; }
+        internal static bool TwitchFollowbackBotChoice { get; set; }
+        internal static bool TwitchFollowbackStreamerChoice { get; set; }
+
+        internal static string TwitchStreamerChannel { get; set; }
+        internal static string TwitchStreamerToken { get; set; }
+        internal static DateTime TwitchStreamTokenDate { get; set; }
+
         internal static void SetSettings()
         {
             lock (Settings.Default)
@@ -54,8 +62,6 @@ namespace ChatBot_Net5.Static
 
                 TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
                 TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
-                TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
-                TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
                 TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
 
                 FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
@@ -87,6 +93,15 @@ namespace ChatBot_Net5.Static
                 ManageUsers = Settings.Default.ManageUsers;
                 ManageFollowers = Settings.Default.ManageFollowers;
                 ManageStreamStats = Settings.Default.ManageStreamStats;
+
+                TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
+                TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
+
+                TwitchFollowbackBotChoice = Settings.Default.TwitchFollowbackBotChoice;
+                TwitchFollowbackStreamerChoice = Settings.Default.TwitchFollowbackStreamerChoice;
+                TwitchStreamerChannel = Settings.Default.TwitchStreamerChannel;
+                TwitchStreamerToken = Settings.Default.TwitchStreamerToken;
+                TwitchStreamTokenDate = Settings.Default.TwitchStrmTokenDate;
             }
         }
 
@@ -98,9 +113,9 @@ namespace ChatBot_Net5.Static
             SetSettings();
         }
 
-        internal static TimeSpan CurrentToTwitchRefreshDate()
+        internal static TimeSpan CurrentToTwitchRefreshDate(bool streamaccount = false)
         {
-            return TwitchRefreshDate - DateTime.Now;
+            return (streamaccount ? TwitchStreamTokenDate : TwitchRefreshDate) - DateTime.Now;
         }
 
     }

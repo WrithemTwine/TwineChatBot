@@ -502,5 +502,78 @@ namespace ChatBot_Net5.Properties {
                 this["RepeatTimerComSlowdown"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("If different than bot account, use this to enter the account for follow-backs - n" +
+            "eeds option selected")]
+        public string TwitchStreamerChannel {
+            get {
+                return ((string)(this["TwitchStreamerChannel"]));
+            }
+            set {
+                this["TwitchStreamerChannel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Add token for streamer channel, specifically for only follow-back")]
+        public string TwitchStreamerToken {
+            get {
+                return ((string)(this["TwitchStreamerToken"]));
+            }
+            set {
+                this["TwitchStreamerToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TwitchDisconnectBot {
+            get {
+                return ((bool)(this["TwitchDisconnectBot"]));
+            }
+            set {
+                this["TwitchDisconnectBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
+        public global::System.DateTime TwitchStrmTokenDate {
+            get {
+                return ((global::System.DateTime)(this["TwitchStrmTokenDate"]));
+            }
+            set {
+                this["TwitchStrmTokenDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowbackBotChoice {
+            get {
+                return ((bool)(this["TwitchFollowbackBotChoice"]));
+            }
+            set {
+                this["TwitchFollowbackBotChoice"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowbackStreamerChoice {
+            get {
+                return ((bool)(this["TwitchFollowbackStreamerChoice"]));
+            }
+            set {
+                this["TwitchFollowbackStreamerChoice"] = value;
+            }
+        }
     }
 }
