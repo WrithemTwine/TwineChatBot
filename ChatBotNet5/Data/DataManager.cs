@@ -52,6 +52,7 @@ namespace ChatBot_Net5.Data
         public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
         public DataView Category { get; private set; } // DataSource.CategoryTable
+        public DataView Clips { get; private set; }  // DataSource.ClipsDataTable
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string PropName)
@@ -80,7 +81,6 @@ namespace ChatBot_Net5.Data
                 return filter == string.Empty ? "" : filter[0..^1];
             }
 
-
             _DataSource = new();
             LocalizedMsgSystem.SetDataManager(this);
             LoadData();
@@ -96,6 +96,7 @@ namespace ChatBot_Net5.Data
             StreamStats = new(_DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
             ShoutOuts = new(_DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
             Category = new(_DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
+            Clips = new(_DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
         }
 
         #region Load and Exit Ops
@@ -150,7 +151,7 @@ namespace ChatBot_Net5.Data
                                 DataSource testinput = new();
                                 using (XmlReader xmlReader = new XmlTextReader(result))
                                 {
-                                // test load
+                                    // test load
                                     _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
                                 }
 
@@ -185,7 +186,7 @@ namespace ChatBot_Net5.Data
                 SaveThreadStarted = false; // indicate start another thread to save data
             }
         }
-        
+
 
         #endregion
 
@@ -737,9 +738,9 @@ switches:
         {
             lock (_DataSource.Commands)
             {
-                if (_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)+"'").Length == 0)
+                if (_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'").Length == 0)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
+                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                     _DataSource.CategoryList.AcceptChanges();
                 }
 
@@ -778,7 +779,7 @@ switches:
                     { DefaultCommand.follow.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.follow), "-use:!follow") },
                     { DefaultCommand.watchtime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.watchtime), "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
                     { DefaultCommand.uptime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime), "-use:!uptime") },
-                    { DefaultCommand.followage.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.followage), "-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>")}
+                    { DefaultCommand.followage.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.followage), "-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>") }
                 };
 
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
@@ -913,7 +914,7 @@ switches:
             DataSource.CommandsRow[] socialrows = null;
             lock (_DataSource.Commands)
             {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='"+ LocalizedMsgSystem.GetVar(DefaultCommand.socials)+"'");
+                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + LocalizedMsgSystem.GetVar(DefaultCommand.socials) + "'");
             }
 
             string socials = socialrows[0].Message;
@@ -1098,16 +1099,40 @@ switches:
         /// Checks for the supplied category in the category list, adds if it isn't already saved.
         /// </summary>
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
-        internal void UpdateCategory(string newCategory)
+        internal void UpdateCategory(string CategoryId, string newCategory)
         {
-            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'","''") + "'");
+            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
 
             if (categoryList.Length == 0)
             {
-                _DataSource.CategoryList.AddCategoryListRow(newCategory);
+                _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
             }
+            else if (categoryList[0].CategoryId == null)
+            {
+                categoryList[0].CategoryId = CategoryId;
+            }
+
             SaveData();
         }
+        #endregion
+
+        #region Clips
+
+        internal bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
+        {
+            DataSource.ClipsRow[] clipsRows = (DataSource.ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
+
+            if (clipsRows.Length == 0)
+            {
+                //DataSource.CategoryListRow categoryListRow = ((DataSource.CategoryListRow[]) _DataSource.CategoryList.Select("CategoryId='" + GameId + "'")).First();
+                _ = _DataSource.Clips.AddClipsRow(ClipId, CreatedAt, Title, GameId, Language, (decimal)Duration, Url);
+                SaveData();
+                return true;
+            }
+
+            return false;
+        }
+
         #endregion
     }
 }

@@ -110,12 +110,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int TwitchFrequency {
+        public int TwitchFrequencyFollow {
             get {
-                return ((int)(this["TwitchFrequency"]));
+                return ((int)(this["TwitchFrequencyFollow"]));
             }
             set {
-                this["TwitchFrequency"] = value;
+                this["TwitchFrequencyFollow"] = value;
             }
         }
         
@@ -543,12 +543,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
-        public global::System.DateTime TwitchStrmTokenDate {
+        public global::System.DateTime TwitchStreamTokenDate {
             get {
-                return ((global::System.DateTime)(this["TwitchStrmTokenDate"]));
+                return ((global::System.DateTime)(this["TwitchStreamTokenDate"]));
             }
             set {
-                this["TwitchStrmTokenDate"] = value;
+                this["TwitchStreamTokenDate"] = value;
             }
         }
         
@@ -597,6 +597,54 @@ namespace ChatBot_Net5.Properties {
             }
             set {
                 this["TwitchChatBotConnectOnline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public double TwitchFrequencyClipTime {
+            get {
+                return ((double)(this["TwitchFrequencyClipTime"]));
+            }
+            set {
+                this["TwitchFrequencyClipTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipPostDiscord {
+            get {
+                return ((bool)(this["TwitchClipPostDiscord"]));
+            }
+            set {
+                this["TwitchClipPostDiscord"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipAutoStart {
+            get {
+                return ((bool)(this["TwitchClipAutoStart"]));
+            }
+            set {
+                this["TwitchClipAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipPostChat {
+            get {
+                return ((bool)(this["TwitchClipPostChat"]));
+            }
+            set {
+                this["TwitchClipPostChat"] = value;
             }
         }
     }

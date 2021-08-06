@@ -52,7 +52,7 @@ namespace ChatBot_Net5.BotClients
         //100,000 accounts per day Verified bots
         public TwitchBotChatClient()
         {
-            ChatClientName = "TwitchChat";
+            BotClientName = "TwitchChat";
 
 
 

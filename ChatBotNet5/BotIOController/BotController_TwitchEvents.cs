@@ -1,14 +1,18 @@
 ﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
 using ChatBot_Net5.Enum;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Interop;
 
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -94,6 +98,39 @@ namespace ChatBot_Net5.BotIOController
 
                 TwitchLiveMonitor.HandlersAdded = true;
             }
+
+            if(TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
+            {
+                TwitchClip.clipMonitorService.OnNewClipFound += ClipMonitorService_OnNewClipFound;
+            }
+        }
+
+        private void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
+        {
+            ClipHelper(e.Clips);
+        }
+
+        private void ClipHelper(IEnumerable<Clip> clips)
+        {
+            foreach (Clip c in clips)
+            {
+                if (DataManage.AddClip(c.Id, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url))
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        Send(c.Url);
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Clips))
+                        {
+                            DiscordWebhook.SendMessage(u, c.Url);
+                            Stats.AddDiscord();
+                        }
+                    }
+                }
+            }
         }
 
         #region Stream On, Off, Updated
@@ -120,7 +157,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            Stats.SetCategory(e.Stream.GameName);
+            Stats.SetCategory(e.Stream.GameId, e.Stream.GameName);
         }
 
         /// <summary>
@@ -169,7 +206,7 @@ namespace ChatBot_Net5.BotIOController
                             {
                                 foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
                                 {
-                                    DiscordWebhook.SendLiveMessage(u, VariableParser.ParseReplace(msg, dictionary)).Wait();
+                                    DiscordWebhook.SendMessage(u, VariableParser.ParseReplace(msg, dictionary));
                                     Stats.AddDiscord();
                                 }
                             }

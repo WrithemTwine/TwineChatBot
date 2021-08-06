@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotClients
@@ -11,17 +12,56 @@ namespace ChatBot_Net5.BotClients
     {
         private static readonly HttpClient client = new();
 
+        private static readonly Queue<Tuple<Uri, JsonContent>> DataJobs = new();
+        private static bool JobThread;
+
         /// <summary>
         /// Send a message to provided Webhooks
         /// </summary>
         /// <param name="UriList">The POST Uris collection of webhooks.</param>
         /// <param name="Msg">The message to send.</param>
-        public async static Task SendLiveMessage(Uri uri, string Msg)
+        public static void SendMessage(Uri uri, string Msg)
         {
             JsonContent content = JsonContent.Create(new WebhookJSON(Msg, new AllowedMentions(new AllowedMentionTypes[] { AllowedMentionTypes.everyone }, null, null)));
 
-            await client.PostAsync(uri.AbsoluteUri, content);
+            lock (DataJobs)
+            {
+                DataJobs.Enqueue(new(uri, content));
+            }
+
+            if (!JobThread) // check if job thread is running
+            {
+                new Thread(new ThreadStart(SendData)).Start();
+
+                lock (DataJobs)
+                {
+                    JobThread = true;
+                }
+            }
         }
+
+        private async static void SendData()
+        {
+            while (DataJobs.Count > 0)
+            {
+                Tuple<Uri, JsonContent> job;
+                lock (DataJobs)
+                {
+                    job = DataJobs.Dequeue();
+                }
+
+                _ = await client.PostAsync(job.Item1.AbsoluteUri, job.Item2);
+
+                // wait so Discord doesn't complain about bots posting to fast to a page
+                Thread.Sleep(20000); // wait 20 seconds between posting, 3 posts a minute
+            }
+
+            lock (DataJobs)
+            {
+                JobThread = false;  // job thread stopped, signal to start another thread
+            }
+        }
+
     }
 
 

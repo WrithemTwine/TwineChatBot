@@ -50,6 +50,11 @@ namespace ChatBot_Net5.BotClients
         /// </summary>
         public static double TwitchFrequencyLiveNotifyTime { get; set; }
 
+        /// <summary>
+        /// The poll time in seconds to check the channel for new clips
+        /// </summary>
+        public static double TwitchFrequencyClipTime { get; set; }
+
         public override bool RefreshSettings()
         {
             SaveParams();
@@ -57,8 +62,9 @@ namespace ChatBot_Net5.BotClients
             TwitchBotUserName = Settings.Default.TwitchBotUserName;
             TwitchChannelName = Settings.Default.TwitchChannelName;
             TwitchClientID = Settings.Default.TwitchClientID;
-            TwitchFrequencyFollowerTime = Settings.Default.TwitchFrequency;
+            TwitchFrequencyFollowerTime = Settings.Default.TwitchFrequencyFollow;
             TwitchFrequencyLiveNotifyTime = Settings.Default.TwitchGoLiveFrequency;
+            TwitchFrequencyClipTime = Settings.Default.TwitchFrequencyClipTime;
             TwitchRefreshToken = Settings.Default.TwitchRefreshToken;
             TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
             ShowConnectionMsg = Settings.Default.MsgBotConnection;

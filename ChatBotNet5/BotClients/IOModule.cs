@@ -10,7 +10,7 @@ namespace ChatBot_Net5.BotClients
     /// </summary>
     public abstract class IOModule : IIOModule
     {
-        public string ChatClientName { get; set; }
+        public string BotClientName { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.

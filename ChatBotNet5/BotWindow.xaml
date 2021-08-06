@@ -84,9 +84,11 @@
             <TabItem Header="Bot Setup">
                 <TabControl>
                     <TabItem Header="Bot Actions">
-                        <DockPanel VerticalAlignment="Top">
+                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                            
+                        <DockPanel VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" Margin="3">
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
-                            <GroupBox Header="Twitch" HorizontalAlignment="Center" Width="Auto">
+                            <GroupBox Header="Twitch" DockPanel.Dock="Top" HorizontalAlignment="Center" Width="Auto">
                                 <StackPanel>
                                     <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.</TextBlock>
@@ -125,24 +127,6 @@
                                                 </CheckBox>
                                             </WrapPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Follower Service">
-                                            <WrapPanel>
-                                                <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
-                                                </Label>
-                                                <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
-                                                </Label>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
-                                                </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                                <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                    <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
-                                                </Label>
-                                            </WrapPanel>
-                                        </GroupBox>
                                         <GroupBox Header="LiveStream Monitor Service">
                                             <StackPanel Orientation="Vertical">
                                                 <WrapPanel>
@@ -177,10 +161,76 @@
                                                 </GroupBox>
                                             </StackPanel>
                                         </GroupBox>
+                                        <GroupBox Header="Follower Service">
+                                            <WrapPanel>
+                                                <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
+                                                </Label>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
+                                                    <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
+                                                </CheckBox>
+                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                    <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                </Label>
+                                            </WrapPanel>
+                                        </GroupBox>
+                                        <GroupBox Header="Clip Service">
+                                            <WrapPanel>
+                                                <Label x:Name="Label_TwitchClip_Start" Foreground="Green" Visibility="Collapsed">
+                                                    <TextBlock TextWrapping="Wrap">The Twitch Clip Client is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchClip_Stop" Foreground="Maroon" Visibility="Visible">
+                                                    <TextBlock TextWrapping="Wrap">The Twitch Clip Client is stopped!</TextBlock>
+                                                </Label>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
+                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                </CheckBox>
+                                                <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStart" Content="Start Clip Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                                <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStop" Content="Stop Clip Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                <Label x:Name="Label_TwitchClip_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                    <TextBlock>The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                </Label>
+                                            </WrapPanel>
+                                        </GroupBox>
                                     </WrapPanel>
                                 </StackPanel>
                             </GroupBox>
+                            <WrapPanel DockPanel.Dock="Top" Height="Auto" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                <GroupBox Header="Setup Follower Operations" Width="Auto">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Seconds between checking for new follows:"/>
+                                            <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
+                                        </StackPanel>
+                                            <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequencyFollow, Mode=TwoWay}" Maximum="300" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="300" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Setup Clip Operations" Width="Auto">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Seconds between checking for new follows:"/>
+                                            <Label Content="{Binding Value, ElementName=Slider_TimeClipPollSeconds}" />
+                                        </StackPanel>
+                                            <Slider x:Name="Slider_TimeClipPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new clips. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequencyClipTime, Mode=TwoWay}" Maximum="1200" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="1200" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5"  />
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Setup Go-Live Notifications" Width="Auto">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Seconds between checking for going live: " />
+                                            <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
+                                        </StackPanel>
+                                            <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10"  />
+                                    </StackPanel>
+                                </GroupBox>
+                            </WrapPanel>
                         </DockPanel>
+                      </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Twitch Setup" GotFocus="TabItem_Twitch_GotFocus">
                         <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
@@ -252,27 +302,7 @@
                                         </Expander></StackPanel>
                                 </GroupBox>
                                 
-                                <StackPanel>
-                                    <GroupBox Header="Setup Follower Operations" Width="Auto">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Label Content="Seconds between checking for new follows:"/>
-                                                <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
-                                            </StackPanel>
-                                            <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequency, Mode=TwoWay}" Maximum="300" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="300" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
 
-                                        </StackPanel>
-                                    </GroupBox>
-                                    <GroupBox Header="Setup Go-Live Notifications" Width="Auto">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Label Content="Seconds between checking for going live: " />
-                                                <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
-                                            </StackPanel>
-                                            <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10" />
-                                        </StackPanel>
-                                    </GroupBox>
-                                </StackPanel>
 
                             </StackPanel>
 
@@ -523,7 +553,16 @@
                                             </StackPanel></GroupBox>
                                         </StackPanel>
                                     </GroupBox>
-
+                                    <GroupBox Header="Twitch - Get Clips">
+                                        <StackPanel>
+                                            <CheckBox IsChecked="{Binding TwitchClipPostChat, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock>Post new clips to chat.</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchClipPostDiscord}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock>Post new clips to Discord. Must have "Clips" Webhook(s) defined.</TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
                                     <GroupBox Header="Any - Data Management">
                                         <StackPanel>
                                             <Label>
@@ -563,6 +602,16 @@
                             </DockPanel>
                         </ScrollViewer>
                     </TabItem>
+                    <TabItem Header="Variable Options">
+                        <ListView DockPanel.Dock="Right" ItemsSource="{Binding CommandInfo.Collection}" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150"/>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="600"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
                     <TabItem Header="Auto-SO">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -595,15 +644,22 @@
                             <DataGrid x:Name="DG_Followers" DataContext="{Binding DataManage}" ItemsSource="{Binding Followers, Mode=OneWay}" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Variable Options">
-                        <ListView DockPanel.Dock="Right" ItemsSource="{Binding CommandInfo.Collection}" >
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150"/>
-                                    <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="600"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                    <TabItem Header="Clips" x:Name="TabItem_Clips">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="2" Content="Clip List"/>
+                            <Label Grid.Row="0" Content="Category List"/>
+                            <DataGrid x:Name="DG_CategoryList_Clips" DataContext="{Binding DataManage}" ItemsSource="{Binding Category, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" />
+                            <DataGrid x:Name="DG_Clips" DataContext="{Binding DataManage}" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" Grid.Column="2" CanUserDeleteRows="True" />                           
+                        </Grid>
                     </TabItem>
                     <TabItem Header="System Events">
                         <Grid>

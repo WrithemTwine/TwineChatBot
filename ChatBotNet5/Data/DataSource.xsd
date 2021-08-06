@@ -140,7 +140,21 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
-              <xs:element name="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_UserColumnName="Category" type="xs:string" minOccurs="0" />
+              <xs:element name="CategoryId" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="CategoryId" msprop:Generator_ColumnVarNameInTable="columnCategoryId" msprop:Generator_ColumnPropNameInTable="CategoryIdColumn" msprop:Generator_UserColumnName="CategoryId" type="xs:string" minOccurs="0" />
+              <xs:element name="Category" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_UserColumnName="Category" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Clips" msprop:Generator_TableClassName="ClipsDataTable" msprop:Generator_TableVarName="tableClips" msprop:Generator_RowChangedName="ClipsRowChanged" msprop:Generator_TablePropName="Clips" msprop:Generator_RowDeletingName="ClipsRowDeleting" msprop:Generator_RowChangingName="ClipsRowChanging" msprop:Generator_RowEvHandlerName="ClipsRowChangeEventHandler" msprop:Generator_RowDeletedName="ClipsRowDeleted" msprop:Generator_RowClassName="ClipsRow" msprop:Generator_UserTableName="Clips" msprop:Generator_RowEvArgName="ClipsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:Caption="ClipId" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:string" minOccurs="0" />
+              <xs:element name="CreatedAt" msprop:Generator_ColumnVarNameInTable="columnCreatedAt" msprop:Generator_ColumnPropNameInRow="CreatedAt" msprop:Generator_ColumnPropNameInTable="CreatedAtColumn" msprop:Generator_UserColumnName="CreatedAt" type="xs:string" minOccurs="0" />
+              <xs:element name="Title" msprop:Generator_ColumnVarNameInTable="columnTitle" msprop:Generator_ColumnPropNameInRow="Title" msprop:Generator_ColumnPropNameInTable="TitleColumn" msprop:Generator_UserColumnName="Title" type="xs:string" minOccurs="0" />
+              <xs:element name="GameId" msprop:Generator_ColumnVarNameInTable="columnGameId" msprop:Generator_ColumnPropNameInRow="GameId" msprop:Generator_ColumnPropNameInTable="GameIdColumn" msprop:Generator_UserColumnName="GameId" type="xs:string" minOccurs="0" />
+              <xs:element name="Language" msprop:Generator_ColumnVarNameInTable="columnLanguage" msprop:Generator_ColumnPropNameInRow="Language" msprop:Generator_ColumnPropNameInTable="LanguageColumn" msprop:Generator_UserColumnName="Language" type="xs:string" minOccurs="0" />
+              <xs:element name="Duration" msprop:Generator_ColumnVarNameInTable="columnDuration" msprop:Generator_ColumnPropNameInRow="Duration" msprop:Generator_ColumnPropNameInTable="DurationColumn" msprop:Generator_UserColumnName="Duration" type="xs:decimal" minOccurs="0" />
+              <xs:element name="Url" msprop:Generator_ColumnVarNameInTable="columnUrl" msprop:Generator_ColumnPropNameInRow="Url" msprop:Generator_ColumnPropNameInTable="UrlColumn" msprop:Generator_UserColumnName="Url" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -212,6 +226,10 @@
     </xs:unique>
     <xs:unique name="CategoryList_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:CategoryList" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="Clips_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:Clips" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
   </xs:element>
