@@ -27,7 +27,7 @@ namespace ChatBot_Net5.BotClients.TwitchLib
             Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
 
             List<Follow> allfollows = new();
-
+            
             string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
 
             GetUsersFollowsResponse followsResponse = null;
@@ -102,3 +102,4 @@ namespace ChatBot_Net5.BotClients.TwitchLib
 
     }
 }
+

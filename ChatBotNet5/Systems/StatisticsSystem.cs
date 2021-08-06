@@ -5,6 +5,8 @@ using ChatBot_Net5.Static;
 using System;
 using System.Collections.Generic;
 
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
+
 namespace ChatBot_Net5.Systems
 {
     public class StatisticsSystem
@@ -30,10 +32,16 @@ namespace ChatBot_Net5.Systems
             return datamanager.CheckMultiStreams(TimeStream);
         }
 
-        public void SetCategory(string category)
+        public void SetCategory(string categoryId, string category)
         {
             Category = category;
-            datamanager.UpdateCategory(category);
+            datamanager.UpdateCategory(categoryId, category);
+        }
+
+        public void RegisterNewClip(Clip clip)
+        {
+            datamanager.AddClip(clip.Id , clip.CreatedAt, clip.Duration, clip.GameId,clip.Language,clip.Title,clip.Url);
+            AddClips();
         }
 
         /// <summary>

@@ -102,7 +102,7 @@ namespace ChatBot_Net5.BotIOController
                         {
                             if (u.Item1 == "Discord")
                             {
-                                DiscordWebhook.SendLiveMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary)).Wait();
+                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary));
                                 Stats.AddDiscord();
                             }
                         }

@@ -4,7 +4,7 @@ namespace ChatBot_Net5.Interfaces
 {
     public interface IIOModule
     {
-        public string ChatClientName { get; set; }
+        public string BotClientName { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.

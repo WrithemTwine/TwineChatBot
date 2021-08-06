@@ -57,5 +57,21 @@ namespace ChatBot_Net5.BotIOController
             ProcessCommands.StopElapsedTimerThread();
             ProcessCommands = null;
         }
+
+        private void TwitchClip_OnBotStopped(object sender, System.EventArgs e)
+        {
+            
+        }
+
+        private void TwitchClip_OnBotStarted(object sender, System.EventArgs e)
+        {
+            RegisterHandlers();
+
+            if (TwitchClip.IsStarted)
+            {
+                BeginAddClips();
+            }
+        }
+
     }
 }

@@ -21,7 +21,7 @@ namespace ChatBot_Net5.BotClients
 
         public TwitchBotFollowerSvc()
         {
-            ChatClientName = "TwitchFollowerService";
+            BotClientName = "TwitchFollowerService";
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace ChatBot_Net5.BotClients
             return false;
         }
 
-        internal async Task<List<Follow>> GetAllFollowersAsync()
+        public async Task<List<Follow>> GetAllFollowersAsync()
         {
             return await FollowerService.GetAllFollowers(TwitchChannelName);
         }
@@ -94,7 +94,7 @@ namespace ChatBot_Net5.BotClients
             return base.ExitBot();
         }
 
-        internal void FollowBack(string ToUserName)
+        public void FollowBack(string ToUserName)
         {
             new Thread(new ThreadStart(() =>
             {

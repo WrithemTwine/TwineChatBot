@@ -56,6 +56,9 @@ namespace ChatBot_Net5.Static
         internal static bool TwitchChatBotConnectOnline { get; set; }
         internal static bool TwitchChatBotDisconnectOffline { get; set; }
 
+        internal static bool TwitchClipPostChat { get; set; }
+        internal static bool TwitchClipPostDiscord { get; set; }
+
         internal static void SetSettings()
         {
             lock (Settings.Default)
@@ -103,10 +106,13 @@ namespace ChatBot_Net5.Static
                 TwitchFollowbackStreamerChoice = Settings.Default.TwitchFollowbackStreamerChoice;
                 TwitchStreamerChannel = Settings.Default.TwitchStreamerChannel;
                 TwitchStreamerToken = Settings.Default.TwitchStreamerToken;
-                TwitchStreamTokenDate = Settings.Default.TwitchStrmTokenDate;
+                TwitchStreamTokenDate = Settings.Default.TwitchStreamTokenDate;
 
                 TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
                 TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
+
+                TwitchClipPostChat = Settings.Default.TwitchClipPostChat;
+                TwitchClipPostDiscord = Settings.Default.TwitchClipPostDiscord;
             }
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.BotIOController
@@ -21,6 +22,9 @@ namespace ChatBot_Net5.BotIOController
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
 
         private List<Follow> Follows { get; set; }
+        private List<Clip> Clips { get; set; }
+
+        private bool StartClips { get; set; }
 
         private void StartThreads()
         {
@@ -45,6 +49,11 @@ namespace ChatBot_Net5.BotIOController
             {
                 new Thread(new ThreadStart(ProcessFollows)).Start();
             }
+        }
+
+        private void BeginAddClips()
+        {
+            new Thread(new ThreadStart(ProcessClips)).Start();
         }
 
         /// <summary>
@@ -86,6 +95,15 @@ namespace ChatBot_Net5.BotIOController
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
             DataManage.UpdateFollowers(ChannelName, new Dictionary<string, List<Follow>>() { { ChannelName, Follows } });
+        }
+
+        private void ProcessClips()
+        {
+            StartClips = true;
+            Clips = TwitchClip.GetAllClipsAsync().Result;
+
+            ClipHelper(Clips);
+            StartClips = false;
         }
 
         #endregion Process Bot Operations

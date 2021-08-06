@@ -19,7 +19,7 @@ namespace ChatBot_Net5.BotClients
         public bool IsMultiConnected { get; set; }
         public TwitchBotLiveMonitorSvc()
         {
-            ChatClientName = "TwitchLiveMonitorService";
+            BotClientName = "TwitchLiveMonitorService";
             IsStarted = false;
             IsStopped = true;
         }

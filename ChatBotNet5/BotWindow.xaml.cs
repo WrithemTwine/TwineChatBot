@@ -76,7 +76,8 @@ namespace ChatBot_Net5
                 new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
                 new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot)
+                new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
+                new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
             };
 
             if (OptionFlags.CurrentToTwitchRefreshDate() >= CheckRefreshDate)
@@ -386,10 +387,10 @@ namespace ChatBot_Net5
                     }
                     break;
 
-                case "DG_CategoryList":
-                    foreach(DataGridColumn dc in dg.Columns)
+                case "DG_CategoryList" or "DG_CategoryList_Clips":
+                    foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if(dc.Header.ToString() != "Category")
+                        if (dc.Header.ToString() != "Category" && dc.Header.ToString() != "CategoryId")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -475,9 +476,44 @@ namespace ChatBot_Net5
         /// <param name="e">Params from the object.</param>
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            IsAddNewRow = false;
+            IsAddNewRow = false;        
         }
-        
+
+
+        // TODO: fix scrolling in Sliders but not scroll the whole panel
+
+        private bool SliderMouseCaptured = false;
+
+        private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Slider curr = (Slider)sender;
+
+            curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
+        }
+
+        private void Slider_MouseEnter(object sender, MouseEventArgs e)
+        {
+            SliderMouseCaptured = true;
+        }
+
+        private void Slider_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SliderMouseCaptured = false;
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if(e.Delta != 0)
+            {
+                if(SliderMouseCaptured)
+                {
+                    e.Handled = true;
+                    
+                    return;
+                }
+            }
+        }
+
         #endregion
 
         #region Helpers
@@ -495,6 +531,7 @@ namespace ChatBot_Net5
             Btn_Twitch_RefreshDate.IsEnabled = setvalue;
             Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
             Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
+            Slider_TimeClipPollSeconds.IsEnabled = setvalue;
         }
 
         /// <summary>
@@ -507,11 +544,14 @@ namespace ChatBot_Net5
                 Radio_Twitch_StartBot.IsEnabled = true;
                 Radio_Twitch_FollowBotStart.IsEnabled = true;
                 Radio_Twitch_LiveBotStart.IsEnabled = true;
+                Radio_Twitch_ClipBotStart.IsEnabled = true;
             } else
             {
                 Radio_Twitch_StartBot.IsEnabled = false;
                 Radio_Twitch_FollowBotStart.IsEnabled = false;
                 Radio_Twitch_LiveBotStart.IsEnabled = false;
+                Radio_Twitch_ClipBotStart.IsEnabled = false;
+
             }
         }
 
@@ -663,6 +703,8 @@ namespace ChatBot_Net5
             controller.UpdateChannels();
             IsAddNewRow = false;
         }
+
+
 
 
         #endregion
