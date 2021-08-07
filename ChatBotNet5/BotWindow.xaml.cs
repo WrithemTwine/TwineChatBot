@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -95,6 +96,7 @@ namespace ChatBot_Net5
                             SetMultiLiveButtons();
                             MultiBotRadio(true);
                         }
+                        Thread.Sleep(2000);
                     }
                 }
             }
@@ -102,6 +104,7 @@ namespace ChatBot_Net5
             // TODO: add follower service online, offline, and repeat timers to re-run service
             // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
         }
+
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
@@ -163,15 +166,19 @@ namespace ChatBot_Net5
                 Radio_MultiLiveTwitch_StopBot,
                 Radio_Twitch_FollowBotStop,
                 Radio_Twitch_LiveBotStop,
-                Radio_Twitch_StopBot
+                Radio_Twitch_StopBot,
+                Radio_Twitch_ClipBotStop
             };
 
-            foreach (RadioButton button in BotOps)
+            Dispatcher.Invoke(() =>
             {
-                HelperStopBot(button);
-            }
+                foreach (RadioButton button in BotOps)
+                {
+                    HelperStopBot(button);
+                }
 
-            CheckFocus();
+                CheckFocus();
+            });
         }
 
         #endregion
