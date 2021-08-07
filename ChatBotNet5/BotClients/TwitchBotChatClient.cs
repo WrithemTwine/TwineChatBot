@@ -136,10 +136,10 @@ namespace ChatBot_Net5.BotClients
             }
             else if (TwitchChat.TwitchUsername == null)
             {
-                TwitchChat.Initialize(credentials);
+                TwitchChat.Initialize(credentials, TwitchChannelName);
+                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
             }
             TwitchChat.Connect();
-            TwitchChat.JoinChannel(TwitchChannelName, TwitchChannelName != TwitchBotUserName);
 
             return true;
         }
@@ -255,7 +255,6 @@ namespace ChatBot_Net5.BotClients
 
             return base.ExitBot();
         }
-
 
         private void TwitchChat_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
