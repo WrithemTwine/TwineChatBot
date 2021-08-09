@@ -12,7 +12,7 @@ namespace ChatBot_Net5.BotIOController
             RegisterHandlers();
         }
 
-        private void TwitchLiveMonitor_OnBotStopped(object sender, System.EventArgs e)
+        private void TwitchLiveMonitor_OnBotStopped(object sender, EventArgs e)
         {
 
         }
@@ -28,7 +28,7 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
-        private void TwitchFollower_OnBotStopped(object sender, System.EventArgs e)
+        private void TwitchFollower_OnBotStopped(object sender, EventArgs e)
         {
 
         }
@@ -58,12 +58,12 @@ namespace ChatBot_Net5.BotIOController
             ProcessCommands = null;
         }
 
-        private void TwitchClip_OnBotStopped(object sender, System.EventArgs e)
+        private void TwitchClip_OnBotStopped(object sender, EventArgs e)
         {
-            
+
         }
 
-        private void TwitchClip_OnBotStarted(object sender, System.EventArgs e)
+        private void TwitchClip_OnBotStarted(object sender, EventArgs e)
         {
             RegisterHandlers();
 

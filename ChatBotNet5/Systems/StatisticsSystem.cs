@@ -1,11 +1,14 @@
-﻿using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
+
 
 using System;
 using System.Collections.Generic;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
+
+using DataManager = ChatBot_Net5.Data.DataManager;
 
 namespace ChatBot_Net5.Systems
 {
@@ -165,6 +168,11 @@ namespace ChatBot_Net5.Systems
                     }
                 }
             }
+        }
+
+        public List<Tuple<bool,Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+{
+            return datamanager.GetWebhooks(webhooksKind);
         }
 
         public bool StreamOnline(DateTime Started)

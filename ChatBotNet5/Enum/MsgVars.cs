@@ -27,6 +27,7 @@
         Pluralmonths,
         Pluralsub,
         Pluralviewers,
-        Total
+        Total,
+        everyone
     }
 }

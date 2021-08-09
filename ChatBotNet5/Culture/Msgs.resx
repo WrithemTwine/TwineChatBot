@@ -133,6 +133,10 @@
     <value>commands</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="everyone" xml:space="preserve">
+    <value>@everyone</value>
+    <comment>Discord tag for informing 'everyone' in a server</comment>
+  </data>
   <data name="ExceptionArgument" xml:space="preserve">
     <value>The supplied value {0} is not included within the acceptable list: {1}</value>
   </data>
@@ -177,6 +181,10 @@
   </data>
   <data name="Helpdate" xml:space="preserve">
     <value>Gets the current date in your timezone</value>
+  </data>
+  <data name="Helpeveryone" xml:space="preserve">
+    <value>When included, will replace '#everyone' with either (true) '@everyone' or (false) '&lt;blank&gt;' depending on whether the 'AddEveryone' is checked (true) or unchecked (false) alongside the Discord Server link.</value>
+    <comment>Add help info for the 'everyone' message variable.</comment>
   </data>
   <data name="HelpFollow" xml:space="preserve">
     <value>Welcome message for new follower to the channel</value>
@@ -325,7 +333,7 @@
     <value>The message isn't used in response.</value>
   </data>
   <data name="MsgLive" xml:space="preserve">
-    <value>@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url</value>
+    <value>#everyone #user is now live streaming #category - #title! Come join and say hi at: #url</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msglurk" xml:space="preserve">

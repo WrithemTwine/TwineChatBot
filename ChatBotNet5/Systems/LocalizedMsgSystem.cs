@@ -134,7 +134,7 @@ namespace ChatBot_Net5.Systems
 
                     if (helpvalue != null)
                     {
-                        temp.Add(new() { Parameter = a.ToString(), Value = helpvalue });
+                        temp.Add(new() { Parameter = VariableParser.Prefix + a.ToString(), Value = helpvalue });
                     }
                 }
                 // catch the 'MissingManifestResourceException' where no resource contains the desired string

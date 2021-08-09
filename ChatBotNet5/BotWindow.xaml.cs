@@ -96,7 +96,6 @@ namespace ChatBot_Net5
                             SetMultiLiveButtons();
                             MultiBotRadio(true);
                         }
-                        Thread.Sleep(2000);
                     }
                 }
             }
@@ -134,7 +133,7 @@ namespace ChatBot_Net5
             CheckBox FollowbackStreamer = (CheckBox)sender;
             FollowbackStreamer.IsEnabled = false;
 
-            if(OptionFlags.TwitchStreamerChannel!=null && OptionFlags.TwitchStreamerToken!=null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
+            if (OptionFlags.TwitchStreamerToken != null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
             {
                 FollowbackStreamer.IsEnabled = true;
             }

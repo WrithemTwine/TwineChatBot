@@ -251,7 +251,7 @@
                                             <Label x:Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
                                         </StackPanel>
 
-                                        <Expander x:Name="Expander_Credentials" Header="Credential (Click me)" ExpandDirection="Down" IsExpanded="False">
+                                        <Expander x:Name="Expander_Credentials" Header="Credentials (Click me)" ExpandDirection="Down" IsExpanded="False">
                                             <StackPanel>
                                                 <StackPanel Orientation="Horizontal" Height="25" Margin="10">
                                                     <Label Content="Client Id" Width="120" />
@@ -283,13 +283,13 @@
                                             <Button Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshStreamButton_Click" LostFocus="Settings_LostFocus" />
                                             <Label x:Name="Twitch_StreamerRefreshDate"  Content="{Binding TwitchStreamTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
                                         </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="Streamer Channel Name"/>
-                                            <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" LostFocus="Settings_LostFocus" />
-                                        </StackPanel>
-                                    <Expander Header="Credential (Click Me)">
+                                        
+                                    <Expander Header="Credentials (Click Me)">
                                             <StackPanel>
-                                                
+                                            <StackPanel Orientation="Horizontal">
+                                            <Label Content="Streamer Client Id:"/>
+                                            <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" LostFocus="Settings_LostFocus" ToolTip="Client Id - saved in the settings. Bot uses the streamer channel defined in 'Channel Name'."/>
+                                        </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="10,0">
                                                 <Label Content="Token Scope" />
                                                     <TextBox BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" Width="116" Height="22" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">user:edit:follows</TextBox>
@@ -425,7 +425,9 @@
                     </TabItem>
                     <TabItem Header="Discord" DataContext="{Binding DataManage}">
                         <StackPanel>
-                            <TextBlock IsEnabled="False"><Run Text="Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification."/><LineBreak /><Run Text="Current implemented"/><LineBreak /><Run Text="'Kind':"/></TextBlock>
+                            <TextBlock IsEnabled="False">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
+                                Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.<LineBreak />
+                                Current implemented<LineBreak />'Kind':</TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single" />
                                 <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />

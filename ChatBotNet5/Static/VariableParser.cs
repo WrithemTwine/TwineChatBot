@@ -15,9 +15,9 @@ namespace ChatBot_Net5.Static
 
         internal static string ConvertVars(MsgVars[] msgVars)
         {
-            string x="";
+            string x = "";
 
-            foreach(MsgVars m in msgVars)
+            foreach (MsgVars m in msgVars)
             {
                 x += Prefix + m.ToString() + ",";
             }
@@ -71,7 +71,7 @@ namespace ChatBot_Net5.Static
             string Rep(string key)
             {
                 int prefcount = key.Split(Prefix).Length;
-                while ( prefcount > 0 ) // count and loop through the number of prefixes, sometimes there's a prefix in the message but not meant to exchange a variable. with just one prefix and no exchange, this becomes an infinite loop.
+                while (prefcount > 0) // count and loop through the number of prefixes, sometimes there's a prefix in the message but not meant to exchange a variable. with just one prefix and no exchange, this becomes an infinite loop.
                 {
                     string hit = "";
 
