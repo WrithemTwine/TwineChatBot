@@ -123,7 +123,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="TwitchStreamerChannel" Type="System.String" Scope="User">
-      <Value Profile="(Default)">If different than bot account, use this to enter the account for follow-backs - needs option selected</Value>
+      <Value Profile="(Default)">The client Id for the bot attached to streamer channel.</Value>
     </Setting>
     <Setting Name="TwitchStreamerToken" Type="System.String" Scope="User">
       <Value Profile="(Default)">Add token for streamer channel, specifically for only follow-back</Value>

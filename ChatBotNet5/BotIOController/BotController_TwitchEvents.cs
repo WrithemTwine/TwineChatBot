@@ -5,12 +5,10 @@ using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Interop;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -23,6 +21,8 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
+        // TODO: Chat Bot automatically turning on and off depending on if stream is online - broken and unresponsive regarding the 'Live Monitor' bot
+
         public event EventHandler StreamOnline;
         public event EventHandler StreamOffline;
 
@@ -123,9 +123,9 @@ namespace ChatBot_Net5.BotIOController
 
                     if (OptionFlags.TwitchClipPostDiscord)
                     {
-                        foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Clips))
+                        foreach (Tuple<bool, Uri> u in Stats.GetDiscordWebhooks(WebhooksKind.Clips))
                         {
-                            DiscordWebhook.SendMessage(u, c.Url);
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
                             Stats.AddDiscord();
                         }
                     }
@@ -143,7 +143,7 @@ namespace ChatBot_Net5.BotIOController
         {
             Stats.StreamOffline(DateTime.Now);
 
-            if (OptionFlags.TwitchChatBotDisconnectOffline)
+            if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)
             {
                 TwitchIO.StopBot();
                 StreamOffline?.Invoke(this, new());
@@ -169,7 +169,7 @@ namespace ChatBot_Net5.BotIOController
         {
             try
             {
-                if (OptionFlags.TwitchChatBotConnectOnline)
+                if (OptionFlags.TwitchChatBotConnectOnline && TwitchIO.IsStopped)
                 {
                     TwitchIO.StartBot();
                     StreamOnline?.Invoke(this, new());
@@ -202,11 +202,19 @@ namespace ChatBot_Net5.BotIOController
                                 new(MsgVars.url, e.Stream.UserName)
                             });
 
+                            string TempMsg = VariableParser.ParseReplace(msg, dictionary);
+
                             if (Enabled)
                             {
-                                foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
+                                foreach (Tuple<bool, Uri> u in Stats.GetDiscordWebhooks(WebhooksKind.Live))
                                 {
-                                    DiscordWebhook.SendMessage(u, VariableParser.ParseReplace(msg, dictionary));
+                                    DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                                                    {
+                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
+                                                                    }
+                                                                )
+                                                            )
+                                                        );
                                     Stats.AddDiscord();
                                 }
                             }
@@ -261,7 +269,7 @@ namespace ChatBot_Net5.BotIOController
                 {
                     // create a new service with the Twitch streamer account for performing the follow-back
                     TwitchBotFollowerSvc StreamerFollowerSvc = new TwitchBotFollowerSvc();
-                    StreamerFollowerSvc.ConnectFollowerService(OptionFlags.TwitchStreamerChannel, OptionFlags.TwitchStreamerToken);
+                    StreamerFollowerSvc.ConnectFollowerService(TwitchBots.TwitchChannelName, OptionFlags.TwitchStreamerToken);
                     StreamerFollowerSvc.FollowerService?.Start();
                     StreamerFollowerSvc.FollowBack(FromName);
                 }

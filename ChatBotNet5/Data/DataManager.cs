@@ -225,7 +225,7 @@ namespace ChatBot_Net5.Data
                 },
                 {
                     ChannelEventActions.Live,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone }))
                 },
                 {
                     ChannelEventActions.Raid,
@@ -573,19 +573,19 @@ namespace ChatBot_Net5.Data
         /// Retrieve all the webhooks from the Discord table
         /// </summary>
         /// <returns></returns>
-        internal List<Uri> GetWebhooks(WebhooksKind webhooks)
+        internal List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
         {
             DataRow[] dataRows = _DataSource.Discord.Select();
 
-            List<Uri> uris = new();
+            List<Tuple<bool, Uri>> uris = new();
 
             foreach (DataRow d in dataRows)
             {
-                DataSource.DiscordRow row = (d as DataSource.DiscordRow);
+                DataSource.DiscordRow row = d as DataSource.DiscordRow;
 
                 if (row.Kind == webhooks.ToString())
                 {
-                    uris.Add(new Uri(row.Webhook));
+                    uris.Add(new Tuple<bool, Uri>(row.AddEveryone, new Uri(row.Webhook)));
                 }
             }
             return uris;

@@ -97,6 +97,15 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @everyone.
+        /// </summary>
+        internal static string everyone {
+            get {
+                return ResourceManager.GetString("everyone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The supplied value {0} is not included within the acceptable list: {1}.
         /// </summary>
         internal static string ExceptionArgument {
@@ -219,6 +228,15 @@ namespace ChatBot_Net5.Culture {
         internal static string Helpdate {
             get {
                 return ResourceManager.GetString("Helpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When included, will replace &apos;#everyone&apos; with either (true) &apos;@everyone&apos; or (false) &apos;&lt;blank&gt;&apos; depending on whether the &apos;AddEveryone&apos; is checked (true) or unchecked (false) alongside the Discord Server link..
+        /// </summary>
+        internal static string Helpeveryone {
+            get {
+                return ResourceManager.GetString("Helpeveryone", resourceCulture);
             }
         }
         
@@ -637,7 +655,7 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url.
+        ///   Looks up a localized string similar to #everyone #user is now live streaming #category - #title! Come join and say hi at: #url.
         /// </summary>
         internal static string MsgLive {
             get {

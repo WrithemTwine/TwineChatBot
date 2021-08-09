@@ -505,8 +505,7 @@ namespace ChatBot_Net5.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("If different than bot account, use this to enter the account for follow-backs - n" +
-            "eeds option selected")]
+        [global::System.Configuration.DefaultSettingValueAttribute("The client Id for the bot attached to streamer channel.")]
         public string TwitchStreamerChannel {
             get {
                 return ((string)(this["TwitchStreamerChannel"]));
