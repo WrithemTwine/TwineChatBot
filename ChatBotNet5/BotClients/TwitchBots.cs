@@ -1,4 +1,4 @@
-﻿using ChatBot_Net5.BotClients;
+﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Properties;
 
 using System;

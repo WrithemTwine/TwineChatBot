@@ -1,4 +1,5 @@
-﻿using ChatBot_Net5.Interfaces;
+﻿using ChatBot_Net5.Enum;
+using ChatBot_Net5.Interfaces;
 using ChatBot_Net5.Properties;
 
 using System;
@@ -10,16 +11,16 @@ namespace ChatBot_Net5.BotClients
     /// </summary>
     public abstract class IOModule : IIOModule
     {
-        public string BotClientName { get; set; }
+        public Bots BotClientName { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.
         /// </summary>
         public static bool ShowConnectionMsg { get; set; }
 
-        public bool IsStarted { get; set; } = false;
-        public bool HandlersAdded { get; set; } = false;
-        public bool IsStopped { get; set; } = false;
+        public bool IsStarted { get; set; }
+        public bool HandlersAdded { get; set; }
+        public bool IsStopped { get; set; }
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;

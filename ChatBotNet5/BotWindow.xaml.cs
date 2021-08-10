@@ -1,5 +1,6 @@
 ﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.BotIOController;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Properties;
 using ChatBot_Net5.Static;
@@ -61,8 +62,8 @@ namespace ChatBot_Net5
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
-            controller.StreamOnline += Controller_StreamOnline;
-            controller.StreamOffline += Controller_StreamOffline;
+            controller.OnBotStarted += Controller_OnBotStarted;
+            controller.OnBotStopped += Controller_OnBotStopped;
         }
 
         #region Events
@@ -88,7 +89,10 @@ namespace ChatBot_Net5
                     {
                         if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
                         {
-                            HelperStartBot(tuple.Item2);
+                            Dispatcher.BeginInvoke(new BotOperation(() =>
+                            {
+                                ((tuple.Item2).DataContext as IOModule)?.StartBot();
+                            }), null);
                         }
                         else
                         {
@@ -140,15 +144,77 @@ namespace ChatBot_Net5
 
         #endregion
 
-        private void Controller_StreamOnline(object sender, EventArgs eventArgs)
+        private void Controller_OnBotStopped(object sender, BotStartStopArgs e)
         {
-            HelperStartBot(Radio_Twitch_LiveBotStart);
+            Dispatcher.BeginInvoke(new BotOperation(() =>
+            {
+                ToggleInputEnabled(true);
+
+                RadioButton radio;
+                if (e.BotName == Enum.Bots.TwitchChatBot)
+                {
+                    radio = Radio_Twitch_StopBot;
+                }
+                else if (e.BotName == Enum.Bots.TwitchClipBot)
+                {
+                    radio = Radio_Twitch_ClipBotStop;
+                }
+                else if (e.BotName == Enum.Bots.TwitchFollowBot)
+                {
+                    radio = Radio_Twitch_FollowBotStop;
+                }
+                else if (e.BotName == Enum.Bots.TwitchLiveBot)
+                {
+                    radio = Radio_Twitch_LiveBotStop;
+                }
+                else
+                {
+                    radio = Radio_MultiLiveTwitch_StopBot;
+                }
+
+                HelperStopBot(radio);
+            }),null);
         }
 
-        private void Controller_StreamOffline(object sender, EventArgs eventArgs)
+        private void Controller_OnBotStarted(object sender, BotStartStopArgs e)
         {
-            HelperStopBot(Radio_Twitch_StopBot);
+            Dispatcher.BeginInvoke(new BotOperation(() =>
+            {
+               if (!e.Started)
+               {
+                   ToggleInputEnabled(true);
+               }
+               else
+               {
+                   ToggleInputEnabled(false);
+
+                    RadioButton radio;
+                    if (e.BotName == Enum.Bots.TwitchChatBot)
+                    {
+                        radio = Radio_Twitch_StartBot;
+                    }
+                    else if (e.BotName == Enum.Bots.TwitchClipBot)
+                    {
+                        radio = Radio_Twitch_ClipBotStart;
+                    }
+                    else if (e.BotName == Enum.Bots.TwitchFollowBot)
+                    {
+                        radio = Radio_Twitch_FollowBotStart;
+                    }
+                    else if (e.BotName == Enum.Bots.TwitchLiveBot)
+                    {
+                        radio = Radio_Twitch_LiveBotStart;
+                    }
+                    else
+                    {
+                        radio = Radio_MultiLiveTwitch_StartBot;
+                    }
+
+                    HelperStartBot(radio);
+               }
+            }),null);
         }
+
 
         #region BotOps-changes in token expiration
 
@@ -257,85 +323,78 @@ namespace ChatBot_Net5
             (sender as TextBox).ScrollToEnd();
         }
 
+        private delegate void BotOperation();
+
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            HelperStartBot(sender as RadioButton);
-        }
-
-        private void HelperStartBot(RadioButton rb)
-        {
-            if (rb.IsEnabled)
+            if ((sender as RadioButton).IsEnabled)
             {
-                bool? started = (rb.DataContext as IOModule)?.StartBot();
-
-                if (started == false)
+                Dispatcher.BeginInvoke(new BotOperation( () =>
                 {
-                    ToggleInputEnabled(true);
-                }
-                else if (started == true)
-                {
-                    rb.IsChecked = true;
-                    ToggleInputEnabled(false);
-
-                    foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
-                    {
-                        if (child.GetType() == typeof(RadioButton))
-                        {
-                            (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
-                        }
-                        else if (child.GetType() == typeof(Label))
-                        {
-                            Label currLabel = (Label)child;
-                            if (currLabel.Name.Contains("Start"))
-                            {
-                                currLabel.Visibility = Visibility.Visible;
-                            }
-                            else if (currLabel.Name.Contains("Stop"))
-                            {
-                                currLabel.Visibility = Visibility.Collapsed;
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-
-        private void HelperStopBot(RadioButton rb)
-        {
-            if (rb.IsEnabled)
-            {
-                rb.IsChecked = true;
-                (rb.DataContext as IOModule)?.StopBot();
-                ToggleInputEnabled(true);
-
-                foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
-                {
-                    if (child.GetType() == typeof(RadioButton))
-                    {
-                        (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
-                    }
-                    else if (child.GetType() == typeof(Label))
-                    {
-                        Label currLabel = (Label)child;
-                        if (currLabel.Name.Contains("Start"))
-                        {
-                            currLabel.Visibility = Visibility.Collapsed;
-                        }
-                        else if (currLabel.Name.Contains("Stop"))
-                        {
-                            currLabel.Visibility = Visibility.Visible;
-                        }
-                    }
-                }
+                    ((sender as RadioButton).DataContext as IOModule)?.StartBot();
+                }),null);
             }
         }
 
         private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            RadioButton rb = sender as RadioButton;
+            if ((sender as RadioButton).IsEnabled)
+            {
+                Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    ((sender as RadioButton).DataContext as IOModule)?.StopBot();
+                }), null);
+            }
+        }
 
-            HelperStopBot(rb);
+        private static void HelperStartBot(RadioButton rb)
+        {
+            rb.IsChecked = true;
+
+            foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
+            {
+                if (child.GetType() == typeof(RadioButton))
+                {
+                    (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
+                }
+                else if (child.GetType() == typeof(Label))
+                {
+                    Label currLabel = (Label)child;
+                    if (currLabel.Name.Contains("Start"))
+                    {
+                        currLabel.Visibility = Visibility.Visible;
+                    }
+                    else if (currLabel.Name.Contains("Stop"))
+                    {
+                        currLabel.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+        }
+
+        private static void HelperStopBot(RadioButton rb)
+        {
+            rb.IsChecked = true;
+
+            foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
+            {
+                if (child.GetType() == typeof(RadioButton))
+                {
+                    (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
+                }
+                else if (child.GetType() == typeof(Label))
+                {
+                    Label currLabel = (Label)child;
+                    if (currLabel.Name.Contains("Start"))
+                    {
+                        currLabel.Visibility = Visibility.Collapsed;
+                    }
+                    else if (currLabel.Name.Contains("Stop"))
+                    {
+                        currLabel.Visibility = Visibility.Visible;
+                    }
+                }
+            }
         }
 
         private void DG_CommonMsgs_AutoGeneratedColumns(object sender, EventArgs e)
