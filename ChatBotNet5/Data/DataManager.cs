@@ -1,5 +1,7 @@
 ﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -7,14 +9,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
-using System.Linq;
-using System.Threading.Tasks;
-using ChatBot_Net5.Static;
-using ChatBot_Net5.Systems;
 
 namespace ChatBot_Net5.Data
 {
@@ -28,9 +28,15 @@ namespace ChatBot_Net5.Data
 
     public class DataManager : INotifyPropertyChanged
     {
-        #region DataSource
 
+        #region DataSource
+#if DEBUG
+        private static readonly string DataFileName = Path.Combine(@"D:\Source\Chat Bot Apps\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
+#else
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
+#endif
+
+
         private readonly DataSource _DataSource;
         private Thread followerThread;
 
