@@ -85,7 +85,6 @@
                 <TabControl>
                     <TabItem Header="Bot Actions">
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-                            
                         <DockPanel VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" Margin="3">
                             <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
                             <GroupBox Header="Twitch" DockPanel.Dock="Top" HorizontalAlignment="Center" Width="Auto">
@@ -301,9 +300,6 @@
                                             </StackPanel>
                                         </Expander></StackPanel>
                                 </GroupBox>
-                                
-
-
                             </StackPanel>
 
                             <FlowDocumentScrollViewer DockPanel.Dock="Right" Margin="10" VerticalScrollBarVisibility="Auto">

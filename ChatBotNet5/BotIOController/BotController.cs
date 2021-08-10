@@ -6,6 +6,7 @@ using ChatBot_Net5.Systems;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
@@ -60,6 +61,7 @@ namespace ChatBot_Net5.BotIOController
             TwitchFollower = new();
             TwitchLiveMonitor = new();
             TwitchClip = new();
+
             IOModuleList.Add(TwitchIO);
             IOModuleList.Add(TwitchFollower);
             IOModuleList.Add(TwitchLiveMonitor);
@@ -119,8 +121,8 @@ namespace ChatBot_Net5.BotIOController
         /// <returns>The string names array of the bots within this controller.</returns>
         public string[] GetProviderNames()
         {
-            List<string> Names = new();
-            
+            List<Enum.Bots> Names = new();
+
             foreach (IOModule a in IOModuleList)
             {
                 Names.Add(a.BotClientName);
@@ -128,7 +130,7 @@ namespace ChatBot_Net5.BotIOController
 
             Names.Sort();
 
-            return Names.ToArray();
+            return Names.ConvertAll((e) => e.ToString()).ToArray();
         }
 
         /// <summary>

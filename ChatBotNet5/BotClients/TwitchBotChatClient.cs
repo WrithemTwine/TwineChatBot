@@ -1,4 +1,6 @@
 ﻿
+using ChatBot_Net5.Exceptions;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -7,17 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
-using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Enums;
-using ChatBot_Net5.Exceptions;
 using TwitchLib.Communication.Events;
-using System.Threading;
+using TwitchLib.Communication.Models;
 
 namespace ChatBot_Net5.BotClients
 {
@@ -52,9 +53,7 @@ namespace ChatBot_Net5.BotClients
         //100,000 accounts per day Verified bots
         public TwitchBotChatClient()
         {
-            BotClientName = "TwitchChat";
-
-
+            BotClientName = Enum.Bots.TwitchChatBot;
 
             LogData = new Logger<TwitchClient>(
                 new LoggerFactory(
@@ -152,11 +151,14 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                RefreshSettings();
-                Connect();
-                IsStarted = true;
-                IsStopped = false;
-                InvokeBotStarted();
+                if (IsStopped || !IsStarted)
+                {
+                    RefreshSettings();
+                    Connect();
+                    IsStarted = true;
+                    IsStopped = false;
+                    InvokeBotStarted();
+                }
                 return true;
             }
             catch
@@ -171,7 +173,7 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                if (TwitchChat.IsConnected)
+                if (IsStarted)
                 {
                     IsStarted = false;
                     IsStopped = true;

@@ -1,6 +1,7 @@
 ﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
 using ChatBot_Net5.Enum;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
@@ -21,12 +22,8 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
-        // TODO: Chat Bot automatically turning on and off depending on if stream is online - broken and unresponsive regarding the 'Live Monitor' bot
-
-        public event EventHandler StreamOnline;
-        public event EventHandler StreamOffline;
-
-        // TODO: Add Twitch Clips Service-posting to Discord, including getting a clip message, Discord clip link
+        public event EventHandler<BotStartStopArgs> OnBotStarted;
+        public event EventHandler<BotStartStopArgs> OnBotStopped;
 
         /// <summary>
         /// Register event handlers for the chat services
@@ -146,7 +143,6 @@ namespace ChatBot_Net5.BotIOController
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)
             {
                 TwitchIO.StopBot();
-                StreamOffline?.Invoke(this, new());
             }
         }
 
@@ -172,7 +168,6 @@ namespace ChatBot_Net5.BotIOController
                 if (OptionFlags.TwitchChatBotConnectOnline && TwitchIO.IsStopped)
                 {
                     TwitchIO.StartBot();
-                    StreamOnline?.Invoke(this, new());
                 }
 
                 if (e.Channel != TwitchBots.TwitchChannelName)

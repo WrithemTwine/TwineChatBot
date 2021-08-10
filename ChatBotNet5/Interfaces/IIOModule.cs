@@ -1,10 +1,12 @@
-﻿using System;
+﻿using ChatBot_Net5.Enum;
+
+using System;
 
 namespace ChatBot_Net5.Interfaces
 {
     public interface IIOModule
     {
-        public string BotClientName { get; set; }
+        public Bots BotClientName { get; set; }
 
         /// <summary>
         /// Whether to display bot connection to channel.

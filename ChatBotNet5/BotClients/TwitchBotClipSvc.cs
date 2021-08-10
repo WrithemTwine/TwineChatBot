@@ -16,7 +16,7 @@ namespace ChatBot_Net5.BotClients
 
         public TwitchBotClipSvc()
         {
-            BotClientName = "TwitchClipBot";
+            BotClientName = Enum.Bots.TwitchClipBot;
         }
 
         internal void ConnectClipService(string ClientName = null, string TwitchToken = null)
@@ -39,12 +39,14 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                ConnectClipService();
-                clipMonitorService?.Start();
-                IsStarted = true;
-                IsStopped = false;
-                InvokeBotStarted();
-
+                if (IsStopped || !IsStarted)
+                {
+                    ConnectClipService();
+                    clipMonitorService?.Start();
+                    IsStarted = true;
+                    IsStopped = false;
+                    InvokeBotStarted();
+                }
                 return true;
             }
             catch { }
@@ -58,7 +60,7 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                if (!IsStopped)
+                if (IsStarted)
                 {
                     clipMonitorService?.Stop();
                     IsStarted = false;

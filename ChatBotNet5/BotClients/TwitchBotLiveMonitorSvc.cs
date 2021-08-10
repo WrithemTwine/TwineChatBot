@@ -19,7 +19,7 @@ namespace ChatBot_Net5.BotClients
         public bool IsMultiConnected { get; set; }
         public TwitchBotLiveMonitorSvc()
         {
-            BotClientName = "TwitchLiveMonitorService";
+            BotClientName = Enum.Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
         }
@@ -58,7 +58,7 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                if (!IsStarted || !IsStopped)
+                if (IsStopped || !IsStarted)
                 {
                     ConnectLiveMonitorService();
 
@@ -87,7 +87,7 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                if (!IsStopped && IsStarted)
+                if (IsStarted)
                 {
                     LiveStreamMonitor.Stop();
                     IsStarted = false;

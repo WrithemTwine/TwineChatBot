@@ -21,7 +21,7 @@ namespace ChatBot_Net5.BotClients
 
         public TwitchBotFollowerSvc()
         {
-            BotClientName = "TwitchFollowerService";
+            BotClientName = Enum.Bots.TwitchFollowBot;
         }
 
         /// <summary>
@@ -49,12 +49,14 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                ConnectFollowerService();
-                FollowerService?.Start();
-                IsStarted = true;
-                IsStopped = false;
-                InvokeBotStarted();
-
+                if (IsStopped || !IsStarted)
+                {
+                    ConnectFollowerService();
+                    FollowerService?.Start();
+                    IsStarted = true;
+                    IsStopped = false;
+                    InvokeBotStarted();
+                }
                 return true;
             }
             catch { }
@@ -68,7 +70,7 @@ namespace ChatBot_Net5.BotClients
         {
             try
             {
-                if (!IsStopped)
+                if (IsStarted)
                 {
                     FollowerService?.Stop();
                     IsStarted = false;
