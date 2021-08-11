@@ -1,6 +1,9 @@
 ﻿
+using ChatBot_Net5.Static;
+
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -74,8 +77,9 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                 return false;
             }
         }
@@ -97,7 +101,11 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return false;
+            }
         }
 
         public override bool ExitBot()

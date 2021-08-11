@@ -8,6 +8,7 @@ using ChatBot_Net5.Static;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Resources;
 
 namespace ChatBot_Net5.Systems
@@ -138,7 +139,10 @@ namespace ChatBot_Net5.Systems
                     }
                 }
                 // catch the 'MissingManifestResourceException' where no resource contains the desired string
-                catch { }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
             }
 
             return temp;

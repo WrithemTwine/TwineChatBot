@@ -646,5 +646,29 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchClipPostChat"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogBotStatus {
+            get {
+                return ((bool)(this["LogBotStatus"]));
+            }
+            set {
+                this["LogBotStatus"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogExceptions {
+            get {
+                return ((bool)(this["LogExceptions"]));
+            }
+            set {
+                this["LogExceptions"] = value;
+            }
+        }
     }
 }

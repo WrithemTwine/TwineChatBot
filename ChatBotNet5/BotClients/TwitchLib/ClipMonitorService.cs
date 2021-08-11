@@ -1,9 +1,11 @@
 ﻿using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
@@ -151,7 +153,10 @@ namespace ChatBot_Net5.BotClients.TwitchLib
                 {
                     count = await AddClip(ChannelName, 100);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
             }
 
             while (count == 100)
@@ -160,7 +165,10 @@ namespace ChatBot_Net5.BotClients.TwitchLib
                 {
                     count = await AddClip(ChannelName, 100, cursor);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
             }
 
             return allClips;

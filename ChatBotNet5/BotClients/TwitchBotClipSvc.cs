@@ -1,7 +1,11 @@
 ﻿using ChatBot_Net5.BotClients.TwitchLib;
+using ChatBot_Net5.Enum;
+using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 using System.Threading.Tasks;
 
 using TwitchLib.Api;
@@ -49,7 +53,10 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch { }
+            catch (Exception ex) 
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
             return false;
         }
 
@@ -70,7 +77,10 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
             return false;
         }
 

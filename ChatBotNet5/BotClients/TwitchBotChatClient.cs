@@ -1,5 +1,7 @@
 ﻿
+using ChatBot_Net5.Enum;
 using ChatBot_Net5.Exceptions;
+using ChatBot_Net5.Static;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
@@ -8,6 +10,8 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -53,7 +57,7 @@ namespace ChatBot_Net5.BotClients
         //100,000 accounts per day Verified bots
         public TwitchBotChatClient()
         {
-            BotClientName = Enum.Bots.TwitchChatBot;
+            BotClientName = Bots.TwitchChatBot;
 
             LogData = new Logger<TwitchClient>(
                 new LoggerFactory(
@@ -117,7 +121,13 @@ namespace ChatBot_Net5.BotClients
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
+            StatusLog += $@"{e.DateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {e.Data}
+";
+
+            if (OptionFlags.LogBotStatus)
+            {
+                LogWriter.WriteLog(LogType.LogBotStatus, e.DateTime.ToLocalTime().ToString() + ": " + e.Data);
+            }
 
             NotifyPropertyChanged(nameof(StatusLog));
         }
@@ -161,8 +171,12 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch
-            { return false; }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                return false; 
+            }
         }
 
         /// <summary>
@@ -183,7 +197,11 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return false;
+            }
         }
 
         /// <summary>
@@ -210,8 +228,10 @@ namespace ChatBot_Net5.BotClients
             {
                 SendData(s);
             }
-            catch
+            catch (Exception ex)
             {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
                 //CreateClient();
                 //StartBot();
                 //SendData(s);
@@ -239,8 +259,10 @@ namespace ChatBot_Net5.BotClients
                 {
                     SendData(ToSend);
                 } 
-                catch
+                catch (Exception ex)
                 {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
                     BackOffSend(ToSend, BackOff * 2);
                 }
             }

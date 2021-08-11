@@ -218,7 +218,10 @@ namespace ChatBot_Net5.BotIOController
                 }
 
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         #endregion Stream On, Off, Updated
@@ -243,33 +246,40 @@ namespace ChatBot_Net5.BotIOController
                     Stats.AddAutoEvents();
                 }
 
-                if (OptionFlags.TwitchFollowerFollowBack)
-                {
-                    FollowbackOp(f.FromUserName);
-                }
+                //if (OptionFlags.TwitchFollowerFollowBack)
+                //{
+                //    FollowbackOp(f.FromUserName);
+                //}
             }
         }
 
 
-        private void FollowbackOp(string FromName)
-        {
-            if (OptionFlags.TwitchFollowbackBotChoice)
-            {
-                TwitchFollower.FollowBack(FromName);
-            }
+        //private void FollowbackOp(string FromName)
+        //{
+        //    if (OptionFlags.TwitchFollowbackBotChoice)
+        //    {
+        //        TwitchFollower.FollowBack(FromName);
+        //    }
 
-            if (OptionFlags.TwitchFollowbackStreamerChoice) // if the bot account is not the same as the streamer account, create a new follower bot just from the streamer account
-            {
-                if (OptionFlags.TwitchStreamerChannel != null && OptionFlags.TwitchStreamerToken != null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
-                {
-                    // create a new service with the Twitch streamer account for performing the follow-back
-                    TwitchBotFollowerSvc StreamerFollowerSvc = new TwitchBotFollowerSvc();
-                    StreamerFollowerSvc.ConnectFollowerService(TwitchBots.TwitchChannelName, OptionFlags.TwitchStreamerToken);
-                    StreamerFollowerSvc.FollowerService?.Start();
-                    StreamerFollowerSvc.FollowBack(FromName);
-                }
-            }
-        }
+        //    if (OptionFlags.TwitchFollowbackStreamerChoice) // if the bot account is not the same as the streamer account, create a new follower bot just from the streamer account
+        //    {
+        //        if (OptionFlags.TwitchStreamerChannel != null && OptionFlags.TwitchStreamerToken != null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
+        //        {
+        //            try
+        //            {
+        //                // create a new service with the Twitch streamer account for performing the follow-back
+        //                TwitchBotFollowerSvc StreamerFollowerSvc = new();
+        //                StreamerFollowerSvc.ConnectFollowerService(TwitchBots.TwitchChannelName, OptionFlags.TwitchStreamerToken);
+        //                StreamerFollowerSvc.FollowerService?.Start();
+        //                StreamerFollowerSvc.FollowBack(FromName);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+        //            }
+        //        }
+        //    }
+        //}
 
         #endregion Followers
 
@@ -408,10 +418,10 @@ namespace ChatBot_Net5.BotIOController
             Stats.AddRaids();
             Stats.AddAutoEvents();
 
-            if (OptionFlags.TwitchRaidFollowBack)
-            {
-                FollowbackOp(e.RaidNotification.DisplayName);
-            }
+            //if (OptionFlags.TwitchRaidFollowBack)
+            //{
+            //    FollowbackOp(e.RaidNotification.DisplayName);
+            //}
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
@@ -465,14 +475,19 @@ namespace ChatBot_Net5.BotIOController
                 }
             }
             catch (InvalidOperationException InvalidOp)
-            {
-                Send(InvalidOp.Message);
+            {                
+                    LogWriter.LogException(InvalidOp, MethodBase.GetCurrentMethod().Name);
+                    Send(InvalidOp.Message);
             }
             catch (NullReferenceException NullRef)
             {
+                LogWriter.LogException(NullRef, MethodBase.GetCurrentMethod().Name);
                 Send(NullRef.Message);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
 
         }
 

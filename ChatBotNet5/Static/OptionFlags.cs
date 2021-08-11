@@ -6,6 +6,9 @@ namespace ChatBot_Net5.Static
 {
     internal static class OptionFlags
     {
+        internal static bool LogBotStatus { get; set; }
+        internal static bool LogExceptions { get; set; }
+
         internal static bool ProcessOps { get; set; }  // whether to process ops or not
         internal static bool IsStreamOnline { get; set; }
 
@@ -44,10 +47,10 @@ namespace ChatBot_Net5.Static
         internal static bool ManageFollowers { get; set; }
         internal static bool ManageStreamStats { get; set; }
 
-        internal static bool TwitchFollowerFollowBack { get; set; }
-        internal static bool TwitchRaidFollowBack { get; set; }
-        internal static bool TwitchFollowbackBotChoice { get; set; }
-        internal static bool TwitchFollowbackStreamerChoice { get; set; }
+        //internal static bool TwitchFollowerFollowBack { get; set; }
+        //internal static bool TwitchRaidFollowBack { get; set; }
+        //internal static bool TwitchFollowbackBotChoice { get; set; }
+        //internal static bool TwitchFollowbackStreamerChoice { get; set; }
 
         internal static string TwitchStreamerChannel { get; set; }
         internal static string TwitchStreamerToken { get; set; }
@@ -64,6 +67,9 @@ namespace ChatBot_Net5.Static
             lock (Settings.Default)
             {
                 Settings.Default.Save();
+
+                LogBotStatus = Settings.Default.LogExceptions;
+                LogExceptions = Settings.Default.LogExceptions;
 
                 TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
                 TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
@@ -99,11 +105,11 @@ namespace ChatBot_Net5.Static
                 ManageFollowers = Settings.Default.ManageFollowers;
                 ManageStreamStats = Settings.Default.ManageStreamStats;
 
-                TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
-                TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
+                //TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
+                //TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;
 
-                TwitchFollowbackBotChoice = Settings.Default.TwitchFollowbackBotChoice;
-                TwitchFollowbackStreamerChoice = Settings.Default.TwitchFollowbackStreamerChoice;
+                //TwitchFollowbackBotChoice = Settings.Default.TwitchFollowbackBotChoice;
+                //TwitchFollowbackStreamerChoice = Settings.Default.TwitchFollowbackStreamerChoice;
                 TwitchStreamerChannel = Settings.Default.TwitchStreamerChannel;
                 TwitchStreamerToken = Settings.Default.TwitchStreamerToken;
                 TwitchStreamTokenDate = Settings.Default.TwitchStreamTokenDate;

@@ -10,6 +10,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -164,8 +165,9 @@ namespace ChatBot_Net5.Data
                                 File.Move(result, DataFileName, true);
                                 File.Delete(result);
                             }
-                            catch
+                            catch (Exception ex)
                             {
+                                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                 File.Delete(result);
                             }
                         }

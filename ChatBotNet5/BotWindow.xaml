@@ -47,7 +47,7 @@
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label> User-Defined:</Label>
+                    <Label>User-Defined:</Label>
                     <Label DataContext="{Binding DataManage, Mode=OneWay}" Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
@@ -85,151 +85,151 @@
                 <TabControl>
                     <TabItem Header="Bot Actions">
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-                        <DockPanel VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" Margin="3">
-                            <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
-                            <GroupBox Header="Twitch" DockPanel.Dock="Top" HorizontalAlignment="Center" Width="Auto">
-                                <StackPanel>
-                                    <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
+                            <DockPanel VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" Margin="3">
+                                <Label DockPanel.Dock="Top" Content="This tab manages the current bot status - to start and stop operations." />
+                                <GroupBox Header="Twitch" DockPanel.Dock="Top" HorizontalAlignment="Center" Width="Auto">
+                                    <StackPanel>
+                                        <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.</TextBlock>
-                                    <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
-                                    <WrapPanel>
-                                        <WrapPanel.Resources>
-                                            <Style TargetType="{x:Type Label}">
-                                                <Setter Property="Height" Value="50" />
-                                            </Style>
-                                        </WrapPanel.Resources>
-                                        <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot" BorderBrush="#FF212D34">
-                                            <WrapPanel Orientation="Horizontal" >
-                                                <Label x:Name="Label_TwitchChat_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock>The Twitch Chat Client is started!</TextBlock>
-                                                </Label>
-                                                <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock>The Twitch Chat Client is stopped!</TextBlock>
-                                                </Label>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
-                                                    <TextBlock>Auto-start when application starts</TextBlock>
-                                                </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
-                                                <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                                <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                    <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
-                                                </Label>
-
-                                                <Label Height="Auto">
-                                                    <TextBlock TextWrapping="Wrap">Start and Stop bot when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the stream is detected online is when the Chat Bot would start.</TextBlock>
-                                                </Label>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotConnectOnline}" LostFocus="Settings_LostFocus" >
-                                                    <TextBlock>Connect bot when stream goes online</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotDisconnectOffline}" LostFocus="Settings_LostFocus" >
-                                                    <TextBlock>Disconnect bot when stream goes offline</TextBlock>
-                                                </CheckBox>
-                                            </WrapPanel>
-                                        </GroupBox>
-                                        <GroupBox Header="LiveStream Monitor Service">
-                                            <StackPanel Orientation="Vertical">
-                                                <WrapPanel>
-                                                    <Label x:Name="Label_TwitchMultiLive_Start" Foreground="Green" Visibility="Collapsed">
-                                                        <TextBlock>The Twitch LiveStream Monitor Client is started!</TextBlock>
+                                        <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
+                                        <WrapPanel>
+                                            <WrapPanel.Resources>
+                                                <Style TargetType="{x:Type Label}">
+                                                    <Setter Property="Height" Value="50" />
+                                                </Style>
+                                            </WrapPanel.Resources>
+                                            <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot" BorderBrush="#FF212D34">
+                                                <WrapPanel Orientation="Horizontal" >
+                                                    <Label x:Name="Label_TwitchChat_Start" Foreground="Green" Visibility="Collapsed">
+                                                        <TextBlock>The Twitch Chat Client is started!</TextBlock>
                                                     </Label>
-                                                    <Label x:Name="Label_TwitchMultiLive_Stop" Foreground="Maroon" Visibility="Visible">
-                                                        <TextBlock>The Twitch LiveStream Monitor Client is stopped!</TextBlock>
+                                                    <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
+                                                        <TextBlock>The Twitch Chat Client is stopped!</TextBlock>
                                                     </Label>
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
                                                         <TextBlock>Auto-start when application starts</TextBlock>
                                                     </CheckBox>
-                                                    <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
-                                                    <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
-                                                    <Label x:Name="Label_TwitchMultiLive_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                    <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
-                                                </Label>
+                                                    <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
+                                                    <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                    <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                        <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                    </Label>
+
+                                                    <Label Height="Auto">
+                                                        <TextBlock TextWrapping="Wrap">Start and Stop bot when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the stream is detected online is when the Chat Bot would start.</TextBlock>
+                                                    </Label>
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotConnectOnline}" LostFocus="Settings_LostFocus" >
+                                                        <TextBlock>Connect bot when stream goes online</TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotDisconnectOffline}" LostFocus="Settings_LostFocus" >
+                                                        <TextBlock>Disconnect bot when stream goes offline</TextBlock>
+                                                    </CheckBox>
                                                 </WrapPanel>
-                                                <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
-                                                    <WrapPanel Orientation="Vertical">
-                                                        <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
-                                                            <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
+                                            </GroupBox>
+                                            <GroupBox Header="LiveStream Monitor Service">
+                                                <StackPanel Orientation="Vertical">
+                                                    <WrapPanel>
+                                                        <Label x:Name="Label_TwitchMultiLive_Start" Foreground="Green" Visibility="Collapsed">
+                                                            <TextBlock>The Twitch LiveStream Monitor Client is started!</TextBlock>
                                                         </Label>
-                                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
+                                                        <Label x:Name="Label_TwitchMultiLive_Stop" Foreground="Maroon" Visibility="Visible">
+                                                            <TextBlock>The Twitch LiveStream Monitor Client is stopped!</TextBlock>
+                                                        </Label>
+                                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
                                                             <TextBlock>Auto-start when application starts</TextBlock>
                                                         </CheckBox>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
-                                                            <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
-                                                        </StackPanel>
+                                                        <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
+                                                        <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
+                                                        <Label x:Name="Label_TwitchMultiLive_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                            <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                        </Label>
                                                     </WrapPanel>
-                                                </GroupBox>
+                                                    <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
+                                                        <WrapPanel Orientation="Vertical">
+                                                            <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
+                                                                <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
+                                                            </Label>
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
+                                                                <TextBlock>Auto-start when application starts</TextBlock>
+                                                            </CheckBox>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StartBot" IsEnabled="False" />
+                                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  PreviewMouseDown="BC_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" />
+                                                            </StackPanel>
+                                                        </WrapPanel>
+                                                    </GroupBox>
+                                                </StackPanel>
+                                            </GroupBox>
+                                            <GroupBox Header="Follower Service">
+                                                <WrapPanel>
+                                                    <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
+                                                    </Label>
+                                                    <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
+                                                    </Label>
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
+                                                        <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
+                                                    </CheckBox>
+                                                    <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                    <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                        <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                    </Label>
+                                                </WrapPanel>
+                                            </GroupBox>
+                                            <GroupBox Header="Clip Service">
+                                                <WrapPanel>
+                                                    <Label x:Name="Label_TwitchClip_Start" Foreground="Green" Visibility="Collapsed">
+                                                        <TextBlock TextWrapping="Wrap">The Twitch Clip Client is started!</TextBlock>
+                                                    </Label>
+                                                    <Label x:Name="Label_TwitchClip_Stop" Foreground="Maroon" Visibility="Visible">
+                                                        <TextBlock TextWrapping="Wrap">The Twitch Clip Client is stopped!</TextBlock>
+                                                    </Label>
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
+                                                        <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
+                                                    </CheckBox>
+                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStart" Content="Start Clip Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStop" Content="Stop Clip Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                    <Label x:Name="Label_TwitchClip_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                                        <TextBlock>The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                    </Label>
+                                                </WrapPanel>
+                                            </GroupBox>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                                <WrapPanel DockPanel.Dock="Top" Height="Auto" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                    <GroupBox Header="Setup Follower Operations" Width="Auto">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Label Content="Seconds between checking for new follows:"/>
+                                                <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
                                             </StackPanel>
-                                        </GroupBox>
-                                        <GroupBox Header="Follower Service">
-                                            <WrapPanel>
-                                                <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
-                                                </Label>
-                                                <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
-                                                </Label>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
-                                                    <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
-                                                </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                                <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                    <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
-                                                </Label>
-                                            </WrapPanel>
-                                        </GroupBox>
-                                        <GroupBox Header="Clip Service">
-                                            <WrapPanel>
-                                                <Label x:Name="Label_TwitchClip_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock TextWrapping="Wrap">The Twitch Clip Client is started!</TextBlock>
-                                                </Label>
-                                                <Label x:Name="Label_TwitchClip_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock TextWrapping="Wrap">The Twitch Clip Client is stopped!</TextBlock>
-                                                </Label>
-                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
-                                                    <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
-                                                </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStart" Content="Start Clip Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStop" Content="Stop Clip Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                                <Label x:Name="Label_TwitchClip_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                    <TextBlock>The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
-                                                </Label>
-                                            </WrapPanel>
-                                        </GroupBox>
-                                    </WrapPanel>
-                                </StackPanel>
-                            </GroupBox>
-                            <WrapPanel DockPanel.Dock="Top" Height="Auto" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
-                                <GroupBox Header="Setup Follower Operations" Width="Auto">
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="Seconds between checking for new follows:"/>
-                                            <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
-                                        </StackPanel>
                                             <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequencyFollow, Mode=TwoWay}" Maximum="300" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="300" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
-                                    </StackPanel>
-                                </GroupBox>
-                                <GroupBox Header="Setup Clip Operations" Width="Auto">
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="Seconds between checking for new follows:"/>
-                                            <Label Content="{Binding Value, ElementName=Slider_TimeClipPollSeconds}" />
                                         </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Setup Clip Operations" Width="Auto">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Label Content="Seconds between checking for new follows:"/>
+                                                <Label Content="{Binding Value, ElementName=Slider_TimeClipPollSeconds}" />
+                                            </StackPanel>
                                             <Slider x:Name="Slider_TimeClipPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new clips. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequencyClipTime, Mode=TwoWay}" Maximum="1200" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="1200" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5"  />
-                                    </StackPanel>
-                                </GroupBox>
-                                <GroupBox Header="Setup Go-Live Notifications" Width="Auto">
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="Seconds between checking for going live: " />
-                                            <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                         </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Setup Go-Live Notifications" Width="Auto">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Label Content="Seconds between checking for going live: " />
+                                                <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
+                                            </StackPanel>
                                             <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10"  />
-                                    </StackPanel>
-                                </GroupBox>
-                            </WrapPanel>
-                        </DockPanel>
-                      </ScrollViewer>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </WrapPanel>
+                            </DockPanel>
+                        </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Twitch Setup" GotFocus="TabItem_Twitch_GotFocus">
                         <DockPanel LastChildFill="False" x:Name="DockPanel_BotSetup_Twitch">
@@ -282,23 +282,24 @@
                                             <Button Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshStreamButton_Click" LostFocus="Settings_LostFocus" />
                                             <Label x:Name="Twitch_StreamerRefreshDate"  Content="{Binding TwitchStreamTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
                                         </StackPanel>
-                                        
-                                    <Expander Header="Credentials (Click Me)">
+
+                                        <Expander Header="Credentials (Click Me)">
                                             <StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                            <Label Content="Streamer Client Id:"/>
-                                            <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" LostFocus="Settings_LostFocus" ToolTip="Client Id - saved in the settings. Bot uses the streamer channel defined in 'Channel Name'."/>
-                                        </StackPanel>
-                                            <StackPanel Orientation="Horizontal" Margin="10,0">
-                                                <Label Content="Token Scope" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Streamer Client Id:"/>
+                                                    <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerChannel, Mode=TwoWay}" Width="296" LostFocus="Settings_LostFocus" ToolTip="Client Id - saved in the settings. Bot uses the streamer channel defined in 'Channel Name'."/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Margin="10,0">
+                                                    <Label Content="Token Scope" />
                                                     <TextBox BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" Width="116" Height="22" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">user:edit:follows</TextBox>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Label Content="Streamer Token"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Streamer Access Token"/>
                                                     <TextBox TextWrapping="Wrap" Text="{Binding TwitchStreamerToken, Mode=TwoWay}" Width="340" LostFocus="Settings_LostFocus" />
+                                                </StackPanel>
                                             </StackPanel>
-                                            </StackPanel>
-                                        </Expander></StackPanel>
+                                        </Expander>
+                                    </StackPanel>
                                 </GroupBox>
                             </StackPanel>
 
@@ -432,7 +433,13 @@
                     </TabItem>
                     <TabItem Header="Bot Status Log">
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Width="Auto">
-                            <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
+                            <DockPanel>
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                                    <CheckBox IsChecked="{Binding LogBotStatus}" Click="CheckBox_Click_SaveSettings" Content="Enable Bot Status Logging" Margin="3" ToolTip="Save this log - 'StatusLog.txt'"/>
+                                    <CheckBox IsChecked="{Binding LogExceptions}" Click="CheckBox_Click_SaveSettings" Content="Enable TwineBot Exception Logging" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'"/>
+                                </StackPanel>
+                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
+                            </DockPanel>
                         </GroupBox>
                     </TabItem>
                 </TabControl>
@@ -465,12 +472,14 @@
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <CheckBox.ToolTip>
-                                                    <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock></CheckBox.ToolTip>
+                                                    <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
+                                                </CheckBox.ToolTip>
                                                 <TextBlock>Enable repeating commands.</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <CheckBox.ToolTip>
-                                                    <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 10+ viewers an hour or over 20 viewer chats in 15 minutes.</TextBlock></CheckBox.ToolTip>
+                                                    <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 10+ viewers an hour or over 20 viewer chats in 15 minutes.</TextBlock>
+                                                </CheckBox.ToolTip>
                                                 <TextBlock>Enable smart slow-down repeating commands</TextBlock>
                                             </CheckBox>
                                             <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
@@ -498,7 +507,7 @@
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    
+
                                     <GroupBox Header="Twitch - Format Bot messages">
                                         <StackPanel>
                                             <Label Content="/me changes message to all italics" />
@@ -530,25 +539,30 @@
                                             </CheckBox>
                                             <GroupBox Header="Automatic Follow other Viewers:" Visibility="Visible" Width="199">
                                                 <StackPanel>
-                                                    <GroupBox Header="Follow-back Account: " Width="165">
+                                                    <TextBlock Margin="3">Twitch.tv has disabled automated following. Therefore, this bot no longer supports this feature.</TextBlock>
+                                                    <TextBox Text="https://blog.twitch.tv/en/2021/06/28/deprecation-of-create-and-delete-follows-api-endpoints/" TextWrapping="Wrap" />
+                                                    <GroupBox Header="Follow-back Account: " Width="165" Visibility="Collapsed">
                                                         <StackPanel>
                                                             <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on bot account.">
-                                                                <TextBlock>Bot Account</TextBlock></CheckBox>
+                                                                <TextBlock>Bot Account</TextBlock>
+                                                            </CheckBox>
                                                             <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab." Loaded="CheckBox_Loaded">
-                                                                <TextBlock>Streamer Account</TextBlock></CheckBox>
+                                                                <TextBlock>Streamer Account</TextBlock>
+                                                            </CheckBox>
                                                         </StackPanel>
                                                     </GroupBox>
 
-                                            <CheckBox IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
+                                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
                                                         <TextBlock>Enable follow-back new followers</TextBlock>
-                                            </CheckBox>
-                                            <CheckBox IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
+                                                    </CheckBox>
+                                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
                                                         <TextBlock>Enable follow-back incoming raider</TextBlock>
-                                            </CheckBox>
-                                            <CheckBox IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
+                                                    </CheckBox>
+                                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
                                                         <TextBlock>Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live</TextBlock>
-                                            </CheckBox>                                                
-                                            </StackPanel></GroupBox>
+                                                    </CheckBox>
+                                                </StackPanel>
+                                            </GroupBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Get Clips">
@@ -656,7 +670,7 @@
                             <Label Grid.Row="0" Grid.Column="2" Content="Clip List"/>
                             <Label Grid.Row="0" Content="Category List"/>
                             <DataGrid x:Name="DG_CategoryList_Clips" DataContext="{Binding DataManage}" ItemsSource="{Binding Category, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" />
-                            <DataGrid x:Name="DG_Clips" DataContext="{Binding DataManage}" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" Grid.Column="2" CanUserDeleteRows="True" />                           
+                            <DataGrid x:Name="DG_Clips" DataContext="{Binding DataManage}" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" Grid.Column="2" CanUserDeleteRows="True" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="System Events">
@@ -691,7 +705,7 @@
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            
+
                             <DataGrid x:Name="DG_Currency" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" />
                             <DataGrid x:Name="DG_CurrencyAccrual" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" />
                         </Grid>

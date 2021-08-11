@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using ChatBot_Net5.Static;
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Core.HttpCallHandlers;
@@ -39,7 +43,10 @@ namespace ChatBot_Net5.BotClients.TwitchLib
                     followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
                 finally
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
@@ -55,7 +62,7 @@ namespace ChatBot_Net5.BotClients.TwitchLib
                     followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch { }
+                catch (Exception ex) { LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name); }
             }
 
             return allfollows;
@@ -81,7 +88,7 @@ namespace ChatBot_Net5.BotClients.TwitchLib
                     // add the follow
                     await followers.CreateUserFollows(from_id, to_id, allownotification);
                 }
-                catch { }
+                catch (Exception ex) { LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name); }
             }
             return;
         }

@@ -3,6 +3,7 @@ using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -59,7 +60,10 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
             return false;
         }
 
@@ -80,7 +84,10 @@ namespace ChatBot_Net5.BotClients
                 }
                 return true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
             return false;
         }
 
@@ -96,12 +103,13 @@ namespace ChatBot_Net5.BotClients
             return base.ExitBot();
         }
 
-        public void FollowBack(string ToUserName)
-        {
-            new Thread(new ThreadStart(() =>
-            {
-                FollowerService.CreateUserFollowerName(TwitchChannelName, ToUserName, OptionFlags.TwitchAddFollowerNotification);
-            })).Start();
-        }
+        // Twitch.tv disabled this feature. https://blog.twitch.tv/en/2021/06/28/deprecation-of-create-and-delete-follows-api-endpoints/
+        //public void FollowBack(string ToUserName)
+        //{
+        //    new Thread(new ThreadStart(() =>
+        //    {
+        //        FollowerService.CreateUserFollowerName(TwitchChannelName, ToUserName, OptionFlags.TwitchAddFollowerNotification);
+        //    })).Start();
+        //}
     }
 }
