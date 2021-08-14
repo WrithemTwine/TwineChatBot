@@ -1,5 +1,8 @@
 ﻿
+using ChatBot_Net5.Static;
+
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Documents;
 
@@ -22,7 +25,8 @@ namespace ChatBot_Net5.BotIOController
         private void UpdateMessage(ChatMessage s)
         {
             Paragraph p = new();
-            p.Inlines.Add(new Run(DateTime.Now.ToLocalTime().ToString("h:mm") + " "));
+            string time = DateTime.Now.ToLocalTime().ToString("h:mm", CultureInfo.CurrentCulture) + " ";
+            p.Inlines.Add(new Run(time));
             p.Inlines.Add(new Run(s.DisplayName + ": "));
             p.Inlines.Add(new Run(s.Message));
             //p.Foreground = new SolidColorBrush(Color.FromArgb(a: s.Color.A,

@@ -1,7 +1,9 @@
-﻿using ChatBot_Net5.Clients;
-using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
 using ChatBot_Net5.Enum;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -19,7 +22,8 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
-        // TODO: Add Twitch Clips Service-posting to Discord, including getting a clip message, Discord clip link
+        public event EventHandler<BotStartStopArgs> OnBotStarted;
+        public event EventHandler<BotStartStopArgs> OnBotStopped;
 
         /// <summary>
         /// Register event handlers for the chat services
@@ -91,6 +95,39 @@ namespace ChatBot_Net5.BotIOController
 
                 TwitchLiveMonitor.HandlersAdded = true;
             }
+
+            if(TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
+            {
+                TwitchClip.clipMonitorService.OnNewClipFound += ClipMonitorService_OnNewClipFound;
+            }
+        }
+
+        private void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
+        {
+            ClipHelper(e.Clips);
+        }
+
+        private void ClipHelper(IEnumerable<Clip> clips)
+        {
+            foreach (Clip c in clips)
+            {
+                if (DataManage.AddClip(c.Id, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url))
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        Send(c.Url);
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        foreach (Tuple<bool, Uri> u in Stats.GetDiscordWebhooks(WebhooksKind.Clips))
+                        {
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            Stats.AddDiscord();
+                        }
+                    }
+                }
+            }
         }
 
         #region Stream On, Off, Updated
@@ -102,6 +139,11 @@ namespace ChatBot_Net5.BotIOController
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
             Stats.StreamOffline(DateTime.Now);
+
+            if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)
+            {
+                TwitchIO.StopBot();
+            }
         }
 
         /// <summary>
@@ -111,7 +153,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            Stats.Category = e.Stream.GameName;
+            Stats.SetCategory(e.Stream.GameId, e.Stream.GameName);
         }
 
         /// <summary>
@@ -123,6 +165,11 @@ namespace ChatBot_Net5.BotIOController
         {
             try
             {
+                if (OptionFlags.TwitchChatBotConnectOnline && TwitchIO.IsStopped)
+                {
+                    TwitchIO.StartBot();
+                }
+
                 if (e.Channel != TwitchBots.TwitchChannelName)
                 {
                     SendMultiLiveMsg(e);
@@ -134,34 +181,47 @@ namespace ChatBot_Net5.BotIOController
 
                     if (Started)
                     {
-                        bool MultiLive = DataManage.CheckMultiStreams(e.Stream.StartedAt);
+                        bool MultiLive = Stats.CheckStreamTime(e.Stream.StartedAt);
 
                         if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                         {
                             // get message, set a default if otherwise deleted/unavailable
-                            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Live);
-                            msg ??= "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+                            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out bool Enabled);
 
                             // keys for exchanging codes for representative names
-                            Dictionary<string, string> dictionary = VariableParser.BuildDictionary( new Tuple<string, string>[]
+                            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                             {
-                                new("user", e.Stream.UserName),
-                                new("category", e.Stream.GameName),
-                                new("title", e.Stream.Title),
-                                new("url", "https://www.twitch.tv/" + e.Stream.UserName)
+                                new(MsgVars.user, e.Stream.UserName),
+                                new(MsgVars.category, e.Stream.GameName),
+                                new(MsgVars.title, e.Stream.Title),
+                                new(MsgVars.url, e.Stream.UserName)
                             });
 
-                            foreach (Uri u in DataManage.GetWebhooks(WebhooksKind.Live))
+                            string TempMsg = VariableParser.ParseReplace(msg, dictionary);
+
+                            if (Enabled)
                             {
-                                DiscordWebhook.SendLiveMessage(u, VariableParser.ParseReplace(msg, dictionary)).Wait();
-                                Stats.AddDiscord();
+                                foreach (Tuple<bool, Uri> u in Stats.GetDiscordWebhooks(WebhooksKind.Live))
+                                {
+                                    DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                                                    {
+                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
+                                                                    }
+                                                                )
+                                                            )
+                                                        );
+                                    Stats.AddDiscord();
+                                }
                             }
                         }
                     }
                 }
 
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         #endregion Stream On, Off, Updated
@@ -169,10 +229,7 @@ namespace ChatBot_Net5.BotIOController
         #region Followers
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            bool FollowEnabled = (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Follow);
-
-            string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Follow);
-            msg ??= "Thanks #user for the follow!";
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
 
             while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
@@ -182,36 +239,61 @@ namespace ChatBot_Net5.BotIOController
                 {
                     if (FollowEnabled)
                     {
-                        Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[] { new("user", "@" + f.FromUserName) })));
+                        Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
                     }
 
                     Stats.AddFollow();
                     Stats.AddAutoEvents();
                 }
 
-                if (OptionFlags.TwitchFollowerFollowBack)
-                {
-                    TwitchFollower.FollowBack(f.FromUserName);
-                }
+                //if (OptionFlags.TwitchFollowerFollowBack)
+                //{
+                //    FollowbackOp(f.FromUserName);
+                //}
             }
         }
+
+
+        //private void FollowbackOp(string FromName)
+        //{
+        //    if (OptionFlags.TwitchFollowbackBotChoice)
+        //    {
+        //        TwitchFollower.FollowBack(FromName);
+        //    }
+
+        //    if (OptionFlags.TwitchFollowbackStreamerChoice) // if the bot account is not the same as the streamer account, create a new follower bot just from the streamer account
+        //    {
+        //        if (OptionFlags.TwitchStreamerChannel != null && OptionFlags.TwitchStreamerToken != null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
+        //        {
+        //            try
+        //            {
+        //                // create a new service with the Twitch streamer account for performing the follow-back
+        //                TwitchBotFollowerSvc StreamerFollowerSvc = new();
+        //                StreamerFollowerSvc.ConnectFollowerService(TwitchBots.TwitchChannelName, OptionFlags.TwitchStreamerToken);
+        //                StreamerFollowerSvc.FollowerService?.Start();
+        //                StreamerFollowerSvc.FollowBack(FromName);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+        //            }
+        //        }
+        //    }
+        //}
 
         #endregion Followers
 
         #region Subscriptions
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Subscribe))
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled);
+            if (Enabled)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Subscribe);
-                msg ??= "Thanks #user for the subscribing!";
-
-
-                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[] {
-                new( "user", e.Subscriber.DisplayName ),
-                new( "submonths", FormatData.Plurality(e.Subscriber.MsgParamCumulativeMonths, "total month", "total months") ),
-                new( "subplan", e.Subscriber.SubscriptionPlan.ToString() ),
-                new( "subplanname", e.Subscriber.SubscriptionPlanName )
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                new( MsgVars.user, e.Subscriber.DisplayName ),
+                new( MsgVars.submonths, FormatData.Plurality(e.Subscriber.MsgParamCumulativeMonths, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
+                new( MsgVars.subplan, e.Subscriber.SubscriptionPlan.ToString() ),
+                new( MsgVars.subplanname, e.Subscriber.SubscriptionPlanName )
                 })));
             }
 
@@ -221,23 +303,21 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Resubscribe))
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled);
+            if (Enabled)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Resubscribe);
-                msg ??= "Thanks #user for re-subscribing!";
-
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[] {
-                new( "user", e.ReSubscriber.DisplayName ),
-                new( "months", FormatData.Plurality(e.ReSubscriber.Months, "total month", "total months") ),
-                new( "submonths", FormatData.Plurality(e.ReSubscriber.MsgParamCumulativeMonths, "month total", "months total")),
-                new( "subplan", e.ReSubscriber.SubscriptionPlan.ToString()),
-                new( "subplanname", e.ReSubscriber.SubscriptionPlanName )
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                new( MsgVars.user, e.ReSubscriber.DisplayName ),
+                new( MsgVars.months, FormatData.Plurality(e.ReSubscriber.Months, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
+                new( MsgVars.submonths, FormatData.Plurality(e.ReSubscriber.MsgParamCumulativeMonths, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))),
+                new( MsgVars.subplan, e.ReSubscriber.SubscriptionPlan.ToString()),
+                new( MsgVars.subplanname, e.ReSubscriber.SubscriptionPlanName )
                 });
 
                 // add the streak element if user wants their sub streak displayed
                 if (e.ReSubscriber.MsgParamShouldShareStreak)
                 {
-                    VariableParser.AddData(ref dictionary, new Tuple<string, string>[] { new("streak", e.ReSubscriber.MsgParamStreakMonths) });
+                    VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, e.ReSubscriber.MsgParamStreakMonths) });
                 }
 
                 Send(VariableParser.ParseReplace(msg, dictionary));
@@ -249,18 +329,16 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.GiftSub))
+
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled);
+            if (Enabled)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.GiftSub);
-                msg ??= "Thanks #user for gifting a #subplan subscription to #receiveuser!";
-
-
-                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[] {
-                    new("user", e.GiftedSubscription.DisplayName),
-                    new("months", FormatData.Plurality(e.GiftedSubscription.MsgParamMonths, "month", "months")),
-                    new("receiveuser", e.GiftedSubscription.MsgParamRecipientUserName ),
-                    new("subplan", e.GiftedSubscription.MsgParamSubPlan.ToString() ),
-                    new("subplanname", e.GiftedSubscription.MsgParamSubPlanName)
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                    new(MsgVars.user, e.GiftedSubscription.DisplayName),
+                    new(MsgVars.months, FormatData.Plurality(e.GiftedSubscription.MsgParamMonths, MsgVars.Pluralmonths)),
+                    new(MsgVars.receiveuser, e.GiftedSubscription.MsgParamRecipientUserName ),
+                    new(MsgVars.subplan, e.GiftedSubscription.MsgParamSubPlan.ToString() ),
+                    new(MsgVars.subplanname, e.GiftedSubscription.MsgParamSubPlanName)
                 })));
             }
 
@@ -270,15 +348,13 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.CommunitySubs))
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled);
+            if (Enabled)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.CommunitySubs);
-                msg ??= "Thanks #user for giving #count to the community!";
-
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[] {
-                    new("user", e.GiftedSubscription.DisplayName),
-                    new("count", FormatData.Plurality(e.GiftedSubscription.MsgParamSenderCount, e.GiftedSubscription.MsgParamSubPlan + " subscription", e.GiftedSubscription.MsgParamSubPlan + " subscriptions")),
-                    new("subplan", e.GiftedSubscription.MsgParamSubPlan.ToString())
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                    new(MsgVars.user, e.GiftedSubscription.DisplayName),
+                    new(MsgVars.count, FormatData.Plurality(e.GiftedSubscription.MsgParamSenderCount, MsgVars.Pluralsub, e.GiftedSubscription.MsgParamSubPlan.ToString())),
+                    new(MsgVars.subplan, e.GiftedSubscription.MsgParamSubPlan.ToString())
                 });
 
                 Send(VariableParser.ParseReplace(msg, dictionary));
@@ -293,17 +369,15 @@ namespace ChatBot_Net5.BotIOController
         #region Hosting
         private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.BeingHosted))
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled);
+            if (Enabled)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.BeingHosted);
-                msg ??= "Thanks #user for #autohost this channel!";
-
-
-                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<string, string>[]
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
-                    new("user", e.BeingHostedNotification.HostedByChannel ),
-                    new("autohost", e.BeingHostedNotification.IsAutoHosted ? "auto-hosting" : "hosting"),
-                    new("viewers", FormatData.Plurality(e.BeingHostedNotification.Viewers, "viewer", "viewers"))
+                    new(MsgVars.user, e.BeingHostedNotification.HostedByChannel ),
+                    new(MsgVars.autohost, LocalizedMsgSystem.DetermineHost(e.BeingHostedNotification.IsAutoHosted) ),
+                    new(MsgVars.viewers, FormatData.Plurality(e.BeingHostedNotification.Viewers, MsgVars.Pluralviewers
+                     ))
                 })));
             }
 
@@ -331,14 +405,12 @@ namespace ChatBot_Net5.BotIOController
         #region Raid events
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-            if ((bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Raid))
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled);
+            if (Enabled)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Raid);
-                msg ??= "Thanks #user for bringing #viewers and raiding the channel!";
-
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[] {
-                new("user", e.RaidNotification.DisplayName ),
-                new("viewers", FormatData.Plurality(e.RaidNotification.MsgParamViewerCount, "viewer", "viewers"))
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                new(MsgVars.user, e.RaidNotification.DisplayName ),
+                new(MsgVars.viewers, FormatData.Plurality(e.RaidNotification.MsgParamViewerCount, MsgVars.Pluralviewers))
                 });
 
                 Send(VariableParser.ParseReplace(msg, dictionary));
@@ -346,10 +418,10 @@ namespace ChatBot_Net5.BotIOController
             Stats.AddRaids();
             Stats.AddAutoEvents();
 
-            if (OptionFlags.TwitchRaidFollowBack)
-            {
-                TwitchFollower.FollowBack(e.RaidNotification.DisplayName);
-            }
+            //if (OptionFlags.TwitchRaidFollowBack)
+            //{
+            //    FollowbackOp(e.RaidNotification.DisplayName);
+            //}
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
@@ -403,14 +475,19 @@ namespace ChatBot_Net5.BotIOController
                 }
             }
             catch (InvalidOperationException InvalidOp)
-            {
-                Send(InvalidOp.Message);
+            {                
+                    LogWriter.LogException(InvalidOp, MethodBase.GetCurrentMethod().Name);
+                    Send(InvalidOp.Message);
             }
             catch (NullReferenceException NullRef)
             {
+                LogWriter.LogException(NullRef, MethodBase.GetCurrentMethod().Name);
                 Send(NullRef.Message);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
 
         }
 
@@ -427,22 +504,28 @@ namespace ChatBot_Net5.BotIOController
             {
                 Stats.VIPJoined(e.ChatMessage.DisplayName);
             }
+            if (e.ChatMessage.IsModerator)
+            {
+                Stats.ModJoined(e.ChatMessage.DisplayName);
+            }
+
 
             // handle bit cheers
-            if (e.ChatMessage.Bits > 0 && (bool)DataManage.GetRowData(DataRetrieve.EventEnabled, ChannelEventActions.Bits))
+            if (e.ChatMessage.Bits > 0)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.Bits);
-                msg ??= "Thanks #user for giving #bits!";
-
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[]
+                string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out bool Enabled);
+                if (Enabled)
                 {
-                    new("user", e.ChatMessage.DisplayName),
-                    new( "bits", FormatData.Plurality(e.ChatMessage.Bits, "bit", "bits") )
-                });
+                    Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                    new(MsgVars.user, e.ChatMessage.DisplayName),
+                    new(MsgVars.bits, FormatData.Plurality(e.ChatMessage.Bits, MsgVars.Pluralbits) )
+                    });
 
-                Send(VariableParser.ParseReplace(msg, dictionary));
-                Stats.AddBits(e.ChatMessage.Bits);
-                Stats.AddAutoEvents();
+                    Send(VariableParser.ParseReplace(msg, dictionary));
+                    Stats.AddBits(e.ChatMessage.Bits);
+                    Stats.AddAutoEvents();
+                }
             }
 
             AddChat(e.ChatMessage.DisplayName);
@@ -525,18 +608,27 @@ namespace ChatBot_Net5.BotIOController
 
         private void RegisterJoinedUser(string Username)
         {
-            // TODO: update welcome message for new user, returning viewer, and returning follower!
-            if (((Username != TwitchBots.TwitchChannelName) || (Username == TwitchBots.TwitchChannelName && OptionFlags.MsgWelcomeStreamer)) && (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg))
+            if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
-                string msg = (string)DataManage.GetRowData(DataRetrieve.EventMessage, ChannelEventActions.UserJoined);
-                msg ??= "Thanks #user for stopping by the channel!";
-
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<string, string>[]
+                if ((Username.ToLower(CultureInfo.CurrentCulture) != TwitchBots.TwitchChannelName.ToLower(CultureInfo.CurrentCulture)) || OptionFlags.MsgWelcomeStreamer)
                 {
-                    new( "user", Username )
-                });
+                    ChannelEventActions selected = ChannelEventActions.UserJoined;
 
-                Send(VariableParser.ParseReplace(msg, dictionary));
+                    if (OptionFlags.WelcomeCustomMsg)
+                    {
+                        selected =
+                            Stats.IsFollower(Username) ?
+                            ChannelEventActions.SupporterJoined :
+                                Stats.IsReturningUser(Username) ?
+                                    ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
+                    }
+
+                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out _);
+                    Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                {
+                        new( MsgVars.user, Username )
+                })));
+                }
             }
 
             if (OptionFlags.AutoShout)
@@ -561,9 +653,9 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
-            foreach (var user in from string user in e.Users
-                                 where Stats.UserJoined(user, DateTime.Now)
-                                 select user)
+            foreach (string user in from string user in e.Users
+                                    where Stats.UserJoined(user, DateTime.Now)
+                                    select user)
             {
                 RegisterJoinedUser(user);
             }
@@ -579,7 +671,8 @@ namespace ChatBot_Net5.BotIOController
             if (IOModule.ShowConnectionMsg)
             {
                 Version version = Assembly.GetEntryAssembly().GetName().Version;
-                string s = "Twine Chatbot by WrithemTwine, version " + string.Format(CultureInfo.CurrentCulture, "{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision) + ", is now connected!";
+                string s = string.Format(CultureInfo.CurrentCulture,
+                    LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
 
                 Send(s);
             }

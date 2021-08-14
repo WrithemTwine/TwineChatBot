@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using ChatBot_Net5.Static;
+
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients.TwitchLib
+namespace ChatBot_Net5.BotClients.TwitchLib
 {
     public class ExtLiveStreamMonitorService : LiveStreamMonitorService
     {
@@ -20,7 +24,10 @@ namespace ChatBot_Net5.Clients.TwitchLib
                 await base.OnServiceTimerTick();
                 await UpdateLiveStreamersAsync();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
  

@@ -227,19 +227,24 @@ namespace MultiUserLiveBot
         private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
         #endregion GUI events and helpers
 
-        private void DataGrid_GotFocus(object sender, RoutedEventArgs e)
+        private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
         {
-            ((DataGrid)sender).CanUserAddRows = true;
+            DataGrid curr = sender as DataGrid;
+
+            if (curr.IsMouseOver)
+            {
+                curr.CanUserAddRows = true;
+            }
         }
 
-        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+        private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
         {
-            ((DataGrid)sender).CanUserAddRows = false;
-        }
+            DataGrid curr = sender as DataGrid;
 
-        private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
-        {
-            ((DataGrid)sender).CanUserAddRows = true;
+            if (!curr.IsMouseOver)
+            {
+                curr.CanUserAddRows = false;
+            }
         }
     }
 }

@@ -110,12 +110,12 @@ namespace ChatBot_Net5.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int TwitchFrequency {
+        public int TwitchFrequencyFollow {
             get {
-                return ((int)(this["TwitchFrequency"]));
+                return ((int)(this["TwitchFrequencyFollow"]));
             }
             set {
-                this["TwitchFrequency"] = value;
+                this["TwitchFrequencyFollow"] = value;
             }
         }
         
@@ -476,6 +476,198 @@ namespace ChatBot_Net5.Properties {
             }
             set {
                 this["MsgWelcomeStreamer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool WelcomeCustomMsg {
+            get {
+                return ((bool)(this["WelcomeCustomMsg"]));
+            }
+            set {
+                this["WelcomeCustomMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatTimerComSlowdown {
+            get {
+                return ((bool)(this["RepeatTimerComSlowdown"]));
+            }
+            set {
+                this["RepeatTimerComSlowdown"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("The client Id for the bot attached to streamer channel.")]
+        public string TwitchStreamerChannel {
+            get {
+                return ((string)(this["TwitchStreamerChannel"]));
+            }
+            set {
+                this["TwitchStreamerChannel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Add token for streamer channel, specifically for only follow-back")]
+        public string TwitchStreamerToken {
+            get {
+                return ((string)(this["TwitchStreamerToken"]));
+            }
+            set {
+                this["TwitchStreamerToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TwitchDisconnectBot {
+            get {
+                return ((bool)(this["TwitchDisconnectBot"]));
+            }
+            set {
+                this["TwitchDisconnectBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
+        public global::System.DateTime TwitchStreamTokenDate {
+            get {
+                return ((global::System.DateTime)(this["TwitchStreamTokenDate"]));
+            }
+            set {
+                this["TwitchStreamTokenDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowbackBotChoice {
+            get {
+                return ((bool)(this["TwitchFollowbackBotChoice"]));
+            }
+            set {
+                this["TwitchFollowbackBotChoice"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowbackStreamerChoice {
+            get {
+                return ((bool)(this["TwitchFollowbackStreamerChoice"]));
+            }
+            set {
+                this["TwitchFollowbackStreamerChoice"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchChatBotDisconnectOffline {
+            get {
+                return ((bool)(this["TwitchChatBotDisconnectOffline"]));
+            }
+            set {
+                this["TwitchChatBotDisconnectOffline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchChatBotConnectOnline {
+            get {
+                return ((bool)(this["TwitchChatBotConnectOnline"]));
+            }
+            set {
+                this["TwitchChatBotConnectOnline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public double TwitchFrequencyClipTime {
+            get {
+                return ((double)(this["TwitchFrequencyClipTime"]));
+            }
+            set {
+                this["TwitchFrequencyClipTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipPostDiscord {
+            get {
+                return ((bool)(this["TwitchClipPostDiscord"]));
+            }
+            set {
+                this["TwitchClipPostDiscord"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipAutoStart {
+            get {
+                return ((bool)(this["TwitchClipAutoStart"]));
+            }
+            set {
+                this["TwitchClipAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipPostChat {
+            get {
+                return ((bool)(this["TwitchClipPostChat"]));
+            }
+            set {
+                this["TwitchClipPostChat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogBotStatus {
+            get {
+                return ((bool)(this["LogBotStatus"]));
+            }
+            set {
+                this["LogBotStatus"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogExceptions {
+            get {
+                return ((bool)(this["LogExceptions"]));
+            }
+            set {
+                this["LogExceptions"] = value;
             }
         }
     }

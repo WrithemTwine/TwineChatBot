@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ChatBot_Net5.Enum;
+using ChatBot_Net5.Properties;
+
+using System;
 using System.Collections.Generic;
 
 namespace ChatBot_Net5.Static
@@ -10,18 +13,30 @@ namespace ChatBot_Net5.Static
     {
         internal static string Prefix = "#";
 
+        internal static string ConvertVars(MsgVars[] msgVars)
+        {
+            string x = "";
+
+            foreach (MsgVars m in msgVars)
+            {
+                x += Prefix + m.ToString() + ",";
+            }
+
+            return x.Remove(x.LastIndexOf(','));
+        }
+
         /// <summary>
         /// Build a dictionary with the incoming string,string data pair, add a prefix to the first string.
         /// </summary>
         /// <param name="paramArray">A Tuple with the first item is a key (which will be prefixed) and second item is the value.</param>
         /// <returns>A key,value Dictionary with the specified prefix.</returns>
-        internal static Dictionary<string, string> BuildDictionary(Tuple<string, string>[] paramArray)
+        internal static Dictionary<string, string> BuildDictionary<T>(Tuple<T, string>[] paramArray)
         {
             Dictionary<string, string> dict = new();
 
-            foreach (Tuple<string, string> t in paramArray)
+            foreach (Tuple<T, string> t in paramArray)
             {
-                dict.Add(Prefix + t.Item1, t.Item2);
+                dict.Add(Prefix + t.Item1.ToString(), t.Item2);
             }
 
             return dict;
@@ -32,11 +47,11 @@ namespace ChatBot_Net5.Static
         /// </summary>
         /// <param name="dictionary">The dictionary to modify.</param>
         /// <param name="paramArray">The Tuple array to add to the dictionary.</param>
-        internal static void AddData(ref Dictionary<string, string> dictionary, Tuple<string, string>[] paramArray)
+        internal static void AddData<T>(ref Dictionary<string, string> dictionary, Tuple<T, string>[] paramArray)
         {
-            foreach (Tuple<string, string> t in paramArray)
+            foreach (Tuple<T, string> t in paramArray)
             {
-                dictionary.Add(Prefix + t.Item1, t.Item2);
+                dictionary.Add(Prefix + t.Item1.ToString(), t.Item2);
             }
         }
 
@@ -55,25 +70,37 @@ namespace ChatBot_Net5.Static
             // submethod to replace the found key with paired value
             string Rep(string key)
             {
-                string hit = "";
-
-                foreach (string s in dictionary.Keys)
+                int prefcount = key.Split(Prefix).Length;
+                while (prefcount > 0) // count and loop through the number of prefixes, sometimes there's a prefix in the message but not meant to exchange a variable. with just one prefix and no exchange, this becomes an infinite loop.
                 {
-                    if (key.Contains(s))
-                    {
-                        hit = s;
-                        break;
-                    }
-                }
+                    string hit = "";
 
-                // if the value doesn't work, return the key used to try to parse - the intended phrase wasn't part of the parsing values
-                return dictionary.TryGetValue(hit, out string value) ? key.Replace(hit, (hit == Prefix + "user" ? "@" : "") + value) : key;
+                    foreach (string s in dictionary.Keys)
+                    {
+                        if (key.Contains(s))
+                        {
+                            hit = s;
+                            break;
+                        }
+                    }
+
+                    // if the value doesn't work, return the key used to try to parse - the intended phrase wasn't part of the parsing values
+
+                    key = dictionary.TryGetValue(hit, out string value) ?
+                        key.Replace(hit,
+                        (hit == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix username with @
+                        (hit == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
+                        value)
+                        : key;
+                    prefcount--;
+                }
+                return key;
             }
 
             // review the incoming string message for all of the keys in the dictionary, replace with paired value
             for (int x = 0; x < words.Length; x++)
             {
-                temp += (words[x].StartsWith(Prefix, StringComparison.CurrentCulture) ? Rep(words[x]) : words[x]) + " ";
+                temp += (words[x].StartsWith(Prefix, StringComparison.CurrentCulture) && dictionary != null ? Rep(words[x]) : words[x]) + " ";
             }
 
             return temp.Trim();

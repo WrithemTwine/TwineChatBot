@@ -1,12 +1,15 @@
 ﻿
+using ChatBot_Net5.Static;
+
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotLiveMonitorSvc : TwitchBots
     {
@@ -19,7 +22,7 @@ namespace ChatBot_Net5.Clients
         public bool IsMultiConnected { get; set; }
         public TwitchBotLiveMonitorSvc()
         {
-            ChatClientName = "TwitchLiveMonitorService";
+            BotClientName = Enum.Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
         }
@@ -56,21 +59,29 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StartBot()
         {
-            if (!IsStarted || !IsStopped)
+            try
             {
-                ConnectLiveMonitorService();
-
-                if (LiveStreamMonitor.ChannelsToMonitor.Count < 1)
+                if (IsStopped || !IsStarted)
                 {
-                    SetLiveMonitorChannels(new() { TwitchChannelName });
-                }
+                    ConnectLiveMonitorService();
 
-                LiveStreamMonitor.Start();
-                IsStarted = true;
-                IsStopped = false;
-                InvokeBotStarted();
+                    if (LiveStreamMonitor.ChannelsToMonitor.Count < 1)
+                    {
+                        SetLiveMonitorChannels(new() { TwitchChannelName });
+                    }
+
+                    LiveStreamMonitor.Start();
+                    IsStarted = true;
+                    IsStopped = false;
+                    InvokeBotStarted();
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return false;
+            }
         }
 
         /// <summary>
@@ -78,15 +89,23 @@ namespace ChatBot_Net5.Clients
         /// </summary>
         public override bool StopBot()
         {
-            if (!IsStopped && IsStarted)
+            try
             {
-                LiveStreamMonitor.Stop();
-                IsStarted = false;
-                IsStopped = true;
-                HandlersAdded = false;
-                InvokeBotStopped();
+                if (IsStarted)
+                {
+                    LiveStreamMonitor.Stop();
+                    IsStarted = false;
+                    IsStopped = true;
+                    HandlersAdded = false;
+                    InvokeBotStopped();
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return false;
+            }
         }
 
         public override bool ExitBot()

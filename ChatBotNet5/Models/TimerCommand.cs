@@ -12,15 +12,15 @@ namespace ChatBot_Net5.Models
         internal DateTime NextRun { get; set; }
         internal List<string> CategoryList { get; } = new();
 
-        internal TimerCommand(Tuple<string, int, string[]> ComRepeat)
+        internal TimerCommand(Tuple<string, int, string[]> ComRepeat, double TimeDilute)
         {
             Command = ComRepeat.Item1;
             RepeatTime = ComRepeat.Item2;
             CategoryList.AddRange(ComRepeat.Item3);
-            UpdateTime();
+            UpdateTime(TimeDilute);
         }
 
-        internal void UpdateTime() => NextRun = DateTime.Now.AddSeconds(RepeatTime);
+        internal void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.AddSeconds(RepeatTime*TimeDilute);
 
         internal bool CheckFireTime() => DateTime.Now > NextRun;
 

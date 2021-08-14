@@ -1,4 +1,8 @@
 ﻿
+using ChatBot_Net5.Enum;
+using ChatBot_Net5.Exceptions;
+using ChatBot_Net5.Static;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -6,19 +10,21 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
-using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Enums;
-using ChatBot_Net5.Exceptions;
 using TwitchLib.Communication.Events;
+using TwitchLib.Communication.Models;
 
-namespace ChatBot_Net5.Clients
+namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotChatClient : TwitchBots, INotifyPropertyChanged
     {
@@ -32,6 +38,7 @@ namespace ChatBot_Net5.Clients
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
+
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …
         //20 per 30 seconds Users sending commands or messages to channels in which they do not have Moderator or Operator status
@@ -50,22 +57,7 @@ namespace ChatBot_Net5.Clients
         //100,000 accounts per day Verified bots
         public TwitchBotChatClient()
         {
-            ChatClientName = "TwitchChat";
-
-            ClientOptions options = new()
-            {
-                UseSsl = true,
-                ClientType = ClientType.Chat,
-
-                MessagesAllowedInPeriod = TwitchClientID == TwitchChannelName ? 100 : 20,
-                ThrottlingPeriod = TimeSpan.FromSeconds(30),
-                SendQueueCapacity = 100,
-                SendDelay = 5,
-
-                WhisperQueueCapacity = 200,
-                WhispersAllowedInPeriod = 200,
-                WhisperThrottlingPeriod = TimeSpan.FromSeconds(30)
-            };
+            BotClientName = Bots.TwitchChatBot;
 
             LogData = new Logger<TwitchClient>(
                 new LoggerFactory(
@@ -84,11 +76,32 @@ namespace ChatBot_Net5.Clients
                     )
                 );
 
+            CreateClient();
+
+            RefreshSettings();
+        }
+
+        private void CreateClient()
+        {
+            ClientOptions options = new()
+            {
+                UseSsl = true,
+                ClientType = ClientType.Chat,
+
+                MessagesAllowedInPeriod = TwitchClientID == TwitchChannelName ? 100 : 20,
+                ThrottlingPeriod = TimeSpan.FromSeconds(30),
+                SendQueueCapacity = 100,
+                SendDelay = 5,
+
+                WhisperQueueCapacity = 200,
+                WhispersAllowedInPeriod = 200,
+                WhisperThrottlingPeriod = TimeSpan.FromSeconds(30)
+            };
+
             TwitchChat = new TwitchClient(new WebSocketClient(options), ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
             TwitchChat.OnDisconnected += TwitchChat_OnDisconnected;
-
-            RefreshSettings();
+            TwitchChat.AutoReListenOnException = true;
         }
 
         /// <summary>
@@ -108,7 +121,13 @@ namespace ChatBot_Net5.Clients
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += e.DateTime.ToLocalTime().ToString() + " " + e.Data + "\n";
+            StatusLog += $@"{e.DateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {e.Data}
+";
+
+            if (OptionFlags.LogBotStatus)
+            {
+                LogWriter.WriteLog(LogType.LogBotStatus, e.DateTime.ToLocalTime().ToString() + ": " + e.Data);
+            }
 
             NotifyPropertyChanged(nameof(StatusLog));
         }
@@ -124,12 +143,12 @@ namespace ChatBot_Net5.Clients
             {
                 throw new NoUserDataException();
             }
-            else
+            else if (TwitchChat.TwitchUsername == null)
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
                 TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
-                TwitchChat.Connect();
             }
+            TwitchChat.Connect();
 
             return true;
         }
@@ -142,15 +161,22 @@ namespace ChatBot_Net5.Clients
         {
             try
             {
-                RefreshSettings();
-                Connect();
-                IsStarted = true;
-                IsStopped = false;
-                InvokeBotStarted();
+                if (IsStopped || !IsStarted)
+                {
+                    RefreshSettings();
+                    Connect();
+                    IsStarted = true;
+                    IsStopped = false;
+                    InvokeBotStarted();
+                }
                 return true;
             }
-            catch
-            { return false; }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                return false; 
+            }
         }
 
         /// <summary>
@@ -159,15 +185,23 @@ namespace ChatBot_Net5.Clients
         /// <returns>True when successful.</returns>
         public override bool StopBot()
         {
-            if (TwitchChat.IsConnected)
+            try
             {
-                IsStarted = false;
-                IsStopped = true;
-                TwitchChat.Disconnect();
-                RefreshSettings();
-                InvokeBotStopped();
+                if (IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    TwitchChat.Disconnect();
+                    RefreshSettings();
+                    InvokeBotStopped();
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return false;
+            }
         }
 
         /// <summary>
@@ -178,24 +212,61 @@ namespace ChatBot_Net5.Clients
         /// <returns>True when succesulf whisper sent.</returns>
         public override bool SendWhisper(string user, string s)
         {
-            throw new NotImplementedException();
+            throw new();
         }
 
         /// <summary>
         /// Send a message to the connected channels.
+        /// Note: When Twitch gets busy/unstable, there are many exceptions from unaccepted responses. Twitchlib throws the http handler exceptions, which we 
+        /// catch here and start backing off by exponential time until success.
         /// </summary>
         /// <param name="s">The message to send.</param>
         /// <returns>True when message is sent.</returns>
         public override bool Send(string s)
         {
-            if (IsStarted)
+            try
             {
-                foreach (JoinedChannel j in TwitchChat.JoinedChannels)
-                {
-                    TwitchChat.SendMessage(j, s);
-                }
+                SendData(s);
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                //CreateClient();
+                //StartBot();
+                //SendData(s);
+                BackOffSend(s); // if exception, perform backoff send
             }
             return true;
+
+            void SendData(string s)
+            {
+                if (IsStarted)
+                {
+                    foreach (JoinedChannel j in TwitchChat.JoinedChannels)
+                    {
+                        TwitchChat.SendMessage(j, s);
+                    }
+                }
+            }
+
+            // need recursive call to send data while unable to send message (returning exceptions from Twitch)
+            void BackOffSend(string ToSend, int BackOff = 1)
+            {
+                Thread.Sleep(BackOff * 1000); // block thread and wait for exponential time each loop while continuing to throw exceptions
+
+                try
+                {
+                    SendData(ToSend);
+                } 
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                    BackOffSend(ToSend, BackOff * 2);
+                }
+            }
+
         }
 
         public override bool ExitBot()
@@ -209,15 +280,15 @@ namespace ChatBot_Net5.Clients
             return base.ExitBot();
         }
 
-
         private void TwitchChat_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
             // the TwitchClient reports disconnected but user didn't click the 'start bot' button
             // the client should be started but is now disconnected
             // check is required so the bot doesn't keep restarting when the user actually clicked stop
-            if (IsStarted) 
+            if (IsStarted && !TwitchChat.IsConnected)
             {
                 Connect();    // restart the bot
+                HandlersAdded = false;
             }
         }
     }

@@ -1,6 +1,8 @@
-﻿using ChatBot_Net5.BotIOController.Models;
-using ChatBot_Net5.Clients;
+﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +19,7 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// List of commands supported as codes within the text, replaced with an actual value.
         /// </summary>
-        public CommandCollection CommandInfo { get; private set; } = new();
+        public MsgVarHelp CommandInfo { get; private set; } = new();
 
         /// <summary>
         /// Manages data storage with the data interface to the datagram xml.
@@ -27,7 +29,7 @@ namespace ChatBot_Net5.BotIOController
         /// <summary>
         /// Manages statistics as the chat bot runs.
         /// </summary>
-        public Statistics Stats { get; private set; }
+        public StatisticsSystem Stats { get; private set; }
 
         #region Bot Services
         /// <summary>
@@ -44,6 +46,8 @@ namespace ChatBot_Net5.BotIOController
 
         public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
 
+        public TwitchBotClipSvc TwitchClip { get; private set; }
+
         #endregion Bot Services
 
         #endregion properties
@@ -56,9 +60,12 @@ namespace ChatBot_Net5.BotIOController
             TwitchIO = new();
             TwitchFollower = new();
             TwitchLiveMonitor = new();
+            TwitchClip = new();
+
             IOModuleList.Add(TwitchIO);
             IOModuleList.Add(TwitchFollower);
             IOModuleList.Add(TwitchLiveMonitor);
+            IOModuleList.Add(TwitchClip);
 
             TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
             TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;
@@ -66,6 +73,8 @@ namespace ChatBot_Net5.BotIOController
             TwitchFollower.OnBotStopped += TwitchFollower_OnBotStopped;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
+            TwitchClip.OnBotStarted += TwitchClip_OnBotStarted;
+            TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
 
             Stats = new(DataManage);
 
@@ -112,16 +121,16 @@ namespace ChatBot_Net5.BotIOController
         /// <returns>The string names array of the bots within this controller.</returns>
         public string[] GetProviderNames()
         {
-            List<string> Names = new();
-            
+            List<Enum.Bots> Names = new();
+
             foreach (IOModule a in IOModuleList)
             {
-                Names.Add(a.ChatClientName);
+                Names.Add(a.BotClientName);
             }
 
             Names.Sort();
 
-            return Names.ToArray();
+            return Names.ConvertAll((e) => e.ToString()).ToArray();
         }
 
         /// <summary>

@@ -23,7 +23,7 @@
     <Setting Name="TwitchBotUserName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Twitch account the bot will use to post</Value>
     </Setting>
-    <Setting Name="TwitchFrequency" Type="System.Int32" Scope="User">
+    <Setting Name="TwitchFrequencyFollow" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">30</Value>
     </Setting>
     <Setting Name="MsgBotConnection" Type="System.Boolean" Scope="User">
@@ -114,6 +114,54 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="MsgWelcomeStreamer" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WelcomeCustomMsg" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="RepeatTimerComSlowdown" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchStreamerChannel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">The client Id for the bot attached to streamer channel.</Value>
+    </Setting>
+    <Setting Name="TwitchStreamerToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Add token for streamer channel, specifically for only follow-back</Value>
+    </Setting>
+    <Setting Name="TwitchDisconnectBot" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="TwitchStreamTokenDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">1900-01-01</Value>
+    </Setting>
+    <Setting Name="TwitchFollowbackBotChoice" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchFollowbackStreamerChoice" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchChatBotDisconnectOffline" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchChatBotConnectOnline" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchFrequencyClipTime" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="TwitchClipPostDiscord" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchClipAutoStart" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchClipPostChat" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LogBotStatus" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LogExceptions" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

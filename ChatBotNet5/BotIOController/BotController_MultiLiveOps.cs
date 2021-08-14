@@ -1,4 +1,4 @@
-﻿using ChatBot_Net5.Clients;
+﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.Data;
 using ChatBot_Net5.Static;
 
@@ -48,6 +48,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 TwitchLiveMonitor.SetLiveMonitorChannels(new());
             }
+  // TODO: localize the multilive bot data
             LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", TwitchLiveMonitor.LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now);
         }
 
@@ -101,7 +102,7 @@ namespace ChatBot_Net5.BotIOController
                         {
                             if (u.Item1 == "Discord")
                             {
-                                DiscordWebhook.SendLiveMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary)).Wait();
+                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary));
                                 Stats.AddDiscord();
                             }
                         }

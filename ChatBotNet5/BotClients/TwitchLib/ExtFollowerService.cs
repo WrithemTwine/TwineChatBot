@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using ChatBot_Net5.Static;
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Core.HttpCallHandlers;
@@ -9,7 +13,7 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
-namespace ChatBot_Net5.Clients.TwitchLib
+namespace ChatBot_Net5.BotClients.TwitchLib
 {
     internal class ExtFollowerService : FollowerService
     {
@@ -17,24 +21,32 @@ namespace ChatBot_Net5.Clients.TwitchLib
         {
         }
 
+        /// <summary>
+        /// Retrieves all followers for the streamer/watched channel, and is asynchronous
+        /// </summary>
+        /// <param name="ChannelName">The channel to retrieve the followers</param>
+        /// <returns>An async task with a list of 'Follow' objects.</returns>
         public async Task<List<Follow>> GetAllFollowers(string ChannelName)
         {
             Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
 
             List<Follow> allfollows = new();
-
+            
             string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
 
             GetUsersFollowsResponse followsResponse = null;
 
-            while (followsResponse == null)
+            while (followsResponse == null) // loop until getting a response
             {
                 try
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
                 finally
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
@@ -43,14 +55,14 @@ namespace ChatBot_Net5.Clients.TwitchLib
 
             }
 
-            while (followsResponse?.Follows.Length == 100)
+            while (followsResponse?.Follows.Length == 100) // loop until the last response is less than 100; each retrieval provides 100 items at a time
             {
                 try
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch { }
+                catch (Exception ex) { LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name); }
             }
 
             return allfollows;
@@ -74,10 +86,9 @@ namespace ChatBot_Net5.Clients.TwitchLib
                 try
                 {
                     // add the follow
-                    // TODO: Fix "CreateUserFollows" - "BadScope" exception
-                    // await followers.CreateUserFollows(from_id, to_id, allownotification);
+                    await followers.CreateUserFollows(from_id, to_id, allownotification);
                 }
-                catch { }
+                catch (Exception ex) { LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name); }
             }
             return;
         }
@@ -98,3 +109,4 @@ namespace ChatBot_Net5.Clients.TwitchLib
 
     }
 }
+

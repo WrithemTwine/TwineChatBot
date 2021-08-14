@@ -1,10 +1,11 @@
-﻿using ChatBot_Net5.Clients;
-using ChatBot_Net5.Data;
+﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.Static;
 
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.BotIOController
@@ -21,6 +22,9 @@ namespace ChatBot_Net5.BotIOController
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
 
         private List<Follow> Follows { get; set; }
+        private List<Clip> Clips { get; set; }
+
+        private bool StartClips { get; set; }
 
         private void StartThreads()
         {
@@ -47,11 +51,17 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
+        private void BeginAddClips()
+        {
+            new Thread(new ThreadStart(ProcessClips)).Start();
+        }
+
         /// <summary>
         /// Cycles through the 'Operations' queue and runs each task in order.
         /// </summary>
         private void ProcMsgs()
         {
+            // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
             while (OptionFlags.ProcessOps || Operations.Count > 0)
             {
@@ -85,6 +95,15 @@ namespace ChatBot_Net5.BotIOController
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
             DataManage.UpdateFollowers(ChannelName, new Dictionary<string, List<Follow>>() { { ChannelName, Follows } });
+        }
+
+        private void ProcessClips()
+        {
+            StartClips = true;
+            Clips = TwitchClip.GetAllClipsAsync().Result;
+
+            ClipHelper(Clips);
+            StartClips = false;
         }
 
         #endregion Process Bot Operations

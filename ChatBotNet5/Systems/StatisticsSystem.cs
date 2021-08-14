@@ -1,11 +1,18 @@
-﻿using ChatBot_Net5.Models;
+﻿using ChatBot_Net5.Enum;
+using ChatBot_Net5.Models;
+using ChatBot_Net5.Static;
+
 
 using System;
 using System.Collections.Generic;
 
-namespace ChatBot_Net5.Data
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
+
+using DataManager = ChatBot_Net5.Data.DataManager;
+
+namespace ChatBot_Net5.Systems
 {
-    public class Statistics
+    public class StatisticsSystem
     {
         private readonly List<string> CurrUsers = new();
         private readonly List<string> UniqueUserJoined = new();
@@ -15,11 +22,29 @@ namespace ChatBot_Net5.Data
         private readonly List<string> VIPUsers = new();
         private readonly DataManager datamanager;
         private StreamStat CurrStream { get; set; } = new();
+
         public string Category { get; set; }
 
-        public Statistics(DataManager dataManager)
+        public StatisticsSystem(DataManager dataManager)
         {
             datamanager = dataManager;
+        }
+
+        public bool CheckStreamTime(DateTime TimeStream)
+        {
+            return datamanager.CheckMultiStreams(TimeStream);
+        }
+
+        public void SetCategory(string categoryId, string category)
+        {
+            Category = category;
+            datamanager.UpdateCategory(categoryId, category);
+        }
+
+        public void RegisterNewClip(Clip clip)
+        {
+            datamanager.AddClip(clip.Id , clip.CreatedAt, clip.Duration, clip.GameId,clip.Language,clip.Title,clip.Url);
+            AddClips();
         }
 
         /// <summary>
@@ -38,6 +63,24 @@ namespace ChatBot_Net5.Data
             }
 
             return UserChat(User);
+        }
+
+        /// <summary>
+        /// Retrieves the current users within the channel during the stream.
+        /// </summary>
+        /// <returns>The current user count as of now.</returns>
+        public int GetUserCount()
+        {
+            return CurrUsers.Count;
+        }
+
+        /// <summary>
+        /// Retrieve how many chats have occurred in the current live stream to now.
+        /// </summary>
+        /// <returns>Current total chats as of now.</returns>
+        public int GetCurrentChatCount()
+        {
+            return CurrStream.TotalChats;
         }
 
         public bool UserChat(string User)
@@ -80,12 +123,21 @@ namespace ChatBot_Net5.Data
 
         public void UserLeft(string User, DateTime CurrTime)
         {
-            UpdateWatchTime(User);
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
                 datamanager.UserLeft(User, CurrTime);
             }
             CurrUsers.Remove(User);
+        }
+
+        public bool IsFollower(string User)
+        {
+            return datamanager.CheckFollower(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
+        }
+
+        public bool IsReturningUser(string User)
+        {
+            return datamanager.CheckUser(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
         }
 
         /// <summary>
@@ -118,6 +170,11 @@ namespace ChatBot_Net5.Data
             }
         }
 
+        public List<Tuple<bool,Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+{
+            return datamanager.GetWebhooks(webhooksKind);
+        }
+
         public bool StreamOnline(DateTime Started)
         {
             OptionFlags.IsStreamOnline = true;
@@ -129,6 +186,8 @@ namespace ChatBot_Net5.Data
 
         public void StreamOffline(DateTime Stopped)
         {
+            // TODO: add option to stop bot when stream goes offline
+
             UpdateWatchTime();
             OptionFlags.IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped.ToLocalTime();
