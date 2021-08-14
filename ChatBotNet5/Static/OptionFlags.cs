@@ -68,7 +68,7 @@ namespace ChatBot_Net5.Static
             {
                 Settings.Default.Save();
 
-                LogBotStatus = Settings.Default.LogExceptions;
+                LogBotStatus = Settings.Default.LogBotStatus;
                 LogExceptions = Settings.Default.LogExceptions;
 
                 TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
