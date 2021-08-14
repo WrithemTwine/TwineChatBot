@@ -20,15 +20,18 @@ The user can add:
 
 Features: This bot utilizes TwitchLib.
 
+*Note: a current change is the 'executable' is not signed. Therefore, the settings (usually saved at c:\Users\<username>\App Data\ChatBot\) files will change folders and settings appear 'lost'. However, the settings still exist and can be moved (when the bot app is closed) to the newer location and will be restored. This is not a problem if you keep the bot in the same location and update it there.
+
 The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
 
 Implements:
    - Twitch Chat bot
    - Twitch Live bot
    - Twitch Follower bot
+   - Twitch "Clip" bot
 
 (future scalability) the app setup allows adding more Twitch bots (different Twitch functions) and other platforms
-   - Twitch "Clip" bot (planned future feature)
+   - TBD, next featured bot
 
 Database management to organize:
    - viewers to a channel (supporting watch-time type commands)
@@ -95,9 +98,8 @@ Twitch (some features depend on settings)
    - Follow bot
       - registers new follows to the channel
       - when started: retrieves followers and removes non-followers from the database
-      - implements following back the viewers who follow you or raid your channel
       - (future feature?) routinely retrieve followers and remove non-followers without restarting the follow bot
-      - (future feature?) message spam protection for large groups of followers, and tool to remove spam bot follows
+      - (future feature?) message spam protection for large groups of followers
    - Live bot
       - registers when your channel goes live or goes offline
       - monitors other channels to share when they go live
