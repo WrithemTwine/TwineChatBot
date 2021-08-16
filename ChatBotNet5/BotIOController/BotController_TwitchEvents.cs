@@ -608,6 +608,8 @@ namespace ChatBot_Net5.BotIOController
 
         private void RegisterJoinedUser(string Username)
         {
+
+            // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
                 if ((Username.ToLower(CultureInfo.CurrentCulture) != TwitchBots.TwitchChannelName.ToLower(CultureInfo.CurrentCulture)) || OptionFlags.MsgWelcomeStreamer)

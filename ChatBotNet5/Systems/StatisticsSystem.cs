@@ -71,7 +71,10 @@ namespace ChatBot_Net5.Systems
         /// <returns>The current user count as of now.</returns>
         public int GetUserCount()
         {
-            return CurrUsers.Count;
+            lock (CurrUsers)
+            {
+                return CurrUsers.Count;
+            }
         }
 
         /// <summary>
@@ -80,7 +83,10 @@ namespace ChatBot_Net5.Systems
         /// <returns>Current total chats as of now.</returns>
         public int GetCurrentChatCount()
         {
-            return CurrStream.TotalChats;
+            lock (CurrStream)
+            {
+                return CurrStream.TotalChats;
+            }
         }
 
         public bool UserChat(string User)
