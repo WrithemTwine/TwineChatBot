@@ -328,7 +328,6 @@ switches:
                 if (resulttype == typeof(DataSource.UsersRow))
                 {
                     DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
-                    UpdateWatchTime(ParamValue, DateTime.Now);
                     return usersRow[row.data_field];
                 }
                 else if (resulttype == typeof(DataSource.FollowersRow))

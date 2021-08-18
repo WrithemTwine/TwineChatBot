@@ -287,6 +287,12 @@ namespace ChatBot_Net5
         private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
             OptionFlags.SetSettings();
+
+            // check for currency online changes, start if offline mode is enabled
+            if(((CheckBox)sender) == CheckBox_CurrencyOnline) 
+            {
+
+            }
         }
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -306,14 +312,14 @@ namespace ChatBot_Net5
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+            Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
-            Twitch_StreamerRefreshDate.Content = DateTime.Now.AddDays(60);
+            Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
@@ -425,7 +431,7 @@ namespace ChatBot_Net5
                 case "DG_Currency":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "CurrencyName" && dc.Header.ToString() != "AccrueRate")
+                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "CurrencyName" && dc.Header.ToString() != "AccrueAmt" && dc.Header.ToString() != "Seconds")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -576,6 +582,11 @@ namespace ChatBot_Net5
                     return;
                 }
             }
+        }
+
+        private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
+        {
+            controller.ClearWatchTime();
         }
 
         #endregion

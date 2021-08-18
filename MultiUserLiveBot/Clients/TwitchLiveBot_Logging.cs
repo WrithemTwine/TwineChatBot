@@ -24,12 +24,12 @@ namespace MultiUserLiveBot.Clients
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            if (MultiLiveStatusLog.Length + dateTime.ToLocalTime().ToString().Length + data.Length + 2 >= maxlength)
+            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= maxlength)
             {
                 MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
             }
 
-            MultiLiveStatusLog += dateTime.ToLocalTime().ToString() + " " + data + "\n";
+            MultiLiveStatusLog += dateTime.ToString() + " " + data + "\n";
 
             NotifyPropertyChanged(nameof(MultiLiveStatusLog));
         }

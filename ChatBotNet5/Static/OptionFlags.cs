@@ -62,6 +62,9 @@ namespace ChatBot_Net5.Static
         internal static bool TwitchClipPostChat { get; set; }
         internal static bool TwitchClipPostDiscord { get; set; }
 
+        internal static bool TwitchCurrencyStart { get; set; }
+        internal static bool TwitchCurrencyOnline { get; set; }
+
         internal static void SetSettings()
         {
             lock (Settings.Default)
@@ -119,6 +122,9 @@ namespace ChatBot_Net5.Static
 
                 TwitchClipPostChat = Settings.Default.TwitchClipPostChat;
                 TwitchClipPostDiscord = Settings.Default.TwitchClipPostDiscord;
+
+                TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
+                TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
             }
         }
 
@@ -132,7 +138,7 @@ namespace ChatBot_Net5.Static
 
         internal static TimeSpan CurrentToTwitchRefreshDate(bool streamaccount = false)
         {
-            return (streamaccount ? TwitchStreamTokenDate : TwitchRefreshDate) - DateTime.Now;
+            return (streamaccount ? TwitchStreamTokenDate : TwitchRefreshDate) - DateTime.Now.ToLocalTime();
         }
 
     }

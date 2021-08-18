@@ -106,7 +106,7 @@ namespace MultiUserLiveBot
 
         private void TabItem_Twitch_GotFocus(object sender, RoutedEventArgs e)
         {
-            if ((DateTime.Parse(Twitch_RefreshDate.Content.ToString()) - DateTime.Now) <= new TimeSpan(14, 0, 0, 0))
+            if ((DateTime.Parse(Twitch_RefreshDate.Content.ToString()) - DateTime.Now.ToLocalTime()) <= new TimeSpan(14, 0, 0, 0))
             {
                 Twitch_RefreshDate.Foreground = new SolidColorBrush(Color.FromRgb(255, 0, 0));
             }
@@ -217,7 +217,7 @@ namespace MultiUserLiveBot
             Settings.Default.Save();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.AddDays(60);
+        private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e) => await Application.Current.Dispatcher.InvokeAsync(((TextBox)sender).SelectAll);
         private void CheckBox_Click(object sender, RoutedEventArgs e) => Settings.Default.Save();
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)

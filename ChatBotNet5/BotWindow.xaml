@@ -535,41 +535,59 @@
                                             <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock TextWrapping="Wrap">Enable action to remove non-followers from the Follower list when bot starts.</TextBlock>
                                             </CheckBox>
-                                            <GroupBox Header="Automatic Follow other Viewers:" Visibility="Visible" Width="199">
+                                            <Expander IsExpanded="False">
+                                                <Expander.Header>
+                                                    <TextBlock TextWrapping="Wrap">Automatic Follower details - Click to Expand</TextBlock></Expander.Header>
                                                 <StackPanel>
-                                                    <TextBlock Margin="3">Twitch.tv has disabled automated following. Therefore, this bot no longer supports this feature.</TextBlock>
-                                                    <TextBox Text="https://blog.twitch.tv/en/2021/06/28/deprecation-of-create-and-delete-follows-api-endpoints/" TextWrapping="Wrap" />
-                                                    <GroupBox Header="Follow-back Account: " Width="165" Visibility="Collapsed">
+                                                    <GroupBox Header="Automatic Follow other Viewers:" Visibility="Visible" Width="199">
                                                         <StackPanel>
-                                                            <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on bot account.">
-                                                                <TextBlock>Bot Account</TextBlock>
+
+                                                            <TextBlock Margin="3">Twitch.tv has disabled automated following. Therefore, this bot no longer supports this feature. It can be supported again if Twitch installs another mechanism to create follows.</TextBlock>
+                                                            <TextBox Text="https://blog.twitch.tv/en/2021/06/28/deprecation-of-create-and-delete-follows-api-endpoints/" TextWrapping="Wrap" />
+                                                            <GroupBox Header="Follow-back Account: " Width="165" Visibility="Collapsed">
+                                                                <StackPanel>
+                                                                    <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on bot account.">
+                                                                        <TextBlock>Bot Account</TextBlock>
+                                                                    </CheckBox>
+                                                                    <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab." Loaded="CheckBox_Loaded">
+                                                                        <TextBlock>Streamer Account</TextBlock>
+                                                                    </CheckBox>
+                                                                </StackPanel>
+                                                            </GroupBox>
+
+                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
+                                                                <TextBlock>Enable follow-back new followers</TextBlock>
                                                             </CheckBox>
-                                                            <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab." Loaded="CheckBox_Loaded">
-                                                                <TextBlock>Streamer Account</TextBlock>
+                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
+                                                                <TextBlock>Enable follow-back incoming raider</TextBlock>
                                                             </CheckBox>
+                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
+                                                                <TextBlock>Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live</TextBlock>
+                                                            </CheckBox>
+
                                                         </StackPanel>
                                                     </GroupBox>
-
-                                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
-                                                        <TextBlock>Enable follow-back new followers</TextBlock>
-                                                    </CheckBox>
-                                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
-                                                        <TextBlock>Enable follow-back incoming raider</TextBlock>
-                                                    </CheckBox>
-                                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
-                                                        <TextBlock>Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live</TextBlock>
-                                                    </CheckBox>
                                                 </StackPanel>
-                                            </GroupBox>
+                                            </Expander>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Twitch - Get Clips">
+                                    <GroupBox Header="Twitch - Stream Clips">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding TwitchClipPostChat, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock>Post new clips to chat.</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchClipPostDiscord}" Click="CheckBox_Click_SaveSettings">
                                                 <TextBlock>Post new clips to Discord. Must have "Clips" Webhook(s) defined.</TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Twitch - Currency System">
+                                        <StackPanel>
+                                            <CheckBox IsChecked="{Binding TwitchCurrencyStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock>Enable Currency Accrual - still permits adding currencies</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding TwitchCurrencyOnline, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                <TextBlock>Enable Currency Accrual only when Streaming Online</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
@@ -648,6 +666,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0" Content="User List"/>
+                            <Button x:Name="Button_ClearWatchTime" Content="Reset WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" />
                             <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
                             <DataGrid x:Name="DG_Users" DataContext="{Binding DataManage}" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
 
@@ -692,18 +711,20 @@
                             </DataGrid>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual" Visibility="Collapsed">
+                    <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="25" />
+                                <RowDefinition Height="65" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="250"/>
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
+                            <Label Grid.Row="0" Grid.ColumnSpan="3">
+                                <TextBlock>Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Deleting currency types will remove all existing user accruals, but renaming currency will update users to the new currency name. Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock></Label>
                             <DataGrid x:Name="DG_Currency" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" />
                             <DataGrid x:Name="DG_CurrencyAccrual" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" />
                         </Grid>
