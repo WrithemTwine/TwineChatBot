@@ -28,7 +28,7 @@ namespace ChatBot_Net5.Data
 
         #region DataSource
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\TwineChatBot\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
+        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
 #else
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
 #endif
@@ -294,6 +294,7 @@ namespace ChatBot_Net5.Data
             }
 
             SaveData();
+            OnPropertyChanged(nameof(Category));
         }
         #endregion
 
@@ -307,6 +308,7 @@ namespace ChatBot_Net5.Data
             {
                 _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
                 SaveData();
+                OnPropertyChanged(nameof(Clips));
                 return true;
             }
 

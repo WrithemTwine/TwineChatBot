@@ -5,6 +5,7 @@ using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
@@ -14,6 +15,8 @@ namespace ChatBot_Net5.Systems
 {
     public class StatisticsSystem
     {
+        private const int SecondsDelay = 5000;
+
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
@@ -33,7 +36,11 @@ namespace ChatBot_Net5.Systems
         public StatisticsSystem(DataManager dataManager)
         {
             datamanager = dataManager;
-            CurrencySystem = new(datamanager);
+            CurrencySystem = new(datamanager, CurrUsers);
+
+            //#if DEBUG
+            //            StreamOnline(DateTime.Now.ToLocalTime());
+            //#endif
 
             StartCurrencyClock();
         }
@@ -41,9 +48,19 @@ namespace ChatBot_Net5.Systems
         /// <summary>
         /// Attempt to start the currency clock. The setting "TwitchCurrencyOnline" can be user set and changed during bot operation. This method checks and starts the clock if not already started. The Currency System "StartClock()" method has checks for whether this setting is enabled.
         /// </summary>
-        public void StartCurrencyClock()
+        public static void StartCurrencyClock()
         {
             CurrencySystem.StartClock(); // try to start clock, in case accrual is started for offline mode
+        }
+
+        public static void StopCurrencyClock()
+        {
+            CurrencySystem.RunClocks = false;
+        }
+
+        public void SaveData()
+        {
+            datamanager.SaveData();
         }
 
         public bool CheckStreamTime(DateTime TimeStream)
@@ -71,7 +88,10 @@ namespace ChatBot_Net5.Systems
         /// <returns></returns>
         public bool UserJoined(string User, DateTime CurrTime)
         {
-            CurrUsers.Add(User);
+            lock (CurrUsers)
+            {
+                CurrUsers.Add(User);
+            }
 
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
@@ -210,6 +230,7 @@ namespace ChatBot_Net5.Systems
                 }
             }
 
+            CurrencySystem.MonitorWatchTime();
             CurrencySystem.StartClock();
 
             // setting if user wants to save Stream Stat data

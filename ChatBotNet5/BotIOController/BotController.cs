@@ -4,6 +4,7 @@ using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -91,6 +92,8 @@ namespace ChatBot_Net5.BotIOController
             {
                 i.ExitBot();
             }
+
+            StatisticsSystem.StopCurrencyClock();
             return true;
         }
 
@@ -138,6 +141,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
+            Stats.StreamOffline(DateTime.Now.ToLocalTime());
             ExitAllBots();              // stop all the bot processes
             DataManage.SaveData();  // save data
         }

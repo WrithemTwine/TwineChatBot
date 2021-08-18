@@ -11,19 +11,27 @@ namespace ChatBot_Net5.Data
         /// Overall update currency accruals for all users active during an online stream
         /// </summary>
         /// <param name="dateTime">The date for the calculation</param>
-        internal void UpdateCurrency(DateTime dateTime)
-        {
-            lock (_DataSource.Users)
-            {
-                foreach (DataSource.UsersRow users in _DataSource.Users.Select())
-                {
-                    if (users.CurrLoginDate >= CurrStreamStart) // detected online user
-                    {
-                        UpdateCurrency(users, dateTime);
-                    }
-                }
-            }
+        //internal void UpdateCurrency(DateTime dateTime)
+        //{
+        //    lock (_DataSource.Users)
+        //    {
+        //        foreach (DataSource.UsersRow users in _DataSource.Users.Select())
+        //        {
+        //            if (users.LastDateSeen >= CurrStreamStart) // detected online user
+        //            {
+        //                UpdateCurrency(users, dateTime);
+        //            }
+        //        }
+        //    }
 
+        //    SaveData();
+        //    OnPropertyChanged(nameof(Users));
+        //    OnPropertyChanged(nameof(Currency));
+        //}
+
+        internal void UpdateCurrency(string User, DateTime dateTime)
+        {
+            UpdateCurrency(_DataSource.Users.FindByUserName(User), dateTime);
             SaveData();
             OnPropertyChanged(nameof(Users));
             OnPropertyChanged(nameof(Currency));
@@ -37,10 +45,10 @@ namespace ChatBot_Net5.Data
         internal void UpdateCurrency(DataSource.UsersRow User, DateTime CurrTime)
         {
             // when currency accrual is started, set each currency
-            if (OptionFlags.TwitchCurrencyStart)
+            if (((OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyOnline) || !OptionFlags.TwitchCurrencyOnline) && OptionFlags.TwitchCurrencyStart)
             {
                 DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                List<DataSource.CurrencyRow> currrow = new List<DataSource.CurrencyRow>((DataSource.CurrencyRow[]) User.GetChildRows("Users_CurrencyAccrued"));
+                List<DataSource.CurrencyRow> currrow = User.Table.ChildRelations.Contains("Users_CurrencyAccrued") ? new((DataSource.CurrencyRow[])User.GetChildRows("Users_CurrencyAccrued")) : new();
                 TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
 
                 lock (_DataSource.Currency)  // lock for multithreading
@@ -51,10 +59,10 @@ namespace ChatBot_Net5.Data
                         {
                             foreach (DataSource.CurrencyTypeRow CR in currencyType)
                             {
-                                DataSource.CurrencyRow found = currrow.Find((f) => f.CurrencyName == CR.CurrencyName); // look for the row for each currency
+                                DataSource.CurrencyRow found = currrow?.Find((f) => f.CurrencyName == CR.CurrencyName); // look for the row for each currency
                                 if (found == null)
                                 {
-                                    _DataSource.Currency.AddCurrencyRow(User.Id, User.UserName, CR.CurrencyName, CR.AccrueAmt * (currencyclock.TotalSeconds / CR.Seconds));
+                                    _DataSource.Currency.AddCurrencyRow(User.Id, User.UserName, CR, CR.AccrueAmt * (currencyclock.TotalSeconds / CR.Seconds));
                                 }
                                 else
                                 {

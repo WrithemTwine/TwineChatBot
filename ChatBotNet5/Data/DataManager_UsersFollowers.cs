@@ -50,33 +50,48 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
+                TimeSpan UpdateLastDate = CurrTime - User.LastDateSeen;
+                if (UpdateLastDate.TotalSeconds < 0)
+                {
+                    UpdateLastDate = User.LastDateSeen - CurrTime;
+                }
+
+                User.WatchTime = User.WatchTime.Add(UpdateLastDate);
                 User.LastDateSeen = CurrTime;
             }
-        }
-
-        internal void UpdateWatchTime(DateTime dateTime)
-        {
-            // LastDateSeen ==> watchtime clock time
-            // CurrLoginDate ==> currency clock time
-
-            lock (_DataSource.Users)
-            {
-                foreach (DataSource.UsersRow d in (DataSource.UsersRow[])_DataSource.Users.Select())
-                {
-                    if (d.LastDateSeen >= CurrStreamStart)
-                    {
-                        new Thread(new ThreadStart(() =>
-                        {
-                            UpdateWatchTime(d, dateTime);
-                        })).Start();
-                    }
-                }
-            }
-
             SaveData();
             OnPropertyChanged(nameof(Users));
         }
+
+        /// <summary>
+        /// Accepts the string version of a UserName and will look up the user in the database.
+        /// </summary>
+        /// <param name="UserName">String of the UserName to update the watchtime.</param>
+        /// <param name="CurrTime">The Current Time to compare against for updating the watch time.</param>
+        internal void UpdateWatchTime(string UserName, DateTime CurrTime)
+        {
+            UpdateWatchTime(_DataSource.Users.FindByUserName(UserName), CurrTime);
+        }
+
+        //internal void UpdateWatchTime(DateTime dateTime)
+        //{
+        //    // LastDateSeen ==> watchtime clock time
+        //    // CurrLoginDate ==> currency clock time
+
+        //    lock (_DataSource.Users)
+        //    {
+        //        foreach (DataSource.UsersRow d in (DataSource.UsersRow[])_DataSource.Users.Select())
+        //        {
+        //            if (d.LastDateSeen >= CurrStreamStart)
+        //            {
+        //                UpdateWatchTime(d, dateTime);
+        //            }
+        //        }
+        //    }
+
+        //    SaveData();
+        //    OnPropertyChanged(nameof(Users));
+        //}
 
         /// <summary>
         /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.ToLocalTime().
@@ -230,6 +245,7 @@ namespace ChatBot_Net5.Data
 
                 UpdatingFollowers = false;
                 SaveData();
+                OnPropertyChanged(nameof(Followers));
             })).Start();
         }
 

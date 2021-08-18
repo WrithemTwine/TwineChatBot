@@ -11,17 +11,44 @@ namespace ChatBot_Net5.Systems
     {
         private const int SecondsDelay = 5000;
 
-        private bool WatchStarted = false;
-        private bool CurAccrualStarted = false;
+        private bool CurAccrualStarted;
+        private bool WatchStarted;
+
+        // flag to stop clocks when exiting application, otherwise, permits running clocks according to user preferences
+        public bool RunClocks { get; set; }
 
         private DataManager Datamanager { get; set; }
+        private readonly List<string> CurrUsers;
 
-        public CurrencySystem(DataManager dataManager)
+        public CurrencySystem(DataManager dataManager, List<string> CurrUserList)
         {
             Datamanager = dataManager;
+            RunClocks = true;
+            CurrUsers = CurrUserList;
         }
 
-        public void StartClock()
+        internal void StartClock()
+        {
+            if (!CurAccrualStarted)
+            {
+                CurAccrualStarted = true;
+                new Thread(new ThreadStart(() =>
+                {
+                    while (((OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyOnline) || !OptionFlags.TwitchCurrencyOnline) && RunClocks && OptionFlags.TwitchCurrencyStart)
+                    {
+                        foreach (string U in CurrUsers)
+                        {
+                            Datamanager.UpdateCurrency(U, DateTime.Now.ToLocalTime());
+                        }
+                        // randomly extend the time delay up to 2times as long
+                        Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
+                    }
+                    CurAccrualStarted = false;
+                })).Start();
+            }
+        }
+        
+        internal void MonitorWatchTime()
         {
             if (!WatchStarted)
             {
@@ -31,29 +58,19 @@ namespace ChatBot_Net5.Systems
                     // watch time accruing only works when stream is online <- i.e. watched!
                     while (OptionFlags.IsStreamOnline)
                     {
-                        Datamanager.UpdateWatchTime(DateTime.Now.ToLocalTime());
+                        lock (CurrUsers)
+                        {
+                            foreach (string U in CurrUsers)
+                            {
+                                Datamanager.UpdateWatchTime(U, DateTime.Now.ToLocalTime());
+                            }
+                        }
                         // randomly extend the time delay up to 2times as long
                         Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
                     }
                     WatchStarted = false;
                 })).Start();
             }
-
-            if (!CurAccrualStarted)
-            {
-                CurAccrualStarted = true;
-                new Thread(new ThreadStart(() =>
-                {
-                    while ((OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyOnline) || !OptionFlags.TwitchCurrencyOnline)
-                    {
-                        Datamanager.UpdateCurrency(DateTime.Now.ToLocalTime());
-                    // randomly extend the time delay up to 2times as long
-                    Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
-                    }
-                    CurAccrualStarted = false;
-                })).Start();
-            }
-
         }
     }
 }

@@ -44,6 +44,8 @@ namespace ChatBot_Net5
 
             WatchProcessOps = true;
             IsMultiProcActive = null;
+            OptionFlags.SetSettings();
+
 
             InitializeComponent();
 
@@ -291,7 +293,7 @@ namespace ChatBot_Net5
             // check for currency online changes, start if offline mode is enabled
             if(((CheckBox)sender) == CheckBox_CurrencyOnline) 
             {
-
+                Systems.StatisticsSystem.StartCurrencyClock();
             }
         }
 
@@ -413,7 +415,7 @@ namespace ChatBot_Net5
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "FirstDateSeen" && dc.Header.ToString() != "CurrLoginDate" && dc.Header.ToString() != "LastDateSeen" && dc.Header.ToString() != "WatchTime")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "CurrLoginDate" and not "LastDateSeen" and not "WatchTime")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -422,7 +424,7 @@ namespace ChatBot_Net5
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "IsFollower" && dc.Header.ToString() != "FollowedDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -431,7 +433,7 @@ namespace ChatBot_Net5
                 case "DG_Currency":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "CurrencyName" && dc.Header.ToString() != "AccrueAmt" && dc.Header.ToString() != "Seconds")
+                        if (dc.Header.ToString() is not "CurrencyName" and not "AccrueAmt" and not "Seconds")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -440,7 +442,7 @@ namespace ChatBot_Net5
                 case "DG_CurrencyAccrual":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "User Name" && dc.Header.ToString() != "Currency Name" && dc.Header.ToString() != "Value")
+                        if (dc.Header.ToString() is not "UserName" and not "CurrencyName" and not "Value")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -460,7 +462,7 @@ namespace ChatBot_Net5
                 case "DG_CategoryList" or "DG_CategoryList_Clips":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Category" && dc.Header.ToString() != "CategoryId")
+                        if (dc.Header.ToString() is not "Category" and not "CategoryId")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -518,7 +520,7 @@ namespace ChatBot_Net5
         private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
         {
             DataGrid curr = sender as DataGrid;
-            
+
             if (!(curr.IsMouseOver || IsAddNewRow)) // check for mouse over object and check if adding new row
             {
                 curr.CanUserAddRows = false;    // this fails if mouse leaves while user hasn't finished adding a new row - the if flag prevents this
@@ -546,13 +548,16 @@ namespace ChatBot_Net5
         /// <param name="e">Params from the object.</param>
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            IsAddNewRow = false;        
+            if (IsAddNewRow)
+            {
+                IsAddNewRow = false;
+  //              _ = (sender as DataGrid).CommitEdit();
+            }
         }
-
 
         // TODO: fix scrolling in Sliders but not scroll the whole panel
 
-        private bool SliderMouseCaptured = false;
+        private bool SliderMouseCaptured;
 
         private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {

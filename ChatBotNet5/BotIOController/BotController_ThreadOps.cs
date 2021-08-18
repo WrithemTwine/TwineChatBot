@@ -58,7 +58,7 @@ namespace ChatBot_Net5.BotIOController
 
         public void BeginCurrencyClock()
         {
-            Stats.StartCurrencyClock();
+            Systems.StatisticsSystem.StartCurrencyClock();
         }
 
         /// <summary>

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Xml;
 
 namespace MultiUserLiveBot.Data
 {
-    public class DataManager
+    public class DataManager : INotifyPropertyChanged
     {
         private static readonly string DataFileName = "MultiChatbotData.xml";
 
@@ -15,6 +16,13 @@ namespace MultiUserLiveBot.Data
         public DataView Channels { get; set; }
         public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string PropName)
+        {
+            PropertyChanged?.Invoke(this, new(PropName));
+        }
+
 
         public DataManager()
         {
@@ -91,8 +99,7 @@ namespace MultiUserLiveBot.Data
 
             _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
             SaveData();
-
-            //            NotifyPropertyChanged("LiveStream");
+            OnPropertyChanged(nameof(LiveStream));
 
             return true;
         }
