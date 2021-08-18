@@ -473,13 +473,6 @@ namespace ChatBot_Net5.Data {
             this.tableClips = new ClipsDataTable();
             base.Tables.Add(this.tableClips);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyAccrued", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
-            this.tableCurrency.Constraints.Add(fkc);
-            fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
-            fkc.DeleteRule = global::System.Data.Rule.Cascade;
-            fkc.UpdateRule = global::System.Data.Rule.Cascade;
             fkc = new global::System.Data.ForeignKeyConstraint("Users_CurrencyAccrued", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.IdColumn});
@@ -487,6 +480,13 @@ namespace ChatBot_Net5.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyAccrued", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
+            this.tableCurrency.Constraints.Add(fkc);
+            fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
+            fkc.DeleteRule = global::System.Data.Rule.Cascade;
+            fkc.UpdateRule = global::System.Data.Rule.Cascade;
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -2369,7 +2369,9 @@ namespace ChatBot_Net5.Data {
                                 this.columnId,
                                 this.columnUserName}, true));
                 this.columnId.AllowDBNull = false;
+                this.columnId.ReadOnly = true;
                 this.columnUserName.AllowDBNull = false;
+                this.columnUserName.ReadOnly = true;
                 this.columnUserName.Caption = "User Name";
                 this.columnCurrencyName.AllowDBNull = false;
                 this.columnCurrencyName.Caption = "Currency Name";

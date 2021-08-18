@@ -19,6 +19,18 @@
     <Shape ID="DesignTable:Clips" ZOrder="3" X="940" Y="130" Height="162" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="178" />
   </Shapes>
   <Connectors>
+    <Connector ID="DesignRelation:Currency_CurrencyAccrued" ZOrder="1" LineWidth="11">
+      <RoutePoints>
+        <Point>
+          <X>298</X>
+          <Y>95</Y>
+        </Point>
+        <Point>
+          <X>531</X>
+          <Y>95</Y>
+        </Point>
+      </RoutePoints>
+    </Connector>
     <Connector ID="DesignRelation:Users_CurrencyAccrued" ZOrder="2" LineWidth="11">
       <RoutePoints>
         <Point>
@@ -56,18 +68,6 @@
         <Point>
           <X>536</X>
           <Y>478</Y>
-        </Point>
-      </RoutePoints>
-    </Connector>
-    <Connector ID="DesignRelation:Currency_CurrencyAccrued" ZOrder="1" LineWidth="11">
-      <RoutePoints>
-        <Point>
-          <X>298</X>
-          <Y>95</Y>
-        </Point>
-        <Point>
-          <X>531</X>
-          <Y>95</Y>
         </Point>
       </RoutePoints>
     </Connector>

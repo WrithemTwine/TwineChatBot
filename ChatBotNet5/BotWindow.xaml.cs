@@ -546,7 +546,7 @@ namespace ChatBot_Net5
         /// <param name="e">Params from the object.</param>
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            IsAddNewRow = false;        
+            IsAddNewRow = false;
         }
 
 

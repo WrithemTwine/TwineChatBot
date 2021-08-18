@@ -40,7 +40,7 @@ namespace ChatBot_Net5.Data
             if (OptionFlags.TwitchCurrencyStart)
             {
                 DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                List<DataSource.CurrencyRow> currrow = new List<DataSource.CurrencyRow>((DataSource.CurrencyRow[]) User.GetChildRows("Users_CurrencyAccrued"));
+                List<DataSource.CurrencyRow> currrow = User.Table.ChildRelations.Contains("Users_CurrencyAccrued") ? new((DataSource.CurrencyRow[]) User.GetChildRows("Users_CurrencyAccrued")) : new();
                 TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
 
                 lock (_DataSource.Currency)  // lock for multithreading

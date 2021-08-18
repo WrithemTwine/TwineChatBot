@@ -10,9 +10,10 @@
     <Copyright>MIT</Copyright>
     <Description>A bot monitoring multiple channels for when they go live. Currently posts to Discord through WebHook URLs.</Description>
     <ApplicationIcon>MultiBot.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <AssemblyVersion>1.0.5.0</AssemblyVersion>
     <FileVersion>1.0.4.0</FileVersion>
     <DelaySign>false</DelaySign>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

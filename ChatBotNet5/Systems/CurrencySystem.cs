@@ -2,7 +2,6 @@
 using ChatBot_Net5.Static;
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace ChatBot_Net5.Systems
@@ -11,14 +10,18 @@ namespace ChatBot_Net5.Systems
     {
         private const int SecondsDelay = 5000;
 
-        private bool WatchStarted = false;
-        private bool CurAccrualStarted = false;
+        private bool WatchStarted;
+        private bool CurAccrualStarted;
+
+        // flag to stop clocks when exiting application, otherwise, permits running clocks according to user preferences
+        public bool RunClocks { get; set; }
 
         private DataManager Datamanager { get; set; }
 
         public CurrencySystem(DataManager dataManager)
         {
             Datamanager = dataManager;
+            RunClocks = true;
         }
 
         public void StartClock()
@@ -29,7 +32,7 @@ namespace ChatBot_Net5.Systems
                 new Thread(new ThreadStart(() =>
                 {
                     // watch time accruing only works when stream is online <- i.e. watched!
-                    while (OptionFlags.IsStreamOnline)
+                    while (OptionFlags.IsStreamOnline && RunClocks)
                     {
                         Datamanager.UpdateWatchTime(DateTime.Now.ToLocalTime());
                         // randomly extend the time delay up to 2times as long
@@ -44,16 +47,15 @@ namespace ChatBot_Net5.Systems
                 CurAccrualStarted = true;
                 new Thread(new ThreadStart(() =>
                 {
-                    while ((OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyOnline) || !OptionFlags.TwitchCurrencyOnline)
+                    while (((OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyOnline) || !OptionFlags.TwitchCurrencyOnline) && RunClocks)
                     {
                         Datamanager.UpdateCurrency(DateTime.Now.ToLocalTime());
-                    // randomly extend the time delay up to 2times as long
-                    Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
+                        // randomly extend the time delay up to 2times as long
+                        Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
                     }
                     CurAccrualStarted = false;
                 })).Start();
             }
-
         }
     }
 }
