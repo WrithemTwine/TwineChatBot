@@ -4,7 +4,6 @@ namespace ChatBot_Net5.BotIOController
 {
     public partial class BotController
     {
-
         /// <summary>
         /// This method checks the user settings and will delete any DB data if the user unchecks the setting. 
         /// Other methods to manage users & followers will adapt to if the user adjusted the setting
@@ -19,6 +18,14 @@ namespace ChatBot_Net5.BotIOController
 
             //  if ManageStreamStats is False, then remove all Stream Statistics!
             if (!OptionFlags.ManageStreamStats) { DataManage.RemoveAllStreamStats(); }
+        }
+
+        /// <summary>
+        /// Clear all user watchtimes
+        /// </summary>
+        public void ClearWatchTime()
+        {
+            DataManage.ClearWatchTime();
         }
 
     }

@@ -56,6 +56,11 @@ namespace ChatBot_Net5.BotIOController
             new Thread(new ThreadStart(ProcessClips)).Start();
         }
 
+        public void BeginCurrencyClock()
+        {
+            Stats.StartCurrencyClock();
+        }
+
         /// <summary>
         /// Cycles through the 'Operations' queue and runs each task in order.
         /// </summary>

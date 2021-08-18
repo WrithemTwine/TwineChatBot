@@ -22,7 +22,7 @@ namespace TestProject1
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
 
-            DateTime nowstart = DateTime.Now;
+            DateTime nowstart = DateTime.Now.ToLocalTime();
 
             test.StreamOnline(nowstart);
 
@@ -50,7 +50,7 @@ namespace TestProject1
 
             Thread.Sleep(60000);
 
-            DateTime nowend = DateTime.Now;
+            DateTime nowend = DateTime.Now.ToLocalTime();
 
             test.StreamOffline(nowend);
 
@@ -76,7 +76,7 @@ namespace TestProject1
             DataManager dataManager = new();
             StatisticsSystem test = new(dataManager);
 
-            DateTime nowstart = TestStart.ToLocalTime();
+            DateTime nowstart = TestStart;
 
             test.StreamOnline(nowstart);
            
@@ -102,7 +102,7 @@ namespace TestProject1
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
 
-            DateTime nowstart = TestStart.ToLocalTime();
+            DateTime nowstart = TestStart;
 
             test.StreamOnline(nowstart);
 
@@ -129,7 +129,7 @@ namespace TestProject1
 
             Thread.Sleep(60000);
 
-            DateTime nowend = DateTime.Now;
+            DateTime nowend = DateTime.Now.ToLocalTime();
 
             test.StreamOffline(nowend);
 

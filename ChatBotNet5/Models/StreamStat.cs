@@ -6,10 +6,8 @@ namespace ChatBot_Net5.Models
     [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
     internal class StreamStat
     {
-        internal static readonly string DefaultTime = "1/1/1990";
-
-        internal DateTime StreamStart { get; set; } = DateTime.Parse(DefaultTime);
-        internal DateTime StreamEnd { get; set; } = DateTime.Parse(DefaultTime);
+        internal DateTime StreamStart { get; set; } = DateTime.MinValue;
+        internal DateTime StreamEnd { get; set; } = DateTime.MinValue;
         internal int NewFollows { get; set; } = 0;
         internal int NewSubs { get; set; } = 0;
         internal int GiftSubs { get; set; } = 0;
@@ -33,8 +31,8 @@ namespace ChatBot_Net5.Models
 
         public void Clear()
         {
-            StreamStart = DateTime.Parse(DefaultTime);
-            StreamEnd = DateTime.Parse(DefaultTime);
+            StreamStart = DateTime.MinValue;
+            StreamEnd = DateTime.MinValue;
             NewFollows = 0;
             NewSubs = 0;
             GiftSubs = 0;

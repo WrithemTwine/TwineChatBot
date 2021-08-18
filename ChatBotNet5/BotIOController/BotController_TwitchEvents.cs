@@ -138,7 +138,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the offline arguments.</param>
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            Stats.StreamOffline(DateTime.Now);
+            Stats.StreamOffline(e.Stream.StartedAt.ToLocalTime());
 
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)
             {
@@ -176,12 +176,12 @@ namespace ChatBot_Net5.BotIOController
                 }
                 else
                 {
-                    bool Started = Stats.StreamOnline(e.Stream.StartedAt);
+                    bool Started = Stats.StreamOnline(e.Stream.StartedAt.ToLocalTime());
                     Stats.Category = e.Stream.GameName;
 
                     if (Started)
                     {
-                        bool MultiLive = Stats.CheckStreamTime(e.Stream.StartedAt);
+                        bool MultiLive = Stats.CheckStreamTime(e.Stream.StartedAt.ToLocalTime());
 
                         if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                         {
@@ -233,7 +233,7 @@ namespace ChatBot_Net5.BotIOController
 
             while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
-            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt)))
+            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
             {
                 if (OptionFlags.ManageFollowers)
                 {
@@ -425,7 +425,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
-                Stats.UserJoined(e.RaidNotification.DisplayName, DateTime.Now);
+                Stats.UserJoined(e.RaidNotification.DisplayName, DateTime.Now.ToLocalTime());
                 bool output = ProcessCommands.CheckShout(e.RaidNotification.DisplayName, out string response, false);
                 if (output)
                 {
@@ -592,7 +592,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            if (Stats.UserJoined(e.Username, DateTime.Now) && OptionFlags.FirstUserJoinedMsg)
+            if (Stats.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
             {
                 RegisterJoinedUser(e.Username);
             }
@@ -608,6 +608,8 @@ namespace ChatBot_Net5.BotIOController
 
         private void RegisterJoinedUser(string Username)
         {
+
+            // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
                 if ((Username.ToLower(CultureInfo.CurrentCulture) != TwitchBots.TwitchChannelName.ToLower(CultureInfo.CurrentCulture)) || OptionFlags.MsgWelcomeStreamer)
@@ -624,10 +626,17 @@ namespace ChatBot_Net5.BotIOController
                     }
 
                     string msg = LocalizedMsgSystem.GetEventMsg(selected, out _);
-                    Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                {
-                        new( MsgVars.user, Username )
-                })));
+                    Send(
+                        VariableParser.ParseReplace(
+                            msg,
+                            VariableParser.BuildDictionary(
+                                new Tuple<MsgVars, string>[]
+                                    {
+                                            new( MsgVars.user, Username )
+                                    }
+                            )
+                        )
+                    );
                 }
             }
 
@@ -641,7 +650,7 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
-        private void Client_OnUserLeft(object sender, OnUserLeftArgs e) => Stats.UserLeft(e.Username, DateTime.Now);
+        private void Client_OnUserLeft(object sender, OnUserLeftArgs e) => Stats.UserLeft(e.Username, DateTime.Now.ToLocalTime());
 
         private void Client_OnUserBanned(object sender, OnUserBannedArgs e) => Stats.AddUserBanned();
 
@@ -654,7 +663,7 @@ namespace ChatBot_Net5.BotIOController
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
             foreach (string user in from string user in e.Users
-                                    where Stats.UserJoined(user, DateTime.Now)
+                                    where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
             {
                 RegisterJoinedUser(user);

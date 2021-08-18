@@ -82,13 +82,13 @@ namespace ChatBot_Net5.Static
         }
 
         /// <summary>
-        /// Calculates difference between a past date and DateTime.Now.
+        /// Calculates difference between a past date and DateTime.Now.ToLocalTime().
         /// </summary>
         /// <param name="pastdate">the historic date of some activity</param>
         /// <returns>the elapsed time since the historic date to now</returns>
         internal static string FormatTimes(DateTime pastdate)
         {
-            return FormatTimes(DateTime.Now - pastdate);
+            return FormatTimes(DateTime.Now.ToLocalTime() - pastdate.ToLocalTime());
         }
     }
 }

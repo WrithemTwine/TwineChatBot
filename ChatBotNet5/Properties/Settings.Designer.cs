@@ -670,5 +670,29 @@ namespace ChatBot_Net5.Properties {
                 this["LogExceptions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchCurrencyStart {
+            get {
+                return ((bool)(this["TwitchCurrencyStart"]));
+            }
+            set {
+                this["TwitchCurrencyStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TwitchCurrencyOnline {
+            get {
+                return ((bool)(this["TwitchCurrencyOnline"]));
+            }
+            set {
+                this["TwitchCurrencyOnline"] = value;
+            }
+        }
     }
 }

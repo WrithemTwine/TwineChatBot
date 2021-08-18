@@ -14,6 +14,11 @@ namespace ChatBot_Net5.Systems
 {
     public class StatisticsSystem
     {
+        /// <summary>
+        /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
+        /// </summary>
+        private static CurrencySystem CurrencySystem { get; set; }
+
         private readonly List<string> CurrUsers = new();
         private readonly List<string> UniqueUserJoined = new();
         private readonly List<string> UniqueUserChat = new();
@@ -28,6 +33,17 @@ namespace ChatBot_Net5.Systems
         public StatisticsSystem(DataManager dataManager)
         {
             datamanager = dataManager;
+            CurrencySystem = new(datamanager);
+
+            StartCurrencyClock();
+        }
+
+        /// <summary>
+        /// Attempt to start the currency clock. The setting "TwitchCurrencyOnline" can be user set and changed during bot operation. This method checks and starts the clock if not already started. The Currency System "StartClock()" method has checks for whether this setting is enabled.
+        /// </summary>
+        public void StartCurrencyClock()
+        {
+            CurrencySystem.StartClock(); // try to start clock, in case accrual is started for offline mode
         }
 
         public bool CheckStreamTime(DateTime TimeStream)
@@ -71,7 +87,10 @@ namespace ChatBot_Net5.Systems
         /// <returns>The current user count as of now.</returns>
         public int GetUserCount()
         {
-            return CurrUsers.Count;
+            lock (CurrUsers)
+            {
+                return CurrUsers.Count;
+            }
         }
 
         /// <summary>
@@ -80,7 +99,10 @@ namespace ChatBot_Net5.Systems
         /// <returns>Current total chats as of now.</returns>
         public int GetCurrentChatCount()
         {
-            return CurrStream.TotalChats;
+            lock (CurrStream)
+            {
+                return CurrStream.TotalChats;
+            }
         }
 
         public bool UserChat(string User)
@@ -132,43 +154,43 @@ namespace ChatBot_Net5.Systems
 
         public bool IsFollower(string User)
         {
-            return datamanager.CheckFollower(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
+            return datamanager.CheckFollower(User, DateTime.Now.ToLocalTime());
         }
 
         public bool IsReturningUser(string User)
         {
-            return datamanager.CheckUser(User, OptionFlags.IsStreamOnline ? CurrStream.StreamStart : DateTime.Now);
+            return datamanager.CheckUser(User, DateTime.Now.ToLocalTime());
         }
 
-        /// <summary>
-        /// Default to all users or a specific user to register "DateTime.Now" as the current watch date.
-        /// </summary>
-        /// <param name="User">User to update "Now" or null to update all users watch time.</param>
-        public void UpdateWatchTime(string User = null)
-        {
-            if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
-            {
-                UpdateWatchTime(User, DateTime.Now);
-            }
-        }
+        ///// <summary>
+        ///// Default to all users or a specific user to register "DateTime.Now.ToLocalTime()" as the current watch date.
+        ///// </summary>
+        ///// <param name="User">User to update "Now" or null to update all users watch time.</param>
+        //public void UpdateWatchTime(string User = null)
+        //{
+        //    if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
+        //    {
+        //        UpdateWatchTime(User, DateTime.Now.ToLocalTime());
+        //    }
+        //}
 
-        public void UpdateWatchTime(string User, DateTime Seen)
-        {
-            if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
-            {
-                if (User != null)
-                {
-                    datamanager.UpdateWatchTime(User, Seen);
-                }
-                else
-                {
-                    foreach (string s in CurrUsers)
-                    {
-                        datamanager.UpdateWatchTime(s, Seen);
-                    }
-                }
-            }
-        }
+        //public void UpdateWatchTime(string User, DateTime Seen)
+        //{
+        //    if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
+        //    {
+        //        if (User != null)
+        //        {
+        //            datamanager.UpdateWatchTime(User, Seen);
+        //        }
+        //        else
+        //        {
+        //            foreach (string s in CurrUsers)
+        //            {
+        //                datamanager.UpdateWatchTime(s, Seen);
+        //            }
+        //        }
+        //    }
+        //}
 
         public List<Tuple<bool,Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
 {
@@ -178,7 +200,17 @@ namespace ChatBot_Net5.Systems
         public bool StreamOnline(DateTime Started)
         {
             OptionFlags.IsStreamOnline = true;
-            CurrStream.StreamStart = Started.ToLocalTime();
+            CurrStream.StreamStart = Started;
+
+            foreach (string U in CurrUsers)
+            {
+                if (OptionFlags.ManageUsers)
+                {
+                    datamanager.UserJoined(U, Started);
+                }
+            }
+
+            CurrencySystem.StartClock();
 
             // setting if user wants to save Stream Stat data
             return OptionFlags.ManageStreamStats && datamanager.AddStream(CurrStream.StreamStart);
@@ -188,9 +220,9 @@ namespace ChatBot_Net5.Systems
         {
             // TODO: add option to stop bot when stream goes offline
 
-            UpdateWatchTime();
+            //UpdateWatchTime();
             OptionFlags.IsStreamOnline = false;
-            CurrStream.StreamEnd = Stopped.ToLocalTime();
+            CurrStream.StreamEnd = Stopped;
             CurrStream.ModsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
@@ -199,6 +231,14 @@ namespace ChatBot_Net5.Systems
             if (OptionFlags.ManageStreamStats)
             {
                 datamanager.PostStreamStat(CurrStream);
+            }
+
+            foreach (string U in CurrUsers)
+            {
+                if (OptionFlags.ManageUsers)
+                {
+                    datamanager.UserLeft(U, Stopped);
+                }
             }
 
             CurrStream.Clear();

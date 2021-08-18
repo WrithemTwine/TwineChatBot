@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 using TwitchLib.Client.Models;
 
@@ -66,13 +67,14 @@ namespace ChatBot_Net5.Systems
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
-            DateTime chattime = DateTime.Now; // the time to check chats sent
-            DateTime viewertime = DateTime.Now; // the time to check viewers
+            DateTime chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
+            DateTime viewertime = DateTime.Now.ToLocalTime(); // the time to check viewers
             int chats = StatData.GetCurrentChatCount();
             int viewers = StatData.GetUserCount();
 
             const int ChatCount = 20;
             const int ViewerCount = 10;
+            const int ThreadSleep = 5000;
 
             double CheckDilute()
             {
@@ -84,7 +86,7 @@ namespace ChatBot_Net5.Systems
                         return 1.0;
                     }
 
-                    DateTime now = DateTime.Now;
+                    DateTime now = DateTime.Now.ToLocalTime();
                     if (now - chattime >= new TimeSpan(0, 15, 0) || now - viewertime >= new TimeSpan(1, 0, 0))
                     {
                         int newchats, newviewers;
@@ -110,62 +112,74 @@ namespace ChatBot_Net5.Systems
                 return 1.0;
             }
 
-            double DiluteTime = CheckDilute();
-
-
-            foreach (Tuple<string, int, string[]> Timers in datamanager.GetTimerCommands())
+            void RepeatCmd(ref TimerCommand cmd)
             {
-                if (Timers.Item3.Contains(StatData.Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
+                int repeat = 0;
+                bool InCategory = false;
+
+                lock (cmd) // lock the cmd because it's referenced in other threads
                 {
-                    RepeatList.Add(new(Timers, DiluteTime));
+                    repeat = cmd.RepeatTime;
+                    InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                }
+
+                while (
+                    OptionFlags.ProcessOps
+                    && repeat != 0
+                    && InCategory)
+                {
+                    if ((cmd.NextRun - DateTime.Now.ToLocalTime()).Seconds <= 0)
+                    {
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = PerformCommand(cmd.Command, BotUserName, null, true) });
+                        lock (cmd)
+                        {
+                            cmd.UpdateTime(CheckDilute());
+                        }
+                    }
+                    Thread.Sleep(ThreadSleep * (1 + (DateTime.Now.Second / 60)));
+
+                    lock (cmd) // lock the cmd because it's referenced in other threads
+                    {
+                        repeat = cmd.RepeatTime;
+                        InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                    }
                 }
             }
 
+            double DiluteTime = CheckDilute();
+
             while (OptionFlags.ProcessOps)
             {
-                DiluteTime = CheckDilute();
-
-                foreach (TimerCommand timer in RepeatList)
-                {
-                    if (timer.CheckFireTime() && (timer.CategoryList.Contains(StatData.Category) || timer.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry))))
-                    {
-                        timer.UpdateTime(DiluteTime);
-                        string output = PerformCommand(timer.Command, BotUserName, null, true);
-
-                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
-                    }
-                }
-
-                // check if any commands are added to the repeat timers
                 foreach (Tuple<string, int, string[]> Timers in datamanager.GetTimerCommands())
                 {
-                    TimerCommand command = new(Timers, DiluteTime);
-                    if (command.CategoryList.Contains(StatData.Category) || command.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
+                    if (Timers.Item3.Contains(StatData.Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                     {
-                        if (!RepeatList.Contains(command))
+                        TimerCommand item = new(Timers, DiluteTime);
+                        if (!RepeatList.Contains(item))
                         {
-                            RepeatList.Add(command);
-                            string output = PerformCommand(command.Command, BotUserName, null, true);
-
-                            OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = output });
+                            RepeatList.Add(item);
+                            new Thread(new ThreadStart(()=>RepeatCmd(ref item))).Start();
                         }
                         else
                         {
-                            TimerCommand update = RepeatList.Find((a) => a.Command == command.Command);
-                            update.RepeatTime = command.RepeatTime;
+                            TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
+
+                            if (item.RepeatTime == 0)
+                            {
+                                RepeatList.Remove(Listcmd);
+                            }
+                            else
+                            {
+                                lock (Listcmd)
+                                {
+                                    Listcmd.RepeatTime = item.RepeatTime; // update repeat time, the task will update time after it runs one loop of repeat
+                                }
+                            }
                         }
                     }
                 }
 
-                for (int x = RepeatList.Count - 1; x >= 0 && RepeatList.Count > 0; x--)
-                {
-                    if (RepeatList[x].RepeatTime == 0 || !(RepeatList[x].CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)) || RepeatList[x].CategoryList.Contains(StatData.Category)))
-                    {
-                        RepeatList.RemoveAt(x);
-                    } 
-                }
-
-                Thread.Sleep(5000); // wait for awhile before checking commands again
+                Thread.Sleep((int)(ThreadSleep * (1 + (DateTime.Now.Second / 60)))); // wait for awhile before checking commands again
             }
         }
 
@@ -288,7 +302,7 @@ namespace ChatBot_Net5.Systems
                             new( MsgVars.user, paramvalue ),
                             new( MsgVars.url, paramvalue ),
                             new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
-                            new( MsgVars.date, DateTime.Now.Date.ToLocalTime().ToString() )
+                            new( MsgVars.date, DateTime.Now.ToLocalTime().Date.ToString() )
                                 });
 
                     if (CommData.lookupdata)
@@ -300,9 +314,6 @@ namespace ChatBot_Net5.Systems
                 return (OptionFlags.MsgPerComMe && CommData.AddMe ? "/me " : "") + VariableParser.ParseReplace(CommData?.Message ?? LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound), datavalues);
             }
         }
-    
-     
-
 
         /*
          if (command == "addcommand")
@@ -357,8 +368,8 @@ namespace ChatBot_Net5.Systems
             {
                 { "#user", paramvalue },
                 { "#url", "http://www.twitch.tv/" + paramvalue },
-                { "#time", DateTime.Now.TimeOfDay.ToString() },
-                { "#date", DateTime.Now.Date.ToString() }
+                { "#time", DateTime.Now.ToLocalTime().TimeOfDay.ToString() },
+                { "#date", DateTime.Now.ToLocalTime().Date.ToString() }
             };
 
             if (CommData.lookupdata)
