@@ -41,7 +41,7 @@ namespace MultiUserLiveBot.Clients
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
             // true posted new event, false did not post
-            bool PostedLive = DataManage.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
+            bool PostedLive = DataManage.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt);
 
             if (PostedLive)
             {
@@ -56,7 +56,7 @@ namespace MultiUserLiveBot.Clients
                 };
 
                 // false if the date didn't match, true if an event matches
-                bool MultiLive = DataManage.CheckStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
+                bool MultiLive = DataManage.CheckStreamDate(e.Stream.UserName, e.Stream.StartedAt);
 
                 if ((Settings.Default.PostMultiLive && MultiLive) || !MultiLive)
                 {
@@ -123,7 +123,7 @@ namespace MultiUserLiveBot.Clients
 
             Connect(names);
             LiveStreamMonitor?.Start();
-            LogEntry(string.Format(CultureInfo.CurrentCulture, "Bot started and monitoring {0} channels.", names.Count.ToString()), DateTime.Now);
+            LogEntry(string.Format(CultureInfo.CurrentCulture, "Bot started and monitoring {0} channels.", names.Count.ToString()), DateTime.Now.ToLocalTime());
             return true;
         }
 
@@ -136,7 +136,7 @@ namespace MultiUserLiveBot.Clients
             if (LiveStreamMonitor?.Enabled == true)
             {
                 LiveStreamMonitor.Stop();
-                LogEntry("Bot stopped.", DateTime.Now);
+                LogEntry("Bot stopped.", DateTime.Now.ToLocalTime());
                 return true;
             }
             return false;
@@ -155,14 +155,14 @@ namespace MultiUserLiveBot.Clients
 
                 if (channels.Count > 0)
                 {
-                    LogEntry(string.Format(CultureInfo.CurrentCulture, "Monitored channels updated!", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now);
+                    LogEntry(string.Format(CultureInfo.CurrentCulture, "Monitored channels updated!", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now.ToLocalTime());
 
                     LiveStreamMonitor.SetChannelsByName(channels);
                     return true;
                 }
                 else
                 {
-                    LogEntry($"There are no channels to monitor. Please add channels to the table.", DateTime.Now);
+                    LogEntry($"There are no channels to monitor. Please add channels to the table.", DateTime.Now.ToLocalTime());
                     return false;
                 }
             }

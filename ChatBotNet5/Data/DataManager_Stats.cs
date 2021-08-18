@@ -51,6 +51,8 @@ namespace ChatBot_Net5.Data
             {
                 return false;
             }
+            CurrStreamStart = StreamStart;
+
             lock (_DataSource.StreamStats)
             {
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

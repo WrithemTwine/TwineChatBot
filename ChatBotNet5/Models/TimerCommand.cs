@@ -35,9 +35,9 @@ namespace ChatBot_Net5.Models
             UpdateTime(TimeDilute);
         }
 
-        internal void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.AddSeconds(RepeatTime*TimeDilute);
+        internal void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime*TimeDilute);
 
-        internal bool CheckFireTime() => DateTime.Now > NextRun;
+        internal bool CheckFireTime() => DateTime.Now.ToLocalTime() > NextRun;
 
         public int CompareTo(TimerCommand obj) => Command.CompareTo(obj.Command);
 

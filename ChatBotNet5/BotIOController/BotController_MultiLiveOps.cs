@@ -49,7 +49,7 @@ namespace ChatBot_Net5.BotIOController
                 TwitchLiveMonitor.SetLiveMonitorChannels(new());
             }
   // TODO: localize the multilive bot data
-            LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", TwitchLiveMonitor.LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now);
+            LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", TwitchLiveMonitor.LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
         }
 
         public void StartMultiLive()
@@ -67,7 +67,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 TwitchLiveMonitor.IsMultiLiveBotActive = false;
                 UpdateChannels();
-                LogEntry("MultiLive Bot stopped.", DateTime.Now);
+                LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
             }
         }
 
@@ -76,12 +76,12 @@ namespace ChatBot_Net5.BotIOController
             if (TwitchLiveMonitor.IsMultiLiveBotActive)
             {
                 // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
+                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt);
 
                 if (PostedLive)
                 {
 
-                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, e.Stream.StartedAt.ToLocalTime());
+                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, e.Stream.StartedAt);
 
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
@@ -97,7 +97,7 @@ namespace ChatBot_Net5.BotIOController
                             { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
                         };
 
-                        LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt.ToLocalTime());
+                        LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt);
                         foreach (Tuple<string, Uri> u in MultiLiveDataManager.GetWebLinks())
                         {
                             if (u.Item1 == "Discord")
@@ -123,12 +123,12 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="dateTime">The time of the event.</param>
         public void LogEntry(string data, DateTime dateTime)
         {
-            if (MultiLiveStatusLog.Length + dateTime.ToLocalTime().ToString().Length + data.Length + 2 >= maxlength)
+            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= maxlength)
             {
                 MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
             }
 
-            MultiLiveStatusLog += dateTime.ToLocalTime().ToString() + " " + data + "\n";
+            MultiLiveStatusLog += dateTime.ToString() + " " + data + "\n";
 
             NotifyPropertyChanged(nameof(MultiLiveStatusLog));
         }

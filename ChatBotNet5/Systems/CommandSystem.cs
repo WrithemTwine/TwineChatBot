@@ -67,8 +67,8 @@ namespace ChatBot_Net5.Systems
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
-            DateTime chattime = DateTime.Now; // the time to check chats sent
-            DateTime viewertime = DateTime.Now; // the time to check viewers
+            DateTime chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
+            DateTime viewertime = DateTime.Now.ToLocalTime(); // the time to check viewers
             int chats = StatData.GetCurrentChatCount();
             int viewers = StatData.GetUserCount();
 
@@ -86,7 +86,7 @@ namespace ChatBot_Net5.Systems
                         return 1.0;
                     }
 
-                    DateTime now = DateTime.Now;
+                    DateTime now = DateTime.Now.ToLocalTime();
                     if (now - chattime >= new TimeSpan(0, 15, 0) || now - viewertime >= new TimeSpan(1, 0, 0))
                     {
                         int newchats, newviewers;
@@ -128,7 +128,7 @@ namespace ChatBot_Net5.Systems
                     && repeat != 0
                     && InCategory)
                 {
-                    if ((cmd.NextRun - DateTime.Now).Seconds <= 0)
+                    if ((cmd.NextRun - DateTime.Now.ToLocalTime()).Seconds <= 0)
                     {
                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = PerformCommand(cmd.Command, BotUserName, null, true) });
                         lock (cmd)
@@ -136,9 +136,8 @@ namespace ChatBot_Net5.Systems
                             cmd.UpdateTime(CheckDilute());
                         }
                     }
-                    Thread.Sleep(ThreadSleep);
+                    Thread.Sleep(ThreadSleep * (1 + (DateTime.Now.Second / 60)));
 
-// TODO: check the repeat time is being updated so command can be stopped from repeating
                     lock (cmd) // lock the cmd because it's referenced in other threads
                     {
                         repeat = cmd.RepeatTime;
@@ -180,7 +179,7 @@ namespace ChatBot_Net5.Systems
                     }
                 }
 
-                Thread.Sleep((int)(ThreadSleep*1.5)); // wait for awhile before checking commands again
+                Thread.Sleep((int)(ThreadSleep * (1 + (DateTime.Now.Second / 60)))); // wait for awhile before checking commands again
             }
         }
 
@@ -303,7 +302,7 @@ namespace ChatBot_Net5.Systems
                             new( MsgVars.user, paramvalue ),
                             new( MsgVars.url, paramvalue ),
                             new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
-                            new( MsgVars.date, DateTime.Now.Date.ToLocalTime().ToString() )
+                            new( MsgVars.date, DateTime.Now.ToLocalTime().Date.ToString() )
                                 });
 
                     if (CommData.lookupdata)
@@ -369,8 +368,8 @@ namespace ChatBot_Net5.Systems
             {
                 { "#user", paramvalue },
                 { "#url", "http://www.twitch.tv/" + paramvalue },
-                { "#time", DateTime.Now.TimeOfDay.ToString() },
-                { "#date", DateTime.Now.Date.ToString() }
+                { "#time", DateTime.Now.ToLocalTime().TimeOfDay.ToString() },
+                { "#date", DateTime.Now.ToLocalTime().Date.ToString() }
             };
 
             if (CommData.lookupdata)

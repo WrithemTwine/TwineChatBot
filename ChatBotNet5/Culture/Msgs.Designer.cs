@@ -574,7 +574,7 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Twine ChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/.
+        ///   Looks up a localized string similar to TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/.
         /// </summary>
         internal static string Msgbot {
             get {
@@ -763,7 +763,7 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Go check a great streamer #user, at #url!.
+        ///   Looks up a localized string similar to Go check out #user at #url and consider following them!.
         /// </summary>
         internal static string Msgso {
             get {
@@ -970,7 +970,7 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Twine Chatbot by WrithemTwine, #url#author, version {0}.{1}.{2}.{3} is now connected!.
+        ///   Looks up a localized string similar to TwineChatBot by WrithemTwine, #url#author, version {0}.{1}.{2}.{3} is now connected!.
         /// </summary>
         internal static string TwineBotInfo {
             get {

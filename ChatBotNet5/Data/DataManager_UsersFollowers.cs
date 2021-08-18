@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 
@@ -13,8 +12,9 @@ namespace ChatBot_Net5.Data
 {
     public partial class DataManager
     {
-
         #region Users and Followers
+
+        private static DateTime CurrStreamStart { get; set; }
 
         internal void UserJoined(string User, DateTime NowSeen)
         {
@@ -23,7 +23,6 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = AddNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
-                UpdateWatchTime(user, DateTime.Now);
                 SaveData();
                 OnPropertyChanged(nameof(Users));
             }
@@ -36,18 +35,14 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 if (user != null)
                 {
-                    UpdateWatchTime(user, LastSeen);
+                    UpdateWatchTime(user, LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(user, LastSeen); // will update the "CurrLoginDate"
+
+                    user.CurrLoginDate = LastSeen;
                     SaveData();
                     OnPropertyChanged(nameof(Users));
+                    OnPropertyChanged(nameof(Currency));
                 }
-            }
-        }
-
-        internal void UpdateWatchTime(string User, DateTime CurrTime)
-        {
-            lock (_DataSource.Users)
-            {
-                UpdateWatchTime(_DataSource.Users.FindByUserName(User), CurrTime);
             }
         }
 
@@ -55,28 +50,46 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                if (User != null)
-                {
-                    User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
-                    User.LastDateSeen = CurrTime;
-                    SaveData();
-                    OnPropertyChanged(nameof(Users));
-                }
+                User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
+                User.LastDateSeen = CurrTime;
             }
         }
 
-        /// <summary>
-        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.
-        /// </summary>
-        /// <param name="User">The user to check in the database.</param>
-        /// <returns><c>true</c> if the user has arrived prior to DateTime.Now, <c>false</c> otherwise.</returns>
-        internal bool CheckUser(string User)
+        internal void UpdateWatchTime(DateTime dateTime)
         {
-            return CheckUser(User, DateTime.Now);
+            // LastDateSeen ==> watchtime clock time
+            // CurrLoginDate ==> currency clock time
+
+            lock (_DataSource.Users)
+            {
+                foreach (DataSource.UsersRow d in (DataSource.UsersRow[])_DataSource.Users.Select())
+                {
+                    if (d.LastDateSeen >= CurrStreamStart)
+                    {
+                        new Thread(new ThreadStart(() =>
+                        {
+                            UpdateWatchTime(d, dateTime);
+                        })).Start();
+                    }
+                }
+            }
+
+            SaveData();
+            OnPropertyChanged(nameof(Users));
         }
 
         /// <summary>
-        /// Check if the <paramref name="User"/> has visited the channel prior to <paramref name="ToDateTime"/>, identified as either DateTime.Now or the current start of the stream.
+        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.ToLocalTime().
+        /// </summary>
+        /// <param name="User">The user to check in the database.</param>
+        /// <returns><c>true</c> if the user has arrived prior to DateTime.Now.ToLocalTime(), <c>false</c> otherwise.</returns>
+        internal bool CheckUser(string User)
+        {
+            return CheckUser(User, DateTime.Now.ToLocalTime());
+        }
+
+        /// <summary>
+        /// Check if the <paramref name="User"/> has visited the channel prior to <paramref name="ToDateTime"/>, identified as either DateTime.Now.ToLocalTime() or the current start of the stream.
         /// </summary>
         /// <param name="User">The user to verify.</param>
         /// <param name="ToDateTime">Specify the date to check if the user arrived to the channel prior to this date and time.</param>
@@ -92,10 +105,10 @@ namespace ChatBot_Net5.Data
         /// Check if the User is already a follower prior to now.
         /// </summary>
         /// <param name="User">The name of the user to check.</param>
-        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.Now.</returns>
+        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.Now.ToLocalTime().</returns>
         internal bool CheckFollower(string User)
         {
-            return CheckFollower(User, DateTime.Now);
+            return CheckFollower(User, DateTime.Now.ToLocalTime());
         }
 
         /// <summary>
@@ -108,13 +121,11 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Followers)
             {
-                DataSource.FollowersRow datafollowers = (DataSource.FollowersRow)_DataSource.Followers.Select("UserName='" + User + "' and FollowedDate<='" + ToDateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture) + "'").FirstOrDefault();
+                DataSource.FollowersRow datafollowers = (DataSource.FollowersRow)_DataSource.Followers.Select("UserName='" + User + "'").FirstOrDefault();
 
-                return datafollowers == null ? false : datafollowers.IsFollower;
+                return datafollowers != null && datafollowers.IsFollower && datafollowers.FollowedDate <= ToDateTime;
             }
         }
-
-
 
         /// <summary>
         /// Add a new follower to the data table.
@@ -185,7 +196,7 @@ namespace ChatBot_Net5.Data
 
         internal void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
-            followerThread = new(new ThreadStart(() =>
+            new Thread(new ThreadStart(() =>
             {
                 UpdatingFollowers = true;
                 lock (_DataSource.Followers)
@@ -219,9 +230,18 @@ namespace ChatBot_Net5.Data
 
                 UpdatingFollowers = false;
                 SaveData();
-            }));
+            })).Start();
+        }
 
-            followerThread.Start();
+        /// <summary>
+        /// Clear all user watchtimes
+        /// </summary>
+        internal void ClearWatchTime()
+        {
+            foreach(DataSource.UsersRow users in _DataSource.Users.Select())
+            {
+                users.WatchTime = new(0);
+            }
         }
 
         #endregion Users and Followers

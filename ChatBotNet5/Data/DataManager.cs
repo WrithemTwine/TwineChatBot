@@ -1,5 +1,4 @@
 ﻿using ChatBot_Net5.Enum;
-using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
@@ -7,15 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace ChatBot_Net5.Data
 {
@@ -38,7 +34,6 @@ namespace ChatBot_Net5.Data
 #endif
 
         private readonly DataSource _DataSource;
-        private Thread followerThread;
 
         private readonly Queue<Task> SaveTasks = new();
         private bool SaveThreadStarted = false;
@@ -104,6 +99,8 @@ namespace ChatBot_Net5.Data
             ShoutOuts = new(_DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
             Category = new(_DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
             Clips = new(_DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
+
+            CurrStreamStart = DateTime.MinValue;
         }
 
         #region Load and Exit Ops
@@ -308,8 +305,7 @@ namespace ChatBot_Net5.Data
 
             if (clipsRows.Length == 0)
             {
-                //DataSource.CategoryListRow categoryListRow = ((DataSource.CategoryListRow[]) _DataSource.CategoryList.Select("CategoryId='" + GameId + "'")).First();
-                _ = _DataSource.Clips.AddClipsRow(ClipId, CreatedAt, Title, GameId, Language, (decimal)Duration, Url);
+                _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
                 SaveData();
                 return true;
             }

@@ -1,10 +1,8 @@
 ﻿using ChatBot_Net5.BotClients.TwitchLib;
-using ChatBot_Net5.Enum;
 using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
 
