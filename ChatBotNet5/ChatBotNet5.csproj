@@ -7,9 +7,9 @@
     <UseWPF>true</UseWPF>
     <Authors>WrithemTwine</Authors>
     <StartupObject>ChatBot_Net5.App</StartupObject>
-    <AssemblyVersion>1.5.4.0</AssemblyVersion>
-    <FileVersion>1.5.4.0</FileVersion>
-    <Version>1.5.4</Version>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
+    <Version>1.6.0</Version>
     <PackageId>Twine_ChatBot</PackageId>
     <AssemblyName>TwineChatBot</AssemblyName>
     <Company>ChatBot</Company>
@@ -22,6 +22,7 @@
     <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
     <PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageReleaseNotes>Implemented Currency System - ability to award currency to channel viewers.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
