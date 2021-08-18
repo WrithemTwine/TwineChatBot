@@ -338,9 +338,9 @@
                         </TextBox>
                     </StackPanel>
 
-                    <DataGrid x:Name="DG_WebHooks" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}"  />
-                    <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" />
-                    <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="2" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
+                    <DataGrid x:Name="DG_WebHooks" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                    <DataGrid x:Name="DG_ChannelNames" Grid.Column="1" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
+                    <DataGrid x:Name="DG_LiveStreamStats" Grid.Column="2" Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" RowEditEnding="DataGrid_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
 
                     <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="2" Visibility="Collapsed" Margin="5">
                         <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />

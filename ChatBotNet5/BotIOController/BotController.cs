@@ -91,6 +91,8 @@ namespace ChatBot_Net5.BotIOController
             {
                 i.ExitBot();
             }
+
+            Stats.StopCurrencyClock();
             return true;
         }
 

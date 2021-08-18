@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -21,6 +20,7 @@ namespace MultiUserLiveBot
         private bool IsBotEnabled = false; // prevent bot from starting twice
 
         private readonly TwitchLiveBot TwitchLiveBot;
+        private bool IsAddNewRow;
 
         public GoLiveWindow()
         {
@@ -150,7 +150,10 @@ namespace MultiUserLiveBot
             CheckFocus();
         }
 
-        private void BC_Twitch_StartStopBot(object sender, MouseButtonEventArgs e) => StartStopBot();
+        private void BC_Twitch_StartStopBot(object sender, MouseButtonEventArgs e)
+        {
+            StartStopBot();
+        }
 
         private void StartStopBot()
         {
@@ -217,16 +220,38 @@ namespace MultiUserLiveBot
             Settings.Default.Save();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e) => Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
-        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e) => await Application.Current.Dispatcher.InvokeAsync(((TextBox)sender).SelectAll);
-        private void CheckBox_Click(object sender, RoutedEventArgs e) => Settings.Default.Save();
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
+        }
+
+        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(((TextBox)sender).SelectAll);
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Save();
+        }
+
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit) { TwitchLiveBot.UpdateChannelList(); }
+            IsAddNewRow = false;
         }
-        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e) => (sender as TextBox).ScrollToEnd();
-        #endregion GUI events and helpers
+        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox).ScrollToEnd();
+        }
 
+
+
+        /// <summary>
+        /// Sets a DataGrid to accept a new row.
+        /// </summary>
+        /// <param name="sender">Object sending event.</param>
+        /// <param name="e">Mouse arguments related to sending object.</param>
         private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
         {
             DataGrid curr = sender as DataGrid;
@@ -237,14 +262,45 @@ namespace MultiUserLiveBot
             }
         }
 
+        /// <summary>
+        /// Sets a DataGrid to no longer accept a new row.
+        /// </summary>
+        /// <param name="sender">Object sending event.</param>
+        /// <param name="e">Mouse arguments related to sending object.</param>
         private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
         {
             DataGrid curr = sender as DataGrid;
 
-            if (!curr.IsMouseOver)
+            if (!(curr.IsMouseOver || IsAddNewRow)) // check for mouse over object and check if adding new row
             {
-                curr.CanUserAddRows = false;
+                curr.CanUserAddRows = false;    // this fails if mouse leaves while user hasn't finished adding a new row - the if flag prevents this
             }
         }
+
+        /// <summary>
+        /// Need to call this event to manage the mouse over "Adding New Rows" event change. 
+        /// Leaving a DataGrid and trying to change "CanUserAddRows" to false while still editing a new row will throw an exception.
+        /// Sets a flag used for the "MouseLeave" to prevent DataGrid from entering an error state.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Params from the object.</param>
+        private void DataGrid_InitializingNewItem(object sender, InitializingNewItemEventArgs e)
+        {
+            IsAddNewRow = true;
+        }
+
+        /// <summary>
+        /// Need to call this event to manage the mouse over "Adding New Rows" event change. 
+        /// Leaving a DataGrid and trying to change "CanUserAddRows" to false while still editing a new row will throw an exception.
+        /// Sets a flag used for the "MouseLeave" to prevent DataGrid from entering an error state.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Params from the object.</param>
+        private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            IsAddNewRow = false;
+        }
+
+        #endregion GUI events and helpers
     }
 }

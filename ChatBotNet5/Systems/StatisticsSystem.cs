@@ -46,6 +46,11 @@ namespace ChatBot_Net5.Systems
             CurrencySystem.StartClock(); // try to start clock, in case accrual is started for offline mode
         }
 
+        public void StopCurrencyClock()
+        {
+            CurrencySystem.RunClocks = false;
+        }
+
         public bool CheckStreamTime(DateTime TimeStream)
         {
             return datamanager.CheckMultiStreams(TimeStream);
