@@ -5,7 +5,6 @@ using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
@@ -15,8 +14,6 @@ namespace ChatBot_Net5.Systems
 {
     public class StatisticsSystem
     {
-        private const int SecondsDelay = 5000;
-
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
@@ -37,12 +34,17 @@ namespace ChatBot_Net5.Systems
         {
             datamanager = dataManager;
             CurrencySystem = new(datamanager, CurrUsers);
+            datamanager.AddCurrencyRows();
 
-            //#if DEBUG
-            //            StreamOnline(DateTime.Now.ToLocalTime());
-            //#endif
+#if DEBUG
+            DateTime started = DateTime.Now.ToLocalTime();
 
-            StartCurrencyClock();
+            StreamOnline(started);
+            UserJoined("Twine_Bot", started);
+            UserJoined("WrithemTwine", started);
+            UserJoined("DarkStreamPhantom", started);
+            UserJoined("Nelarts", started);
+#endif
         }
 
         /// <summary>
@@ -53,9 +55,20 @@ namespace ChatBot_Net5.Systems
             CurrencySystem.StartClock(); // try to start clock, in case accrual is started for offline mode
         }
 
-        public static void StopCurrencyClock()
+        public void ManageUsers()
         {
-            CurrencySystem.RunClocks = false;
+            ManageUsers(DateTime.Now.ToLocalTime());
+        }
+
+        public void ManageUsers(DateTime SpecifyTime)
+        {
+            foreach (string U in CurrUsers)
+            {
+                if (OptionFlags.ManageUsers)
+                {
+                    datamanager.UserJoined(U, SpecifyTime.ToLocalTime());
+                }
+            }
         }
 
         public void SaveData()
@@ -79,7 +92,6 @@ namespace ChatBot_Net5.Systems
             datamanager.AddClip(clip.Id , clip.CreatedAt, clip.Duration, clip.GameId,clip.Language,clip.Title,clip.Url);
             AddClips();
         }
-
         /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel
         /// </summary>
@@ -112,7 +124,6 @@ namespace ChatBot_Net5.Systems
                 return CurrUsers.Count;
             }
         }
-
         /// <summary>
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>
@@ -222,13 +233,7 @@ namespace ChatBot_Net5.Systems
             OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
 
-            foreach (string U in CurrUsers)
-            {
-                if (OptionFlags.ManageUsers)
-                {
-                    datamanager.UserJoined(U, Started);
-                }
-            }
+            ManageUsers(Started);
 
             CurrencySystem.MonitorWatchTime();
             CurrencySystem.StartClock();
@@ -237,11 +242,22 @@ namespace ChatBot_Net5.Systems
             return OptionFlags.ManageStreamStats && datamanager.AddStream(CurrStream.StreamStart);
         }
 
+        public bool StreamOnline()
+        {
+            // TODO: fix resuming managing stream stats
+            return false;
+        }
+
         public void StreamOffline(DateTime Stopped)
         {
             // TODO: add option to stop bot when stream goes offline
 
-            //UpdateWatchTime();
+            for (int i = 0; i < CurrUsers.Count; i++)
+            {
+                string U = CurrUsers[i];
+                UserLeft(U, Stopped);
+            }
+
             OptionFlags.IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped;
             CurrStream.ModsPresent = ModUsers.Count;
@@ -252,14 +268,6 @@ namespace ChatBot_Net5.Systems
             if (OptionFlags.ManageStreamStats)
             {
                 datamanager.PostStreamStat(CurrStream);
-            }
-
-            foreach (string U in CurrUsers)
-            {
-                if (OptionFlags.ManageUsers)
-                {
-                    datamanager.UserLeft(U, Stopped);
-                }
             }
 
             CurrStream.Clear();

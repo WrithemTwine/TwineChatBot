@@ -93,7 +93,7 @@ namespace ChatBot_Net5
                         {
                             Dispatcher.BeginInvoke(new BotOperation(() =>
                             {
-                                ((tuple.Item2).DataContext as IOModule)?.StartBot();
+                                (tuple.Item2.DataContext as IOModule)?.StartBot();
                             }), null);
                         }
                         else
@@ -488,10 +488,29 @@ namespace ChatBot_Net5
             if (CheckBox_ManageUsers.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
-            } else
+            }
+            else
             {
                 CheckBox_ManageFollowers.IsEnabled = false;
                 CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
+            }
+
+            if (CheckBox_ManageFollowers.IsChecked == true)
+            {
+                if (Settings.Default.TwitchFollowerSvcAutoStart)
+                {
+                    Dispatcher.BeginInvoke(new BotOperation(() =>
+                    {
+                        (Radio_Twitch_FollowBotStart.DataContext as IOModule).StartBot();
+                    }), null);
+                }
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    (Radio_Twitch_FollowBotStart.DataContext as IOModule).StopBot();
+                }), null);
             }
 
             controller.ManageDatabase();
@@ -551,7 +570,7 @@ namespace ChatBot_Net5
             if (IsAddNewRow)
             {
                 IsAddNewRow = false;
-  //              _ = (sender as DataGrid).CommitEdit();
+                controller.UpdateCurrencyTable();
             }
         }
 
@@ -592,6 +611,11 @@ namespace ChatBot_Net5
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {
             controller.ClearWatchTime();
+        }
+
+        private void Button_ClearCurrencyAccrlValues_Click(object sender, RoutedEventArgs e)
+        {
+            controller.ClearAllCurrenciesValues();
         }
 
         #endregion
@@ -788,6 +812,7 @@ namespace ChatBot_Net5
 
 
         #endregion
+
 
     }
 }

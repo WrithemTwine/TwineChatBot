@@ -93,7 +93,6 @@ namespace ChatBot_Net5.BotIOController
                 i.ExitBot();
             }
 
-            StatisticsSystem.StopCurrencyClock();
             return true;
         }
 

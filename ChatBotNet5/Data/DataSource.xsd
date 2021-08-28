@@ -182,6 +182,11 @@
       <xs:selector xpath=".//mstns:Users" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
+    <xs:unique name="Constraint3">
+      <xs:selector xpath=".//mstns:Users" />
+      <xs:field xpath="mstns:Id" />
+      <xs:field xpath="mstns:UserName" />
+    </xs:unique>
     <xs:unique name="Commands_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:Commands" />
       <xs:field xpath="mstns:Id" />
@@ -189,6 +194,12 @@
     <xs:unique name="Commands_Constraint2" msdata:ConstraintName="Constraint2" msdata:PrimaryKey="true">
       <xs:selector xpath=".//mstns:Commands" />
       <xs:field xpath="mstns:CmdName" />
+    </xs:unique>
+    <xs:unique name="Currency_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:Currency" />
+      <xs:field xpath="mstns:Id" />
+      <xs:field xpath="mstns:UserName" />
+      <xs:field xpath="mstns:CurrencyName" />
     </xs:unique>
     <xs:unique name="CurrencyType_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
       <xs:selector xpath=".//mstns:CurrencyType" />
@@ -226,13 +237,20 @@
       <xs:selector xpath=".//mstns:Clips" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
+    <xs:keyref name="Users_CurrencyAccrued" refer="Constraint3" msdata:ConstraintOnly="true" msdata:UpdateRule="None">
+      <xs:selector xpath=".//mstns:Currency" />
+      <xs:field xpath="mstns:Id" />
+      <xs:field xpath="mstns:UserName" />
+    </xs:keyref>
+    <xs:keyref name="Currency_CurrencyAccrued" refer="CurrencyType_Constraint1" msdata:ConstraintOnly="true">
+      <xs:selector xpath=".//mstns:Currency" />
+      <xs:field xpath="mstns:CurrencyName" />
+    </xs:keyref>
   </xs:element>
   <xs:annotation>
     <xs:appinfo>
       <msdata:Relationship name="Users_Followers" msdata:parent="Users" msdata:child="Followers" msdata:parentkey="Id" msdata:childkey="Id" msprop:Generator_UserChildTable="Followers" msprop:Generator_ChildPropName="GetFollowersRows" msprop:Generator_UserRelationName="Users_Followers" msprop:Generator_RelationVarName="relationUsers_Followers" msprop:Generator_UserParentTable="Users" msprop:Generator_ParentPropName="UsersRow" />
       <msdata:Relationship name="CategoryList_Commands" msdata:parent="CategoryList" msdata:child="Commands" msdata:parentkey="Category" msdata:childkey="Category" msprop:Generator_UserChildTable="Commands" msprop:Generator_ChildPropName="GetCommandsRows" msprop:Generator_UserRelationName="CategoryList_Commands" msprop:Generator_RelationVarName="relationCategoryList_Commands" msprop:Generator_UserParentTable="CategoryList" msprop:Generator_ParentPropName="CategoryListRow" />
-      <msdata:Relationship name="Users_CurrencyAccrued" msdata:parent="Users" msdata:child="Currency" msdata:parentkey="Id UserName" msdata:childkey="Id UserName" msprop:Generator_UserChildTable="Currency" msprop:Generator_ChildPropName="GetCurrencyRows" msprop:Generator_UserRelationName="Users_CurrencyAccrued" msprop:Generator_ParentPropName="UsersRowParent" msprop:Generator_RelationVarName="relationUsers_CurrencyAccrued" msprop:Generator_UserParentTable="Users" />
-      <msdata:Relationship name="Currency_CurrencyAccrued" msdata:parent="CurrencyType" msdata:child="Currency" msdata:parentkey="CurrencyName" msdata:childkey="CurrencyName" msprop:Generator_UserChildTable="Currency" msprop:Generator_ChildPropName="GetCurrencyRows" msprop:Generator_UserRelationName="Currency_CurrencyAccrued" msprop:Generator_RelationVarName="relationCurrency_CurrencyAccrued" msprop:Generator_UserParentTable="CurrencyType" msprop:Generator_ParentPropName="CurrencyTypeRow" />
     </xs:appinfo>
   </xs:annotation>
 </xs:schema>

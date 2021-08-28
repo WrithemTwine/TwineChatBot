@@ -14,16 +14,12 @@ namespace ChatBot_Net5.Systems
         private bool CurAccrualStarted;
         private bool WatchStarted;
 
-        // flag to stop clocks when exiting application, otherwise, permits running clocks according to user preferences
-        public bool RunClocks { get; set; }
-
         private DataManager Datamanager { get; set; }
         private readonly List<string> CurrUsers;
 
         public CurrencySystem(DataManager dataManager, List<string> CurrUserList)
         {
             Datamanager = dataManager;
-            RunClocks = true;
             CurrUsers = CurrUserList;
         }
 
@@ -34,7 +30,7 @@ namespace ChatBot_Net5.Systems
                 CurAccrualStarted = true;
                 new Thread(new ThreadStart(() =>
                 {
-                    while (((OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyOnline) || !OptionFlags.TwitchCurrencyOnline) && RunClocks && OptionFlags.TwitchCurrencyStart)
+                    while (OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyStart && OptionFlags.ManageUsers)
                     {
                         foreach (string U in CurrUsers)
                         {
@@ -56,7 +52,7 @@ namespace ChatBot_Net5.Systems
                 new Thread(new ThreadStart(() =>
                 {
                     // watch time accruing only works when stream is online <- i.e. watched!
-                    while (OptionFlags.IsStreamOnline)
+                    while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                     {
                         lock (CurrUsers)
                         {

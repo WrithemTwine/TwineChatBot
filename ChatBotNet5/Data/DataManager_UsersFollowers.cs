@@ -38,7 +38,6 @@ namespace ChatBot_Net5.Data
                     UpdateWatchTime(user, LastSeen); // will update the "LastDateSeen"
                     UpdateCurrency(user, LastSeen); // will update the "CurrLoginDate"
 
-                    user.CurrLoginDate = LastSeen;
                     SaveData();
                     OnPropertyChanged(nameof(Users));
                     OnPropertyChanged(nameof(Currency));
@@ -49,14 +48,17 @@ namespace ChatBot_Net5.Data
         internal void UpdateWatchTime(DataSource.UsersRow User, DateTime CurrTime)
         {
             lock (_DataSource.Users)
-            {
-                TimeSpan UpdateLastDate = CurrTime - User.LastDateSeen;
-                if (UpdateLastDate.TotalSeconds < 0)
+            {               
+                if(User.LastDateSeen <= CurrStreamStart)
                 {
-                    UpdateLastDate = User.LastDateSeen - CurrTime;
+                    User.LastDateSeen = CurrStreamStart;
                 }
 
-                User.WatchTime = User.WatchTime.Add(UpdateLastDate);
+                if (CurrTime >= User.LastDateSeen && CurrTime >= CurrStreamStart)
+                {
+                    User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
+                }
+
                 User.LastDateSeen = CurrTime;
             }
             SaveData();
@@ -190,6 +192,7 @@ namespace ChatBot_Net5.Data
                 if (!CheckUser(User))
                 {
                     DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
+                    AddCurrencyRows(output);
                     SaveData();
                     return output;
                 }
