@@ -86,12 +86,12 @@ namespace ChatBot_Net5.Data
             
             LocalizedMsgSystem.SetDataManager(this);
             LoadData();
-
+            
             ChannelEvents = _DataSource.ChannelEvents.DefaultView;
             Users = new(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
             Followers = new(_DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
             Discord = _DataSource.Discord.DefaultView;
-            CurrencyType = new(_DataSource.CurrencyType, null, "Id", DataViewRowState.CurrentRows);
+            CurrencyType = new(_DataSource.CurrencyType, null, "CurrencyName", DataViewRowState.CurrentRows);
             Currency = new(_DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
             BuiltInCommands = new(_DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
@@ -109,18 +109,21 @@ namespace ChatBot_Net5.Data
         /// </summary>
         private void LoadData()
         {
-            if (!File.Exists(DataFileName))
+            lock (_DataSource)
             {
-                _DataSource.WriteXml(DataFileName);
-            }
+                if (!File.Exists(DataFileName))
+                {
+                    _DataSource.WriteXml(DataFileName);
+                }
 
-            using (XmlReader xmlreader = new XmlTextReader(DataFileName))
-            {
-                _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
-            }
+                using (XmlReader xmlreader = new XmlTextReader(DataFileName))
+                {
+                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                }
 
-            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
-            SetDefaultCommandsTable(); // check all default Commands
+                SetDefaultChannelEventsTable();  // check all default ChannelEvents names
+                SetDefaultCommandsTable(); // check all default Commands
+            }
 
             SaveData();
         }
@@ -142,10 +145,10 @@ namespace ChatBot_Net5.Data
 
                     SaveTasks.Enqueue(new(() =>
                     {
-                        string result = Path.GetRandomFileName();
-
                         lock (_DataSource)
                         {
+                            string result = Path.GetRandomFileName();
+
                             _DataSource.AcceptChanges();
 
                             try
@@ -257,20 +260,23 @@ namespace ChatBot_Net5.Data
         /// <returns></returns>
         internal List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
         {
-            DataRow[] dataRows = _DataSource.Discord.Select();
-
-            List<Tuple<bool, Uri>> uris = new();
-
-            foreach (DataRow d in dataRows)
+            lock (_DataSource.Discord)
             {
-                DataSource.DiscordRow row = d as DataSource.DiscordRow;
+                DataRow[] dataRows = _DataSource.Discord.Select();
 
-                if (row.Kind == webhooks.ToString())
+                List<Tuple<bool, Uri>> uris = new();
+
+                foreach (DataRow d in dataRows)
                 {
-                    uris.Add(new Tuple<bool, Uri>(row.AddEveryone, new Uri(row.Webhook)));
+                    DataSource.DiscordRow row = d as DataSource.DiscordRow;
+
+                    if (row.Kind == webhooks.ToString())
+                    {
+                        uris.Add(new Tuple<bool, Uri>(row.AddEveryone, new Uri(row.Webhook)));
+                    }
                 }
+                return uris;
             }
-            return uris;
         }
         #endregion Discord and Webhooks
 
@@ -282,15 +288,18 @@ namespace ChatBot_Net5.Data
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
         internal void UpdateCategory(string CategoryId, string newCategory)
         {
-            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
+            lock (_DataSource)
+            {
+                DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
 
-            if (categoryList.Length == 0)
-            {
-                _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
-            }
-            else if (categoryList[0].CategoryId == null)
-            {
-                categoryList[0].CategoryId = CategoryId;
+                if (categoryList.Length == 0)
+                {
+                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
+                }
+                else if (categoryList[0].CategoryId == null)
+                {
+                    categoryList[0].CategoryId = CategoryId;
+                }
             }
 
             SaveData();
@@ -302,17 +311,19 @@ namespace ChatBot_Net5.Data
 
         internal bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
-            DataSource.ClipsRow[] clipsRows = (DataSource.ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
-
-            if (clipsRows.Length == 0)
+            lock (_DataSource)
             {
-                _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
-                SaveData();
-                OnPropertyChanged(nameof(Clips));
-                return true;
-            }
+                DataSource.ClipsRow[] clipsRows = (DataSource.ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
 
-            return false;
+                if (clipsRows.Length == 0)
+                {
+                    _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
+                    SaveData();
+                    OnPropertyChanged(nameof(Clips));
+                    return true;
+                }
+                return false;
+            }
         }
 
         #endregion

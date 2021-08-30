@@ -2,9 +2,9 @@
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 
-
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
@@ -18,6 +18,9 @@ namespace ChatBot_Net5.Systems
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
         private static CurrencySystem CurrencySystem { get; set; }
+        private Thread StreamUpdateThread;
+        private bool StreamUpdateClockStarted;
+        private const int SecondsDelay = 5000;
 
         private readonly List<string> CurrUsers = new();
         private readonly List<string> UniqueUserJoined = new();
@@ -26,15 +29,14 @@ namespace ChatBot_Net5.Systems
         private readonly List<string> SubUsers = new();
         private readonly List<string> VIPUsers = new();
         private readonly DataManager datamanager;
-        private StreamStat CurrStream { get; set; } = new();
-
+        private StreamStat CurrStream = new();
         public string Category { get; set; }
 
         public StatisticsSystem(DataManager dataManager)
         {
             datamanager = dataManager;
             CurrencySystem = new(datamanager, CurrUsers);
-            datamanager.AddCurrencyRows();
+            //datamanager.AddCurrencyRows();
 
 #if DEBUG
             DateTime started = DateTime.Now.ToLocalTime();
@@ -52,21 +54,25 @@ namespace ChatBot_Net5.Systems
         /// </summary>
         public static void StartCurrencyClock()
         {
-            CurrencySystem.StartClock(); // try to start clock, in case accrual is started for offline mode
+            CurrencySystem.StartCurrencyClock(); // try to start clock, in case accrual is started for offline mode
         }
 
         public void ManageUsers()
         {
             ManageUsers(DateTime.Now.ToLocalTime());
+            CurrencySystem.MonitorWatchTime();
         }
 
         public void ManageUsers(DateTime SpecifyTime)
         {
-            foreach (string U in CurrUsers)
+            lock (CurrUsers)
             {
-                if (OptionFlags.ManageUsers)
+                foreach (string U in CurrUsers)
                 {
-                    datamanager.UserJoined(U, SpecifyTime.ToLocalTime());
+                    if (OptionFlags.ManageUsers)
+                    {
+                        datamanager.UserJoined(U, SpecifyTime.ToLocalTime());
+                    }
                 }
             }
         }
@@ -89,9 +95,10 @@ namespace ChatBot_Net5.Systems
 
         public void RegisterNewClip(Clip clip)
         {
-            datamanager.AddClip(clip.Id , clip.CreatedAt, clip.Duration, clip.GameId,clip.Language,clip.Title,clip.Url);
+            datamanager.AddClip(clip.Id, clip.CreatedAt, clip.Duration, clip.GameId, clip.Language, clip.Title, clip.Url);
             AddClips();
         }
+
         /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel
         /// </summary>
@@ -124,6 +131,7 @@ namespace ChatBot_Net5.Systems
                 return CurrUsers.Count;
             }
         }
+
         /// <summary>
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>
@@ -176,11 +184,19 @@ namespace ChatBot_Net5.Systems
 
         public void UserLeft(string User, DateTime CurrTime)
         {
+            lock (CurrUsers)
+            {
+                PostDataUserLeft(User, CurrTime);
+                CurrUsers.Remove(User);
+            }
+        }
+
+        private void PostDataUserLeft(string User, DateTime CurrTime)
+        {
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
                 datamanager.UserLeft(User, CurrTime);
             }
-            CurrUsers.Remove(User);
         }
 
         public bool IsFollower(string User)
@@ -223,8 +239,8 @@ namespace ChatBot_Net5.Systems
         //    }
         //}
 
-        public List<Tuple<bool,Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
-{
+        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        {
             return datamanager.GetWebhooks(webhooksKind);
         }
 
@@ -232,42 +248,97 @@ namespace ChatBot_Net5.Systems
         {
             OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
+            CurrStream.StreamEnd = Started; // temp assign ending time as start
 
             ManageUsers(Started);
 
-            CurrencySystem.MonitorWatchTime();
-            CurrencySystem.StartClock();
+            bool found;
+
+            // retrieve existing stream or start a new stream entry
+            if (CheckStreamTime(Started))
+            {
+                if (OptionFlags.ManageStreamStats)
+                {
+                    CurrStream = datamanager.GetStreamData(Started);
+                }
+                found = true;
+            }
+            else
+            {
+                if (OptionFlags.ManageStreamStats)
+                {
+                    datamanager.AddStream(CurrStream.StreamStart);
+                }
+                found = false;
+            }
+
+            // TODO: fix updating a new stream online stat - start time and end time
+            PostStreamUpdates();
 
             // setting if user wants to save Stream Stat data
-            return OptionFlags.ManageStreamStats && datamanager.AddStream(CurrStream.StreamStart);
+            return OptionFlags.ManageStreamStats && !found;
         }
 
-        public bool StreamOnline()
+        public void BeginPostingStreamUpdates()
         {
-            // TODO: fix resuming managing stream stats
-            return false;
+            if (OptionFlags.ManageStreamStats)
+            {
+                PostStreamUpdates();
+            }
+        }
+
+        public void EndPostingStreamUpdates()
+        {
+            StreamUpdateThread.Join();
+        }
+
+        private void PostStreamUpdates()
+        {
+            if (!StreamUpdateClockStarted)
+            {
+                StreamUpdateClockStarted = true;
+                CurrencySystem.MonitorWatchTime();
+                CurrencySystem.StartCurrencyClock();
+                StreamUpdateThread = new Thread(new ThreadStart(() =>
+                {
+                    while (OptionFlags.IsStreamOnline && OptionFlags.ManageStreamStats)
+                    {
+                        lock (CurrStream)
+                        {
+                            datamanager.PostStreamStat(ref CurrStream);
+                        }
+                        Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
+                    }
+                    StreamUpdateClockStarted = false;
+                }));
+                StreamUpdateThread.Start();
+            }
         }
 
         public void StreamOffline(DateTime Stopped)
         {
             // TODO: add option to stop bot when stream goes offline
 
-            for (int i = 0; i < CurrUsers.Count; i++)
+            lock (CurrUsers)
             {
-                string U = CurrUsers[i];
-                UserLeft(U, Stopped);
+                foreach (string U in CurrUsers)
+                {
+                    PostDataUserLeft(U, Stopped);
+                }
+                CurrUsers.Clear();
             }
 
             OptionFlags.IsStreamOnline = false;
+            EndPostingStreamUpdates(); // wait until the posting thread stops
             CurrStream.StreamEnd = Stopped;
-            CurrStream.ModsPresent = ModUsers.Count;
+            CurrStream.ModeratorsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
 
             // setting if user wants to save Stream Stat data
             if (OptionFlags.ManageStreamStats)
             {
-                datamanager.PostStreamStat(CurrStream);
+                datamanager.PostStreamStat(ref CurrStream);
             }
 
             CurrStream.Clear();
@@ -278,25 +349,139 @@ namespace ChatBot_Net5.Systems
             UniqueUserChat.Clear();
         }
 
-        public DateTime GetCurrentStreamStart() => CurrStream.StreamStart;
+        public DateTime GetCurrentStreamStart()
+        {
+            return CurrStream.StreamStart;
+        }
 
         #region Stream Stat Methods
-        public void AddFollow() => CurrStream.NewFollows++;
-        public void AddSub() => CurrStream.NewSubs++;
-        public void AddGiftSubs(int Gifted = 1) => CurrStream.GiftSubs += Gifted;
-        public void AddBits(int BitCount) => CurrStream.Bits += BitCount;
-        public void AddRaids() => CurrStream.Raids++;
-        public void AddHosted() => CurrStream.Hosted++;
-        public void AddUserBanned() => CurrStream.UsersBanned++;
-        public void AddUserTimedOut() => CurrStream.UsersTimedOut++;
-        public void AddTotalChats() => CurrStream.TotalChats++;
-        public void AddCommands() => CurrStream.Commands++;
-        public void AddAutoEvents() => CurrStream.AutoEvents++;
-        public void AddAutoCommands() => CurrStream.AutoCommands++;
-        public void AddDiscord() => CurrStream.DiscordMsgs++;
-        public void AddClips() => CurrStream.ClipsMade++;
-        public void AddChannelPtsCount() => CurrStream.ChannelPtCount++;
-        public void AddChannelChallenge() => CurrStream.ChannelChallenge++;
+        public void AddFollow()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.NewFollows++;
+            }
+        }
+
+        public void AddSub()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.NewSubscribers++;
+            }
+        }
+
+        public void AddGiftSubs(int Gifted = 1)
+        {
+            lock (CurrStream)
+            {
+                CurrStream.GiftSubs += Gifted;
+            }
+        }
+
+        public void AddBits(int BitCount)
+        {
+            lock (CurrStream)
+            {
+                CurrStream.Bits += BitCount;
+            }
+        }
+
+        public void AddRaids()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.Raids++;
+            }
+        }
+
+        public void AddHosted()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.Hosted++;
+            }
+        }
+
+        public void AddUserBanned()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.UsersBanned++;
+            }
+        }
+
+        public void AddUserTimedOut()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.UsersTimedOut++;
+            }
+        }
+
+        public void AddTotalChats()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.TotalChats++;
+            }
+        }
+
+        public void AddCommands()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.Commands++;
+            }
+        }
+
+        public void AddAutoEvents()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.AutomatedEvents++;
+            }
+        }
+
+        public void AddAutoCommands()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.AutomatedCommands++;
+            }
+        }
+
+        public void AddDiscord()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.DiscordMsgs++;
+            }
+        }
+
+        public void AddClips()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.ClipsMade++;
+            }
+        }
+
+        public void AddChannelPtsCount()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.ChannelPtCount++;
+            }
+        }
+
+        public void AddChannelChallenge()
+        {
+            lock (CurrStream)
+            {
+                CurrStream.ChannelChallenge++;
+            }
+        }
         #endregion
     }
 }

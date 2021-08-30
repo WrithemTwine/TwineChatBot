@@ -1,10 +1,13 @@
 ﻿
 using System;
+using System.Linq;
 
 namespace ChatBot_Net5.Data
 {
     public partial class DataManager
     {
+        private int CurrencyTypes;
+
         /// <summary>
         /// For the supplied user string, update the currency based on the supplied time to the currency accrual rates the streamer specified for the currency.
         /// </summary>
@@ -31,43 +34,28 @@ namespace ChatBot_Net5.Data
                 {
                     lock (_DataSource.CurrencyType)
                     {
-                        TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
-
-                        double ComputeCurrency(double Accrue, double Seconds)
+                        if (User != null)
                         {
-                            return Accrue * (currencyclock.TotalSeconds / Seconds);
-                        }
+                            TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
 
-                        DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                        DataSource.CurrencyRow[] userCurrency = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + User.Id + "'");
-
-                        foreach (DataSource.CurrencyTypeRow typeRow in currencyType)
-                        {
-                            if (userCurrency.Length == 0)
+                            double ComputeCurrency(double Accrue, double Seconds)
                             {
-                                _DataSource.Currency.AddCurrencyRow(User.Id, User.UserName, typeRow.CurrencyName, ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds));
+                                return Accrue * (currencyclock.TotalSeconds / Seconds);
                             }
-                            else
+
+                            AddCurrencyRows(User);
+
+                            DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
+                            DataSource.CurrencyRow[] userCurrency = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + User.Id + "'");
+
+                            foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                             {
-                                bool found = false;
-                                foreach (DataSource.CurrencyRow currencyRow in userCurrency)
-                                {
-                                    if (currencyRow.CurrencyName == typeRow.CurrencyName)
-                                    {
-                                        currencyRow.Value += ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds);
-                                        found = true;
-                                    }
-                                }
-                                if (!found)
-                                {
-                                    _DataSource.Currency.AddCurrencyRow(User.Id, User.UserName, typeRow.CurrencyName, ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds));
-                                }
+                                currencyRow.Value += ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds);
                             }
+
+                            // set the current login date, always set regardless if currency accrual is started
+                            User.CurrLoginDate = CurrTime;
                         }
-
-
-                        // set the current login date, always set regardless if currency accrual is started
-                        User.CurrLoginDate = CurrTime;
                     }
                 }
             }
@@ -133,9 +121,12 @@ namespace ChatBot_Net5.Data
         /// </summary>
         internal void ClearAllCurrencyValues()
         {
-            foreach(DataSource.CurrencyRow row in _DataSource.Currency.Select())
+            lock (_DataSource.Currency)
             {
-                row.Value = 0;
+                foreach (DataSource.CurrencyRow row in _DataSource.Currency.Select())
+                {
+                    row.Value = 0;
+                }
             }
         }
     }

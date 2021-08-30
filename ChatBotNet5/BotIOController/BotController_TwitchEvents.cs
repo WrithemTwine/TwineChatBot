@@ -58,7 +58,7 @@ namespace ChatBot_Net5.BotIOController
                 //TwitchIO.TwitchChat.OnModeratorsReceived += Client_OnModeratorsReceived;
                 TwitchIO.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
                 //TwitchIO.TwitchChat.OnNoPermissionError += Client_OnNoPermissionError;
-                //TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
+                TwitchIO.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 //TwitchIO.TwitchChat.OnRaidedChannelIsMatureAudience += Client_OnRaidedChannelIsMatureAudience;
                 TwitchIO.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
                 TwitchIO.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
@@ -138,7 +138,10 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the offline arguments.</param>
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            Stats.StreamOffline(e.Stream.StartedAt.ToLocalTime());
+            if (OptionFlags.IsStreamOnline)
+            {
+                Stats.StreamOffline(DateTime.Now.ToLocalTime());
+            }
 
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)
             {
@@ -399,6 +402,12 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
         {
+            // when hosting starts via an initiated raid or going offline, stop the stream
+            if (OptionFlags.IsStreamOnline)
+            {
+                Stats.StreamOffline(DateTime.Now.ToLocalTime());
+            }
+
         }
         #endregion Hosting
 
@@ -608,7 +617,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void RegisterJoinedUser(string Username)
         {
-
             // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {

@@ -13,17 +13,36 @@ namespace ChatBot_Net5.BotIOController
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
             // if ManageUsers is False, then remove users!
-            if(!OptionFlags.ManageUsers) { DataManage.RemoveAllUsers(); } else
+            if (!OptionFlags.ManageUsers)
+            {
+                DataManage.RemoveAllUsers();
+            }
+            else
             {
                 Stats.ManageUsers();
             }
 
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
-            if (!OptionFlags.ManageFollowers) { DataManage.RemoveAllFollowers(); }
+            if (!OptionFlags.ManageFollowers)
+            {
+                DataManage.RemoveAllFollowers();
+            }
+            else
+            {
+                BeginAddFollowers();
+            }
             // when management resumes, code upstream enables the startbot process
 
             //  if ManageStreamStats is False, then remove all Stream Statistics!
-            if (!OptionFlags.ManageStreamStats) { DataManage.RemoveAllStreamStats(); }
+            if (!OptionFlags.ManageStreamStats)
+            {
+                Stats.EndPostingStreamUpdates();
+                DataManage.RemoveAllStreamStats();
+            }
+            else
+            {
+                StartStreamPosting();
+            }
         }
 
         /// <summary>
@@ -38,14 +57,5 @@ namespace ChatBot_Net5.BotIOController
         {
             DataManage.ClearAllCurrencyValues();
         }
-
-        /// <summary>
-        /// Add currency accrual rows for every user when a new currency type is added to the database
-        /// </summary>
-        public void UpdateCurrencyTable()
-        {
-            DataManage.AddCurrencyRows();
-        }
-
     }
 }

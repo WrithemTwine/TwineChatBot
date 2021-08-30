@@ -171,36 +171,40 @@ switches:
 
         internal string GetKey(string Table)
         {
-            string key = "";
-
-            if (Table != "")
+            lock (_DataSource)
             {
-                DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
-                if (k?.Length > 1)
+                string key = "";
+
+                if (Table != "")
                 {
-                    foreach (DataColumn d in k)
+                    DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
+                    if (k?.Length > 1)
                     {
-                        if (d.ColumnName != "Id")
+                        foreach (DataColumn d in k)
                         {
-                            key = d.ColumnName;
+                            if (d.ColumnName != "Id")
+                            {
+                                key = d.ColumnName;
+                            }
                         }
                     }
+                    else
+                    {
+                        key = k?[0].ColumnName;
+                    }
                 }
-                else
-                {
-                    key = k?[0].ColumnName;
-                }
+                return key;
             }
-            return key;
         }
 
         internal string AddCommand(string cmd, CommandParams Params)
         {
-            //string strParams = Params.DBParamsString();
-            DataSource.CategoryListRow categoryListRow = (DataSource.CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
-
             lock (_DataSource.Commands)
             {
+                //string strParams = Params.DBParamsString();
+                DataSource.CategoryListRow categoryListRow = (DataSource.CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
+
+
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 SaveData();
                 OnPropertyChanged(nameof(Commands));

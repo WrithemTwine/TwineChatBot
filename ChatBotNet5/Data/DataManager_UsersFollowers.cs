@@ -47,9 +47,8 @@ namespace ChatBot_Net5.Data
 
         internal void UpdateWatchTime(DataSource.UsersRow User, DateTime CurrTime)
         {
-            lock (_DataSource.Users)
-            {               
-                if(User.LastDateSeen <= CurrStreamStart)
+            
+                if (User.LastDateSeen <= CurrStreamStart)
                 {
                     User.LastDateSeen = CurrStreamStart;
                 }
@@ -60,7 +59,7 @@ namespace ChatBot_Net5.Data
                 }
 
                 User.LastDateSeen = CurrTime;
-            }
+            
             SaveData();
             OnPropertyChanged(nameof(Users));
         }
@@ -72,7 +71,10 @@ namespace ChatBot_Net5.Data
         /// <param name="CurrTime">The Current Time to compare against for updating the watch time.</param>
         internal void UpdateWatchTime(string UserName, DateTime CurrTime)
         {
-            UpdateWatchTime(_DataSource.Users.FindByUserName(UserName), CurrTime);
+            lock (_DataSource.Users)
+            {
+                UpdateWatchTime(_DataSource.Users.FindByUserName(UserName), CurrTime);
+            }
         }
 
         //internal void UpdateWatchTime(DateTime dateTime)
@@ -113,9 +115,12 @@ namespace ChatBot_Net5.Data
         /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
         internal bool CheckUser(string User, DateTime ToDateTime)
         {
-            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+            lock (_DataSource.Users)
+            {
+                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
 
-            return !(user == null) || user?.FirstDateSeen <= ToDateTime;
+                return !(user == null) || user?.FirstDateSeen <= ToDateTime;
+            }
         }
 
         /// <summary>
@@ -257,9 +262,12 @@ namespace ChatBot_Net5.Data
         /// </summary>
         internal void ClearWatchTime()
         {
-            foreach(DataSource.UsersRow users in _DataSource.Users.Select())
+            lock (_DataSource.Users)
             {
-                users.WatchTime = new(0);
+                foreach (DataSource.UsersRow users in _DataSource.Users.Select())
+                {
+                    users.WatchTime = new(0);
+                }
             }
         }
 

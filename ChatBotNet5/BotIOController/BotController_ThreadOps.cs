@@ -36,35 +36,14 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void StartProcMsgThread()
         {
-            SendThread = new(new ThreadStart(ProcMsgs));
+            SendThread = new(new ThreadStart(BeginProcMsgs));
             SendThread.Start();
-        }
-
-        /// <summary>
-        /// Retrieve all followers for the channel and add to the datatable.
-        /// </summary>
-        private void BeginAddFollowers()
-        {
-            if (OptionFlags.ManageFollowers)
-            {
-                new Thread(new ThreadStart(ProcessFollows)).Start();
-            }
-        }
-
-        private void BeginAddClips()
-        {
-            new Thread(new ThreadStart(ProcessClips)).Start();
-        }
-
-        public void BeginCurrencyClock()
-        {
-            Systems.StatisticsSystem.StartCurrencyClock();
         }
 
         /// <summary>
         /// Cycles through the 'Operations' queue and runs each task in order.
         /// </summary>
-        private void ProcMsgs()
+        private void BeginProcMsgs()
         {
             // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
@@ -91,6 +70,17 @@ namespace ChatBot_Net5.BotIOController
         }
 
         /// <summary>
+        /// Retrieve all followers for the channel and add to the datatable.
+        /// </summary>
+        private void BeginAddFollowers()
+        {
+            if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
+            {
+                new Thread(new ThreadStart(ProcessFollows)).Start();
+            }
+        }
+
+        /// <summary>
         /// Process all of the followers from the reviewing channel
         /// </summary>
         private void ProcessFollows()
@@ -102,6 +92,11 @@ namespace ChatBot_Net5.BotIOController
             DataManage.UpdateFollowers(ChannelName, new Dictionary<string, List<Follow>>() { { ChannelName, Follows } });
         }
 
+        private void BeginAddClips()
+        {
+            new Thread(new ThreadStart(ProcessClips)).Start();
+        }
+
         private void ProcessClips()
         {
             StartClips = true;
@@ -109,6 +104,19 @@ namespace ChatBot_Net5.BotIOController
 
             ClipHelper(Clips);
             StartClips = false;
+        }
+
+        /// <summary>
+        /// Add currency accrual rows for every user when a new currency type is added to the database
+        /// </summary>
+        internal void UpdateCurrencyTable()
+        {
+            DataManage.AddCurrencyRows();
+        }
+
+        private void StartStreamPosting()
+        {
+            Stats.BeginPostingStreamUpdates();
         }
 
         #endregion Process Bot Operations

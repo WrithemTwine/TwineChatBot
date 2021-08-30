@@ -72,21 +72,22 @@ namespace ChatBot_Net5.Data
                     new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 }
             };
-
-            foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
+            lock (_DataSource)
             {
-                // consider only the values in the dictionary, check if data is already defined in the data table
-                if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
-                {   // extract the default data from the dictionary and add to the data table
-                    Tuple<string, string> values = dictionary[command];
-                    lock (_DataSource)
-                    {
+                foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
+                {
+                    // consider only the values in the dictionary, check if data is already defined in the data table
+                    if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
+                    {   // extract the default data from the dictionary and add to the data table
+                        Tuple<string, string> values = dictionary[command];
+
                         _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), false, true, values.Item1, values.Item2);
+
                     }
                 }
-            }
 
-            _DataSource.ChannelEvents.AcceptChanges();
+                _DataSource.ChannelEvents.AcceptChanges();
+            }
         }
         #endregion Regular Channel Events
 

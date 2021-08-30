@@ -23,7 +23,7 @@ namespace ChatBot_Net5.Systems
             CurrUsers = CurrUserList;
         }
 
-        internal void StartClock()
+        internal void StartCurrencyClock()
         {
             if (!CurAccrualStarted)
             {
@@ -32,9 +32,12 @@ namespace ChatBot_Net5.Systems
                 {
                     while (OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyStart && OptionFlags.ManageUsers)
                     {
-                        foreach (string U in CurrUsers)
+                        lock (CurrUsers)
                         {
-                            Datamanager.UpdateCurrency(U, DateTime.Now.ToLocalTime());
+                            foreach (string U in CurrUsers)
+                            {
+                                Datamanager.UpdateCurrency(U, DateTime.Now.ToLocalTime());
+                            }
                         }
                         // randomly extend the time delay up to 2times as long
                         Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
