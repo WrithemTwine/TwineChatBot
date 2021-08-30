@@ -10,12 +10,12 @@ namespace ChatBot_Net5.BotClients.TwitchLib
 {
     public abstract class ExtApiService<T> : ApiService
     {
-        internal CoreMonitor<T> _monitor;
-        internal IdBasedMonitor<T> _idBasedMonitor;
-        internal NameBasedMonitor<T> _nameBasedMonitor;
+        public CoreMonitor<T> _monitor;
+        public IdBasedMonitor<T> _idBasedMonitor;
+        public NameBasedMonitor<T> _nameBasedMonitor;
 
-        internal IdBasedMonitor<T> IdBasedMonitor => _idBasedMonitor ?? (_idBasedMonitor = new IdBasedMonitor<T>(_api));
-        internal NameBasedMonitor<T> NameBasedMonitor => _nameBasedMonitor ?? (_nameBasedMonitor = new NameBasedMonitor<T>(_api));
+        public IdBasedMonitor<T> IdBasedMonitor => _idBasedMonitor ?? (_idBasedMonitor = new IdBasedMonitor<T>(_api));
+        public NameBasedMonitor<T> NameBasedMonitor => _nameBasedMonitor ?? (_nameBasedMonitor = new NameBasedMonitor<T>(_api));
 
         protected ExtApiService(ITwitchAPI api, int checkIntervalInSeconds) : base(api, checkIntervalInSeconds)
         {

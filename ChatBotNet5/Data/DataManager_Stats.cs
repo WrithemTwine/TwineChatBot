@@ -14,7 +14,7 @@ namespace ChatBot_Net5.Data
         #region Stream Statistics
         private StreamStatsRow CurrStreamStatRow;
 
-        internal StreamStatsRow[] GetAllStreamData()
+        public StreamStatsRow[] GetAllStreamData()
         {
             return (StreamStatsRow[])_DataSource.StreamStats.Select();
         }
@@ -24,8 +24,8 @@ namespace ChatBot_Net5.Data
             lock (_DataSource.StreamStats)
             {
                 foreach (StreamStatsRow streamStatsRow in from StreamStatsRow streamStatsRow in GetAllStreamData()
-                                               where streamStatsRow.StreamStart == dateTime
-                                               select streamStatsRow)
+                                                          where streamStatsRow.StreamStart == dateTime
+                                                          select streamStatsRow)
                 {
                     return streamStatsRow;
                 }
@@ -33,22 +33,25 @@ namespace ChatBot_Net5.Data
             return null;
         }
 
-        internal StreamStat GetStreamData(DateTime dateTime)
+        public StreamStat GetStreamData(DateTime dateTime)
         {
             StreamStatsRow streamStatsRow = GetAllStreamData(dateTime);
             StreamStat streamStat = new();
 
-            // can't use a simple method to duplicate this because "ref" can't be used with boxing
-            foreach (PropertyInfo property in streamStat.GetType().GetProperties())
+            if (streamStatsRow != null)
             {
-                // use properties from 'StreamStat' since StreamStatRow has additional properties
-                property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                // can't use a simple method to duplicate this because "ref" can't be used with boxing
+                foreach (PropertyInfo property in streamStat.GetType().GetProperties())
+                {
+                    // use properties from 'StreamStat' since StreamStatRow has additional properties
+                    property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                }
             }
 
             return streamStat;
         }
 
-        internal bool CheckMultiStreams(DateTime dateTime)
+        public bool CheckMultiStreams(DateTime dateTime)
         {
             int x = 0;
             foreach (StreamStatsRow row in GetAllStreamData())
@@ -62,7 +65,7 @@ namespace ChatBot_Net5.Data
             return x > 1;
         }
 
-        internal bool AddStream(DateTime StreamStart)
+        public bool AddStream(DateTime StreamStart)
         {
             if (CheckStreamTime(StreamStart))
             {
@@ -79,7 +82,7 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        internal void PostStreamStat(ref StreamStat streamStat)
+        public void PostStreamStat(StreamStat streamStat)
         {
             lock (_DataSource.StreamStats)
             {
@@ -96,12 +99,11 @@ namespace ChatBot_Net5.Data
                     foreach (PropertyInfo srcprop in CurrStreamStatRow.GetType().GetProperties())
                     {
                         bool found = false;
-                        foreach (PropertyInfo trgtprop in streamStat.GetType().GetProperties())
+                        foreach (var _ in from PropertyInfo trgtprop in typeof(StreamStat).GetProperties()
+                                          where trgtprop.Name == srcprop.Name
+                                          select new { })
                         {
-                            if (trgtprop.Name == srcprop.Name)
-                            {
-                                found = true;
-                            }
+                            found = true;
                         }
 
                         if (found)
@@ -111,17 +113,17 @@ namespace ChatBot_Net5.Data
                         }
                     }
                 }
-                SaveData();
             }
+            SaveData();
             OnPropertyChanged(nameof(StreamStats));
         }
 
-        internal bool CheckStreamTime(DateTime CurrTime)
+        public bool CheckStreamTime(DateTime CurrTime)
         {
             return GetAllStreamData(CurrTime) != null;
         }
 
-        internal void RemoveAllStreamStats()
+        public void RemoveAllStreamStats()
         {
             lock (_DataSource.StreamStats)
             {

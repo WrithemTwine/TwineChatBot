@@ -18,7 +18,7 @@ namespace ChatBot_Net5.Static
         /// <param name="single">Singular version of the word to return</param>
         /// <param name="plural">Plural version of the word to return</param>
         /// <returns>The source number and the version of word to match the plurality of src.</returns>
-        internal static string Plurality(string src, MsgVars msgVars, string Prefix = null, string Suffix = null)
+        public static string Plurality(string src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
             return Plurality(Convert.ToInt32(src, CultureInfo.CurrentCulture), msgVars, Prefix, Suffix);
         }
@@ -31,7 +31,7 @@ namespace ChatBot_Net5.Static
         /// <param name="Prefix">The string to add to the beginning of the determined phrase</param>
         /// <param name="Suffix">The string to add to the end of the determined phrase</param>
         /// <returns>a string containing the culture adjusted plurality of the supplied number</returns>
-        internal static string Plurality(int src, MsgVars msgVars, string Prefix = null, string Suffix = null)
+        public static string Plurality(int src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
             string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
             return src.ToString(CultureInfo.CurrentCulture) + " " + (Prefix + " ") ?? string.Empty + (src != 1 ? plural[1] : plural[0]) + (" " + Suffix) ?? string.Empty;
@@ -54,7 +54,7 @@ namespace ChatBot_Net5.Static
         /// </summary>
         /// <param name="timeSpan">The timespan containing the data to format.</param>
         /// <returns>A string from <paramref name="timeSpan"/> data with 'x days, y hours, and z minutes'; and the time unit is adjusted to plurality, e.g. 0 days, 1 day, 2 days etc</returns>
-        internal static string FormatTimes(TimeSpan timeSpan)
+        public static string FormatTimes(TimeSpan timeSpan)
         {
             const double monthdays = 30.0;
             const double yeardays = 365.242;
@@ -86,7 +86,7 @@ namespace ChatBot_Net5.Static
         /// </summary>
         /// <param name="pastdate">the historic date of some activity</param>
         /// <returns>the elapsed time since the historic date to now</returns>
-        internal static string FormatTimes(DateTime pastdate)
+        public static string FormatTimes(DateTime pastdate)
         {
             return FormatTimes(DateTime.Now.ToLocalTime() - pastdate.ToLocalTime());
         }

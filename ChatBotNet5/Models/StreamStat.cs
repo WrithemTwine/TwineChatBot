@@ -4,30 +4,30 @@ using System.Diagnostics;
 namespace ChatBot_Net5.Models
 {
     [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
-    internal class StreamStat
+    public class StreamStat
     {
-        internal DateTime StreamStart { get; set; } = DateTime.MinValue;
-        internal DateTime StreamEnd { get; set; } = DateTime.MinValue;
-        internal int NewFollows { get; set; } = 0;
-        internal int NewSubscribers { get; set; } = 0;
-        internal int GiftSubs { get; set; } = 0;
-        internal int Bits { get; set; } = 0;
-        internal int Raids { get; set; } = 0;
-        internal int Hosted { get; set; } = 0;
-        internal int UsersBanned { get; set; } = 0;
-        internal int UsersTimedOut { get; set; } = 0;
-        internal int ModeratorsPresent { get; set; } = 0;
-        internal int SubsPresent { get; set; } = 0;
-        internal int VIPsPresent { get; set; } = 0;
-        internal int TotalChats { get; set; } = 0;
-        internal int Commands { get; set; } = 0;
-        internal int AutomatedEvents { get; set; } = 0;
-        internal int AutomatedCommands { get; set; } = 0;
-        internal int DiscordMsgs { get; set; } = 0;
-        internal int ClipsMade { get; set; } = 0;
-        internal int ChannelPtCount { get; set; } = 0;
-        internal int ChannelChallenge { get; set; } = 0;
-        internal int MaxUsers { get; set; } = 0;
+        public DateTime StreamStart { get; set; } = DateTime.MinValue;
+        public DateTime StreamEnd { get; set; } = DateTime.MinValue;
+        public int NewFollows { get; set; } = 0;
+        public int NewSubscribers { get; set; } = 0;
+        public int GiftSubs { get; set; } = 0;
+        public long Bits { get; set; } = 0;
+        public int Raids { get; set; } = 0;
+        public int Hosted { get; set; } = 0;
+        public int UsersBanned { get; set; } = 0;
+        public int UsersTimedOut { get; set; } = 0;
+        public int ModeratorsPresent { get; set; } = 0;
+        public int SubsPresent { get; set; } = 0;
+        public int VIPsPresent { get; set; } = 0;
+        public int TotalChats { get; set; } = 0;
+        public int Commands { get; set; } = 0;
+        public int AutomatedEvents { get; set; } = 0;
+        public int AutomatedCommands { get; set; } = 0;
+        public int DiscordMsgs { get; set; } = 0;
+        public int ClipsMade { get; set; } = 0;
+        public int ChannelPtCount { get; set; } = 0;
+        public int ChannelChallenge { get; set; } = 0;
+        public int MaxUsers { get; set; } = 0;
 
         public void Clear()
         {

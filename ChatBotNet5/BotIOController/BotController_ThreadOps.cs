@@ -1,5 +1,6 @@
 ﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 using System.Collections.Generic;
 using System.Threading;
@@ -89,7 +90,7 @@ namespace ChatBot_Net5.BotIOController
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-            DataManage.UpdateFollowers(ChannelName, new Dictionary<string, List<Follow>>() { { ChannelName, Follows } });
+            BotSystems.UpdateFollowers(ChannelName, Follows);
         }
 
         private void BeginAddClips()
@@ -102,21 +103,8 @@ namespace ChatBot_Net5.BotIOController
             StartClips = true;
             Clips = TwitchClip.GetAllClipsAsync().Result;
 
-            ClipHelper(Clips);
+            Stats.ClipHelper(Clips);
             StartClips = false;
-        }
-
-        /// <summary>
-        /// Add currency accrual rows for every user when a new currency type is added to the database
-        /// </summary>
-        internal void UpdateCurrencyTable()
-        {
-            DataManage.AddCurrencyRows();
-        }
-
-        private void StartStreamPosting()
-        {
-            Stats.BeginPostingStreamUpdates();
         }
 
         #endregion Process Bot Operations

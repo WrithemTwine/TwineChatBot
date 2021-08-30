@@ -71,7 +71,7 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
-        internal void SendMultiLiveMsg(OnStreamOnlineArgs e)
+        public void SendMultiLiveMsg(OnStreamOnlineArgs e)
         {
             if (TwitchLiveMonitor.IsMultiLiveBotActive)
             {

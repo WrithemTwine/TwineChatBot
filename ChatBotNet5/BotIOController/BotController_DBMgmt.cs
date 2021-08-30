@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 namespace ChatBot_Net5.BotIOController
 {
@@ -10,24 +11,17 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ManageDatabase()
         {
+            BotSystems.ManageDatabase();
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
             // if ManageUsers is False, then remove users!
-            if (!OptionFlags.ManageUsers)
-            {
-                DataManage.RemoveAllUsers();
-            }
-            else
+            if (OptionFlags.ManageUsers)
             {
                 Stats.ManageUsers();
             }
 
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
-            if (!OptionFlags.ManageFollowers)
-            {
-                DataManage.RemoveAllFollowers();
-            }
-            else
+            if (OptionFlags.ManageFollowers)
             {
                 BeginAddFollowers();
             }
@@ -37,12 +31,7 @@ namespace ChatBot_Net5.BotIOController
             if (!OptionFlags.ManageStreamStats)
             {
                 Stats.EndPostingStreamUpdates();
-                DataManage.RemoveAllStreamStats();
-            }
-            else
-            {
-                StartStreamPosting();
-            }
+            } // when the LiveStream Online event fires again, the datacollection will restart
         }
 
         /// <summary>
@@ -50,12 +39,15 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ClearWatchTime()
         {
-            DataManage.ClearWatchTime();
+            BotSystems.ClearWatchTime();
         }
 
+        /// <summary>
+        /// Clear all accrued user currencies
+        /// </summary>
         public void ClearAllCurrenciesValues()
         {
-            DataManage.ClearAllCurrencyValues();
+            BotSystems.ClearAllCurrenciesValues();
         }
     }
 }

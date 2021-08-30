@@ -19,29 +19,27 @@ using TwitchLib.Client.Models;
 
 namespace ChatBot_Net5.Systems
 {
-    public class CommandSystem : INotifyPropertyChanged
+    public class CommandSystem : BotSystems, INotifyPropertyChanged
     {
-        private readonly DataManager datamanager;
         private readonly StatisticsSystem StatData;
         private readonly string BotUserName;
         private Thread ElapsedThread;
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
-        internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
+        public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
 
         // bubble up the user request for joining the game queue list
-        internal event EventHandler<UserJoinArgs> UserJoinCommand;
+        public event EventHandler<UserJoinEventArgs> UserJoinCommand;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal void NotifyPropertyChanged(string ParamName = "")
+        public void NotifyPropertyChanged(string ParamName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
-        internal CommandSystem(DataManager dataManager, StatisticsSystem statistics, string BotName)
+        public CommandSystem(StatisticsSystem statistics, string BotName)
         {
-            datamanager = dataManager;
             StatData = statistics;
             BotUserName = BotName;
 
@@ -150,7 +148,7 @@ namespace ChatBot_Net5.Systems
 
             while (OptionFlags.ProcessOps)
             {
-                foreach (Tuple<string, int, string[]> Timers in datamanager.GetTimerCommands())
+                foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
                 {
                     if (Timers.Item3.Contains(StatData.Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                     {
@@ -193,7 +191,7 @@ namespace ChatBot_Net5.Systems
         public bool CheckShout(string UserName, out string response, bool AutoShout = true)
         {
             response = "";
-            if (datamanager.CheckShoutName(UserName) || !AutoShout)
+            if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
                 response = PerformCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new());
                 return true;
@@ -235,7 +233,7 @@ namespace ChatBot_Net5.Systems
         /// <returns></returns>
         private bool CheckPermission(string command, ViewerTypes InvokerPermission)
         {
-            return datamanager.CheckPermission(command, InvokerPermission);
+            return DataManage.CheckPermission(command, InvokerPermission);
         }
 
         private string PerformCommand(string command, string DisplayName, List<string> arglist, bool ElapsedTimer = false)
@@ -246,15 +244,15 @@ namespace ChatBot_Net5.Systems
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
-                return datamanager.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+                return DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {
-                return datamanager.GetSocials();
+                return DataManage.GetSocials();
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
             {
-                string msg = OptionFlags.IsStreamOnline ? datamanager.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline);
+                string msg = OptionFlags.IsStreamOnline ? DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline);
 
 
                 return VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -286,7 +284,7 @@ namespace ChatBot_Net5.Systems
                     NotifyPropertyChanged("UserPartyStop");
                 }
 
-                DataSource.CommandsRow CommData = datamanager.GetCommand(command);
+                DataSource.CommandsRow CommData = DataManage.GetCommand(command);
                 Dictionary<string, string> datavalues = null;
 
                 if (CommData != null)
@@ -399,7 +397,7 @@ namespace ChatBot_Net5.Systems
 
                         // convert multi-row output to a string
                         string queryoutput = "";
-                        foreach (Tuple<object, object> bundle in from object r in datamanager.PerformQuery(CommData, CommData.top)
+                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(CommData, CommData.top)
                                                                  let bundle = r as Tuple<object, object>
                                                                  where bundle.Item1 == bundle.Item2
                                                                  select bundle)
@@ -414,7 +412,7 @@ namespace ChatBot_Net5.Systems
 
                 default:
                     {
-                        object querydata = datamanager.PerformQuery(CommData, paramvalue);
+                        object querydata = DataManage.PerformQuery(CommData, paramvalue);
 
                         string output = "";
                         if (querydata.GetType() == typeof(string))
@@ -440,11 +438,11 @@ namespace ChatBot_Net5.Systems
             }
         }
 
-        internal void UserParty(string command, List<string> arglist, string UserName)
+        public void UserParty(string command, List<string> arglist, string UserName)
         {
-            DataSource.CommandsRow CommData = datamanager.GetCommand(command);
+            DataSource.CommandsRow CommData = DataManage.GetCommand(command);
 
-            UserJoinArgs userJoinArgs = new();
+            UserJoinEventArgs userJoinArgs = new();
             userJoinArgs.Command = command;
             userJoinArgs.AddMe = CommData?.AddMe ?? false;
             userJoinArgs.ChatUser = UserName;
@@ -459,7 +457,7 @@ namespace ChatBot_Net5.Systems
         /// </summary>
         /// <param name="chatMessage">The ChatMessage holding the characteristics of the user who invoked the chat command, which parses out the user permissions.</param>
         /// <returns>The ViewerType corresponding to the user's highest permission.</returns>
-        internal ViewerTypes ParsePermission(ChatMessage chatMessage)
+        public ViewerTypes ParsePermission(ChatMessage chatMessage)
         {
             if (chatMessage.IsBroadcaster)
             {
@@ -473,7 +471,7 @@ namespace ChatBot_Net5.Systems
             {
                 return ViewerTypes.VIP;
             }
-            else if (datamanager.CheckFollower(chatMessage.DisplayName))
+            else if (DataManage.CheckFollower(chatMessage.DisplayName))
             {
                 return ViewerTypes.Follower;
             }

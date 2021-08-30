@@ -16,7 +16,7 @@ namespace ChatBot_Net5.BotClients
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
-        internal LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
+        public LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
         public bool IsMultiLiveBotActive { get; set; }
         public bool IsMultiConnected { get; set; }
@@ -27,7 +27,7 @@ namespace ChatBot_Net5.BotClients
             IsStopped = true;
         }
 
-        internal void ConnectLiveMonitorService()
+        public void ConnectLiveMonitorService()
         {
             if (IsStarted)
             {
@@ -43,7 +43,7 @@ namespace ChatBot_Net5.BotClients
         /// Adds and updates the channels to monitor for if the streamer goes live.
         /// </summary>
         /// <param name="ChannelList">The channel names to monitor - the chat bot channel will automatically add to this monitor list.</param>
-        internal void SetLiveMonitorChannels(List<string> ChannelList)
+        public void SetLiveMonitorChannels(List<string> ChannelList)
         {
             string s = "";
             lock (s)

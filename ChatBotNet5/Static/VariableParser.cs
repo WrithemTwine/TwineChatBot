@@ -11,9 +11,9 @@ namespace ChatBot_Net5.Static
     /// </summary>
     public static class VariableParser
     {
-        internal static string Prefix = "#";
+        public static string Prefix = "#";
 
-        internal static string ConvertVars(MsgVars[] msgVars)
+        public static string ConvertVars(MsgVars[] msgVars)
         {
             string x = "";
 
@@ -30,7 +30,7 @@ namespace ChatBot_Net5.Static
         /// </summary>
         /// <param name="paramArray">A Tuple with the first item is a key (which will be prefixed) and second item is the value.</param>
         /// <returns>A key,value Dictionary with the specified prefix.</returns>
-        internal static Dictionary<string, string> BuildDictionary<T>(Tuple<T, string>[] paramArray)
+        public static Dictionary<string, string> BuildDictionary<T>(Tuple<T, string>[] paramArray)
         {
             Dictionary<string, string> dict = new();
 
@@ -47,7 +47,7 @@ namespace ChatBot_Net5.Static
         /// </summary>
         /// <param name="dictionary">The dictionary to modify.</param>
         /// <param name="paramArray">The Tuple array to add to the dictionary.</param>
-        internal static void AddData<T>(ref Dictionary<string, string> dictionary, Tuple<T, string>[] paramArray)
+        public static void AddData<T>(ref Dictionary<string, string> dictionary, Tuple<T, string>[] paramArray)
         {
             foreach (Tuple<T, string> t in paramArray)
             {
@@ -61,7 +61,7 @@ namespace ChatBot_Net5.Static
         /// <param name="message">The message to replace, may contain usage variables.</param>
         /// <param name="dictionary">The dictionary containing the parse keys.</param>
         /// <returns></returns>
-        internal static string ParseReplace(string message, Dictionary<string, string> dictionary)
+        public static string ParseReplace(string message, Dictionary<string, string> dictionary)
         {
             string temp = ""; // build the message to return
 

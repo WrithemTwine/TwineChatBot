@@ -6,14 +6,12 @@ namespace ChatBot_Net5.Data
 {
     public partial class DataManager
     {
-        private int CurrencyTypes;
-
         /// <summary>
         /// For the supplied user string, update the currency based on the supplied time to the currency accrual rates the streamer specified for the currency.
         /// </summary>
         /// <param name="User">The name of the user to find in the database.</param>
         /// <param name="dateTime">The time to base the currency calculation.</param>
-        internal void UpdateCurrency(string User, DateTime dateTime)
+        public void UpdateCurrency(string User, DateTime dateTime)
         {
             UpdateCurrency(_DataSource.Users.FindByUserName(User), dateTime);
             SaveData();
@@ -26,7 +24,7 @@ namespace ChatBot_Net5.Data
         /// </summary>
         /// <param name="User">The user to evaluate.</param>
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
-        internal void UpdateCurrency(DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateCurrency(DataSource.UsersRow User, DateTime CurrTime)
         {
             lock (_DataSource.Users)
             {
@@ -66,7 +64,7 @@ namespace ChatBot_Net5.Data
         /// Update the currency accrual for the specified user, add all currency rows per the user.
         /// </summary>
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
-        internal void AddCurrencyRows(DataSource.UsersRow usersRow)
+        public void AddCurrencyRows(DataSource.UsersRow usersRow)
         {
             lock (_DataSource.CurrencyType)
             {
@@ -102,7 +100,7 @@ namespace ChatBot_Net5.Data
         /// <summary>
         /// For every user in the database, add currency rows for each currency type - add missing rows.
         /// </summary>
-        internal void AddCurrencyRows()
+        public void AddCurrencyRows()
         {
             lock (_DataSource.Users)
             {
@@ -119,7 +117,7 @@ namespace ChatBot_Net5.Data
         /// <summary>
         /// Empty every currency to 0, for all users for all currencies.
         /// </summary>
-        internal void ClearAllCurrencyValues()
+        public void ClearAllCurrencyValues()
         {
             lock (_DataSource.Currency)
             {

@@ -3,7 +3,7 @@ using System.Timers;
 
 namespace ChatBot_Net5.BotClients.TwitchLib.Core
 {
-    internal class ServiceTimer : Timer
+    public class ServiceTimer : Timer
     {
         public int IntervalInSeconds { get; }
 

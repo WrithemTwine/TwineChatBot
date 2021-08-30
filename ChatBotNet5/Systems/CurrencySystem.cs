@@ -7,23 +7,21 @@ using System.Threading;
 
 namespace ChatBot_Net5.Systems
 {
-    public class CurrencySystem
+    public class CurrencySystem : BotSystems
     {
         private const int SecondsDelay = 5000;
 
         private bool CurAccrualStarted;
         private bool WatchStarted;
 
-        private DataManager Datamanager { get; set; }
         private readonly List<string> CurrUsers;
 
-        public CurrencySystem(DataManager dataManager, List<string> CurrUserList)
+        public CurrencySystem(List<string> CurrUserList)
         {
-            Datamanager = dataManager;
             CurrUsers = CurrUserList;
         }
 
-        internal void StartCurrencyClock()
+        public void StartCurrencyClock()
         {
             if (!CurAccrualStarted)
             {
@@ -36,7 +34,7 @@ namespace ChatBot_Net5.Systems
                         {
                             foreach (string U in CurrUsers)
                             {
-                                Datamanager.UpdateCurrency(U, DateTime.Now.ToLocalTime());
+                                DataManage.UpdateCurrency(U, DateTime.Now.ToLocalTime());
                             }
                         }
                         // randomly extend the time delay up to 2times as long
@@ -47,7 +45,7 @@ namespace ChatBot_Net5.Systems
             }
         }
         
-        internal void MonitorWatchTime()
+        public void MonitorWatchTime()
         {
             if (!WatchStarted)
             {
@@ -61,7 +59,7 @@ namespace ChatBot_Net5.Systems
                         {
                             foreach (string U in CurrUsers)
                             {
-                                Datamanager.UpdateWatchTime(U, DateTime.Now.ToLocalTime());
+                                DataManage.UpdateWatchTime(U, DateTime.Now.ToLocalTime());
                             }
                         }
                         // randomly extend the time delay up to 2times as long

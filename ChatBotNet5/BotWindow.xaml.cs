@@ -675,7 +675,7 @@ namespace ChatBot_Net5
         /// <summary>
         /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
         /// </summary>
-        internal event EventHandler NotifyExpiredCredentials;
+        public event EventHandler NotifyExpiredCredentials;
 
         /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active

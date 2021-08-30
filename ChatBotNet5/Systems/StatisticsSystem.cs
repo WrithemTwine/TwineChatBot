@@ -1,18 +1,24 @@
-﻿using ChatBot_Net5.Enum;
+﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
+using ChatBot_Net5.Enum;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
+using TwitchLib.Api.Helix;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
-
-using DataManager = ChatBot_Net5.Data.DataManager;
+using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
+using TwitchLib.Api.Services.Events.FollowerService;
+using TwitchLib.Api.ThirdParty.ModLookup;
 
 namespace ChatBot_Net5.Systems
 {
-    public class StatisticsSystem
+    public class StatisticsSystem : BotSystems
     {
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
@@ -28,24 +34,25 @@ namespace ChatBot_Net5.Systems
         private readonly List<string> ModUsers = new();
         private readonly List<string> SubUsers = new();
         private readonly List<string> VIPUsers = new();
-        private readonly DataManager datamanager;
-        private StreamStat CurrStream = new();
+        private StreamStat CurrStream;
         public string Category { get; set; }
 
-        public StatisticsSystem(DataManager dataManager)
+        public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
+
+        public StatisticsSystem()
         {
-            datamanager = dataManager;
-            CurrencySystem = new(datamanager, CurrUsers);
-            //datamanager.AddCurrencyRows();
+            CurrStream = new();
+            CurrencySystem = new(CurrUsers);
 
 #if DEBUG
-            DateTime started = DateTime.Now.ToLocalTime();
+            DateTime started = DateTime.Parse("8/30/2021 8:11:20 PM"); // DateTime.Now.ToLocalTime();
 
             StreamOnline(started);
             UserJoined("Twine_Bot", started);
             UserJoined("WrithemTwine", started);
             UserJoined("DarkStreamPhantom", started);
             UserJoined("Nelarts", started);
+            UserJoined("OutlawTorn14", started);
 #endif
         }
 
@@ -71,32 +78,21 @@ namespace ChatBot_Net5.Systems
                 {
                     if (OptionFlags.ManageUsers)
                     {
-                        datamanager.UserJoined(U, SpecifyTime.ToLocalTime());
+                        DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
                     }
                 }
             }
         }
 
-        public void SaveData()
-        {
-            datamanager.SaveData();
-        }
-
         public bool CheckStreamTime(DateTime TimeStream)
         {
-            return datamanager.CheckMultiStreams(TimeStream);
+            return DataManage.CheckMultiStreams(TimeStream);
         }
 
         public void SetCategory(string categoryId, string category)
         {
             Category = category;
-            datamanager.UpdateCategory(categoryId, category);
-        }
-
-        public void RegisterNewClip(Clip clip)
-        {
-            datamanager.AddClip(clip.Id, clip.CreatedAt, clip.Duration, clip.GameId, clip.Language, clip.Title, clip.Url);
-            AddClips();
+            DataManage.UpdateCategory(categoryId, category);
         }
 
         /// <summary>
@@ -114,7 +110,7 @@ namespace ChatBot_Net5.Systems
 
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
-                datamanager.UserJoined(User, CurrTime);
+                DataManage.UserJoined(User, CurrTime);
             }
 
             return UserChat(User);
@@ -195,20 +191,49 @@ namespace ChatBot_Net5.Systems
         {
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
-                datamanager.UserLeft(User, CurrTime);
+                DataManage.UserLeft(User, CurrTime);
             }
         }
 
         public bool IsFollower(string User)
         {
-            return datamanager.CheckFollower(User, DateTime.Now.ToLocalTime());
+            return DataManage.CheckFollower(User, DateTime.Now.ToLocalTime());
         }
 
         public bool IsReturningUser(string User)
         {
-            return datamanager.CheckUser(User, DateTime.Now.ToLocalTime());
+            return DataManage.CheckUser(User, DateTime.Now.ToLocalTime());
         }
 
+        #region Follower
+        public void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
+        {
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
+
+            while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+            {
+                if (OptionFlags.ManageFollowers)
+                {
+                    if (FollowEnabled)
+                    {
+                        PostChannelMessage?.Invoke(this,new() { Msg = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })) });
+                    }
+
+                    AddFollow();
+                    AddAutoEvents();
+                }
+
+                //if (OptionFlags.TwitchFollowerFollowBack)
+                //{
+                //    FollowbackOp(f.FromUserName);
+                //}
+            }
+        }
+        #endregion Follower
+
+        #region Clips
         ///// <summary>
         ///// Default to all users or a specific user to register "DateTime.Now.ToLocalTime()" as the current watch date.
         ///// </summary>
@@ -238,10 +263,44 @@ namespace ChatBot_Net5.Systems
         //        }
         //    }
         //}
+        public void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
+        {
+            ClipHelper(e.Clips);
+        }
+
+        public void ClipHelper(IEnumerable<Clip> Clips)
+        {
+            foreach (Clip c in Clips)
+            {
+                if (AddClip(c))
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        PostChannelMessage?.Invoke(this, new() { Msg = c.Url });
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
+                        {
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            AddDiscord();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void RegisterNewClip(Clip clip)
+        {
+            DataManage.AddClip(clip.Id, clip.CreatedAt, clip.Duration, clip.GameId, clip.Language, clip.Title, clip.Url);
+            AddClips();
+        }
+        #endregion Clips
 
         public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
-            return datamanager.GetWebhooks(webhooksKind);
+            return DataManage.GetWebhooks(webhooksKind);
         }
 
         public bool StreamOnline(DateTime Started)
@@ -255,11 +314,11 @@ namespace ChatBot_Net5.Systems
             bool found;
 
             // retrieve existing stream or start a new stream entry
-            if (CheckStreamTime(Started))
+            if (DataManage.CheckStreamTime(Started))
             {
                 if (OptionFlags.ManageStreamStats)
                 {
-                    CurrStream = datamanager.GetStreamData(Started);
+                    CurrStream = DataManage.GetStreamData(Started);
                 }
                 found = true;
             }
@@ -267,7 +326,7 @@ namespace ChatBot_Net5.Systems
             {
                 if (OptionFlags.ManageStreamStats)
                 {
-                    datamanager.AddStream(CurrStream.StreamStart);
+                    DataManage.AddStream(CurrStream.StreamStart);
                 }
                 found = false;
             }
@@ -277,14 +336,6 @@ namespace ChatBot_Net5.Systems
 
             // setting if user wants to save Stream Stat data
             return OptionFlags.ManageStreamStats && !found;
-        }
-
-        public void BeginPostingStreamUpdates()
-        {
-            if (OptionFlags.ManageStreamStats)
-            {
-                PostStreamUpdates();
-            }
         }
 
         public void EndPostingStreamUpdates()
@@ -305,7 +356,7 @@ namespace ChatBot_Net5.Systems
                     {
                         lock (CurrStream)
                         {
-                            datamanager.PostStreamStat(ref CurrStream);
+                            DataManage.PostStreamStat(CurrStream);
                         }
                         Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
                     }
@@ -338,7 +389,7 @@ namespace ChatBot_Net5.Systems
             // setting if user wants to save Stream Stat data
             if (OptionFlags.ManageStreamStats)
             {
-                datamanager.PostStreamStat(ref CurrStream);
+                DataManage.PostStreamStat(CurrStream);
             }
 
             CurrStream.Clear();

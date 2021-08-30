@@ -43,19 +43,7 @@
         </Point>
       </RoutePoints>
     </Connector>
-    <Connector ID="DesignRelation:Currency_CurrencyType" ZOrder="2" LineWidth="11">
-      <RoutePoints>
-        <Point>
-          <X>367</X>
-          <Y>93</Y>
-        </Point>
-        <Point>
-          <X>229</X>
-          <Y>93</Y>
-        </Point>
-      </RoutePoints>
-    </Connector>
-    <Connector ID="DesignRelation:Users_Currency" ZOrder="1" LineWidth="11">
+    <Connector ID="DesignRelation:Users_Currency" ZOrder="2" LineWidth="11">
       <RoutePoints>
         <Point>
           <X>684</X>
@@ -68,6 +56,18 @@
         <Point>
           <X>500</X>
           <Y>148</Y>
+        </Point>
+      </RoutePoints>
+    </Connector>
+    <Connector ID="DesignRelation:Currency_CurrencyType" ZOrder="1" LineWidth="11">
+      <RoutePoints>
+        <Point>
+          <X>367</X>
+          <Y>79</Y>
+        </Point>
+        <Point>
+          <X>229</X>
+          <Y>79</Y>
         </Point>
       </RoutePoints>
     </Connector>

@@ -109,7 +109,7 @@ switches:
         /// </summary>
         /// <param name="table">The table name to check.</param>
         /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
-        internal bool CheckTable(string table)
+        public bool CheckTable(string table)
         {
             lock (_DataSource)
             {
@@ -123,7 +123,7 @@ switches:
         /// <param name="table">The table to check.</param>
         /// <param name="field">The field within the table to see if it exists.</param>
         /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
-        internal bool CheckField(string table, string field)
+        public bool CheckField(string table, string field)
         {
             lock (_DataSource)
             {
@@ -138,7 +138,7 @@ switches:
         /// <param name="permission">The supplied permission to check.</param>
         /// <returns><i>true</i> - the permission is allowed to the command. <i>false</i> - the command permission is not allowed.</returns>
         /// <exception cref="InvalidOperationException">The command is not found.</exception>
-        internal bool CheckPermission(string cmd, ViewerTypes permission)
+        public bool CheckPermission(string cmd, ViewerTypes permission)
         {
             lock (_DataSource.Commands)
             {
@@ -161,7 +161,7 @@ switches:
         /// <param name="UserName">The UserName to shoutout.</param>
         /// <returns>true if in the ShoutOut table.</returns>
         /// <remarks>Thread-safe</remarks>
-        internal bool CheckShoutName(string UserName)
+        public bool CheckShoutName(string UserName)
         {
             lock (_DataSource.ShoutOuts)
             {
@@ -169,7 +169,7 @@ switches:
             }
         }
 
-        internal string GetKey(string Table)
+        public string GetKey(string Table)
         {
             lock (_DataSource)
             {
@@ -197,7 +197,7 @@ switches:
             }
         }
 
-        internal string AddCommand(string cmd, CommandParams Params)
+        public string AddCommand(string cmd, CommandParams Params)
         {
             lock (_DataSource.Commands)
             {
@@ -212,7 +212,7 @@ switches:
             return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
         }
 
-        internal string GetSocials()
+        public string GetSocials()
         {
             string filter = "";
 
@@ -250,7 +250,7 @@ switches:
             return socials.Trim();
         }
 
-        internal string GetUsage(string command)
+        public string GetUsage(string command)
         {
             lock (_DataSource.Commands)
             {
@@ -261,7 +261,7 @@ switches:
         }
 
         // older code
-        //internal string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList=null)
+        //public string PerformCommand(string cmd, string InvokedUser, string ParamUser, List<string> ParamList=null)
         //{
         //    DataSource.CommandsRow[] comrow = null;
 
@@ -292,7 +292,7 @@ switches:
         //    return BotController.ParseReplace(comrow[0].Message, datavalues);
         //}
 
-        internal DataSource.CommandsRow GetCommand(string cmd)
+        public DataSource.CommandsRow GetCommand(string cmd)
         {
             DataSource.CommandsRow[] comrow = null;
 
@@ -309,7 +309,7 @@ switches:
             return comrow?[0];
         }
 
-        internal object PerformQuery(DataSource.CommandsRow row, string ParamValue)
+        public object PerformQuery(DataSource.CommandsRow row, string ParamValue)
         {
             //CommandParams query = CommandParams.Parse(row.Params);
             DataRow result = null;
@@ -357,7 +357,7 @@ switches:
             return result;
         }
 
-        internal object[] PerformQuery(DataSource.CommandsRow row, int Top = 0)
+        public object[] PerformQuery(DataSource.CommandsRow row, int Top = 0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
             DataRow[] output;
@@ -387,7 +387,7 @@ switches:
         /// Retrieves the commands with a timer setting > 0 seconds.
         /// </summary>
         /// <returns>The list of commands and the seconds to repeat the command.</returns>
-        internal List<Tuple<string, int, string[]>> GetTimerCommands()
+        public List<Tuple<string, int, string[]>> GetTimerCommands()
         {
             lock (_DataSource.Commands)
             {

@@ -1,6 +1,5 @@
 ﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Static;
-using ChatBot_Net5.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -84,7 +83,6 @@ namespace ChatBot_Net5.Data
 
             _DataSource = new();
             
-            LocalizedMsgSystem.SetDataManager(this);
             LoadData();
             
             ChannelEvents = _DataSource.ChannelEvents.DefaultView;
@@ -120,12 +118,15 @@ namespace ChatBot_Net5.Data
                 {
                     _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
                 }
-
-                SetDefaultChannelEventsTable();  // check all default ChannelEvents names
-                SetDefaultCommandsTable(); // check all default Commands
             }
 
             SaveData();
+        }
+
+        public void Initialize()
+        {
+            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
+            SetDefaultCommandsTable(); // check all default Commands
         }
 
         /// <summary>
@@ -143,35 +144,36 @@ namespace ChatBot_Net5.Data
                         new Thread(new ThreadStart(PerformSaveOp)).Start();
                     }
 
-                    SaveTasks.Enqueue(new(() =>
+                    if (_DataSource.HasChanges())
                     {
-                        lock (_DataSource)
+                        SaveTasks.Enqueue(new(() =>
                         {
-                            string result = Path.GetRandomFileName();
-
-                            _DataSource.AcceptChanges();
-
-                            try
+                            lock (_DataSource)
                             {
-                                _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
-
-                                DataSource testinput = new();
-                                using (XmlReader xmlReader = new XmlTextReader(result))
+                                string result = Path.GetRandomFileName();
+                                try
                                 {
-                                    // test load
-                                    _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
-                                }
+                                    _DataSource.AcceptChanges();
+                                    _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
 
-                                File.Move(result, DataFileName, true);
-                                File.Delete(result);
+                                    DataSource testinput = new();
+                                    using (XmlReader xmlReader = new XmlTextReader(result))
+                                    {
+                                        // test load
+                                        _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                                    }
+
+                                    File.Move(result, DataFileName, true);
+                                    File.Delete(result);
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                    File.Delete(result);
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                File.Delete(result);
-                            }
-                        }
-                    }));
+                        }));
+                    }
                 }
             }
         }
@@ -205,7 +207,7 @@ namespace ChatBot_Net5.Data
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>Null for no value or the first row found using the <i>rowcriteria</i></returns>
-        internal object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
+        public object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
         {
             return GetAllRowData(dataRetrieve, rowcriteria).FirstOrDefault();
         }
@@ -216,7 +218,7 @@ namespace ChatBot_Net5.Data
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>All data found using the <i>rowcriteria</i></returns>
-        internal object[] GetAllRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
+        public object[] GetAllRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
         {
             string criteriacolumn = "";
             string datacolumn = "";
@@ -258,7 +260,7 @@ namespace ChatBot_Net5.Data
         /// Retrieve all the webhooks from the Discord table
         /// </summary>
         /// <returns></returns>
-        internal List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
+        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
         {
             lock (_DataSource.Discord)
             {
@@ -286,7 +288,7 @@ namespace ChatBot_Net5.Data
         /// Checks for the supplied category in the category list, adds if it isn't already saved.
         /// </summary>
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
-        internal void UpdateCategory(string CategoryId, string newCategory)
+        public void UpdateCategory(string CategoryId, string newCategory)
         {
             lock (_DataSource)
             {
@@ -309,7 +311,7 @@ namespace ChatBot_Net5.Data
 
         #region Clips
 
-        internal bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
+        public bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
             lock (_DataSource)
             {

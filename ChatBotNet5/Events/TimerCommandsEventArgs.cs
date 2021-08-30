@@ -2,8 +2,8 @@
 
 namespace ChatBot_Net5.Events
 {
-    internal class TimerCommandsEventArgs : EventArgs
+    public class TimerCommandsEventArgs : EventArgs
     {
-        internal string Message { get; set; }
+        public string Message { get; set; }
     }
 }

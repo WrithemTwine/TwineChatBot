@@ -1,5 +1,4 @@
 ﻿using ChatBot_Net5.BotClients;
-using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
 using ChatBot_Net5.Enum;
 using ChatBot_Net5.Events;
 using ChatBot_Net5.Static;
@@ -11,7 +10,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -82,7 +80,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
             {
-                TwitchFollower.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
+                TwitchFollower.FollowerService.OnNewFollowersDetected += Stats.FollowerService_OnNewFollowersDetected;
 
                 TwitchFollower.HandlersAdded = true;
             }
@@ -98,35 +96,7 @@ namespace ChatBot_Net5.BotIOController
 
             if(TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
             {
-                TwitchClip.clipMonitorService.OnNewClipFound += ClipMonitorService_OnNewClipFound;
-            }
-        }
-
-        private void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
-        {
-            ClipHelper(e.Clips);
-        }
-
-        private void ClipHelper(IEnumerable<Clip> clips)
-        {
-            foreach (Clip c in clips)
-            {
-                if (DataManage.AddClip(c.Id, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url))
-                {
-                    if (OptionFlags.TwitchClipPostChat)
-                    {
-                        Send(c.Url);
-                    }
-
-                    if (OptionFlags.TwitchClipPostDiscord)
-                    {
-                        foreach (Tuple<bool, Uri> u in Stats.GetDiscordWebhooks(WebhooksKind.Clips))
-                        {
-                            DiscordWebhook.SendMessage(u.Item2, c.Url);
-                            Stats.AddDiscord();
-                        }
-                    }
-                }
+                TwitchClip.clipMonitorService.OnNewClipFound += Stats.ClipMonitorService_OnNewClipFound;
             }
         }
 
@@ -228,63 +198,6 @@ namespace ChatBot_Net5.BotIOController
         }
 
         #endregion Stream On, Off, Updated
-
-        #region Followers
-        private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
-        {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
-
-            while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
-
-            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
-            {
-                if (OptionFlags.ManageFollowers)
-                {
-                    if (FollowEnabled)
-                    {
-                        Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
-                    }
-
-                    Stats.AddFollow();
-                    Stats.AddAutoEvents();
-                }
-
-                //if (OptionFlags.TwitchFollowerFollowBack)
-                //{
-                //    FollowbackOp(f.FromUserName);
-                //}
-            }
-        }
-
-
-        //private void FollowbackOp(string FromName)
-        //{
-        //    if (OptionFlags.TwitchFollowbackBotChoice)
-        //    {
-        //        TwitchFollower.FollowBack(FromName);
-        //    }
-
-        //    if (OptionFlags.TwitchFollowbackStreamerChoice) // if the bot account is not the same as the streamer account, create a new follower bot just from the streamer account
-        //    {
-        //        if (OptionFlags.TwitchStreamerChannel != null && OptionFlags.TwitchStreamerToken != null && OptionFlags.CurrentToTwitchRefreshDate(true).TotalSeconds >= 0)
-        //        {
-        //            try
-        //            {
-        //                // create a new service with the Twitch streamer account for performing the follow-back
-        //                TwitchBotFollowerSvc StreamerFollowerSvc = new();
-        //                StreamerFollowerSvc.ConnectFollowerService(TwitchBots.TwitchChannelName, OptionFlags.TwitchStreamerToken);
-        //                StreamerFollowerSvc.FollowerService?.Start();
-        //                StreamerFollowerSvc.FollowBack(FromName);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-        //            }
-        //        }
-        //    }
-        //}
-
-        #endregion Followers
 
         #region Subscriptions
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)

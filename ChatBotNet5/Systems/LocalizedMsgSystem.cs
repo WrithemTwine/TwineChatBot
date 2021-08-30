@@ -61,17 +61,15 @@ namespace ChatBot_Net5.Systems
          * 
          */
 
-
         private static DataManager _datamanager;
         private static readonly ResourceManager RM = Msgs.ResourceManager;
 
         /// <summary>
         /// Set the DataManager to use for extracting event messages
         /// </summary>
-        /// <param name="dataManager">Reference to acitve datamanager</param>
-        public static void SetDataManager(DataManager dataManager)
+        public static void SetDataManager()
         {
-            _datamanager = dataManager;
+            _datamanager = BotSystems.DataManage;
         }
 
         /// <summary>
