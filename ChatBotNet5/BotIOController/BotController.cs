@@ -4,9 +4,9 @@ using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
@@ -22,10 +22,10 @@ namespace ChatBot_Net5.BotIOController
         public MsgVarHelp CommandInfo { get; private set; } = new();
 
         /// <summary>
-        /// Manages data storage with the data interface to the datagram xml.
+        /// Only referenced for the GUI.
         /// </summary>
-        public DataManager DataManage { get; private set; } = new();
- 
+        public DataManager DataManage { get; set; }
+
         /// <summary>
         /// Manages statistics as the chat bot runs.
         /// </summary>
@@ -62,6 +62,12 @@ namespace ChatBot_Net5.BotIOController
             TwitchLiveMonitor = new();
             TwitchClip = new();
 
+            BotSystems.DataManage = new();
+            LocalizedMsgSystem.SetDataManager();
+            BotSystems.DataManage.Initialize();
+            DataManage = BotSystems.DataManage;
+            Stats = new();
+
             IOModuleList.Add(TwitchIO);
             IOModuleList.Add(TwitchFollower);
             IOModuleList.Add(TwitchLiveMonitor);
@@ -75,11 +81,11 @@ namespace ChatBot_Net5.BotIOController
             TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
             TwitchClip.OnBotStarted += TwitchClip_OnBotStarted;
             TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
-
-            Stats = new(DataManage);
+            Stats.PostChannelMessage += Stats_PostChannelMessage;
 
             OptionFlags.SetSettings();
         }
+
 
         /// <summary>
         /// Set all of the attached bots into a stopped state.
@@ -92,7 +98,6 @@ namespace ChatBot_Net5.BotIOController
                 i.ExitBot();
             }
 
-            Stats.StopCurrencyClock();
             return true;
         }
 
@@ -140,8 +145,9 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
+            Stats.StreamOffline(DateTime.Now.ToLocalTime());
             ExitAllBots();              // stop all the bot processes
-            DataManage.SaveData();  // save data
+            BotSystems.SaveData();  // save data
         }
     }
 }

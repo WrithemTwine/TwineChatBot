@@ -4,68 +4,68 @@ using System;
 
 namespace ChatBot_Net5.Static
 {
-    internal static class OptionFlags
+    public static class OptionFlags
     {
-        internal static bool LogBotStatus { get; set; }
-        internal static bool LogExceptions { get; set; }
+        public static bool LogBotStatus { get; set; }
+        public static bool LogExceptions { get; set; }
 
-        internal static bool ProcessOps { get; set; }  // whether to process ops or not
-        internal static bool IsStreamOnline { get; set; }
+        public static bool ProcessOps { get; set; }  // whether to process ops or not
+        public static bool IsStreamOnline { get; set; }
 
-        internal static bool TwitchAddFollowersStart { get; set; }
-        internal static bool TwitchPruneNonFollowers { get; set; }
-        internal static bool TwitchAddFollowerNotification { get; set; }
+        public static bool TwitchAddFollowersStart { get; set; }
+        public static bool TwitchPruneNonFollowers { get; set; }
+        public static bool TwitchAddFollowerNotification { get; set; }
 
-        internal static bool FirstUserJoinedMsg { get; set; }
-        internal static bool FirstUserChatMsg { get; set; }
+        public static bool FirstUserJoinedMsg { get; set; }
+        public static bool FirstUserChatMsg { get; set; }
 
-        internal static DateTime TwitchRefreshDate { get; set; }
+        public static DateTime TwitchRefreshDate { get; set; }
 
-        internal static bool MsgAddMe { get; set; }
-        internal static bool MsgNoMe { get; set; }
-        internal static bool MsgPerComMe { get; set; }
+        public static bool MsgAddMe { get; set; }
+        public static bool MsgNoMe { get; set; }
+        public static bool MsgPerComMe { get; set; }
 
-        internal static bool MsgWelcomeStreamer { get; set; }
+        public static bool MsgWelcomeStreamer { get; set; }
 
-        internal static bool WelcomeCustomMsg { get; set; }
+        public static bool WelcomeCustomMsg { get; set; }
 
-        internal static bool AutoShout { get; set; }
-        internal static bool TwitchRaidShoutOut { get; set; }
+        public static bool AutoShout { get; set; }
+        public static bool TwitchRaidShoutOut { get; set; }
 
-        internal static bool RepeatTimer { get; set; }
-        internal static bool RepeatTimerDilute { get; set; }
-        internal static bool RepeatWhenLive { get; set; }
+        public static bool RepeatTimer { get; set; }
+        public static bool RepeatTimerDilute { get; set; }
+        public static bool RepeatWhenLive { get; set; }
 
-        internal static bool UserPartyStart { get; set; }
-        internal static bool UserPartyStop { get; set; }
+        public static bool UserPartyStart { get; set; }
+        public static bool UserPartyStop { get; set; }
 
         // Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
-        internal static bool PostMultiLive { get; set; }
-        internal static string LiveMsg { get; set; }
+        public static bool PostMultiLive { get; set; }
+        public static string LiveMsg { get; set; }
 
-        internal static bool ManageUsers { get; set; }
-        internal static bool ManageFollowers { get; set; }
-        internal static bool ManageStreamStats { get; set; }
+        public static bool ManageUsers { get; set; }
+        public static bool ManageFollowers { get; set; }
+        public static bool ManageStreamStats { get; set; }
 
-        //internal static bool TwitchFollowerFollowBack { get; set; }
-        //internal static bool TwitchRaidFollowBack { get; set; }
-        //internal static bool TwitchFollowbackBotChoice { get; set; }
-        //internal static bool TwitchFollowbackStreamerChoice { get; set; }
+        //public static bool TwitchFollowerFollowBack { get; set; }
+        //public static bool TwitchRaidFollowBack { get; set; }
+        //public static bool TwitchFollowbackBotChoice { get; set; }
+        //public static bool TwitchFollowbackStreamerChoice { get; set; }
 
-        internal static string TwitchStreamerChannel { get; set; }
-        internal static string TwitchStreamerToken { get; set; }
-        internal static DateTime TwitchStreamTokenDate { get; set; }
+        public static string TwitchStreamerChannel { get; set; }
+        public static string TwitchStreamerToken { get; set; }
+        public static DateTime TwitchStreamTokenDate { get; set; }
 
-        internal static bool TwitchChatBotConnectOnline { get; set; }
-        internal static bool TwitchChatBotDisconnectOffline { get; set; }
+        public static bool TwitchChatBotConnectOnline { get; set; }
+        public static bool TwitchChatBotDisconnectOffline { get; set; }
 
-        internal static bool TwitchClipPostChat { get; set; }
-        internal static bool TwitchClipPostDiscord { get; set; }
+        public static bool TwitchClipPostChat { get; set; }
+        public static bool TwitchClipPostDiscord { get; set; }
 
-        internal static bool TwitchCurrencyStart { get; set; }
-        internal static bool TwitchCurrencyOnline { get; set; }
+        public static bool TwitchCurrencyStart { get; set; }
+        public static bool TwitchCurrencyOnline { get; set; }
 
-        internal static void SetSettings()
+        public static void SetSettings()
         {
             lock (Settings.Default)
             {
@@ -128,7 +128,7 @@ namespace ChatBot_Net5.Static
             }
         }
 
-        internal static void SetParty(bool Start = true)
+        public static void SetParty(bool Start = true)
         {
             Settings.Default.UserPartyStart = Start;
             Settings.Default.UserPartyStop = !Start;
@@ -136,7 +136,7 @@ namespace ChatBot_Net5.Static
             SetSettings();
         }
 
-        internal static TimeSpan CurrentToTwitchRefreshDate(bool streamaccount = false)
+        public static TimeSpan CurrentToTwitchRefreshDate(bool streamaccount = false)
         {
             return (streamaccount ? TwitchStreamTokenDate : TwitchRefreshDate) - DateTime.Now.ToLocalTime();
         }

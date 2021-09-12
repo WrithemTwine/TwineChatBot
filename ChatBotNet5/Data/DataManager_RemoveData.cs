@@ -5,7 +5,7 @@
         /// <summary>
         /// Remove all Users from the database.
         /// </summary>
-        internal void RemoveAllUsers()
+        public void RemoveAllUsers()
         {
             lock (_DataSource.Users)
             {
@@ -18,7 +18,7 @@
         /// <summary>
         /// Remove all Followers from the database.
         /// </summary>
-        internal void RemoveAllFollowers()
+        public void RemoveAllFollowers()
         {
             lock (_DataSource.Followers)
             {

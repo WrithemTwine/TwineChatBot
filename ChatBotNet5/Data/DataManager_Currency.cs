@@ -1,29 +1,20 @@
-﻿using ChatBot_Net5.Static;
-
+﻿
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace ChatBot_Net5.Data
 {
     public partial class DataManager
     {
         /// <summary>
-        /// Overall update currency accruals for all users active during an online stream
+        /// For the supplied user string, update the currency based on the supplied time to the currency accrual rates the streamer specified for the currency.
         /// </summary>
-        /// <param name="dateTime">The date for the calculation</param>
-        internal void UpdateCurrency(DateTime dateTime)
+        /// <param name="User">The name of the user to find in the database.</param>
+        /// <param name="dateTime">The time to base the currency calculation.</param>
+        public void UpdateCurrency(string User, DateTime dateTime)
         {
-            lock (_DataSource.Users)
-            {
-                foreach (DataSource.UsersRow users in _DataSource.Users.Select())
-                {
-                    if (users.CurrLoginDate >= CurrStreamStart) // detected online user
-                    {
-                        UpdateCurrency(users, dateTime);
-                    }
-                }
-            }
-
+            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+            UpdateCurrency(ref user, dateTime);
             SaveData();
             OnPropertyChanged(nameof(Users));
             OnPropertyChanged(nameof(Currency));
@@ -34,49 +25,110 @@ namespace ChatBot_Net5.Data
         /// </summary>
         /// <param name="User">The user to evaluate.</param>
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
-        internal void UpdateCurrency(DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateCurrency(ref DataSource.UsersRow User, DateTime CurrTime)
         {
-            // when currency accrual is started, set each currency
-            if (OptionFlags.TwitchCurrencyStart)
+            lock (_DataSource.Users)
             {
-                DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                List<DataSource.CurrencyRow> currrow = User.Table.ChildRelations.Contains("Users_CurrencyAccrued") ? new((DataSource.CurrencyRow[]) User.GetChildRows("Users_CurrencyAccrued")) : new();
-                TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
-
-                lock (_DataSource.Currency)  // lock for multithreading
+                lock (_DataSource.Currency)
                 {
-                    if (currencyType.Length > 0) // no currency, no accruing currency
+                    lock (_DataSource.CurrencyType)
                     {
-                        if (currrow.Count != currencyType.Length) // meaning at least 1 user currency row isn't created or matches the currency types
+                        if (User != null)
                         {
-                            foreach (DataSource.CurrencyTypeRow CR in currencyType)
+                            TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
+
+                            double ComputeCurrency(double Accrue, double Seconds)
                             {
-                                DataSource.CurrencyRow found = currrow.Find((f) => f.CurrencyName == CR.CurrencyName); // look for the row for each currency
-                                if (found == null)
+                                return Accrue * (currencyclock.TotalSeconds / Seconds);
+                            }
+
+                            AddCurrencyRows(ref User);
+
+                            DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
+                            DataSource.CurrencyRow[] userCurrency = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + User.Id + "'");
+
+                            foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
+                            {
+                                currencyRow.Value += ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds);
+                            }
+
+                            // set the current login date, always set regardless if currency accrual is started
+                            User.CurrLoginDate = CurrTime;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Update the currency accrual for the specified user, add all currency rows per the user.
+        /// </summary>
+        /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
+        public void AddCurrencyRows(ref DataSource.UsersRow usersRow)
+        {
+            lock (_DataSource.CurrencyType)
+            {
+                DataSource.CurrencyTypeRow[] currencyTypeRows = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
+                if (usersRow != null)
+                {
+                    lock (_DataSource.Currency)
+                    {
+                        DataSource.CurrencyRow[] currencyRows = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + usersRow.Id + "'");
+                        foreach (DataSource.CurrencyTypeRow typeRow in currencyTypeRows)
+                        {
+                            bool found = false;
+                            foreach (DataSource.CurrencyRow CR in currencyRows)
+                            {
+                                if (CR.CurrencyName == typeRow.CurrencyName)
                                 {
-                                    _DataSource.Currency.AddCurrencyRow(User.Id, User.UserName, CR.CurrencyName, CR.AccrueAmt * (currencyclock.TotalSeconds / CR.Seconds));
-                                }
-                                else
-                                {
-                                    found.Value += CR.AccrueAmt * (currencyclock.TotalSeconds / CR.Seconds);
+                                    found = true;
                                 }
                             }
-                        }
-                        else // otherwise, we assume all currency types are handled in rows, since there's a data integrity relation to update or delete when currency types change
-                        {
-                            foreach (DataSource.CurrencyRow U in currrow)
+                            if (!found)
                             {
-                                DataSource.CurrencyTypeRow typeRow = (DataSource.CurrencyTypeRow)U.GetParentRow("Currency_CurrencyAccrued");
-                                U.Value += typeRow.AccrueAmt * (currencyclock.TotalSeconds / typeRow.Seconds);
+                                _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow.UserName, typeRow.CurrencyName, 0);
                             }
                         }
                     }
                 }
             }
+            SaveData();
+            OnPropertyChanged(nameof(Users));
+            OnPropertyChanged(nameof(Currency));
+        }
 
-            // set the current login date, always set regardless if currency accrual is started
-            User.CurrLoginDate = CurrTime;
-            return;
+        /// <summary>
+        /// For every user in the database, add currency rows for each currency type - add missing rows.
+        /// </summary>
+        public void AddCurrencyRows()
+        {
+            lock (_DataSource.Users)
+            {
+                System.Data.DataRow[] UserRows = _DataSource.Users.Select();
+                for (int i = 0; i < UserRows.Length; i++)
+                {
+                    DataSource.UsersRow users = (DataSource.UsersRow)UserRows[i];
+                    AddCurrencyRows(ref users);
+                }
+            }
+            SaveData();
+            OnPropertyChanged(nameof(Users));
+            OnPropertyChanged(nameof(Currency));
+        }
+
+        /// <summary>
+        /// Empty every currency to 0, for all users for all currencies.
+        /// </summary>
+        public void ClearAllCurrencyValues()
+        {
+            lock (_DataSource.Currency)
+            {
+                foreach (DataSource.CurrencyRow row in _DataSource.Currency.Select())
+                {
+                    row.Value = 0;
+                }
+            }
         }
     }
 }

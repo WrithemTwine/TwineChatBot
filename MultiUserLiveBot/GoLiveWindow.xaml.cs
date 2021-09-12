@@ -44,7 +44,7 @@ namespace MultiUserLiveBot
         /// <param name="message"></param>
         /// <param name="dictionary"></param>
         /// <returns></returns>
-        internal static string ParseReplace(string message, Dictionary<string, string> dictionary)
+        public static string ParseReplace(string message, Dictionary<string, string> dictionary)
         {
             string temp = ""; // build the message to return
 
@@ -84,7 +84,7 @@ namespace MultiUserLiveBot
         /// <param name="single">Singular version of the word to return</param>
         /// <param name="plural">Plural version of the word to return</param>
         /// <returns>The source number and the version of word to match the plurality of src.</returns>
-        internal static string Plurality(string src, string single, string plural)
+        public static string Plurality(string src, string single, string plural)
         {
             return Plurality(Convert.ToInt32(src, CultureInfo.CurrentCulture), single, plural);
         }
@@ -96,7 +96,7 @@ namespace MultiUserLiveBot
         /// <param name="single">Singular version of the word to return</param>
         /// <param name="plural">Plural version of the word to return</param>
         /// <returns>The source number and the version of word to match the plurality of src.</returns>
-        internal static string Plurality(int src, string single, string plural)
+        public static string Plurality(int src, string single, string plural)
         {
             return src.ToString(CultureInfo.CurrentCulture) + " " + (src != 1 ? plural : single);
         }
@@ -119,7 +119,7 @@ namespace MultiUserLiveBot
         /// <summary>
         /// Verify certain text fields contain data for the bot login to permit the radio button to be enabled for user to click start
         /// </summary>
-        internal void CheckFocus()
+        public void CheckFocus()
         {
             if (TB_Twitch_BotUser.Text.Length != 0
                 && TB_Twitch_ClientID.Text.Length != 0

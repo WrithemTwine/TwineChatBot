@@ -10,27 +10,27 @@ using System.Text.RegularExpressions;
 namespace ChatBot_Net5.Models
 {
     [DebuggerDisplay("Table={Table}, Field={Field}")]
-    internal class CommandParams
+    public class CommandParams
     {
-        internal string Table { get; set; } = string.Empty;
-        internal string Field { get; set; } = string.Empty;
-        internal string Currency { get; set; } = string.Empty;
-        internal string Unit { get; set; } = string.Empty;
-        internal ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        internal int Top { get; set; } = 0;
-        internal string Sort { get; set; } = CommandSort.ASC.ToString();
-        internal string Action { get; set; } = CommandAction.Get.ToString();
-        internal bool AllowParam { get; set; } = false;
-        internal bool LookupData { get; set; } = false;
-        internal int Timer { get; set; } = 0;
-        internal string Usage { get; set; } = "!<command>";
-        internal string Message { get; set; } = string.Empty;
-        internal bool AddMe { get; set; } = false;
-        internal bool Empty { get; set; } = false;
+        public string Table { get; set; } = string.Empty;
+        public string Field { get; set; } = string.Empty;
+        public string Currency { get; set; } = string.Empty;
+        public string Unit { get; set; } = string.Empty;
+        public ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
+        public int Top { get; set; } = 0;
+        public string Sort { get; set; } = CommandSort.ASC.ToString();
+        public string Action { get; set; } = CommandAction.Get.ToString();
+        public bool AllowParam { get; set; } = false;
+        public bool LookupData { get; set; } = false;
+        public int Timer { get; set; } = 0;
+        public string Usage { get; set; } = "!<command>";
+        public string Message { get; set; } = string.Empty;
+        public bool AddMe { get; set; } = false;
+        public bool Empty { get; set; } = false;
 
-        internal static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
+        public static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
 
-        internal static CommandParams Parse(List<string> ParamList)
+        public static CommandParams Parse(List<string> ParamList)
         {
             bool CheckList(string a) => ParamList.Exists((s) => s.StartsWith(a));
 
@@ -136,7 +136,7 @@ namespace ChatBot_Net5.Models
 
 
 
-        //internal string DBParamsString()
+        //public string DBParamsString()
         //{
         //    static string Combine(string key, string value) => key + ":" + value + " ";
 

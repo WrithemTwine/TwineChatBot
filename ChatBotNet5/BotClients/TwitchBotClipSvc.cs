@@ -14,14 +14,14 @@ namespace ChatBot_Net5.BotClients
 {
     public class TwitchBotClipSvc : TwitchBots
     {
-        internal ClipMonitorService clipMonitorService { get; set; }
+        public ClipMonitorService clipMonitorService { get; set; }
 
         public TwitchBotClipSvc()
         {
             BotClientName = Enum.Bots.TwitchClipBot;
         }
 
-        internal void ConnectClipService(string ClientName = null, string TwitchToken = null)
+        public void ConnectClipService(string ClientName = null, string TwitchToken = null)
         {
             if (IsStarted)
             {

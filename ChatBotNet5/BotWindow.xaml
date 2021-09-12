@@ -63,6 +63,7 @@
                 </Style>
                 <Style TargetType="{x:Type CheckBox}">
                     <Setter Property="Margin" Value="5" />
+                    <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
                 </Style>
                 <Style TargetType="{x:Type RadioButton}">
                     <Setter Property="Margin" Value="10,5,0,5" />
@@ -281,7 +282,7 @@
                                             <Label x:Name="Twitch_StreamerRefreshDate"  Content="{Binding TwitchStreamTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
                                         </StackPanel>
 
-                                        <Expander Header="Credentials (Click Me)">
+                                        <Expander Header="Credentials (Click Me)" Visibility="Collapsed">
                                             <StackPanel>
                                                 <StackPanel Orientation="Horizontal">
                                                     <Label Content="Streamer Client Id:"/>
@@ -433,8 +434,8 @@
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Width="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" DataContext="{Binding Source={x:Static s:Settings.Default}}">
-                                    <CheckBox IsChecked="{Binding LogBotStatus}" Click="CheckBox_Click_SaveSettings" Content="Enable Bot Status Logging" Margin="3" ToolTip="Save this log - 'StatusLog.txt'"/>
-                                    <CheckBox IsChecked="{Binding LogExceptions}" Click="CheckBox_Click_SaveSettings" Content="Enable TwineBot Exception Logging" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'"/>
+                                    <CheckBox IsChecked="{Binding LogBotStatus}" Content="Enable Bot Status Logging" Margin="3" ToolTip="Save this log - 'StatusLog.txt'"/>
+                                    <CheckBox IsChecked="{Binding LogExceptions}" Content="Enable TwineBot Exception Logging" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'"/>
                                 </StackPanel>
                                 <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                             </DockPanel>
@@ -455,26 +456,26 @@
                                 <WrapPanel Orientation="Horizontal">
                                     <GroupBox Header="Any - Bot Management">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding MsgBotConnection, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding MsgBotConnection, Mode=TwoWay}">
                                                 <TextBlock><Run Text="Enable bot welcome message when connected to stream channel."/></TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}">
                                                 <TextBlock><Run Text="Enable posting to social media (e.g. Discord) multiple live messages in same day."/></TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Automatic Commands by Timer">
                                         <StackPanel Margin="5">
-                                            <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" >
+                                            <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" >
                                                 <TextBlock><Run Text="Enable Repeat commands only when live."/></TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}">
                                                 <CheckBox.ToolTip>
                                                     <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
                                                 </CheckBox.ToolTip>
                                                 <TextBlock>Enable repeating commands.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}">
                                                 <CheckBox.ToolTip>
                                                     <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 10+ viewers an hour or over 20 viewer chats in 15 minutes.</TextBlock>
                                                 </CheckBox.ToolTip>
@@ -486,16 +487,16 @@
                                     <GroupBox Header="Any - Welcome Viewers">
                                         <StackPanel>
                                             <Label Content="Only once per user per active stream (no repeats)" />
-                                            <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}">
                                                 <TextBlock Text="{DynamicResource Disabled}" />
                                             </RadioButton>
-                                            <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}">
                                                 <TextBlock Text="Enable when viewer joins the channel" />
                                             </RadioButton>
-                                            <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}">
                                                 <TextBlock Text="Enable when a viewer first chats" />
                                             </RadioButton>
-                                            <CheckBox IsChecked="{Binding MsgWelcomeStreamer, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding MsgWelcomeStreamer, Mode=TwoWay}">
                                                 <TextBlock Text="Enable welcome message when streamer chats" />
                                             </CheckBox>
                                             <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
@@ -509,9 +510,9 @@
                                     <GroupBox Header="Twitch - Format Bot messages">
                                         <StackPanel>
                                             <Label Content="/me changes message to all italics" />
-                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" Content="{DynamicResource Disabled}" />
-                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" Click="CheckBox_Click_SaveSettings" />
-                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" Click="CheckBox_Click_SaveSettings" />
+                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Content="{DynamicResource Disabled}" />
+                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" />
+                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" />
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Shout Out Viewers">
@@ -519,25 +520,26 @@
                                             <Label>
                                                 <TextBlock>Active when channel is live</TextBlock>
                                             </Label>
-                                            <CheckBox IsChecked="{Binding MsgAutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding MsgAutoShout, Mode=TwoWay}">
                                                 <TextBlock>Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding TwitchRaidShoutOut}">
                                                 <TextBlock>Enable auto shoutout for incoming channel raid streamers</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Follow Options">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding TwitchAddFollowersStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
+                                            <CheckBox IsChecked="{Binding TwitchAddFollowersStart, Mode=TwoWay}" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock TextWrapping="Wrap">Enable adding all followers when bot starts.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
+                                            <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock TextWrapping="Wrap">Enable action to remove non-followers from the Follower list when bot starts.</TextBlock>
                                             </CheckBox>
                                             <Expander IsExpanded="False">
                                                 <Expander.Header>
-                                                    <TextBlock TextWrapping="Wrap">Automatic Follower details - Click to Expand</TextBlock></Expander.Header>
+                                                    <TextBlock TextWrapping="Wrap">Automatic Follower details - Click to Expand</TextBlock>
+                                                </Expander.Header>
                                                 <StackPanel>
                                                     <GroupBox Header="Automatic Follow other Viewers:" Visibility="Visible" Width="199">
                                                         <StackPanel>
@@ -546,22 +548,22 @@
                                                             <TextBox Text="https://blog.twitch.tv/en/2021/06/28/deprecation-of-create-and-delete-follows-api-endpoints/" TextWrapping="Wrap" />
                                                             <GroupBox Header="Follow-back Account: " Width="165" Visibility="Collapsed">
                                                                 <StackPanel>
-                                                                    <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on bot account.">
+                                                                    <CheckBox IsChecked="{Binding TwitchFollowbackBotChoice, Mode=TwoWay}" ToolTip="Perform follow-back on bot account.">
                                                                         <TextBlock>Bot Account</TextBlock>
                                                                     </CheckBox>
-                                                                    <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab." Loaded="CheckBox_Loaded">
+                                                                    <CheckBox IsChecked="{Binding TwitchFollowbackStreamerChoice, Mode=TwoWay}" ToolTip="Perform follow-back on streamer account. Must have Stream Name and Token identified in Bot Setup/Twitch Setup tab." Loaded="CheckBox_Loaded">
                                                                         <TextBlock>Streamer Account</TextBlock>
                                                                     </CheckBox>
                                                                 </StackPanel>
                                                             </GroupBox>
 
-                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" ToolTip="Follow only if not currently following.">
+                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchFollowerFollowBack, Mode=TwoWay}" ToolTip="Follow only if not currently following.">
                                                                 <TextBlock>Enable follow-back new followers</TextBlock>
                                                             </CheckBox>
-                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following." Click="CheckBox_Click_SaveSettings">
+                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchRaidFollowBack}"  ToolTip="Follow only if not currently following.">
                                                                 <TextBlock>Enable follow-back incoming raider</TextBlock>
                                                             </CheckBox>
-                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status." Click="CheckBox_Click_SaveSettings">
+                                                            <CheckBox Visibility="Collapsed" IsChecked="{Binding TwitchAddFollowerNotification}"  ToolTip="Notification of the channel's live status.">
                                                                 <TextBlock>Enable live notifications for the follow-back channel i.e. Twitch notifies you when the channel goes live</TextBlock>
                                                             </CheckBox>
 
@@ -573,36 +575,41 @@
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Stream Clips">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding TwitchClipPostChat, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding TwitchClipPostChat, Mode=TwoWay}">
                                                 <TextBlock>Post new clips to chat.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding TwitchClipPostDiscord}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding TwitchClipPostDiscord}">
                                                 <TextBlock>Post new clips to Discord. Must have "Clips" Webhook(s) defined.</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Currency System">
                                         <StackPanel>
-                                            <CheckBox IsChecked="{Binding TwitchCurrencyStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox IsChecked="{Binding TwitchCurrencyStart, Mode=TwoWay}">
                                                 <TextBlock>Enable Currency Accrual - still permits adding currencies</TextBlock>
                                             </CheckBox>
-                                            <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding TwitchCurrencyOnline, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                            <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding TwitchCurrencyOnline, Mode=TwoWay}" Visibility="Collapsed">
                                                 <TextBlock>Enable Currency Accrual only when Streaming Online</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Any - Data Management">
+                                        <GroupBox.Resources>
+                                            <Style TargetType="{x:Type CheckBox}">
+                                                <EventSetter Event="Click" Handler="CheckBox_ManageData_Click" />
+                                            </Style>
+                                        </GroupBox.Resources>
                                         <StackPanel>
                                             <Label>
                                                 <TextBlock Foreground="Red"><Run Text="*Unchecking will remove data from database.*"/></TextBlock>
                                             </Label>
-                                            <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
+                                            <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Manage channel viewers, including their watchtime.*"/></TextBlock>
                                             </CheckBox>
-                                            <CheckBox x:Name="CheckBox_ManageFollowers" IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
+                                            <CheckBox x:Name="CheckBox_ManageFollowers" IsChecked="{Binding ManageFollowers}">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Manage channel followers, including their followage. Requires User data.*"/></TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
+                                            <CheckBox x:Name="CheckBox_ManageStreamStat" IsChecked="{Binding ManageStreamStats}">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Record Stream Stats for each stream.*"/></TextBlock>
                                             </CheckBox>
                                             <Label>
@@ -724,9 +731,11 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Row="0" Grid.ColumnSpan="3">
-                                <TextBlock>Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Deleting currency types will remove all existing user accruals, but renaming currency will update users to the new currency name. Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock></Label>
-                            <DataGrid x:Name="DG_Currency" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" CanUserDeleteRows="True" />
-                            <DataGrid x:Name="DG_CurrencyAccrual" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                <TextBlock>Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
+                            </Label>
+                            <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalContentAlignment="Center" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,150,0" Click="Button_ClearCurrencyAccrlValues_Click" />
+                            <DataGrid x:Name="DG_Currency" DataContext="{Binding DataManage}" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" CanUserDeleteRows="True" CanUserAddRows="True"/>
+                            <DataGrid x:Name="DG_CurrencyAccrual" DataContext="{Binding DataManage}" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="False" Grid.Row="1" Grid.Column="2" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Commands">
@@ -841,8 +850,8 @@
                                             <Setter Property="Margin" Value="3" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <RadioButton Content="Start Join List" IsChecked="{Binding UserPartyStart, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" />
-                                    <RadioButton Content="Stop Join List" IsChecked="{Binding UserPartyStop, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings" />
+                                    <RadioButton Content="Start Join List" IsChecked="{Binding UserPartyStart, Mode=TwoWay}" />
+                                    <RadioButton Content="Stop Join List" IsChecked="{Binding UserPartyStop, Mode=TwoWay}" />
                                 </StackPanel>
                             </GroupBox>
 

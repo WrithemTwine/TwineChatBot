@@ -29,11 +29,8 @@ namespace ChatBot_Net5.BotIOController
 
             // perform loading steps every time, because service is a new object when started
             RegisterHandlers();
+            BeginAddFollowers(); // begin adding followers back to the data table
 
-            if (OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
-            {
-                BeginAddFollowers(); // begin adding followers back to the data table
-            }
             OnBotStarted?.Invoke(this, new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
         }
 

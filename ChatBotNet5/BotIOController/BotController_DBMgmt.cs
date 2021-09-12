@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 namespace ChatBot_Net5.BotIOController
 {
@@ -10,14 +11,27 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ManageDatabase()
         {
-            // if ManageUsers is False, then remove users!
-            if(!OptionFlags.ManageUsers) { DataManage.RemoveAllUsers(); }
+            BotSystems.ManageDatabase();
+            // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
-            // if ManageFollowers is False, then remove followers!
-            if (!OptionFlags.ManageFollowers) { DataManage.RemoveAllFollowers(); }
+            // if ManageUsers is False, then remove users!
+            if (OptionFlags.ManageUsers)
+            {
+                Stats.ManageUsers();
+            }
+
+            // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
+            if (OptionFlags.ManageFollowers)
+            {
+                BeginAddFollowers();
+            }
+            // when management resumes, code upstream enables the startbot process
 
             //  if ManageStreamStats is False, then remove all Stream Statistics!
-            if (!OptionFlags.ManageStreamStats) { DataManage.RemoveAllStreamStats(); }
+            if (!OptionFlags.ManageStreamStats)
+            {
+                Stats.EndPostingStreamUpdates();
+            } // when the LiveStream Online event fires again, the datacollection will restart
         }
 
         /// <summary>
@@ -25,8 +39,15 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ClearWatchTime()
         {
-            DataManage.ClearWatchTime();
+            BotSystems.ClearWatchTime();
         }
 
+        /// <summary>
+        /// Clear all accrued user currencies
+        /// </summary>
+        public void ClearAllCurrenciesValues()
+        {
+            BotSystems.ClearAllCurrenciesValues();
+        }
     }
 }

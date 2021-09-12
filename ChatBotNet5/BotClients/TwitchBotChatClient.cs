@@ -31,7 +31,7 @@ namespace ChatBot_Net5.BotClients
         /// <summary>
         /// The client connection to the server.
         /// </summary>
-        internal TwitchClient TwitchChat { get; private set; } // chat bot
+        public TwitchClient TwitchChat { get; private set; } // chat bot
 
         private Logger<TwitchClient> LogData { get; set; }
 

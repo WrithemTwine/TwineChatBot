@@ -8,7 +8,7 @@ using TwitchLib.Api.Interfaces;
 
 namespace ChatBot_Net5.BotClients.TwitchLib.Core
 {
-    internal class NameBasedMonitor<T> : CoreMonitor<T>
+    public class NameBasedMonitor<T> : CoreMonitor<T>
     {
         private readonly ConcurrentDictionary<string, string> _channelToId = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 

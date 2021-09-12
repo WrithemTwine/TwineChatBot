@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Linq;
 
 namespace ChatBot_Net5
 {
@@ -44,6 +45,8 @@ namespace ChatBot_Net5
 
             WatchProcessOps = true;
             IsMultiProcActive = null;
+            OptionFlags.SetSettings();
+
 
             InitializeComponent();
 
@@ -71,34 +74,31 @@ namespace ChatBot_Net5
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             CheckFocus();
-
-            List<Tuple<bool, RadioButton>> BotOps = new()
-            {
-                new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
-                new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
-                new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
-                new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
-            };
-
             if (OptionFlags.CurrentToTwitchRefreshDate() >= CheckRefreshDate)
             {
-                foreach (Tuple<bool, RadioButton> tuple in BotOps)
+                List<Tuple<bool, RadioButton>> BotOps = new()
                 {
-                    if (tuple.Item1 && tuple.Item2.IsEnabled)
+                    new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
+                    new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
+                    new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
+                    new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
+                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
+                };
+                foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
+                                      where tuple.Item1 && tuple.Item2.IsEnabled
+                                      select tuple)
+                {
+                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
                     {
-                        if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                        Dispatcher.BeginInvoke(new BotOperation(() =>
                         {
-                            Dispatcher.BeginInvoke(new BotOperation(() =>
-                            {
-                                ((tuple.Item2).DataContext as IOModule)?.StartBot();
-                            }), null);
-                        }
-                        else
-                        {
-                            SetMultiLiveButtons();
-                            MultiBotRadio(true);
-                        }
+                            (tuple.Item2.DataContext as IOModule)?.StartBot();
+                        }), null);
+                    }
+                    else
+                    {
+                        SetMultiLiveButtons();
+                        MultiBotRadio(true);
                     }
                 }
             }
@@ -106,7 +106,6 @@ namespace ChatBot_Net5
             // TODO: add follower service online, offline, and repeat timers to re-run service
             // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
         }
-
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
@@ -151,25 +150,23 @@ namespace ChatBot_Net5
                 ToggleInputEnabled(true);
 
                 RadioButton radio;
-                if (e.BotName == Enum.Bots.TwitchChatBot)
+                switch (e.BotName)
                 {
-                    radio = Radio_Twitch_StopBot;
-                }
-                else if (e.BotName == Enum.Bots.TwitchClipBot)
-                {
-                    radio = Radio_Twitch_ClipBotStop;
-                }
-                else if (e.BotName == Enum.Bots.TwitchFollowBot)
-                {
-                    radio = Radio_Twitch_FollowBotStop;
-                }
-                else if (e.BotName == Enum.Bots.TwitchLiveBot)
-                {
-                    radio = Radio_Twitch_LiveBotStop;
-                }
-                else
-                {
-                    radio = Radio_MultiLiveTwitch_StopBot;
+                    case Enum.Bots.TwitchChatBot:
+                        radio = Radio_Twitch_StopBot;
+                        break;
+                    case Enum.Bots.TwitchClipBot:
+                        radio = Radio_Twitch_ClipBotStop;
+                        break;
+                    case Enum.Bots.TwitchFollowBot:
+                        radio = Radio_Twitch_FollowBotStop;
+                        break;
+                    case Enum.Bots.TwitchLiveBot:
+                        radio = Radio_Twitch_LiveBotStop;
+                        break;
+                    default:
+                        radio = Radio_MultiLiveTwitch_StopBot;
+                        break;
                 }
 
                 HelperStopBot(radio);
@@ -178,43 +175,40 @@ namespace ChatBot_Net5
 
         private void Controller_OnBotStarted(object sender, BotStartStopArgs e)
         {
-            Dispatcher.BeginInvoke(new BotOperation(() =>
-            {
-               if (!e.Started)
-               {
-                   ToggleInputEnabled(true);
-               }
-               else
-               {
-                   ToggleInputEnabled(false);
+            _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+              {
+                  if (!e.Started)
+                  {
+                      ToggleInputEnabled(true);
+                  }
+                  else
+                  {
+                      ToggleInputEnabled(false);
 
-                    RadioButton radio;
-                    if (e.BotName == Enum.Bots.TwitchChatBot)
-                    {
-                        radio = Radio_Twitch_StartBot;
-                    }
-                    else if (e.BotName == Enum.Bots.TwitchClipBot)
-                    {
-                        radio = Radio_Twitch_ClipBotStart;
-                    }
-                    else if (e.BotName == Enum.Bots.TwitchFollowBot)
-                    {
-                        radio = Radio_Twitch_FollowBotStart;
-                    }
-                    else if (e.BotName == Enum.Bots.TwitchLiveBot)
-                    {
-                        radio = Radio_Twitch_LiveBotStart;
-                    }
-                    else
-                    {
-                        radio = Radio_MultiLiveTwitch_StartBot;
-                    }
+                      RadioButton radio;
+                      switch (e.BotName)
+                      {
+                          case Enum.Bots.TwitchChatBot:
+                              radio = Radio_Twitch_StartBot;
+                              break;
+                          case Enum.Bots.TwitchClipBot:
+                              radio = Radio_Twitch_ClipBotStart;
+                              break;
+                          case Enum.Bots.TwitchFollowBot:
+                              radio = Radio_Twitch_FollowBotStart;
+                              break;
+                          case Enum.Bots.TwitchLiveBot:
+                              radio = Radio_Twitch_LiveBotStart;
+                              break;
+                          default:
+                              radio = Radio_MultiLiveTwitch_StartBot;
+                              break;
+                      }
 
-                    HelperStartBot(radio);
-               }
-            }),null);
+                      HelperStartBot(radio);
+                  }
+              }), null);
         }
-
 
         #region BotOps-changes in token expiration
 
@@ -287,12 +281,46 @@ namespace ChatBot_Net5
         private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
             OptionFlags.SetSettings();
+        }
 
-            // check for currency online changes, start if offline mode is enabled
-            if(((CheckBox)sender) == CheckBox_CurrencyOnline) 
+        private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
+        {
+            OptionFlags.SetSettings();
+
+            static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
+
+            TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
+            TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
+
+            if (CheckBox_ManageUsers.IsChecked == true)
             {
-
+                CheckBox_ManageFollowers.IsEnabled = true;
             }
+            else
+            {
+                CheckBox_ManageFollowers.IsEnabled = false;
+                CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
+            }
+
+            if (CheckBox_ManageFollowers.IsChecked == true)
+            {
+                if (Settings.Default.TwitchFollowerSvcAutoStart)
+                {
+                    Dispatcher.BeginInvoke(new BotOperation(() =>
+                    {
+                        (Radio_Twitch_FollowBotStart.DataContext as IOModule).StartBot();
+                    }), null);
+                }
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    (Radio_Twitch_FollowBotStart.DataContext as IOModule).StopBot();
+                }), null);
+            }
+
+            controller.ManageDatabase();
         }
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -413,7 +441,7 @@ namespace ChatBot_Net5
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "FirstDateSeen" && dc.Header.ToString() != "CurrLoginDate" && dc.Header.ToString() != "LastDateSeen" && dc.Header.ToString() != "WatchTime")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "CurrLoginDate" and not "LastDateSeen" and not "WatchTime")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -422,7 +450,7 @@ namespace ChatBot_Net5
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "UserName" && dc.Header.ToString() != "IsFollower" && dc.Header.ToString() != "FollowedDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -431,7 +459,7 @@ namespace ChatBot_Net5
                 case "DG_Currency":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "CurrencyName" && dc.Header.ToString() != "AccrueAmt" && dc.Header.ToString() != "Seconds")
+                        if (dc.Header.ToString() is not "CurrencyName" and not "AccrueAmt" and not "Seconds")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -440,7 +468,7 @@ namespace ChatBot_Net5
                 case "DG_CurrencyAccrual":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Id" && dc.Header.ToString() != "User Name" && dc.Header.ToString() != "Currency Name" && dc.Header.ToString() != "Value")
+                        if (dc.Header.ToString() is not "UserName" and not "CurrencyName" and not "Value")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -460,7 +488,7 @@ namespace ChatBot_Net5
                 case "DG_CategoryList" or "DG_CategoryList_Clips":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() != "Category" && dc.Header.ToString() != "CategoryId")
+                        if (dc.Header.ToString() is not "Category" and not "CategoryId")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -476,24 +504,6 @@ namespace ChatBot_Net5
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
 
-        private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
-        {
-            static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
-
-            TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
-            TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
-
-            if (CheckBox_ManageUsers.IsChecked == true)
-            {
-                CheckBox_ManageFollowers.IsEnabled = true;
-            } else
-            {
-                CheckBox_ManageFollowers.IsEnabled = false;
-                CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
-            }
-
-            controller.ManageDatabase();
-        }
 
         /// <summary>
         /// Sets a DataGrid to accept a new row.
@@ -518,7 +528,7 @@ namespace ChatBot_Net5
         private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
         {
             DataGrid curr = sender as DataGrid;
-            
+
             if (!(curr.IsMouseOver || IsAddNewRow)) // check for mouse over object and check if adding new row
             {
                 curr.CanUserAddRows = false;    // this fails if mouse leaves while user hasn't finished adding a new row - the if flag prevents this
@@ -546,18 +556,21 @@ namespace ChatBot_Net5
         /// <param name="e">Params from the object.</param>
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            IsAddNewRow = false;
+            if (IsAddNewRow)
+            {
+                IsAddNewRow = false;
+                (sender as DataGrid).CommitEdit();
+            }
+            
         }
-
 
         // TODO: fix scrolling in Sliders but not scroll the whole panel
 
-        private bool SliderMouseCaptured = false;
+        private bool SliderMouseCaptured;
 
         private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             Slider curr = (Slider)sender;
-
             curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
         }
 
@@ -573,20 +586,21 @@ namespace ChatBot_Net5
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if(e.Delta != 0)
+            if (e.Delta != 0 && SliderMouseCaptured)
             {
-                if(SliderMouseCaptured)
-                {
-                    e.Handled = true;
-                    
-                    return;
-                }
+                e.Handled = true;
+                return;
             }
         }
 
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {
             controller.ClearWatchTime();
+        }
+
+        private void Button_ClearCurrencyAccrlValues_Click(object sender, RoutedEventArgs e)
+        {
+            controller.ClearAllCurrenciesValues();
         }
 
         #endregion
@@ -661,7 +675,7 @@ namespace ChatBot_Net5
         /// <summary>
         /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
         /// </summary>
-        internal event EventHandler NotifyExpiredCredentials;
+        public event EventHandler NotifyExpiredCredentials;
 
         /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
@@ -778,6 +792,7 @@ namespace ChatBot_Net5
             controller.UpdateChannels();
             IsAddNewRow = false;
         }
+
 
 
 

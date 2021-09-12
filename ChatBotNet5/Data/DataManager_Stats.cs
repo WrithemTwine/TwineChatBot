@@ -1,6 +1,10 @@
 ﻿using ChatBot_Net5.Models;
 
 using System;
+using System.Reflection;
+
+using static ChatBot_Net5.Data.DataSource;
+using System.Linq;
 
 namespace ChatBot_Net5.Data
 {
@@ -8,33 +12,49 @@ namespace ChatBot_Net5.Data
     {
 
         #region Stream Statistics
-        private DataSource.StreamStatsRow CurrStreamStatRow;
+        private StreamStatsRow CurrStreamStatRow;
 
-        internal DataSource.StreamStatsRow[] GetAllStreamData()
+        public StreamStatsRow[] GetAllStreamData()
+        {
+            return (StreamStatsRow[])_DataSource.StreamStats.Select();
+        }
+
+        private StreamStatsRow GetAllStreamData(DateTime dateTime)
         {
             lock (_DataSource.StreamStats)
             {
-                return (DataSource.StreamStatsRow[])_DataSource.StreamStats.Select();
-            }
-        }
-
-        internal DataSource.StreamStatsRow GetAllStreamData(DateTime dateTime)
-        {
-            foreach (DataSource.StreamStatsRow streamStatsRow in GetAllStreamData())
-            {
-                if (streamStatsRow.StreamStart == dateTime)
+                foreach (StreamStatsRow streamStatsRow in from StreamStatsRow streamStatsRow in GetAllStreamData()
+                                                          where streamStatsRow.StreamStart == dateTime
+                                                          select streamStatsRow)
                 {
                     return streamStatsRow;
                 }
             }
-
             return null;
         }
 
-        internal bool CheckMultiStreams(DateTime dateTime)
+        public StreamStat GetStreamData(DateTime dateTime)
+        {
+            StreamStatsRow streamStatsRow = GetAllStreamData(dateTime);
+            StreamStat streamStat = new();
+
+            if (streamStatsRow != null)
+            {
+                // can't use a simple method to duplicate this because "ref" can't be used with boxing
+                foreach (PropertyInfo property in streamStat.GetType().GetProperties())
+                {
+                    // use properties from 'StreamStat' since StreamStatRow has additional properties
+                    property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                }
+            }
+
+            return streamStat;
+        }
+
+        public bool CheckMultiStreams(DateTime dateTime)
         {
             int x = 0;
-            foreach (DataSource.StreamStatsRow row in GetAllStreamData())
+            foreach (StreamStatsRow row in GetAllStreamData())
             {
                 if (row.StreamStart.ToShortDateString() == dateTime.ToShortDateString())
                 {
@@ -45,7 +65,7 @@ namespace ChatBot_Net5.Data
             return x > 1;
         }
 
-        internal bool AddStream(DateTime StreamStart)
+        public bool AddStream(DateTime StreamStart)
         {
             if (CheckStreamTime(StreamStart))
             {
@@ -57,61 +77,53 @@ namespace ChatBot_Net5.Data
             {
                 _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 SaveData();
-
-                //CurrStreamStatRow = GetAllStreamData(StreamStart);
                 OnPropertyChanged(nameof(StreamStats));
-
                 return true;
             }
         }
 
-        internal void PostStreamStat(StreamStat streamStat)
+        public void PostStreamStat(StreamStat streamStat)
         {
-            // TODO: consider regularly posting stream stats in case bot crashes and loses current stream stats up to the crash
             lock (_DataSource.StreamStats)
             {
                 CurrStreamStatRow = GetAllStreamData(streamStat.StreamStart);
 
                 if (CurrStreamStatRow == null)
                 {
-                    _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubs, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutoEvents, streamStat.AutoCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
+                    _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubscribers, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModeratorsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutomatedEvents, streamStat.AutomatedCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
                 }
                 else
                 {
-                    CurrStreamStatRow.StreamStart = streamStat.StreamStart;
-                    CurrStreamStatRow.StreamEnd = streamStat.StreamEnd;
-                    CurrStreamStatRow.NewFollows = streamStat.NewFollows;
-                    CurrStreamStatRow.NewSubscribers = streamStat.NewSubs;
-                    CurrStreamStatRow.GiftSubs = streamStat.GiftSubs;
-                    CurrStreamStatRow.Bits = streamStat.Bits;
-                    CurrStreamStatRow.Raids = streamStat.Raids;
-                    CurrStreamStatRow.Hosted = streamStat.Hosted;
-                    CurrStreamStatRow.UsersBanned = streamStat.UsersBanned;
-                    CurrStreamStatRow.UsersTimedOut = streamStat.UsersTimedOut;
-                    CurrStreamStatRow.ModeratorsPresent = streamStat.ModsPresent;
-                    CurrStreamStatRow.SubsPresent = streamStat.SubsPresent;
-                    CurrStreamStatRow.VIPsPresent = streamStat.VIPsPresent;
-                    CurrStreamStatRow.TotalChats = streamStat.TotalChats;
-                    CurrStreamStatRow.Commands = streamStat.Commands;
-                    CurrStreamStatRow.AutomatedEvents = streamStat.AutoEvents;
-                    CurrStreamStatRow.AutomatedCommands = streamStat.AutoCommands;
-                    CurrStreamStatRow.DiscordMsgs = streamStat.DiscordMsgs;
-                    CurrStreamStatRow.ClipsMade = streamStat.ClipsMade;
-                    CurrStreamStatRow.ChannelPtCount = streamStat.ChannelPtCount;
-                    CurrStreamStatRow.ChannelChallenge = streamStat.ChannelChallenge;
-                    CurrStreamStatRow.MaxUsers = streamStat.MaxUsers;
+                    // can't use a simple method to duplicate this because "ref" can't be used with boxing
+
+                    foreach (PropertyInfo srcprop in CurrStreamStatRow.GetType().GetProperties())
+                    {
+                        bool found = false;
+                        foreach (var _ in from PropertyInfo trgtprop in typeof(StreamStat).GetProperties()
+                                          where trgtprop.Name == srcprop.Name
+                                          select new { })
+                        {
+                            found = true;
+                        }
+
+                        if (found)
+                        {
+                            // use properties from 'StreamStat' since StreamStatRow has additional properties
+                            srcprop.SetValue(CurrStreamStatRow, streamStat.GetType().GetProperty(srcprop.Name).GetValue(streamStat));
+                        }
+                    }
                 }
-                SaveData();
             }
+            SaveData();
             OnPropertyChanged(nameof(StreamStats));
         }
 
-        internal bool CheckStreamTime(DateTime CurrTime)
+        public bool CheckStreamTime(DateTime CurrTime)
         {
             return GetAllStreamData(CurrTime) != null;
         }
 
-        internal void RemoveAllStreamStats()
+        public void RemoveAllStreamStats()
         {
             lock (_DataSource.StreamStats)
             {

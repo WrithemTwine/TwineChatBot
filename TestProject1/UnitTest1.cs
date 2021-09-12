@@ -17,7 +17,7 @@ namespace TestProject1
         public void TestAddEndStream()
         {
             DataManager dataManager = new();
-            StatisticsSystem test = new(dataManager);
+            StatisticsSystem test = new();
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
@@ -74,7 +74,7 @@ namespace TestProject1
         public void AddSpecificStream1()
         {
             DataManager dataManager = new();
-            StatisticsSystem test = new(dataManager);
+            StatisticsSystem test = new();
 
             DateTime nowstart = TestStart;
 
@@ -97,7 +97,7 @@ namespace TestProject1
         public void AddSpecificStream2()
         {
             DataManager dataManager = new();
-            StatisticsSystem test = new(dataManager);
+            StatisticsSystem test = new();
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);

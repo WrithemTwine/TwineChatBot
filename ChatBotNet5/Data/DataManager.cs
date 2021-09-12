@@ -1,6 +1,5 @@
 ﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Static;
-using ChatBot_Net5.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace ChatBot_Net5.Data
 
         #region DataSource
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\TwineChatBot\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
+        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
 #else
         private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
 #endif
@@ -84,14 +83,13 @@ namespace ChatBot_Net5.Data
 
             _DataSource = new();
             
-            LocalizedMsgSystem.SetDataManager(this);
             LoadData();
-
+            
             ChannelEvents = _DataSource.ChannelEvents.DefaultView;
             Users = new(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
             Followers = new(_DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
             Discord = _DataSource.Discord.DefaultView;
-            CurrencyType = new(_DataSource.CurrencyType, null, "Id", DataViewRowState.CurrentRows);
+            CurrencyType = new(_DataSource.CurrencyType, null, "CurrencyName", DataViewRowState.CurrentRows);
             Currency = new(_DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
             BuiltInCommands = new(_DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
@@ -109,20 +107,26 @@ namespace ChatBot_Net5.Data
         /// </summary>
         private void LoadData()
         {
-            if (!File.Exists(DataFileName))
+            lock (_DataSource)
             {
-                _DataSource.WriteXml(DataFileName);
-            }
+                if (!File.Exists(DataFileName))
+                {
+                    _DataSource.WriteXml(DataFileName);
+                }
 
-            using (XmlReader xmlreader = new XmlTextReader(DataFileName))
-            {
-                _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                using (XmlReader xmlreader = new XmlTextReader(DataFileName))
+                {
+                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                }
             }
-
-            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
-            SetDefaultCommandsTable(); // check all default Commands
 
             SaveData();
+        }
+
+        public void Initialize()
+        {
+            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
+            SetDefaultCommandsTable(); // check all default Commands
         }
 
         /// <summary>
@@ -132,43 +136,45 @@ namespace ChatBot_Net5.Data
         {
             if (!UpdatingFollowers) // block saving data until the follower updating is completed
             {
+
+                if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                {
+                    SaveThreadStarted = true;
+                    new Thread(new ThreadStart(PerformSaveOp)).Start();
+                }
+
                 lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                 {
-                    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                    if (_DataSource.HasChanges())
                     {
-                        SaveThreadStarted = true;
-                        new Thread(new ThreadStart(PerformSaveOp)).Start();
-                    }
-
-                    SaveTasks.Enqueue(new(() =>
-                    {
-                        string result = Path.GetRandomFileName();
-
-                        lock (_DataSource)
+                        SaveTasks.Enqueue(new(() =>
                         {
-                            _DataSource.AcceptChanges();
-
-                            try
+                            lock (_DataSource)
                             {
-                                _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
-
-                                DataSource testinput = new();
-                                using (XmlReader xmlReader = new XmlTextReader(result))
+                                string result = Path.GetRandomFileName();
+                                try
                                 {
+                                    _DataSource.AcceptChanges();
+                                    _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
+
+                                    DataSource testinput = new();
+
+                                    XmlReader xmlReader = new XmlTextReader(result);
                                     // test load
                                     _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
-                                }
 
-                                File.Move(result, DataFileName, true);
-                                File.Delete(result);
+                                    File.Move(result, DataFileName, true);
+                                    File.Delete(result);
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                    File.Delete(result);
+                                }
+                                SaveThreadStarted = false; // indicate start another thread to save data
                             }
-                            catch (Exception ex)
-                            {
-                                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                File.Delete(result);
-                            }
-                        }
-                    }));
+                        }));
+                    }
                 }
             }
         }
@@ -186,9 +192,7 @@ namespace ChatBot_Net5.Data
                 {
                     SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
                 }
-
                 SaveTasks.Clear();
-                SaveThreadStarted = false; // indicate start another thread to save data
             }
         }
 
@@ -202,7 +206,7 @@ namespace ChatBot_Net5.Data
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>Null for no value or the first row found using the <i>rowcriteria</i></returns>
-        internal object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
+        public object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
         {
             return GetAllRowData(dataRetrieve, rowcriteria).FirstOrDefault();
         }
@@ -213,7 +217,7 @@ namespace ChatBot_Net5.Data
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>All data found using the <i>rowcriteria</i></returns>
-        internal object[] GetAllRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
+        public object[] GetAllRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
         {
             string criteriacolumn = "";
             string datacolumn = "";
@@ -255,22 +259,25 @@ namespace ChatBot_Net5.Data
         /// Retrieve all the webhooks from the Discord table
         /// </summary>
         /// <returns></returns>
-        internal List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
+        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
         {
-            DataRow[] dataRows = _DataSource.Discord.Select();
-
-            List<Tuple<bool, Uri>> uris = new();
-
-            foreach (DataRow d in dataRows)
+            lock (_DataSource.Discord)
             {
-                DataSource.DiscordRow row = d as DataSource.DiscordRow;
+                DataRow[] dataRows = _DataSource.Discord.Select();
 
-                if (row.Kind == webhooks.ToString())
+                List<Tuple<bool, Uri>> uris = new();
+
+                foreach (DataRow d in dataRows)
                 {
-                    uris.Add(new Tuple<bool, Uri>(row.AddEveryone, new Uri(row.Webhook)));
+                    DataSource.DiscordRow row = d as DataSource.DiscordRow;
+
+                    if (row.Kind == webhooks.ToString())
+                    {
+                        uris.Add(new Tuple<bool, Uri>(row.AddEveryone, new Uri(row.Webhook)));
+                    }
                 }
+                return uris;
             }
-            return uris;
         }
         #endregion Discord and Webhooks
 
@@ -280,37 +287,44 @@ namespace ChatBot_Net5.Data
         /// Checks for the supplied category in the category list, adds if it isn't already saved.
         /// </summary>
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
-        internal void UpdateCategory(string CategoryId, string newCategory)
+        public void UpdateCategory(string CategoryId, string newCategory)
         {
-            DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
+            lock (_DataSource)
+            {
+                DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
 
-            if (categoryList.Length == 0)
-            {
-                _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
-            }
-            else if (categoryList[0].CategoryId == null)
-            {
-                categoryList[0].CategoryId = CategoryId;
+                if (categoryList.Length == 0)
+                {
+                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
+                }
+                else if (categoryList[0].CategoryId == null)
+                {
+                    categoryList[0].CategoryId = CategoryId;
+                }
             }
 
             SaveData();
+            OnPropertyChanged(nameof(Category));
         }
         #endregion
 
         #region Clips
 
-        internal bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
+        public bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
-            DataSource.ClipsRow[] clipsRows = (DataSource.ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
-
-            if (clipsRows.Length == 0)
+            lock (_DataSource)
             {
-                _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
-                SaveData();
-                return true;
-            }
+                DataSource.ClipsRow[] clipsRows = (DataSource.ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
 
-            return false;
+                if (clipsRows.Length == 0)
+                {
+                    _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
+                    SaveData();
+                    OnPropertyChanged(nameof(Clips));
+                    return true;
+                }
+                return false;
+            }
         }
 
         #endregion

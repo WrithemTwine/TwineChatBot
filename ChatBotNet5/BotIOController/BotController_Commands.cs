@@ -17,7 +17,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void SetProcessCommands()
         {
-            ProcessCommands = new(DataManage, Stats, TwitchBots.TwitchBotUserName);
+            ProcessCommands = new(Stats, TwitchBots.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
         }
@@ -44,7 +44,7 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
-        private void ProcessCommands_UserJoinCommand(object sender, UserJoinArgs e)
+        private void ProcessCommands_UserJoinCommand(object sender, UserJoinEventArgs e)
         {
             string response = "";
 

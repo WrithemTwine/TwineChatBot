@@ -4,7 +4,7 @@ using TwitchLib.Api.Interfaces;
 
 namespace ChatBot_Net5.BotClients.TwitchLib.Core
 {
-    internal class IdBasedMonitor<T> : CoreMonitor<T>
+    public class IdBasedMonitor<T> : CoreMonitor<T>
     {
         public IdBasedMonitor(ITwitchAPI api) : base(api) { }
 

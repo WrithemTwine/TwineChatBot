@@ -15,7 +15,7 @@ using TwitchLib.Api.Services;
 
 namespace ChatBot_Net5.BotClients.TwitchLib
 {
-    internal class ExtFollowerService : FollowerService
+    public class ExtFollowerService : FollowerService
     {
         public ExtFollowerService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 300) : base(api, checkIntervalInSeconds, queryCountPerRequest, cacheSize)
         {

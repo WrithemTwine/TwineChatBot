@@ -16,7 +16,7 @@ namespace ChatBot_Net5.Data
 
         private static DateTime CurrStreamStart { get; set; }
 
-        internal void UserJoined(string User, DateTime NowSeen)
+        public void UserJoined(string User, DateTime NowSeen)
         {
             lock (_DataSource.Users)
             {
@@ -28,17 +28,16 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        internal void UserLeft(string User, DateTime LastSeen)
+        public void UserLeft(string User, DateTime LastSeen)
         {
             lock (_DataSource.Users)
             {
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 if (user != null)
                 {
-                    UpdateWatchTime(user, LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(user, LastSeen); // will update the "CurrLoginDate"
+                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
 
-                    user.CurrLoginDate = LastSeen;
                     SaveData();
                     OnPropertyChanged(nameof(Users));
                     OnPropertyChanged(nameof(Currency));
@@ -46,44 +45,67 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        internal void UpdateWatchTime(DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateWatchTime(ref DataSource.UsersRow User, DateTime CurrTime)
         {
-            lock (_DataSource.Users)
+            if (User != null)
             {
-                User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
-                User.LastDateSeen = CurrTime;
-            }
-        }
-
-        internal void UpdateWatchTime(DateTime dateTime)
-        {
-            // LastDateSeen ==> watchtime clock time
-            // CurrLoginDate ==> currency clock time
-
-            lock (_DataSource.Users)
-            {
-                foreach (DataSource.UsersRow d in (DataSource.UsersRow[])_DataSource.Users.Select())
+                if (User.LastDateSeen <= CurrStreamStart)
                 {
-                    if (d.LastDateSeen >= CurrStreamStart)
-                    {
-                        new Thread(new ThreadStart(() =>
-                        {
-                            UpdateWatchTime(d, dateTime);
-                        })).Start();
-                    }
+                    User.LastDateSeen = CurrStreamStart;
                 }
-            }
 
-            SaveData();
-            OnPropertyChanged(nameof(Users));
+                if (CurrTime >= User.LastDateSeen && CurrTime >= CurrStreamStart)
+                {
+                    User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
+                }
+
+                User.LastDateSeen = CurrTime;
+
+                SaveData();
+                OnPropertyChanged(nameof(Users));
+            }
         }
+
+        /// <summary>
+        /// Accepts the string version of a UserName and will look up the user in the database.
+        /// </summary>
+        /// <param name="UserName">String of the UserName to update the watchtime.</param>
+        /// <param name="CurrTime">The Current Time to compare against for updating the watch time.</param>
+        public void UpdateWatchTime(string UserName, DateTime CurrTime)
+        {
+            lock (_DataSource.Users)
+            { 
+                DataSource.UsersRow user = _DataSource.Users.FindByUserName(UserName);
+                UpdateWatchTime(ref user, CurrTime);
+            }
+        }
+
+        //public void UpdateWatchTime(DateTime dateTime)
+        //{
+        //    // LastDateSeen ==> watchtime clock time
+        //    // CurrLoginDate ==> currency clock time
+
+        //    lock (_DataSource.Users)
+        //    {
+        //        foreach (DataSource.UsersRow d in (DataSource.UsersRow[])_DataSource.Users.Select())
+        //        {
+        //            if (d.LastDateSeen >= CurrStreamStart)
+        //            {
+        //                UpdateWatchTime(d, dateTime);
+        //            }
+        //        }
+        //    }
+
+        //    SaveData();
+        //    OnPropertyChanged(nameof(Users));
+        //}
 
         /// <summary>
         /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.ToLocalTime().
         /// </summary>
         /// <param name="User">The user to check in the database.</param>
         /// <returns><c>true</c> if the user has arrived prior to DateTime.Now.ToLocalTime(), <c>false</c> otherwise.</returns>
-        internal bool CheckUser(string User)
+        public bool CheckUser(string User)
         {
             return CheckUser(User, DateTime.Now.ToLocalTime());
         }
@@ -94,11 +116,14 @@ namespace ChatBot_Net5.Data
         /// <param name="User">The user to verify.</param>
         /// <param name="ToDateTime">Specify the date to check if the user arrived to the channel prior to this date and time.</param>
         /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
-        internal bool CheckUser(string User, DateTime ToDateTime)
+        public bool CheckUser(string User, DateTime ToDateTime)
         {
-            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+            lock (_DataSource.Users)
+            {
+                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
 
-            return !(user == null) || user?.FirstDateSeen <= ToDateTime;
+                return !(user == null) || user?.FirstDateSeen <= ToDateTime;
+            }
         }
 
         /// <summary>
@@ -106,7 +131,7 @@ namespace ChatBot_Net5.Data
         /// </summary>
         /// <param name="User">The name of the user to check.</param>
         /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.Now.ToLocalTime().</returns>
-        internal bool CheckFollower(string User)
+        public bool CheckFollower(string User)
         {
             return CheckFollower(User, DateTime.Now.ToLocalTime());
         }
@@ -117,7 +142,7 @@ namespace ChatBot_Net5.Data
         /// <param name="User">The user to query.</param>
         /// <param name="ToDateTime">The date to check FollowedDate <= <c>ToDateTime</c></param>
         /// <returns></returns>
-        internal bool CheckFollower(string User, DateTime ToDateTime)
+        public bool CheckFollower(string User, DateTime ToDateTime)
         {
             lock (_DataSource.Followers)
             {
@@ -133,7 +158,7 @@ namespace ChatBot_Net5.Data
         /// <param name="User">The Username of the new Follow</param>
         /// <param name="FollowedDate">The date of the Follow.</param>
         /// <returns>True if the follower is the first time. False if already followed.</returns>
-        internal bool AddFollower(string User, DateTime FollowedDate)
+        public bool AddFollower(string User, DateTime FollowedDate)
         {
             lock (_DataSource.Followers)
             {
@@ -175,6 +200,7 @@ namespace ChatBot_Net5.Data
                 if (!CheckUser(User))
                 {
                     DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
+                    AddCurrencyRows(ref output);
                     SaveData();
                     return output;
                 }
@@ -194,7 +220,7 @@ namespace ChatBot_Net5.Data
             return usersRow;
         }
 
-        internal void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
+        public void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
             new Thread(new ThreadStart(() =>
             {
@@ -230,17 +256,21 @@ namespace ChatBot_Net5.Data
 
                 UpdatingFollowers = false;
                 SaveData();
+                OnPropertyChanged(nameof(Followers));
             })).Start();
         }
 
         /// <summary>
         /// Clear all user watchtimes
         /// </summary>
-        internal void ClearWatchTime()
+        public void ClearWatchTime()
         {
-            foreach(DataSource.UsersRow users in _DataSource.Users.Select())
+            lock (_DataSource.Users)
             {
-                users.WatchTime = new(0);
+                foreach (DataSource.UsersRow users in _DataSource.Users.Select())
+                {
+                    users.WatchTime = new(0);
+                }
             }
         }
 

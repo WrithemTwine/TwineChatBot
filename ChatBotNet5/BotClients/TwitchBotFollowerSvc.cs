@@ -18,7 +18,7 @@ namespace ChatBot_Net5.BotClients
         /// <summary>
         /// Listens for new followers.
         /// </summary>
-        internal ExtFollowerService FollowerService { get; private set; }
+        public ExtFollowerService FollowerService { get; private set; }
 
         public TwitchBotFollowerSvc()
         {
@@ -30,7 +30,7 @@ namespace ChatBot_Net5.BotClients
         /// </summary>
         /// <param name="ClientName">Override the Twitch Bot account name, another name used for connecting to a different channel (such as directly to streamer)</param>
         /// <param name="TwitchToken">Override the Twitch Bot token used and to connect to the <para>ClientName</para> channel with a specific token just for changing followers.</param>
-        internal void ConnectFollowerService(string ClientName = null, string TwitchToken = null )
+        public void ConnectFollowerService(string ClientName = null, string TwitchToken = null )
         {
             if(IsStarted)
             {
