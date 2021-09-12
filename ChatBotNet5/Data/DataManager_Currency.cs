@@ -13,7 +13,8 @@ namespace ChatBot_Net5.Data
         /// <param name="dateTime">The time to base the currency calculation.</param>
         public void UpdateCurrency(string User, DateTime dateTime)
         {
-            UpdateCurrency(_DataSource.Users.FindByUserName(User), dateTime);
+            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+            UpdateCurrency(ref user, dateTime);
             SaveData();
             OnPropertyChanged(nameof(Users));
             OnPropertyChanged(nameof(Currency));
@@ -24,7 +25,7 @@ namespace ChatBot_Net5.Data
         /// </summary>
         /// <param name="User">The user to evaluate.</param>
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
-        public void UpdateCurrency(DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateCurrency(ref DataSource.UsersRow User, DateTime CurrTime)
         {
             lock (_DataSource.Users)
             {
@@ -41,7 +42,7 @@ namespace ChatBot_Net5.Data
                                 return Accrue * (currencyclock.TotalSeconds / Seconds);
                             }
 
-                            AddCurrencyRows(User);
+                            AddCurrencyRows(ref User);
 
                             DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
                             DataSource.CurrencyRow[] userCurrency = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + User.Id + "'");
@@ -64,7 +65,7 @@ namespace ChatBot_Net5.Data
         /// Update the currency accrual for the specified user, add all currency rows per the user.
         /// </summary>
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
-        public void AddCurrencyRows(DataSource.UsersRow usersRow)
+        public void AddCurrencyRows(ref DataSource.UsersRow usersRow)
         {
             lock (_DataSource.CurrencyType)
             {
@@ -104,9 +105,11 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                foreach (DataSource.UsersRow users in _DataSource.Users.Select())
+                System.Data.DataRow[] UserRows = _DataSource.Users.Select();
+                for (int i = 0; i < UserRows.Length; i++)
                 {
-                    AddCurrencyRows(users);
+                    DataSource.UsersRow users = (DataSource.UsersRow)UserRows[i];
+                    AddCurrencyRows(ref users);
                 }
             }
             SaveData();

@@ -35,8 +35,8 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
                 if (user != null)
                 {
-                    UpdateWatchTime(user, LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(user, LastSeen); // will update the "CurrLoginDate"
+                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
 
                     SaveData();
                     OnPropertyChanged(nameof(Users));
@@ -45,9 +45,10 @@ namespace ChatBot_Net5.Data
             }
         }
 
-        public void UpdateWatchTime(DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateWatchTime(ref DataSource.UsersRow User, DateTime CurrTime)
         {
-            
+            if (User != null)
+            {
                 if (User.LastDateSeen <= CurrStreamStart)
                 {
                     User.LastDateSeen = CurrStreamStart;
@@ -59,9 +60,10 @@ namespace ChatBot_Net5.Data
                 }
 
                 User.LastDateSeen = CurrTime;
-            
-            SaveData();
-            OnPropertyChanged(nameof(Users));
+
+                SaveData();
+                OnPropertyChanged(nameof(Users));
+            }
         }
 
         /// <summary>
@@ -72,8 +74,9 @@ namespace ChatBot_Net5.Data
         public void UpdateWatchTime(string UserName, DateTime CurrTime)
         {
             lock (_DataSource.Users)
-            {
-                UpdateWatchTime(_DataSource.Users.FindByUserName(UserName), CurrTime);
+            { 
+                DataSource.UsersRow user = _DataSource.Users.FindByUserName(UserName);
+                UpdateWatchTime(ref user, CurrTime);
             }
         }
 
@@ -197,7 +200,7 @@ namespace ChatBot_Net5.Data
                 if (!CheckUser(User))
                 {
                     DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-                    AddCurrencyRows(output);
+                    AddCurrencyRows(ref output);
                     SaveData();
                     return output;
                 }
