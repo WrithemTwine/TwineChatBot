@@ -10,11 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using TwitchLib.Api.Helix;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
-using TwitchLib.Api.ThirdParty.ModLookup;
 
 namespace ChatBot_Net5.Systems
 {
@@ -43,17 +41,6 @@ namespace ChatBot_Net5.Systems
         {
             CurrStream = new();
             CurrencySystem = new(CurrUsers);
-
-#if DEBUG
-            DateTime started = DateTime.Parse("8/30/2021 8:11:20 PM"); // DateTime.Now.ToLocalTime();
-
-            StreamOnline(started);
-            UserJoined("Twine_Bot", started);
-            UserJoined("WrithemTwine", started);
-            UserJoined("DarkStreamPhantom", started);
-            UserJoined("Nelarts", started);
-            UserJoined("OutlawTorn14", started);
-#endif
         }
 
         /// <summary>

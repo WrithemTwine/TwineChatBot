@@ -136,14 +136,15 @@ namespace ChatBot_Net5.Data
         {
             if (!UpdatingFollowers) // block saving data until the follower updating is completed
             {
+
+                if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                {
+                    SaveThreadStarted = true;
+                    new Thread(new ThreadStart(PerformSaveOp)).Start();
+                }
+
                 lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                 {
-                    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
-                    {
-                        SaveThreadStarted = true;
-                        new Thread(new ThreadStart(PerformSaveOp)).Start();
-                    }
-
                     if (_DataSource.HasChanges())
                     {
                         SaveTasks.Enqueue(new(() =>
@@ -157,11 +158,10 @@ namespace ChatBot_Net5.Data
                                     _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
 
                                     DataSource testinput = new();
-                                    using (XmlReader xmlReader = new XmlTextReader(result))
-                                    {
-                                        // test load
-                                        _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
-                                    }
+
+                                    XmlReader xmlReader = new XmlTextReader(result);
+                                    // test load
+                                    _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
 
                                     File.Move(result, DataFileName, true);
                                     File.Delete(result);
@@ -171,6 +171,7 @@ namespace ChatBot_Net5.Data
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                     File.Delete(result);
                                 }
+                                SaveThreadStarted = false; // indicate start another thread to save data
                             }
                         }));
                     }
@@ -191,9 +192,7 @@ namespace ChatBot_Net5.Data
                 {
                     SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
                 }
-
                 SaveTasks.Clear();
-                SaveThreadStarted = false; // indicate start another thread to save data
             }
         }
 
