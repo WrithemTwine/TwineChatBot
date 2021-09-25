@@ -48,6 +48,8 @@ namespace ChatBot_Net5.BotIOController
 
         public TwitchBotClipSvc TwitchClip { get; private set; }
 
+        public TwitchBotUserSvc TwitchUsers { get; private set; }
+
         #endregion Bot Services
 
         #endregion properties
@@ -61,6 +63,7 @@ namespace ChatBot_Net5.BotIOController
             TwitchFollower = new();
             TwitchLiveMonitor = new();
             TwitchClip = new();
+            TwitchUsers = new();
 
             BotSystems.DataManage = new();
             LocalizedMsgSystem.SetDataManager();
@@ -72,6 +75,7 @@ namespace ChatBot_Net5.BotIOController
             IOModuleList.Add(TwitchFollower);
             IOModuleList.Add(TwitchLiveMonitor);
             IOModuleList.Add(TwitchClip);
+            IOModuleList.Add(TwitchUsers);
 
             TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
             TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;

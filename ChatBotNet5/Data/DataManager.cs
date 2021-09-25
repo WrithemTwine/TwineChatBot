@@ -36,7 +36,7 @@ namespace ChatBot_Net5.Data
 
         private readonly Queue<Task> SaveTasks = new();
         private bool SaveThreadStarted = false;
-        private const int SaveThreadWait = 1500;
+        private const int SaveThreadWait = 5000;
 
         public bool UpdatingFollowers { get; set; } = false;
 
@@ -53,6 +53,7 @@ namespace ChatBot_Net5.Data
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
         public DataView Category { get; private set; } // DataSource.CategoryTable
         public DataView Clips { get; private set; }  // DataSource.ClipsDataTable
+        public DataView RaidData { get; private set; } // DataSource.RaidDataDataTable
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string PropName)

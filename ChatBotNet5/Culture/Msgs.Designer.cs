@@ -772,7 +772,7 @@ namespace ChatBot_Net5.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Here are all of my social media connections: .
+        ///   Looks up a localized string similar to Here are my social media connections: .
         /// </summary>
         internal static string Msgsocials {
             get {

@@ -53,6 +53,11 @@ namespace ChatBot_Net5.Systems
             {
                 DataManage.RemoveAllStreamStats();
             } // when the LiveStream Online event fires again, the datacollection will restart
+
+            if (!OptionFlags.ManageRaidData)
+            {
+                DataManage.RemoveAllRaidData();
+            }
         }
 
         public static void ClearWatchTime()

@@ -6,6 +6,7 @@
         TwitchLiveBot,
         TwitchFollowBot,
         TwitchClipBot,
-        TwitchMultiBot
+        TwitchMultiBot,
+        TwitchUserBot
     }
 }

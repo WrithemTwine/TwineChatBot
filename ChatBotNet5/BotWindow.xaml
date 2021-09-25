@@ -601,19 +601,22 @@
                                         </GroupBox.Resources>
                                         <StackPanel>
                                             <Label>
-                                                <TextBlock Foreground="Red"><Run Text="*Unchecking will remove data from database.*"/></TextBlock>
+                                                <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>
                                             </Label>
                                             <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel viewers, including their watchtime.*"/></TextBlock>
+                                                <TextBlock TextWrapping="Wrap">Manage channel viewers, including their watchtime.*</TextBlock>
                                             </CheckBox>
                                             <CheckBox x:Name="CheckBox_ManageFollowers" IsChecked="{Binding ManageFollowers}">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Manage channel followers, including their followage. Requires User data.*"/></TextBlock>
+                                                <TextBlock TextWrapping="Wrap">Manage channel followers, including their followage. Requires User data.*</TextBlock>
                                             </CheckBox>
                                             <CheckBox x:Name="CheckBox_ManageStreamStat" IsChecked="{Binding ManageStreamStats}">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="Record Stream Stats for each stream.*"/></TextBlock>
+                                                <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream.*</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox x:Name="CheckBox_ManageRaidData" IsChecked="{Binding ManageRaidData}">
+                                                <TextBlock TextWrapping="Wrap">Record Raid Stats for incoming raids.*</TextBlock>
                                             </CheckBox>
                                             <Label>
-                                                <TextBlock Foreground="Red"><Run Text="*Unchecking will remove data from database.*"/></TextBlock>
+                                                <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>
                                             </Label>
                                         </StackPanel>
                                     </GroupBox>
@@ -763,6 +766,20 @@
                                 </Grid>
                             </TabItem>
                         </TabControl>
+                    </TabItem>
+                    <TabItem Header="Incoming Raid">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="350" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
+                            <DataGrid Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding RaidData, Mode=OneWay}" CanUserDeleteRows="True" />
+                        </Grid>
                     </TabItem>
                     <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
                         <Grid>

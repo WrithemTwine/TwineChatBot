@@ -71,7 +71,7 @@ namespace ChatBot_Net5.Systems
             }
         }
 
-        public bool CheckStreamTime(DateTime TimeStream)
+        public static bool CheckStreamTime(DateTime TimeStream)
         {
             return DataManage.CheckMultiStreams(TimeStream);
         }
@@ -174,7 +174,7 @@ namespace ChatBot_Net5.Systems
             }
         }
 
-        private void PostDataUserLeft(string User, DateTime CurrTime)
+        private static void PostDataUserLeft(string User, DateTime CurrTime)
         {
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
@@ -182,12 +182,12 @@ namespace ChatBot_Net5.Systems
             }
         }
 
-        public bool IsFollower(string User)
+        public static bool IsFollower(string User)
         {
             return DataManage.CheckFollower(User, DateTime.Now.ToLocalTime());
         }
 
-        public bool IsReturningUser(string User)
+        public static bool IsReturningUser(string User)
         {
             return DataManage.CheckUser(User, DateTime.Now.ToLocalTime());
         }
@@ -219,6 +219,15 @@ namespace ChatBot_Net5.Systems
             }
         }
         #endregion Follower
+
+        #region Incoming Raids
+
+        public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
+        {
+            DataManage.AddRaidData(UserName, RaidTime, Viewers, GameName);
+        }
+
+        #endregion
 
         #region Clips
         ///// <summary>
@@ -285,7 +294,7 @@ namespace ChatBot_Net5.Systems
         }
         #endregion Clips
 
-        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
             return DataManage.GetWebhooks(webhooksKind);
         }
@@ -355,36 +364,39 @@ namespace ChatBot_Net5.Systems
 
         public void StreamOffline(DateTime Stopped)
         {
-            // TODO: add option to stop bot when stream goes offline
-
-            lock (CurrUsers)
+            if (OptionFlags.IsStreamOnline)
             {
-                foreach (string U in CurrUsers)
+                // TODO: add option to stop bot when stream goes offline
+
+                lock (CurrUsers)
                 {
-                    PostDataUserLeft(U, Stopped);
+                    foreach (string U in CurrUsers)
+                    {
+                        PostDataUserLeft(U, Stopped);
+                    }
+                    CurrUsers.Clear();
                 }
-                CurrUsers.Clear();
+
+                OptionFlags.IsStreamOnline = false;
+                EndPostingStreamUpdates(); // wait until the posting thread stops
+                CurrStream.StreamEnd = Stopped;
+                CurrStream.ModeratorsPresent = ModUsers.Count;
+                CurrStream.VIPsPresent = VIPUsers.Count;
+                CurrStream.SubsPresent = SubUsers.Count;
+
+                // setting if user wants to save Stream Stat data
+                if (OptionFlags.ManageStreamStats)
+                {
+                    DataManage.PostStreamStat(CurrStream);
+                }
+
+                CurrStream.Clear();
+                ModUsers.Clear();
+                SubUsers.Clear();
+                VIPUsers.Clear();
+                UniqueUserJoined.Clear();
+                UniqueUserChat.Clear();
             }
-
-            OptionFlags.IsStreamOnline = false;
-            EndPostingStreamUpdates(); // wait until the posting thread stops
-            CurrStream.StreamEnd = Stopped;
-            CurrStream.ModeratorsPresent = ModUsers.Count;
-            CurrStream.VIPsPresent = VIPUsers.Count;
-            CurrStream.SubsPresent = SubUsers.Count;
-
-            // setting if user wants to save Stream Stat data
-            if (OptionFlags.ManageStreamStats)
-            {
-                DataManage.PostStreamStat(CurrStream);
-            }
-
-            CurrStream.Clear();
-            ModUsers.Clear();
-            SubUsers.Clear();
-            VIPUsers.Clear();
-            UniqueUserJoined.Clear();
-            UniqueUserChat.Clear();
         }
 
         public DateTime GetCurrentStreamStart()
