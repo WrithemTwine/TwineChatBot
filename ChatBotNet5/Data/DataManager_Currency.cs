@@ -58,6 +58,8 @@ namespace ChatBot_Net5.Data
                     }
                 }
             }
+            OnPropertyChanged(nameof(Users));
+            OnPropertyChanged(nameof(Currency));
             return;
         }
 

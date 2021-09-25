@@ -154,7 +154,7 @@ namespace ChatBot_Net5.BotIOController
 
                     if (Started)
                     {
-                        bool MultiLive = Stats.CheckStreamTime(e.Stream.StartedAt.ToLocalTime());
+                        bool MultiLive = StatisticsSystem.CheckStreamTime(e.Stream.StartedAt.ToLocalTime());
 
                         if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                         {
@@ -174,7 +174,7 @@ namespace ChatBot_Net5.BotIOController
 
                             if (Enabled)
                             {
-                                foreach (Tuple<bool, Uri> u in Stats.GetDiscordWebhooks(WebhooksKind.Live))
+                                foreach (Tuple<bool, Uri> u in StatisticsSystem.GetDiscordWebhooks(WebhooksKind.Live))
                                 {
                                     DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                                                                     {
@@ -327,6 +327,8 @@ namespace ChatBot_Net5.BotIOController
         #region Raid events
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
+            string Category = TwitchUsers.GetUserGameCategory(e.RaidNotification.UserId);
+
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled);
             if (Enabled)
             {
@@ -353,6 +355,11 @@ namespace ChatBot_Net5.BotIOController
                 {
                     Send(response);
                 }
+            }
+
+            if (OptionFlags.ManageRaidData)
+            {
+                Stats.PostIncomingRaid(e.RaidNotification.DisplayName, DateTime.Now.ToLocalTime(), e.RaidNotification.MsgParamViewerCount, Category);
             }
         }
 
@@ -540,9 +547,9 @@ namespace ChatBot_Net5.BotIOController
                     if (OptionFlags.WelcomeCustomMsg)
                     {
                         selected =
-                            Stats.IsFollower(Username) ?
+                            StatisticsSystem.IsFollower(Username) ?
                             ChannelEventActions.SupporterJoined :
-                                Stats.IsReturningUser(Username) ?
+                                StatisticsSystem.IsReturningUser(Username) ?
                                     ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
                     }
 

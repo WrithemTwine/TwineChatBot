@@ -166,6 +166,17 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="RaidData" msprop:Generator_TableClassName="RaidDataDataTable" msprop:Generator_TableVarName="tableRaidData" msprop:Generator_RowChangedName="RaidDataRowChanged" msprop:Generator_TablePropName="RaidData" msprop:Generator_RowDeletingName="RaidDataRowDeleting" msprop:Generator_RowChangingName="RaidDataRowChanging" msprop:Generator_RowEvHandlerName="RaidDataRowChangeEventHandler" msprop:Generator_RowDeletedName="RaidDataRowDeleted" msprop:Generator_RowClassName="RaidDataRow" msprop:Generator_UserTableName="RaidData" msprop:Generator_RowEvArgName="RaidDataRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_UserColumnName="UserName" type="xs:string" minOccurs="0" />
+              <xs:element name="ViewerCount" msprop:Generator_ColumnVarNameInTable="columnViewerCount" msprop:Generator_ColumnPropNameInRow="ViewerCount" msprop:Generator_ColumnPropNameInTable="ViewerCountColumn" msprop:Generator_UserColumnName="ViewerCount" type="xs:string" minOccurs="0" />
+              <xs:element name="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_UserColumnName="DateTime" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_UserColumnName="Category" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Constraint1">
@@ -236,6 +247,10 @@
     </xs:unique>
     <xs:unique name="Clips_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:Clips" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="RaidData_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:RaidData" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
   </xs:element>

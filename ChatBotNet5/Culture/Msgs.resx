@@ -378,7 +378,7 @@
     <comment>message for "Shout Out" (so), to recognize another streamer/channel</comment>
   </data>
   <data name="Msgsocials" xml:space="preserve">
-    <value>Here are all of my social media connections: </value>
+    <value>Here are my social media connections: </value>
   </data>
   <data name="Msgstreamoffline" xml:space="preserve">
     <value>The stream is offline.</value>

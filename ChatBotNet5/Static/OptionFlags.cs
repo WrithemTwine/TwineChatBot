@@ -46,6 +46,7 @@ namespace ChatBot_Net5.Static
         public static bool ManageUsers { get; set; }
         public static bool ManageFollowers { get; set; }
         public static bool ManageStreamStats { get; set; }
+        public static bool ManageRaidData { get; set; }
 
         //public static bool TwitchFollowerFollowBack { get; set; }
         //public static bool TwitchRaidFollowBack { get; set; }
@@ -107,6 +108,7 @@ namespace ChatBot_Net5.Static
                 ManageUsers = Settings.Default.ManageUsers;
                 ManageFollowers = Settings.Default.ManageFollowers;
                 ManageStreamStats = Settings.Default.ManageStreamStats;
+                ManageRaidData = Settings.Default.ManageRaidData;
 
                 //TwitchFollowerFollowBack = Settings.Default.TwitchFollowerFollowBack;
                 //TwitchRaidFollowBack = Settings.Default.TwitchRaidFollowBack;

@@ -694,5 +694,17 @@ namespace ChatBot_Net5.Properties {
                 this["TwitchCurrencyOnline"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ManageRaidData {
+            get {
+                return ((bool)(this["ManageRaidData"]));
+            }
+            set {
+                this["ManageRaidData"] = value;
+            }
+        }
     }
 }
