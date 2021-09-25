@@ -98,6 +98,7 @@ namespace ChatBot_Net5.Data
             ShoutOuts = new(_DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
             Category = new(_DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
             Clips = new(_DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
+            RaidData = new(_DataSource.RaidData, null, "Id", DataViewRowState.CurrentRows);
 
             CurrStreamStart = DateTime.MinValue;
         }

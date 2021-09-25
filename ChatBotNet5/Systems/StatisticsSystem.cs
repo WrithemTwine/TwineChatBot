@@ -41,6 +41,10 @@ namespace ChatBot_Net5.Systems
         {
             CurrStream = new();
             CurrencySystem = new(CurrUsers);
+
+#if DEBUG
+            StreamOnline(DateTime.Now.ToLocalTime());
+#endif
         }
 
         /// <summary>
@@ -329,6 +333,10 @@ namespace ChatBot_Net5.Systems
 
             // TODO: fix updating a new stream online stat - start time and end time
             PostStreamUpdates();
+
+#if DEBUG
+            PostIncomingRaid("Twine", DateTime.Now.ToLocalTime(), "15", "Destiny 2");
+#endif
 
             // setting if user wants to save Stream Stat data
             return OptionFlags.ManageStreamStats && !found;
