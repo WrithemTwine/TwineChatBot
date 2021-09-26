@@ -180,7 +180,7 @@ namespace ChatBot_Net5.Data
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                     File.Delete(result);
                                 }
-                        }
+                            }
                         }));
                     }
                 }
