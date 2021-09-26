@@ -38,6 +38,7 @@ Database management to organize:
    - followers to a channel (supporting follow age type commands)
    - a viewer list to auto shout out viewers when they are first recognized as arrived in the channel
    - Statistics for the current live stream
+   - save basic statistics for incoming raid users
 - Responses to events occuring in the channel:
    - Messages to viewer actions and events: welcome a viewer message, incoming raids, subscriptions and resubscriptions, gifted subscriptions, bits (Twitch), new follower, hosting messages, and going live messages
    - Command system 
@@ -47,7 +48,7 @@ Database management to organize:
          - a simple text message, with certain variables to customize the message (e.g. refer to the viewer who called the command)
          - a data retrieval message - some implementation, currently updating and coding; to allow user customization for a data return message, define your own messages to get data returned from the database through a command message
          - repeat timers - repeat any of the above messages per defined seconds
-   - Currency system (future feature) - your viewers earn virtual currency to use in chat games
+   - Currency system - your viewers earn virtual currency to use in chat games
    - Currency games (future feature) - using currency earned from watching
 
 Options to manage bot actions (enable or disable):
@@ -57,6 +58,7 @@ Options to manage bot actions (enable or disable):
    - Manage channel viewers - saving in the database
    - Manage channel followers - saving in the database
    - Save stats for each live stream
+   - Save stats for incoming stream raid users
    - Notify the channel when the bot connects
    - Post go live messages to social media
       - currently to Discord webhooks
@@ -109,7 +111,7 @@ Twitch (some features depend on settings)
    Note: Live bot and Multi-Live Bot read from the same file to save the channels you wish to promote their going live,  the social media links for posting messages, and a tracker of the going live channels to prevent any multiple message posting (if the option is enabled).
 
 Future features not implemented - and may not be implemented:
-- Currency system
+- Currency system - currency (implemented-testing), the chat gaming side (in process)
 - Message spam protection: if there are a large influx of follows at a time or significant number of subscriptions; limit the number of messages
 
 - Considering a compact webserver to provide notifications for streaming software.
