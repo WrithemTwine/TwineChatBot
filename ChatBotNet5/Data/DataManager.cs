@@ -26,10 +26,15 @@ namespace ChatBot_Net5.Data
     {
 
         #region DataSource
+
+        private static readonly string DataFileXML = "ChatDataStore.xml";
+
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
+        private static readonly string DataFileName = DataFileXML;
+
+        //private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", DataFileXML);
 #else
-        private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
+        private static readonly string DataFileName = DataFileXML;
 #endif
 
         private readonly DataSource _DataSource;
@@ -144,6 +149,8 @@ namespace ChatBot_Net5.Data
                     SaveThreadStarted = true;
                     new Thread(new ThreadStart(PerformSaveOp)).Start();
                 }
+                                    
+                _DataSource.AcceptChanges();
 
                 lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                 {
@@ -156,7 +163,6 @@ namespace ChatBot_Net5.Data
                                 string result = Path.GetRandomFileName();
                                 try
                                 {
-                                    _DataSource.AcceptChanges();
                                     _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
 
                                     DataSource testinput = new();
@@ -173,7 +179,6 @@ namespace ChatBot_Net5.Data
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                     File.Delete(result);
                                 }
-                                SaveThreadStarted = false; // indicate start another thread to save data
                             }
                         }));
                     }
@@ -196,8 +201,8 @@ namespace ChatBot_Net5.Data
                 }
                 SaveTasks.Clear();
             }
+            SaveThreadStarted = false; // indicate start another thread to save data
         }
-
 
         #endregion
 

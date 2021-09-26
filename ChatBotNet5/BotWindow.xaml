@@ -783,7 +783,15 @@
                     </TabItem>
                     <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
                         <Grid>
-                            <DataGrid DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0">
+                                <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
+                                <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" DataContext="{Binding DataManage}" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                         </Grid>
                     </TabItem>
                     <TabItem IsEnabled="False" />

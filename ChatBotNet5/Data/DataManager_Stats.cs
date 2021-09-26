@@ -67,22 +67,35 @@ namespace ChatBot_Net5.Data
 
         public bool AddStream(DateTime StreamStart)
         {
+            bool returnvalue;
+
             if (CheckStreamTime(StreamStart))
             {
-                return false;
+                returnvalue = false;
             }
-            CurrStreamStart = StreamStart;
-
-            lock (_DataSource.StreamStats)
+            else
             {
-                _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                SaveData();
-                OnPropertyChanged(nameof(StreamStats));
-                return true;
+                if (StreamStart != DateTime.MinValue.ToLocalTime())
+                {
+                    CurrStreamStart = StreamStart;
+
+                    lock (_DataSource.StreamStats)
+                    {
+                        _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        SaveData();
+                        OnPropertyChanged(nameof(StreamStats));
+                        returnvalue = true;
+                    }
+                } else
+                {
+                    returnvalue = false;
+                }
             }
+
+            return returnvalue;
         }
 
-        public void PostStreamStat(StreamStat streamStat)
+        public void PostStreamStat(ref StreamStat streamStat)
         {
             lock (_DataSource.StreamStats)
             {
@@ -118,11 +131,19 @@ namespace ChatBot_Net5.Data
             OnPropertyChanged(nameof(StreamStats));
         }
 
+        /// <summary>
+        /// Find if stream data already exists for the current stream
+        /// </summary>
+        /// <param name="CurrTime">The time to check</param>
+        /// <returns><code>true</code>: the stream already has a data entry; <code>false</code>: the stream has no data entry</returns>
         public bool CheckStreamTime(DateTime CurrTime)
         {
             return GetAllStreamData(CurrTime) != null;
         }
 
+        /// <summary>
+        /// Remove all stream stats, to satisfy a user option selection to not track stats
+        /// </summary>
         public void RemoveAllStreamStats()
         {
             lock (_DataSource.StreamStats)
@@ -130,7 +151,6 @@ namespace ChatBot_Net5.Data
                 _DataSource.StreamStats.Clear();
             }
             OnPropertyChanged(nameof(StreamStats));
-
         }
 
         #endregion
