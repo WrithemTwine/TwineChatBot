@@ -30,9 +30,7 @@ namespace ChatBot_Net5.Data
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
 #if DEBUG
-        private static readonly string DataFileName = DataFileXML;
-
-        //private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", DataFileXML);
+        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
@@ -180,7 +178,7 @@ namespace ChatBot_Net5.Data
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                     File.Delete(result);
                                 }
-                        }
+                            }
                         }));
                     }
                 }

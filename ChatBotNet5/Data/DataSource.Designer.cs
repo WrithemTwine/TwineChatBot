@@ -50,6 +50,8 @@ namespace ChatBot_Net5.Data {
         
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
         
+        private global::System.Data.DataRelation relationFK_Users_Currency;
+        
         private global::System.Data.DataRelation relationCategoryList_Commands;
         
         private global::System.Data.DataRelation relationUsers_Followers;
@@ -465,6 +467,7 @@ namespace ChatBot_Net5.Data {
                 }
             }
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationCategoryList_Commands = this.Relations["CategoryList_Commands"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
         }
@@ -502,11 +505,29 @@ namespace ChatBot_Net5.Data {
             base.Tables.Add(this.tableClips);
             this.tableRaidData = new RaidDataDataTable();
             base.Tables.Add(this.tableRaidData);
+            global::System.Data.ForeignKeyConstraint fkc;
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
+            this.tableCurrency.Constraints.Add(fkc);
+            fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
+            fkc.DeleteRule = global::System.Data.Rule.Cascade;
+            fkc.UpdateRule = global::System.Data.Rule.Cascade;
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
+            this.tableCurrency.Constraints.Add(fkc);
+            fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
+            fkc.DeleteRule = global::System.Data.Rule.Cascade;
+            fkc.UpdateRule = global::System.Data.Rule.Cascade;
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, false);
-            this.relationCurrency_CurrencyType.Nested = true;
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCategoryList_Commands = new global::System.Data.DataRelation("CategoryList_Commands", new global::System.Data.DataColumn[] {
                         this.tableCategoryList.CategoryColumn}, new global::System.Data.DataColumn[] {
                         this.tableCommands.CategoryColumn}, false);
@@ -797,13 +818,19 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRow AddCurrencyRow(long Id, string UserName, string CurrencyName, double Value) {
+            public CurrencyRow AddCurrencyRow(long Id, UsersRow parentUsersRowByFK_Users_Currency, CurrencyTypeRow parentCurrencyTypeRowByCurrency_CurrencyType, double Value) {
                 CurrencyRow rowCurrencyRow = ((CurrencyRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Id,
-                        UserName,
-                        CurrencyName,
+                        null,
+                        null,
                         Value};
+                if ((parentUsersRowByFK_Users_Currency != null)) {
+                    columnValuesArray[1] = parentUsersRowByFK_Users_Currency[1];
+                }
+                if ((parentCurrencyTypeRowByCurrency_CurrencyType != null)) {
+                    columnValuesArray[2] = parentCurrencyTypeRowByCurrency_CurrencyType[1];
+                }
                 rowCurrencyRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCurrencyRow);
                 return rowCurrencyRow;
@@ -1102,16 +1129,13 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyTypeRow AddCurrencyTypeRow(CurrencyRow parentCurrencyRowByCurrency_CurrencyType, double AccrueAmt, double Seconds) {
+            public CurrencyTypeRow AddCurrencyTypeRow(string CurrencyName, double AccrueAmt, double Seconds) {
                 CurrencyTypeRow rowCurrencyTypeRow = ((CurrencyTypeRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
-                        null,
+                        CurrencyName,
                         AccrueAmt,
                         Seconds};
-                if ((parentCurrencyRowByCurrency_CurrencyType != null)) {
-                    columnValuesArray[1] = parentCurrencyRowByCurrency_CurrencyType[2];
-                }
                 rowCurrencyTypeRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCurrencyTypeRow);
                 return rowCurrencyTypeRow;
@@ -5039,6 +5063,28 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow CurrencyTypeRow {
+                get {
+                    return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsIdNull() {
                 return this.IsNull(this.tableCurrency.IdColumn);
             }
@@ -5059,17 +5105,6 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetValueNull() {
                 this[this.tableCurrency.ValueColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyTypeRow[] GetCurrencyTypeRows() {
-                if ((this.Table.ChildRelations["Currency_CurrencyType"] == null)) {
-                    return new CurrencyTypeRow[0];
-                }
-                else {
-                    return ((CurrencyTypeRow[])(base.GetChildRows(this.Table.ChildRelations["Currency_CurrencyType"])));
-                }
             }
         }
         
@@ -5143,17 +5178,6 @@ namespace ChatBot_Net5.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyRow CurrencyRow {
-                get {
-                    return ((CurrencyRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsAccrueAmtNull() {
                 return this.IsNull(this.tableCurrencyType.AccrueAmtColumn);
             }
@@ -5174,6 +5198,17 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetSecondsNull() {
                 this[this.tableCurrencyType.SecondsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyRow[] GetCurrencyRows() {
+                if ((this.Table.ChildRelations["Currency_CurrencyType"] == null)) {
+                    return new CurrencyRow[0];
+                }
+                else {
+                    return ((CurrencyRow[])(base.GetChildRows(this.Table.ChildRelations["Currency_CurrencyType"])));
+                }
             }
         }
         
@@ -5593,6 +5628,17 @@ namespace ChatBot_Net5.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetWatchTimeNull() {
                 this[this.tableUsers.WatchTimeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyRow[] GetCurrencyRows() {
+                if ((this.Table.ChildRelations["FK_Users_Currency"] == null)) {
+                    return new CurrencyRow[0];
+                }
+                else {
+                    return ((CurrencyRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Users_Currency"])));
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
