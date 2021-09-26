@@ -11,6 +11,7 @@ namespace ChatBot_Net5.Static
 
         public static bool ProcessOps { get; set; }  // whether to process ops or not
         public static bool IsStreamOnline { get; set; }
+        public static bool BotStarted { get; set; }
 
         public static bool TwitchAddFollowersStart { get; set; }
         public static bool TwitchPruneNonFollowers { get; set; }
