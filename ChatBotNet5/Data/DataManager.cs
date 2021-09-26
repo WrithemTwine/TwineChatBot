@@ -26,10 +26,15 @@ namespace ChatBot_Net5.Data
     {
 
         #region DataSource
+
+        private static readonly string DataFileXML = "ChatDataStore.xml";
+
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", "ChatDataStore.xml");
+        private static readonly string DataFileName = DataFileXML;
+
+        //private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\ChatBotNet5\bin\Debug\net5.0-windows", DataFileXML);
 #else
-        private static readonly string DataFileName = Path.Combine(Directory.GetCurrentDirectory(), "ChatDataStore.xml");
+        private static readonly string DataFileName = DataFileXML;
 #endif
 
         private readonly DataSource _DataSource;
@@ -145,9 +150,11 @@ namespace ChatBot_Net5.Data
                     new Thread(new ThreadStart(PerformSaveOp)).Start();
                 }
 
-                lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+                if (_DataSource.HasChanges())
                 {
-                    if (_DataSource.HasChanges())
+                    _DataSource.AcceptChanges();
+
+                    lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                     {
                         SaveTasks.Enqueue(new(() =>
                         {
@@ -156,14 +163,14 @@ namespace ChatBot_Net5.Data
                                 string result = Path.GetRandomFileName();
                                 try
                                 {
-                                    _DataSource.AcceptChanges();
                                     _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
 
                                     DataSource testinput = new();
 
                                     XmlReader xmlReader = new XmlTextReader(result);
-                                    // test load
-                                    _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                                // test load
+                                _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
+                                    xmlReader.Close();
 
                                     File.Move(result, DataFileName, true);
                                     File.Delete(result);
@@ -173,8 +180,7 @@ namespace ChatBot_Net5.Data
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                     File.Delete(result);
                                 }
-                                SaveThreadStarted = false; // indicate start another thread to save data
-                            }
+                        }
                         }));
                     }
                 }
@@ -183,7 +189,7 @@ namespace ChatBot_Net5.Data
 
         private void PerformSaveOp()
         {
-            if (OptionFlags.ProcessOps) // don't sleep if exiting app
+            if (OptionFlags.BotStarted) // don't sleep if exiting app
             {
                 Thread.Sleep(SaveThreadWait);
             }
@@ -196,8 +202,8 @@ namespace ChatBot_Net5.Data
                 }
                 SaveTasks.Clear();
             }
+            SaveThreadStarted = false; // indicate start another thread to save data
         }
-
 
         #endregion
 

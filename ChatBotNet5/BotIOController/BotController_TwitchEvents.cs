@@ -10,8 +10,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
-using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 using TwitchLib.Communication.Events;
@@ -108,15 +106,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the offline arguments.</param>
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            if (OptionFlags.IsStreamOnline)
-            {
-                Stats.StreamOffline(DateTime.Now.ToLocalTime());
-            }
-
-            if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)
-            {
-                TwitchIO.StopBot();
-            }
+            HandleOnStreamOffline();
         }
 
         /// <summary>
@@ -136,65 +126,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the online arguments.</param>
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
-            try
-            {
-                if (OptionFlags.TwitchChatBotConnectOnline && TwitchIO.IsStopped)
-                {
-                    TwitchIO.StartBot();
-                }
-
-                if (e.Channel != TwitchBots.TwitchChannelName)
-                {
-                    SendMultiLiveMsg(e);
-                }
-                else
-                {
-                    bool Started = Stats.StreamOnline(e.Stream.StartedAt.ToLocalTime());
-                    Stats.Category = e.Stream.GameName;
-
-                    if (Started)
-                    {
-                        bool MultiLive = StatisticsSystem.CheckStreamTime(e.Stream.StartedAt.ToLocalTime());
-
-                        if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
-                        {
-                            // get message, set a default if otherwise deleted/unavailable
-                            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out bool Enabled);
-
-                            // keys for exchanging codes for representative names
-                            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                            {
-                                new(MsgVars.user, e.Stream.UserName),
-                                new(MsgVars.category, e.Stream.GameName),
-                                new(MsgVars.title, e.Stream.Title),
-                                new(MsgVars.url, e.Stream.UserName)
-                            });
-
-                            string TempMsg = VariableParser.ParseReplace(msg, dictionary);
-
-                            if (Enabled)
-                            {
-                                foreach (Tuple<bool, Uri> u in StatisticsSystem.GetDiscordWebhooks(WebhooksKind.Live))
-                                {
-                                    DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                                                    {
-                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
-                                                                    }
-                                                                )
-                                                            )
-                                                        );
-                                    Stats.AddDiscord();
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
+            HandleOnStreamOnline(e);
         }
 
         #endregion Stream On, Off, Updated

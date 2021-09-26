@@ -41,10 +41,6 @@ namespace ChatBot_Net5.Systems
         {
             CurrStream = new();
             CurrencySystem = new(CurrUsers);
-
-#if DEBUG
-            StreamOnline(DateTime.Now.ToLocalTime());
-#endif
         }
 
         /// <summary>
@@ -332,11 +328,9 @@ namespace ChatBot_Net5.Systems
             }
 
             // TODO: fix updating a new stream online stat - start time and end time
-            PostStreamUpdates();
-
-#if DEBUG
-            PostIncomingRaid("Twine", DateTime.Now.ToLocalTime(), "15", "Destiny 2");
-#endif
+            //PostStreamUpdates();
+            CurrencySystem.MonitorWatchTime();
+            CurrencySystem.StartCurrencyClock();
 
             // setting if user wants to save Stream Stat data
             return OptionFlags.ManageStreamStats && !found;
@@ -354,13 +348,14 @@ namespace ChatBot_Net5.Systems
                 StreamUpdateClockStarted = true;
                 CurrencySystem.MonitorWatchTime();
                 CurrencySystem.StartCurrencyClock();
+
                 StreamUpdateThread = new Thread(new ThreadStart(() =>
                 {
                     while (OptionFlags.IsStreamOnline && OptionFlags.ManageStreamStats)
                     {
                         lock (CurrStream)
                         {
-                            DataManage.PostStreamStat(CurrStream);
+                            DataManage.PostStreamStat(ref CurrStream);
                         }
                         Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
                     }
@@ -386,7 +381,7 @@ namespace ChatBot_Net5.Systems
                 }
 
                 OptionFlags.IsStreamOnline = false;
-                EndPostingStreamUpdates(); // wait until the posting thread stops
+                //EndPostingStreamUpdates(); // wait until the posting thread stops
                 CurrStream.StreamEnd = Stopped;
                 CurrStream.ModeratorsPresent = ModUsers.Count;
                 CurrStream.VIPsPresent = VIPUsers.Count;
@@ -395,7 +390,7 @@ namespace ChatBot_Net5.Systems
                 // setting if user wants to save Stream Stat data
                 if (OptionFlags.ManageStreamStats)
                 {
-                    DataManage.PostStreamStat(CurrStream);
+                    DataManage.PostStreamStat(ref CurrStream);
                 }
 
                 CurrStream.Clear();

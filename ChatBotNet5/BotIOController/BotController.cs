@@ -59,6 +59,8 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public BotController()
         {
+            OptionFlags.BotStarted = true;
+
             TwitchIO = new();
             TwitchFollower = new();
             TwitchLiveMonitor = new();
@@ -149,6 +151,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ExitSave()
         {
+            OptionFlags.BotStarted = false;
             Stats.StreamOffline(DateTime.Now.ToLocalTime());
             ExitAllBots();              // stop all the bot processes
             BotSystems.SaveData();  // save data

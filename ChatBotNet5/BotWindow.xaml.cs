@@ -799,5 +799,40 @@ namespace ChatBot_Net5
 
         #endregion
 
+        #region Debug Empty Stream
+
+        private DateTime DebugStreamStarted = DateTime.MinValue;
+
+        private void StartDebugStream_Click(object sender, RoutedEventArgs e)
+        {
+            if (DebugStreamStarted == DateTime.MinValue)
+            {
+                DebugStreamStarted = DateTime.Now.ToLocalTime();
+
+                string User = TwitchBots.TwitchChannelName;
+                string Category = "All";
+                string Title = "Testing a debug stream";
+
+                controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, Category, true);
+            }
+
+        }
+
+        private void EndDebugStream_Click(object sender, RoutedEventArgs e)
+        {
+            if(DebugStreamStarted != DateTime.MinValue)
+            {
+                controller.HandleOnStreamOffline();
+
+                DebugStreamStarted = DateTime.MinValue;
+            }
+
+        }
+
+        #endregion
+
+
+
+
     }
 }

@@ -1,4 +1,6 @@
+using ChatBot_Net5.BotIOController;
 using ChatBot_Net5.Data;
+using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
 using System;
@@ -16,8 +18,11 @@ namespace TestProject1
         [Fact]
         public void TestAddEndStream()
         {
+            OptionFlags.ManageStreamStats = true;
+
             DataManager dataManager = new();
             StatisticsSystem test = new();
+            BotSystems.DataManage = dataManager;
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
@@ -73,8 +78,11 @@ namespace TestProject1
         [Fact]
         public void AddSpecificStream1()
         {
+            OptionFlags.ManageStreamStats = true;
+
             DataManager dataManager = new();
             StatisticsSystem test = new();
+            BotSystems.DataManage = dataManager;
 
             DateTime nowstart = TestStart;
 
@@ -96,8 +104,11 @@ namespace TestProject1
         [Fact]
         public void AddSpecificStream2()
         {
+            OptionFlags.ManageStreamStats = true;
+
             DataManager dataManager = new();
             StatisticsSystem test = new();
+            BotSystems.DataManage = dataManager;
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
@@ -148,5 +159,67 @@ namespace TestProject1
             Assert.Equal(bits, findend[0].Bits);
             Assert.Equal(chats, findend[0].TotalChats);
         }
+
+        [Fact]
+        public void TestStreamOnlineEvent()
+        {
+            OptionFlags.ManageStreamStats = true;
+
+            BotController controller = new();
+
+            string category = "Destiny2";
+            string user = "Twine";
+            string title = "Check out this stream";
+            DateTime startedat = DateTime.Now.ToLocalTime();
+
+            controller.HandleOnStreamOnline(user, title, startedat, category);
+
+            int chats = (int)(new Random().NextDouble() * 100);
+            int bits = (int)(new Random().NextDouble() * 500);
+
+            DataSource.StreamStatsRow[] teststart = (DataSource.StreamStatsRow[])BotSystems.DataManage.StreamStats.Table.Select();
+            DataSource.StreamStatsRow findstart = null;
+
+            foreach (DataSource.StreamStatsRow d in teststart)
+            {
+                if (d.StreamStart == startedat)
+                {
+                    findstart = d;
+                }
+            }
+
+            Assert.NotNull(findstart);
+
+            for (int i = 0; i < chats; i++)
+            {
+                controller.Stats.AddTotalChats();
+            }
+
+            Thread.Sleep(4000);
+
+            controller.Stats.AddBits(bits);
+
+            Thread.Sleep(60000);
+
+            DateTime nowend = DateTime.Now.ToLocalTime();
+            controller.Stats.StreamOffline(nowend);
+
+            DataSource.StreamStatsRow[] testend = (DataSource.StreamStatsRow[])BotSystems.DataManage.StreamStats.Table.Select();
+            DataSource.StreamStatsRow findend = null;
+
+            foreach (DataSource.StreamStatsRow d in testend)
+            {
+                if (d.StreamEnd == nowend)
+                {
+                    findend = d;
+                }
+            }
+
+            Assert.NotNull(findend);
+            Assert.Equal(bits, findend.Bits);
+            Assert.Equal(chats, findend.TotalChats);
+
+        }
+
     }
 }
