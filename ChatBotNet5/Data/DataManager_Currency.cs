@@ -89,7 +89,7 @@ namespace ChatBot_Net5.Data
                             }
                             if (!found)
                             {
-                                _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow.UserName, typeRow.CurrencyName, 0);
+                                _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
                             }
                         }
                     }
