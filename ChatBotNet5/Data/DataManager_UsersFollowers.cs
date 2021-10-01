@@ -32,11 +32,11 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
                 if (user != null)
                 {
-                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
+                    UpdateWatchTime(ref user[0], LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(ref user[0], LastSeen); // will update the "CurrLoginDate"
 
                     SaveData();
                     OnPropertyChanged(nameof(Users));
@@ -74,9 +74,9 @@ namespace ChatBot_Net5.Data
         public void UpdateWatchTime(string UserName, DateTime CurrTime)
         {
             lock (_DataSource.Users)
-            { 
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(UserName);
-                UpdateWatchTime(ref user, CurrTime);
+            {
+                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + UserName + "'");
+                UpdateWatchTime(ref user[0], CurrTime);
             }
         }
 
@@ -120,9 +120,9 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
 
-                return !(user == null) || user?.FirstDateSeen <= ToDateTime;
+                return !(user == null) || user[0]?.FirstDateSeen <= ToDateTime;
             }
         }
 

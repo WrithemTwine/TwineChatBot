@@ -400,6 +400,16 @@ switches:
             }
         }
 
+        public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
+        {
+            lock (_DataSource.Commands)
+            {
+                DataSource.CommandsRow[] row = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + Cmd + "'");
+
+                return row == null ? null : new(row[0].CmdName, row[0].RepeatTimer, row[0].Category?.Split(',') ?? Array.Empty<string>());
+            }
+        }
+
         #endregion
     }
 }

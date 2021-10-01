@@ -83,7 +83,6 @@ namespace ChatBot_Net5.Data
                     {
                         _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         SaveData();
-                        OnPropertyChanged(nameof(StreamStats));
                         returnvalue = true;
                     }
                 } else
@@ -91,7 +90,7 @@ namespace ChatBot_Net5.Data
                     returnvalue = false;
                 }
             }
-
+            OnPropertyChanged(nameof(StreamStats));
             return returnvalue;
         }
 

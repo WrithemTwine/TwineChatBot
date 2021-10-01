@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Client.Models;
 
@@ -62,6 +61,9 @@ namespace ChatBot_Net5.Systems
         /// </summary>
         private void ElapsedCommandTimers()
         {
+            // TODO: fix repeating commands not updating their time, duplicate commands running
+
+
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
@@ -110,7 +112,7 @@ namespace ChatBot_Net5.Systems
                 return 1.0;
             }
 
-            void RepeatCmd(ref TimerCommand cmd)
+            void RepeatCmd(TimerCommand cmd)
             {
                 int repeat = 0;
                 bool InCategory = false;
@@ -118,6 +120,7 @@ namespace ChatBot_Net5.Systems
                 lock (cmd) // lock the cmd because it's referenced in other threads
                 {
                     repeat = cmd.RepeatTime;
+                    // verify if the category is different and the command is no longer applicable
                     InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
                 }
 
@@ -138,7 +141,16 @@ namespace ChatBot_Net5.Systems
 
                     lock (cmd) // lock the cmd because it's referenced in other threads
                     {
-                        repeat = cmd.RepeatTime;
+                        Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
+                        if (command == null)
+                        {
+                            repeat = 0;
+                        }
+                        else
+                        {
+                            repeat = command.Item2;
+                        }
+                        // verify if the category is different and the command is no longer applicable
                         InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
                     }
                 }
@@ -156,13 +168,13 @@ namespace ChatBot_Net5.Systems
                         if (!RepeatList.Contains(item))
                         {
                             RepeatList.Add(item);
-                            new Thread(new ThreadStart(()=>RepeatCmd(ref item))).Start();
+                            new Thread(new ThreadStart(()=>RepeatCmd(item))).Start();
                         }
                         else
                         {
                             TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
 
-                            if (item.RepeatTime == 0)
+                            if (Listcmd.RepeatTime == 0)
                             {
                                 RepeatList.Remove(Listcmd);
                             }
@@ -177,7 +189,7 @@ namespace ChatBot_Net5.Systems
                     }
                 }
 
-                Thread.Sleep((int)(ThreadSleep * (1 + (DateTime.Now.Second / 60)))); // wait for awhile before checking commands again
+                Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
             }
         }
 
