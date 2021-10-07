@@ -18,9 +18,9 @@ using TwitchLib.Client.Models;
 
 namespace ChatBot_Net5.Systems
 {
-    public class CommandSystem : BotSystems, INotifyPropertyChanged
+    public class CommandSystem : SystemsController, INotifyPropertyChanged
     {
-        private readonly StatisticsSystem StatData;
+        //private readonly StatisticsSystem StatData;
         private readonly string BotUserName;
         private Thread ElapsedThread;
 
@@ -37,9 +37,8 @@ namespace ChatBot_Net5.Systems
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
-        public CommandSystem(StatisticsSystem statistics, string BotName)
+        public CommandSystem(string BotName)
         {
-            StatData = statistics;
             BotUserName = BotName;
 
             StartElapsedTimerThread();
@@ -69,8 +68,8 @@ namespace ChatBot_Net5.Systems
 
             DateTime chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
             DateTime viewertime = DateTime.Now.ToLocalTime(); // the time to check viewers
-            int chats = StatData.GetCurrentChatCount();
-            int viewers = StatData.GetUserCount();
+            int chats = GetCurrentChatCount();
+            int viewers = GetUserCount();
 
             const int ChatCount = 20;
             const int ViewerCount = 10;
@@ -90,13 +89,13 @@ namespace ChatBot_Net5.Systems
                     if (now - chattime >= new TimeSpan(0, 15, 0) || now - viewertime >= new TimeSpan(1, 0, 0))
                     {
                         int newchats, newviewers;
-                        if (now - chattime >= new TimeSpan(0, 15, 0)) { chattime = now; newchats = StatData.GetCurrentChatCount(); }
+                        if (now - chattime >= new TimeSpan(0, 15, 0)) { chattime = now; newchats = GetCurrentChatCount(); }
                         else
                         {
                             newchats = chats;
                         }
 
-                        if (now - viewertime >= new TimeSpan(1, 0, 0)) { viewertime = now; newviewers = StatData.GetUserCount(); }
+                        if (now - viewertime >= new TimeSpan(1, 0, 0)) { viewertime = now; newviewers = GetUserCount(); }
                         else
                         {
                             newviewers = viewers;
@@ -121,7 +120,7 @@ namespace ChatBot_Net5.Systems
                 {
                     repeat = cmd.RepeatTime;
                     // verify if the category is different and the command is no longer applicable
-                    InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                    InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                 }
 
                 while (
@@ -151,7 +150,7 @@ namespace ChatBot_Net5.Systems
                             repeat = command.Item2;
                         }
                         // verify if the category is different and the command is no longer applicable
-                        InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                        InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                     }
                 }
             }
@@ -162,7 +161,7 @@ namespace ChatBot_Net5.Systems
             {
                 foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
                 {
-                    if (Timers.Item3.Contains(StatData.Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
+                    if (Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                     {
                         TimerCommand item = new(Timers, DiluteTime);
                         if (!RepeatList.Contains(item))
@@ -270,7 +269,7 @@ namespace ChatBot_Net5.Systems
                 return VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                             new( MsgVars.user, TwitchBots.TwitchChannelName ),
-                            new( MsgVars.uptime, FormatData.FormatTimes(StatData.GetCurrentStreamStart()) )
+                            new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart()) )
                 })); // the message is handled at the botcontroller
             }
 

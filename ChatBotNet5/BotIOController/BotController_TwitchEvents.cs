@@ -49,7 +49,7 @@ namespace ChatBot_Net5.BotIOController
                 TwitchIO.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
                 //TwitchIO.TwitchChat.OnMessageSent += Client_OnMessageSent;
                 TwitchIO.TwitchChat.OnMessageThrottled += Client_OnMessageThrottled;
-                TwitchIO.TwitchChat.OnModeratorJoined += Client_OnModeratorJoined;
+                //TwitchIO.TwitchChat.OnModeratorJoined += Client_OnModeratorJoined;
                 //TwitchIO.TwitchChat.OnModeratorLeft += Client_OnModeratorLeft;
                 //TwitchIO.TwitchChat.OnModeratorsReceived += Client_OnModeratorsReceived;
                 TwitchIO.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
@@ -171,8 +171,8 @@ namespace ChatBot_Net5.BotIOController
                 Send(VariableParser.ParseReplace(msg, dictionary));
             }
 
-            Stats.AddSub();
-            Stats.AddAutoEvents();
+            SystemsController.UpdatedStat(StreamStatType.Sub); 
+            SystemsController.UpdatedStat(StreamStatType.AutoEvents);
         }
 
         private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
@@ -190,8 +190,8 @@ namespace ChatBot_Net5.BotIOController
                 })));
             }
 
-            Stats.AddGiftSubs();
-            Stats.AddAutoEvents();
+            SystemsController.UpdatedStat(StreamStatType.GiftSubs);
+            SystemsController.UpdatedStat(StreamStatType.AutoEvents);
         }
 
         private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
@@ -207,9 +207,8 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(VariableParser.ParseReplace(msg, dictionary));
             }
-
-            Stats.AddGiftSubs(e.GiftedSubscription.MsgParamMassGiftCount);
-            Stats.AddAutoEvents();
+            SystemsController.UpdatedStat(StreamStatType.GiftSubs, e.GiftedSubscription.MsgParamMassGiftCount);
+            SystemsController.UpdatedStat(StreamStatType.AutoEvents);
         }
 
         #endregion Subscriptions
@@ -229,8 +228,8 @@ namespace ChatBot_Net5.BotIOController
                 })));
             }
 
-            Stats.AddHosted();
-            Stats.AddAutoEvents();
+            SystemsController.UpdatedStat(StreamStatType.Hosted);
+            SystemsController.UpdatedStat(StreamStatType.AutoEvents);
         }
 
         private void Client_OnHostLeft(object sender, EventArgs e)
@@ -271,8 +270,8 @@ namespace ChatBot_Net5.BotIOController
 
                 Send(VariableParser.ParseReplace(msg, dictionary));
             }
-            Stats.AddRaids();
-            Stats.AddAutoEvents();
+            SystemsController.UpdatedStat(StreamStatType.Raids);
+            SystemsController.UpdatedStat(StreamStatType.AutoEvents);
 
             //if (OptionFlags.TwitchRaidFollowBack)
             //{
@@ -324,7 +323,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-            Stats.AddCommands();
+            SystemsController.UpdatedStat(StreamStatType.Commands);
             AddChat(e.Command.ChatMessage.DisplayName);
 
             try
@@ -355,7 +354,7 @@ namespace ChatBot_Net5.BotIOController
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             AddChatString(e.ChatMessage);
-            Stats.AddTotalChats();
+            SystemsController.UpdatedStat(StreamStatType.TotalChats);
 
             if (e.ChatMessage.IsSubscriber)
             {
@@ -384,8 +383,8 @@ namespace ChatBot_Net5.BotIOController
                     });
 
                     Send(VariableParser.ParseReplace(msg, dictionary));
-                    Stats.AddBits(e.ChatMessage.Bits);
-                    Stats.AddAutoEvents();
+                    SystemsController.UpdatedStat(StreamStatType.Bits, e.ChatMessage.Bits);
+                    SystemsController.UpdatedStat(StreamStatType.AutoEvents);
                 }
             }
 
@@ -512,13 +511,13 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e) => Stats.UserLeft(e.Username, DateTime.Now.ToLocalTime());
 
-        private void Client_OnUserBanned(object sender, OnUserBannedArgs e) => Stats.AddUserBanned();
+        private void Client_OnUserBanned(object sender, OnUserBannedArgs e) => SystemsController.UpdatedStat(StreamStatType.UserBanned);
 
         private void Client_OnUserStateChanged(object sender, OnUserStateChangedArgs e)
         {
         }
 
-        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e) => Stats.AddUserTimedOut();
+        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e) => SystemsController.UpdatedStat(StreamStatType.UserTimedOut);
 
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {

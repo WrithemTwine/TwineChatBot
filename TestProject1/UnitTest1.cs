@@ -20,9 +20,7 @@ namespace TestProject1
         {
             OptionFlags.ManageStreamStats = true;
 
-            DataManager dataManager = new();
-            StatisticsSystem test = new();
-            BotSystems.DataManage = dataManager;
+            SystemsController test = new();
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
@@ -82,7 +80,7 @@ namespace TestProject1
 
             DataManager dataManager = new();
             StatisticsSystem test = new();
-            BotSystems.DataManage = dataManager;
+            SystemsController.DataManage = dataManager;
 
             DateTime nowstart = TestStart;
 
@@ -108,7 +106,7 @@ namespace TestProject1
 
             DataManager dataManager = new();
             StatisticsSystem test = new();
-            BotSystems.DataManage = dataManager;
+            SystemsController.DataManage = dataManager;
 
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
@@ -177,7 +175,7 @@ namespace TestProject1
             int chats = (int)(new Random().NextDouble() * 100);
             int bits = (int)(new Random().NextDouble() * 500);
 
-            DataSource.StreamStatsRow[] teststart = (DataSource.StreamStatsRow[])BotSystems.DataManage.StreamStats.Table.Select();
+            DataSource.StreamStatsRow[] teststart = (DataSource.StreamStatsRow[])SystemsController.DataManage.StreamStats.Table.Select();
             DataSource.StreamStatsRow findstart = null;
 
             foreach (DataSource.StreamStatsRow d in teststart)
@@ -204,7 +202,7 @@ namespace TestProject1
             DateTime nowend = DateTime.Now.ToLocalTime();
             controller.Stats.StreamOffline(nowend);
 
-            DataSource.StreamStatsRow[] testend = (DataSource.StreamStatsRow[])BotSystems.DataManage.StreamStats.Table.Select();
+            DataSource.StreamStatsRow[] testend = (DataSource.StreamStatsRow[])SystemsController.DataManage.StreamStats.Table.Select();
             DataSource.StreamStatsRow findend = null;
 
             foreach (DataSource.StreamStatsRow d in testend)

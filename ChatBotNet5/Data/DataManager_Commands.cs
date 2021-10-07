@@ -206,8 +206,7 @@ switches:
 
 
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
-                SaveData();
-                OnPropertyChanged(nameof(Commands));
+                NotifySaveData();
             }
             return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
         }

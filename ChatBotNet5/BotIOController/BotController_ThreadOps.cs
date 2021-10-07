@@ -23,7 +23,7 @@ namespace ChatBot_Net5.BotIOController
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
 
         private List<Follow> Follows { get; set; }
-        private List<Clip> Clips { get; set; }
+        private List<Clip> ClipList { get; set; }
 
         private bool StartClips { get; set; }
 
@@ -90,7 +90,7 @@ namespace ChatBot_Net5.BotIOController
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-            BotSystems.UpdateFollowers(ChannelName, Follows);
+            SystemsController.UpdateFollowers(ChannelName, Follows);
         }
 
         private void BeginAddClips()
@@ -101,9 +101,9 @@ namespace ChatBot_Net5.BotIOController
         private void ProcessClips()
         {
             StartClips = true;
-            Clips = TwitchClip.GetAllClipsAsync().Result;
+            ClipList = TwitchClip.GetAllClipsAsync().Result;
 
-            Stats.ClipHelper(Clips);
+            SystemsController.UpdateClips(ClipList);
             StartClips = false;
         }
 

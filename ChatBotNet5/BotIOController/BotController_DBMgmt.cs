@@ -11,27 +11,15 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ManageDatabase()
         {
-            BotSystems.ManageDatabase();
+            SystemsController.ManageDatabase();
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
-
-            // if ManageUsers is False, then remove users!
-            if (OptionFlags.ManageUsers)
-            {
-                Stats.ManageUsers();
-            }
 
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
             if (OptionFlags.ManageFollowers)
             {
                 BeginAddFollowers();
             }
-            // when management resumes, code upstream enables the startbot process
-
-            //  if ManageStreamStats is False, then remove all Stream Statistics!
-            if (!OptionFlags.ManageStreamStats)
-            {
-                Stats.EndPostingStreamUpdates();
-            } // when the LiveStream Online event fires again, the datacollection will restart
+            // when management resumes, code upstream enables the startbot process 
         }
 
         /// <summary>
@@ -39,7 +27,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ClearWatchTime()
         {
-            BotSystems.ClearWatchTime();
+            SystemsController.ClearWatchTime();
         }
 
         /// <summary>
@@ -47,7 +35,7 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         public void ClearAllCurrenciesValues()
         {
-            BotSystems.ClearAllCurrenciesValues();
+            SystemsController.ClearAllCurrenciesValues();
         }
     }
 }

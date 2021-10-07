@@ -1,24 +1,17 @@
-﻿using ChatBot_Net5.Data;
-using ChatBot_Net5.Static;
+﻿using ChatBot_Net5.Static;
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace ChatBot_Net5.Systems
 {
-    public class CurrencySystem : BotSystems
+    public class CurrencySystem : SystemsController
     {
-        private const int SecondsDelay = 5000;
-
         private bool CurAccrualStarted;
         private bool WatchStarted;
 
-        private readonly List<string> CurrUsers;
-
-        public CurrencySystem(List<string> CurrUserList)
+        public CurrencySystem()
         {
-            CurrUsers = CurrUserList;
         }
 
         public void StartCurrencyClock()

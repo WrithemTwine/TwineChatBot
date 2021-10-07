@@ -17,7 +17,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void SetProcessCommands()
         {
-            ProcessCommands = new(Stats, TwitchBots.TwitchBotUserName);
+            ProcessCommands = new(TwitchBots.TwitchBotUserName);
             ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
         }
@@ -40,7 +40,7 @@ namespace ChatBot_Net5.BotIOController
             if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 Send(e.Message);
-                Stats.AddAutoCommands();
+                SystemsController.UpdatedStat(Enum.StreamStatType.AutoCommands);
             }
         }
 

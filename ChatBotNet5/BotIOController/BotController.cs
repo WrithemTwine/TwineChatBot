@@ -1,18 +1,17 @@
 ﻿using ChatBot_Net5.BotClients;
-using ChatBot_Net5.Data;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace ChatBot_Net5.BotIOController
 {
     // see "BotController_*.cs for partial class implementation
-    public partial class BotController
+    public partial class BotController : INotifyPropertyChanged
     {
         #region properties
 
@@ -22,14 +21,9 @@ namespace ChatBot_Net5.BotIOController
         public MsgVarHelp CommandInfo { get; private set; } = new();
 
         /// <summary>
-        /// Only referenced for the GUI.
-        /// </summary>
-        public DataManager DataManage { get; set; }
-
-        /// <summary>
         /// Manages statistics as the chat bot runs.
         /// </summary>
-        public StatisticsSystem Stats { get; private set; }
+        public SystemsController SystemsController { get; private set; }
 
         #region Bot Services
         /// <summary>
@@ -41,13 +35,9 @@ namespace ChatBot_Net5.BotIOController
         /// Specifically Twitch Lib chat bot.
         /// </summary>
         public TwitchBotChatClient TwitchIO { get; private set; }
-
         public TwitchBotFollowerSvc TwitchFollower { get; private set; }
-
         public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
-
         public TwitchBotClipSvc TwitchClip { get; private set; }
-
         public TwitchBotUserSvc TwitchUsers { get; private set; }
 
         #endregion Bot Services
@@ -61,17 +51,26 @@ namespace ChatBot_Net5.BotIOController
         {
             OptionFlags.BotStarted = true;
 
+            SetTwitchBots();
+
+            // specify callback action to send message to the bots
+            SystemsController = new(TwitchBots.TwitchBotUserName, (s) => Send(s));
+
+            SetDataTableViews();
+
+            OptionFlags.SetSettings();
+        }
+
+        /// <summary>
+        /// Used in class object construction to build the Twitch Bots and set some events
+        /// </summary>
+        private void SetTwitchBots()
+        {
             TwitchIO = new();
             TwitchFollower = new();
             TwitchLiveMonitor = new();
             TwitchClip = new();
             TwitchUsers = new();
-
-            BotSystems.DataManage = new();
-            LocalizedMsgSystem.SetDataManager();
-            BotSystems.DataManage.Initialize();
-            DataManage = BotSystems.DataManage;
-            Stats = new();
 
             IOModuleList.Add(TwitchIO);
             IOModuleList.Add(TwitchFollower);
@@ -87,11 +86,7 @@ namespace ChatBot_Net5.BotIOController
             TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
             TwitchClip.OnBotStarted += TwitchClip_OnBotStarted;
             TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
-            Stats.PostChannelMessage += Stats_PostChannelMessage;
-
-            OptionFlags.SetSettings();
         }
-
 
         /// <summary>
         /// Set all of the attached bots into a stopped state.
@@ -106,7 +101,6 @@ namespace ChatBot_Net5.BotIOController
 
             return true;
         }
-
         /// <summary>
         /// Send a message to the channel via the background worker.
         /// it queues the tasks to provide messages in order.
@@ -152,9 +146,8 @@ namespace ChatBot_Net5.BotIOController
         public void ExitSave()
         {
             OptionFlags.BotStarted = false;
-            Stats.StreamOffline(DateTime.Now.ToLocalTime());
             ExitAllBots();              // stop all the bot processes
-            BotSystems.SaveData();  // save data
+            SystemsController.ExitSystem(); // close down the systems and active threads
         }
     }
 }
