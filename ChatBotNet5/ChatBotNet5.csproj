@@ -35,9 +35,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Systems - Copy\**" />
     <Compile Remove="XML\**" />
+    <EmbeddedResource Remove="Systems - Copy\**" />
     <EmbeddedResource Remove="XML\**" />
+    <None Remove="Systems - Copy\**" />
     <None Remove="XML\**" />
+    <Page Remove="Systems - Copy\**" />
     <Page Remove="XML\**" />
   </ItemGroup>
 

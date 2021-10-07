@@ -23,8 +23,7 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = AddNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
-                SaveData();
-                OnPropertyChanged(nameof(Users));
+                NotifySaveData();
             }
         }
 
@@ -38,9 +37,7 @@ namespace ChatBot_Net5.Data
                     UpdateWatchTime(ref user[0], LastSeen); // will update the "LastDateSeen"
                     UpdateCurrency(ref user[0], LastSeen); // will update the "CurrLoginDate"
 
-                    SaveData();
-                    OnPropertyChanged(nameof(Users));
-                    OnPropertyChanged(nameof(Currency));
+                    NotifySaveData();
                 }
             }
         }
@@ -61,8 +58,7 @@ namespace ChatBot_Net5.Data
 
                 User.LastDateSeen = CurrTime;
 
-                SaveData();
-                OnPropertyChanged(nameof(Users));
+                NotifySaveData();
             }
         }
 
@@ -122,7 +118,7 @@ namespace ChatBot_Net5.Data
             {
                 DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
 
-                return !(user == null) || user[0]?.FirstDateSeen <= ToDateTime;
+                return (user.Length > 0) ? user[0]?.FirstDateSeen <= ToDateTime : false;
             }
         }
 
@@ -179,8 +175,7 @@ namespace ChatBot_Net5.Data
                     newfollow = true;
                     _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
                 }
-                SaveData();
-                OnPropertyChanged(nameof(Followers));
+                NotifySaveData();
                 return newfollow;
             }
         }
@@ -199,17 +194,16 @@ namespace ChatBot_Net5.Data
             {
                 if (!CheckUser(User))
                 {
-                    DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-                    AddCurrencyRows(ref output);
-                    SaveData();
-                    return output;
+                    usersRow = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
+                    AddCurrencyRows(ref usersRow);
+                    NotifySaveData();
                 }
             }
 
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock (_DataSource.Users)
             {
-                usersRow = _DataSource.Users.FindByUserName(User);
+                usersRow = (DataSource.UsersRow)_DataSource.Users.Select("UserName='" + User + "'")[0];
 
                 if (DateTime.Compare(usersRow.FirstDateSeen, FirstSeen) > 0)
                 {
@@ -219,6 +213,14 @@ namespace ChatBot_Net5.Data
 
             return usersRow;
         }
+
+
+        //public event EventHandler<OnFoundNewFollowerEventArgs> OnFoundNewFollower;
+
+        //private void InvokeFoundNewFollower(string fromUserName, DateTime followedAt)
+        //{
+        //    OnFoundNewFollower?.Invoke(this, new() { FromUserName = fromUserName, FollowedAt = followedAt });
+        //}
 
         public void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
@@ -255,8 +257,7 @@ namespace ChatBot_Net5.Data
                 }
 
                 UpdatingFollowers = false;
-                SaveData();
-                OnPropertyChanged(nameof(Followers));
+                NotifySaveData();
             })).Start();
         }
 

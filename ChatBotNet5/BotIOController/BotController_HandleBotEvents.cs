@@ -35,7 +35,7 @@ namespace ChatBot_Net5.BotIOController
                 }
 
                 bool Started = Stats.StreamOnline(StartedAt);
-                Stats.Category = Category;
+                SystemsController.Category = Category;
 
                 if (Started)
                 {
@@ -68,7 +68,7 @@ namespace ChatBot_Net5.BotIOController
                                                             )
                                                         )
                                                     );
-                                Stats.AddDiscord();
+                                SystemsController.UpdatedStat(StreamStatType.Discord);
                             }
                         }
                     }

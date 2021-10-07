@@ -67,9 +67,9 @@ namespace ChatBot_Net5.Systems
         /// <summary>
         /// Set the DataManager to use for extracting event messages
         /// </summary>
-        public static void SetDataManager()
+        public static void SetDataManager(DataManager dataManager)
         {
-            _datamanager = BotSystems.DataManage;
+            _datamanager = dataManager;
         }
 
         /// <summary>
