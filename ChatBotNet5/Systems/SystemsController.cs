@@ -58,9 +58,9 @@ namespace ChatBot_Net5.Systems
         public static void ManageDatabase()
         {
             if (!OptionFlags.ManageStreamStats)
-            {
+        {
                 Stats.EndPostingStreamUpdates();
-            }
+        }
 
             if (OptionFlags.ManageUsers)
             {
@@ -69,17 +69,17 @@ namespace ChatBot_Net5.Systems
             }
 
             SystemsBase.ManageDatabase();
-        }
+            }
 
         public static void ClearWatchTime()
-        {
+            {
             SystemsBase.ClearWatchTime();
-        }
+            }
 
         public static void ClearAllCurrenciesValues()
-        {
+            {
             SystemsBase.ClearAllCurrenciesValues();
-        }
+            }
 
         public static void UpdateClips(List<Clip> ClipList)
         {

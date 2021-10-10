@@ -19,7 +19,7 @@ namespace ChatBot_Net5.Systems
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
-//        private static CurrencySystem CurrencySystem { get; set; }
+        private static CurrencySystem CurrencySystem { get; set; }
         private Thread StreamUpdateThread;
 
         public event EventHandler BeginCurrencyClock;
