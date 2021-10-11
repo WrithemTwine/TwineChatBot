@@ -1,5 +1,4 @@
-﻿using ChatBot_Net5.BotClients;
-using ChatBot_Net5.Events;
+﻿using ChatBot_Net5.Events;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
@@ -13,14 +12,7 @@ namespace ChatBot_Net5.BotIOController
     {
         public ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
 
-        public CommandSystem ProcessCommands { get; private set; }
-
-        private void SetProcessCommands()
-        {
-            ProcessCommands = new(TwitchBots.TwitchBotUserName);
-            ProcessCommands.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
-            ProcessCommands.UserJoinCommand += ProcessCommands_UserJoinCommand;
-        }
+        //public CommandSystem ProcessCommands { get; private set; }
 
         private delegate void UpdateUsers(UserJoin userJoin);
 
@@ -36,7 +28,6 @@ namespace ChatBot_Net5.BotIOController
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
-
             if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 Send(e.Message);

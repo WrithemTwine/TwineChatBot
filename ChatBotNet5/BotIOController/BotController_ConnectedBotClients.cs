@@ -1,5 +1,6 @@
 ﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.Static;
+using ChatBot_Net5.Systems;
 
 using System;
 
@@ -50,13 +51,7 @@ namespace ChatBot_Net5.BotIOController
 
             OptionFlags.ProcessOps = true; // required as true to spin the "SendThread" while loop, so it doesn't conclude early
             StartThreads(); // messages can be sent now the chat client is connected
-
-            if (ProcessCommands == null) //currently on Twitch, bot stopped object is null, bot started object is assigned
-            {
-                SetProcessCommands(); // commands can be processed when received through the chat
-            }
             OnBotStarted?.Invoke(this, new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
-
         }
 
         private void TwitchIO_OnBotStopped(object sender, EventArgs e)
@@ -68,8 +63,7 @@ namespace ChatBot_Net5.BotIOController
             SendThread?.Join();
 
             // the commands aren't available when bot is stopped - commands are stopped, only Twitch is current available chat client; should stop only when all chat bots are stopped
-            ProcessCommands.StopElapsedTimerThread();
-            ProcessCommands = null;
+            SystemsController.StopElapsedTimerThread();
             OnBotStopped?.Invoke(this, new() { BotName = currBot.BotClientName, Stopped = currBot.IsStopped });
         }
 

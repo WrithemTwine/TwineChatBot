@@ -1,11 +1,9 @@
 ﻿using ChatBot_Net5.Data;
-using ChatBot_Net5.Enum;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -13,9 +11,11 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 namespace ChatBot_Net5.Systems
 {
     /// <summary>
-    /// The common shared operations class between each of the subsystems. Should not be referenced outside of <c>ChatBot_Net5.Systems</c> namespace.
+    /// The common shared operations class between each of the subsystems. 
+    /// Should not be referenced outside of <c>ChatBot_Net5.Systems</c> namespace.
     /// Perform direct DataManager tasks here.
-    /// Each Subsystem class derives from this base class and can access the DataManager and static properties here to share data between systems.
+    /// Each Subsystem class derives from this base class and can access the 
+    /// DataManager and static properties here to share data between systems.
     /// </summary>
     public class SystemsBase
     {

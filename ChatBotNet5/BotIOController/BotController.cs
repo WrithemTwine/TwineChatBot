@@ -54,7 +54,7 @@ namespace ChatBot_Net5.BotIOController
             SetTwitchBots();
 
             // specify callback action to send message to the bots
-            SystemsController = new(TwitchBots.TwitchBotUserName, (s) => Send(s));
+            SystemsController = new(TwitchBots.TwitchBotUserName, (s) => Send(s), ProcessCommands_OnRepeatEventOccured, ProcessCommands_UserJoinCommand);
 
             SetDataTableViews();
 

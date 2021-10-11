@@ -14,13 +14,10 @@ using System.Threading;
 
 using TwitchLib.Client.Models;
 
-// TODO: add currency system
-
 namespace ChatBot_Net5.Systems
 {
     public class CommandSystem : SystemsBase, INotifyPropertyChanged
     {
-        //private readonly StatisticsSystem StatData;
         private readonly string BotUserName;
         private Thread ElapsedThread;
 

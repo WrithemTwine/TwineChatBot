@@ -75,7 +75,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
             {
-                TwitchFollower.FollowerService.OnNewFollowersDetected += Stats.FollowerService_OnNewFollowersDetected;
+                TwitchFollower.FollowerService.OnNewFollowersDetected += SystemsController.FollowerService_OnNewFollowersDetected;
 
                 TwitchFollower.HandlersAdded = true;
             }
@@ -91,7 +91,7 @@ namespace ChatBot_Net5.BotIOController
 
             if(TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
             {
-                TwitchClip.clipMonitorService.OnNewClipFound += Stats.ClipMonitorService_OnNewClipFound;
+                TwitchClip.clipMonitorService.OnNewClipFound += SystemsController.ClipMonitorService_OnNewClipFound;
             }
         }
 
@@ -113,7 +113,7 @@ namespace ChatBot_Net5.BotIOController
         /// <param name="e">Contains the update arguments.</param>
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            Stats.SetCategory(e.Stream.GameId, e.Stream.GameName);
+            SystemsController.SetCategory(e.Stream.GameId, e.Stream.GameName);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace ChatBot_Net5.BotIOController
             // when hosting starts via an initiated raid or going offline, stop the stream
             if (OptionFlags.IsStreamOnline)
             {
-                Stats.StreamOffline(DateTime.Now.ToLocalTime());
+                SystemsController.StreamOffline(DateTime.Now.ToLocalTime());
             }
 
         }
@@ -277,8 +277,8 @@ namespace ChatBot_Net5.BotIOController
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
-                Stats.UserJoined(e.RaidNotification.DisplayName, DateTime.Now.ToLocalTime());
-                bool output = ProcessCommands.CheckShout(e.RaidNotification.DisplayName, out string response, false);
+                SystemsController.UserJoined(e.RaidNotification.DisplayName, DateTime.Now.ToLocalTime());
+                bool output = SystemsController.CheckShout(e.RaidNotification.DisplayName, out string response, false);
                 if (output)
                 {
                     Send(response);
@@ -287,7 +287,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (OptionFlags.ManageRaidData)
             {
-                Stats.PostIncomingRaid(e.RaidNotification.DisplayName, DateTime.Now.ToLocalTime(), e.RaidNotification.MsgParamViewerCount, Category);
+                SystemsController.PostIncomingRaid(e.RaidNotification.DisplayName, DateTime.Now.ToLocalTime(), e.RaidNotification.MsgParamViewerCount, Category);
             }
         }
 
@@ -325,7 +325,7 @@ namespace ChatBot_Net5.BotIOController
 
             try
             {
-                string response = ProcessCommands.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
+                string response = SystemsController.ParseCommand(e.Command.CommandText, e.Command.ArgumentsAsList, e.Command.ChatMessage);
                 if (response != "")
                 {
                     Send(response);
@@ -345,7 +345,6 @@ namespace ChatBot_Net5.BotIOController
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
-
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -355,17 +354,16 @@ namespace ChatBot_Net5.BotIOController
 
             if (e.ChatMessage.IsSubscriber)
             {
-                Stats.SubJoined(e.ChatMessage.DisplayName);
+                SystemsController.SubJoined(e.ChatMessage.DisplayName);
             }
             if (e.ChatMessage.IsVip)
             {
-                Stats.VIPJoined(e.ChatMessage.DisplayName);
+                SystemsController.VIPJoined(e.ChatMessage.DisplayName);
             }
             if (e.ChatMessage.IsModerator)
             {
-                Stats.ModJoined(e.ChatMessage.DisplayName);
+                SystemsController.ModJoined(e.ChatMessage.DisplayName);
             }
-
 
             // handle bit cheers
             if (e.ChatMessage.Bits > 0)
@@ -437,7 +435,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            if (Stats.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
+            if (SystemsController.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
             {
                 RegisterJoinedUser(e.Username);
             }
@@ -445,7 +443,7 @@ namespace ChatBot_Net5.BotIOController
 
         private void AddChat(string Username)
         {
-            if (Stats.UserChat(Username) && OptionFlags.FirstUserChatMsg)
+            if (SystemsController.UserChat(Username) && OptionFlags.FirstUserChatMsg)
             {
                 RegisterJoinedUser(Username);
             }
@@ -486,7 +484,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (OptionFlags.AutoShout)
             {
-                bool output = ProcessCommands.CheckShout(Username, out string response);
+                bool output = SystemsController.CheckShout(Username, out string response);
                 if (output)
                 {
                     Send(response);
@@ -494,7 +492,7 @@ namespace ChatBot_Net5.BotIOController
             }
         }
 
-        private void Client_OnUserLeft(object sender, OnUserLeftArgs e) => Stats.UserLeft(e.Username, DateTime.Now.ToLocalTime());
+        private void Client_OnUserLeft(object sender, OnUserLeftArgs e) => SystemsController.UserLeft(e.Username, DateTime.Now.ToLocalTime());
 
         private void Client_OnUserBanned(object sender, OnUserBannedArgs e) => SystemsController.UpdatedStat(StreamStatType.UserBanned);
 
@@ -507,7 +505,7 @@ namespace ChatBot_Net5.BotIOController
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
             foreach (string user in from string user in e.Users
-                                    where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
+                                    where SystemsController.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
             {
                 RegisterJoinedUser(user);

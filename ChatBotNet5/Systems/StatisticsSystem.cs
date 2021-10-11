@@ -19,7 +19,6 @@ namespace ChatBot_Net5.Systems
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
-        private static CurrencySystem CurrencySystem { get; set; }
         private Thread StreamUpdateThread;
 
         public event EventHandler BeginCurrencyClock;
@@ -162,19 +161,20 @@ namespace ChatBot_Net5.Systems
         }
 
         #region Follower
-        public void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
+
+        public void AddNewFollower(List<Follow> FollowList)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
 
             while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
-            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+            foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
             {
                 if (OptionFlags.ManageFollowers)
                 {
                     if (FollowEnabled)
                     {
-                        CallbackSendMsg?.Invoke( VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })) );
+                        CallbackSendMsg?.Invoke(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
                     }
 
                     AddFollow();
@@ -234,10 +234,6 @@ namespace ChatBot_Net5.Systems
         //        }
         //    }
         //}
-        public void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
-        {
-            ClipHelper(e.Clips);
-        }
 
         public void ClipHelper(IEnumerable<Clip> Clips)
         {
