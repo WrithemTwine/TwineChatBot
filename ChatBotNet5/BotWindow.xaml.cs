@@ -143,7 +143,7 @@ namespace ChatBot_Net5
 
         #endregion
 
-        private void Controller_OnBotStopped(object sender, BotStartStopArgs e)
+        private void Controller_OnBotStopped(object sender, BotStartStopEventArgs e)
         {
             Dispatcher.BeginInvoke(new BotOperation(() =>
             {
@@ -173,7 +173,7 @@ namespace ChatBot_Net5
             }),null);
         }
 
-        private void Controller_OnBotStarted(object sender, BotStartStopArgs e)
+        private void Controller_OnBotStarted(object sender, BotStartStopEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new BotOperation(() =>
               {

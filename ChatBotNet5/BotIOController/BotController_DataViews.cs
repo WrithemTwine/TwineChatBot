@@ -70,72 +70,24 @@ namespace ChatBot_Net5.BotIOController
             Clips = new(dataManager._DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
             RaidData = new(dataManager._DataSource.RaidData, null, "Id", DataViewRowState.CurrentRows);
 
-            ChannelEvents.ListChanged += ChannelEvents_ListChanged;
-            Users.ListChanged += Users_ListChanged;
-            Followers.ListChanged += Followers_ListChanged;
-            Discord.ListChanged += Discord_ListChanged;
-            CurrencyType.ListChanged += CurrencyType_ListChanged;
-            Currency.ListChanged += Currency_ListChanged;
-            BuiltInCommands.ListChanged += BuiltInCommands_ListChanged;
-            Commands.ListChanged += Commands_ListChanged;
-            StreamStats.ListChanged += StreamStats_ListChanged;
-            ShoutOuts.ListChanged += ShoutOuts_ListChanged;
-            Category.ListChanged += Category_ListChanged;
-            Clips.ListChanged += Clips_ListChanged;
-            RaidData.ListChanged += RaidData_ListChanged;
+            ChannelEvents.ListChanged += DataView_ListChanged;
+            Users.ListChanged += DataView_ListChanged;
+            Followers.ListChanged += DataView_ListChanged;
+            Discord.ListChanged += DataView_ListChanged;
+            CurrencyType.ListChanged += DataView_ListChanged;
+            Currency.ListChanged += DataView_ListChanged;
+            BuiltInCommands.ListChanged += DataView_ListChanged;
+            Commands.ListChanged += DataView_ListChanged;
+            StreamStats.ListChanged += DataView_ListChanged;
+            ShoutOuts.ListChanged += DataView_ListChanged;
+            Category.ListChanged += DataView_ListChanged;
+            Clips.ListChanged += DataView_ListChanged;
+            RaidData.ListChanged += DataView_ListChanged;
         }
 
-        private void RaidData_ListChanged(object sender, ListChangedEventArgs e)
+        private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            NotifyPropertyChanged(nameof(RaidData));
-        }
-        private void Clips_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Clips));
-        }
-        private void Category_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Category));
-        }
-        private void ShoutOuts_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(ShoutOuts));
-        }
-        private void StreamStats_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(StreamStats));
-        }
-        private void Commands_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Commands));
-        }
-        private void BuiltInCommands_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(BuiltInCommands));
-        }
-        private void Currency_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Currency));
-        }
-        private void CurrencyType_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(CurrencyType));
-        }
-        private void Discord_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Currency));
-        }
-        private void Followers_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Followers));
-        }
-        private void Users_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(Users));
-        }
-        private void ChannelEvents_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            NotifyPropertyChanged(nameof(ChannelEvents));
+            NotifyPropertyChanged(nameof(sender));
         }
     }
 }

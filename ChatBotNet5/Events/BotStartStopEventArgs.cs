@@ -2,7 +2,7 @@
 
 namespace ChatBot_Net5.Events
 {
-    public class BotStartStopArgs : EventArgs
+    public class BotStartStopEventArgs : EventArgs
     {
         public Enum.Bots BotName { get; set; }
         public bool Started { get; set; }

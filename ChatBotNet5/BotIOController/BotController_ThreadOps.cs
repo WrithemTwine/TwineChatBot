@@ -1,7 +1,9 @@
 ﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +20,8 @@ namespace ChatBot_Net5.BotIOController
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
+
+        public event EventHandler<DownloadedFollowersEventArgs> OnCompletedDownloadFollowers;
 
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
@@ -90,7 +94,15 @@ namespace ChatBot_Net5.BotIOController
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-            SystemsController.UpdateFollowers(ChannelName, Follows);
+            OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = Follows });
+        }
+
+        private void BotController_OnCompletedDownloadFollowers(object sender, DownloadedFollowersEventArgs e)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                SystemsController.UpdateFollowers(e.ChannelName, e.FollowList);
+            });
         }
 
         private void BeginAddClips()

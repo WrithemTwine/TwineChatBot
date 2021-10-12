@@ -59,6 +59,8 @@ namespace ChatBot_Net5.BotIOController
             SetDataTableViews();
 
             OptionFlags.SetSettings();
+
+            OnCompletedDownloadFollowers += BotController_OnCompletedDownloadFollowers;
         }
 
         /// <summary>

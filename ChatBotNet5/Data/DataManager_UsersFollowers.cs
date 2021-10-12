@@ -224,8 +224,8 @@ namespace ChatBot_Net5.Data
 
         public void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
         {
-            new Thread(new ThreadStart(() =>
-            {
+            //new Thread(new ThreadStart(() =>
+            //{
                 UpdatingFollowers = true;
                 lock (_DataSource.Followers)
                 {
@@ -258,7 +258,7 @@ namespace ChatBot_Net5.Data
 
                 UpdatingFollowers = false;
                 NotifySaveData();
-            })).Start();
+            //})).Start();
         }
 
         /// <summary>

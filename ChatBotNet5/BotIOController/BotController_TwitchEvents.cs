@@ -18,8 +18,8 @@ namespace ChatBot_Net5.BotIOController
 {
     public sealed partial class BotController
     {
-        public event EventHandler<BotStartStopArgs> OnBotStarted;
-        public event EventHandler<BotStartStopArgs> OnBotStopped;
+        public event EventHandler<BotStartStopEventArgs> OnBotStarted;
+        public event EventHandler<BotStartStopEventArgs> OnBotStopped;
 
         /// <summary>
         /// Register event handlers for the chat services
