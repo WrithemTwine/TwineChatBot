@@ -92,6 +92,8 @@ namespace ChatBot_Net5.BotIOController
             if(TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
             {
                 TwitchClip.clipMonitorService.OnNewClipFound += SystemsController.ClipMonitorService_OnNewClipFound;
+
+                TwitchClip.HandlersAdded = true;
             }
         }
 

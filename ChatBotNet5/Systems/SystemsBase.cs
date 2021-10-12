@@ -71,29 +71,30 @@ namespace ChatBot_Net5.Systems
             }
         }
 
-        public static void UpdateFollowers(string ChannelName, List<Follow> Follows)
+        public static void UpdateFollowers(string ChannelName, IEnumerable<Follow> Follows)
         {
             DataManage.UpdateFollowers(ChannelName, new() { { ChannelName, Follows } });
         }
+
         /// <summary>
         /// Add currency accrual rows for every user when a new currency type is added to the database
         /// </summary>
-        public void UpdateCurrencyTable()
+        public static void UpdateCurrencyTable()
         {
             DataManage.AddCurrencyRows();
         }
 
-        public void ClearWatchTime()
+        public static void ClearWatchTime()
         {
             DataManage.ClearWatchTime();
         }
 
-        public void ClearAllCurrenciesValues()
+        public static void ClearAllCurrenciesValues()
         {
             DataManage.ClearAllCurrencyValues();
         }
 
-        public bool AddClip(Clip c)
+        public static bool AddClip(Clip c)
         {
             return DataManage.AddClip(c.Id, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
@@ -102,7 +103,7 @@ namespace ChatBot_Net5.Systems
         /// Retrieves the current users within the channel during the stream.
         /// </summary>
         /// <returns>The current user count as of now.</returns>
-        public int GetUserCount
+        public static int GetUserCount
         {
             get
             {
@@ -112,6 +113,7 @@ namespace ChatBot_Net5.Systems
                 }
             }
         }
+
         /// <summary>
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>

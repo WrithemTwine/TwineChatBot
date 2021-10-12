@@ -61,7 +61,10 @@ namespace ChatBot_Net5.BotIOController
             OptionFlags.SetSettings();
 
             OnCompletedDownloadFollowers += BotController_OnCompletedDownloadFollowers;
+            OnClipFound += BotController_OnClipFound;
+
         }
+
 
         /// <summary>
         /// Used in class object construction to build the Twitch Bots and set some events

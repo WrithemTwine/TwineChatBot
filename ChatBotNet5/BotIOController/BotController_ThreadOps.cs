@@ -22,6 +22,7 @@ namespace ChatBot_Net5.BotIOController
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
 
         public event EventHandler<DownloadedFollowersEventArgs> OnCompletedDownloadFollowers;
+        public event EventHandler<ClipFoundEventArgs> OnClipFound;
 
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
@@ -94,15 +95,18 @@ namespace ChatBot_Net5.BotIOController
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-            OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = Follows });
-        }
+            const int count = 200;
 
-        private void BotController_OnCompletedDownloadFollowers(object sender, DownloadedFollowersEventArgs e)
-        {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            Follow[] FollowArray = new Follow[count];
+
+            int x = 0;
+
+            while (x < Follows.Count)
             {
-                SystemsController.UpdateFollowers(e.ChannelName, e.FollowList);
-            });
+                Follows.CopyTo(x, FollowArray, 0, Math.Min(Follows.Count - x, count));
+                OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = FollowArray });
+                x += count;
+            }
         }
 
         private void BeginAddClips()
@@ -115,7 +119,7 @@ namespace ChatBot_Net5.BotIOController
             StartClips = true;
             ClipList = TwitchClip.GetAllClipsAsync().Result;
 
-            SystemsController.UpdateClips(ClipList);
+            OnClipFound?.Invoke(this, new() { ClipList = ClipList });
             StartClips = false;
         }
 

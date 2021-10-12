@@ -222,42 +222,42 @@ namespace ChatBot_Net5.Data
         //    OnFoundNewFollower?.Invoke(this, new() { FromUserName = fromUserName, FollowedAt = followedAt });
         //}
 
-        public void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
+        public void UpdateFollowers(string ChannelName, Dictionary<string, IEnumerable<Follow>> follows)
         {
             //new Thread(new ThreadStart(() =>
             //{
-                UpdatingFollowers = true;
+            UpdatingFollowers = true;
+            lock (_DataSource.Followers)
+            {
+                List<DataSource.FollowersRow> temp = new();
+                temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
+                temp.ForEach((f) => f.IsFollower = false);
+            }
+            if (follows[ChannelName].Count() > 1)
+            {
+                foreach (Follow f in follows[ChannelName])
+                {
+                    AddFollower(f.FromUserName, f.FollowedAt);
+                }
+            }
+
+            if (OptionFlags.TwitchPruneNonFollowers)
+            {
                 lock (_DataSource.Followers)
                 {
                     List<DataSource.FollowersRow> temp = new();
                     temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
-                    temp.ForEach((f) => f.IsFollower = false);
-                }
-                if (follows[ChannelName].Count > 1)
-                {
-                    foreach (Follow f in follows[ChannelName])
+                    foreach (DataSource.FollowersRow f in from DataSource.FollowersRow f in temp
+                                                          where !f.IsFollower
+                                                          select f)
                     {
-                        AddFollower(f.FromUserName, f.FollowedAt);
+                        _DataSource.Followers.RemoveFollowersRow(f);
                     }
                 }
+            }
 
-                if (OptionFlags.TwitchPruneNonFollowers)
-                {
-                    lock (_DataSource.Followers)
-                    {
-                        List<DataSource.FollowersRow> temp = new();
-                        temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
-                        foreach (DataSource.FollowersRow f in from DataSource.FollowersRow f in temp
-                                                              where !f.IsFollower
-                                                              select f)
-                        {
-                            _DataSource.Followers.RemoveFollowersRow(f);
-                        }
-                    }
-                }
-
-                UpdatingFollowers = false;
-                NotifySaveData();
+            UpdatingFollowers = false;
+            NotifySaveData();
             //})).Start();
         }
 

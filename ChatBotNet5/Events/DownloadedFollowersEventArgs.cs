@@ -8,6 +8,6 @@ namespace ChatBot_Net5.Events
     public class DownloadedFollowersEventArgs : EventArgs
     {
         public string ChannelName;
-        public List<Follow> FollowList;
+        public IEnumerable<Follow> FollowList;
     }
 }

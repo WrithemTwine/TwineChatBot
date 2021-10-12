@@ -67,7 +67,7 @@ namespace ChatBot_Net5.Systems
             SystemsBase.ClearAllCurrenciesValues();
         }
 
-        public static void UpdateFollowers(string ChannelName, List<Follow> Follows)
+        public static void UpdateFollowers(string ChannelName, IEnumerable<Follow> Follows)
         {
             SystemsBase.UpdateFollowers(ChannelName, Follows);
         }
