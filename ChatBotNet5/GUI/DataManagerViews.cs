@@ -1,15 +1,15 @@
-﻿using ChatBot_Net5.Data;
-using ChatBot_Net5.Enum;
+﻿using ChatBot_Net5.Enum;
 using ChatBot_Net5.Systems;
+using ChatBot_Net5.Data;
 
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace ChatBot_Net5.BotIOController
+namespace ChatBot_Net5.GUI
 {
-    partial class BotController
+    public class DataManagerViews : INotifyPropertyChanged
     {
         #region DataManager TableViews
         // datatable views to display the data in the GUI
@@ -32,10 +32,22 @@ namespace ChatBot_Net5.BotIOController
 
         #endregion
 
+        public DataManagerViews()
+        {
+            SetDataTableViews(SystemsController.DataManage);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         /// <summary>
         /// Used in class object construction to build assign the DataTable views for the GUI, requires <c>SystemsController</c> to be initialized.
         /// </summary>
-        private void SetDataTableViews()
+        private void SetDataTableViews(DataManager dataManager)
         {
             static string ComFilter()
             {
@@ -53,8 +65,6 @@ namespace ChatBot_Net5.BotIOController
 
                 return filter == string.Empty ? "" : filter[0..^1];
             }
-
-            DataManager dataManager = SystemsController.DataManage;
 
             ChannelEvents = dataManager._DataSource.ChannelEvents.DefaultView;
             Users = new(dataManager._DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
@@ -89,5 +99,6 @@ namespace ChatBot_Net5.BotIOController
         {
             NotifyPropertyChanged(nameof(sender));
         }
+
     }
 }

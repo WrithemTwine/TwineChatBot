@@ -75,7 +75,7 @@ namespace ChatBot_Net5.BotIOController
 
             if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
             {
-                TwitchFollower.FollowerService.OnNewFollowersDetected += SystemsController.FollowerService_OnNewFollowersDetected;
+                TwitchFollower.FollowerService.OnNewFollowersDetected += SystemsController.FollowerServiceOnNewFollowersDetected;
 
                 TwitchFollower.HandlersAdded = true;
             }
@@ -89,9 +89,9 @@ namespace ChatBot_Net5.BotIOController
                 TwitchLiveMonitor.HandlersAdded = true;
             }
 
-            if(TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
+            if (TwitchClip.IsStarted && !TwitchClip.HandlersAdded)
             {
-                TwitchClip.clipMonitorService.OnNewClipFound += SystemsController.ClipMonitorService_OnNewClipFound;
+                TwitchClip.clipMonitorService.OnNewClipFound += SystemsController.ClipMonitorServiceOnNewClipFound;
 
                 TwitchClip.HandlersAdded = true;
             }
@@ -250,8 +250,7 @@ namespace ChatBot_Net5.BotIOController
             {
                 SystemsController.StreamOffline(DateTime.Now.ToLocalTime());
             }
-
-        }
+        } 
         #endregion Hosting
 
         #region Raid events
@@ -437,10 +436,10 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            if (SystemsController.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
-            {
-                RegisterJoinedUser(e.Username);
-            }
+                if (SystemsController.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
+                {
+                    RegisterJoinedUser(e.Username);
+                }
         }
 
         private void AddChat(string Username)

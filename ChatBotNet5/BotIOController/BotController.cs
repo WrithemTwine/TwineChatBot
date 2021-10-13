@@ -1,4 +1,5 @@
 ﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.GUI;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
@@ -56,13 +57,10 @@ namespace ChatBot_Net5.BotIOController
             // specify callback action to send message to the bots
             SystemsController = new(TwitchBots.TwitchBotUserName, (s) => Send(s), ProcessCommands_OnRepeatEventOccured, ProcessCommands_UserJoinCommand);
 
-            SetDataTableViews();
-
             OptionFlags.SetSettings();
 
             OnCompletedDownloadFollowers += BotController_OnCompletedDownloadFollowers;
             OnClipFound += BotController_OnClipFound;
-
         }
 
 
@@ -71,11 +69,11 @@ namespace ChatBot_Net5.BotIOController
         /// </summary>
         private void SetTwitchBots()
         {
-            TwitchIO = new();
-            TwitchFollower = new();
-            TwitchLiveMonitor = new();
-            TwitchClip = new();
-            TwitchUsers = new();
+            TwitchIO = GUITwitchBots.TwitchIO;
+            TwitchFollower = GUITwitchBots.TwitchFollower;
+            TwitchLiveMonitor = GUITwitchBots.TwitchLiveMonitor;
+            TwitchClip = GUITwitchBots.TwitchClip;
+            TwitchUsers = GUITwitchBots.TwitchUsers;
 
             IOModuleList.Add(TwitchIO);
             IOModuleList.Add(TwitchFollower);

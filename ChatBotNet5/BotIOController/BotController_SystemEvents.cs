@@ -7,18 +7,13 @@ namespace ChatBot_Net5.BotIOController
     {
         private void BotController_OnCompletedDownloadFollowers(object sender, DownloadedFollowersEventArgs e)
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
-            {
-                SystemsController.UpdateFollowers(e.ChannelName, e.FollowList);
-            });
+            SystemsController.UpdateFollowers(e.ChannelName, e.FollowList);
         }
 
         private void BotController_OnClipFound(object sender, ClipFoundEventArgs e)
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
-            {
-                SystemsController.UpdateClips(ClipList);
-            });
+
+            SystemsController.UpdateClips(ClipList);
         }
     }
 }

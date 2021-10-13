@@ -190,12 +190,12 @@ namespace ChatBot_Net5.Systems
             Stats.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
         }
 
-        public void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
+        public void FollowerServiceOnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
             Stats.AddNewFollower(e.NewFollowers);
         }
 
-        public void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
+        public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {
             Stats.ClipHelper(e.Clips);
         }

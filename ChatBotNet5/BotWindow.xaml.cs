@@ -47,6 +47,7 @@ namespace ChatBot_Net5
             IsMultiProcActive = null;
             OptionFlags.SetSettings();
 
+            controller = new();
 
             InitializeComponent();
 
@@ -54,7 +55,6 @@ namespace ChatBot_Net5
             Resources.MergedDictionaries.Add(language);
 
             OptionFlags.SetSettings();
-            controller = Resources["ControlBot"] as BotController;
 
             // TODO: debug ChatPopup
             //CP = new();

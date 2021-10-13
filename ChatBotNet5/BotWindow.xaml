@@ -3,19 +3,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:BotIOController="clr-namespace:ChatBot_Net5.BotIOController"
-    xmlns:s="clr-namespace:ChatBot_Net5.Properties"
+    xmlns:s="clr-namespace:ChatBot_Net5.Properties" xmlns:GUI="clr-namespace:ChatBot_Net5.GUI"
     x:Class="ChatBot_Net5.BotWindow" mc:Ignorable="d" Title="Twine Chat Bot Manager" Height="771" Width="1020" 
     Closing="OnWindowClosing" SnapsToDevicePixels="True" Loaded="Window_Loaded" UseLayoutRounding="True">
     <Window.Resources>
         <ResourceDictionary>
-            <BotIOController:BotController x:Name="ControlBot" x:Key="ControlBot" />
+            <GUI:GUITwitchBots x:Name="ControlBot" x:Key="ControlBot" />
+            <GUI:DataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <DockPanel SnapsToDevicePixels="True" DataContext="{DynamicResource ControlBot}">
+    <DockPanel SnapsToDevicePixels="True" DataContext="{DynamicResource DataViews}">
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBar.Resources>
                 <Style TargetType="StackPanel">
@@ -110,8 +110,8 @@
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
                                                         <TextBlock>Auto-start when application starts</TextBlock>
                                                     </CheckBox>
-                                                    <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
-                                                    <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
+                                                    <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                                     <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                         <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                     </Label>
@@ -139,8 +139,8 @@
                                                         <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
                                                             <TextBlock>Auto-start when application starts</TextBlock>
                                                         </CheckBox>
-                                                        <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
-                                                        <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
+                                                        <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked" />
+                                                        <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked" />
                                                         <Label x:Name="Label_TwitchMultiLive_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                             <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                         </Label>
@@ -170,8 +170,8 @@
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
                                                         <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                                     </CheckBox>
-                                                    <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                    <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                                     <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                         <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                     </Label>
@@ -188,8 +188,8 @@
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
                                                         <TextBlock TextWrapping="Wrap">Auto-start when application starts</TextBlock>
                                                     </CheckBox>
-                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStart" Content="Start Clip Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay}" x:Name="Radio_Twitch_ClipBotStop" Content="Stop Clip Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_ClipBotStart" Content="Start Clip Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource ControlBot}}" x:Name="Radio_Twitch_ClipBotStop" Content="Stop Clip Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                                     <Label x:Name="Label_TwitchClip_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                         <TextBlock>The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                     </Label>

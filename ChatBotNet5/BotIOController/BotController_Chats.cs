@@ -1,7 +1,4 @@
-﻿
-using ChatBot_Net5.Static;
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Documents;

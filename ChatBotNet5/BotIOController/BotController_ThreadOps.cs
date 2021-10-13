@@ -95,18 +95,21 @@ namespace ChatBot_Net5.BotIOController
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-            const int count = 200;
+            //const int count = 200;
 
-            Follow[] FollowArray = new Follow[count];
+            //Follow[] FollowArray = new Follow[count];
 
-            int x = 0;
+            //int x = 0;
 
-            while (x < Follows.Count)
-            {
-                Follows.CopyTo(x, FollowArray, 0, Math.Min(Follows.Count - x, count));
-                OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = FollowArray });
-                x += count;
-            }
+            //while (x < Follows.Count)
+            //{
+            //    Follows.CopyTo(x, FollowArray, 0, Math.Min(Follows.Count - x, count));
+            //    OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = FollowArray });
+            //    x += count;
+            //}
+
+            OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = Follows });
+
         }
 
         private void BeginAddClips()

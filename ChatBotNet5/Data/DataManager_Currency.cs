@@ -72,7 +72,7 @@ namespace ChatBot_Net5.Data
                 {
                     lock (_DataSource.Currency)
                     {
-                        DataSource.CurrencyRow[] currencyRows = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + usersRow.Id + "'");
+                        DataSource.CurrencyRow[] currencyRows = (DataSource.CurrencyRow[])_DataSource.Currency.Select("UserName='" + usersRow.UserName + "'");
                         foreach (DataSource.CurrencyTypeRow typeRow in currencyTypeRows)
                         {
                             bool found = false;

@@ -97,13 +97,13 @@ namespace ChatBot_Net5.Data
         //}
 
         /// <summary>
-        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.ToLocalTime().
+        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.MaxValue.
         /// </summary>
         /// <param name="User">The user to check in the database.</param>
-        /// <returns><c>true</c> if the user has arrived prior to DateTime.Now.ToLocalTime(), <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if the user has arrived prior to DateTime.MaxValue, <c>false</c> otherwise.</returns>
         public bool CheckUser(string User)
         {
-            return CheckUser(User, DateTime.Now.ToLocalTime());
+            return CheckUser(User, DateTime.MaxValue);
         }
 
         /// <summary>
@@ -126,10 +126,10 @@ namespace ChatBot_Net5.Data
         /// Check if the User is already a follower prior to now.
         /// </summary>
         /// <param name="User">The name of the user to check.</param>
-        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.Now.ToLocalTime().</returns>
+        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.MaxValue.</returns>
         public bool CheckFollower(string User)
         {
-            return CheckFollower(User, DateTime.Now.ToLocalTime());
+            return CheckFollower(User, DateTime.MaxValue);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace ChatBot_Net5.Data
                 if (!CheckUser(User))
                 {
                     usersRow = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-                    AddCurrencyRows(ref usersRow);
+                    //AddCurrencyRows(ref usersRow);
                     NotifySaveData();
                 }
             }
