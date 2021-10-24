@@ -1,12 +1,215 @@
-﻿<Window x:Class="StreamerBot.MainWindow"
+﻿<Window x:Class="StreamerBot.StreamerBotWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StreamerBot"
+        xmlns:s="clr-namespace:StreamerBot.Properties"
+        xmlns:local="clr-namespace:StreamerBot" xmlns:Bots="clr-namespace:StreamerBot.BotClients"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Streamer Bot Manager" Height="770" Width="1020">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Bots:BotsTwitch x:Name="TwitchBot" x:Key="TwitchBot" />
+            <!--<GUI:DataManagerViews x:Name="DataViews" x:Key="DataViews" />-->
 
-    </Grid>
+            <Style TargetType="{x:Type DockPanel}">
+                <Setter Property="Margin" Value="5" />
+            </Style>
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="Width" Value="100" />
+                <Setter Property="Height" Value="30" />
+            </Style>
+            <Style TargetType="{x:Type GroupBox}">
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Width" Value="230" />
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="{x:Type CheckBox}">
+                <Setter Property="Margin" Value="5" />
+                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
+            </Style>
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="Margin" Value="10,5,0,5" />
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="Padding" Value="5,0" />
+            </Style>
+            <Style TargetType="{x:Type DataGrid}">
+                <Setter Property="AlternationCount" Value="1" />
+                <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4"/>
+                <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+                <Setter Property="AutoGenerateColumns" Value="True" />
+                <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+                <Setter Property="CanUserAddRows" Value="False" />
+                <Setter Property="CanUserDeleteRows" Value="False" />
+            </Style>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                </Style>
+            </StatusBar.Resources>
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>All Viewers (Users):</Label>
+                    <Label Content="{Binding Users.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>
+                        <Label.ToolTip>When a viewers stops following, not currently updated real-time. Bot startup option manages followers.</Label.ToolTip>
+                        <Label.Content>Followers:</Label.Content>
+                    </Label>
+                    <Label Content="{Binding Followers.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>Commands- Built-in:</Label>
+                    <Label Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>User-Defined:</Label>
+                    <Label Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
+            <ComboBoxItem x:Name="StatusBar_GoLiveCombo" IsEnabled="False" Visibility="Collapsed" />
+        </StatusBar>
+        <TabControl DockPanel.Dock="Top" TabStripPlacement="Left">
+            <TabItem Header="Bots">
+                <TabControl>
+                    <TabItem Header="Start">
+                        <StackPanel>
+                            <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
+                                    <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.
+                            </TextBlock>
+                            <WrapPanel>
+                                <GroupBox Header="Follower Service">
+                                    <WrapPanel>
+                                        <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
+                                            <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
+                                        </Label>
+                                        <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
+                                            <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
+                                        </Label>
+                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
+                                            <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
+                                        </CheckBox>
+                                        <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                        <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                        <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                            <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                        </Label>
+                                    </WrapPanel>
+                                </GroupBox>
+                            </WrapPanel>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Twitch">
+                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                            <DockPanel HorizontalAlignment="Left" ScrollViewer.CanContentScroll="True">
+                                <StackPanel DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Width="450" ScrollViewer.CanContentScroll="True">
+                                    <TextBlock>The bot credentials form needs to be completed with at least client id and access token.
+                                    </TextBlock>
+                                    <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
+                                    <GroupBox Header="Bot Account" Width="Auto">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                <Label Content="Channel Name" Width="110" />
+                                                <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
+                                            </StackPanel>
+                                            <TextBlock Width="300" Text="* This Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
+                                            <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                <Label Content="Bot User Name" Width="110" />
+                                                <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
+                                                <Label x:Name="Twitch_RefreshDate" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" Width="200" />
+                                            </StackPanel>
+
+                                            <Expander x:Name="Expander_Credentials" Header="Credentials (Click me)" ExpandDirection="Down" IsExpanded="False">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                        <Label Content="Client Id" Width="120" />
+                                                        <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" Width="250" ToolTip="The client ID for the bot user account."  LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" Margin="10,0">
+                                                        <Label Content="Token Scope" />
+                                                        <TextBox BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" Width="328" Height="42" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows</TextBox>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                        <Label Content="Access OAuth Token" Width="120" />
+                                                        <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" SourceUpdated="TextBox_SourceUpdated" InputScope="Password" />
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" Height="25" Margin="10">
+                                                        <Label Content="Refresh Token" Width="120" />
+                                                        <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" Width="250" LostFocus="Settings_LostFocus" />
+                                                    </StackPanel>
+
+                                                </StackPanel>
+                                            </Expander>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <WrapPanel DockPanel.Dock="Top" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                        <GroupBox Header="Setup Follower Operations" Width="Auto">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Seconds between checking for new follows:"/>
+                                                    <Label Content="{Binding Value, ElementName=Slider_TimeFollowerPollSeconds}" />
+                                                </StackPanel>
+                                                <Slider x:Name="Slider_TimeFollowerPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new followers. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequencyFollow, Mode=TwoWay}" Maximum="300" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="300" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5" />
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <GroupBox Header="Setup Clip Operations" Width="Auto">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Seconds between checking for new follows:"/>
+                                                    <Label Content="{Binding Value, ElementName=Slider_TimeClipPollSeconds}" />
+                                                </StackPanel>
+                                                <Slider x:Name="Slider_TimeClipPollSeconds" Height="40" Width="407" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for new clips. Smaller values increases traffic to your channel." Value="{Binding TwitchFrequencyClipTime, Mode=TwoWay}" Maximum="1200" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="1200" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5"  />
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <GroupBox Header="Setup Go-Live Notifications" Width="Auto">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Seconds between checking for going live: " />
+                                                    <Label Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
+                                                </StackPanel>
+                                                <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="422" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10"  />
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="Data">
+
+            </TabItem>
+            <TabItem Header="Logs">
+                <TabControl>
+                    <TabItem Header="Twitch Status">
+
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>

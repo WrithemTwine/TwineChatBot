@@ -11,10 +11,14 @@
     <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1701;1702;8002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,8 +31,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="BotClients\Twitch\TwitchLib\Core\ServiceTimer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Culture\Msgs.Designer.cs">
       <DependentUpon>Msgs.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Data\DataSource.Designer.cs">
+      <DependentUpon>DataSource.xsd</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
@@ -56,6 +68,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\DataSource.xsd">
+      <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -10,8 +10,9 @@ namespace StreamerBot.Static
         public static bool LogExceptions { get; set; }
 
         public static bool ProcessOps { get; set; }  // whether to process ops or not
-        public static bool IsStreamOnline { get; set; }
-        public static bool BotStarted { get; set; }
+        public static bool IsStreamOnline { get; set; } // whether stream is online
+        public static bool BotStarted { get; set; } // whether bots are started
+        public static bool ExitToken { get; set; } // the token specifying the bot is exiting
 
         public static bool TwitchAddFollowersStart { get; set; }
         public static bool TwitchPruneNonFollowers { get; set; }
