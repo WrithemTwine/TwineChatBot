@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace StreamerBot.GUI
 {
-    public class DataManagerViews : INotifyPropertyChanged
+    public class GUIDataManagerViews : INotifyPropertyChanged
     {
         #region DataManager TableViews
         // datatable views to display the data in the GUI
@@ -32,7 +32,7 @@ namespace StreamerBot.GUI
 
         #endregion
 
-        public DataManagerViews()
+        public GUIDataManagerViews()
         {
             SetDataTableViews(SystemsController.DataManage);
         }

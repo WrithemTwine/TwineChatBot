@@ -1,4 +1,5 @@
-﻿using StreamerBot.Properties;
+﻿using StreamerBot.Events;
+using StreamerBot.Properties;
 
 using System;
 
@@ -69,5 +70,6 @@ namespace StreamerBot.BotClients.Twitch
             ShowConnectionMsg = Settings.Default.MsgBotConnection;
             return true;
         }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using StreamerBot.Culture;
 using StreamerBot.Data;
 using StreamerBot.Enum;
+using StreamerBot.Interfaces;
 using StreamerBot.Models;
 using StreamerBot.Properties;
 using StreamerBot.Static;
@@ -61,7 +62,7 @@ namespace StreamerBot.Systems
          * 
          */
 
-        private static DataManager _datamanager;
+        private static IDataManageReadOnly _datamanager;
         private static readonly ResourceManager RM = Msgs.ResourceManager;
 
         /// <summary>
