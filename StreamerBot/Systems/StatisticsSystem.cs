@@ -179,17 +179,7 @@ namespace StreamerBot.Systems
                     AddFollow();
                     AddAutoEvents();
                 }
-
-                //if (OptionFlags.TwitchFollowerFollowBack)
-                //{
-                //    FollowbackOp(f.FromUserName);
-                //}
             }
-        }
-
-        public void DataManage_OnFoundNewFollower(object sender, Events.OnFoundNewFollowerEventArgs e)
-        {
-            DataManage.AddFollower(e.FromUserName, e.FollowedAt.ToLocalTime());
         }
 
         #endregion Follower

@@ -15,8 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
-
 using static StreamerBot.Data.DataSource;
 
 namespace StreamerBot.Data
@@ -250,11 +248,11 @@ switches:
                     _DataSource.CategoryList.AcceptChanges();
                 }
 
-                DataSource.CategoryListRow categoryListRow = (DataSource.CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
+                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
 
                 bool CheckName(string criteria)
                 {
-                    DataSource.CommandsRow[] datarow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + criteria + "'");
+                    CommandsRow[] datarow = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + criteria + "'");
                     if (datarow.Length > 0 && datarow[0].Category == string.Empty)
                     {
                         datarow[0].Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
@@ -342,7 +340,7 @@ switches:
         {
             lock (_DataSource.Commands)
             {
-                DataSource.CommandsRow[] rows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
+                CommandsRow[] rows = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
 
                 if (rows != null && rows.Length > 0)
                 {
@@ -402,7 +400,7 @@ switches:
             lock (_DataSource.Commands)
             {
                 //string strParams = Params.DBParamsString();
-                DataSource.CategoryListRow categoryListRow = (DataSource.CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
+                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
 
 
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
@@ -420,10 +418,10 @@ switches:
                 filter += "'" + s.ToString() + "',";
             }
 
-            DataSource.CommandsRow[] socialrows = null;
+            CommandsRow[] socialrows = null;
             lock (_DataSource.Commands)
             {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + LocalizedMsgSystem.GetVar(DefaultCommand.socials) + "'");
+                socialrows = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + LocalizedMsgSystem.GetVar(DefaultCommand.socials) + "'");
             }
 
             string socials = socialrows[0].Message;
@@ -435,10 +433,10 @@ switches:
 
             lock (_DataSource.Commands)
             {
-                socialrows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter[0..^1] + ")");
+                socialrows = (CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + filter[0..^1] + ")");
             }
 
-            foreach (DataSource.CommandsRow com in socialrows)
+            foreach (CommandsRow com in socialrows)
             {
                 if (com.Message != DefaulSocialMsg && com.Message != string.Empty)
                 {
@@ -453,7 +451,7 @@ switches:
         {
             lock (_DataSource.Commands)
             {
-                DataSource.CommandsRow[] usagerows = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + command + "'");
+                CommandsRow[] usagerows = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + command + "'");
 
                 return usagerows[0]?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
             }
@@ -491,13 +489,13 @@ switches:
         //    return BotController.ParseReplace(comrow[0].Message, datavalues);
         //}
 
-        public DataSource.CommandsRow GetCommand(string cmd)
+        public CommandsRow GetCommand(string cmd)
         {
-            DataSource.CommandsRow[] comrow = null;
+            CommandsRow[] comrow = null;
 
             lock (_DataSource.Commands)
             {
-                comrow = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
+                comrow = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
             }
 
             //if (comrow == null || comrow.Length == 0)
@@ -508,7 +506,7 @@ switches:
             return comrow?[0];
         }
 
-        public object PerformQuery(DataSource.CommandsRow row, string ParamValue)
+        public object PerformQuery(CommandsRow row, string ParamValue)
         {
             //CommandParams query = CommandParams.Parse(row.Params);
             DataRow result = null;
@@ -528,26 +526,26 @@ switches:
                 Type resulttype = result.GetType();
 
                 // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
-                if (resulttype == typeof(DataSource.UsersRow))
+                if (resulttype == typeof(UsersRow))
                 {
-                    DataSource.UsersRow usersRow = (DataSource.UsersRow)result;
+                    UsersRow usersRow = (UsersRow)result;
                     return usersRow[row.data_field];
                 }
-                else if (resulttype == typeof(DataSource.FollowersRow))
+                else if (resulttype == typeof(FollowersRow))
                 {
-                    DataSource.FollowersRow follower = (DataSource.FollowersRow)result;
+                    FollowersRow follower = (FollowersRow)result;
 
                     return follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
                 }
-                else if (resulttype == typeof(DataSource.CurrencyRow))
+                else if (resulttype == typeof(CurrencyRow))
                 {
 
                 }
-                else if (resulttype == typeof(DataSource.CurrencyTypeRow))
+                else if (resulttype == typeof(CurrencyTypeRow))
                 {
 
                 }
-                else if (resulttype == typeof(DataSource.CommandsRow))
+                else if (resulttype == typeof(CommandsRow))
                 {
 
                 }
@@ -556,7 +554,7 @@ switches:
             return result;
         }
 
-        public object[] PerformQuery(DataSource.CommandsRow row, int Top = 0)
+        public object[] PerformQuery(CommandsRow row, int Top = 0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
             DataRow[] output;
@@ -591,7 +589,7 @@ switches:
             lock (_DataSource.Commands)
             {
                 List<Tuple<string, int, string[]>> TimerList = new();
-                foreach (DataSource.CommandsRow row in (DataSource.CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0"))
+                foreach (CommandsRow row in (CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0"))
                 {
                     TimerList.Add(new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>()));
                 }
@@ -603,7 +601,7 @@ switches:
         {
             lock (_DataSource.Commands)
             {
-                DataSource.CommandsRow[] row = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + Cmd + "'");
+                CommandsRow[] row = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + Cmd + "'");
 
                 return row == null ? null : new(row[0].CmdName, row[0].RepeatTimer, row[0].Category?.Split(',') ?? Array.Empty<string>());
             }
@@ -841,7 +839,7 @@ switches:
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow user = AddNewUser(User, NowSeen);
+                UsersRow user = AddNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
                 NotifySaveData();
@@ -852,7 +850,7 @@ switches:
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
+                UsersRow[] user = (UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
                 if (user != null)
                 {
                     UpdateWatchTime(ref user[0], LastSeen); // will update the "LastDateSeen"
@@ -863,7 +861,7 @@ switches:
             }
         }
 
-        public void UpdateWatchTime(ref DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateWatchTime(ref UsersRow User, DateTime CurrTime)
         {
             if (User != null)
             {
@@ -892,7 +890,7 @@ switches:
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + UserName + "'");
+                UsersRow[] user = (UsersRow[])_DataSource.Users.Select("UserName='" + UserName + "'");
                 UpdateWatchTime(ref user[0], CurrTime);
             }
         }
@@ -937,7 +935,7 @@ switches:
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
+                UsersRow[] user = (UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
 
                 return (user.Length > 0) ? user[0]?.FirstDateSeen <= ToDateTime : false;
             }
@@ -963,7 +961,7 @@ switches:
         {
             lock (_DataSource.Followers)
             {
-                DataSource.FollowersRow datafollowers = (DataSource.FollowersRow)_DataSource.Followers.Select("UserName='" + User + "'").FirstOrDefault();
+                FollowersRow datafollowers = (FollowersRow)_DataSource.Followers.Select("UserName='" + User + "'").FirstOrDefault();
 
                 return datafollowers != null && datafollowers.IsFollower && datafollowers.FollowedDate <= ToDateTime;
             }
@@ -981,10 +979,10 @@ switches:
             {
                 bool newfollow = false;
 
-                DataSource.UsersRow users = AddNewUser(User, FollowedDate);
+                UsersRow users = AddNewUser(User, FollowedDate);
 
                 DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "'");
-                DataSource.FollowersRow followers = datafollowers.Length > 0 ? (DataSource.FollowersRow)datafollowers[0] : null;
+                FollowersRow followers = datafollowers.Length > 0 ? (FollowersRow)datafollowers[0] : null;
                 if (followers != null)
                 {
                     newfollow = !followers.IsFollower;
@@ -1007,9 +1005,9 @@ switches:
         /// <param name="User">The user name.</param>
         /// <param name="FirstSeen">The first time the user is seen.</param>
         /// <returns>True if the user is added, else false if the user already existed.</returns>
-        private DataSource.UsersRow AddNewUser(string User, DateTime FirstSeen)
+        private UsersRow AddNewUser(string User, DateTime FirstSeen)
         {
-            DataSource.UsersRow usersRow = null;
+            UsersRow usersRow = null;
 
             lock (_DataSource.Users)
             {
@@ -1024,7 +1022,7 @@ switches:
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock (_DataSource.Users)
             {
-                usersRow = (DataSource.UsersRow)_DataSource.Users.Select("UserName='" + User + "'")[0];
+                usersRow = (UsersRow)_DataSource.Users.Select("UserName='" + User + "'")[0];
 
                 if (DateTime.Compare(usersRow.FirstDateSeen, FirstSeen) > 0)
                 {
@@ -1043,20 +1041,20 @@ switches:
         //    OnFoundNewFollower?.Invoke(this, new() { FromUserName = fromUserName, FollowedAt = followedAt });
         //}
 
-        public void UpdateFollowers(string ChannelName, Dictionary<string, IEnumerable<Follow>> follows)
+        public void UpdateFollowers( IEnumerable<Follow> follows)
         {
             //new Thread(new ThreadStart(() =>
             //{
             UpdatingFollowers = true;
             lock (_DataSource.Followers)
             {
-                List<DataSource.FollowersRow> temp = new();
-                temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
+                List<FollowersRow> temp = new();
+                temp.AddRange((FollowersRow[])_DataSource.Followers.Select());
                 temp.ForEach((f) => f.IsFollower = false);
             }
-            if (follows[ChannelName].Count() > 1)
+            if (follows.Any())
             {
-                foreach (Follow f in follows[ChannelName])
+                foreach (Follow f in follows)
                 {
                     AddFollower(f.FromUserName, f.FollowedAt);
                 }
@@ -1066,9 +1064,9 @@ switches:
             {
                 lock (_DataSource.Followers)
                 {
-                    List<DataSource.FollowersRow> temp = new();
-                    temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
-                    foreach (DataSource.FollowersRow f in from DataSource.FollowersRow f in temp
+                    List<FollowersRow> temp = new();
+                    temp.AddRange((FollowersRow[])_DataSource.Followers.Select());
+                    foreach (FollowersRow f in from FollowersRow f in temp
                                                           where !f.IsFollower
                                                           select f)
                     {
@@ -1089,7 +1087,7 @@ switches:
         {
             lock (_DataSource.Users)
             {
-                foreach (DataSource.UsersRow users in _DataSource.Users.Select())
+                foreach (UsersRow users in _DataSource.Users.Select())
                 {
                     users.WatchTime = new(0);
                 }
@@ -1106,7 +1104,7 @@ switches:
         /// <param name="dateTime">The time to base the currency calculation.</param>
         public void UpdateCurrency(string User, DateTime dateTime)
         {
-            DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+            UsersRow user = _DataSource.Users.FindByUserName(User);
             UpdateCurrency(ref user, dateTime);
             NotifySaveData();
         }
@@ -1116,7 +1114,7 @@ switches:
         /// </summary>
         /// <param name="User">The user to evaluate.</param>
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
-        public void UpdateCurrency(ref DataSource.UsersRow User, DateTime CurrTime)
+        public void UpdateCurrency(ref UsersRow User, DateTime CurrTime)
         {
             lock (_DataSource.Users)
             {
@@ -1135,8 +1133,8 @@ switches:
 
                             AddCurrencyRows(ref User);
 
-                            DataSource.CurrencyTypeRow[] currencyType = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                            DataSource.CurrencyRow[] userCurrency = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + User.Id + "'");
+                            CurrencyTypeRow[] currencyType = (CurrencyTypeRow[])_DataSource.CurrencyType.Select();
+                            CurrencyRow[] userCurrency = (CurrencyRow[])_DataSource.Currency.Select("Id='" + User.Id + "'");
 
                             foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                             {
@@ -1156,20 +1154,20 @@ switches:
         /// Update the currency accrual for the specified user, add all currency rows per the user.
         /// </summary>
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
-        public void AddCurrencyRows(ref DataSource.UsersRow usersRow)
+        public void AddCurrencyRows(ref UsersRow usersRow)
         {
             lock (_DataSource.CurrencyType)
             {
-                DataSource.CurrencyTypeRow[] currencyTypeRows = (DataSource.CurrencyTypeRow[])_DataSource.CurrencyType.Select();
+                CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])_DataSource.CurrencyType.Select();
                 if (usersRow != null)
                 {
                     lock (_DataSource.Currency)
                     {
-                        DataSource.CurrencyRow[] currencyRows = (DataSource.CurrencyRow[])_DataSource.Currency.Select("UserName='" + usersRow.UserName + "'");
-                        foreach (DataSource.CurrencyTypeRow typeRow in currencyTypeRows)
+                        CurrencyRow[] currencyRows = (CurrencyRow[])_DataSource.Currency.Select("UserName='" + usersRow.UserName + "'");
+                        foreach (CurrencyTypeRow typeRow in currencyTypeRows)
                         {
                             bool found = false;
-                            foreach (DataSource.CurrencyRow CR in currencyRows)
+                            foreach (CurrencyRow CR in currencyRows)
                             {
                                 if (CR.CurrencyName == typeRow.CurrencyName)
                                 {
@@ -1197,7 +1195,7 @@ switches:
                 System.Data.DataRow[] UserRows = _DataSource.Users.Select();
                 for (int i = 0; i < UserRows.Length; i++)
                 {
-                    DataSource.UsersRow users = (DataSource.UsersRow)UserRows[i];
+                    UsersRow users = (UsersRow)UserRows[i];
                     AddCurrencyRows(ref users);
                 }
             }
@@ -1211,7 +1209,7 @@ switches:
         {
             lock (_DataSource.Currency)
             {
-                foreach (DataSource.CurrencyRow row in _DataSource.Currency.Select())
+                foreach (CurrencyRow row in _DataSource.Currency.Select())
                 {
                     row.Value = 0;
                 }
@@ -1245,7 +1243,7 @@ switches:
 
                 foreach (DataRow d in dataRows)
                 {
-                    DiscordRow row = d as DataSource.DiscordRow;
+                    DiscordRow row = d as DiscordRow;
 
                     if (row.Kind == webhooks.ToString())
                     {
@@ -1267,7 +1265,7 @@ switches:
         {
             lock (_DataSource)
             {
-                DataSource.CategoryListRow[] categoryList = (DataSource.CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
+                CategoryListRow[] categoryList = (CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
 
                 if (categoryList.Length == 0)
                 {
@@ -1289,7 +1287,7 @@ switches:
         {
             lock (_DataSource)
             {
-                DataSource.ClipsRow[] clipsRows = (DataSource.ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
+                ClipsRow[] clipsRows = (ClipsRow[])_DataSource.Clips.Select("Id='" + ClipId + "'");
 
                 if (clipsRows.Length == 0)
                 {

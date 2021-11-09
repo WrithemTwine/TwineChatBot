@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace StreamerBot.Systems
 {
@@ -20,8 +19,6 @@ namespace StreamerBot.Systems
     /// </summary>
     public class SystemsBase
     {
-        public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
-
         public static DataManager DataManage { get; set; }
 
         public static string Category { get; set; }
@@ -72,11 +69,6 @@ namespace StreamerBot.Systems
             {
                 DataManage.RemoveAllRaidData();
             }
-        }
-
-        public static void UpdateFollowers(string ChannelName, IEnumerable<Follow> Follows)
-        {
-            DataManage.UpdateFollowers(ChannelName, new() { { ChannelName, Follows } });
         }
 
         /// <summary>

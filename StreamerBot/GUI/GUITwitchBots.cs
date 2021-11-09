@@ -12,20 +12,23 @@ namespace StreamerBot.GUI
         /// </summary>
         //public static TwitchBotChatClient TwitchIO { get; private set; } = new();
         public TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        //public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = new();
         //public static TwitchBotClipSvc TwitchClip { get; private set; } = new();
         //public static TwitchBotUserSvc TwitchUsers { get; private set; } = new();
 
-        public string TwitchLiveMonitor { get; set; }
+        public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; set; }
         public string TwitchIO { get; set; }
         public string TwitchClip { get; set; }
 
         public GUITwitchBots()
         {
             TwitchFollower = BotsTwitch.TwitchFollower;
+            TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
 
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchFollower.OnBotStopped += TwitchFollower_OnBotStopped;
+
+            TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
+            TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
         }
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)

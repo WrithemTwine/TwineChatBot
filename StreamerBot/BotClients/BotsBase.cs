@@ -1,11 +1,17 @@
-﻿using StreamerBot.Interfaces;
+﻿using StreamerBot.Events;
+using StreamerBot.Enum;
+using StreamerBot.Interfaces;
 
+using System;
 using System.Collections.ObjectModel;
 
 namespace StreamerBot.BotClients
 {
     public class BotsBase : IBotTypes
     {
+        public event EventHandler<BotEventArgs> BotEvent;
+
+
         /// <summary>
         /// Utilize the read-only version of the data manager, designed to only read data
         /// </summary>
@@ -32,6 +38,11 @@ namespace StreamerBot.BotClients
             {
                 a.ExitBot();
             }
+        }
+
+        protected void InvokeBotEvent(object sender, BotEvents Botevent, EventArgs eventargs)
+        {
+            BotEvent?.Invoke(sender, new() { MethodName = Botevent.ToString(), e = eventargs });
         }
 
 

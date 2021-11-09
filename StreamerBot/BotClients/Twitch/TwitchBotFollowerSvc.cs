@@ -14,6 +14,8 @@ namespace StreamerBot.BotClients.Twitch
 {
     public class TwitchBotFollowerSvc : TwitchBotsBase
     {
+        public event EventHandler<EventArgs> OnServiceConnected;
+
         /// <summary>
         /// Listens for new followers.
         /// </summary>
@@ -40,6 +42,8 @@ namespace StreamerBot.BotClients.Twitch
             ApiSettings apifollow = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
             FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
             FollowerService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
+
+            OnServiceConnected?.Invoke(this, new());
         }
 
         /// <summary>
