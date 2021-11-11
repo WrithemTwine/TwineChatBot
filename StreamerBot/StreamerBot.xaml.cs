@@ -42,6 +42,9 @@ namespace StreamerBot
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
             }
+            OptionFlags.SetSettings();
+
+            Controller.SetDispatcher(Application.Current.Dispatcher);
 
             InitializeComponent();
 

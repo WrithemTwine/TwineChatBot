@@ -24,6 +24,9 @@ namespace StreamerBot.BotIOController
 
         public BotsTwitch botsTwitch { get; private set; }
 
+
+        private Dispatcher AppDispatcher { get; set; }
+
         public BotController()
         {
             Systems = new();
@@ -39,12 +42,17 @@ namespace StreamerBot.BotIOController
 
         }
 
+        public void SetDispatcher(Dispatcher dispatcher)
+        {
+            AppDispatcher = dispatcher;
+        }
+
         private void Twitch_BotEvent(object sender, BotEventArgs e)
         {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
-           {
-               typeof(BotController).InvokeMember(name: e.MethodName, invokeAttr: BindingFlags.InvokeMethod, binder: null, target: this, args: new[] { e.e });
-           });
+            AppDispatcher.Invoke(() =>
+            {
+                typeof(BotController).InvokeMember(name: e.MethodName, invokeAttr: BindingFlags.InvokeMethod, binder: null, target: this, args: new[] { e.e });
+            });
         }
 
         private void Systems_PostChannelMessage(object sender, Events.PostChannelMessageEventArgs e)

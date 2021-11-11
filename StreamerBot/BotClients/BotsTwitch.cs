@@ -29,8 +29,12 @@ namespace StreamerBot.BotClients
             AddBot(TwitchFollower);
 
             TwitchFollower.OnServiceConnected += TwitchFollower_OnServiceConnected;
+            TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             OnCompletedDownloadFollowers += BotsTwitch_OnCompletedDownloadFollowers;
+        }
 
+        private void TwitchFollower_OnBotStarted(object sender, EventArgs e)
+        {
             GetAllFollowers();
         }
 
@@ -73,7 +77,7 @@ namespace StreamerBot.BotClients
 
         private const int maxlength = 8000;
 
-        public string MultiLiveStatusLog { get; set; } = "";
+        public static string MultiLiveStatusLog { get; set; } = "";
 
         public event PropertyChangedEventHandler PropertyChanged;
 

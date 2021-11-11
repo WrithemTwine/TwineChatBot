@@ -1,8 +1,9 @@
-﻿using StreamerBot.Systems;
+﻿using StreamerBot.Models;
+using StreamerBot.Systems;
 
 using System.Collections.Generic;
 
-namespace StreamerBot.Models
+namespace StreamerBot.Static
 {
     public class MsgVarHelp : IComparer<Command>
     {

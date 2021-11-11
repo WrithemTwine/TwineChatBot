@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="clr-namespace:StreamerBot.Properties"
-        xmlns:GUI="clr-namespace:StreamerBot.GUI"
+        xmlns:GUI="clr-namespace:StreamerBot.GUI" xmlns:Static="clr-namespace:StreamerBot.Static"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="770" Width="1020"
         Loaded="Window_Loaded" Closing="OnWindowClosing">
@@ -13,6 +13,7 @@
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <GUI:GUIMultiLiveDataManager x:Name="MultiLiveDataManager" x:Key="MultiLiveDataManager" />
+            <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
 
             <Style TargetType="{x:Type DockPanel}">
                 <Setter Property="Margin" Value="5" />
@@ -59,6 +60,9 @@
                     <Setter Property="Orientation" Value="Horizontal" />
                 </Style>
             </StatusBar.Resources>
+            <StatusBar.DataContext>
+                <Binding Mode="OneWay" Source="{StaticResource DataViews}"/>
+            </StatusBar.DataContext>
             <StatusBarItem>
                 <StackPanel>
                     <Label>All Viewers (Users):</Label>
@@ -450,7 +454,7 @@
                             </ScrollViewer>
                         </TabItem>
                         <TabItem Header="Variable Options">
-                            <ListView DockPanel.Dock="Right" ItemsSource="{Binding CommandInfo.Collection}" >
+                            <ListView DockPanel.Dock="Right" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" ItemsSource="{Binding Collection}" >
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150"/>
