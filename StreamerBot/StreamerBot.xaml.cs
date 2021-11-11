@@ -537,14 +537,14 @@ namespace StreamerBot
         {
             if (IsMultiProcActive == false)
             {
-                Controller.botsTwitch.MultiConnect();
+                Controller.TwitchBots.GetLiveMonitorSvc().MultiConnect();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
                 Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
             }
             else if (IsMultiProcActive == true)
             {
                 MultiBotRadio();
-                Controller.botsTwitch.MultiDisconnect();
+                Controller.TwitchBots.GetLiveMonitorSvc().MultiDisconnect();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
             }
         }
@@ -624,7 +624,7 @@ namespace StreamerBot
             {
                 if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
                 {
-                    Controller.botsTwitch.StartMultiLive();
+                    Controller.TwitchBots.GetLiveMonitorSvc().StartMultiLive();
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StartBot.IsChecked = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
@@ -636,14 +636,14 @@ namespace StreamerBot
                 }
                 else
                 {
-                    Controller.botsTwitch.StopMultiLive();
+                    Controller.TwitchBots.GetLiveMonitorSvc().StopMultiLive();
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StopBot.IsChecked = true;
 
                     if (IsMultiProcActive == true)
                     {
-                        DG_Multi_LiveStreamStats.ItemsSource = GUIMultiLiveDataManager.MultiLiveDataManager.LiveStream;
+                        DG_Multi_LiveStreamStats.ItemsSource = TwitchBotLiveMonitorSvc.MultiLiveDataManager.LiveStream;
                     }
                     DG_Multi_LiveStreamStats.Visibility = Visibility.Visible;
 
@@ -672,7 +672,7 @@ namespace StreamerBot
 
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            Controller.botsTwitch.UpdateChannels();
+            Controller.TwitchBots.GetLiveMonitorSvc().UpdateChannels();
             IsAddNewRow = false;
         }
 

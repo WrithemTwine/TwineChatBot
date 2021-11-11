@@ -19,13 +19,13 @@ namespace StreamerBot.BotIOController
 {
     public class BotController
     {
+        private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
         internal Collection<IBotTypes> BotsList { get; private set; } = new();
 
-        public BotsTwitch botsTwitch { get; private set; }
+        public BotsTwitch TwitchBots { get; private set; }
 
 
-        private Dispatcher AppDispatcher { get; set; }
 
         public BotController()
         {
@@ -34,7 +34,7 @@ namespace StreamerBot.BotIOController
 
 
             BotsTwitch Twitch = new BotsTwitch();
-            botsTwitch = Twitch;
+            TwitchBots = Twitch;
             Twitch.BotEvent += Twitch_BotEvent;
 
 
@@ -124,7 +124,7 @@ namespace StreamerBot.BotIOController
         {
             if (e.Channel != TwitchBotsBase.TwitchChannelName)
             {
-                botsTwitch.SendMultiLiveMsg(e);
+                TwitchBots.GetLiveMonitorSvc().SendMultiLiveMsg(e);
             }
             else
             {
@@ -213,7 +213,7 @@ namespace StreamerBot.BotIOController
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
             if (OptionFlags.ManageFollowers)
             {
-                botsTwitch.GetAllFollowers();
+                TwitchBots.GetAllFollowers();
             }
             // when management resumes, code upstream enables the startbot process 
         }

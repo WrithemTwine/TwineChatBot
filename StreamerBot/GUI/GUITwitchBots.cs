@@ -15,7 +15,7 @@ namespace StreamerBot.GUI
         //public static TwitchBotClipSvc TwitchClip { get; private set; } = new();
         //public static TwitchBotUserSvc TwitchUsers { get; private set; } = new();
 
-        public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; set; }
+        public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
         public string TwitchIO { get; set; }
         public string TwitchClip { get; set; }
 
