@@ -98,6 +98,12 @@ namespace StreamerBot.GUI
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             NotifyPropertyChanged(nameof(sender));
+
+            // refresh the 'status bar' count items
+            NotifyPropertyChanged(nameof(Users));
+            NotifyPropertyChanged(nameof(Followers));
+            NotifyPropertyChanged(nameof(BuiltInCommands));
+            NotifyPropertyChanged(nameof(Users));
         }
 
     }

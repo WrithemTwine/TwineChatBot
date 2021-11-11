@@ -35,7 +35,7 @@ namespace StreamerBot.Data
 
         private readonly Queue<Task> SaveTasks = new();
         private bool SaveThreadStarted = false;
-        private const int SaveThreadWait = 5000;
+        private const int SaveThreadWait = 10000;
 
         public bool UpdatingFollowers { get; set; }
 
@@ -91,7 +91,6 @@ namespace StreamerBot.Data
         {
             if (!UpdatingFollowers) // block saving data until the follower updating is completed
             {
-
                 if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
                 {
                     SaveThreadStarted = true;
