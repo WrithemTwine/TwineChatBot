@@ -17,8 +17,11 @@ namespace StreamerBot.BotClients
         public event EventHandler<OnNewFollowersDetectedArgs> OnCompletedDownloadFollowers;
         public event EventHandler<ClipFoundEventArgs> OnClipFound;
 
+        public static TwitchBotChatClient TwitchBotChatClient { get; private set; } = new();
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = new();
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = new();
+        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } = new();
+        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = new();
 
         public BotsTwitch()
         {

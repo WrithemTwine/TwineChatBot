@@ -10,22 +10,26 @@ namespace StreamerBot.GUI
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        //public static TwitchBotChatClient TwitchIO { get; private set; } = new();
+        public TwitchBotChatClient TwitchIO { get; private set; }
         public TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        //public static TwitchBotClipSvc TwitchClip { get; private set; } = new();
-        //public static TwitchBotUserSvc TwitchUsers { get; private set; } = new();
-
         public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
-        public string TwitchIO { get; set; }
-        public string TwitchClip { get; set; }
+        public TwitchBotClipSvc TwitchClip { get; private set; }
 
         public GUITwitchBots()
         {
+            TwitchIO = BotsTwitch.TwitchBotChatClient;
             TwitchFollower = BotsTwitch.TwitchFollower;
+            TwitchClip = BotsTwitch.TwitchBotClipSvc;
             TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
+
+            TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
+            TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;
 
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchFollower.OnBotStopped += TwitchFollower_OnBotStopped;
+
+            TwitchClip.OnBotStarted += TwitchClip_OnBotStopped;
+            TwitchClip.OnBotStopped += TwitchClip_OnBotStarted;
 
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;

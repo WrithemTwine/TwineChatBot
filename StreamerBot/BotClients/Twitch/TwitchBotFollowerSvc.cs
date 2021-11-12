@@ -105,14 +105,5 @@ namespace StreamerBot.BotClients.Twitch
             FollowerService = null;
             return base.ExitBot();
         }
-
-        // Twitch.tv disabled this feature. https://blog.twitch.tv/en/2021/06/28/deprecation-of-create-and-delete-follows-api-endpoints/
-        //public void FollowBack(string ToUserName)
-        //{
-        //    new Thread(new ThreadStart(() =>
-        //    {
-        //        FollowerService.CreateUserFollowerName(TwitchChannelName, ToUserName, OptionFlags.TwitchAddFollowerNotification);
-        //    })).Start();
-        //}
     }
 }

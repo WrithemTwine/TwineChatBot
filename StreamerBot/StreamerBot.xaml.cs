@@ -30,7 +30,6 @@ namespace StreamerBot
         private GUITwitchBots guiTwitchBot;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private bool IsAddNewRow;
-        private bool IsAppClosing;
         private const string MultiLiveName = "MultiUserLiveBot";
 
         public StreamerBotWindow()
@@ -42,6 +41,8 @@ namespace StreamerBot
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
             }
+            WatchProcessOps = true;
+            IsMultiProcActive = null;
             OptionFlags.SetSettings();
 
             Controller.SetDispatcher(Application.Current.Dispatcher);
@@ -52,6 +53,9 @@ namespace StreamerBot
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
+
+            new Thread(new ThreadStart(ProcessWatcher)).Start();
+            NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
         }
 
         #region Window Open and Close
@@ -95,7 +99,6 @@ namespace StreamerBot
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
             WatchProcessOps = false;
-            IsAppClosing = true;
             OptionFlags.ProcessOps = false;
             OptionFlags.ExitToken = true;
             //CP.Close();
@@ -325,6 +328,11 @@ namespace StreamerBot
             }
         }
 
+        private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox).ScrollToEnd();
+        }
+
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             if ((sender as TextBox).Name == "TB_Twitch_AccessToken")
@@ -551,6 +559,38 @@ namespace StreamerBot
 
         #endregion
 
+
+        #region BotOps-changes in token expiration
+
+        /// <summary>
+        /// Event to handle when the Bot Credentials expire. The expiration date 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
+        {
+            List<RadioButton> BotOps = new()
+            {
+                Radio_MultiLiveTwitch_StopBot,
+                Radio_Twitch_FollowBotStop,
+                Radio_Twitch_LiveBotStop,
+                Radio_Twitch_StopBot,
+                Radio_Twitch_ClipBotStop
+            };
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (RadioButton button in BotOps)
+                {
+                    HelperStopBot(button);
+                }
+
+                CheckFocus();
+            });
+        }
+
+        #endregion
+
         #region WatcherTools
 
         private bool WatchProcessOps;
@@ -620,7 +660,7 @@ namespace StreamerBot
 
         private void MultiBotRadio(bool Start = false)
         {
-            if (Controller != null && guiTwitchBot.TwitchLiveMonitor.IsMultiConnected)
+            if (Controller != null && guiTwitchBot != null && guiTwitchBot.TwitchLiveMonitor.IsMultiConnected)
             {
                 if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
                 {

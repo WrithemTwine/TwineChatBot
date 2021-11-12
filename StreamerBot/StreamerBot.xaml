@@ -115,11 +115,8 @@
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                            <!--Checked="Radio_Twitch_LiveBotStart_Checked"-->
-
-                                            <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                            <!--Checked="Radio_Twitch_LiveBotStop_Checked"-->
+                                            <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked"/>
+                                            <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked"/>
                                             <Label x:Name="Label_TwitchMultiLive_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                 <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
@@ -132,10 +129,8 @@
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
                                                     <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
-                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot" IsEnabled="False" HorizontalAlignment="Left" />
-                                                <!--PreviewMouseDown="BC_MultiLiveTwitch_StartBot"-->
-                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" />
-                                                <!--PreviewMouseDown="BC_MultiLiveTwitch_StopBot"-->
+                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot" IsEnabled="False" HorizontalAlignment="Left" PreviewMouseDown="BC_MultiLiveTwitch_StartBot"/>
+                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" PreviewMouseDown="BC_MultiLiveTwitch_StopBot"/>
                                             </WrapPanel>
                                         </GroupBox>
                                     </StackPanel>
@@ -583,7 +578,7 @@
                                     <CheckBox IsChecked="{Binding LogBotStatus}" Content="Enable Bot Status Logging" Margin="3" ToolTip="Save this log - 'StatusLog.txt'"/>
                                     <CheckBox IsChecked="{Binding LogExceptions}" Content="Enable TwineBot Exception Logging" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'"/>
                                 </StackPanel>
-                                <!--<TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />-->
+                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                             </DockPanel>
                         </GroupBox>
                     </TabItem>
