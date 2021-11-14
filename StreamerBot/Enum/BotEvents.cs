@@ -3,7 +3,13 @@
     public enum BotEvents
     {
         TwitchPostNewFollowers,
-        TwitchBulkPostFollowers
-
+        TwitchBulkPostFollowers,
+        TwitchPostNewClip,
+        TwitchStreamOnline,
+        TwitchStreamOffline,
+        TwitchStreamUpdate,
+        TwitchNewSubscriber,
+        TwitchReSubscriber,
+        TwitchGiftSubscription
     }
 }

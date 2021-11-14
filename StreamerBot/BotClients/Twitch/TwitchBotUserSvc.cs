@@ -10,7 +10,7 @@ namespace StreamerBot.BotClients.Twitch
 {
     public class TwitchBotUserSvc : TwitchBotsBase
     {
-        public UserLookupService userLookupService { get; set; }
+        private UserLookupService userLookupService;
 
         public TwitchBotUserSvc()
         {

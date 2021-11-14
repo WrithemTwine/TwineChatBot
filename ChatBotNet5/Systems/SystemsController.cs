@@ -182,7 +182,7 @@ namespace ChatBot_Net5.Systems
 
         public static void SetCategory(string GameId, string GameName)
         {
-            SetCategory(GameId, GameName);
+            Stats.SetCategory(GameId, GameName);
         }
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)

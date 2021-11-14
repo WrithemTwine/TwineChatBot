@@ -1,4 +1,5 @@
-﻿using StreamerBot.Data;
+﻿using StreamerBot.BotClients;
+using StreamerBot.Data;
 using StreamerBot.Enum;
 using StreamerBot.Events;
 using StreamerBot.Models;
@@ -8,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
 namespace StreamerBot.Systems
 {
@@ -54,8 +53,7 @@ namespace StreamerBot.Systems
                         SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
                     }
 
-                    Stats.AddFollow();
-                    Stats.AddAutoEvents();
+                    UpdatedStat(new List<StreamStatType>() { StreamStatType.Follow, StreamStatType.AutoEvents });
                 }
             }
         }
@@ -70,6 +68,11 @@ namespace StreamerBot.Systems
             SystemsBase.ClearWatchTime();
         }
 
+        public void ClearAllCurrenciesValues()
+        {
+            SystemsBase.ClearAllCurrenciesValues();
+        }
+
         public bool StreamOnline(DateTime CurrTime)
         {
             return Stats.StreamOnline(CurrTime);
@@ -80,9 +83,45 @@ namespace StreamerBot.Systems
             Stats.StreamOffline(CurrTime);
         }
 
-        public void UpdateClips(List<Clip> ClipList)
+        public void SetCategory(string GameId, string GameName)
         {
-            Stats.ClipHelper(ClipList);
+            Stats.SetCategory(GameId, GameName);
+        }
+
+        public void ClipHelper(IEnumerable<Clip> Clips)
+        {
+            foreach (Clip c in Clips)
+            {
+                if (SystemsBase.AddClip(c))
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        SendMessage(c.Url);
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
+                        {
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            Stats.AddDiscord(); // count how many times posted to Discord
+                        }
+                    }
+                }
+            }
+        }
+
+        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        {
+            return DataManage.GetWebhooks(webhooksKind);
+        }
+
+        public void UpdatedStat(List<StreamStatType> streamStatTypes)
+        {
+            foreach(StreamStatType s in streamStatTypes)
+            {
+                UpdatedStat(s);
+            }
         }
 
         public void UpdatedStat(StreamStatType streamStat)

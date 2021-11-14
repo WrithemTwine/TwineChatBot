@@ -6,8 +6,6 @@ using StreamerBot.Static;
 using System;
 using System.Collections.Generic;
 
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
-
 namespace StreamerBot.Systems
 {
     /// <summary>
@@ -91,7 +89,7 @@ namespace StreamerBot.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.AddClip(c.Id, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
 
         /// <summary>

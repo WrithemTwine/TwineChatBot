@@ -455,6 +455,11 @@ namespace StreamerBot
             Controller.ClearWatchTime();
         }
 
+        private void Button_ClearCurrencyAccrlValues_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.ClearAllCurrenciesValues();
+        }
+
         /// <summary>
         /// Sets a DataGrid to accept a new row.
         /// </summary>
@@ -511,7 +516,6 @@ namespace StreamerBot
                 IsAddNewRow = false;
                 (sender as DataGrid).CommitEdit();
             }
-
         }
 
         // TODO: fix scrolling in Sliders but not scroll the whole panel

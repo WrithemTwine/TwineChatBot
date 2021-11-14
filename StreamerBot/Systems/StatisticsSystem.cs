@@ -1,17 +1,12 @@
 ﻿using StreamerBot.BotClients;
-using StreamerBot.BotClients.Twitch;
-using StreamerBot.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBot.Enum;
+using StreamerBot.Models;
 using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
-using TwitchLib.Api.Services.Events.FollowerService;
 
 namespace StreamerBot.Systems
 {
@@ -161,26 +156,26 @@ namespace StreamerBot.Systems
 
         #region Follower
 
-        public void AddNewFollower(List<Follow> FollowList)
-        {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
+        //public void AddNewFollower(List<Follow> FollowList)
+        //{
+        //    string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
 
-            while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+        //    while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
-            foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
-            {
-                if (OptionFlags.ManageFollowers)
-                {
-                    if (FollowEnabled)
-                    {
-                        CallbackSendMsg?.Invoke(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
-                    }
+        //    foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+        //    {
+        //        if (OptionFlags.ManageFollowers)
+        //        {
+        //            if (FollowEnabled)
+        //            {
+        //                CallbackSendMsg?.Invoke(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
+        //            }
 
-                    AddFollow();
-                    AddAutoEvents();
-                }
-            }
-        }
+        //            AddFollow();
+        //            AddAutoEvents();
+        //        }
+        //    }
+        //}
 
         #endregion Follower
 
@@ -192,67 +187,6 @@ namespace StreamerBot.Systems
         }
 
         #endregion
-
-        #region Clips
-        ///// <summary>
-        ///// Default to all users or a specific user to register "DateTime.Now.ToLocalTime()" as the current watch date.
-        ///// </summary>
-        ///// <param name="User">User to update "Now" or null to update all users watch time.</param>
-        //public void UpdateWatchTime(string User = null)
-        //{
-        //    if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
-        //    {
-        //        UpdateWatchTime(User, DateTime.Now.ToLocalTime());
-        //    }
-        //}
-
-        //public void UpdateWatchTime(string User, DateTime Seen)
-        //{
-        //    if (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
-        //    {
-        //        if (User != null)
-        //        {
-        //            datamanager.UpdateWatchTime(User, Seen);
-        //        }
-        //        else
-        //        {
-        //            foreach (string s in CurrUsers)
-        //            {
-        //                datamanager.UpdateWatchTime(s, Seen);
-        //            }
-        //        }
-        //    }
-        //}
-
-        public void ClipHelper(IEnumerable<Clip> Clips)
-        {
-            foreach (Clip c in Clips)
-            {
-                if (AddClip(c))
-                {
-                    if (OptionFlags.TwitchClipPostChat)
-                    {
-                        CallbackSendMsg?.Invoke(c.Url);
-                    }
-
-                    if (OptionFlags.TwitchClipPostDiscord)
-                    {
-                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
-                        {
-                            DiscordWebhook.SendMessage(u.Item2, c.Url);
-                            AddDiscord();
-                        }
-                    }
-                }
-            }
-        }
-
-        public void RegisterNewClip(Clip clip)
-        {
-            DataManage.AddClip(clip.Id, clip.CreatedAt, clip.Duration, clip.GameId, clip.Language, clip.Title, clip.Url);
-            AddClips();
-        }
-        #endregion Clips
 
         public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
