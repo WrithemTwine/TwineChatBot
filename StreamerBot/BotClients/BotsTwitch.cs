@@ -45,6 +45,8 @@ namespace StreamerBot.BotClients
             OnCompletedDownloadFollowers += BotsTwitch_OnCompletedDownloadFollowers;
 
             TwitchBotUserSvc.ConnectUserService();
+
+            OptionFlags.ProcessOps = true;
         }
 
         private void RegisterHandlers()

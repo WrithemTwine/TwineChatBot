@@ -1,5 +1,4 @@
 ﻿using ChatBot_Net5.BotClients;
-using ChatBot_Net5.BotClients.Twitch;
 using ChatBot_Net5.GUI;
 using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;

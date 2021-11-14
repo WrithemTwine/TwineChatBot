@@ -13,7 +13,8 @@
     <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
+    <AssemblyVersion>0.1.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
