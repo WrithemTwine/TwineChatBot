@@ -1,4 +1,5 @@
 ﻿
+using StreamerBot.Enum;
 using StreamerBot.Static;
 
 using System;
@@ -26,7 +27,7 @@ namespace StreamerBot.BotClients.Twitch
         public bool IsMultiConnected { get; set; }
         public TwitchBotLiveMonitorSvc()
         {
-            BotClientName = Enum.Bots.TwitchLiveBot;
+            BotClientName = Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
         }
@@ -117,7 +118,7 @@ namespace StreamerBot.BotClients.Twitch
         {
             if (IsStarted)
             {
-                LiveStreamMonitor?.Stop();
+                StopBot();
             }
             LiveStreamMonitor = null;
             return base.ExitBot();

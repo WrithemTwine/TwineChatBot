@@ -452,7 +452,7 @@
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="600"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -687,9 +687,66 @@
                                     <CheckBox IsChecked="{Binding LogBotStatus}" Content="Enable Bot Status Logging" Margin="3" ToolTip="Save this log - 'StatusLog.txt'"/>
                                     <CheckBox IsChecked="{Binding LogExceptions}" Content="Enable TwineBot Exception Logging" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'"/>
                                 </StackPanel>
-                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
+                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                             </DockPanel>
                         </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Bot Chat">
+                        <DockPanel>
+                            <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="25" />
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="100"/>
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="Join List to organize playing games with your viewers." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
+                                    <Label Grid.Row="1" Content="Click the 'remove' box next to the user name to remove from this list." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
+                                    <GroupBox Grid.Row="2" Padding="10" Header="Join List Status" Grid.RowSpan="3" >
+                                        <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="{x:Type RadioButton}">
+                                                    <Setter Property="Margin" Value="3" />
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <RadioButton Content="Start Join List" IsChecked="{Binding UserPartyStart, Mode=TwoWay}" />
+                                            <RadioButton Content="Stop Join List" IsChecked="{Binding UserPartyStop, Mode=TwoWay}" />
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <ListView Grid.Row="3"  x:Name="LV_JoinList" MaxWidth="500" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" 
+                                      ItemsSource="{Binding JoinCollection, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" Margin="0,0,0,10">
+                                        <ListView.Resources>
+                                            <DataTemplate x:Key="GridColCheck">
+                                                <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Checked="JoinCollectionCheckBox_Checked" AutomationProperties.IsRowHeader="False" />
+                                            </DataTemplate>
+                                        </ListView.Resources>
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Remove" Width="70" CellTemplate="{DynamicResource GridColCheck}" />
+                                                <GridViewColumn Header="GameTag UserName" Width="200" DisplayMemberBinding="{Binding GameUserName, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                                <GridViewColumn Header="Chat User" Width="200" DisplayMemberBinding="{Binding ChatUser, Mode=OneWay, UpdateSourceTrigger=Default}" />
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </Grid>
+                            </DockPanel>
+                            <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
+                                    <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" Opacity="1" IsEnabled="False" />
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Label Padding="0" Content="Pop-out Opacity"/>
+                                        <TextBlock Text="50%"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,4,15,4">
+                                    <TextBox Width="365" />
+                                    <Button Content="Send" Margin="10,0,0,0" Padding="8,2" />
+                                </StackPanel>
+                                <FlowDocumentScrollViewer DockPanel.Dock="Top" BorderThickness="1,1,1,1" x:Name="FlowDoc_ChatBox" ScrollViewer.CanContentScroll="True" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Document="{Binding ChatData, Mode=OneWay, NotifyOnSourceUpdated=True}" Foreground="#FFC5C3C3" />
+                            </DockPanel>
+                        </DockPanel>
                     </TabItem>
                 </TabControl>
             </TabItem>

@@ -1,11 +1,8 @@
-﻿using StreamerBot.BotClients;
-using StreamerBot.Enum;
-using StreamerBot.Models;
+﻿using StreamerBot.Enum;
 using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace StreamerBot.Systems

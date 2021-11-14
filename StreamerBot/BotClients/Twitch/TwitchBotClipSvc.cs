@@ -1,4 +1,5 @@
 ﻿using StreamerBot.BotClients.Twitch.TwitchLib;
+using StreamerBot.Enum;
 using StreamerBot.Static;
 
 using System;
@@ -18,7 +19,7 @@ namespace StreamerBot.BotClients.Twitch
 
         public TwitchBotClipSvc()
         {
-            BotClientName = Enum.Bots.TwitchClipBot;
+            BotClientName = Bots.TwitchClipBot;
         }
 
         public void ConnectClipService(string ClientName = null, string TwitchToken = null)
@@ -84,8 +85,10 @@ namespace StreamerBot.BotClients.Twitch
 
         public override bool ExitBot()
         {
-            clipMonitorService?.Stop();
-            clipMonitorService = null;
+            if (IsStarted)
+            {
+                StopBot();
+            }
             return base.ExitBot();
         }
 

@@ -3,18 +3,19 @@ using StreamerBot.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBot.Enum;
 using StreamerBot.Events;
 using StreamerBot.Static;
+using StreamerBot.Systems;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
-using TwitchLib.Api.ThirdParty.ModLookup;
 using TwitchLib.Client.Events;
-using TwitchLib.Communication.Events;
 
 namespace StreamerBot.BotClients
 {
@@ -57,7 +58,6 @@ namespace StreamerBot.BotClients
                 TwitchBotChatClient.TwitchChat.OnGiftedSubscription += Client_OnGiftedSubscription;
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
-                TwitchBotChatClient.TwitchChat.OnMessageThrottled += Client_OnMessageThrottled;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
                 TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
@@ -114,83 +114,81 @@ namespace StreamerBot.BotClients
         
         private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        private void Client_OnMessageThrottled(object sender, OnMessageThrottledEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
-        {
-            throw new NotImplementedException();
+            InvokeBotEvent(this, BotEvents.TwitchGiftSubscription, e);
         }
 
         private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
-        {
-            throw new NotImplementedException();
+            InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
         }
 
         private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
         {
-            throw new NotImplementedException();
+            InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
+        }
+
+        private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchNowHosting, e);
+        }
+
+        private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
+        {
+            if (IOModule.ShowConnectionMsg)
+            {
+                Version version = Assembly.GetEntryAssembly().GetName().Version;
+                string s = string.Format(CultureInfo.CurrentCulture,
+                    LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
+
+                Send(s);
+            }
+        }
+
+        private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchExistingUsers, e);
+        }
+
+        private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchOnUserBanned, e);
+        }
+        
+        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchOnUserTimedout, e);
+        }
+
+        private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, e);
+        }
+
+        private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, e);
+        }
+
+        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchRitualNewChatter, e);
+        }
+
+        private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
+        {
+            string Category = TwitchBotUserSvc.GetUserGameCategory(e.RaidNotification.UserId);
+
+            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = Category, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
+        }
+
+        private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchMessageReceived, e);
+        }
+
+        private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
         }
 
         #endregion
@@ -270,10 +268,15 @@ namespace StreamerBot.BotClients
         private void TwitchBotClipSvc_OnBotStarted(object sender, EventArgs e)
         {
             RegisterHandlers();
+
+            // start thread to retrieve all clips
+            new Thread(new ThreadStart(ProcessClips)).Start();
         }
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {
+            while (StartClips) { } // wait while receiving new clips
+
             InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
         }
 
@@ -296,10 +299,25 @@ namespace StreamerBot.BotClients
             }
         }
 
+        private List<Clip> ClipList { get; set; }
+
+        private bool StartClips { get; set; }
+
+        private void ProcessClips()
+        {
+            StartClips = true;
+            ClipList = TwitchBotClipSvc.GetAllClipsAsync().Result;
+
+            OnClipFound?.Invoke(this, new() { ClipList = ClipList });
+            StartClips = false;
+        }
+
+
+
         #endregion
 
 
 
- 
+
     }
 }

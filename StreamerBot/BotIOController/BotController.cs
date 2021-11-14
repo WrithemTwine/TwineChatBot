@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
@@ -30,16 +32,27 @@ namespace StreamerBot.BotIOController
 
         public BotsTwitch TwitchBots { get; private set; }
 
+        private const int SendMsgDelay = 750;
+        // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
+        // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
+        private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
+        private Thread SendThread;  // the thread for sending messages back to the monitored  channels
+
         public BotController()
         {
             Systems = new();
             Systems.PostChannelMessage += Systems_PostChannelMessage;
 
-            BotsTwitch Twitch = new BotsTwitch();
-            TwitchBots = Twitch;
-            Twitch.BotEvent += HandleBotEvent;
+            TwitchBots = new();
+            TwitchBots.BotEvent += HandleBotEvent;
+            TwitchBots.OnClipFound += TwitchClipSvcOnClipFound;
+            SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
 
-            BotsList.Add(Twitch);
+            BotsList.Add(TwitchBots);
+
+
+            SendThread = new(new ThreadStart(BeginProcMsgs));
+            SendThread.Start();
         }
 
         public void SetDispatcher(Dispatcher dispatcher)
@@ -55,21 +68,62 @@ namespace StreamerBot.BotIOController
             });
         }
 
-        private void Systems_PostChannelMessage(object sender, Events.PostChannelMessageEventArgs e)
+        private void Systems_PostChannelMessage(object sender, PostChannelMessageEventArgs e)
         {
             Send(e.Msg);
         }
 
+        /// <summary>
+        /// Send a response message to all bots incorporated into this app. The messages send through a thread managing a message delay to not flood the channel with immediate messages, channels often have limited received messages per minute.
+        /// </summary>
+        /// <param name="s">The string to send.</param>
         public void Send(string s)
         {
             foreach (IBotTypes bot in BotsList)
             {
-                bot.Send(s);
+                lock (Operations)
+                {
+                    Operations.Enqueue(new Task(() =>
+                    {
+                        bot.Send(s);
+                    }));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cycles through the 'Operations' queue and runs each task in order.
+        /// </summary>
+        private void BeginProcMsgs()
+        {
+            // TODO: set option to stop messages immediately, and wait until started again to send them
+            // until the ProcessOps is false to stop operations, only run until the operations queue is empty
+            while (OptionFlags.ProcessOps || Operations.Count > 0)
+            {
+                Task temp = null;
+                lock (Operations)
+                {
+                    if (Operations.Count > 0)
+                    {
+                        temp = Operations.Dequeue(); // get a task from the queue
+                    }
+                }
+
+                if (temp != null)
+                {
+                    temp.Start();   // begin, wait, and dispose the task; let it process in sequence before the next message
+                    temp.Wait();
+                    temp.Dispose();
+                }
+
+                Thread.Sleep(SendMsgDelay);
             }
         }
 
         public void ExitBots()
         {
+            SendThread.Join(); // wait until all the messages are sent to ask bots to close
+
             foreach (IBotTypes bot in BotsList)
             {
                 bot.StopBots();
@@ -129,9 +183,17 @@ namespace StreamerBot.BotIOController
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers));
         }
 
-        public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
+        private void TwitchClipSvcOnClipFound(object sender, ClipFoundEventArgs clips)
         {
-            HandleBotEventPostNewClip(clips.Clips.ConvertAll((SrcClip) =>
+            AppDispatcher.Invoke(() =>
+            {
+                ConvertClips(clips.ClipList);
+            });
+        }
+
+        private void ConvertClips(List<Clip> clips)
+        {
+            HandleBotEventPostNewClip(clips.ConvertAll((SrcClip) =>
             {
                 return new Models.Clip()
                 {
@@ -145,6 +207,11 @@ namespace StreamerBot.BotIOController
                 };
 
             }));
+        }
+
+        public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
+        {
+            ConvertClips(clips.Clips);
         }
 
         public void TwitchStreamOnline(OnStreamOnlineArgs e)
@@ -164,22 +231,121 @@ namespace StreamerBot.BotIOController
 
         public void TwitchNewSubscriber(OnNewSubscriberArgs e)
         {
-            HandleNewSubscriber(e.Subscriber.DisplayName, e.Subscriber.MsgParamCumulativeMonths, e.Subscriber.SubscriptionPlan.ToString(), e.Subscriber.SubscriptionPlanName);
+            HandleNewSubscriber(
+                e.Subscriber.DisplayName, 
+                e.Subscriber.MsgParamCumulativeMonths,
+                e.Subscriber.SubscriptionPlan.ToString(),
+                e.Subscriber.SubscriptionPlanName);
         }
 
         public void TwitchReSubscriber(OnReSubscriberArgs e)
         {
-            HandleReSubscriber(e.ReSubscriber.DisplayName, e.ReSubscriber.Months, e.ReSubscriber.MsgParamCumulativeMonths, e.ReSubscriber.SubscriptionPlan.ToString(), e.ReSubscriber.SubscriptionPlanName, e.ReSubscriber.MsgParamShouldShareStreak, e.ReSubscriber.MsgParamStreakMonths);
+            HandleReSubscriber(
+                e.ReSubscriber.DisplayName,
+                e.ReSubscriber.Months,
+                e.ReSubscriber.MsgParamCumulativeMonths,
+                e.ReSubscriber.SubscriptionPlan.ToString(),
+                e.ReSubscriber.SubscriptionPlanName,
+                e.ReSubscriber.MsgParamShouldShareStreak,
+                e.ReSubscriber.MsgParamStreakMonths);
         }
 
         public void TwitchGiftSubscription(OnGiftedSubscriptionArgs e)
         {
+            HandleGiftSubscription(
+                e.GiftedSubscription.DisplayName,
+                e.GiftedSubscription.MsgParamMonths,
+                e.GiftedSubscription.MsgParamRecipientUserName,
+                e.GiftedSubscription.MsgParamSubPlan.ToString(),
+                e.GiftedSubscription.MsgParamSubPlanName);
+        }
 
+        public void TwitchCommunitySubscription(OnCommunitySubscriptionArgs e)
+        {
+            HandleCommunitySubscription(
+                e.GiftedSubscription.DisplayName,
+                e.GiftedSubscription.MsgParamSenderCount,
+                e.GiftedSubscription.MsgParamSubPlan.ToString());
+        }
+
+        public void TwitchBeingHosted(OnBeingHostedArgs e)
+        {
+            HandleBeingHosted(e.BeingHostedNotification.HostedByChannel, e.BeingHostedNotification.IsAutoHosted, e.BeingHostedNotification.Viewers);
+        }
+
+        public void TwitchNowHosting(OnNowHostingArgs e)
+        {
+            HandleOnStreamOffline();
+        }
+
+        public void TwitchExistingUsers(OnExistingUsersDetectedArgs e)
+        {
+            HandleUserJoined(e.Users);
+        }
+
+        public void TwitchOnUserJoined(OnUserJoinedArgs e)
+        {
+            HandleUserJoined(new() { e.Username });
+        }
+
+        public void TwitchOnUserLeft(OnUserLeftArgs e)
+        {
+            HandleUserLeft(e.Username);
+        }
+
+        public void TwitchOnUserTimedout(OnUserTimedoutArgs e)
+        {
+            HandleUserTimedOut();
+        }
+
+        public void TwitchOnUserBanned(OnUserBannedArgs e)
+        {
+            HandleUserBanned();
+        }
+
+        public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
+        {
+            HandleAddChat(e.RitualNewChatter.DisplayName);
+        }
+
+        public void TwitchMessageReceived(OnMessageReceivedArgs e)
+        {
+            HandleMessageReceived(e.ChatMessage.DisplayName, e.ChatMessage.IsSubscriber, e.ChatMessage.IsVip, e.ChatMessage.IsModerator, e.ChatMessage.Bits, e.ChatMessage.Message);
+        }
+
+        public void TwitchIncomingRaid(OnIncomingRaidArgs e)
+        {
+            HandleIncomingRaidData(e.DisplayName, e.RaidTime, e.ViewerCount, e.Category);
+        }
+
+        public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
+        {
+            HandleChatCommandReceived( new()
+            {
+                CommandArguments = e.Command.ArgumentsAsList,
+                CommandText = e.Command.CommandText,
+                DisplayName = e.Command.ChatMessage.DisplayName,
+                Channel = e.Command.ChatMessage.Channel,
+                IsBroadcaster = e.Command.ChatMessage.IsBroadcaster,
+                IsHighlighted = e.Command.ChatMessage.IsHighlighted,
+                IsMe = e.Command.ChatMessage.IsMe,
+                IsModerator = e.Command.ChatMessage.IsModerator,
+                IsPartner = e.Command.ChatMessage.IsPartner,
+                IsSkippingSubMode = e.Command.ChatMessage.IsSkippingSubMode,
+                IsStaff = e.Command.ChatMessage.IsStaff,
+                IsSubscriber = e.Command.ChatMessage.IsSubscriber,
+                IsTurbo = e.Command.ChatMessage.IsTurbo,
+                IsVip = e.Command.ChatMessage.IsVip,
+                Message = e.Command.ChatMessage.Message,
+                UserType = System.Enum.Parse<ViewerTypes>(e.Command.ChatMessage.UserType.ToString())
+            });
         }
 
         #endregion
 
         #region Handle Bot Events
+
+        #region Followers
 
         public void HandleBotEventNewFollowers(List<Models.Follow> follows)
         {
@@ -188,20 +354,28 @@ namespace StreamerBot.BotIOController
 
         public void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
         {
-            Dispatcher.CurrentDispatcher.Invoke(() => Systems.UpdateFollowers(follows));
+            AppDispatcher.Invoke(() => Systems.UpdateFollowers(follows));
         }
+
+        #endregion
+
+        #region Clips
 
         public void HandleBotEventPostNewClip(List<Models.Clip> clips)
         {
             Systems.ClipHelper(clips);
         }
 
-        public void HandleOnStreamOnline(string UserName, string Title, DateTime StartedAt, string Category, bool Debug = false)
+        #endregion
+        
+        #region LiveStream
+        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string Category, bool Debug = false)
         {
             try
             {
                 bool Started = Systems.StreamOnline(StartedAt);
                 SystemsBase.Category = Category;
+                SystemsBase.ChannelName = ChannelName;
 
                 if (Started)
                 {
@@ -215,10 +389,10 @@ namespace StreamerBot.BotIOController
                         // keys for exchanging codes for representative names
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
-                                new(MsgVars.user, UserName),
+                                new(MsgVars.user, ChannelName),
                                 new(MsgVars.category, Category),
                                 new(MsgVars.title, Title),
-                                new(MsgVars.url, UserName)
+                                new(MsgVars.url, ChannelName)
                         });
 
                         string TempMsg = VariableParser.ParseReplace(msg, dictionary);
@@ -259,6 +433,10 @@ namespace StreamerBot.BotIOController
             }
         }
 
+        #endregion
+        
+        #region Chat Bot
+
         public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled);
@@ -272,7 +450,7 @@ namespace StreamerBot.BotIOController
                 })));
             }
 
-            Systems.UpdatedStat(new List<StreamStatType>() { StreamStatType.Sub, StreamStatType.AutoEvents });
+            Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
@@ -297,8 +475,101 @@ namespace StreamerBot.BotIOController
                 Send(VariableParser.ParseReplace(msg, dictionary));
             }
 
-            Systems.UpdatedStat(new List<StreamStatType>() { StreamStatType.Sub, StreamStatType.AutoEvents });
+            Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
         }
+
+        public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
+        {
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled);
+            if (Enabled)
+            {
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                    new(MsgVars.user,DisplayName),
+                    new(MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonths)),
+                    new(MsgVars.receiveuser, RecipientUserName ),
+                    new(MsgVars.subplan, Subscription ),
+                    new(MsgVars.subplanname, SubscriptionName)
+                })));
+            }
+            Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
+        }
+
+        public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
+        {
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled);
+            if (Enabled)
+            {
+                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                    new(MsgVars.user, DisplayName),
+                    new(MsgVars.count, FormatData.Plurality(SubCount, MsgVars.Pluralsub, Subscription)),
+                    new(MsgVars.subplan, Subscription)
+                });
+
+                Send(VariableParser.ParseReplace(msg, dictionary));
+            }
+
+            Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
+            Systems.UpdatedStat(StreamStatType.AutoEvents);
+        }
+
+        public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
+        {
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled);
+            if (Enabled)
+            {
+                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                {
+                    new(MsgVars.user, HostedByChannel ),
+                    new(MsgVars.autohost, LocalizedMsgSystem.DetermineHost(IsAutoHosted) ),
+                    new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers
+                     ))
+                })));
+            }
+
+            Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
+        }
+
+        public void HandleUserJoined(List<string> Users)
+        {
+            Systems.UserJoined(Users);
+        }
+
+        public void HandleUserLeft(string Users)
+        {
+            Systems.UserLeft(Users);
+        }
+
+        public void HandleUserTimedOut()
+        {
+            Systems.UpdatedStat(StreamStatType.UserTimedOut);
+        }
+
+        public void HandleUserBanned()
+        {
+            Systems.UpdatedStat(StreamStatType.UserBanned);
+        }
+
+        public void HandleAddChat(string UserName)
+        {
+            Systems.AddChat(UserName);
+        }
+
+        public void HandleMessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message)
+        {
+            Systems.MessageReceived(UserName, IsSubscriber, IsVip, IsModerator, Bits, Message);
+        }
+
+        public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category)
+        {
+            Systems.PostIncomingRaid(UserName, RaidTime, ViewerCount, Category);
+        }
+
+        public void HandleChatCommandReceived(Models.CmdMessage commandmsg)
+        {
+            Systems.ProcessCommand(commandmsg);
+        }
+
+        #endregion
 
         #endregion
 

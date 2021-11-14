@@ -436,10 +436,10 @@ namespace ChatBot_Net5.BotIOController
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-                if (SystemsController.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
-                {
-                    RegisterJoinedUser(e.Username);
-                }
+            if (SystemsController.UserJoined(e.Username, DateTime.Now.ToLocalTime()) && OptionFlags.FirstUserJoinedMsg)
+            {
+                RegisterJoinedUser(e.Username);
+            }
         }
 
         private void AddChat(string Username)

@@ -1,4 +1,5 @@
 ﻿using StreamerBot.BotClients.Twitch.TwitchLib;
+using StreamerBot.Enum;
 using StreamerBot.Static;
 
 using System;
@@ -22,7 +23,7 @@ namespace StreamerBot.BotClients.Twitch
 
         public TwitchBotFollowerSvc()
         {
-            BotClientName = Enum.Bots.TwitchFollowBot;
+            BotClientName = Bots.TwitchFollowBot;
         }
 
         /// <summary>
@@ -98,8 +99,10 @@ namespace StreamerBot.BotClients.Twitch
 
         public override bool ExitBot()
         {
-            FollowerService?.Stop();
-            FollowerService = null;
+            if (IsStarted)
+            {
+                StopBot();
+            }
             return base.ExitBot();
         }
     }

@@ -137,21 +137,18 @@ namespace StreamerBot.BotClients.Twitch
         /// <returns>True for a successful connection.</returns>
         public override bool Connect()
         {
-            bool isConnected = true;
+            bool isConnected;
             ConnectionCredentials credentials = new(TwitchBotUserName, TwitchAccessToken);
             if (TwitchChannelName == null)
             {
                 isConnected = false;
             }
-            else if (TwitchChat.TwitchUsername == null)
+            else
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
                 TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
-            }
-
-            if (!isConnected)
-            {
                 TwitchChat.Connect();
+                isConnected = true;
             }
 
             return isConnected;
@@ -163,24 +160,34 @@ namespace StreamerBot.BotClients.Twitch
         /// <returns>true for successful bot start</returns>
         public override bool StartBot()
         {
+            bool Connected;
+
             try
             {
                 if (IsStopped || !IsStarted)
                 {
                     RefreshSettings();
-                    Connect();
-                    IsStarted = true;
-                    IsStopped = false;
-                    InvokeBotStarted();
+                    Connected = Connect();
+                    if (Connected)
+                    {
+                        IsStarted = true;
+                        IsStopped = false;
+                        InvokeBotStarted();
+                    }
                 }
-                return true;
+                else
+                {
+                    Connected = false;
+                }
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
 
-                return false; 
+                Connected = false;
             }
+
+            return Connected;
         }
 
         /// <summary>
@@ -277,7 +284,7 @@ namespace StreamerBot.BotClients.Twitch
         {
             if (TwitchChat.IsConnected)
             {
-                TwitchChat.Disconnect();
+                StopBot();
             }
             TwitchChat = null;
 

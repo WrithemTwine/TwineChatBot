@@ -1,4 +1,5 @@
 ﻿using StreamerBot.BotClients.Twitch.TwitchLib;
+using StreamerBot.Enum;
 
 using System;
 
@@ -14,7 +15,7 @@ namespace StreamerBot.BotClients.Twitch
 
         public TwitchBotUserSvc()
         {
-            BotClientName = Enum.Bots.TwitchUserBot;
+            BotClientName = Bots.TwitchUserBot;
         }
 
         public void ConnectUserService(string ClientName = null, string TwitchToken = null)

@@ -28,11 +28,11 @@ namespace StreamerBot.GUI
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchFollower.OnBotStopped += TwitchFollower_OnBotStopped;
 
-            TwitchClip.OnBotStarted += TwitchClip_OnBotStopped;
-            TwitchClip.OnBotStopped += TwitchClip_OnBotStarted;
-
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
+
+            TwitchClip.OnBotStarted += TwitchClip_OnBotStarted;
+            TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
         }
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)

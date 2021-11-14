@@ -2,14 +2,26 @@
 {
     public enum BotEvents
     {
-        TwitchPostNewFollowers,
+        TwitchBeingHosted,
         TwitchBulkPostFollowers,
-        TwitchPostNewClip,
-        TwitchStreamOnline,
-        TwitchStreamOffline,
-        TwitchStreamUpdate,
+        TwitchCommunitySubscription,
+        TwitchGiftSubscription,
         TwitchNewSubscriber,
+        TwitchPostNewClip,
+        TwitchPostNewFollowers,
         TwitchReSubscriber,
-        TwitchGiftSubscription
+        TwitchStreamOffline,
+        TwitchStreamOnline,
+        TwitchStreamUpdate,
+        TwitchNowHosting,
+        TwitchExistingUsers,
+        TwitchOnUserJoined,
+        TwitchOnUserLeft,
+        TwitchOnUserTimedout,
+        TwitchOnUserBanned,
+        TwitchRitualNewChatter,
+        TwitchMessageReceived,
+        TwitchIncomingRaid,
+        TwitchChatCommandReceived
     }
 }

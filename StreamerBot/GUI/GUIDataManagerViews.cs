@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Runtime.CompilerServices;
+using System.Windows.Documents;
+using StreamerBot.Models;
 
 namespace StreamerBot.GUI
 {
@@ -15,6 +17,10 @@ namespace StreamerBot.GUI
         // datatable views to display the data in the GUI
 
         public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
+
+        public FlowDocument ChatData { get; private set; }
+
+        public List<UserJoin> JoinCollection { get; set; }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -34,6 +40,8 @@ namespace StreamerBot.GUI
 
         public GUIDataManagerViews()
         {
+            ChatData = SystemsBase.ChatData;
+            JoinCollection = SystemsBase.JoinCollection;
             SetDataTableViews(SystemsController.DataManage);
         }
 

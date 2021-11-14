@@ -1,10 +1,12 @@
 ﻿using StreamerBot.Data;
-using StreamerBot.Events;
 using StreamerBot.Models;
 using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Documents;
 
 namespace StreamerBot.Systems
 {
@@ -18,8 +20,17 @@ namespace StreamerBot.Systems
     public class SystemsBase
     {
         public static DataManager DataManage { get; set; }
+        public static FlowDocument ChatData { get; private set; } = new();
+        public static List<UserJoin> JoinCollection { get; set; } = new();
 
         public static string Category { get; set; }
+
+        /// <summary>
+        /// The streamer channel monitored.
+        /// </summary>
+        public static string ChannelName { get; set; }
+        public static string BotUserName { get; set; }
+
         public static Action<string> CallbackSendMsg;
         protected const int SecondsDelay = 5000;
         protected static bool StreamUpdateClockStarted;
@@ -133,5 +144,29 @@ namespace StreamerBot.Systems
                 return CurrStream.StreamStart;
             }
         }
+
+
+        private delegate void ProcMessage(string UserName, string Message);
+
+        internal static void AddChatString(string UserName, string Message)
+        {
+            ProcMessage Msg = UpdateMessage;
+            Application.Current.Dispatcher.BeginInvoke(Msg, UserName, Message);
+        }
+
+        private static void UpdateMessage(string UserName, string Message)
+        {
+            Paragraph p = new();
+            string time = DateTime.Now.ToLocalTime().ToString("h:mm", CultureInfo.CurrentCulture) + " ";
+            p.Inlines.Add(new Run(time));
+            p.Inlines.Add(new Run(UserName + ": "));
+            p.Inlines.Add(new Run(Message));
+            //p.Foreground = new SolidColorBrush(Color.FromArgb(a: s.Color.A,
+            //                                                  r: s.Color.R,
+            //                                                  g: s.Color.G,
+            //                                                  b: s.Color.B));
+            ChatData.Blocks.Add(p);
+        }
+
     }
 }

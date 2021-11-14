@@ -1,22 +1,23 @@
 ﻿using StreamerBot.BotClients;
-using StreamerBot.Static;
+using StreamerBot.BotClients.Twitch;
 using StreamerBot.BotIOController;
+using StreamerBot.Events;
+using StreamerBot.GUI;
+using StreamerBot.Models;
+using StreamerBot.Properties;
+using StreamerBot.Static;
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Diagnostics;
-using System.Threading;
-using StreamerBot.Properties;
-using StreamerBot.Events;
 using System.Windows.Media;
-using StreamerBot.GUI;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using StreamerBot.BotClients.Twitch;
 
 namespace StreamerBot
 {
@@ -111,36 +112,6 @@ namespace StreamerBot
         #region Bot_Ops
         #region Controller Events
 
-        private void GUI_OnBotStopped(object sender, BotStartStopEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new BotOperation(() =>
-            {
-                ToggleInputEnabled(true);
-
-                RadioButton radio;
-                switch (e.BotName)
-                {
-                    case Enum.Bots.TwitchChatBot:
-                        radio = Radio_Twitch_StopBot;
-                        break;
-                    case Enum.Bots.TwitchClipBot:
-                        radio = Radio_Twitch_ClipBotStop;
-                        break;
-                    case Enum.Bots.TwitchFollowBot:
-                        radio = Radio_Twitch_FollowBotStop;
-                        break;
-                    case Enum.Bots.TwitchLiveBot:
-                        radio = Radio_Twitch_LiveBotStop;
-                        break;
-                    default:
-                        radio = Radio_MultiLiveTwitch_StopBot;
-                        break;
-                }
-
-                HelperStopBot(radio);
-            }), null);
-        }
-
         private void GUI_OnBotStarted(object sender, BotStartStopEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new BotOperation(() =>
@@ -175,6 +146,36 @@ namespace StreamerBot
 
                     HelperStartBot(radio);
                 }
+            }), null);
+        }
+
+        private void GUI_OnBotStopped(object sender, BotStartStopEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new BotOperation(() =>
+            {
+                ToggleInputEnabled(true);
+
+                RadioButton radio;
+                switch (e.BotName)
+                {
+                    case Enum.Bots.TwitchChatBot:
+                        radio = Radio_Twitch_StopBot;
+                        break;
+                    case Enum.Bots.TwitchClipBot:
+                        radio = Radio_Twitch_ClipBotStop;
+                        break;
+                    case Enum.Bots.TwitchFollowBot:
+                        radio = Radio_Twitch_FollowBotStop;
+                        break;
+                    case Enum.Bots.TwitchLiveBot:
+                        radio = Radio_Twitch_LiveBotStop;
+                        break;
+                    default:
+                        radio = Radio_MultiLiveTwitch_StopBot;
+                        break;
+                }
+
+                HelperStopBot(radio);
             }), null);
         }
 
@@ -282,6 +283,7 @@ namespace StreamerBot
 
             Controller.ManageDatabase();
         }
+       
         /// <summary>
         /// Check the conditions for starting the bot, where the data fields require data before the bot can be successfully started.
         /// </summary>
@@ -341,6 +343,11 @@ namespace StreamerBot
             }
 
             CheckFocus();
+        }
+
+        private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ((GUIDataManagerViews)LV_JoinList.DataContext).JoinCollection.Remove((sender as CheckBox).DataContext as UserJoin);
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -520,6 +527,36 @@ namespace StreamerBot
 
         // TODO: fix scrolling in Sliders but not scroll the whole panel
 
+        #region PopOut Chat Window
+        private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
+        {
+            //    CP.Show();
+            //    CP.Height = 500;
+            //    CP.Width = 300;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propname)
+        {
+            PropertyChanged?.Invoke(this, new(propname));
+        }
+
+        private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            OnPropertyChanged("Opacity");
+        }
+
+        private bool IsAppClosing;
+        private void CP_Closing(object sender, CancelEventArgs e)
+        {
+            //    if (!IsAppClosing) // flag to really close the window
+            //    {
+            //        e.Cancel = true;
+            //        CP.Hide();
+            //    }
+        }
+
+        #endregion
 
         #region Helpers
 
@@ -562,7 +599,6 @@ namespace StreamerBot
         }
 
         #endregion
-
 
         #region BotOps-changes in token expiration
 

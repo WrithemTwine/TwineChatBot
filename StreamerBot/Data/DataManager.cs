@@ -43,7 +43,6 @@ namespace StreamerBot.Data
         {
             _DataSource = new();
             LoadData();
-
             OnSaveData += SaveData;
         }
 
