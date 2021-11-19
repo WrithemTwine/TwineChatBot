@@ -12,6 +12,10 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 
+using TwitchLib.PubSub.Models.Responses;
+
+using static StreamerBot.Data.DataSource;
+
 namespace StreamerBot.Systems
 {
     public class CommandSystem : SystemsBase, INotifyPropertyChanged
@@ -214,6 +218,7 @@ namespace StreamerBot.Systems
         /// <returns>The resulting value of the command.</returns>
         public string ParseCommand(CmdMessage cmdMessage)
         {
+            //TODO: fix StreamerBot Commands
             ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
 
             // no permission, stop processing
@@ -284,7 +289,7 @@ namespace StreamerBot.Systems
                     NotifyPropertyChanged("UserPartyStop");
                 }
 
-                DataSource.CommandsRow CommData = DataManage.GetCommand(command);
+                CommandsRow CommData = DataManage.GetCommand(command);
                 Dictionary<string, string> datavalues = null;
 
                 if (CommData != null)
@@ -381,7 +386,215 @@ namespace StreamerBot.Systems
         } 
          */
 
-        private void LookupQuery(DataSource.CommandsRow CommData, string paramvalue, ref Dictionary<string, string> datavalues)
+
+
+        public void UserParty(string command, List<string> arglist, string UserName)
+        {
+            DataSource.CommandsRow CommData = DataManage.GetCommand(command);
+
+            UserJoinEventArgs userJoinArgs = new();
+            userJoinArgs.Command = command;
+            userJoinArgs.AddMe = CommData?.AddMe ?? false;
+            userJoinArgs.ChatUser = UserName;
+            userJoinArgs.GameUserName = arglist == null || arglist.Count == 0 ? UserName : arglist[0];
+
+            // we have to invoke an event, because the GUI thread must be used to manipulate the data collection for the user list
+            ProcessCommands_UserJoinCommand(userJoinArgs);
+        }
+
+        #region New Command Code
+       /// <summary>
+        /// Establishes the permission level for the user who sends the message.
+        /// </summary>
+        /// <param name="chatMessage">The ChatMessage holding the characteristics of the user who invoked the chat command, which parses out the user permissions.</param>
+        /// <returns>The ViewerType corresponding to the user's highest permission.</returns>
+        public ViewerTypes ParsePermission(CmdMessage chatMessage)
+        {
+            if (chatMessage.IsBroadcaster)
+            {
+                return ViewerTypes.Broadcaster;
+            }
+            else if (chatMessage.IsModerator)
+            {
+                return ViewerTypes.Mod;
+            }
+            else if (chatMessage.IsVip)
+            {
+                return ViewerTypes.VIP;
+            }
+            else if (DataManage.CheckFollower(chatMessage.DisplayName))
+            {
+                return ViewerTypes.Follower;
+            }
+            else if (chatMessage.IsSubscriber)
+            {
+                return ViewerTypes.Sub;
+            }
+            else
+            {
+                return ViewerTypes.Viewer;
+            }
+        }
+
+        public string EvalCommand(CmdMessage cmdMessage)
+        {
+            string result = "";
+            ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
+
+            CommandsRow cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
+
+            if (cmdrow == null)
+            {
+                result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound);
+            }
+            else if ((ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < InvokerPermission)
+            {
+                result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
+            }
+            else
+            {
+                // parse commands, either built-in or custom
+                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow);
+            }
+
+            result = ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe ? "/me " : "") + result;
+
+            return result;
+        }
+
+        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, bool ElapsedTimer = false)
+        {
+            string result = "";
+            Dictionary<string, string> datavalues = null;
+            if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
+            {
+                string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
+                arglist.RemoveAt(0);
+                result = DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
+            {
+                result = cmdrow.Message + " " + DataManage.GetSocials();
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
+            {
+                result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                {
+                            new( MsgVars.user, ChannelName ),
+                            new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
+                }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
+            {
+
+            }
+            // capture all of the join queue commands
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.enqueue)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.leave)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.dequeue)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.queue)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
+            {
+                if (OptionFlags.UserPartyStart)
+                {
+                    result = PartyCommand(command, DisplayName, arglist.Count > 0 ? arglist[0] : "", cmdrow);
+                }
+                else
+                {
+                    if (ElapsedTimer)
+                    {
+                        result = "";
+                    }
+                    else
+                    {
+                        result = LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
+                    }
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart) || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
+            {
+                result = cmdrow.Message;
+                OptionFlags.SetParty(command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart));
+                NotifyPropertyChanged("UserPartyStart");
+                NotifyPropertyChanged("UserPartyStop");
+            }
+            else
+            {
+                string paramvalue = cmdrow.AllowParam
+                                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                                        ? DisplayName
+                                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                                    : DisplayName;
+                datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                {
+                    new( MsgVars.user, paramvalue ),
+                    new( MsgVars.url, paramvalue ),
+                    new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
+                    new( MsgVars.date, DateTime.Now.ToLocalTime().Date.ToString() )
+                });
+
+                if (cmdrow.lookupdata)
+                {
+                    LookupQuery(cmdrow, paramvalue, ref datavalues);
+                }
+
+                result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+            }
+
+            return result;
+        }
+
+        private string PartyCommand(string command, string DisplayName, string argument, CommandsRow cmdrow)
+        {
+            UserJoin newuser = new() { ChatUser = DisplayName };
+            if (argument != "")
+            {
+                newuser.GameUserName = argument;
+            }
+
+            string response;
+            if (command == LocalizedMsgSystem.GetVar(DefaultCommand.queue))
+            {
+                response = string.Format("There are {0} users in the join queue: {1}", JoinCollection.Count, JoinCollection.Count==0 ? "no users!" : string.Join(", ", JoinCollection) );
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
+            {
+                response = cmdrow.Message;
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.enqueue) || command == LocalizedMsgSystem.GetVar(DefaultCommand.join))
+            {
+                if (JoinCollection.Contains(newuser))
+                {
+                    response = string.Format("You have already joined. You are currently number {0}.", JoinCollection.IndexOf(newuser) + 1);
+                }
+                else
+                {
+                    response = string.Format("You have joined the queue. You are currently {0}.", (JoinCollection.Count + 1));
+                    JoinCollection.Add(newuser);
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.leave) || command == LocalizedMsgSystem.GetVar(DefaultCommand.dequeue))
+            {
+                if (JoinCollection.Contains(newuser))
+                {
+                    JoinCollection.Remove(newuser);
+                    response = "You are no longer in the queue.";
+                }
+                else
+                {
+                    response = "You are not in the queue.";
+                }
+            } 
+            else
+            {
+                response = "Command not understood!";
+            }
+
+            return response;
+        }
+
+        private void LookupQuery(CommandsRow CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
             //TODO: the commands with data lookup needs a lot of work!
 
@@ -438,52 +651,8 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void UserParty(string command, List<string> arglist, string UserName)
-        {
-            DataSource.CommandsRow CommData = DataManage.GetCommand(command);
+        #endregion
 
-            UserJoinEventArgs userJoinArgs = new();
-            userJoinArgs.Command = command;
-            userJoinArgs.AddMe = CommData?.AddMe ?? false;
-            userJoinArgs.ChatUser = UserName;
-            userJoinArgs.GameUserName = arglist == null || arglist.Count == 0 ? UserName : arglist[0];
-
-            // we have to invoke an event, because the GUI thread must be used to manipulate the data collection for the user list
-            ProcessCommands_UserJoinCommand(userJoinArgs);
-        }
-
-        /// <summary>
-        /// Establishes the permission level for the user who sends the message.
-        /// </summary>
-        /// <param name="chatMessage">The ChatMessage holding the characteristics of the user who invoked the chat command, which parses out the user permissions.</param>
-        /// <returns>The ViewerType corresponding to the user's highest permission.</returns>
-        public ViewerTypes ParsePermission(CmdMessage chatMessage)
-        {
-            if (chatMessage.IsBroadcaster)
-            {
-                return ViewerTypes.Broadcaster;
-            }
-            else if (chatMessage.IsModerator)
-            {
-                return ViewerTypes.Mod;
-            }
-            else if (chatMessage.IsVip)
-            {
-                return ViewerTypes.VIP;
-            }
-            else if (DataManage.CheckFollower(chatMessage.DisplayName))
-            {
-                return ViewerTypes.Follower;
-            }
-            else if (chatMessage.IsSubscriber)
-            {
-                return ViewerTypes.Sub;
-            }
-            else
-            {
-                return ViewerTypes.Viewer;
-            }
-        }
 
         #region Join Collection
 
@@ -570,7 +739,7 @@ namespace StreamerBot.Systems
                 response = "The join queue list is not started.";
             }
 
-            CallbackSendMsg(response);
+            //CallbackSendMsg(response);
         }
 
         #endregion

@@ -281,7 +281,9 @@ switches:
                     { DefaultCommand.follow.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.follow), "-use:!follow") },
                     { DefaultCommand.watchtime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.watchtime), "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
                     { DefaultCommand.uptime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime), "-use:!uptime") },
-                    { DefaultCommand.followage.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.followage), "-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>") }
+                    { DefaultCommand.followage.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.followage), "-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>") },
+                    { DefaultCommand.dequeue.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.dequeue), "-use:!dequeue") },
+                    { DefaultCommand.enqueue.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.enqueue), "-use:!enqueue") }
                 };
 
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
@@ -417,17 +419,7 @@ switches:
             }
 
             CommandsRow[] socialrows = null;
-            lock (_DataSource)
-            {
-                socialrows = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + LocalizedMsgSystem.GetVar(DefaultCommand.socials) + "'");
-            }
-
-            string socials = socialrows[0].Message;
-
-            if (OptionFlags.MsgPerComMe && socialrows[0].AddMe == true)
-            {
-                socials = "/me " + socialrows[0].Message;
-            }
+            string socials = "";
 
             lock (_DataSource)
             {
@@ -489,19 +481,10 @@ switches:
 
         public CommandsRow GetCommand(string cmd)
         {
-            CommandsRow[] comrow = null;
-
             lock (_DataSource)
             {
-                comrow = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + cmd + "'");
+                return (CommandsRow)_DataSource.Commands.Select("CmdName='" + cmd + "'").First();
             }
-
-            //if (comrow == null || comrow.Length == 0)
-            //{
-            //    throw new KeyNotFoundException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound));
-            //}
-
-            return comrow?[0];
         }
 
         public object PerformQuery(CommandsRow row, string ParamValue)

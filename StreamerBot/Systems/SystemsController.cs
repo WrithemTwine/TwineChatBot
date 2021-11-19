@@ -282,7 +282,7 @@ namespace StreamerBot.Systems
             try
             {
                 string response = Command.ParseCommand(cmdMessage);
-                if (response != "")
+                if (response != "" && response != "/me ")
                 {
                     SendMessage(response);
                 }

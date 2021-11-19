@@ -4,6 +4,7 @@ using StreamerBot.Interfaces;
 
 using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 
 namespace StreamerBot.BotClients
 {
@@ -11,7 +12,7 @@ namespace StreamerBot.BotClients
     {
         public event EventHandler<BotEventArgs> BotEvent;
 
-
+        protected Collection<Thread> MultiThreadOps = new();
         /// <summary>
         /// Utilize the read-only version of the data manager, designed to only read data
         /// </summary>
@@ -34,9 +35,21 @@ namespace StreamerBot.BotClients
 
         public void StopBots()
         {
+            StopThreads();
             foreach (IIOModule a in BotsList)
             {
                 a.ExitBot();
+            }
+        }
+
+        private void StopThreads()
+        {
+            foreach(Thread t in MultiThreadOps)
+            {
+                if (t?.IsAlive == true)
+                {
+                    t.Join();
+                }
             }
         }
 

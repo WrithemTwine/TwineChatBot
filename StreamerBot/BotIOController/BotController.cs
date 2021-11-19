@@ -45,7 +45,6 @@ namespace StreamerBot.BotIOController
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
-            TwitchBots.OnClipFound += TwitchClipSvcOnClipFound;
             SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
 
             BotsList.Add(TwitchBots);
@@ -183,12 +182,9 @@ namespace StreamerBot.BotIOController
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers));
         }
 
-        private void TwitchClipSvcOnClipFound(object sender, ClipFoundEventArgs clips)
+        public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
         {
-            AppDispatcher.Invoke(() =>
-            {
-                ConvertClips(clips.ClipList);
-            });
+            ConvertClips(clips.ClipList);
         }
 
         private void ConvertClips(List<Clip> clips)
@@ -354,7 +350,7 @@ namespace StreamerBot.BotIOController
 
         public void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
         {
-            AppDispatcher.Invoke(() => Systems.UpdateFollowers(follows));
+            Systems.UpdateFollowers(follows);
         }
 
         #endregion

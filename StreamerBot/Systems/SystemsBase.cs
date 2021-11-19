@@ -31,7 +31,6 @@ namespace StreamerBot.Systems
         public static string ChannelName { get; set; }
         public static string BotUserName { get; set; }
 
-        public static Action<string> CallbackSendMsg;
         protected const int SecondsDelay = 5000;
         protected static bool StreamUpdateClockStarted;
 

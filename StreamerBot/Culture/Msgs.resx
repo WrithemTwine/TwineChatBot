@@ -133,6 +133,14 @@
     <value>commands</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="dequeue" xml:space="preserve">
+    <value>dequeue</value>
+    <comment>leave the player queue</comment>
+  </data>
+  <data name="enqueue" xml:space="preserve">
+    <value>enqueue</value>
+    <comment>join the player queue</comment>
+  </data>
   <data name="everyone" xml:space="preserve">
     <value>@everyone</value>
     <comment>Discord tag for informing 'everyone' in a server</comment>
@@ -141,10 +149,10 @@
     <value>The supplied value {0} is not included within the acceptable list: {1}</value>
   </data>
   <data name="ExceptionInvalidCommand" xml:space="preserve">
-    <value>"No permission to invoke this command."</value>
+    <value>No permission to invoke this command.</value>
   </data>
   <data name="ExceptionInvalidComUsage" xml:space="preserve">
-    <value>"The command {0} is configured for {1}, but can only perform {2}"</value>
+    <value>The command {0} is configured for {1}, but can only perform {2}</value>
     <comment>keep the {0}, {1}, {2} - it's for the string format</comment>
   </data>
   <data name="ExceptionInvalidOpCommand" xml:space="preserve">
@@ -155,6 +163,9 @@
   </data>
   <data name="ExceptionInvalidOperationTable" xml:space="preserve">
     <value>Table not specified.</value>
+  </data>
+  <data name="ExceptionKeyNotFound" xml:space="preserve">
+    <value>Command not found.</value>
   </data>
   <data name="followage" xml:space="preserve">
     <value>followage</value>
@@ -269,17 +280,14 @@
   </data>
   <data name="join" xml:space="preserve">
     <value>join</value>
-    <comment>default command, can be translated</comment>
+    <comment>default command - join user game play list, can be translated</comment>
   </data>
   <data name="JoinChannel" xml:space="preserve">
     <value>Currently not used.</value>
   </data>
-  <data name="KeyNotFoundException" xml:space="preserve">
-    <value>Command not found.</value>
-  </data>
   <data name="leave" xml:space="preserve">
     <value>leave</value>
-    <comment>default command, can be translated</comment>
+    <comment>default command - leave user game play list, can be translated</comment>
   </data>
   <data name="LeaveChannel" xml:space="preserve">
     <value>Currently not used.</value>
@@ -356,7 +364,7 @@
     <value>The queue list to join me in the game has started!</value>
   </data>
   <data name="Msgqstop" xml:space="preserve">
-    <value>The queue list to join me has stopped.</value>
+    <value>The queue list to join me is stopped.</value>
   </data>
   <data name="Msgqueue" xml:space="preserve">
     <value>The message isn't used in response.</value>

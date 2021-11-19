@@ -97,6 +97,24 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to dequeue.
+        /// </summary>
+        internal static string dequeue {
+            get {
+                return ResourceManager.GetString("dequeue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to enqueue.
+        /// </summary>
+        internal static string enqueue {
+            get {
+                return ResourceManager.GetString("enqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @everyone.
         /// </summary>
         internal static string everyone {
@@ -115,7 +133,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;No permission to invoke this command.&quot;.
+        ///   Looks up a localized string similar to No permission to invoke this command..
         /// </summary>
         internal static string ExceptionInvalidCommand {
             get {
@@ -124,7 +142,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;The command {0} is configured for {1}, but can only perform {2}&quot;.
+        ///   Looks up a localized string similar to The command {0} is configured for {1}, but can only perform {2}.
         /// </summary>
         internal static string ExceptionInvalidComUsage {
             get {
@@ -156,6 +174,15 @@ namespace StreamerBot.Culture {
         internal static string ExceptionInvalidOperationTable {
             get {
                 return ResourceManager.GetString("ExceptionInvalidOperationTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command not found..
+        /// </summary>
+        internal static string ExceptionKeyNotFound {
+            get {
+                return ResourceManager.GetString("ExceptionKeyNotFound", resourceCulture);
             }
         }
         
@@ -502,15 +529,6 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Command not found..
-        /// </summary>
-        internal static string KeyNotFoundException {
-            get {
-                return ResourceManager.GetString("KeyNotFoundException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to leave.
         /// </summary>
         internal static string leave {
@@ -718,7 +736,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The queue list to join me has stopped..
+        ///   Looks up a localized string similar to The queue list to join me is stopped..
         /// </summary>
         internal static string Msgqstop {
             get {

@@ -8,6 +8,7 @@
         TwitchGiftSubscription,
         TwitchNewSubscriber,
         TwitchPostNewClip,
+        TwitchClipSvcOnClipFound,
         TwitchPostNewFollowers,
         TwitchReSubscriber,
         TwitchStreamOffline,

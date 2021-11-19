@@ -8,6 +8,7 @@ using StreamerBot.Systems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -21,14 +22,14 @@ namespace StreamerBot.BotClients
 {
     public class BotsTwitch : BotsBase
     {
-        public event EventHandler<OnNewFollowersDetectedArgs> OnCompletedDownloadFollowers;
-        public event EventHandler<ClipFoundEventArgs> OnClipFound;
-
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; } = new();
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = new();
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = new();
         public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } = new();
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = new();
+
+        private Thread BulkLoadFollows;
+        private Thread BulkLoadClips;
 
         public BotsTwitch()
         {
@@ -42,11 +43,11 @@ namespace StreamerBot.BotClients
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
 
-            OnCompletedDownloadFollowers += BotsTwitch_OnCompletedDownloadFollowers;
-
             TwitchBotUserSvc.ConnectUserService();
 
             OptionFlags.ProcessOps = true;
+            MultiThreadOps.Add(BulkLoadFollows);
+            MultiThreadOps.Add(BulkLoadClips);
         }
 
         private void RegisterHandlers()
@@ -204,11 +205,6 @@ namespace StreamerBot.BotClients
             GetAllFollowers();
         }
 
-        private void BotsTwitch_OnCompletedDownloadFollowers(object sender, OnNewFollowersDetectedArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchBulkPostFollowers, e);
-        }
-
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
             InvokeBotEvent(this, BotEvents.TwitchPostNewFollowers, e);
@@ -272,7 +268,8 @@ namespace StreamerBot.BotClients
             RegisterHandlers();
 
             // start thread to retrieve all clips
-            new Thread(new ThreadStart(ProcessClips)).Start();
+            BulkLoadClips = new Thread(new ThreadStart(ProcessClips));
+            BulkLoadClips.Start();
         }
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
@@ -290,14 +287,27 @@ namespace StreamerBot.BotClients
         {
             if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
             {
-                new Thread(new ThreadStart(() =>
+                BulkLoadFollows = new Thread(new ThreadStart(() =>
                 {
                     string ChannelName = TwitchBotsBase.TwitchChannelName;
 
                     List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-                    OnCompletedDownloadFollowers?.Invoke(this, new() { NewFollowers = follows });
-                })).Start();
+                    for (int i = 0; i < follows.Count; i++)
+                    {
+                        // break up the follower list so chunks of the big list are sent in parts via event
+                        List<Follow> pieces = new(follows.Skip(i).Take(100));
+
+                        InvokeBotEvent(
+                            this,
+                            BotEvents.TwitchBulkPostFollowers,
+                            new OnNewFollowersDetectedArgs() { NewFollowers = pieces
+                            });
+
+                        Thread.Sleep(500);
+                    }
+                }));
+                BulkLoadFollows.Start();
             }
         }
 
@@ -310,16 +320,11 @@ namespace StreamerBot.BotClients
             StartClips = true;
             ClipList = TwitchBotClipSvc.GetAllClipsAsync().Result;
 
-            OnClipFound?.Invoke(this, new() { ClipList = ClipList });
+            InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
             StartClips = false;
         }
 
-
-
         #endregion
-
-
-
 
     }
 }
