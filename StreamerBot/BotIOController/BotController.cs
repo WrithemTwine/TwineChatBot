@@ -121,11 +121,18 @@ namespace StreamerBot.BotIOController
 
         public void ExitBots()
         {
-            SendThread.Join(); // wait until all the messages are sent to ask bots to close
-
-            foreach (IBotTypes bot in BotsList)
+            try
             {
-                bot.StopBots();
+                SendThread.Join(); // wait until all the messages are sent to ask bots to close
+
+                foreach (IBotTypes bot in BotsList)
+                {
+                    bot.StopBots();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 

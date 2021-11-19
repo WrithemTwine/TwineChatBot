@@ -46,8 +46,6 @@ namespace StreamerBot.BotClients
             TwitchBotUserSvc.ConnectUserService();
 
             OptionFlags.ProcessOps = true;
-            MultiThreadOps.Add(BulkLoadFollows);
-            MultiThreadOps.Add(BulkLoadClips);
         }
 
         private void RegisterHandlers()
@@ -270,6 +268,7 @@ namespace StreamerBot.BotClients
             // start thread to retrieve all clips
             BulkLoadClips = new Thread(new ThreadStart(ProcessClips));
             BulkLoadClips.Start();
+            MultiThreadOps.Add(BulkLoadClips);
         }
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
@@ -301,13 +300,16 @@ namespace StreamerBot.BotClients
                         InvokeBotEvent(
                             this,
                             BotEvents.TwitchBulkPostFollowers,
-                            new OnNewFollowersDetectedArgs() { NewFollowers = pieces
+                            new OnNewFollowersDetectedArgs()
+                            {
+                                NewFollowers = pieces
                             });
 
                         Thread.Sleep(500);
                     }
                 }));
                 BulkLoadFollows.Start();
+                MultiThreadOps.Add(BulkLoadFollows);
             }
         }
 

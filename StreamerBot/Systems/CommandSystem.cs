@@ -486,7 +486,7 @@ namespace StreamerBot.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
             {
-
+                result = DataManage.GetCommands();
             }
             // capture all of the join queue commands
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)

@@ -487,6 +487,30 @@ switches:
             }
         }
 
+        public string GetCommands()
+        {
+            CommandsRow[] commandsRows = null;
+
+            lock (_DataSource)
+            {
+                commandsRows = (CommandsRow[])_DataSource.Commands.Select("Message <>'"+DefaulSocialMsg+"'");
+            }
+
+            string result = "";
+
+            if (commandsRows.Length > 0)
+            {
+                result = "!" + commandsRows[0].CmdName;
+            }
+
+            foreach(CommandsRow c in commandsRows.Skip(1))
+            {
+                result += ", !" + c.CmdName;
+            }
+
+            return result;
+        }
+
         public object PerformQuery(CommandsRow row, string ParamValue)
         {
             //CommandParams query = CommandParams.Parse(row.Params);
