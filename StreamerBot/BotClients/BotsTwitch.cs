@@ -31,12 +31,14 @@ namespace StreamerBot.BotClients
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
 
+        private const int BulkFollowSkipCount = 100;
+
         public BotsTwitch()
         {
-            AddBot(TwitchBotChatClient);
             AddBot(TwitchFollower);
             AddBot(TwitchLiveMonitor);
             AddBot(TwitchBotClipSvc);
+            AddBot(TwitchBotChatClient);
 
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
@@ -267,8 +269,8 @@ namespace StreamerBot.BotClients
 
             // start thread to retrieve all clips
             BulkLoadClips = new Thread(new ThreadStart(ProcessClips));
-            BulkLoadClips.Start();
             MultiThreadOps.Add(BulkLoadClips);
+            BulkLoadClips.Start();
         }
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
@@ -296,10 +298,10 @@ namespace StreamerBot.BotClients
 
                     follows.Reverse();
 
-                    for (int i = 0; i < follows.Count; i++)
+                    for (int i = 0; i < follows.Count; i += BulkFollowSkipCount)
                     {
                         // break up the follower list so chunks of the big list are sent in parts via event
-                        List<Follow> pieces = new(follows.Skip(i).Take(100));
+                        List<Follow> pieces = new(follows.Skip(i).Take(BulkFollowSkipCount));
 
                         InvokeBotEvent(
                             this,
@@ -308,14 +310,12 @@ namespace StreamerBot.BotClients
                             {
                                 NewFollowers = pieces
                             });
-
-                        Thread.Sleep(500);
                     }
 
                     InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, new EventArgs());
                 }));
-                BulkLoadFollows.Start();
                 MultiThreadOps.Add(BulkLoadFollows);
+                BulkLoadFollows.Start();
             }
         }
 

@@ -985,7 +985,7 @@ switches:
                 bool newfollow;
 
                 UsersRow users = AddNewUser(User, FollowedDate);
-                FollowersRow followers = (FollowersRow)_DataSource.Followers.Select("UserName='" + User + "'").First();
+                FollowersRow followers = (FollowersRow)_DataSource.Followers.Select("UserName='" + User + "'").FirstOrDefault();
 
                 if (followers != null)
                 {
@@ -1199,10 +1199,10 @@ switches:
         {
             lock (_DataSource)
             {
-                System.Data.DataRow[] UserRows = _DataSource.Users.Select();
+                UsersRow[] UserRows = (UsersRow[])_DataSource.Users.Select();
                 for (int i = 0; i < UserRows.Length; i++)
                 {
-                    UsersRow users = (UsersRow)UserRows[i];
+                    UsersRow users = UserRows[i];
                     AddCurrencyRows(ref users);
                 }
             }
