@@ -895,8 +895,8 @@ switches:
         {
             lock (_DataSource)
             {
-                UsersRow[] user = (UsersRow[])_DataSource.Users.Select("UserName='" + UserName + "'");
-                UpdateWatchTime(ref user[0], CurrTime);
+                UsersRow user = (UsersRow)_DataSource.Users.Select("UserName='" + UserName + "'").FirstOrDefault();
+                UpdateWatchTime(ref user, CurrTime);
             }
         }
 
@@ -1150,7 +1150,7 @@ switches:
 
                     foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                     {
-                        currencyRow.Value += ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds);
+                        currencyRow.Value += Math.Round(ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds),2);
                     }
 
                     // set the current login date, always set regardless if currency accrual is started

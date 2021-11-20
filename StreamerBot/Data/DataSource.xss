@@ -20,18 +20,6 @@
     <Shape ID="DesignTable:RaidData" ZOrder="5" X="262" Y="543" Height="144" Width="158" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="140" />
   </Shapes>
   <Connectors>
-    <Connector ID="DesignRelation:FK_Users_Currency" ZOrder="13" LineWidth="11">
-      <RoutePoints>
-        <Point>
-          <X>484</X>
-          <Y>148</Y>
-        </Point>
-        <Point>
-          <X>654</X>
-          <Y>148</Y>
-        </Point>
-      </RoutePoints>
-    </Connector>
     <Connector ID="DesignRelation:Currency_CurrencyType" ZOrder="12" LineWidth="11">
       <RoutePoints>
         <Point>
@@ -44,15 +32,15 @@
         </Point>
       </RoutePoints>
     </Connector>
-    <Connector ID="DesignRelation:CategoryList_Commands" ZOrder="15" LineWidth="11">
+    <Connector ID="DesignRelation:FK_Users_Currency" ZOrder="13" LineWidth="11">
       <RoutePoints>
         <Point>
-          <X>417</X>
-          <Y>464</Y>
+          <X>484</X>
+          <Y>148</Y>
         </Point>
         <Point>
-          <X>221</X>
-          <Y>464</Y>
+          <X>654</X>
+          <Y>148</Y>
         </Point>
       </RoutePoints>
     </Connector>
@@ -65,6 +53,18 @@
         <Point>
           <X>225</X>
           <Y>80</Y>
+        </Point>
+      </RoutePoints>
+    </Connector>
+    <Connector ID="DesignRelation:CategoryList_Commands" ZOrder="15" LineWidth="11">
+      <RoutePoints>
+        <Point>
+          <X>417</X>
+          <Y>464</Y>
+        </Point>
+        <Point>
+          <X>221</X>
+          <Y>464</Y>
         </Point>
       </RoutePoints>
     </Connector>

@@ -100,6 +100,7 @@ namespace StreamerBot
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
             WatchProcessOps = false;
+            OptionFlags.IsStreamOnline = false;
             OptionFlags.ProcessOps = false;
             OptionFlags.ExitToken = true;
             //CP.Close();
