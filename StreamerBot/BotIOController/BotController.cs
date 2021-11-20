@@ -184,9 +184,19 @@ namespace StreamerBot.BotIOController
             });
         }
 
+        public void TwitchStartBulkFollowers(EventArgs args)
+        {
+            HandleBotEventStartBulkFollowers();
+        }
+
         public void TwitchBulkPostFollowers(OnNewFollowersDetectedArgs Follower)
         {
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers));
+        }
+
+        public void TwitchStopBulkFollowers(EventArgs args)
+        {
+            HandleBotEventStopBulkFollowers();
         }
 
         public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
@@ -355,9 +365,19 @@ namespace StreamerBot.BotIOController
             Systems.AddNewFollowers(follows);
         }
 
+        public void HandleBotEventStartBulkFollowers()
+        {
+            Systems.StartBulkFollowers();
+        }
+
         public void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
         {
             Systems.UpdateFollowers(follows);
+        }
+
+        public void HandleBotEventStopBulkFollowers()
+        {
+            Systems.StopBulkFollowers();
         }
 
         #endregion

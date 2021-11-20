@@ -1046,17 +1046,23 @@ switches:
         //    OnFoundNewFollower?.Invoke(this, new() { FromUserName = fromUserName, FollowedAt = followedAt });
         //}
 
-        public void UpdateFollowers( IEnumerable<Follow> follows)
+        public void StartFollowers()
         {
-            //new Thread(new ThreadStart(() =>
-            //{
-            UpdatingFollowers = true;
             lock (_DataSource)
             {
                 List<FollowersRow> temp = new();
                 temp.AddRange((FollowersRow[])_DataSource.Followers.Select());
                 temp.ForEach((f) => f.IsFollower = false);
             }
+            NotifySaveData();
+        }
+
+        public void UpdateFollowers( IEnumerable<Follow> follows)
+        {
+            //new Thread(new ThreadStart(() =>
+            //{
+            UpdatingFollowers = true;
+
             if (follows.Any())
             {
                 foreach (Follow f in follows)
@@ -1065,6 +1071,13 @@ switches:
                 }
             }
 
+            UpdatingFollowers = false;
+            NotifySaveData();
+            //})).Start();
+        }
+
+        public void StopBulkFollows()
+        {
             if (OptionFlags.TwitchPruneNonFollowers)
             {
                 lock (_DataSource)
@@ -1079,10 +1092,8 @@ switches:
                     }
                 }
             }
-
-            UpdatingFollowers = false;
             NotifySaveData();
-            //})).Start();
+
         }
 
         /// <summary>

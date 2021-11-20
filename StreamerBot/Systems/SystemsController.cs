@@ -21,6 +21,7 @@ namespace StreamerBot.Systems
 
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
+        private CurrencySystem Currency { get; set; }
 
         public SystemsController()
         {
@@ -29,8 +30,11 @@ namespace StreamerBot.Systems
             DataManage.Initialize();
             Stats = new();
             Command = new();
+            Currency = new();
 
             Command.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
+            Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
+            Stats.BeginWatchTime += Stats_BeginWatchTime;
         }
 
         private void SendMessage(string message)
@@ -38,9 +42,35 @@ namespace StreamerBot.Systems
             PostChannelMessage?.Invoke(this, new() { Msg = message });
         }
 
+        #region Currency System
+
+        private void Stats_BeginWatchTime(object sender, EventArgs e)
+        {
+            Currency.MonitorWatchTime();
+        }
+
+        private void Stats_BeginCurrencyClock(object sender, EventArgs e)
+        {
+            Currency.StartCurrencyClock();
+        }
+
+        #endregion
+
+        #region Followers
+
+        public void StartBulkFollowers()
+        {
+            DataManage.StartFollowers();
+        }
+
         public void UpdateFollowers(IEnumerable<Follow> Follows)
         {
             DataManage.UpdateFollowers(Follows);
+        }
+
+        public void StopBulkFollowers()
+        {
+            DataManage.StopBulkFollows();
         }
 
         public void AddNewFollowers(IEnumerable<Follow> FollowList)
@@ -63,6 +93,10 @@ namespace StreamerBot.Systems
             }
         }
 
+        #endregion
+
+        #region Database Ops
+
         public void ManageDatabase()
         {
             SystemsBase.ManageDatabase();
@@ -78,6 +112,11 @@ namespace StreamerBot.Systems
             SystemsBase.ClearAllCurrenciesValues();
         }
 
+        #endregion
+
+
+        #region Statistics
+
         public bool StreamOnline(DateTime CurrTime)
         {
             return Stats.StreamOnline(CurrTime);
@@ -91,36 +130,6 @@ namespace StreamerBot.Systems
         public void SetCategory(string GameId, string GameName)
         {
             Stats.SetCategory(GameId, GameName);
-        }
-
-        public void ClipHelper(IEnumerable<Clip> Clips)
-        {
-            foreach (Clip c in Clips)
-            {
-                if (SystemsBase.AddClip(c))
-                {
-                    if (OptionFlags.TwitchClipPostChat)
-                    {
-                        SendMessage(c.Url);
-                    }
-
-                    if (OptionFlags.TwitchClipPostDiscord)
-                    {
-                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
-                        {
-                            DiscordWebhook.SendMessage(u.Item2, c.Url);
-                            UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to Discord
-                        }
-                    }
-
-                    UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
-                }
-            }
-        }
-
-        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
-        {
-            return DataManage.GetWebhooks(webhooksKind);
         }
 
         public void UpdatedStat(params StreamStatType[] streamStatTypes)
@@ -141,6 +150,32 @@ namespace StreamerBot.Systems
             Stats.GetType()?.InvokeMember("Add" + streamStat.ToString(), BindingFlags.InvokeMethod, null, Stats, new object[] { value });
         }
 
+        public void UserJoined(List<string> users)
+        {
+            foreach (string user in from string user in users
+                                    where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
+                                    select user)
+            {
+                RegisterJoinedUser(user);
+            }
+        }
+
+        public void UserLeft(string User)
+        {
+            Stats.UserLeft(User, DateTime.Now.ToLocalTime());
+        }
+
+
+        #endregion
+
+
+
+        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        {
+            return DataManage.GetWebhooks(webhooksKind);
+        }
+
+ 
         public void AddChat(string Username)
         {
             if (Stats.UserChat(Username) && OptionFlags.FirstUserChatMsg)
@@ -192,20 +227,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void UserJoined(List<string> users)
-        {
-            foreach (string user in from string user in users
-                                    where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
-                                    select user)
-            {
-                RegisterJoinedUser(user);
-            }
-        }
 
-        public void UserLeft(string User)
-        {
-            Stats.UserLeft(User, DateTime.Now.ToLocalTime());
-        }
 
         public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message)
         {
@@ -311,5 +333,34 @@ namespace StreamerBot.Systems
                 UpdatedStat(StreamStatType.AutoCommands);
             }
         }
+
+
+        #region Clips
+        public void ClipHelper(IEnumerable<Clip> Clips)
+        {
+            foreach (Clip c in Clips)
+            {
+                if (SystemsBase.AddClip(c))
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        SendMessage(c.Url);
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
+                        {
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to Discord
+                        }
+                    }
+
+                    UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
+                }
+            }
+        }
+
+        #endregion
     }
 }

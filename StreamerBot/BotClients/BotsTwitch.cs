@@ -290,7 +290,11 @@ namespace StreamerBot.BotClients
                 {
                     string ChannelName = TwitchBotsBase.TwitchChannelName;
 
+                    InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, new EventArgs());
+
                     List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
+
+                    follows.Reverse();
 
                     for (int i = 0; i < follows.Count; i++)
                     {
@@ -307,6 +311,8 @@ namespace StreamerBot.BotClients
 
                         Thread.Sleep(500);
                     }
+
+                    InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, new EventArgs());
                 }));
                 BulkLoadFollows.Start();
                 MultiThreadOps.Add(BulkLoadFollows);
