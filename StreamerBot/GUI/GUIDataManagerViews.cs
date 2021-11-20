@@ -93,6 +93,7 @@ namespace StreamerBot.GUI
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
             Followers.ListChanged += DataView_ListChanged;
+            CurrFollowers.ListChanged += DataView_ListChanged;
             Discord.ListChanged += DataView_ListChanged;
             CurrencyType.ListChanged += DataView_ListChanged;
             Currency.ListChanged += DataView_ListChanged;
@@ -111,7 +112,7 @@ namespace StreamerBot.GUI
 
             // refresh the 'status bar' count items
             NotifyPropertyChanged(nameof(Users));
-            NotifyPropertyChanged(nameof(Followers));
+            NotifyPropertyChanged(nameof(CurrFollowers));
             NotifyPropertyChanged(nameof(BuiltInCommands));
             NotifyPropertyChanged(nameof(Users));
         }
