@@ -324,6 +324,12 @@
   <data name="MsgDataNotFound" xml:space="preserve">
     <value>data not found.</value>
   </data>
+  <data name="Msgdequeue" xml:space="preserve">
+    <value>Also with leave, user leaves the play list</value>
+  </data>
+  <data name="Msgenqueue" xml:space="preserve">
+    <value>Also with join, user join the play list</value>
+  </data>
   <data name="Msgfollow" xml:space="preserve">
     <value>If you are enjoying the content, please hit that follow button!</value>
   </data>
@@ -358,7 +364,7 @@
     <value>No usage available.</value>
   </data>
   <data name="Msgqinfo" xml:space="preserve">
-    <value>Use -!join 'gamertag'- to join the queue, and !leave to leave the queue.</value>
+    <value>Use -!join 'gamertag'- (or !enqueue) to join the queue, and !leave (or !dequeue) to leave the queue.</value>
   </data>
   <data name="Msgqstart" xml:space="preserve">
     <value>The queue list to join me in the game has started!</value>
@@ -367,7 +373,7 @@
     <value>The queue list to join me is stopped.</value>
   </data>
   <data name="Msgqueue" xml:space="preserve">
-    <value>The message isn't used in response.</value>
+    <value>The details of the queue, list who is in it</value>
   </data>
   <data name="MsgRaid" xml:space="preserve">
     <value>Thanks #user for bringing #viewers and raiding the channel!</value>

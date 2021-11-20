@@ -628,6 +628,24 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Also with leave, user leaves the play list.
+        /// </summary>
+        internal static string Msgdequeue {
+            get {
+                return ResourceManager.GetString("Msgdequeue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Also with join, user join the play list.
+        /// </summary>
+        internal static string Msgenqueue {
+            get {
+                return ResourceManager.GetString("Msgenqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If you are enjoying the content, please hit that follow button!.
         /// </summary>
         internal static string Msgfollow {
@@ -718,7 +736,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use -!join &apos;gamertag&apos;- to join the queue, and !leave to leave the queue..
+        ///   Looks up a localized string similar to Use -!join &apos;gamertag&apos;- (or !enqueue) to join the queue, and !leave (or !dequeue) to leave the queue..
         /// </summary>
         internal static string Msgqinfo {
             get {
@@ -745,7 +763,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The message isn&apos;t used in response..
+        ///   Looks up a localized string similar to The details of the queue, list who is in it.
         /// </summary>
         internal static string Msgqueue {
             get {

@@ -982,15 +982,15 @@ switches:
         {
             lock (_DataSource)
             {
-                bool newfollow = false;
+                bool newfollow;
 
                 UsersRow users = AddNewUser(User, FollowedDate);
+                FollowersRow followers = (FollowersRow)_DataSource.Followers.Select("UserName='" + User + "'").First();
 
-                DataRow[] datafollowers = _DataSource.Followers.Select("UserName='" + User + "'");
-                FollowersRow followers = datafollowers.Length > 0 ? (FollowersRow)datafollowers[0] : null;
                 if (followers != null)
                 {
-                    newfollow = !followers.IsFollower;
+                    // newfollow = !followers.IsFollower;
+                    newfollow = false;
                     followers.IsFollower = true;
                     followers.FollowedDate = FollowedDate;
                 }
@@ -1048,6 +1048,7 @@ switches:
 
         public void StartFollowers()
         {
+            UpdatingFollowers = true;
             lock (_DataSource)
             {
                 List<FollowersRow> temp = new();
@@ -1061,7 +1062,6 @@ switches:
         {
             //new Thread(new ThreadStart(() =>
             //{
-            UpdatingFollowers = true;
 
             if (follows.Any())
             {
@@ -1071,7 +1071,6 @@ switches:
                 }
             }
 
-            UpdatingFollowers = false;
             NotifySaveData();
             //})).Start();
         }
@@ -1092,8 +1091,9 @@ switches:
                     }
                 }
             }
-            NotifySaveData();
 
+            NotifySaveData();
+            UpdatingFollowers = false;
         }
 
         /// <summary>
