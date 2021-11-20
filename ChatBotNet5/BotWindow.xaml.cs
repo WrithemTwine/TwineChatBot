@@ -47,6 +47,7 @@ namespace ChatBot_Net5
             IsMultiProcActive = null;
             OptionFlags.SetSettings();
 
+            controller = new();
 
             InitializeComponent();
 
@@ -54,7 +55,6 @@ namespace ChatBot_Net5
             Resources.MergedDictionaries.Add(language);
 
             OptionFlags.SetSettings();
-            controller = Resources["ControlBot"] as BotController;
 
             // TODO: debug ChatPopup
             //CP = new();
@@ -143,7 +143,7 @@ namespace ChatBot_Net5
 
         #endregion
 
-        private void Controller_OnBotStopped(object sender, BotStartStopArgs e)
+        private void Controller_OnBotStopped(object sender, BotStartStopEventArgs e)
         {
             Dispatcher.BeginInvoke(new BotOperation(() =>
             {
@@ -173,7 +173,7 @@ namespace ChatBot_Net5
             }),null);
         }
 
-        private void Controller_OnBotStarted(object sender, BotStartStopArgs e)
+        private void Controller_OnBotStarted(object sender, BotStartStopEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new BotOperation(() =>
               {

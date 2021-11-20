@@ -1,7 +1,9 @@
 ﻿using ChatBot_Net5.BotClients;
+using ChatBot_Net5.Events;
 using ChatBot_Net5.Static;
 using ChatBot_Net5.Systems;
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,11 +21,14 @@ namespace ChatBot_Net5.BotIOController
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
 
+        public event EventHandler<DownloadedFollowersEventArgs> OnCompletedDownloadFollowers;
+        public event EventHandler<ClipFoundEventArgs> OnClipFound;
+
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored Twitch channel
 
         private List<Follow> Follows { get; set; }
-        private List<Clip> Clips { get; set; }
+        private List<Clip> ClipList { get; set; }
 
         private bool StartClips { get; set; }
 
@@ -90,7 +95,21 @@ namespace ChatBot_Net5.BotIOController
 
             Follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-            BotSystems.UpdateFollowers(ChannelName, Follows);
+            //const int count = 200;
+
+            //Follow[] FollowArray = new Follow[count];
+
+            //int x = 0;
+
+            //while (x < Follows.Count)
+            //{
+            //    Follows.CopyTo(x, FollowArray, 0, Math.Min(Follows.Count - x, count));
+            //    OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = FollowArray });
+            //    x += count;
+            //}
+
+            OnCompletedDownloadFollowers?.Invoke(this, new() { ChannelName = ChannelName, FollowList = Follows });
+
         }
 
         private void BeginAddClips()
@@ -101,9 +120,9 @@ namespace ChatBot_Net5.BotIOController
         private void ProcessClips()
         {
             StartClips = true;
-            Clips = TwitchClip.GetAllClipsAsync().Result;
+            ClipList = TwitchClip.GetAllClipsAsync().Result;
 
-            Stats.ClipHelper(Clips);
+            OnClipFound?.Invoke(this, new() { ClipList = ClipList });
             StartClips = false;
         }
 

@@ -34,8 +34,8 @@ namespace ChatBot_Net5.BotIOController
                     TwitchIO.StartBot();
                 }
 
-                bool Started = Stats.StreamOnline(StartedAt);
-                Stats.Category = Category;
+                bool Started = SystemsController.StreamOnline(StartedAt);
+                SystemsController.Category = Category;
 
                 if (Started)
                 {
@@ -68,7 +68,7 @@ namespace ChatBot_Net5.BotIOController
                                                             )
                                                         )
                                                     );
-                                Stats.AddDiscord();
+                                SystemsController.UpdatedStat(StreamStatType.Discord);
                             }
                         }
                     }
@@ -84,7 +84,7 @@ namespace ChatBot_Net5.BotIOController
         {
             if (OptionFlags.IsStreamOnline)
             {
-                Stats.StreamOffline(DateTime.Now.ToLocalTime());
+                SystemsController.StreamOffline(DateTime.Now.ToLocalTime());
             }
 
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchIO.IsStarted)

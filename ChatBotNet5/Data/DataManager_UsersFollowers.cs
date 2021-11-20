@@ -23,8 +23,7 @@ namespace ChatBot_Net5.Data
                 DataSource.UsersRow user = AddNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
-                SaveData();
-                OnPropertyChanged(nameof(Users));
+                NotifySaveData();
             }
         }
 
@@ -32,15 +31,13 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
                 if (user != null)
                 {
-                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
+                    UpdateWatchTime(ref user[0], LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(ref user[0], LastSeen); // will update the "CurrLoginDate"
 
-                    SaveData();
-                    OnPropertyChanged(nameof(Users));
-                    OnPropertyChanged(nameof(Currency));
+                    NotifySaveData();
                 }
             }
         }
@@ -61,8 +58,7 @@ namespace ChatBot_Net5.Data
 
                 User.LastDateSeen = CurrTime;
 
-                SaveData();
-                OnPropertyChanged(nameof(Users));
+                NotifySaveData();
             }
         }
 
@@ -74,9 +70,9 @@ namespace ChatBot_Net5.Data
         public void UpdateWatchTime(string UserName, DateTime CurrTime)
         {
             lock (_DataSource.Users)
-            { 
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(UserName);
-                UpdateWatchTime(ref user, CurrTime);
+            {
+                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + UserName + "'");
+                UpdateWatchTime(ref user[0], CurrTime);
             }
         }
 
@@ -101,13 +97,13 @@ namespace ChatBot_Net5.Data
         //}
 
         /// <summary>
-        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.Now.ToLocalTime().
+        /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.MaxValue.
         /// </summary>
         /// <param name="User">The user to check in the database.</param>
-        /// <returns><c>true</c> if the user has arrived prior to DateTime.Now.ToLocalTime(), <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if the user has arrived prior to DateTime.MaxValue, <c>false</c> otherwise.</returns>
         public bool CheckUser(string User)
         {
-            return CheckUser(User, DateTime.Now.ToLocalTime());
+            return CheckUser(User, DateTime.MaxValue);
         }
 
         /// <summary>
@@ -120,9 +116,9 @@ namespace ChatBot_Net5.Data
         {
             lock (_DataSource.Users)
             {
-                DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
+                DataSource.UsersRow[] user = (DataSource.UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
 
-                return !(user == null) || user?.FirstDateSeen <= ToDateTime;
+                return (user.Length > 0) ? user[0]?.FirstDateSeen <= ToDateTime : false;
             }
         }
 
@@ -130,10 +126,10 @@ namespace ChatBot_Net5.Data
         /// Check if the User is already a follower prior to now.
         /// </summary>
         /// <param name="User">The name of the user to check.</param>
-        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.Now.ToLocalTime().</returns>
+        /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.MaxValue.</returns>
         public bool CheckFollower(string User)
         {
-            return CheckFollower(User, DateTime.Now.ToLocalTime());
+            return CheckFollower(User, DateTime.MaxValue);
         }
 
         /// <summary>
@@ -179,8 +175,7 @@ namespace ChatBot_Net5.Data
                     newfollow = true;
                     _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
                 }
-                SaveData();
-                OnPropertyChanged(nameof(Followers));
+                NotifySaveData();
                 return newfollow;
             }
         }
@@ -199,17 +194,16 @@ namespace ChatBot_Net5.Data
             {
                 if (!CheckUser(User))
                 {
-                    DataSource.UsersRow output = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
-                    AddCurrencyRows(ref output);
-                    SaveData();
-                    return output;
+                    usersRow = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
+                    //AddCurrencyRows(ref usersRow);
+                    NotifySaveData();
                 }
             }
 
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock (_DataSource.Users)
             {
-                usersRow = _DataSource.Users.FindByUserName(User);
+                usersRow = (DataSource.UsersRow)_DataSource.Users.Select("UserName='" + User + "'")[0];
 
                 if (DateTime.Compare(usersRow.FirstDateSeen, FirstSeen) > 0)
                 {
@@ -220,44 +214,51 @@ namespace ChatBot_Net5.Data
             return usersRow;
         }
 
-        public void UpdateFollowers(string ChannelName, Dictionary<string, List<Follow>> follows)
+
+        //public event EventHandler<OnFoundNewFollowerEventArgs> OnFoundNewFollower;
+
+        //private void InvokeFoundNewFollower(string fromUserName, DateTime followedAt)
+        //{
+        //    OnFoundNewFollower?.Invoke(this, new() { FromUserName = fromUserName, FollowedAt = followedAt });
+        //}
+
+        public void UpdateFollowers(string ChannelName, Dictionary<string, IEnumerable<Follow>> follows)
         {
-            new Thread(new ThreadStart(() =>
+            //new Thread(new ThreadStart(() =>
+            //{
+            UpdatingFollowers = true;
+            lock (_DataSource.Followers)
             {
-                UpdatingFollowers = true;
+                List<DataSource.FollowersRow> temp = new();
+                temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
+                temp.ForEach((f) => f.IsFollower = false);
+            }
+            if (follows[ChannelName].Count() > 1)
+            {
+                foreach (Follow f in follows[ChannelName])
+                {
+                    AddFollower(f.FromUserName, f.FollowedAt);
+                }
+            }
+
+            if (OptionFlags.TwitchPruneNonFollowers)
+            {
                 lock (_DataSource.Followers)
                 {
                     List<DataSource.FollowersRow> temp = new();
                     temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
-                    temp.ForEach((f) => f.IsFollower = false);
-                }
-                if (follows[ChannelName].Count > 1)
-                {
-                    foreach (Follow f in follows[ChannelName])
+                    foreach (DataSource.FollowersRow f in from DataSource.FollowersRow f in temp
+                                                          where !f.IsFollower
+                                                          select f)
                     {
-                        AddFollower(f.FromUserName, f.FollowedAt);
+                        _DataSource.Followers.RemoveFollowersRow(f);
                     }
                 }
+            }
 
-                if (OptionFlags.TwitchPruneNonFollowers)
-                {
-                    lock (_DataSource.Followers)
-                    {
-                        List<DataSource.FollowersRow> temp = new();
-                        temp.AddRange((DataSource.FollowersRow[])_DataSource.Followers.Select());
-                        foreach (DataSource.FollowersRow f in from DataSource.FollowersRow f in temp
-                                                              where !f.IsFollower
-                                                              select f)
-                        {
-                            _DataSource.Followers.RemoveFollowersRow(f);
-                        }
-                    }
-                }
-
-                UpdatingFollowers = false;
-                SaveData();
-                OnPropertyChanged(nameof(Followers));
-            })).Start();
+            UpdatingFollowers = false;
+            NotifySaveData();
+            //})).Start();
         }
 
         /// <summary>

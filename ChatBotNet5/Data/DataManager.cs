@@ -3,7 +3,6 @@ using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace ChatBot_Net5.Data
         - A GUI to add new commands would provide more localized help, apart from names of data tables <= unless there's somehow a converter between the name they choose and the database name => could be a dictionary with keys of the localized language and the values to the data manager data table values
     */
 
-    public partial class DataManager : INotifyPropertyChanged
+    public partial class DataManager
     {
 
         #region DataSource
@@ -35,7 +34,7 @@ namespace ChatBot_Net5.Data
         private static readonly string DataFileName = DataFileXML;
 #endif
 
-        private readonly DataSource _DataSource;
+        internal readonly DataSource _DataSource;
 
         private readonly Queue<Task> SaveTasks = new();
         private bool SaveThreadStarted = false;
@@ -43,67 +42,15 @@ namespace ChatBot_Net5.Data
 
         public bool UpdatingFollowers { get; set; } = false;
 
-        public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
-        public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
-        public DataView Users { get; private set; }  // DataSource.UsersDataTable
-        public DataView Followers { get; private set; } // DataSource.FollowersDataTable
-        public DataView Discord { get; private set; } // DataSource.DiscordDataTable
-        public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
-        public DataView CurrencyType { get; private set; }  // DataSource.CurrencyTypeDataTable
-        public DataView BuiltInCommands { get; private set; } // DataSource.CommandsDataTable
-        public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
-        public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
-        public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
-        public DataView Category { get; private set; } // DataSource.CategoryTable
-        public DataView Clips { get; private set; }  // DataSource.ClipsDataTable
-        public DataView RaidData { get; private set; } // DataSource.RaidDataDataTable
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string PropName)
-        {
-            PropertyChanged?.Invoke(this, new(PropName));
-        }
-
         #endregion DataSource
 
         public DataManager()
         {
-            static string ComFilter()
-            {
-                string filter = string.Empty;
-
-                foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
-                {
-                    filter += "'" + d.ToString() + "',";
-                }
-
-                foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
-                {
-                    filter += "'" + s.ToString() + "',";
-                }
-
-                return filter == string.Empty ? "" : filter[0..^1];
-            }
-
-            _DataSource = new();
-            
+            _DataSource = new();            
             LoadData();
-            
-            ChannelEvents = _DataSource.ChannelEvents.DefaultView;
-            Users = new(_DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
-            Followers = new(_DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
-            Discord = _DataSource.Discord.DefaultView;
-            CurrencyType = new(_DataSource.CurrencyType, null, "CurrencyName", DataViewRowState.CurrentRows);
-            Currency = new(_DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
-            BuiltInCommands = new(_DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
-            Commands = new(_DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
-            StreamStats = new(_DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
-            ShoutOuts = new(_DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
-            Category = new(_DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
-            Clips = new(_DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
-            RaidData = new(_DataSource.RaidData, null, "Id", DataViewRowState.CurrentRows);
-
             CurrStreamStart = DateTime.MinValue;
+
+            OnSaveData += SaveData;
         }
 
         #region Load and Exit Ops
@@ -125,7 +72,7 @@ namespace ChatBot_Net5.Data
                 }
             }
 
-            SaveData();
+            SaveData(this, new());
         }
 
         public void Initialize()
@@ -135,9 +82,18 @@ namespace ChatBot_Net5.Data
         }
 
         /// <summary>
+        /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
+        /// </summary>
+        public event EventHandler OnSaveData;
+        private void NotifySaveData()
+        {
+            OnSaveData?.Invoke(this, new());
+        }
+
+        /// <summary>
         /// Save data to file upon exit and after data changes. Pauses for 15 seconds (unless exiting) to slow down multiple saves in a short time.
         /// </summary>
-        public void SaveData()
+        public void SaveData(object sender, EventArgs e)
         {
             if (!UpdatingFollowers) // block saving data until the follower updating is completed
             {
@@ -309,8 +265,7 @@ namespace ChatBot_Net5.Data
                 }
             }
 
-            SaveData();
-            OnPropertyChanged(nameof(Category));
+            NotifySaveData();
         }
         #endregion
 
@@ -325,8 +280,7 @@ namespace ChatBot_Net5.Data
                 if (clipsRows.Length == 0)
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
-                    SaveData();
-                    OnPropertyChanged(nameof(Clips));
+                    NotifySaveData();
                     return true;
                 }
                 return false;

@@ -15,9 +15,7 @@ namespace ChatBot_Net5.Data
         {
             DataSource.UsersRow user = _DataSource.Users.FindByUserName(User);
             UpdateCurrency(ref user, dateTime);
-            SaveData();
-            OnPropertyChanged(nameof(Users));
-            OnPropertyChanged(nameof(Currency));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -58,8 +56,6 @@ namespace ChatBot_Net5.Data
                     }
                 }
             }
-            OnPropertyChanged(nameof(Users));
-            OnPropertyChanged(nameof(Currency));
             return;
         }
 
@@ -76,7 +72,7 @@ namespace ChatBot_Net5.Data
                 {
                     lock (_DataSource.Currency)
                     {
-                        DataSource.CurrencyRow[] currencyRows = (DataSource.CurrencyRow[])_DataSource.Currency.Select("Id='" + usersRow.Id + "'");
+                        DataSource.CurrencyRow[] currencyRows = (DataSource.CurrencyRow[])_DataSource.Currency.Select("UserName='" + usersRow.UserName + "'");
                         foreach (DataSource.CurrencyTypeRow typeRow in currencyTypeRows)
                         {
                             bool found = false;
@@ -95,9 +91,7 @@ namespace ChatBot_Net5.Data
                     }
                 }
             }
-            SaveData();
-            OnPropertyChanged(nameof(Users));
-            OnPropertyChanged(nameof(Currency));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -114,9 +108,7 @@ namespace ChatBot_Net5.Data
                     AddCurrencyRows(ref users);
                 }
             }
-            SaveData();
-            OnPropertyChanged(nameof(Users));
-            OnPropertyChanged(nameof(Currency));
+            NotifySaveData();
         }
 
         /// <summary>

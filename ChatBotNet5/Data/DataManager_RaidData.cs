@@ -7,7 +7,7 @@ namespace ChatBot_Net5.Data
         public void AddRaidData(string user, DateTime time, string viewers, string gamename)
         {
             _ = _DataSource.RaidData.AddRaidDataRow(user, viewers, time, gamename);
-            SaveData();
+            NotifySaveData();
         }
 
         public void RemoveAllRaidData()

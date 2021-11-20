@@ -206,8 +206,7 @@ switches:
 
 
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
-                SaveData();
-                OnPropertyChanged(nameof(Commands));
+                NotifySaveData();
             }
             return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
         }
@@ -397,6 +396,16 @@ switches:
                     TimerList.Add(new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>()));
                 }
                 return TimerList;
+            }
+        }
+
+        public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
+        {
+            lock (_DataSource.Commands)
+            {
+                DataSource.CommandsRow[] row = (DataSource.CommandsRow[])_DataSource.Commands.Select("CmdName='" + Cmd + "'");
+
+                return row == null ? null : new(row[0].CmdName, row[0].RepeatTimer, row[0].Category?.Split(',') ?? Array.Empty<string>());
             }
         }
 

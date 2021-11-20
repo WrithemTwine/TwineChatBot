@@ -11,17 +11,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Client.Models;
 
-// TODO: add currency system
-
 namespace ChatBot_Net5.Systems
 {
-    public class CommandSystem : BotSystems, INotifyPropertyChanged
+    public class CommandSystem : SystemsBase, INotifyPropertyChanged
     {
-        private readonly StatisticsSystem StatData;
         private readonly string BotUserName;
         private Thread ElapsedThread;
 
@@ -38,9 +34,8 @@ namespace ChatBot_Net5.Systems
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
-        public CommandSystem(StatisticsSystem statistics, string BotName)
+        public CommandSystem(string BotName)
         {
-            StatData = statistics;
             BotUserName = BotName;
 
             StartElapsedTimerThread();
@@ -62,13 +57,16 @@ namespace ChatBot_Net5.Systems
         /// </summary>
         private void ElapsedCommandTimers()
         {
+            // TODO: fix repeating commands not updating their time, duplicate commands running
+
+
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
             DateTime chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
             DateTime viewertime = DateTime.Now.ToLocalTime(); // the time to check viewers
-            int chats = StatData.GetCurrentChatCount();
-            int viewers = StatData.GetUserCount();
+            int chats = GetCurrentChatCount;
+            int viewers = GetUserCount;
 
             const int ChatCount = 20;
             const int ViewerCount = 10;
@@ -88,13 +86,13 @@ namespace ChatBot_Net5.Systems
                     if (now - chattime >= new TimeSpan(0, 15, 0) || now - viewertime >= new TimeSpan(1, 0, 0))
                     {
                         int newchats, newviewers;
-                        if (now - chattime >= new TimeSpan(0, 15, 0)) { chattime = now; newchats = StatData.GetCurrentChatCount(); }
+                        if (now - chattime >= new TimeSpan(0, 15, 0)) { chattime = now; newchats = GetCurrentChatCount; }
                         else
                         {
                             newchats = chats;
                         }
 
-                        if (now - viewertime >= new TimeSpan(1, 0, 0)) { viewertime = now; newviewers = StatData.GetUserCount(); }
+                        if (now - viewertime >= new TimeSpan(1, 0, 0)) { viewertime = now; newviewers = GetUserCount; }
                         else
                         {
                             newviewers = viewers;
@@ -110,7 +108,7 @@ namespace ChatBot_Net5.Systems
                 return 1.0;
             }
 
-            void RepeatCmd(ref TimerCommand cmd)
+            void RepeatCmd(TimerCommand cmd)
             {
                 int repeat = 0;
                 bool InCategory = false;
@@ -118,7 +116,8 @@ namespace ChatBot_Net5.Systems
                 lock (cmd) // lock the cmd because it's referenced in other threads
                 {
                     repeat = cmd.RepeatTime;
-                    InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                    // verify if the category is different and the command is no longer applicable
+                    InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                 }
 
                 while (
@@ -138,8 +137,17 @@ namespace ChatBot_Net5.Systems
 
                     lock (cmd) // lock the cmd because it's referenced in other threads
                     {
-                        repeat = cmd.RepeatTime;
-                        InCategory = (cmd.CategoryList.Contains(StatData.Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                        Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
+                        if (command == null)
+                        {
+                            repeat = 0;
+                        }
+                        else
+                        {
+                            repeat = command.Item2;
+                        }
+                        // verify if the category is different and the command is no longer applicable
+                        InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                     }
                 }
             }
@@ -150,19 +158,19 @@ namespace ChatBot_Net5.Systems
             {
                 foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
                 {
-                    if (Timers.Item3.Contains(StatData.Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
+                    if (Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                     {
                         TimerCommand item = new(Timers, DiluteTime);
                         if (!RepeatList.Contains(item))
                         {
                             RepeatList.Add(item);
-                            new Thread(new ThreadStart(()=>RepeatCmd(ref item))).Start();
+                            new Thread(new ThreadStart(()=>RepeatCmd(item))).Start();
                         }
                         else
                         {
                             TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
 
-                            if (item.RepeatTime == 0)
+                            if (Listcmd.RepeatTime == 0)
                             {
                                 RepeatList.Remove(Listcmd);
                             }
@@ -177,7 +185,7 @@ namespace ChatBot_Net5.Systems
                     }
                 }
 
-                Thread.Sleep((int)(ThreadSleep * (1 + (DateTime.Now.Second / 60)))); // wait for awhile before checking commands again
+                Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
             }
         }
 
@@ -258,7 +266,7 @@ namespace ChatBot_Net5.Systems
                 return VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                             new( MsgVars.user, TwitchBots.TwitchChannelName ),
-                            new( MsgVars.uptime, FormatData.FormatTimes(StatData.GetCurrentStreamStart()) )
+                            new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
                 })); // the message is handled at the botcontroller
             }
 

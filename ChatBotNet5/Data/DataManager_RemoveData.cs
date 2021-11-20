@@ -11,7 +11,6 @@
             {
                 _DataSource.Users.Clear();
             }
-            OnPropertyChanged(nameof(Users));
 
         }
 
@@ -24,7 +23,6 @@
             {
                 _DataSource.Followers.Clear();
             }
-            OnPropertyChanged(nameof(Followers));
         }
     }
 }

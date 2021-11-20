@@ -82,8 +82,7 @@ namespace ChatBot_Net5.Data
                     lock (_DataSource.StreamStats)
                     {
                         _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                        SaveData();
-                        OnPropertyChanged(nameof(StreamStats));
+                        NotifySaveData();
                         returnvalue = true;
                     }
                 } else
@@ -91,7 +90,6 @@ namespace ChatBot_Net5.Data
                     returnvalue = false;
                 }
             }
-
             return returnvalue;
         }
 
@@ -127,8 +125,7 @@ namespace ChatBot_Net5.Data
                     }
                 }
             }
-            SaveData();
-            OnPropertyChanged(nameof(StreamStats));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -150,7 +147,6 @@ namespace ChatBot_Net5.Data
             {
                 _DataSource.StreamStats.Clear();
             }
-            OnPropertyChanged(nameof(StreamStats));
         }
 
         #endregion

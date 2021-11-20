@@ -1,15 +1,12 @@
 ﻿using ChatBot_Net5.BotClients;
 using ChatBot_Net5.BotClients.TwitchLib.Events.ClipService;
 using ChatBot_Net5.Enum;
-using ChatBot_Net5.Events;
-using ChatBot_Net5.Models;
 using ChatBot_Net5.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -17,45 +14,39 @@ using TwitchLib.Api.Services.Events.FollowerService;
 
 namespace ChatBot_Net5.Systems
 {
-    public class StatisticsSystem : BotSystems
+    public class StatisticsSystem : SystemsBase
     {
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
-        private static CurrencySystem CurrencySystem { get; set; }
         private Thread StreamUpdateThread;
-        private bool StreamUpdateClockStarted;
-        private const int SecondsDelay = 5000;
 
-        private readonly List<string> CurrUsers = new();
-        private readonly List<string> UniqueUserJoined = new();
-        private readonly List<string> UniqueUserChat = new();
-        private readonly List<string> ModUsers = new();
-        private readonly List<string> SubUsers = new();
-        private readonly List<string> VIPUsers = new();
-        private StreamStat CurrStream;
-        public string Category { get; set; }
+        public event EventHandler BeginCurrencyClock;
+        public event EventHandler BeginWatchTime;
 
-        public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
+        //public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
 
         public StatisticsSystem()
         {
-            CurrStream = new();
-            CurrencySystem = new(CurrUsers);
         }
 
         /// <summary>
         /// Attempt to start the currency clock. The setting "TwitchCurrencyOnline" can be user set and changed during bot operation. This method checks and starts the clock if not already started. The Currency System "StartClock()" method has checks for whether this setting is enabled.
         /// </summary>
-        public static void StartCurrencyClock()
+        public void StartCurrencyClock()
         {
-            CurrencySystem.StartCurrencyClock(); // try to start clock, in case accrual is started for offline mode
+            BeginCurrencyClock?.Invoke(this,new()); // try to start clock, in case accrual is started for offline mode
+        }
+
+        public void MonitorWatchTime()
+        {
+            BeginWatchTime?.Invoke(this, new());
         }
 
         public void ManageUsers()
         {
             ManageUsers(DateTime.Now.ToLocalTime());
-            CurrencySystem.MonitorWatchTime();
+            MonitorWatchTime();
         }
 
         public void ManageUsers(DateTime SpecifyTime)
@@ -102,30 +93,6 @@ namespace ChatBot_Net5.Systems
             }
 
             return UserChat(User);
-        }
-
-        /// <summary>
-        /// Retrieves the current users within the channel during the stream.
-        /// </summary>
-        /// <returns>The current user count as of now.</returns>
-        public int GetUserCount()
-        {
-            lock (CurrUsers)
-            {
-                return CurrUsers.Count;
-            }
-        }
-
-        /// <summary>
-        /// Retrieve how many chats have occurred in the current live stream to now.
-        /// </summary>
-        /// <returns>Current total chats as of now.</returns>
-        public int GetCurrentChatCount()
-        {
-            lock (CurrStream)
-            {
-                return CurrStream.TotalChats;
-            }
         }
 
         public bool UserChat(string User)
@@ -194,19 +161,20 @@ namespace ChatBot_Net5.Systems
         }
 
         #region Follower
-        public void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
+
+        public void AddNewFollower(List<Follow> FollowList)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
 
             while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
-            foreach (Follow f in e.NewFollowers.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+            foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
             {
                 if (OptionFlags.ManageFollowers)
                 {
                     if (FollowEnabled)
                     {
-                        PostChannelMessage?.Invoke(this,new() { Msg = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })) });
+                        CallbackSendMsg?.Invoke(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
                     }
 
                     AddFollow();
@@ -219,6 +187,12 @@ namespace ChatBot_Net5.Systems
                 //}
             }
         }
+
+        public void DataManage_OnFoundNewFollower(object sender, Events.OnFoundNewFollowerEventArgs e)
+        {
+            DataManage.AddFollower(e.FromUserName, e.FollowedAt.ToLocalTime());
+        }
+
         #endregion Follower
 
         #region Incoming Raids
@@ -260,10 +234,6 @@ namespace ChatBot_Net5.Systems
         //        }
         //    }
         //}
-        public void ClipMonitorService_OnNewClipFound(object sender, OnNewClipsDetectedArgs e)
-        {
-            ClipHelper(e.Clips);
-        }
 
         public void ClipHelper(IEnumerable<Clip> Clips)
         {
@@ -273,7 +243,7 @@ namespace ChatBot_Net5.Systems
                 {
                     if (OptionFlags.TwitchClipPostChat)
                     {
-                        PostChannelMessage?.Invoke(this, new() { Msg = c.Url });
+                        CallbackSendMsg?.Invoke(c.Url);
                     }
 
                     if (OptionFlags.TwitchClipPostDiscord)
@@ -330,8 +300,8 @@ namespace ChatBot_Net5.Systems
 
             // TODO: fix updating a new stream online stat - start time and end time
             //PostStreamUpdates();
-            CurrencySystem.MonitorWatchTime();
-            CurrencySystem.StartCurrencyClock();
+            MonitorWatchTime();
+            StartCurrencyClock();
 
             // setting if user wants to save Stream Stat data
             return OptionFlags.ManageStreamStats && !found;
@@ -347,8 +317,8 @@ namespace ChatBot_Net5.Systems
             if (!StreamUpdateClockStarted)
             {
                 StreamUpdateClockStarted = true;
-                CurrencySystem.MonitorWatchTime();
-                CurrencySystem.StartCurrencyClock();
+                MonitorWatchTime();
+                StartCurrencyClock();
 
                 StreamUpdateThread = new Thread(new ThreadStart(() =>
                 {
@@ -401,11 +371,6 @@ namespace ChatBot_Net5.Systems
                 UniqueUserJoined.Clear();
                 UniqueUserChat.Clear();
             }
-        }
-
-        public DateTime GetCurrentStreamStart()
-        {
-            return CurrStream.StreamStart;
         }
 
         #region Stream Stat Methods
