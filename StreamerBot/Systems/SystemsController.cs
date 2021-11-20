@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Windows;
 
 namespace StreamerBot.Systems
 {
@@ -73,12 +75,35 @@ namespace StreamerBot.Systems
             DataManage.StopBulkFollows();
         }
 
+
+        private delegate void ProcFollowDelegate(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled);
+
         public void AddNewFollowers(IEnumerable<Follow> FollowList)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
 
-            while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+            if (DataManage.UpdatingFollowers)
+            { // capture any followers found after starting the bot and before completing the bulk follower load
+                Application.Current.Dispatcher.BeginInvoke( (ProcFollowDelegate) PerformFollow, FollowList, msg, FollowEnabled);
+            }
+            else
+            {
+                ProcessFollow(FollowList, msg, FollowEnabled);
+            }
+        }
 
+        private void PerformFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
+        {
+            new Thread(new ThreadStart(() =>
+            {
+                while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+                ProcessFollow(FollowList, msg, FollowEnabled);
+            })).Start();
+        }
+
+        private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
+        {
             foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
             {
                 if (OptionFlags.ManageFollowers)
@@ -94,6 +119,7 @@ namespace StreamerBot.Systems
         }
 
         #endregion
+
 
         #region Database Ops
 
@@ -168,14 +194,11 @@ namespace StreamerBot.Systems
 
         #endregion
 
-
-
         public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
             return DataManage.GetWebhooks(webhooksKind);
         }
 
- 
         public void AddChat(string Username)
         {
             if (Stats.UserChat(Username) && OptionFlags.FirstUserChatMsg)
@@ -226,8 +249,6 @@ namespace StreamerBot.Systems
                 }
             }
         }
-
-
 
         public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message)
         {

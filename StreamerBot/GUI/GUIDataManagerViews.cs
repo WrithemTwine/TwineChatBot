@@ -25,6 +25,7 @@ namespace StreamerBot.GUI
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
+        public DataView CurrFollowers { get; private set; }
         public DataView Discord { get; private set; } // DataSource.DiscordDataTable
         public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
         public DataView CurrencyType { get; private set; }  // DataSource.CurrencyTypeDataTable
@@ -77,6 +78,7 @@ namespace StreamerBot.GUI
             ChannelEvents = dataManager._DataSource.ChannelEvents.DefaultView;
             Users = new(dataManager._DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
             Followers = new(dataManager._DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
+            CurrFollowers = new(dataManager._DataSource.Followers, "IsFollower=True", "FollowedDate", DataViewRowState.CurrentRows);
             Discord = dataManager._DataSource.Discord.DefaultView;
             CurrencyType = new(dataManager._DataSource.CurrencyType, null, "CurrencyName", DataViewRowState.CurrentRows);
             Currency = new(dataManager._DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);

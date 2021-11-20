@@ -72,10 +72,10 @@
             <StatusBarItem>
                 <StackPanel>
                     <Label>
-                        <Label.ToolTip>When a viewers stops following, not currently updated real-time. Bot startup option manages followers.</Label.ToolTip>
-                        <Label.Content>Followers:</Label.Content>
+                        <Label.ToolTip>Select options to manage followers. Currently not updated in real-time when a follower stops following.</Label.ToolTip>
+                        <Label.Content>Current Followers:</Label.Content>
                     </Label>
-                    <Label Content="{Binding Followers.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                    <Label Content="{Binding CurrFollowers.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
