@@ -9,6 +9,7 @@ using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -24,11 +25,12 @@ namespace StreamerBot
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class StreamerBotWindow : Window
+    public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
         public static BotController Controller { get; private set; } = new();
 
         private GUITwitchBots guiTwitchBot;
+        private GUIDataManagerViews guiDataManagerViews;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private bool IsAddNewRow;
         private const string MultiLiveName = "MultiUserLiveBot";
@@ -51,6 +53,7 @@ namespace StreamerBot
             InitializeComponent();
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
+            guiDataManagerViews = Resources["DataViews"] as GUIDataManagerViews;
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
@@ -348,7 +351,17 @@ namespace StreamerBot
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            ((GUIDataManagerViews)LV_JoinList.DataContext).JoinCollection.Remove((sender as CheckBox).DataContext as UserJoin);
+            UserJoin curr = (sender as CheckBox).DataContext as UserJoin;
+
+            //guiDataManagerViews.JoinCollection.Remove(curr);
+
+            ((ObservableCollection<UserJoin>)LV_JoinList.ItemsSource).Remove(curr);
+        }
+
+        private void BotChat_SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            guiTwitchBot.Send(TextBox_BotChat.Text);
+            TextBox_BotChat.Text = "";
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -640,8 +653,7 @@ namespace StreamerBot
         /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
         /// </summary>
         public event EventHandler NotifyExpiredCredentials;
-
-        /// <summary>
+                /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
         private bool? IsMultiProcActive;
@@ -790,5 +802,6 @@ namespace StreamerBot
         }
 
         #endregion
+
     }
 }

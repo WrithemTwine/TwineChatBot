@@ -35,6 +35,11 @@ namespace StreamerBot.GUI
             TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
         }
 
+        public void Send(string msg)
+        {
+            TwitchIO.Send(msg);
+        }
+
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;

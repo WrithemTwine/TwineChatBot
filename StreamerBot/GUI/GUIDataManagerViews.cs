@@ -8,6 +8,7 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows.Documents;
 using StreamerBot.Models;
+using System.Collections.ObjectModel;
 
 namespace StreamerBot.GUI
 {
@@ -20,7 +21,7 @@ namespace StreamerBot.GUI
 
         public FlowDocument ChatData { get; private set; }
 
-        public List<UserJoin> JoinCollection { get; set; }
+        public ObservableCollection<UserJoin> JoinCollection { get; set; }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
