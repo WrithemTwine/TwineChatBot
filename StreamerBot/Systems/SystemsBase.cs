@@ -4,6 +4,7 @@ using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Documents;
@@ -21,7 +22,7 @@ namespace StreamerBot.Systems
     {
         public static DataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
-        public static List<UserJoin> JoinCollection { get; set; } = new();
+        public static ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
 
         public static string Category { get; set; }
 

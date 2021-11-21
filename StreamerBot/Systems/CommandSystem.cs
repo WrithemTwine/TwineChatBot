@@ -12,8 +12,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 
-using TwitchLib.PubSub.Models.Responses;
-
 using static StreamerBot.Data.DataSource;
 
 namespace StreamerBot.Systems
@@ -123,7 +121,7 @@ namespace StreamerBot.Systems
                 {
                     if ((cmd.NextRun - DateTime.Now.ToLocalTime()).Seconds <= 0)
                     {
-                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = PerformCommand(cmd.Command, BotUserName, null, true) });
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), true) });
                         lock (cmd)
                         {
                             cmd.UpdateTime(CheckDilute());
@@ -184,224 +182,7 @@ namespace StreamerBot.Systems
                 Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
             }
         }
-
-        /// <summary>
-        /// See if the user is part of the user's auto-shout out list to determine if the message should be called
-        /// </summary>
-        /// <param name="UserName">The user to check</param>
-        /// <param name="response">the response message template</param>
-        /// <param name="AutoShout">true-check if the user is on the autoshout list, false-the method call is from a command, no autoshout check</param>
-        /// <returns></returns>
-        public bool CheckShout(string UserName, out string response, bool AutoShout = true)
-        {
-            response = "";
-            if (DataManage.CheckShoutName(UserName) || !AutoShout)
-            {
-                response = PerformCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new());
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Parses the command and performs the operation of the command. Some exceptions can bubble up from underlying database.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <param name="arglist"></param>
-        /// <param name="cmdMessage"></param>
-        /// <exception cref="InvalidOperationException">The user calling the chat command does not have permission.</exception>
-        /// <exception cref="NullReferenceException">A referenced object is null and cannot be accessed.</exception>
-        /// <exception cref="KeyNotFoundException">Command is not found in the command listing.</exception>
-        /// <returns>The resulting value of the command.</returns>
-        public string ParseCommand(CmdMessage cmdMessage)
-        {
-            //TODO: fix StreamerBot Commands
-            ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
-
-            // no permission, stop processing
-            if (!CheckPermission(cmdMessage.CommandText, InvokerPermission))
-            {
-               return LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
-            }
-
-            return PerformCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments);
-        }
-
-        /// <summary>
-        /// Review the permission of the invoker to activate the command
-        /// </summary>
-        /// <param name="command">the command to check</param>
-        /// <param name="chatMessage">From the invoker, contains different flags indicating permission.</param>
-        /// <returns></returns>
-        private bool CheckPermission(string command, ViewerTypes InvokerPermission)
-        {
-            return DataManage.CheckPermission(command, InvokerPermission);
-        }
-
-        private string PerformCommand(string command, string DisplayName, List<string> arglist, bool ElapsedTimer = false)
-        {
-            arglist?.ForEach((s) => s = s.Trim());
-
-            if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
-            {
-                string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
-                arglist.RemoveAt(0);
-                return DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
-            }
-            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
-            {
-                return DataManage.GetSocials();
-            }
-            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
-            {
-                string msg = OptionFlags.IsStreamOnline ? DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline);
-
-
-                return VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                {
-                            new( MsgVars.user, ChannelName ),
-                            new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
-                })); // the message is handled at the botcontroller
-            }
-
-            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)
-         || command == LocalizedMsgSystem.GetVar(DefaultCommand.leave)
-         || command == LocalizedMsgSystem.GetVar(DefaultCommand.queue)
-         || (command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo) && OptionFlags.UserPartyStop && !ElapsedTimer)) // handle case when a viewer tries to view qinfo--it's not started
-            {
-                UserParty(command, arglist, DisplayName);
-                return ""; // the message is handled in the GUI thread
-            }
-            else
-            {
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo) && OptionFlags.UserPartyStop) // case when an elapsed timer tries to invoke the qinfo for stopped queue, just blank-no response
-                {
-                    return ""; // skip the queue info if it's a recurring message
-                }
-
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart) || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
-                {
-                    OptionFlags.SetParty(command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart));
-                    NotifyPropertyChanged("UserPartyStart");
-                    NotifyPropertyChanged("UserPartyStop");
-                }
-
-                CommandsRow CommData = DataManage.GetCommand(command);
-                Dictionary<string, string> datavalues = null;
-
-                if (CommData != null)
-                {
-                    string paramvalue = CommData.AllowParam
-                        ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
-                            ? DisplayName
-                            : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
-                        : DisplayName;
-
-                    datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                {
-                            new( MsgVars.user, paramvalue ),
-                            new( MsgVars.url, paramvalue ),
-                            new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
-                            new( MsgVars.date, DateTime.Now.ToLocalTime().Date.ToString() )
-                                });
-
-                    if (CommData.lookupdata)
-                    {
-                        LookupQuery(CommData, paramvalue, ref datavalues);
-                    }
-                }
-
-                return (OptionFlags.MsgPerComMe && CommData.AddMe ? "/me " : "") + VariableParser.ParseReplace(CommData?.Message ?? LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound), datavalues);
-            }
-        }
-
-        /*
-         if (command == "addcommand")
-        {
-            string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
-            arglist.RemoveAt(0);
-
-            CommandParams addparams = CommandParams.Parse(arglist);
-
-            return datamanager.AddCommand(newcom[1..], addparams);
-        }
-        else if (command == "socials")
-        {
-            return datamanager.GetSocials();
-        }
-        else if (command == "uptime")
-        {
-            GetUpTimeCommand?.Invoke(this, new() { Message = datamanager.GetCommand(command).Message, User = IOModule.TwitchChannelName });
-            return ""; // the message is handled at the botcontroller
-        }
-        else if (command == "join"
-                 || command == "leave"
-                 || command == "queue"
-                 || (command == "qinfo" && OptionFlags.UserPartyStop && !ElapsedTimer)) // handle case when a viewer tries to view qinfo--it's not started
-        {
-            UserParty(command, arglist, DisplayName);
-            return ""; // the message is handled in the GUI thread
-        }
-        else
-        {
-            if (command == "qinfo" && OptionFlags.UserPartyStop) // case when an elapsed timer tries to invoke the qinfo for stopped queue, just blank-no response
-            {
-                return ""; // skip the queue info if it's a recurring message
-            }
-
-            if (command == "qstart" || command == "qstop")
-            {
-                OptionFlags.SetParty(command == "qstart");
-                NotifyPropertyChanged("UserPartyStart");
-                NotifyPropertyChanged("UserPartyStop");
-            }
-
-            DataSource.CommandsRow CommData = datamanager.GetCommand(command);
-
-            string paramvalue = CommData.AllowParam
-                ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
-                    ? DisplayName
-                    : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
-                : DisplayName;
-
-            Dictionary<string, string> datavalues = new()
-            {
-                { "#user", paramvalue },
-                { "#url", "http://www.twitch.tv/" + paramvalue },
-                { "#time", DateTime.Now.ToLocalTime().TimeOfDay.ToString() },
-                { "#date", DateTime.Now.ToLocalTime().Date.ToString() }
-            };
-
-            if (CommData.lookupdata)
-            {
-                LookupQuery(CommData, paramvalue, ref datavalues);
-            }
-
-            string response = BotController.ParseReplace(CommData.Message, datavalues);
-
-            return (OptionFlags.PerComMeMsg && CommData.AddMe ? "/me " : "") + response;
-        } 
-         */
-
-
-
-        public void UserParty(string command, List<string> arglist, string UserName)
-        {
-            DataSource.CommandsRow CommData = DataManage.GetCommand(command);
-
-            UserJoinEventArgs userJoinArgs = new();
-            userJoinArgs.Command = command;
-            userJoinArgs.AddMe = CommData?.AddMe ?? false;
-            userJoinArgs.ChatUser = UserName;
-            userJoinArgs.GameUserName = arglist == null || arglist.Count == 0 ? UserName : arglist[0];
-
-            // we have to invoke an event, because the GUI thread must be used to manipulate the data collection for the user list
-            ProcessCommands_UserJoinCommand(userJoinArgs);
-        }
-
+  
         #region New Command Code
        /// <summary>
         /// Establishes the permission level for the user who sends the message.
@@ -460,6 +241,26 @@ namespace StreamerBot.Systems
             result = ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe ? "/me " : "") + result;
 
             return result;
+        }
+        /// <summary>
+        /// See if the user is part of the user's auto-shout out list to determine if the message should be called
+        /// </summary>
+        /// <param name="UserName">The user to check</param>
+        /// <param name="response">the response message template</param>
+        /// <param name="AutoShout">true-check if the user is on the autoshout list, false-the method call is from a command, no autoshout check</param>
+        /// <returns></returns>
+        public bool CheckShout(string UserName, out string response, bool AutoShout = true)
+        {
+            response = "";
+            if (DataManage.CheckShoutName(UserName) || !AutoShout)
+            {
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, bool ElapsedTimer = false)
@@ -556,7 +357,13 @@ namespace StreamerBot.Systems
             string response;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.queue))
             {
-                response = string.Format("There are {0} users in the join queue: {1}", JoinCollection.Count, JoinCollection.Count==0 ? "no users!" : string.Join(", ", JoinCollection) );
+                List<string> JoinChatUsers = new();
+                foreach(UserJoin u in JoinCollection)
+                {
+                    JoinChatUsers.Add(u.ChatUser);
+                }
+
+                response = string.Format("There are {0} users in the join queue: {1}", JoinCollection.Count, JoinCollection.Count==0 ? "no users!" : string.Join(", ", JoinChatUsers ) );
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
             {
@@ -585,7 +392,7 @@ namespace StreamerBot.Systems
                 {
                     response = "You are not in the queue.";
                 }
-            } 
+            }
             else
             {
                 response = "Command not understood!";
@@ -656,91 +463,91 @@ namespace StreamerBot.Systems
 
         #region Join Collection
 
-        private delegate void UpdateUsers(UserJoin userJoin);
+        //private delegate void UpdateUsers(UserJoin userJoin);
 
-        private void AddJoinUser(UserJoin userJoin)
-        {
-            JoinCollection.Add(userJoin);
-        }
+        //private void AddJoinUser(UserJoin userJoin)
+        //{
+        //    JoinCollection.Add(userJoin);
+        //}
 
-        private void RemoveJoinUser(UserJoin userJoin)
-        {
-            JoinCollection.Remove(userJoin);
-        }
+        //private void RemoveJoinUser(UserJoin userJoin)
+        //{
+        //    JoinCollection.Remove(userJoin);
+        //}
 
-        private void ProcessCommands_UserJoinCommand(UserJoinEventArgs e)
-        {
-            string response = "";
+        //private void ProcessCommands_UserJoinCommand(UserJoinEventArgs e)
+        //{
+        //    string response = "";
 
-            if (OptionFlags.MsgPerComMe && e.AddMe)
-            {
-                response = "/me ";
-            }
+        //    if (OptionFlags.MsgPerComMe && e.AddMe)
+        //    {
+        //        response = "/me ";
+        //    }
 
-            // TODO: convert the queue join messages to localized strings
-            if (OptionFlags.UserPartyStart)
-            {
-                switch (e.Command)
-                {
-                    case "join":
-                        int x = 1;
+        //    // TODO: convert the queue join messages to localized strings
+        //    if (OptionFlags.UserPartyStart)
+        //    {
+        //        switch (e.Command)
+        //        {
+        //            case "join":
+        //                int x = 1;
 
-                        foreach (UserJoin u in JoinCollection)
-                        {
-                            if (u.ChatUser == e.ChatUser)
-                            {
-                                response = string.Format("You have already joined. You are currently number {0}.", x.ToString());
-                                break;
-                            }
-                            x++;
-                        }
+        //                foreach (UserJoin u in JoinCollection)
+        //                {
+        //                    if (u.ChatUser == e.ChatUser)
+        //                    {
+        //                        response = string.Format("You have already joined. You are currently number {0}.", x.ToString());
+        //                        break;
+        //                    }
+        //                    x++;
+        //                }
 
-                        response = "You have joined the queue. You are currently " + (JoinCollection.Count + 1) + ".";
-                        UpdateUsers AddUpdate = AddJoinUser;
-                        Application.Current.Dispatcher.BeginInvoke(AddUpdate, new UserJoin() { ChatUser = e.ChatUser, GameUserName = e.GameUserName });
-                        break;
-                    case "leave":
-                        UserJoin remove = null;
-                        foreach (UserJoin u in JoinCollection)
-                        {
-                            if (u.ChatUser == e.ChatUser) { remove = u; }
-                        }
-                        if (remove == null)
-                        {
-                            response = "You are not in the queue.";
-                        }
-                        else
-                        {
-                            UpdateUsers RemUpdate = RemoveJoinUser;
-                            Application.Current.Dispatcher.BeginInvoke(RemUpdate, remove);
-                            response = "You are no longer in the queue.";
-                        }
-                        break;
-                    case "queue":
-                        int y = 1;
-                        string queuelist = string.Empty;
-                        if (JoinCollection != null)
-                        {
-                            foreach (UserJoin u in JoinCollection)
-                            {
-                                queuelist += y.ToString() + ". " + u.ChatUser + " ";
-                                y++;
-                            }
-                        }
-                        response = "The current users in the join queue: " + (queuelist == string.Empty ? "no users!" : queuelist);
-                        break;
-                    default:
-                        response = "Command not understood!";
-                        break;
-                }
-            }
-            else
-            {
-                response = "The join queue list is not started.";
-            }
+        //                response = "You have joined the queue. You are currently " + (JoinCollection.Count + 1) + ".";
+        //                UpdateUsers AddUpdate = AddJoinUser;
+        //                Application.Current.Dispatcher.BeginInvoke(AddUpdate, new UserJoin() { ChatUser = e.ChatUser, GameUserName = e.GameUserName });
+        //                break;
+        //            case "leave":
+        //                UserJoin remove = null;
+        //                foreach (UserJoin u in JoinCollection)
+        //                {
+        //                    if (u.ChatUser == e.ChatUser) { remove = u; }
+        //                }
+        //                if (remove == null)
+        //                {
+        //                    response = "You are not in the queue.";
+        //                }
+        //                else
+        //                {
+        //                    UpdateUsers RemUpdate = RemoveJoinUser;
+        //                    Application.Current.Dispatcher.BeginInvoke(RemUpdate, remove);
+        //                    response = "You are no longer in the queue.";
+        //                }
+        //                break;
+        //            case "queue":
+        //                int y = 1;
+        //                string queuelist = string.Empty;
+        //                if (JoinCollection != null)
+        //                {
+        //                    foreach (UserJoin u in JoinCollection)
+        //                    {
+        //                        queuelist += y.ToString() + ". " + u.ChatUser + " ";
+        //                        y++;
+        //                    }
+        //                }
+        //                response = "The current users in the join queue: " + (queuelist == string.Empty ? "no users!" : queuelist);
+        //                break;
+        //            default:
+        //                response = "Command not understood!";
+        //                break;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        response = "The join queue list is not started.";
+        //    }
 
-            //CallbackSendMsg(response);
-        }
+        //    //CallbackSendMsg(response);
+        //}
 
         #endregion
     }
