@@ -2,6 +2,49 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Disabled">Disabled</system:String>
-    <system:String x:Key="ExplainFollowBack">This bot permits following a user who raids or follows the streamer's channel. But, if the bot account is different than streamer account, this fails per Twitch rules. This section adds the streamer's account just for performing follow-back operations when the option is enabled.</system:String>
+       
     <system:String x:Key="ExpiredToken">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
+
+    <system:String x:Key="CredentialsHeader">Help for Credentials</system:String>
+    
+    <system:String x:Key="CredentialsIntro">*The 'Credentials' are in the "Credentials (Click me)" expander for privacy when the bot starts. Click to expand and to enter and view the credentials. The data is saved automatically.</system:String>
+
+    <system:String x:Key="CredentialsSettings">The settings are saved at: C:\Users\{username}\AppData\Local\TwineStreamerBot</system:String>
+
+    <system:String x:Key="CredentialsOAuth">Bots need an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token".</system:String>
+
+    <system:String x:Key="CredentialsOAuthManual">*Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.</system:String>
+
+    <system:String x:Key="CredentialsBotAccount">Get and login to the bot account* to use within this chat bot. The Token Generator site needs the bot account as the current Twitch login (first time, to link the Token site to Twitch bot account).  *The recommendation is to create a separate Twitch account for this bot to use.</system:String>
+
+    <system:String x:Key="CredentialsLinkTwitchConsole">https://dev.twitch.tv/console</system:String>
+    <system:String x:Key="CredentialsLinkTwitchTokenGen">https://twitchapps.com/tokengen/</system:String>
+    <system:String x:Key="CredentialsTwitchScopes">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows</system:String>
+
+    <system:String x:Key="CredentialsVisit">Visit: </system:String>
+    <system:String x:Key="CredentialsAdd">Add:</system:String>
+
+    <system:String x:Key="CredentialsTwitchAppRegister"> and "Register Your Application" under the account the bot will use. *Note, the Twitch account needs 2-factor authentication set-up to register applications.*</system:String>
+
+    <system:String x:Key="CredentialsTwitchAppName">Give the application a name (it's just a reference when you look at the listing)</system:String>
+
+    <system:String x:Key="CredentialsTwitchAcctOAuthRedirect"> as the OAuth Redirect URL. Select "Chat Bot" category (or add the token generator website you're using to generate tokens).</system:String>
+
+    <system:String x:Key="CredentialsTwitchAppCreate">Complete the reCaptcha and click 'Create'.</system:String>
+
+    <system:String x:Key="CredentialsTwitchClientId">View the application entry to get the 'Client Id'. You can save it in your files and add to the left credential box.</system:String>
+
+    <system:String x:Key="CredentialsAccessTokens">One such site to generate the access tokens is at: </system:String>
+
+    <system:String x:Key="CredentialsTwitchPasteClientId">Paste the 'Client Id' generated from above at: </system:String>
+
+    <system:String x:Key="CredentialsTwitchPasteScopes">For "Scopes", paste exactly</system:String>
+
+    <system:String x:Key="CredentialsTwitchScopesExplained">*This permits specific access for the app functions. Please add these scopes. Currently, the app doesn't adjust to what user scopes you've selected if you don't want specific features enabled.</system:String>
+
+    <system:String x:Key="CredentialsTwitchAcctConnectClientIds">Click 'Connect' (to connect with Twitch Account) and copy the resulting "Access Token". You can save it to your local files and paste it to the left credential box.</system:String>
+
+    <system:String x:Key="CredentialsTwitchRefreshDate">Be sure to click "Refresh Date" here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform the new 'access token' to get another token.</system:String>
+    
 </ResourceDictionary>
+

@@ -120,7 +120,6 @@ namespace StreamerBot.Systems
 
         #endregion
 
-
         #region Database Ops
 
         public void ManageDatabase()
@@ -139,7 +138,6 @@ namespace StreamerBot.Systems
         }
 
         #endregion
-
 
         #region Statistics
 
@@ -190,7 +188,6 @@ namespace StreamerBot.Systems
         {
             Stats.UserLeft(User, DateTime.Now.ToLocalTime());
         }
-
 
         #endregion
 

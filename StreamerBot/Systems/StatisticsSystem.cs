@@ -88,16 +88,17 @@ namespace StreamerBot.Systems
 
         public bool UserChat(string User)
         {
+            bool result = false;
             if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
                 if (!UniqueUserChat.Contains(User))
                 {
                     UniqueUserChat.Add(User);
-                    return true;
+                    result = true;
                 }
             }
-            return false;
+            return result;
         }
 
         public void ModJoined(string User)
