@@ -42,7 +42,7 @@ namespace StreamerBot.Systems
         protected static List<string> SubUsers { get; private set; } = new();
         protected static List<string> VIPUsers { get; private set; } = new();
 
-        protected StreamStat CurrStream = new();
+        protected static StreamStat CurrStream { get; set; } = new();
 
         public SystemsBase() { }
 

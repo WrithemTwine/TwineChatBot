@@ -40,6 +40,8 @@ namespace StreamerBot.BotIOController
 
         public BotController()
         {
+            OptionFlags.ActiveToken = true;
+
             Systems = new();
             Systems.PostChannelMessage += Systems_PostChannelMessage;
 
@@ -97,7 +99,7 @@ namespace StreamerBot.BotIOController
         {
             // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
-            while (OptionFlags.ProcessOps || Operations.Count > 0)
+            while (OptionFlags.ActiveToken || Operations.Count > 0)
             {
                 Task temp = null;
                 lock (Operations)

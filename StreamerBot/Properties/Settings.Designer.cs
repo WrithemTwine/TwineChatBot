@@ -622,5 +622,17 @@ namespace StreamerBot.Properties {
                 this["WelcomeUserJoined"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CredentialsHelpExpanded {
+            get {
+                return ((bool)(this["CredentialsHelpExpanded"]));
+            }
+            set {
+                this["CredentialsHelpExpanded"] = value;
+            }
+        }
     }
 }

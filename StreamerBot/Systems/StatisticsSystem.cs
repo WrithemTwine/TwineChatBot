@@ -88,16 +88,17 @@ namespace StreamerBot.Systems
 
         public bool UserChat(string User)
         {
+            bool result = false;
             if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
                 if (!UniqueUserChat.Contains(User))
                 {
                     UniqueUserChat.Add(User);
-                    return true;
+                    result = true;
                 }
             }
-            return false;
+            return result;
         }
 
         public void ModJoined(string User)
@@ -193,6 +194,7 @@ namespace StreamerBot.Systems
         public bool StreamOnline(DateTime Started)
         {
             OptionFlags.IsStreamOnline = true;
+            CurrStream = new();
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
 
@@ -246,7 +248,7 @@ namespace StreamerBot.Systems
                     {
                         lock (CurrStream)
                         {
-                            DataManage.PostStreamStat(ref CurrStream);
+                            DataManage.PostStreamStat(CurrStream);
                         }
                         Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
                     }
@@ -281,7 +283,7 @@ namespace StreamerBot.Systems
                 // setting if user wants to save Stream Stat data
                 if (OptionFlags.ManageStreamStats)
                 {
-                    DataManage.PostStreamStat(ref CurrStream);
+                    DataManage.PostStreamStat(CurrStream);
                 }
 
                 CurrStream.Clear();

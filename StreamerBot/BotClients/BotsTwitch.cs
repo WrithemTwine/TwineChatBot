@@ -46,8 +46,6 @@ namespace StreamerBot.BotClients
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
 
             TwitchBotUserSvc.ConnectUserService();
-
-            OptionFlags.ProcessOps = true;
         }
 
         private void RegisterHandlers()
