@@ -96,7 +96,7 @@ namespace StreamerBot.Systems
         {
             new Thread(new ThreadStart(() =>
             {
-                while (DataManage.UpdatingFollowers && OptionFlags.ProcessOps) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+                while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
                 ProcessFollow(FollowList, msg, FollowEnabled);
             })).Start();

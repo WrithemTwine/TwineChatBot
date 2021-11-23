@@ -1,5 +1,4 @@
-﻿using StreamerBot.Data;
-using StreamerBot.Enum;
+﻿using StreamerBot.Enum;
 using StreamerBot.Events;
 using StreamerBot.Models;
 using StreamerBot.Static;
@@ -10,7 +9,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 
 using static StreamerBot.Data.DataSource;
 
@@ -115,7 +113,7 @@ namespace StreamerBot.Systems
                 }
 
                 while (
-                    OptionFlags.ProcessOps
+                    OptionFlags.ActiveToken
                     && repeat != 0
                     && InCategory)
                 {
@@ -148,7 +146,7 @@ namespace StreamerBot.Systems
 
             double DiluteTime = CheckDilute();
 
-            while (OptionFlags.ProcessOps)
+            while (OptionFlags.ActiveToken)
             {
                 foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
                 {
@@ -281,8 +279,8 @@ namespace StreamerBot.Systems
             {
                 result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
-                            new( MsgVars.user, ChannelName ),
-                            new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
+                    new( MsgVars.user, ChannelName ),
+                    new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
                 }));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
@@ -323,10 +321,10 @@ namespace StreamerBot.Systems
             else
             {
                 string paramvalue = cmdrow.AllowParam
-                                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
-                                        ? DisplayName
-                                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
-                                    : DisplayName;
+                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                        ? DisplayName
+                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                    : DisplayName;
                 datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                     new( MsgVars.user, paramvalue ),

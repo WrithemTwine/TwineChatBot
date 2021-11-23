@@ -778,7 +778,7 @@ switches:
             return returnvalue;
         }
 
-        public void PostStreamStat(ref StreamStat streamStat)
+        public void PostStreamStat(StreamStat streamStat)
         {
             lock (_DataSource)
             {

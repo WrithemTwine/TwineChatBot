@@ -104,8 +104,7 @@ namespace StreamerBot
         {
             WatchProcessOps = false;
             OptionFlags.IsStreamOnline = false;
-            OptionFlags.ProcessOps = false;
-            OptionFlags.ExitToken = true;
+            OptionFlags.ActiveToken = false;
             //CP.Close();
             Controller.ExitBots();
             OptionFlags.SetSettings();
