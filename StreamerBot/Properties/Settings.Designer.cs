@@ -578,12 +578,12 @@ namespace StreamerBot.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool WelcomeChatMsg {
+        public bool FirstUserChatMsg {
             get {
-                return ((bool)(this["WelcomeChatMsg"]));
+                return ((bool)(this["FirstUserChatMsg"]));
             }
             set {
-                this["WelcomeChatMsg"] = value;
+                this["FirstUserChatMsg"] = value;
             }
         }
         
@@ -614,12 +614,12 @@ namespace StreamerBot.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool WelcomeUserJoined {
+        public bool FirstUserJoinedMsg {
             get {
-                return ((bool)(this["WelcomeUserJoined"]));
+                return ((bool)(this["FirstUserJoinedMsg"]));
             }
             set {
-                this["WelcomeUserJoined"] = value;
+                this["FirstUserJoinedMsg"] = value;
             }
         }
         

@@ -194,30 +194,27 @@ namespace StreamerBot.Systems
         public bool StreamOnline(DateTime Started)
         {
             OptionFlags.IsStreamOnline = true;
-            CurrStream = new();
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
 
             ManageUsers(Started);
 
-            bool found;
-
-            // retrieve existing stream or start a new stream entry
-            if (DataManage.CheckStreamTime(Started))
+            bool found=false;
+            if (OptionFlags.ManageStreamStats)
             {
-                if (OptionFlags.ManageStreamStats)
+                // retrieve existing stream or start a new stream entry
+                if (DataManage.CheckStreamTime(Started))
                 {
                     CurrStream = DataManage.GetStreamData(Started);
+
+                    found = true;
                 }
-                found = true;
-            }
-            else
-            {
-                if (OptionFlags.ManageStreamStats)
+                else
                 {
                     DataManage.AddStream(CurrStream.StreamStart);
+
+                    found = false;
                 }
-                found = false;
             }
 
             // TODO: fix updating a new stream online stat - start time and end time

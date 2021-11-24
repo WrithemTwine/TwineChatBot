@@ -483,7 +483,7 @@ switches:
         {
             lock (_DataSource)
             {
-                return (CommandsRow)_DataSource.Commands.Select("CmdName='" + cmd + "'").First();
+                return (CommandsRow)_DataSource.Commands.Select("CmdName='" + cmd + "'").FirstOrDefault();
             }
         }
 
@@ -940,9 +940,9 @@ switches:
         {
             lock (_DataSource)
             {
-                UsersRow[] user = (UsersRow[])_DataSource.Users.Select("UserName='" + User + "'");
+                UsersRow user = (UsersRow)_DataSource.Users.Select("UserName='" + User + "'").FirstOrDefault();
 
-                return (user.Length > 0) ? user[0]?.FirstDateSeen <= ToDateTime : false;
+                return user != null ? user.FirstDateSeen <= ToDateTime : false;
             }
         }
 

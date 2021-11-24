@@ -71,8 +71,8 @@ namespace StreamerBot.Static
                 TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
                 TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
 
-                FirstUserJoinedMsg = Settings.Default.WelcomeUserJoined;
-                FirstUserChatMsg = Settings.Default.WelcomeChatMsg;
+                FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
+                FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
 
                 TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
 

@@ -431,10 +431,10 @@
                                                 <RadioButton IsChecked="{Binding WelcomeDisabled, Mode=TwoWay}">
                                                     <TextBlock Text="{DynamicResource Disabled}" />
                                                 </RadioButton>
-                                                <RadioButton IsChecked="{Binding WelcomeUserJoined, Mode=TwoWay}">
+                                                <RadioButton IsChecked="{Binding FirstUserJoinedMsg, Mode=TwoWay}">
                                                     <TextBlock Text="Enable when viewer joins the channel" />
                                                 </RadioButton>
-                                                <RadioButton IsChecked="{Binding WelcomeChatMsg, Mode=TwoWay}">
+                                                <RadioButton IsChecked="{Binding FirstUserChatMsg, Mode=TwoWay}">
                                                     <TextBlock Text="Enable when a viewer first chats" />
                                                 </RadioButton>
                                                 <CheckBox IsChecked="{Binding MsgWelcomeStreamer, Mode=TwoWay}">
