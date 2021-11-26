@@ -1,7 +1,12 @@
 ﻿using StreamerBot.BotClients.Twitch.TwitchLib;
 using StreamerBot.Enum;
+using StreamerBot.Events;
+using StreamerBot.Properties;
 
 using System;
+using System.Configuration;
+using System.Linq;
+using System.Reflection;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -12,6 +17,9 @@ namespace StreamerBot.BotClients.Twitch
     public class TwitchBotUserSvc : TwitchBotsBase
     {
         private UserLookupService userLookupService;
+        private bool IsInitalized;
+
+        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
 
         public TwitchBotUserSvc()
         {
@@ -20,23 +28,73 @@ namespace StreamerBot.BotClients.Twitch
 
         public void ConnectUserService(string ClientName = null, string TwitchToken = null)
         {
-            if (IsStarted)
+            DefaultSettingValueAttribute defaultSetting = null;
+
+            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
+                              where m.Name == "TwitchClientID"
+                              select m)
             {
-                userLookupService.Stop();
+                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
             }
 
-            RefreshSettings();
-            ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
-            userLookupService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
+            if (Settings.Default.TwitchClientID != defaultSetting.Value)
+            {
+                if (IsStarted)
+                {
+                    userLookupService.Stop();
+                }
+
+                RefreshSettings();
+                ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
+                userLookupService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
+
+                IsInitalized = true;
+            }
         }
 
-        public string GetUserGameCategory(string UserId)
+        public string GetUserGameCategoryId(string UserId)
         {
-            userLookupService.Start();
-            GetChannelInformationResponse user =  userLookupService.GetChannelInformation(UserId).Result;
-            userLookupService.Stop();
+            string result = GetUserInfoId(UserId)?.Data[0].GameName ?? "N/A";
 
-            return user.Data[0].GameName;
+            PostEvent_GetChannelGameName(result);
+
+            return result;
+        }
+
+        public string GetUserGameCategoryName(string UserName)
+        {
+            string result = GetUserInfoName(UserName)?.Data[0].GameName ?? "N/A";
+
+            PostEvent_GetChannelGameName(result);
+
+            return result;
+        }
+
+        private void PostEvent_GetChannelGameName(string foundGameName)
+        {
+            GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName });
+        }
+
+        public GetChannelInformationResponse GetUserInfoId(string UserId)
+        {
+            if (!IsInitalized) ConnectUserService();
+
+            //userLookupService.Start();
+            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId).Result;
+            //userLookupService.Stop();
+            
+            return user;
+        }
+
+        public GetChannelInformationResponse GetUserInfoName(string UserName)
+        {
+            if (!IsInitalized) ConnectUserService();
+
+            //userLookupService.Start();
+            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserName: UserName).Result;
+            //userLookupService.Stop();
+
+            return user;
         }
     }
 }

@@ -277,7 +277,7 @@ namespace StreamerBot.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
             {
-                result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                     new( MsgVars.user, ChannelName ),
                     new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )

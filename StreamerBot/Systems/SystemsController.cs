@@ -176,11 +176,15 @@ namespace StreamerBot.Systems
 
         public void UserJoined(List<string> users)
         {
+
             foreach (string user in from string user in users
                                     where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
             {
-                RegisterJoinedUser(user);
+                if (OptionFlags.FirstUserJoinedMsg)
+                {
+                    RegisterJoinedUser(user);
+                }
             }
         }
 
@@ -209,7 +213,7 @@ namespace StreamerBot.Systems
             // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
-                if ((Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName) || OptionFlags.MsgWelcomeStreamer)
+                if ((Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture)) || OptionFlags.MsgWelcomeStreamer)
                 {
                     ChannelEventActions selected = ChannelEventActions.UserJoined;
 
@@ -229,7 +233,7 @@ namespace StreamerBot.Systems
                             VariableParser.BuildDictionary(
                                 new Tuple<MsgVars, string>[]
                                     {
-                                            new( MsgVars.user, Username )
+                                        new( MsgVars.user, Username )
                                     }
                             )
                         )

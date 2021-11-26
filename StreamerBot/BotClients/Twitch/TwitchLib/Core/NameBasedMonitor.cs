@@ -11,7 +11,7 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib.Core
 {
     public class NameBasedMonitor<T> : CoreMonitor<T>
     {
-        private readonly ConcurrentDictionary<string, string> _channelToId = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, string> _channelToId = new(StringComparer.OrdinalIgnoreCase);
 
         public NameBasedMonitor(ITwitchAPI api) : base(api) { }
 

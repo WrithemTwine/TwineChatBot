@@ -14,6 +14,7 @@ namespace StreamerBot.GUI
         public TwitchBotFollowerSvc TwitchFollower { get; private set; }
         public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
         public TwitchBotClipSvc TwitchClip { get; private set; }
+        public TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
 
         public GUITwitchBots()
         {
@@ -21,6 +22,7 @@ namespace StreamerBot.GUI
             TwitchFollower = BotsTwitch.TwitchFollower;
             TwitchClip = BotsTwitch.TwitchBotClipSvc;
             TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
+            TwitchBotUserSvc = BotsTwitch.TwitchBotUserSvc;
 
             TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
             TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;

@@ -45,7 +45,6 @@ namespace StreamerBot.BotClients
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
 
-            TwitchBotUserSvc.ConnectUserService();
         }
 
         private void RegisterHandlers()
@@ -101,6 +100,8 @@ namespace StreamerBot.BotClients
         private void TwitchBotChatClient_OnBotStarted(object sender, EventArgs e)
         {
             RegisterHandlers();
+
+            TwitchBotUserSvc.ConnectUserService();
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
@@ -177,9 +178,9 @@ namespace StreamerBot.BotClients
 
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-            string Category = TwitchBotUserSvc.GetUserGameCategory(e.RaidNotification.UserId);
+            string CategoryName = TwitchBotUserSvc.GetUserGameCategoryId(e.RaidNotification.UserId);
 
-            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = Category, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
+            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
