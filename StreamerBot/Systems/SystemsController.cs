@@ -233,7 +233,7 @@ namespace StreamerBot.Systems
                             VariableParser.BuildDictionary(
                                 new Tuple<MsgVars, string>[]
                                     {
-                                            new( MsgVars.user, Username )
+                                        new( MsgVars.user, Username )
                                     }
                             )
                         )

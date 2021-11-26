@@ -842,11 +842,16 @@ switches:
 
         public void UserJoined(string User, DateTime NowSeen)
         {
+            DateTime Max(DateTime A, DateTime B)
+            {
+                return A <= B ? B : A;
+            }
+
             lock (_DataSource)
             {
                 UsersRow user = AddNewUser(User, NowSeen);
-                user.CurrLoginDate = NowSeen;
-                user.LastDateSeen = NowSeen;
+                user.CurrLoginDate = Max(user.CurrLoginDate, NowSeen);
+                user.LastDateSeen = Max(user.LastDateSeen, NowSeen);
                 NotifySaveData();
             }
         }
@@ -1029,7 +1034,7 @@ switches:
             {
                 usersRow = (UsersRow)_DataSource.Users.Select("UserName='" + User + "'")[0];
 
-                if (DateTime.Compare(usersRow.FirstDateSeen, FirstSeen) > 0)
+                if (FirstSeen <= usersRow.FirstDateSeen)
                 {
                     usersRow.FirstDateSeen = FirstSeen;
                 }
@@ -1150,7 +1155,7 @@ switches:
 
                     foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                     {
-                        currencyRow.Value += Math.Round(ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds),2);
+                        currencyRow.Value = Math.Round(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), 2);
                     }
 
                     // set the current login date, always set regardless if currency accrual is started

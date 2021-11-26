@@ -7,7 +7,7 @@ using Xunit;
 
 namespace TestStreamerBot
 {
-    public class UnitTest1
+    public class TestSystemsController
     {
         private bool setFile;
         private static readonly string DataFileXML = "ChatDataStore.xml";

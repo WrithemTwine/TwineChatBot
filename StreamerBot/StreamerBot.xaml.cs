@@ -11,8 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,7 +32,6 @@ namespace StreamerBot
         public static BotController Controller { get; private set; } = new();
 
         private GUITwitchBots guiTwitchBot;
-        private GUIDataManagerViews guiDataManagerViews;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private bool IsAddNewRow;
         private const string MultiLiveName = "MultiUserLiveBot";
@@ -53,7 +54,6 @@ namespace StreamerBot
             InitializeComponent();
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
-            guiDataManagerViews = Resources["DataViews"] as GUIDataManagerViews;
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
@@ -61,6 +61,7 @@ namespace StreamerBot
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
         }
+
 
         #region Window Open and Close
 
@@ -94,6 +95,7 @@ namespace StreamerBot
                         MultiBotRadio(true);
                     }
                 }
+                BeginUpdateCategory();
             }
 
             // TODO: add follower service online, offline, and repeat timers to re-run service
@@ -305,7 +307,6 @@ namespace StreamerBot
                 Radio_Twitch_FollowBotStart.IsEnabled = false;
                 Radio_Twitch_LiveBotStart.IsEnabled = false;
                 Radio_Twitch_ClipBotStart.IsEnabled = false;
-
             }
         }
 
@@ -369,6 +370,61 @@ namespace StreamerBot
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
+
+        private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
+        {
+            BeginUpdateCategory();
+        }
+
+        private void BeginUpdateCategory()
+        {
+            // TODO: align current stream info to the current active stream
+            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+
+            RefreshCategory refresh = UpdateCategory;
+
+            Dispatcher.BeginInvoke(refresh, null);
+
+            Button_RefreshCategory.IsEnabled = false;
+        }
+
+        private void UpdateCategory()
+        {
+            DefaultSettingValueAttribute defaultSetting = null;
+            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
+                                     where m.Name == "TwitchChannelName"
+                                     select m)
+            {
+                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
+            }
+
+            if (Settings.Default.TwitchChannelName != defaultSetting.Value) // prevent operation if default value
+            {
+                new Thread(new ThreadStart(() =>
+                {
+                    try
+                    {
+                        guiTwitchBot.TwitchBotUserSvc.GetUserGameCategoryName(Settings.Default.TwitchChannelName);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    }
+                })).Start();
+            }
+        }
+
+        private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                TextBlock_CurrentCategory.Text = e.GameName;
+                Button_RefreshCategory.IsEnabled = true;
+            });
+            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName -= TwitchBotUserSvc_GetChannelGameName;
+        }
+
+        private delegate void RefreshCategory();
 
         private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
@@ -652,7 +708,8 @@ namespace StreamerBot
         /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
         /// </summary>
         public event EventHandler NotifyExpiredCredentials;
-                /// <summary>
+ 
+        /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
         private bool? IsMultiProcActive;

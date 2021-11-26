@@ -75,7 +75,10 @@ namespace StreamerBot.Systems
         {
             lock (CurrUsers)
             {
-                CurrUsers.Add(User);
+                if (!CurrUsers.Contains(User))
+                {
+                    CurrUsers.Add(User);
+                }
             }
 
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
@@ -199,7 +202,7 @@ namespace StreamerBot.Systems
 
             ManageUsers(Started);
 
-            bool found=false;
+            bool found = false;
             if (OptionFlags.ManageStreamStats)
             {
                 // retrieve existing stream or start a new stream entry

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Interfaces;
@@ -12,9 +14,19 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
         {
         }
 
-        public async Task<GetChannelInformationResponse> GetChannelInformation(string UserId)
+        public async Task<GetChannelInformationResponse> GetChannelInformation(string UserId = null, string UserName = null)
         {
-            return await _api.Helix.Channels.GetChannelInformationAsync(UserId);
+            if (UserId != null)
+            {
+                return await _api.Helix.Channels.GetChannelInformationAsync(UserId);
+            }
+            else if (UserName != null)
+            {
+                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id;
+                return await _api.Helix.Channels.GetChannelInformationAsync(channelId);
+            }
+
+            return null;
         }
     }
 }
