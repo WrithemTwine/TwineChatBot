@@ -606,9 +606,9 @@ switches:
         {
             lock (_DataSource)
             {
-                CommandsRow[] row = (CommandsRow[])_DataSource.Commands.Select("CmdName='" + Cmd + "'");
+                CommandsRow row = (CommandsRow)_DataSource.Commands.Select("CmdName='" + Cmd + "'").First();
 
-                return row == null ? null : new(row[0].CmdName, row[0].RepeatTimer, row[0].Category?.Split(',') ?? Array.Empty<string>());
+                return (row == null) ? null : new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>());
             }
         }
 
@@ -1155,7 +1155,7 @@ switches:
 
                     foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                     {
-                        currencyRow.Value = Math.Round(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), 2);
+                        currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), 2), typeRow.MaxValue);
                     }
 
                     // set the current login date, always set regardless if currency accrual is started

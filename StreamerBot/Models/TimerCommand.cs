@@ -29,10 +29,23 @@ namespace StreamerBot.Models
 
         public TimerCommand(Tuple<string, int, string[]> ComRepeat, double TimeDilute)
         {
-            Command = ComRepeat.Item1;
+            Command = ComRepeat.Item1.ToLower();
             RepeatTime = ComRepeat.Item2;
             CategoryList.AddRange(ComRepeat.Item3);
             UpdateTime(TimeDilute);
+        }
+
+        public void ModifyTime(int NewRepeatTime, double TimeDilute)
+        {
+            if(NewRepeatTime < RepeatTime)
+            {
+                NextRun = DateTime.Now.ToLocalTime().AddSeconds((RepeatTime - NewRepeatTime) * TimeDilute);
+            } 
+            else if (NewRepeatTime > RepeatTime)
+            {
+                NextRun = DateTime.Now.ToLocalTime().AddSeconds((NewRepeatTime-RepeatTime) * TimeDilute);
+            }
+            RepeatTime = NewRepeatTime;
         }
 
         public void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime*TimeDilute);

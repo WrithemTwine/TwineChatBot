@@ -18,6 +18,8 @@ namespace StreamerBot.Systems
     {
         private Thread ElapsedThread;
 
+        // TODO: add "!time" command for current time per the streamer's location
+
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
 
@@ -44,6 +46,15 @@ namespace StreamerBot.Systems
             ElapsedThread.Join();
         }
 
+        private const int ChatCount = 20;
+        private const int ViewerCount = 25;
+        private const int ThreadSleep = 5000;
+        private DateTime chattime;
+        private DateTime viewertime;
+        private int chats;
+        private int viewers;
+
+
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
         /// </summary>
@@ -55,99 +66,17 @@ namespace StreamerBot.Systems
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
-            DateTime chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
-            DateTime viewertime = DateTime.Now.ToLocalTime(); // the time to check viewers
-            int chats = GetCurrentChatCount;
-            int viewers = GetUserCount;
+            chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
+            viewertime = DateTime.Now.ToLocalTime(); // the time to check viewers
+            chats = GetCurrentChatCount;
+            viewers = GetUserCount;
 
-            const int ChatCount = 20;
-            const int ViewerCount = 10;
-            const int ThreadSleep = 5000;
-
-            double CheckDilute()
-            {
-                if (OptionFlags.RepeatTimerDilute)
-                {
-                    // 10+ viewers per hr, or 20chats in 15 minutes; == 1.0 dilute
-                    if (chats >= ChatCount || viewers >= ViewerCount)
-                    {
-                        return 1.0;
-                    }
-
-                    DateTime now = DateTime.Now.ToLocalTime();
-                    if (now - chattime >= new TimeSpan(0, 15, 0) || now - viewertime >= new TimeSpan(1, 0, 0))
-                    {
-                        int newchats, newviewers;
-                        if (now - chattime >= new TimeSpan(0, 15, 0)) { chattime = now; newchats = GetCurrentChatCount; }
-                        else
-                        {
-                            newchats = chats;
-                        }
-
-                        if (now - viewertime >= new TimeSpan(1, 0, 0)) { viewertime = now; newviewers = GetUserCount; }
-                        else
-                        {
-                            newviewers = viewers;
-                        }
-
-                        double temp = 1.0 + newchats >= ChatCount || newviewers >= ViewerCount ? 0 : (1.0 - (Math.Abs(newchats + newviewers) / (ChatCount + ViewerCount)));
-                        chats = newchats;
-                        viewers = newviewers;
-
-                        return temp;
-                    }
-                }
-                return 1.0;
-            }
-
-            void RepeatCmd(TimerCommand cmd)
-            {
-                int repeat = 0;
-                bool InCategory = false;
-
-                lock (cmd) // lock the cmd because it's referenced in other threads
-                {
-                    repeat = cmd.RepeatTime;
-                    // verify if the category is different and the command is no longer applicable
-                    InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
-                }
-
-                while (
-                    OptionFlags.ActiveToken
-                    && repeat != 0
-                    && InCategory)
-                {
-                    if ((cmd.NextRun - DateTime.Now.ToLocalTime()).Seconds <= 0)
-                    {
-                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), true) });
-                        lock (cmd)
-                        {
-                            cmd.UpdateTime(CheckDilute());
-                        }
-                    }
-                    Thread.Sleep(ThreadSleep * (1 + (DateTime.Now.Second / 60)));
-
-                    lock (cmd) // lock the cmd because it's referenced in other threads
-                    {
-                        Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
-                        if (command == null)
-                        {
-                            repeat = 0;
-                        }
-                        else
-                        {
-                            repeat = command.Item2;
-                        }
-                        // verify if the category is different and the command is no longer applicable
-                        InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
-                    }
-                }
-            }
-
-            double DiluteTime = CheckDilute();
+            double DiluteTime;
 
             while (OptionFlags.ActiveToken)
             {
+                DiluteTime = CheckDilute();
+
                 foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
                 {
                     if (Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
@@ -161,17 +90,9 @@ namespace StreamerBot.Systems
                         else
                         {
                             TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
-
                             if (Listcmd.RepeatTime == 0)
                             {
                                 RepeatList.Remove(Listcmd);
-                            }
-                            else
-                            {
-                                lock (Listcmd)
-                                {
-                                    Listcmd.RepeatTime = item.RepeatTime; // update repeat time, the task will update time after it runs one loop of repeat
-                                }
                             }
                         }
                     }
@@ -180,9 +101,82 @@ namespace StreamerBot.Systems
                 Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
             }
         }
-  
+
+        private void RepeatCmd(TimerCommand cmd)
+        {
+            int repeat = 0;
+            bool InCategory = false;
+
+            lock (cmd) // lock the cmd because it's referenced in other threads
+            {
+                repeat = cmd.RepeatTime;
+                // verify if the category is different and the command is no longer applicable
+                InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
+            }
+
+            while (OptionFlags.ActiveToken && repeat != 0 && InCategory)
+            {
+                if (cmd.NextRun <= DateTime.Now.ToLocalTime())
+                {
+                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), true) });
+                    lock (cmd)
+                    {
+                        cmd.UpdateTime(CheckDilute());
+                    }
+                }
+                Thread.Sleep(ThreadSleep * (1 + (DateTime.Now.Second / 60)));
+
+                lock (cmd) // lock the cmd because it's referenced in other threads
+                {
+                    Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
+                    if (command == null)
+                    {
+                        repeat = 0;
+                    }
+                    else
+                    {
+                        repeat = command.Item2;
+                        cmd.ModifyTime(repeat, CheckDilute());
+                    }
+                    // verify if the category is different and the command is no longer applicable
+                    InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
+                }
+            }
+        }
+
+        private double CheckDilute()
+        {
+            double temp = 1.0;
+
+            if (OptionFlags.RepeatTimerDilute)
+            {
+                DateTime now = DateTime.Now.ToLocalTime();
+
+                // 10+ viewers per 1/2 hr, or 20chats in 15 minutes; == 1.0 dilute
+
+                int newchats = chats, newviewers = viewers;
+
+                if ((now - chattime) >= new TimeSpan(0, 15, 0))
+                {
+                    chattime = now;
+                    newchats = GetCurrentChatCount - chats;
+                }
+
+                if ((now - viewertime) >= new TimeSpan(0, 30, 0))
+                {
+                    viewertime = now;
+                    newviewers = GetUserCount;
+                }
+
+                double factor = (newchats + newviewers) / (ChatCount + ViewerCount);
+
+                temp = 1.0 + (factor > 1.0 ? 0 : 1.0 - factor);
+            }
+            return temp;
+        }
+
         #region New Command Code
-       /// <summary>
+        /// <summary>
         /// Establishes the permission level for the user who sends the message.
         /// </summary>
         /// <param name="chatMessage">The ChatMessage holding the characteristics of the user who invoked the chat command, which parses out the user permissions.</param>
@@ -240,6 +234,7 @@ namespace StreamerBot.Systems
 
             return result;
         }
+
         /// <summary>
         /// See if the user is part of the user's auto-shout out list to determine if the message should be called
         /// </summary>
@@ -263,7 +258,7 @@ namespace StreamerBot.Systems
 
         public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, bool ElapsedTimer = false)
         {
-            string result = "";
+            string result;
             Dictionary<string, string> datavalues = null;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
             {
@@ -455,97 +450,6 @@ namespace StreamerBot.Systems
                     }
             }
         }
-
-        #endregion
-
-
-        #region Join Collection
-
-        //private delegate void UpdateUsers(UserJoin userJoin);
-
-        //private void AddJoinUser(UserJoin userJoin)
-        //{
-        //    JoinCollection.Add(userJoin);
-        //}
-
-        //private void RemoveJoinUser(UserJoin userJoin)
-        //{
-        //    JoinCollection.Remove(userJoin);
-        //}
-
-        //private void ProcessCommands_UserJoinCommand(UserJoinEventArgs e)
-        //{
-        //    string response = "";
-
-        //    if (OptionFlags.MsgPerComMe && e.AddMe)
-        //    {
-        //        response = "/me ";
-        //    }
-
-        //    // TODO: convert the queue join messages to localized strings
-        //    if (OptionFlags.UserPartyStart)
-        //    {
-        //        switch (e.Command)
-        //        {
-        //            case "join":
-        //                int x = 1;
-
-        //                foreach (UserJoin u in JoinCollection)
-        //                {
-        //                    if (u.ChatUser == e.ChatUser)
-        //                    {
-        //                        response = string.Format("You have already joined. You are currently number {0}.", x.ToString());
-        //                        break;
-        //                    }
-        //                    x++;
-        //                }
-
-        //                response = "You have joined the queue. You are currently " + (JoinCollection.Count + 1) + ".";
-        //                UpdateUsers AddUpdate = AddJoinUser;
-        //                Application.Current.Dispatcher.BeginInvoke(AddUpdate, new UserJoin() { ChatUser = e.ChatUser, GameUserName = e.GameUserName });
-        //                break;
-        //            case "leave":
-        //                UserJoin remove = null;
-        //                foreach (UserJoin u in JoinCollection)
-        //                {
-        //                    if (u.ChatUser == e.ChatUser) { remove = u; }
-        //                }
-        //                if (remove == null)
-        //                {
-        //                    response = "You are not in the queue.";
-        //                }
-        //                else
-        //                {
-        //                    UpdateUsers RemUpdate = RemoveJoinUser;
-        //                    Application.Current.Dispatcher.BeginInvoke(RemUpdate, remove);
-        //                    response = "You are no longer in the queue.";
-        //                }
-        //                break;
-        //            case "queue":
-        //                int y = 1;
-        //                string queuelist = string.Empty;
-        //                if (JoinCollection != null)
-        //                {
-        //                    foreach (UserJoin u in JoinCollection)
-        //                    {
-        //                        queuelist += y.ToString() + ". " + u.ChatUser + " ";
-        //                        y++;
-        //                    }
-        //                }
-        //                response = "The current users in the join queue: " + (queuelist == string.Empty ? "no users!" : queuelist);
-        //                break;
-        //            default:
-        //                response = "Command not understood!";
-        //                break;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        response = "The join queue list is not started.";
-        //    }
-
-        //    //CallbackSendMsg(response);
-        //}
 
         #endregion
     }

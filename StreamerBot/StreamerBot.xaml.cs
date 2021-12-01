@@ -486,7 +486,7 @@ namespace StreamerBot
                 case "DG_Currency":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "CurrencyName" and not "AccrueAmt" and not "Seconds")
+                        if (dc.Header.ToString() is not "CurrencyName" and not "AccrueAmt" and not "Seconds" and not "MaxValue")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
