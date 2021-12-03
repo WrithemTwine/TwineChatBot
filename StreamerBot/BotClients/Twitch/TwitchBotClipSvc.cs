@@ -15,7 +15,7 @@ namespace StreamerBot.BotClients.Twitch
 {
     public class TwitchBotClipSvc : TwitchBotsBase
     {
-        public ClipMonitorService clipMonitorService { get; set; }
+        public ClipMonitorService ClipMonitorService { get; set; }
 
         public TwitchBotClipSvc()
         {
@@ -26,13 +26,13 @@ namespace StreamerBot.BotClients.Twitch
         {
             if (IsStarted)
             {
-                clipMonitorService.Stop();
+                ClipMonitorService.Stop();
             }
 
             RefreshSettings();
             ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
-            clipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
-            clipMonitorService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
+            ClipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
+            ClipMonitorService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace StreamerBot.BotClients.Twitch
                 if (IsStopped || !IsStarted)
                 {
                     ConnectClipService();
-                    clipMonitorService?.Start();
+                    ClipMonitorService?.Start();
                     IsStarted = true;
                     IsStopped = false;
                     InvokeBotStarted();
@@ -68,11 +68,11 @@ namespace StreamerBot.BotClients.Twitch
             {
                 if (IsStarted)
                 {
-                    clipMonitorService?.Stop();
+                    ClipMonitorService?.Stop();
                     IsStarted = false;
                     IsStopped = true;
                     InvokeBotStopped();
-                    clipMonitorService = null;
+                    ClipMonitorService = null;
                 }
                 return true;
             }
@@ -94,7 +94,7 @@ namespace StreamerBot.BotClients.Twitch
 
         public async Task<List<Clip>> GetAllClipsAsync()
         {
-            return await clipMonitorService.GetAllClipsAsync(TwitchChannelName);
+            return await ClipMonitorService.GetAllClipsAsync(TwitchChannelName);
         }
 
     }

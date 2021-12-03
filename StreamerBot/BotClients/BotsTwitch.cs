@@ -89,7 +89,7 @@ namespace StreamerBot.BotClients
 
             if (TwitchBotClipSvc.IsStarted && !TwitchBotClipSvc.HandlersAdded)
             {
-                TwitchBotClipSvc.clipMonitorService.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
+                TwitchBotClipSvc.ClipMonitorService.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
 
                 TwitchBotClipSvc.HandlersAdded = true;
             }
