@@ -398,10 +398,13 @@
                                         <GroupBox Header="Any - Bot Management">
                                             <StackPanel>
                                                 <CheckBox IsChecked="{Binding MsgBotConnection, Mode=TwoWay}">
-                                                    <TextBlock><Run Text="Enable bot welcome message when connected to stream channel."/></TextBlock>
+                                                    <TextBlock>Enable bot welcome message when connected to stream channel.</TextBlock>
                                                 </CheckBox>
                                                 <CheckBox IsChecked="{Binding PostMultiLive, Mode=TwoWay}">
-                                                    <TextBlock><Run Text="Enable posting to social media (e.g. Discord) multiple live messages in same day."/></TextBlock>
+                                                    <TextBlock>Enable posting to social media (e.g. Discord) multiple live messages in same day.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox x:Name="CheckBox_Debug_Livestream" IsChecked="{Binding DebugLiveStream, Mode=TwoWay}">
+                                                    <TextBlock>Enable Livestream debug buttons.</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
@@ -447,7 +450,6 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-
                                         <GroupBox Header="Twitch - Format Bot messages">
                                             <StackPanel>
                                                 <Label Content="/me changes message to all italics" />
@@ -462,7 +464,7 @@
                                                     <TextBlock>Active when channel is live</TextBlock>
                                                 </Label>
                                                 <CheckBox IsChecked="{Binding MsgAutoShout, Mode=TwoWay}">
-                                                    <TextBlock>Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab.</TextBlock>
+                                                    <TextBlock>Auto shoutout viewers when they first appear (tied to 'Welcome Viewers'. Add names to &quot;Auto SO&quot; tab.)</TextBlock>
                                                 </CheckBox>
                                                 <CheckBox IsChecked="{Binding TwitchRaidShoutOut}">
                                                     <TextBlock>Enable auto shoutout for incoming channel raid streamers</TextBlock>
@@ -521,6 +523,9 @@
                                                 <CheckBox x:Name="CheckBox_ManageRaidData" IsChecked="{Binding ManageRaidData}">
                                                     <TextBlock TextWrapping="Wrap">Record Raid Stats for incoming raids.*</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox x:Name="CheckBox_ManageOutRaidData" IsChecked="{Binding ManageOutRaidData}">
+                                                    <TextBlock TextWrapping="Wrap">Record outgoing raids.*</TextBlock>
+                                                </CheckBox>
                                                 <Label>
                                                     <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>
                                                 </Label>
@@ -567,55 +572,63 @@
                                 </StackPanel>
                             </StackPanel>
                         </TabItem>
-                        <TabItem Header="Auto-SO">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="35" />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="450" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                                <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
-                            </Grid>
-                        </TabItem>
                         <TabItem Header="User Data" x:Name="TabItem_Users">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="25" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="5" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Row="0" Content="User List"/>
-                                <Button x:Name="Button_ClearWatchTime" Content="Reset WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />
-                                <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
-                                <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
+                            <TabControl>
+                                <TabItem Header="User Follow">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="5" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Row="0" Content="User List"/>
+                                        <Button x:Name="Button_ClearWatchTime" Content="Reset WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />
+                                        <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
+                                        <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
 
-                                <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
-                            </Grid>
-                        </TabItem>
-                        <TabItem Header="Clips" x:Name="TabItem_Clips">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="25" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="300"/>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Row="0" Grid.Column="2" Content="Clip List"/>
-                                <Label Grid.Row="0" Content="Category List"/>
-                                <DataGrid x:Name="DG_CategoryList_Clips" ItemsSource="{Binding Category, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" />
-                                <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" Grid.Column="2" CanUserDeleteRows="True" />
-                            </Grid>
+                                        <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns"/>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Auto-SO">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="35" />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
+                                        <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="65" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="320"/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Grid.Row="0" Grid.ColumnSpan="3">
+                                            <TextBlock Width="744">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
+                                        </Label>
+                                        <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
+                                        <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" CanUserDeleteRows="True" CanUserAddRows="True"/>
+                                        <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="False" Grid.Row="1" Grid.Column="2" />
+                                    </Grid>
+                                </TabItem>
+
+                            </TabControl>
                         </TabItem>
                         <TabItem Header="System Events">
                             <Grid>
@@ -624,46 +637,15 @@
                                     <RowDefinition Height="100*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="250"/>
-                                    <ColumnDefinition Width="5"/>
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
 
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label>Current Category: </Label>
-                                        <TextBlock x:Name="TextBlock_CurrentCategory" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                    <Button Name="Button_RefreshCategory" Height="20" Width="120" Content="Refresh Category" Click="Button_RefreshCategory_Click" />
-                                </StackPanel>
-                                <DataGrid x:Name="DG_CategoryList" ItemsSource="{Binding Category, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" />
-
-                                <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="2"><Run Text="Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values."/><LineBreak/><Run Text="'Live' is a message to Discord/other services."/></TextBlock>
+                                <TextBlock TextWrapping="Wrap" Grid.Row="0">Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values.<LineBreak/>'Live' is a message to Discord/other services.</TextBlock>
                                 <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2">
                                     <DataGrid.ToolTip>
                                         <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;, the &quot; #&quot; needs to be the first character in the word."/></TextBlock>
                                     </DataGrid.ToolTip>
                                 </DataGrid>
-                            </Grid>
-                        </TabItem>
-                        <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="65" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="320"/>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-
-                                <Label Grid.Row="0" Grid.ColumnSpan="3">
-                                    <TextBlock Width="744">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
-                                </Label>
-                                <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
-                                <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" CanUserDeleteRows="True" CanUserAddRows="True"/>
-                                <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" CanUserDeleteRows="False" Grid.Row="1" Grid.Column="2" />
                             </Grid>
                         </TabItem>
                         <TabItem Header="Commands">
@@ -692,32 +674,71 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem Header="Incoming Raid">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="25" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="500" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
-                                <DataGrid Grid.Row="1" ItemsSource="{Binding RaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
-                            </Grid>
-                        </TabItem>
-                        <TabItem Header="Stream Stats" x:Name="TabItem_StreamStats">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="25" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <StackPanel Orientation="Horizontal" Grid.Row="0">
-                                    <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
-                                    <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
-                                </StackPanel>
-                                <DataGrid Grid.Row="1" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
-                            </Grid>
+                        <TabItem Header="Stream Data" x:Name="TabItem_StreamStats">
+                            <TabControl>
+                                <TabItem Header="Stats">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <StackPanel x:Name="StackPanel_DebugLivestream" Orientation="Horizontal" Grid.Row="0">
+                                            <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
+                                            <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
+                                        </StackPanel>
+                                        <DataGrid Grid.Row="1" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Raids">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="55" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="400" />
+                                            <ColumnDefinition Width="5" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
+                                        <TextBlock Grid.Row="0" Grid.Column="2">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
+                                        <DataGrid Grid.Row="1" ItemsSource="{Binding InRaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                        <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding OutRaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Categories" x:Name="TabItem_Category">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="350"/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button Name="Button_RefreshCategory" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="120" Content="Refresh Category" Click="Button_RefreshCategory_Click" />
+                                        <Label Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center">Current Category:</Label>
+                                        <TextBlock x:Name="TextBlock_CurrentCategory" Grid.Column="2" VerticalAlignment="Center" TextWrapping="Wrap"/>
+
+                                        <DataGrid x:Name="DG_CategoryList_Clips" ItemsSource="{Binding Category, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_CommonMsgs_AutoGeneratedColumns" />
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Clips" x:Name="TabItem_Clips">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Row="0" Content="Clip List"/>
+                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" CanUserDeleteRows="True" />
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
                         </TabItem>
                         <TabItem IsEnabled="False" MinWidth="20" Width="20" />
                         <TabItem Header="MultiLive Monitor">
@@ -797,7 +818,7 @@
                                 <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Width="Auto" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                             </DockPanel>
                         </GroupBox>
-                    </TabItem>                    
+                    </TabItem>
                 </TabControl>
             </TabItem>
             <TabItem Header="Bot Chat">

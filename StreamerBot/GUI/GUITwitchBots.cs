@@ -7,6 +7,9 @@ namespace StreamerBot.GUI
 {
     public class GUITwitchBots : GUIBotBase
     {
+        public event EventHandler OnLiveStreamStarted;
+        public event EventHandler OnLiveStreamUpdated;
+
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
@@ -37,6 +40,8 @@ namespace StreamerBot.GUI
             TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
         }
 
+
+
         public void Send(string msg)
         {
             TwitchIO.Send(msg);
@@ -46,6 +51,19 @@ namespace StreamerBot.GUI
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             BotStarted( new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
+
+            TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
+            TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
+        }
+
+        private void LiveStreamMonitor_OnStreamUpdate(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamUpdateArgs e)
+        {
+            OnLiveStreamUpdated?.Invoke(this, new());
+        }
+
+        private void LiveStreamMonitor_OnStreamOnline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOnlineArgs e)
+        {
+            OnLiveStreamStarted?.Invoke(this, new());
         }
 
         private void TwitchLiveMonitor_OnBotStopped(object sender, EventArgs e)

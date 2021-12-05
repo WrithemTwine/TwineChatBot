@@ -634,5 +634,29 @@ namespace StreamerBot.Properties {
                 this["CredentialsHelpExpanded"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DebugLiveStream {
+            get {
+                return ((bool)(this["DebugLiveStream"]));
+            }
+            set {
+                this["DebugLiveStream"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ManageOutRaidData {
+            get {
+                return ((bool)(this["ManageOutRaidData"]));
+            }
+            set {
+                this["ManageOutRaidData"] = value;
+            }
+        }
     }
 }

@@ -57,11 +57,12 @@ namespace StreamerBot
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
+            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
         }
-
 
         #region Window Open and Close
 
@@ -247,6 +248,13 @@ namespace StreamerBot
         private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
             OptionFlags.SetSettings();
+
+            CheckDebug();
+        }
+
+        private void CheckDebug()
+        {
+            StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
@@ -308,6 +316,8 @@ namespace StreamerBot
                 Radio_Twitch_LiveBotStart.IsEnabled = false;
                 Radio_Twitch_ClipBotStart.IsEnabled = false;
             }
+
+            CheckDebug();
         }
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -369,6 +379,12 @@ namespace StreamerBot
             Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
+        }
+
+
+        private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
+        {
+            BeginUpdateCategory();
         }
 
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)

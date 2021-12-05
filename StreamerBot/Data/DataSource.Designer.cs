@@ -46,11 +46,13 @@ namespace StreamerBot.Data {
         
         private ClipsDataTable tableClips;
         
-        private RaidDataDataTable tableRaidData;
+        private InRaidDataDataTable tableInRaidData;
         
-        private global::System.Data.DataRelation relationCurrency_CurrencyType;
+        private OutRaidDataDataTable tableOutRaidData;
         
         private global::System.Data.DataRelation relationFK_Users_Currency;
+        
+        private global::System.Data.DataRelation relationCurrency_CurrencyType;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -117,8 +119,11 @@ namespace StreamerBot.Data {
                 if ((ds.Tables["Clips"] != null)) {
                     base.Tables.Add(new ClipsDataTable(ds.Tables["Clips"]));
                 }
-                if ((ds.Tables["RaidData"] != null)) {
-                    base.Tables.Add(new RaidDataDataTable(ds.Tables["RaidData"]));
+                if ((ds.Tables["InRaidData"] != null)) {
+                    base.Tables.Add(new InRaidDataDataTable(ds.Tables["InRaidData"]));
+                }
+                if ((ds.Tables["OutRaidData"] != null)) {
+                    base.Tables.Add(new OutRaidDataDataTable(ds.Tables["OutRaidData"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -252,9 +257,19 @@ namespace StreamerBot.Data {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public RaidDataDataTable RaidData {
+        public InRaidDataDataTable InRaidData {
             get {
-                return this.tableRaidData;
+                return this.tableInRaidData;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public OutRaidDataDataTable OutRaidData {
+            get {
+                return this.tableOutRaidData;
             }
         }
         
@@ -358,8 +373,11 @@ namespace StreamerBot.Data {
                 if ((ds.Tables["Clips"] != null)) {
                     base.Tables.Add(new ClipsDataTable(ds.Tables["Clips"]));
                 }
-                if ((ds.Tables["RaidData"] != null)) {
-                    base.Tables.Add(new RaidDataDataTable(ds.Tables["RaidData"]));
+                if ((ds.Tables["InRaidData"] != null)) {
+                    base.Tables.Add(new InRaidDataDataTable(ds.Tables["InRaidData"]));
+                }
+                if ((ds.Tables["OutRaidData"] != null)) {
+                    base.Tables.Add(new OutRaidDataDataTable(ds.Tables["OutRaidData"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -460,14 +478,20 @@ namespace StreamerBot.Data {
                     this.tableClips.InitVars();
                 }
             }
-            this.tableRaidData = ((RaidDataDataTable)(base.Tables["RaidData"]));
+            this.tableInRaidData = ((InRaidDataDataTable)(base.Tables["InRaidData"]));
             if ((initTable == true)) {
-                if ((this.tableRaidData != null)) {
-                    this.tableRaidData.InitVars();
+                if ((this.tableInRaidData != null)) {
+                    this.tableInRaidData.InitVars();
                 }
             }
-            this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.tableOutRaidData = ((OutRaidDataDataTable)(base.Tables["OutRaidData"]));
+            if ((initTable == true)) {
+                if ((this.tableOutRaidData != null)) {
+                    this.tableOutRaidData.InitVars();
+                }
+            }
             this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
+            this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
             this.relationCategoryList_Commands = this.Relations["CategoryList_Commands"];
         }
@@ -502,19 +526,21 @@ namespace StreamerBot.Data {
             base.Tables.Add(this.tableCategoryList);
             this.tableClips = new ClipsDataTable();
             base.Tables.Add(this.tableClips);
-            this.tableRaidData = new RaidDataDataTable();
-            base.Tables.Add(this.tableRaidData);
+            this.tableInRaidData = new InRaidDataDataTable();
+            base.Tables.Add(this.tableInRaidData);
+            this.tableOutRaidData = new OutRaidDataDataTable();
+            base.Tables.Add(this.tableOutRaidData);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -526,14 +552,14 @@ namespace StreamerBot.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn}, false);
-            this.Relations.Add(this.relationCurrency_CurrencyType);
             this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
                         this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.UserNameColumn}, false);
             this.Relations.Add(this.relationFK_Users_Currency);
+            this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn}, false);
+            this.Relations.Add(this.relationCurrency_CurrencyType);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -612,7 +638,13 @@ namespace StreamerBot.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        private bool ShouldSerializeRaidData() {
+        private bool ShouldSerializeInRaidData() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeOutRaidData() {
             return false;
         }
         
@@ -705,7 +737,10 @@ namespace StreamerBot.Data {
         public delegate void ClipsRowChangeEventHandler(object sender, ClipsRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public delegate void RaidDataRowChangeEventHandler(object sender, RaidDataRowChangeEvent e);
+        public delegate void InRaidDataRowChangeEventHandler(object sender, InRaidDataRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public delegate void OutRaidDataRowChangeEventHandler(object sender, OutRaidDataRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -1660,6 +1695,8 @@ namespace StreamerBot.Data {
             
             private global::System.Data.DataColumn columnName;
             
+            private global::System.Data.DataColumn columnRepeatMsg;
+            
             private global::System.Data.DataColumn columnAddMe;
             
             private global::System.Data.DataColumn columnIsEnabled;
@@ -1714,6 +1751,14 @@ namespace StreamerBot.Data {
             public global::System.Data.DataColumn NameColumn {
                 get {
                     return this.columnName;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RepeatMsgColumn {
+                get {
+                    return this.columnRepeatMsg;
                 }
             }
             
@@ -1786,11 +1831,12 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public ChannelEventsRow AddChannelEventsRow(string Name, bool AddMe, bool IsEnabled, string MsgStr, string Commands) {
+            public ChannelEventsRow AddChannelEventsRow(string Name, short RepeatMsg, bool AddMe, bool IsEnabled, string MsgStr, string Commands) {
                 ChannelEventsRow rowChannelEventsRow = ((ChannelEventsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         Name,
+                        RepeatMsg,
                         AddMe,
                         IsEnabled,
                         MsgStr,
@@ -1826,6 +1872,7 @@ namespace StreamerBot.Data {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnName = base.Columns["Name"];
+                this.columnRepeatMsg = base.Columns["RepeatMsg"];
                 this.columnAddMe = base.Columns["AddMe"];
                 this.columnIsEnabled = base.Columns["IsEnabled"];
                 this.columnMsgStr = base.Columns["MsgStr"];
@@ -1839,6 +1886,8 @@ namespace StreamerBot.Data {
                 base.Columns.Add(this.columnId);
                 this.columnName = new global::System.Data.DataColumn("Name", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnName);
+                this.columnRepeatMsg = new global::System.Data.DataColumn("RepeatMsg", typeof(short), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRepeatMsg);
                 this.columnAddMe = new global::System.Data.DataColumn("AddMe", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAddMe);
                 this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
@@ -1859,6 +1908,8 @@ namespace StreamerBot.Data {
                 this.columnName.AllowDBNull = false;
                 this.columnName.ReadOnly = true;
                 this.columnName.Unique = true;
+                this.columnRepeatMsg.Caption = "Repeat Message";
+                this.columnRepeatMsg.DefaultValue = ((short)(0));
                 this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnIsEnabled.AllowDBNull = false;
                 this.columnIsEnabled.DefaultValue = ((bool)(true));
@@ -2353,6 +2404,8 @@ namespace StreamerBot.Data {
             
             private global::System.Data.DataColumn columnRepeatTimer;
             
+            private global::System.Data.DataColumn columnRepeatMsg;
+            
             private global::System.Data.DataColumn columnCategory;
             
             private global::System.Data.DataColumn columnAllowParam;
@@ -2455,6 +2508,14 @@ namespace StreamerBot.Data {
             public global::System.Data.DataColumn RepeatTimerColumn {
                 get {
                     return this.columnRepeatTimer;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RepeatMsgColumn {
+                get {
+                    return this.columnRepeatMsg;
                 }
             }
             
@@ -2597,6 +2658,7 @@ namespace StreamerBot.Data {
                         string Permission, 
                         string Message, 
                         int RepeatTimer, 
+                        short RepeatMsg, 
                         CategoryListRow parentCategoryListRowByCategoryList_Commands, 
                         bool AllowParam, 
                         string Usage, 
@@ -2617,6 +2679,7 @@ namespace StreamerBot.Data {
                         Permission,
                         Message,
                         RepeatTimer,
+                        RepeatMsg,
                         null,
                         AllowParam,
                         Usage,
@@ -2630,7 +2693,7 @@ namespace StreamerBot.Data {
                         top,
                         sort};
                 if ((parentCategoryListRowByCategoryList_Commands != null)) {
-                    columnValuesArray[6] = parentCategoryListRowByCategoryList_Commands[2];
+                    columnValuesArray[7] = parentCategoryListRowByCategoryList_Commands[2];
                 }
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
@@ -2667,6 +2730,7 @@ namespace StreamerBot.Data {
                 this.columnPermission = base.Columns["Permission"];
                 this.columnMessage = base.Columns["Message"];
                 this.columnRepeatTimer = base.Columns["RepeatTimer"];
+                this.columnRepeatMsg = base.Columns["RepeatMsg"];
                 this.columnCategory = base.Columns["Category"];
                 this.columnAllowParam = base.Columns["AllowParam"];
                 this.columnUsage = base.Columns["Usage"];
@@ -2696,6 +2760,8 @@ namespace StreamerBot.Data {
                 base.Columns.Add(this.columnMessage);
                 this.columnRepeatTimer = new global::System.Data.DataColumn("RepeatTimer", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnRepeatTimer);
+                this.columnRepeatMsg = new global::System.Data.DataColumn("RepeatMsg", typeof(short), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRepeatMsg);
                 this.columnCategory = new global::System.Data.DataColumn("Category", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCategory);
                 this.columnAllowParam = new global::System.Data.DataColumn("AllowParam", typeof(bool), null, global::System.Data.MappingType.Element);
@@ -2734,6 +2800,8 @@ namespace StreamerBot.Data {
                 this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
+                this.columnRepeatMsg.Caption = "Repeat Message";
+                this.columnRepeatMsg.DefaultValue = ((short)(0));
                 this.columnCategory.Caption = "Specify an array of categories for context relevant timers-only implement timers " +
                     "per category.";
                 this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
@@ -4712,7 +4780,7 @@ namespace StreamerBot.Data {
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class RaidDataDataTable : global::System.Data.TypedTableBase<RaidDataRow> {
+        public partial class InRaidDataDataTable : global::System.Data.TypedTableBase<InRaidDataRow> {
             
             private global::System.Data.DataColumn columnId;
             
@@ -4726,8 +4794,8 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public RaidDataDataTable() {
-                this.TableName = "RaidData";
+            public InRaidDataDataTable() {
+                this.TableName = "InRaidData";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
@@ -4735,7 +4803,7 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal RaidDataDataTable(global::System.Data.DataTable table) {
+            internal InRaidDataDataTable(global::System.Data.DataTable table) {
                 this.TableName = table.TableName;
                 if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
                     this.CaseSensitive = table.CaseSensitive;
@@ -4752,7 +4820,7 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            protected RaidDataDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+            protected InRaidDataDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
             }
@@ -4808,49 +4876,49 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public RaidDataRow this[int index] {
+            public InRaidDataRow this[int index] {
                 get {
-                    return ((RaidDataRow)(this.Rows[index]));
+                    return ((InRaidDataRow)(this.Rows[index]));
                 }
             }
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event RaidDataRowChangeEventHandler RaidDataRowChanging;
+            public event InRaidDataRowChangeEventHandler InRaidDataRowChanging;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event RaidDataRowChangeEventHandler RaidDataRowChanged;
+            public event InRaidDataRowChangeEventHandler InRaidDataRowChanged;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event RaidDataRowChangeEventHandler RaidDataRowDeleting;
+            public event InRaidDataRowChangeEventHandler InRaidDataRowDeleting;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public event RaidDataRowChangeEventHandler RaidDataRowDeleted;
+            public event InRaidDataRowChangeEventHandler InRaidDataRowDeleted;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void AddRaidDataRow(RaidDataRow row) {
+            public void AddInRaidDataRow(InRaidDataRow row) {
                 this.Rows.Add(row);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public RaidDataRow AddRaidDataRow(string UserName, string ViewerCount, System.DateTime DateTime, string Category) {
-                RaidDataRow rowRaidDataRow = ((RaidDataRow)(this.NewRow()));
+            public InRaidDataRow AddInRaidDataRow(string UserName, string ViewerCount, System.DateTime DateTime, string Category) {
+                InRaidDataRow rowInRaidDataRow = ((InRaidDataRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         UserName,
                         ViewerCount,
                         DateTime,
                         Category};
-                rowRaidDataRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowRaidDataRow);
-                return rowRaidDataRow;
+                rowInRaidDataRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowInRaidDataRow);
+                return rowInRaidDataRow;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public override global::System.Data.DataTable Clone() {
-                RaidDataDataTable cln = ((RaidDataDataTable)(base.Clone()));
+                InRaidDataDataTable cln = ((InRaidDataDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
@@ -4858,7 +4926,7 @@ namespace StreamerBot.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Data.DataTable CreateInstance() {
-                return new RaidDataDataTable();
+                return new InRaidDataDataTable();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4892,28 +4960,28 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public RaidDataRow NewRaidDataRow() {
-                return ((RaidDataRow)(this.NewRow()));
+            public InRaidDataRow NewInRaidDataRow() {
+                return ((InRaidDataRow)(this.NewRow()));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new RaidDataRow(builder);
+                return new InRaidDataRow(builder);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override global::System.Type GetRowType() {
-                return typeof(RaidDataRow);
+                return typeof(InRaidDataRow);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanged(e);
-                if ((this.RaidDataRowChanged != null)) {
-                    this.RaidDataRowChanged(this, new RaidDataRowChangeEvent(((RaidDataRow)(e.Row)), e.Action));
+                if ((this.InRaidDataRowChanged != null)) {
+                    this.InRaidDataRowChanged(this, new InRaidDataRowChangeEvent(((InRaidDataRow)(e.Row)), e.Action));
                 }
             }
             
@@ -4921,8 +4989,8 @@ namespace StreamerBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanging(e);
-                if ((this.RaidDataRowChanging != null)) {
-                    this.RaidDataRowChanging(this, new RaidDataRowChangeEvent(((RaidDataRow)(e.Row)), e.Action));
+                if ((this.InRaidDataRowChanging != null)) {
+                    this.InRaidDataRowChanging(this, new InRaidDataRowChangeEvent(((InRaidDataRow)(e.Row)), e.Action));
                 }
             }
             
@@ -4930,8 +4998,8 @@ namespace StreamerBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleted(e);
-                if ((this.RaidDataRowDeleted != null)) {
-                    this.RaidDataRowDeleted(this, new RaidDataRowChangeEvent(((RaidDataRow)(e.Row)), e.Action));
+                if ((this.InRaidDataRowDeleted != null)) {
+                    this.InRaidDataRowDeleted(this, new InRaidDataRowChangeEvent(((InRaidDataRow)(e.Row)), e.Action));
                 }
             }
             
@@ -4939,14 +5007,14 @@ namespace StreamerBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleting(e);
-                if ((this.RaidDataRowDeleting != null)) {
-                    this.RaidDataRowDeleting(this, new RaidDataRowChangeEvent(((RaidDataRow)(e.Row)), e.Action));
+                if ((this.InRaidDataRowDeleting != null)) {
+                    this.InRaidDataRowDeleting(this, new InRaidDataRowChangeEvent(((InRaidDataRow)(e.Row)), e.Action));
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void RemoveRaidDataRow(RaidDataRow row) {
+            public void RemoveInRaidDataRow(InRaidDataRow row) {
                 this.Rows.Remove(row);
             }
             
@@ -4973,7 +5041,293 @@ namespace StreamerBot.Data {
                 type.Attributes.Add(attribute1);
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "RaidDataDataTable";
+                attribute2.FixedValue = "InRaidDataDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class OutRaidDataDataTable : global::System.Data.TypedTableBase<OutRaidDataRow> {
+            
+            private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnChannelRaided;
+            
+            private global::System.Data.DataColumn columnDateTime;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataDataTable() {
+                this.TableName = "OutRaidData";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal OutRaidDataDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected OutRaidDataDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ChannelRaidedColumn {
+                get {
+                    return this.columnChannelRaided;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn DateTimeColumn {
+                get {
+                    return this.columnDateTime;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataRow this[int index] {
+                get {
+                    return ((OutRaidDataRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event OutRaidDataRowChangeEventHandler OutRaidDataRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event OutRaidDataRowChangeEventHandler OutRaidDataRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event OutRaidDataRowChangeEventHandler OutRaidDataRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event OutRaidDataRowChangeEventHandler OutRaidDataRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddOutRaidDataRow(OutRaidDataRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataRow AddOutRaidDataRow(string Id, string ChannelRaided, System.DateTime DateTime) {
+                OutRaidDataRow rowOutRaidDataRow = ((OutRaidDataRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        Id,
+                        ChannelRaided,
+                        DateTime};
+                rowOutRaidDataRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowOutRaidDataRow);
+                return rowOutRaidDataRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataRow FindById(string Id) {
+                return ((OutRaidDataRow)(this.Rows.Find(new object[] {
+                            Id})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                OutRaidDataDataTable cln = ((OutRaidDataDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new OutRaidDataDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars() {
+                this.columnId = base.Columns["Id"];
+                this.columnChannelRaided = base.Columns["ChannelRaided"];
+                this.columnDateTime = base.Columns["DateTime"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass() {
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
+                this.columnChannelRaided = new global::System.Data.DataColumn("ChannelRaided", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnChannelRaided);
+                this.columnDateTime = new global::System.Data.DataColumn("DateTime", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDateTime);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnId}, true));
+                this.columnId.AllowDBNull = false;
+                this.columnId.Unique = true;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataRow NewOutRaidDataRow() {
+                return ((OutRaidDataRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new OutRaidDataRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(OutRaidDataRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.OutRaidDataRowChanged != null)) {
+                    this.OutRaidDataRowChanged(this, new OutRaidDataRowChangeEvent(((OutRaidDataRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.OutRaidDataRowChanging != null)) {
+                    this.OutRaidDataRowChanging(this, new OutRaidDataRowChangeEvent(((OutRaidDataRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.OutRaidDataRowDeleted != null)) {
+                    this.OutRaidDataRowDeleted(this, new OutRaidDataRowChangeEvent(((OutRaidDataRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.OutRaidDataRowDeleting != null)) {
+                    this.OutRaidDataRowDeleting(this, new OutRaidDataRowChangeEvent(((OutRaidDataRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveOutRaidDataRow(OutRaidDataRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DataSource ds = new DataSource();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "OutRaidDataDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -5084,23 +5438,23 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyTypeRow CurrencyTypeRow {
-                get {
-                    return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public UsersRow UsersRow {
                 get {
                     return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow CurrencyTypeRow {
+                get {
+                    return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
                 }
             }
             
@@ -5437,6 +5791,22 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public short RepeatMsg {
+                get {
+                    try {
+                        return ((short)(this[this.tableChannelEvents.RepeatMsgColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RepeatMsg\' in table \'ChannelEvents\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableChannelEvents.RepeatMsgColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool AddMe {
                 get {
                     try {
@@ -5492,6 +5862,18 @@ namespace StreamerBot.Data {
                 set {
                     this[this.tableChannelEvents.CommandsColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsRepeatMsgNull() {
+                return this.IsNull(this.tableChannelEvents.RepeatMsgColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetRepeatMsgNull() {
+                this[this.tableChannelEvents.RepeatMsgColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5809,6 +6191,22 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public short RepeatMsg {
+                get {
+                    try {
+                        return ((short)(this[this.tableCommands.RepeatMsgColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RepeatMsg\' in table \'Commands\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCommands.RepeatMsgColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Category {
                 get {
                     if (this.IsCategoryNull()) {
@@ -6068,6 +6466,18 @@ namespace StreamerBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetRepeatTimerNull() {
                 this[this.tableCommands.RepeatTimerColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsRepeatMsgNull() {
+                return this.IsNull(this.tableCommands.RepeatMsgColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetRepeatMsgNull() {
+                this[this.tableCommands.RepeatMsgColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7339,15 +7749,15 @@ namespace StreamerBot.Data {
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class RaidDataRow : global::System.Data.DataRow {
+        public partial class InRaidDataRow : global::System.Data.DataRow {
             
-            private RaidDataDataTable tableRaidData;
+            private InRaidDataDataTable tableInRaidData;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            internal RaidDataRow(global::System.Data.DataRowBuilder rb) : 
+            internal InRaidDataRow(global::System.Data.DataRowBuilder rb) : 
                     base(rb) {
-                this.tableRaidData = ((RaidDataDataTable)(this.Table));
+                this.tableInRaidData = ((InRaidDataDataTable)(this.Table));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7355,14 +7765,14 @@ namespace StreamerBot.Data {
             public int Id {
                 get {
                     try {
-                        return ((int)(this[this.tableRaidData.IdColumn]));
+                        return ((int)(this[this.tableInRaidData.IdColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'RaidData\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'InRaidData\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableRaidData.IdColumn] = value;
+                    this[this.tableInRaidData.IdColumn] = value;
                 }
             }
             
@@ -7371,14 +7781,14 @@ namespace StreamerBot.Data {
             public string UserName {
                 get {
                     try {
-                        return ((string)(this[this.tableRaidData.UserNameColumn]));
+                        return ((string)(this[this.tableInRaidData.UserNameColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'UserName\' in table \'RaidData\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'UserName\' in table \'InRaidData\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableRaidData.UserNameColumn] = value;
+                    this[this.tableInRaidData.UserNameColumn] = value;
                 }
             }
             
@@ -7387,14 +7797,14 @@ namespace StreamerBot.Data {
             public string ViewerCount {
                 get {
                     try {
-                        return ((string)(this[this.tableRaidData.ViewerCountColumn]));
+                        return ((string)(this[this.tableInRaidData.ViewerCountColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ViewerCount\' in table \'RaidData\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'ViewerCount\' in table \'InRaidData\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableRaidData.ViewerCountColumn] = value;
+                    this[this.tableInRaidData.ViewerCountColumn] = value;
                 }
             }
             
@@ -7403,14 +7813,14 @@ namespace StreamerBot.Data {
             public System.DateTime DateTime {
                 get {
                     try {
-                        return ((global::System.DateTime)(this[this.tableRaidData.DateTimeColumn]));
+                        return ((global::System.DateTime)(this[this.tableInRaidData.DateTimeColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'DateTime\' in table \'RaidData\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'DateTime\' in table \'InRaidData\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableRaidData.DateTimeColumn] = value;
+                    this[this.tableInRaidData.DateTimeColumn] = value;
                 }
             }
             
@@ -7419,75 +7829,157 @@ namespace StreamerBot.Data {
             public string Category {
                 get {
                     try {
-                        return ((string)(this[this.tableRaidData.CategoryColumn]));
+                        return ((string)(this[this.tableInRaidData.CategoryColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Category\' in table \'RaidData\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Category\' in table \'InRaidData\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableRaidData.CategoryColumn] = value;
+                    this[this.tableInRaidData.CategoryColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsIdNull() {
-                return this.IsNull(this.tableRaidData.IdColumn);
+                return this.IsNull(this.tableInRaidData.IdColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetIdNull() {
-                this[this.tableRaidData.IdColumn] = global::System.Convert.DBNull;
+                this[this.tableInRaidData.IdColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsUserNameNull() {
-                return this.IsNull(this.tableRaidData.UserNameColumn);
+                return this.IsNull(this.tableInRaidData.UserNameColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetUserNameNull() {
-                this[this.tableRaidData.UserNameColumn] = global::System.Convert.DBNull;
+                this[this.tableInRaidData.UserNameColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsViewerCountNull() {
-                return this.IsNull(this.tableRaidData.ViewerCountColumn);
+                return this.IsNull(this.tableInRaidData.ViewerCountColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetViewerCountNull() {
-                this[this.tableRaidData.ViewerCountColumn] = global::System.Convert.DBNull;
+                this[this.tableInRaidData.ViewerCountColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsDateTimeNull() {
-                return this.IsNull(this.tableRaidData.DateTimeColumn);
+                return this.IsNull(this.tableInRaidData.DateTimeColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetDateTimeNull() {
-                this[this.tableRaidData.DateTimeColumn] = global::System.Convert.DBNull;
+                this[this.tableInRaidData.DateTimeColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsCategoryNull() {
-                return this.IsNull(this.tableRaidData.CategoryColumn);
+                return this.IsNull(this.tableInRaidData.CategoryColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetCategoryNull() {
-                this[this.tableRaidData.CategoryColumn] = global::System.Convert.DBNull;
+                this[this.tableInRaidData.CategoryColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class OutRaidDataRow : global::System.Data.DataRow {
+            
+            private OutRaidDataDataTable tableOutRaidData;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal OutRaidDataRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableOutRaidData = ((OutRaidDataDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Id {
+                get {
+                    return ((string)(this[this.tableOutRaidData.IdColumn]));
+                }
+                set {
+                    this[this.tableOutRaidData.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string ChannelRaided {
+                get {
+                    try {
+                        return ((string)(this[this.tableOutRaidData.ChannelRaidedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelRaided\' in table \'OutRaidData\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableOutRaidData.ChannelRaidedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public System.DateTime DateTime {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableOutRaidData.DateTimeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'DateTime\' in table \'OutRaidData\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableOutRaidData.DateTimeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsChannelRaidedNull() {
+                return this.IsNull(this.tableOutRaidData.ChannelRaidedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetChannelRaidedNull() {
+                this[this.tableOutRaidData.ChannelRaidedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsDateTimeNull() {
+                return this.IsNull(this.tableOutRaidData.DateTimeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetDateTimeNull() {
+                this[this.tableOutRaidData.DateTimeColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -7869,22 +8361,56 @@ namespace StreamerBot.Data {
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-        public class RaidDataRowChangeEvent : global::System.EventArgs {
+        public class InRaidDataRowChangeEvent : global::System.EventArgs {
             
-            private RaidDataRow eventRow;
+            private InRaidDataRow eventRow;
             
             private global::System.Data.DataRowAction eventAction;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public RaidDataRowChangeEvent(RaidDataRow row, global::System.Data.DataRowAction action) {
+            public InRaidDataRowChangeEvent(InRaidDataRow row, global::System.Data.DataRowAction action) {
                 this.eventRow = row;
                 this.eventAction = action;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public RaidDataRow Row {
+            public InRaidDataRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class OutRaidDataRowChangeEvent : global::System.EventArgs {
+            
+            private OutRaidDataRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataRowChangeEvent(OutRaidDataRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public OutRaidDataRow Row {
                 get {
                     return this.eventRow;
                 }

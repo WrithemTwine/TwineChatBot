@@ -36,7 +36,8 @@ namespace StreamerBot.GUI
         public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
         public DataView Category { get; private set; } // DataSource.CategoryTable
         public DataView Clips { get; private set; }  // DataSource.ClipsDataTable
-        public DataView RaidData { get; private set; } // DataSource.RaidDataDataTable
+        public DataView InRaidData { get; private set; } // DataSource.InRaidDataDataTable
+        public DataView OutRaidData { get; private set; } // DataSource.OutRaidDataDataTable
 
         #endregion
 
@@ -89,7 +90,8 @@ namespace StreamerBot.GUI
             ShoutOuts = new(dataManager._DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
             Category = new(dataManager._DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
             Clips = new(dataManager._DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
-            RaidData = new(dataManager._DataSource.RaidData, null, "Id", DataViewRowState.CurrentRows);
+            InRaidData = new(dataManager._DataSource.InRaidData, null, "Id", DataViewRowState.CurrentRows);
+            OutRaidData = new(dataManager._DataSource.OutRaidData, null, "Id", DataViewRowState.CurrentRows);
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
@@ -104,7 +106,8 @@ namespace StreamerBot.GUI
             ShoutOuts.ListChanged += DataView_ListChanged;
             Category.ListChanged += DataView_ListChanged;
             Clips.ListChanged += DataView_ListChanged;
-            RaidData.ListChanged += DataView_ListChanged;
+            InRaidData.ListChanged += DataView_ListChanged;
+            OutRaidData.ListChanged += DataView_ListChanged;
         }
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
