@@ -48,6 +48,7 @@ namespace StreamerBot.Static
         public static bool ManageFollowers { get; set; }
         public static bool ManageStreamStats { get; set; }
         public static bool ManageRaidData { get; set; }
+        public static bool ManageOutRaidData { get; set; }
 
         public static bool TwitchChatBotConnectOnline { get; set; }
         public static bool TwitchChatBotDisconnectOffline { get; set; }
@@ -101,6 +102,7 @@ namespace StreamerBot.Static
                 ManageFollowers = Settings.Default.ManageFollowers;
                 ManageStreamStats = Settings.Default.ManageStreamStats;
                 ManageRaidData = Settings.Default.ManageRaidData;
+                ManageOutRaidData = Settings.Default.ManageOutRaidData;
 
                 TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
                 TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;

@@ -118,7 +118,7 @@ namespace StreamerBot.Systems
             {
                 if (cmd.NextRun <= DateTime.Now.ToLocalTime())
                 {
-                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), true) });
+                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
                     lock (cmd)
                     {
                         cmd.UpdateTime(CheckDilute());
@@ -209,12 +209,13 @@ namespace StreamerBot.Systems
             }
         }
 
-        public string EvalCommand(CmdMessage cmdMessage)
+        public string EvalCommand(CmdMessage cmdMessage, out short multi)
         {
             string result = "";
             ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
 
             CommandsRow cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
+            multi = 0;
 
             if (cmdrow == null)
             {
@@ -227,11 +228,10 @@ namespace StreamerBot.Systems
             else
             {
                 // parse commands, either built-in or custom
-                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow);
+                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi);
             }
 
-            result = ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe ? "/me " : "") + result;
-
+            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
             return result;
         }
 
@@ -247,7 +247,7 @@ namespace StreamerBot.Systems
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
-                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)));
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi);
                 return true;
             }
             else
@@ -256,7 +256,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, bool ElapsedTimer = false)
+        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, bool ElapsedTimer = false)
         {
             string result;
             Dictionary<string, string> datavalues = null;
@@ -336,6 +336,9 @@ namespace StreamerBot.Systems
                 result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
             }
 
+            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+
+            multi = cmdrow.RepeatMsg;
             return result;
         }
 

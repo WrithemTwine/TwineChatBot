@@ -13,6 +13,8 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 
+using TwitchLib.PubSub.Models.Responses;
+
 namespace StreamerBot.Systems
 {
     public class SystemsController
@@ -41,7 +43,10 @@ namespace StreamerBot.Systems
 
         private void SendMessage(string message)
         {
-            PostChannelMessage?.Invoke(this, new() { Msg = message });
+            if (message != "" && message != "/me ")
+            {
+                PostChannelMessage?.Invoke(this, new() { Msg = message });
+            }
         }
 
         #region Currency System
@@ -84,7 +89,7 @@ namespace StreamerBot.Systems
 
             if (DataManage.UpdatingFollowers)
             { // capture any followers found after starting the bot and before completing the bulk follower load
-                Application.Current.Dispatcher.BeginInvoke( (ProcFollowDelegate) PerformFollow, FollowList, msg, FollowEnabled);
+                Application.Current.Dispatcher.BeginInvoke((ProcFollowDelegate)PerformFollow, FollowList, msg, FollowEnabled);
             }
             else
             {
@@ -321,15 +326,26 @@ namespace StreamerBot.Systems
             }
         }
 
+        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        {
+            if (OptionFlags.ManageOutRaidData)
+            {
+                DataManage.PostOutgoingRaid(HostedChannel, dateTime);
+            }
+        }
+
         public void ProcessCommand(CmdMessage cmdMessage)
         {
             try
             {
-                string response = Command.EvalCommand(cmdMessage);
-                if (response != "" && response != "/me ")
+                string response = Command.EvalCommand(cmdMessage, out short multi);
+                short x = 0;
+
+                do
                 {
-                    SendMessage(response);
-                }
+                    SendMessage(response);                    
+                    x++;
+                } while (x <= multi);
             }
             catch (InvalidOperationException InvalidOp)
             {
@@ -351,11 +367,16 @@ namespace StreamerBot.Systems
         {
             if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
-                SendMessage(e.Message);
-                UpdatedStat(StreamStatType.AutoCommands);
-            }
-        }
+                short x = 0;
 
+                do
+                {
+                    SendMessage(e.Message);
+                    x++;
+                } while (x <= e.RepeatMsg);
+            }
+            UpdatedStat(StreamStatType.AutoCommands);
+        }
 
         #region Clips
         public void ClipHelper(IEnumerable<Clip> Clips)

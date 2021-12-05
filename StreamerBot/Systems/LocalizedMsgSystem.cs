@@ -97,6 +97,16 @@ namespace StreamerBot.Systems
             return RM.GetString("Msg" + defaultCommand.ToString(), CultureInfo.CurrentCulture);
         }
 
+        public static string GetDefaultComParam(DefaultCommand defaultCommand)
+        {
+            return RM.GetString("Param" + defaultCommand.ToString(), CultureInfo.CurrentCulture);
+        }
+
+        public static string GetDefaultComParam(string defaultCommand)
+        {
+            return RM.GetString("Param" + defaultCommand, CultureInfo.CurrentCulture);
+        }
+
         public static string GetVar<T>(T msgVars)
         {
             return RM.GetString(msgVars.ToString(), CultureInfo.CurrentCulture);

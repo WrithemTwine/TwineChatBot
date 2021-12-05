@@ -258,37 +258,20 @@ switches:
                     return datarow.Length == 0;
                 }
 
-                // TODO: convert commands table to localized strings, except the query parameters should stay in English
+                // dictionary with commands, messages, and parameters
+                // command name     // msg   // params
+                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new();
 
-                // command name     // msg   // params  
-                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new()
+                // add each of the default commands with localized strings
+                foreach (DefaultCommand com in System.Enum.GetValues(typeof(DefaultCommand)))
                 {
-                    { DefaultCommand.addcommand.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), "-p:Mod -use:!addcommand command <switches-optional> <message>. See documentation for <switches>.") },
-                    // '-top:-1' means all items
-                    { DefaultCommand.commands.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.commands), "-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands") },
-                    { DefaultCommand.bot.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.bot), "-use:!bot") },
-                    { DefaultCommand.lurk.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.lurk), "-use:!lurk") },
-                    { DefaultCommand.worklurk.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.worklurk), "-use:!worklurk") },
-                    { DefaultCommand.unlurk.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.unlurk), "-use:!unlurk") },
-                    { DefaultCommand.socials.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.socials), "-use:!socials") },
-                    { DefaultCommand.so.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.so), "-p:Mod -param:true -use:!so username - only mods can use !so.") },
-                    { DefaultCommand.join.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.join), "-use:!join") },
-                    { DefaultCommand.leave.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.leave), "-use:!leave") },
-                    { DefaultCommand.queue.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.queue), "-p:Mod -use:!queue mods only") },
-                    { DefaultCommand.qinfo.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qinfo), "-use:!qinfo") },
-                    { DefaultCommand.qstart.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstart), "-p:Mod -use:!qstart mod only") },
-                    { DefaultCommand.qstop.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop), "-p:Mod -use:!qstop mod only") },
-                    { DefaultCommand.follow.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.follow), "-use:!follow") },
-                    { DefaultCommand.watchtime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.watchtime), "-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime <user>") },
-                    { DefaultCommand.uptime.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime), "-use:!uptime") },
-                    { DefaultCommand.followage.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.followage), "-t:Followers -f:FollowedDate -param:true -use:!followage or !followage <user>") },
-                    { DefaultCommand.dequeue.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.dequeue), "-use:!dequeue") },
-                    { DefaultCommand.enqueue.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.enqueue), "-use:!enqueue") }
-                };
+                    DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
+                }
 
+                // add each of the social commands
                 foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
                 {
-                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, "-use:!<social_name> -top:0"));
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetDefaultComParam("eachsocial")));
                 }
 
                 foreach (string key in DefCommandsDictionary.Keys)
@@ -296,7 +279,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, categoryListRow, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, categoryListRow, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -400,10 +383,10 @@ switches:
             lock (_DataSource)
             {
                 //string strParams = Params.DBParamsString();
-                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'")[0];
+                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select("Category='" + LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry) + "'").First();
 
 
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.RepeatMsg, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 NotifySaveData();
             }
             return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
@@ -685,8 +668,7 @@ switches:
                     {   // extract the default data from the dictionary and add to the data table
                         Tuple<string, string> values = dictionary[command];
 
-                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), false, true, values.Item1, values.Item2);
-
+                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), 0, false, true, values.Item1, values.Item2);
                     }
                 }
 
@@ -1231,12 +1213,16 @@ switches:
         #endregion
 
         #region Raid Data
-        public void AddRaidData(string user, DateTime time, string viewers, string gamename)
+        public void AddInRaidData(string user, DateTime time, string viewers, string gamename)
         {
-            _ = _DataSource.RaidData.AddRaidDataRow(user, viewers, time, gamename);
+            _ = _DataSource.InRaidData.AddInRaidDataRow(user, viewers, time, gamename);
             NotifySaveData();
         }
 
+        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        {
+            _DataSource.OutRaidData.AddOutRaidDataRow(null, HostedChannel, dateTime);
+        }
 
         #endregion
 
@@ -1277,15 +1263,19 @@ switches:
         {
             lock (_DataSource)
             {
-                CategoryListRow[] categoryList = (CategoryListRow[])_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "'");
+                CategoryListRow categoryList = (CategoryListRow)_DataSource.CategoryList.Select("Category='" + newCategory.Replace("'", "''") + "' OR CategoryId='" + CategoryId + "'").First();
 
-                if (categoryList.Length == 0)
+                if (categoryList == null)
                 {
                     _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
                 }
-                else if (categoryList[0].CategoryId == null)
+                else if (categoryList.CategoryId == null)
                 {
-                    categoryList[0].CategoryId = CategoryId;
+                    categoryList.CategoryId = CategoryId;
+                }
+                else if (categoryList.Category == null)
+                {
+                    categoryList.Category = newCategory;
                 }
             }
 
@@ -1295,6 +1285,17 @@ switches:
 
         #region Clips
 
+        /// <summary>
+        /// Add a clip to the database.
+        /// </summary>
+        /// <param name="ClipId">The already assigned ID number</param>
+        /// <param name="CreatedAt">Time clip created</param>
+        /// <param name="Duration">The duration of the clip</param>
+        /// <param name="GameId">The ID of the Game in the clip</param>
+        /// <param name="Language">The channel language for the clip</param>
+        /// <param name="Title">The clip title a viewer assigned the clip</param>
+        /// <param name="Url">The URL to reach the clip</param>
+        /// <returns><c>true</c> when clip added to database, <c>false</c> when clip is already added.</returns>
         public bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
             lock (_DataSource)
@@ -1337,9 +1338,26 @@ switches:
             }
         }
 
-        public void RemoveAllRaidData()
+        /// <summary>
+        /// Removes all incoming raid data from database.
+        /// </summary>
+        public void RemoveAllInRaidData()
         {
-            _DataSource.RaidData.Clear();
+            lock (_DataSource)
+            {
+                _DataSource.InRaidData.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Removes all outgoing raid data from database.
+        /// </summary>
+        public void RemoveAllOutRaidData()
+        {
+            lock (_DataSource)
+            {
+                _DataSource.OutRaidData.Clear();
+            }
         }
 
         #endregion

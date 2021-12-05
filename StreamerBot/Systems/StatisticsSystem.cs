@@ -184,7 +184,7 @@ namespace StreamerBot.Systems
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
         {
-            DataManage.AddRaidData(UserName, RaidTime, Viewers, GameName);
+            DataManage.AddInRaidData(UserName, RaidTime, Viewers, GameName);
         }
 
         #endregion

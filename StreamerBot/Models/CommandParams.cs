@@ -23,6 +23,7 @@ namespace StreamerBot.Models
         public bool AllowParam { get; set; } = false;
         public bool LookupData { get; set; } = false;
         public int Timer { get; set; } = 0;
+        public short RepeatMsg { get; set; } = 0;
         public string Usage { get; set; } = "!<command>";
         public string Message { get; set; } = string.Empty;
         public bool AddMe { get; set; } = false;
@@ -96,6 +97,9 @@ namespace StreamerBot.Models
                             break;
                         case "timer":
                             data.Timer = int.Parse(value);
+                            break;
+                        case "r":
+                            data.RepeatMsg = short.Parse(value);
                             break;
                         case "use":
                             checkUsage = true;

@@ -423,6 +423,89 @@
   <data name="Msgworklurk" xml:space="preserve">
     <value>#user is lurking while making some moohla! See you soon!</value>
   </data>
+  <data name="Paramaddcommand" xml:space="preserve">
+    <value>-p:Mod -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Parambot" xml:space="preserve">
+    <value>-use:!bot</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramcommands" xml:space="preserve">
+    <value>-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramdequeue" xml:space="preserve">
+    <value>-use:!dequeue</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Parameachsocial" xml:space="preserve">
+    <value>-use:!&lt;social_name&gt;</value>
+  </data>
+  <data name="Paramenqueue" xml:space="preserve">
+    <value>-use:!enqueue</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramfollow" xml:space="preserve">
+    <value>-use:!follow</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramfollowage" xml:space="preserve">
+    <value>-t:Followers -f:FollowedDate -param:true -use:!followage or !followage &lt;user&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramjoin" xml:space="preserve">
+    <value>-use:!join</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramleave" xml:space="preserve">
+    <value>-use:!leave</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramlurk" xml:space="preserve">
+    <value>-use:!lurk</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramqinfo" xml:space="preserve">
+    <value>-use:!qinfo</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramqstart" xml:space="preserve">
+    <value>-p:Mod -use:!qstart mod only</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramqstop" xml:space="preserve">
+    <value>-p:Mod -use:!qstop mod only</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramqueue" xml:space="preserve">
+    <value>-p:Mod -use:!queue mods only</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramso" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!so username - only mods can use !so.</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramsocials" xml:space="preserve">
+    <value>-use:!socials</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramunlurk" xml:space="preserve">
+    <value>-use:!unlurk</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramuptime" xml:space="preserve">
+    <value>-use:!uptime</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramwatchtime" xml:space="preserve">
+    <value>"-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramworklurk" xml:space="preserve">
+    <value>-use:!worklurk</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
   <data name="Pluralbits" xml:space="preserve">
     <value>bit, bits</value>
     <comment>comma separated 'single, plural'</comment>

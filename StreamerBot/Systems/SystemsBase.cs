@@ -76,7 +76,12 @@ namespace StreamerBot.Systems
 
             if (!OptionFlags.ManageRaidData)
             {
-                DataManage.RemoveAllRaidData();
+                DataManage.RemoveAllInRaidData();
+            }
+
+            if (!OptionFlags.ManageOutRaidData)
+            {
+                DataManage.RemoveAllOutRaidData();
             }
         }
 

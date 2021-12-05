@@ -889,6 +889,195 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;..
+        /// </summary>
+        internal static string Paramaddcommand {
+            get {
+                return ResourceManager.GetString("Paramaddcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!bot.
+        /// </summary>
+        internal static string Parambot {
+            get {
+                return ResourceManager.GetString("Parambot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands.
+        /// </summary>
+        internal static string Paramcommands {
+            get {
+                return ResourceManager.GetString("Paramcommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!dequeue.
+        /// </summary>
+        internal static string Paramdequeue {
+            get {
+                return ResourceManager.GetString("Paramdequeue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!&lt;social_name&gt;.
+        /// </summary>
+        internal static string Parameachsocial {
+            get {
+                return ResourceManager.GetString("Parameachsocial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!enqueue.
+        /// </summary>
+        internal static string Paramenqueue {
+            get {
+                return ResourceManager.GetString("Paramenqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!follow.
+        /// </summary>
+        internal static string Paramfollow {
+            get {
+                return ResourceManager.GetString("Paramfollow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -t:Followers -f:FollowedDate -param:true -use:!followage or !followage &lt;user&gt;.
+        /// </summary>
+        internal static string Paramfollowage {
+            get {
+                return ResourceManager.GetString("Paramfollowage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!join.
+        /// </summary>
+        internal static string Paramjoin {
+            get {
+                return ResourceManager.GetString("Paramjoin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!leave.
+        /// </summary>
+        internal static string Paramleave {
+            get {
+                return ResourceManager.GetString("Paramleave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!lurk.
+        /// </summary>
+        internal static string Paramlurk {
+            get {
+                return ResourceManager.GetString("Paramlurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!qinfo.
+        /// </summary>
+        internal static string Paramqinfo {
+            get {
+                return ResourceManager.GetString("Paramqinfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:!qstart mod only.
+        /// </summary>
+        internal static string Paramqstart {
+            get {
+                return ResourceManager.GetString("Paramqstart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:!qstop mod only.
+        /// </summary>
+        internal static string Paramqstop {
+            get {
+                return ResourceManager.GetString("Paramqstop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:!queue mods only.
+        /// </summary>
+        internal static string Paramqueue {
+            get {
+                return ResourceManager.GetString("Paramqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!so username - only mods can use !so..
+        /// </summary>
+        internal static string Paramso {
+            get {
+                return ResourceManager.GetString("Paramso", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!socials.
+        /// </summary>
+        internal static string Paramsocials {
+            get {
+                return ResourceManager.GetString("Paramsocials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!unlurk.
+        /// </summary>
+        internal static string Paramunlurk {
+            get {
+                return ResourceManager.GetString("Paramunlurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!uptime.
+        /// </summary>
+        internal static string Paramuptime {
+            get {
+                return ResourceManager.GetString("Paramuptime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;.
+        /// </summary>
+        internal static string Paramwatchtime {
+            get {
+                return ResourceManager.GetString("Paramwatchtime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!worklurk.
+        /// </summary>
+        internal static string Paramworklurk {
+            get {
+                return ResourceManager.GetString("Paramworklurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to bit, bits.
         /// </summary>
         internal static string Pluralbits {

@@ -290,7 +290,7 @@ namespace StreamerBot.BotIOController
 
         public void TwitchNowHosting(OnNowHostingArgs e)
         {
-            HandleOnStreamOffline();
+            HandleOnStreamOffline(HostedChannel: e.HostedChannel);
         }
 
         public void TwitchExistingUsers(OnExistingUsersDetectedArgs e)
@@ -450,11 +450,14 @@ namespace StreamerBot.BotIOController
             Systems.SetCategory(gameId, gameName);
         }
 
-        public void HandleOnStreamOffline()
+        public void HandleOnStreamOffline(string HostedChannel = null)
         {
             if (OptionFlags.IsStreamOnline)
             {
-                Systems.StreamOffline(DateTime.Now.ToLocalTime());
+                DateTime currTime = DateTime.Now.ToLocalTime();
+                Systems.StreamOffline(currTime);
+
+                Systems.PostOutgoingRaid(HostedChannel, currTime);
             }
         }
 
