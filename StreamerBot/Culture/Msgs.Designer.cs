@@ -232,6 +232,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameter command used within the &apos;usage&apos; command.
+        /// </summary>
+        internal static string Helpcom {
+            get {
+                return ResourceManager.GetString("Helpcom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thank you message for someone gifting subscription(s) to the channel.
         /// </summary>
         internal static string HelpCommunitySubs {
@@ -862,6 +871,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The #com usage is: #query.
+        /// </summary>
+        internal static string Msgusage {
+            get {
+                return ResourceManager.GetString("Msgusage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thanks #user for stopping by the channel!.
         /// </summary>
         internal static string MsgUserJoined {
@@ -1060,7 +1078,16 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;.
+        ///   Looks up a localized string similar to -t:Commands -f:Usage -param:true -use:!usage &lt;command&gt;.
+        /// </summary>
+        internal static string Paramusage {
+            get {
+                return ResourceManager.GetString("Paramusage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;.
         /// </summary>
         internal static string Paramwatchtime {
             get {
@@ -1218,6 +1245,15 @@ namespace StreamerBot.Culture {
         internal static string uptime {
             get {
                 return ResourceManager.GetString("uptime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to usage.
+        /// </summary>
+        internal static string usage {
+            get {
+                return ResourceManager.GetString("usage", resourceCulture);
             }
         }
         

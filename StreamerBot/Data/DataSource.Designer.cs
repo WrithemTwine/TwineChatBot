@@ -1238,6 +1238,8 @@ namespace StreamerBot.Data {
                 this.columnId.ReadOnly = true;
                 this.columnCurrencyName.AllowDBNull = false;
                 this.columnCurrencyName.Unique = true;
+                this.columnAccrueAmt.DefaultValue = ((double)(10D));
+                this.columnSeconds.DefaultValue = ((double)(10D));
                 this.columnMaxValue.DefaultValue = ((int)(1000000));
             }
             
@@ -2404,7 +2406,7 @@ namespace StreamerBot.Data {
             
             private global::System.Data.DataColumn columnRepeatTimer;
             
-            private global::System.Data.DataColumn columnRepeatMsg;
+            private global::System.Data.DataColumn columnSendMsgCount;
             
             private global::System.Data.DataColumn columnCategory;
             
@@ -2513,9 +2515,9 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn RepeatMsgColumn {
+            public global::System.Data.DataColumn SendMsgCountColumn {
                 get {
-                    return this.columnRepeatMsg;
+                    return this.columnSendMsgCount;
                 }
             }
             
@@ -2658,7 +2660,7 @@ namespace StreamerBot.Data {
                         string Permission, 
                         string Message, 
                         int RepeatTimer, 
-                        short RepeatMsg, 
+                        short SendMsgCount, 
                         CategoryListRow parentCategoryListRowByCategoryList_Commands, 
                         bool AllowParam, 
                         string Usage, 
@@ -2679,7 +2681,7 @@ namespace StreamerBot.Data {
                         Permission,
                         Message,
                         RepeatTimer,
-                        RepeatMsg,
+                        SendMsgCount,
                         null,
                         AllowParam,
                         Usage,
@@ -2730,7 +2732,7 @@ namespace StreamerBot.Data {
                 this.columnPermission = base.Columns["Permission"];
                 this.columnMessage = base.Columns["Message"];
                 this.columnRepeatTimer = base.Columns["RepeatTimer"];
-                this.columnRepeatMsg = base.Columns["RepeatMsg"];
+                this.columnSendMsgCount = base.Columns["SendMsgCount"];
                 this.columnCategory = base.Columns["Category"];
                 this.columnAllowParam = base.Columns["AllowParam"];
                 this.columnUsage = base.Columns["Usage"];
@@ -2760,8 +2762,8 @@ namespace StreamerBot.Data {
                 base.Columns.Add(this.columnMessage);
                 this.columnRepeatTimer = new global::System.Data.DataColumn("RepeatTimer", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnRepeatTimer);
-                this.columnRepeatMsg = new global::System.Data.DataColumn("RepeatMsg", typeof(short), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnRepeatMsg);
+                this.columnSendMsgCount = new global::System.Data.DataColumn("SendMsgCount", typeof(short), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnSendMsgCount);
                 this.columnCategory = new global::System.Data.DataColumn("Category", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCategory);
                 this.columnAllowParam = new global::System.Data.DataColumn("AllowParam", typeof(bool), null, global::System.Data.MappingType.Element);
@@ -2800,8 +2802,8 @@ namespace StreamerBot.Data {
                 this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
-                this.columnRepeatMsg.Caption = "Repeat Message";
-                this.columnRepeatMsg.DefaultValue = ((short)(0));
+                this.columnSendMsgCount.Caption = "Repeat Message";
+                this.columnSendMsgCount.DefaultValue = ((short)(0));
                 this.columnCategory.Caption = "Specify an array of categories for context relevant timers-only implement timers " +
                     "per category.";
                 this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
@@ -5189,10 +5191,10 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public OutRaidDataRow AddOutRaidDataRow(string Id, string ChannelRaided, System.DateTime DateTime) {
+            public OutRaidDataRow AddOutRaidDataRow(string ChannelRaided, System.DateTime DateTime) {
                 OutRaidDataRow rowOutRaidDataRow = ((OutRaidDataRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        Id,
+                        null,
                         ChannelRaided,
                         DateTime};
                 rowOutRaidDataRow.ItemArray = columnValuesArray;
@@ -5202,7 +5204,7 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public OutRaidDataRow FindById(string Id) {
+            public OutRaidDataRow FindById(int Id) {
                 return ((OutRaidDataRow)(this.Rows.Find(new object[] {
                             Id})));
             }
@@ -5232,7 +5234,7 @@ namespace StreamerBot.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             private void InitClass() {
-                this.columnId = new global::System.Data.DataColumn("Id", typeof(string), null, global::System.Data.MappingType.Element);
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
                 this.columnChannelRaided = new global::System.Data.DataColumn("ChannelRaided", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnChannelRaided);
@@ -5240,6 +5242,7 @@ namespace StreamerBot.Data {
                 base.Columns.Add(this.columnDateTime);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, true));
+                this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
                 this.columnId.Unique = true;
             }
@@ -6191,17 +6194,17 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public short RepeatMsg {
+            public short SendMsgCount {
                 get {
                     try {
-                        return ((short)(this[this.tableCommands.RepeatMsgColumn]));
+                        return ((short)(this[this.tableCommands.SendMsgCountColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'RepeatMsg\' in table \'Commands\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'SendMsgCount\' in table \'Commands\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableCommands.RepeatMsgColumn] = value;
+                    this[this.tableCommands.SendMsgCountColumn] = value;
                 }
             }
             
@@ -6470,14 +6473,14 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsRepeatMsgNull() {
-                return this.IsNull(this.tableCommands.RepeatMsgColumn);
+            public bool IsSendMsgCountNull() {
+                return this.IsNull(this.tableCommands.SendMsgCountColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetRepeatMsgNull() {
-                this[this.tableCommands.RepeatMsgColumn] = global::System.Convert.DBNull;
+            public void SetSendMsgCountNull() {
+                this[this.tableCommands.SendMsgCountColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7917,9 +7920,9 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public string Id {
+            public int Id {
                 get {
-                    return ((string)(this[this.tableOutRaidData.IdColumn]));
+                    return ((int)(this[this.tableOutRaidData.IdColumn]));
                 }
                 set {
                     this[this.tableOutRaidData.IdColumn] = value;

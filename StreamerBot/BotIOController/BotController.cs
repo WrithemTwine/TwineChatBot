@@ -56,19 +56,33 @@ namespace StreamerBot.BotIOController
             SendThread.Start();
         }
 
+        /// <summary>
+        /// Associate the dispatcher from the GUI thread, necessary to run code based on the GUI thread objects.
+        /// </summary>
+        /// <param name="dispatcher">The GUI thread Application.Dispatcher</param>
         public void SetDispatcher(Dispatcher dispatcher)
         {
             AppDispatcher = dispatcher;
         }
 
+        /// <summary>
+        /// Receives a bundled event from the bots, which is unpackaged and now runs on the GUI thread dispatcher.
+        /// </summary>
+        /// <param name="sender">Unused.</param>
+        /// <param name="e">The parameters to include the method name to invoke, and the event arguments for the invoked method.</param>
         private void HandleBotEvent(object sender, BotEventArgs e)
         {
             AppDispatcher.Invoke(() =>
             {
-                typeof(BotController).InvokeMember(name: e.MethodName, invokeAttr: BindingFlags.InvokeMethod, binder: null, target: this, args: new[] { e.e }, culture: CultureInfo.CurrentCulture);
+                _ = typeof(BotController).InvokeMember(name: e.MethodName, invokeAttr: BindingFlags.InvokeMethod, binder: null, target: this, args: new[] { e.e }, culture: CultureInfo.CurrentCulture);
             });
         }
 
+        /// <summary>
+        /// Captures send events from the systems object to send to every bot with a send method. Some bots don't have 'send' implemented, so the message only sends for bots implementing send.
+        /// </summary>
+        /// <param name="sender">Unused - object invoking the event.</param>
+        /// <param name="e">Contains the message to send to the bots.</param>
         private void Systems_PostChannelMessage(object sender, PostChannelMessageEventArgs e)
         {
             Send(e.Msg);
@@ -121,6 +135,9 @@ namespace StreamerBot.BotIOController
             }
         }
 
+        /// <summary>
+        /// Wait for all messages to send to bots. Invoke a StopBots() method for each bot, and prepare to stop the application.
+        /// </summary>
         public void ExitBots()
         {
             try
@@ -171,6 +188,11 @@ namespace StreamerBot.BotIOController
             HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers));
         }
 
+        /// <summary>
+        /// Convert from Twitch Follower objects to generic "Models.Follow" objects.
+        /// </summary>
+        /// <param name="follows">The Twitch follows list to convert.</param>
+        /// <returns>The follower list converted to the generic "Models.Follow" list.</returns>
         private List<Models.Follow> ConvertFollowers(List<Follow> follows)
         {
             return follows.ConvertAll((f) =>

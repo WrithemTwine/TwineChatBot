@@ -1,6 +1,7 @@
 using StreamerBot.Static;
 using StreamerBot.Systems;
 
+using System;
 using System.IO;
 
 using Xunit;
@@ -66,6 +67,41 @@ namespace TestStreamerBot
 
             systemsController.AddChat("DarkStreamPhantom");
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public void RaidData()
+        {
+            Initialize();
+
+            OptionFlags.ManageRaidData = true;
+            OptionFlags.ManageOutRaidData = true;
+
+            string RaidName = "CuteChibiChu";
+            string viewers = "5000";
+            string Category = "New World";
+            DateTime RaidTime = DateTime.Now;
+
+            systemsController.PostIncomingRaid(RaidName,RaidTime, viewers, Category);
+            systemsController.PostOutgoingRaid(RaidName, RaidTime);
+
+            Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
+            Assert.True(SystemsBase.DataManage.TestOutRaidData(RaidName, RaidTime));
+        }
+
+        [Theory, 
+            InlineData("CuteChibiChu"),
+            InlineData("DarkStreamPhantom"),
+            InlineData("SevenOf9")]
+        public void UserJoinLeave(string UserName)
+        {
+            Initialize();
+            OptionFlags.ManageUsers = true;
+            OptionFlags.IsStreamOnline = true;
+
+            systemsController.UserJoined(new() { UserName });
+            Assert.True(SystemsController.DataManage.CheckUser(UserName));
+            systemsController.UserLeft(UserName);
         }
     }
 }

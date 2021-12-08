@@ -18,8 +18,6 @@ namespace StreamerBot.Systems
     {
         private Thread ElapsedThread;
 
-        // TODO: add "!time" command for current time per the streamer's location
-
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
 
@@ -324,8 +322,9 @@ namespace StreamerBot.Systems
                 {
                     new( MsgVars.user, paramvalue ),
                     new( MsgVars.url, paramvalue ),
-                    new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
-                    new( MsgVars.date, DateTime.Now.ToLocalTime().Date.ToString() )
+                    new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
+                    new( MsgVars.date, DateTime.Now.ToLocalTime().ToShortDateString() ),
+                    new( MsgVars.com, paramvalue)
                 });
 
                 if (cmdrow.lookupdata)
@@ -338,7 +337,7 @@ namespace StreamerBot.Systems
 
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
-            multi = cmdrow.RepeatMsg;
+            multi = cmdrow.SendMsgCount;
             return result;
         }
 
@@ -369,11 +368,11 @@ namespace StreamerBot.Systems
             {
                 if (JoinCollection.Contains(newuser))
                 {
-                    response = string.Format("You have already joined. You are currently number {0}.", JoinCollection.IndexOf(newuser) + 1);
+                    response = $"You have already joined. You are currently number {JoinCollection.IndexOf(newuser) + 1}.";
                 }
                 else
                 {
-                    response = string.Format("You have joined the queue. You are currently {0}.", (JoinCollection.Count + 1));
+                    response = $"You have joined the queue. You are currently {JoinCollection.Count + 1}.";
                     JoinCollection.Add(newuser);
                 }
             }
@@ -448,7 +447,10 @@ namespace StreamerBot.Systems
                             output = querydata.ToString();
                         }
 
-                        VariableParser.AddData(ref datavalues, new Tuple<MsgVars, string>[] { new(MsgVars.query, output) });
+                        if (output != null)
+                        {
+                            VariableParser.AddData(ref datavalues, new Tuple<MsgVars, string>[] { new(MsgVars.query, output) });
+                        }
                         break;
                     }
             }
