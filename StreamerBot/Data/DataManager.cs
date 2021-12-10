@@ -59,10 +59,8 @@ namespace StreamerBot.Data
                     _DataSource.WriteXml(DataFileName);
                 }
 
-                using (XmlReader xmlreader = new XmlTextReader(DataFileName))
-                {
-                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
-                }
+                using XmlReader xmlreader = new XmlTextReader(DataFileName);
+                _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
             }
 
             SaveData(this, new());
@@ -258,7 +256,7 @@ switches:
                         {
                             datarow.Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
                         }
-                        if ( DBNull.Value.Equals(datarow["RepeatMsg"]) ) 
+                        if ( DBNull.Value.Equals(datarow["SendMsgCount"]) ) 
                         {
                             datarow.SendMsgCount = 0;
                         }
@@ -806,7 +804,7 @@ switches:
 
         public void UserJoined(string User, DateTime NowSeen)
         {
-            DateTime Max(DateTime A, DateTime B)
+            static DateTime Max(DateTime A, DateTime B)
             {
                 return A <= B ? B : A;
             }
@@ -911,7 +909,7 @@ switches:
             {
                 UsersRow user = (UsersRow)_DataSource.Users.Select($"UserName='{User}'").FirstOrDefault();
 
-                return user != null ? user.FirstDateSeen <= ToDateTime : false;
+                return user != null && user.FirstDateSeen <= ToDateTime;
             }
         }
 
@@ -1195,7 +1193,7 @@ switches:
         #endregion
 
         #region Raid Data
-        public void AddInRaidData(string user, DateTime time, string viewers, string gamename)
+        public void PostInRaidData(string user, DateTime time, string viewers, string gamename)
         {
             lock (_DataSource)
             {
@@ -1211,7 +1209,7 @@ switches:
             {
                 // 2021-12-06T01:19:16.0248427-05:00
                 //string.Format("UserName='{0}' and DateTime='{1}' and ViewerCount='{2}' and Category='{3}'", user, time, viewers, gamename)
-                inRaidDataRow = (InRaidDataRow)_DataSource.InRaidData.Select($"UserName='{user}' AND DateTime=#{time.ToString("O")}# AND ViewerCount='{viewers}' AND Category='{gamename}'").FirstOrDefault();
+                inRaidDataRow = (InRaidDataRow)_DataSource.InRaidData.Select($"UserName='{user}' AND DateTime=#{time:O}# AND ViewerCount='{viewers}' AND Category='{gamename}'").FirstOrDefault();
             }
 
             return inRaidDataRow != null;
@@ -1223,7 +1221,7 @@ switches:
             lock (_DataSource)
             {
                 //string.Format("ChannelRaided='{0}' and DateTime='{1}'", HostedChannel, dateTime)
-                outRaidDataRow = (OutRaidDataRow)_DataSource.OutRaidData.Select($"ChannelRaided='{HostedChannel}' AND DateTime=#{dateTime.ToString("O")}#").FirstOrDefault();
+                outRaidDataRow = (OutRaidDataRow)_DataSource.OutRaidData.Select($"ChannelRaided='{HostedChannel}' AND DateTime=#{dateTime:O}#").FirstOrDefault();
             }
 
             return outRaidDataRow != null;
@@ -1273,7 +1271,7 @@ switches:
         /// Checks for the supplied category in the category list, adds if it isn't already saved.
         /// </summary>
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
-        public void UpdateCategory(string CategoryId, string newCategory)
+        public void PostCategory(string CategoryId, string newCategory)
         {
             lock (_DataSource)
             {

@@ -13,8 +13,6 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 
-using TwitchLib.PubSub.Models.Responses;
-
 namespace StreamerBot.Systems
 {
     public class SystemsController
@@ -65,17 +63,17 @@ namespace StreamerBot.Systems
 
         #region Followers
 
-        public void StartBulkFollowers()
+        public static void StartBulkFollowers()
         {
             DataManage.StartFollowers();
         }
 
-        public void UpdateFollowers(IEnumerable<Follow> Follows)
+        public static void UpdateFollowers(IEnumerable<Follow> Follows)
         {
             DataManage.UpdateFollowers(Follows);
         }
 
-        public void StopBulkFollowers()
+        public static void StopBulkFollowers()
         {
             DataManage.StopBulkFollows();
         }
@@ -127,17 +125,17 @@ namespace StreamerBot.Systems
 
         #region Database Ops
 
-        public void ManageDatabase()
+        public static void ManageDatabase()
         {
             SystemsBase.ManageDatabase();
         }
 
-        public void ClearWatchTime()
+        public static void ClearWatchTime()
         {
             SystemsBase.ClearWatchTime();
         }
 
-        public void ClearAllCurrenciesValues()
+        public static void ClearAllCurrenciesValues()
         {
             SystemsBase.ClearAllCurrenciesValues();
         }
@@ -151,14 +149,14 @@ namespace StreamerBot.Systems
             return Stats.StreamOnline(CurrTime);
         }
 
-        public void StreamOffline(DateTime CurrTime)
+        public static void StreamOffline(DateTime CurrTime)
         {
-            Stats.StreamOffline(CurrTime);
+            StatisticsSystem.StreamOffline(CurrTime);
         }
 
-        public void SetCategory(string GameId, string GameName)
+        public static void SetCategory(string GameId, string GameName)
         {
-            Stats.SetCategory(GameId, GameName);
+            StatisticsSystem.SetCategory(GameId, GameName);
         }
 
         public void UpdatedStat(params StreamStatType[] streamStatTypes)
@@ -183,7 +181,7 @@ namespace StreamerBot.Systems
         {
 
             foreach (string user in from string user in users
-                                    where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
+                                    where StatisticsSystem.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
             {
                 if (OptionFlags.FirstUserJoinedMsg)
@@ -193,21 +191,21 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void UserLeft(string User)
+        public static void UserLeft(string User)
         {
-            Stats.UserLeft(User, DateTime.Now.ToLocalTime());
+            StatisticsSystem.UserLeft(User, DateTime.Now.ToLocalTime());
         }
 
         #endregion
 
-        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
             return DataManage.GetWebhooks(webhooksKind);
         }
 
         public void AddChat(string Username)
         {
-            if (Stats.UserChat(Username) && OptionFlags.FirstUserChatMsg)
+            if (StatisticsSystem.UserChat(Username) && OptionFlags.FirstUserChatMsg)
             {
                 RegisterJoinedUser(Username);
             }
@@ -263,15 +261,15 @@ namespace StreamerBot.Systems
 
             if (IsSubscriber)
             {
-                Stats.SubJoined(UserName);
+                StatisticsSystem.SubJoined(UserName);
             }
             if (IsVip)
             {
-                Stats.VIPJoined(UserName);
+                StatisticsSystem.VIPJoined(UserName);
             }
             if (IsModerator)
             {
-                Stats.ModJoined(UserName);
+                StatisticsSystem.ModJoined(UserName);
             }
 
             // handle bit cheers
@@ -312,7 +310,7 @@ namespace StreamerBot.Systems
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
-                Stats.UserJoined(UserName, RaidTime);
+                StatisticsSystem.UserJoined(UserName, RaidTime);
                 bool output = Command.CheckShout(UserName, out string response, false);
                 if (output)
                 {
@@ -322,11 +320,11 @@ namespace StreamerBot.Systems
 
             if (OptionFlags.ManageRaidData)
             {
-                Stats.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
+                StatisticsSystem.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
             }
         }
 
-        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        public static void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
             if (OptionFlags.ManageOutRaidData)
             {

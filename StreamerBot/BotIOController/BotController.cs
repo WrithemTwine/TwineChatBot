@@ -36,7 +36,7 @@ namespace StreamerBot.BotIOController
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
-        private Thread SendThread;  // the thread for sending messages back to the monitored  channels
+        private readonly Thread SendThread;  // the thread for sending messages back to the monitored  channels
 
         public BotController()
         {
@@ -161,7 +161,7 @@ namespace StreamerBot.BotIOController
         /// </summary>
         public void ManageDatabase()
         {
-            Systems.ManageDatabase();
+            SystemsController.ManageDatabase();
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
@@ -172,14 +172,14 @@ namespace StreamerBot.BotIOController
             // when management resumes, code upstream enables the startbot process 
         }
         
-        public void ClearWatchTime()
+        public static void ClearWatchTime()
         {
-            Systems.ClearWatchTime();
+            SystemsController.ClearWatchTime();
         }
 
-        public void ClearAllCurrenciesValues()
+        public static void ClearAllCurrenciesValues()
         {
-            Systems.ClearAllCurrenciesValues();
+            SystemsController.ClearAllCurrenciesValues();
         }
 
         #region Twitch Bot Events
@@ -193,7 +193,7 @@ namespace StreamerBot.BotIOController
         /// </summary>
         /// <param name="follows">The Twitch follows list to convert.</param>
         /// <returns>The follower list converted to the generic "Models.Follow" list.</returns>
-        private List<Models.Follow> ConvertFollowers(List<Follow> follows)
+        private static List<Models.Follow> ConvertFollowers(List<Follow> follows)
         {
             return follows.ConvertAll((f) =>
             {
@@ -208,17 +208,19 @@ namespace StreamerBot.BotIOController
             });
         }
 
-        public void TwitchStartBulkFollowers(EventArgs args)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public static void TwitchStartBulkFollowers(EventArgs args = null)
         {
             HandleBotEventStartBulkFollowers();
         }
 
-        public void TwitchBulkPostFollowers(OnNewFollowersDetectedArgs Follower)
+        public static void TwitchBulkPostFollowers(OnNewFollowersDetectedArgs Follower)
         {
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers));
         }
 
-        public void TwitchStopBulkFollowers(EventArgs args)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public static void TwitchStopBulkFollowers(EventArgs args = null)
         {
             HandleBotEventStopBulkFollowers();
         }
@@ -253,15 +255,16 @@ namespace StreamerBot.BotIOController
 
         public void TwitchStreamOnline(OnStreamOnlineArgs e)
         {
-            HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameName);
+            HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
         }
 
-        public void TwitchStreamupdate(OnStreamUpdateArgs e)
+        public static void TwitchStreamupdate(OnStreamUpdateArgs e)
         {
             HandleOnStreamUpdate(e.Stream.GameId, e.Stream.GameName);
         }
 
-        public void TwitchStreamOffline(OnStreamOfflineArgs e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public static void TwitchStreamOffline(OnStreamOfflineArgs e = null)
         {
             HandleOnStreamOffline();
         }
@@ -310,7 +313,7 @@ namespace StreamerBot.BotIOController
             HandleBeingHosted(e.BeingHostedNotification.HostedByChannel, e.BeingHostedNotification.IsAutoHosted, e.BeingHostedNotification.Viewers);
         }
 
-        public void TwitchNowHosting(OnNowHostingArgs e)
+        public static void TwitchNowHosting(OnNowHostingArgs e)
         {
             HandleOnStreamOffline(HostedChannel: e.HostedChannel);
         }
@@ -325,17 +328,19 @@ namespace StreamerBot.BotIOController
             HandleUserJoined(new() { e.Username });
         }
 
-        public void TwitchOnUserLeft(OnUserLeftArgs e)
+        public static void TwitchOnUserLeft(OnUserLeftArgs e)
         {
             HandleUserLeft(e.Username);
         }
 
-        public void TwitchOnUserTimedout(OnUserTimedoutArgs e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public void TwitchOnUserTimedout(OnUserTimedoutArgs e = null)
         {
             HandleUserTimedOut();
         }
 
-        public void TwitchOnUserBanned(OnUserBannedArgs e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public void TwitchOnUserBanned(OnUserBannedArgs e = null)
         {
             HandleUserBanned();
         }
@@ -389,19 +394,19 @@ namespace StreamerBot.BotIOController
             Systems.AddNewFollowers(follows);
         }
 
-        public void HandleBotEventStartBulkFollowers()
+        public static void HandleBotEventStartBulkFollowers()
         {
-            Systems.StartBulkFollowers();
+            SystemsController.StartBulkFollowers();
         }
 
-        public void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
+        public static void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
         {
-            Systems.UpdateFollowers(follows);
+            SystemsController.UpdateFollowers(follows);
         }
 
-        public void HandleBotEventStopBulkFollowers()
+        public static void HandleBotEventStopBulkFollowers()
         {
-            Systems.StopBulkFollowers();
+            SystemsController.StopBulkFollowers();
         }
 
         #endregion
@@ -416,17 +421,17 @@ namespace StreamerBot.BotIOController
         #endregion
         
         #region LiveStream
-        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string Category, bool Debug = false)
+        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string GameId, string Category, bool Debug = false)
         {
             try
             {
                 bool Started = Systems.StreamOnline(StartedAt);
-                SystemsBase.Category = Category;
                 SystemsBase.ChannelName = ChannelName;
 
                 if (Started)
                 {
                     bool MultiLive = StatisticsSystem.CheckStreamTime(StartedAt);
+                    SystemsController.SetCategory(GameId, Category);
 
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
@@ -467,19 +472,18 @@ namespace StreamerBot.BotIOController
             }
         }
 
-        public void HandleOnStreamUpdate(string gameId, string gameName)
+        public static void HandleOnStreamUpdate(string gameId, string gameName)
         {
-            Systems.SetCategory(gameId, gameName);
+            SystemsController.SetCategory(gameId, gameName);
         }
 
-        public void HandleOnStreamOffline(string HostedChannel = null)
+        public static void HandleOnStreamOffline(string HostedChannel = null)
         {
             if (OptionFlags.IsStreamOnline)
             {
                 DateTime currTime = DateTime.Now.ToLocalTime();
-                Systems.StreamOffline(currTime);
-
-                Systems.PostOutgoingRaid(HostedChannel, currTime);
+                SystemsController.StreamOffline(currTime);
+                SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
             }
         }
 
@@ -584,9 +588,9 @@ namespace StreamerBot.BotIOController
             Systems.UserJoined(Users);
         }
 
-        public void HandleUserLeft(string Users)
+        public static void HandleUserLeft(string Users)
         {
-            Systems.UserLeft(Users);
+            SystemsController.UserLeft(Users);
         }
 
         public void HandleUserTimedOut()

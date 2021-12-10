@@ -12,7 +12,7 @@ namespace StreamerBot.Systems
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
         /// </summary>
-        private Thread StreamUpdateThread;
+        // private Thread StreamUpdateThread;
 
         public event EventHandler BeginCurrencyClock;
         public event EventHandler BeginWatchTime;
@@ -26,7 +26,7 @@ namespace StreamerBot.Systems
         /// </summary>
         public void StartCurrencyClock()
         {
-            BeginCurrencyClock?.Invoke(this,new()); // try to start clock, in case accrual is started for offline mode
+            BeginCurrencyClock?.Invoke(this, new()); // try to start clock, in case accrual is started for offline mode
         }
 
         public void MonitorWatchTime()
@@ -40,7 +40,7 @@ namespace StreamerBot.Systems
             MonitorWatchTime();
         }
 
-        public void ManageUsers(DateTime SpecifyTime)
+        public static void ManageUsers(DateTime SpecifyTime)
         {
             lock (CurrUsers)
             {
@@ -59,10 +59,14 @@ namespace StreamerBot.Systems
             return DataManage.CheckMultiStreams(TimeStream);
         }
 
-        public void SetCategory(string categoryId, string category)
+        public static void SetCategory(string categoryId, string category)
         {
             Category = category;
-            DataManage.UpdateCategory(categoryId, category);
+
+            if (OptionFlags.ManageStreamStats)
+            {
+                DataManage.PostCategory(categoryId, category);
+            }
         }
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace StreamerBot.Systems
         /// <param name="User">User's DisplayName</param>
         /// <param name="CurrTime">The current time the user joined</param>
         /// <returns></returns>
-        public bool UserJoined(string User, DateTime CurrTime)
+        public static bool UserJoined(string User, DateTime CurrTime)
         {
             lock (CurrUsers)
             {
@@ -89,7 +93,7 @@ namespace StreamerBot.Systems
             return UserChat(User);
         }
 
-        public bool UserChat(string User)
+        public static bool UserChat(string User)
         {
             bool result = false;
             if (OptionFlags.IsStreamOnline)
@@ -104,7 +108,7 @@ namespace StreamerBot.Systems
             return result;
         }
 
-        public void ModJoined(string User)
+        public static void ModJoined(string User)
         {
             if (OptionFlags.IsStreamOnline && !ModUsers.Contains(User))
             {
@@ -112,7 +116,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void SubJoined(string User)
+        public static void SubJoined(string User)
         {
             if (OptionFlags.IsStreamOnline && !SubUsers.Contains(User))
             {
@@ -120,7 +124,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void VIPJoined(string User)
+        public static void VIPJoined(string User)
         {
             if (OptionFlags.IsStreamOnline && !VIPUsers.Contains(User))
             {
@@ -128,7 +132,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void UserLeft(string User, DateTime CurrTime)
+        public static void UserLeft(string User, DateTime CurrTime)
         {
             lock (CurrUsers)
             {
@@ -182,9 +186,9 @@ namespace StreamerBot.Systems
 
         #region Incoming Raids
 
-        public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
+        public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
         {
-            DataManage.AddInRaidData(UserName, RaidTime, Viewers, GameName);
+            DataManage.PostInRaidData(UserName, RaidTime, Viewers, GameName);
         }
 
         #endregion
@@ -229,74 +233,71 @@ namespace StreamerBot.Systems
             return OptionFlags.ManageStreamStats && !found;
         }
 
-        public void EndPostingStreamUpdates()
-        {
-            StreamUpdateThread.Join();
-        }
+        //public void EndPostingStreamUpdates()
+        //{
+        //    StreamUpdateThread.Join();
+        //}
 
-        private void PostStreamUpdates()
+        //private void PostStreamUpdates()
+        //{
+        //    if (!StreamUpdateClockStarted)
+        //    {
+        //        StreamUpdateClockStarted = true;
+        //        MonitorWatchTime();
+        //        StartCurrencyClock();
+
+        //        StreamUpdateThread = new Thread(new ThreadStart(() =>
+        //        {
+        //            while (OptionFlags.IsStreamOnline && OptionFlags.ManageStreamStats)
+        //            {
+        //                lock (CurrStream)
+        //                {
+        //                    DataManage.PostStreamStat(CurrStream);
+        //                }
+        //                Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
+        //            }
+        //            StreamUpdateClockStarted = false;
+        //        }));
+        //        StreamUpdateThread.Start();
+        //    }
+        //}
+
+        public static void StreamOffline(DateTime Stopped)
         {
-            if (!StreamUpdateClockStarted)
+            // TODO: add option to stop bot when stream goes offline
+
+            lock (CurrUsers)
             {
-                StreamUpdateClockStarted = true;
-                MonitorWatchTime();
-                StartCurrencyClock();
-
-                StreamUpdateThread = new Thread(new ThreadStart(() =>
+                foreach (string U in CurrUsers)
                 {
-                    while (OptionFlags.IsStreamOnline && OptionFlags.ManageStreamStats)
-                    {
-                        lock (CurrStream)
-                        {
-                            DataManage.PostStreamStat(CurrStream);
-                        }
-                        Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
-                    }
-                    StreamUpdateClockStarted = false;
-                }));
-                StreamUpdateThread.Start();
+                    PostDataUserLeft(U, Stopped);
+                }
+                CurrUsers.Clear();
             }
-        }
 
-        public void StreamOffline(DateTime Stopped)
-        {
-            if (OptionFlags.IsStreamOnline)
+            OptionFlags.IsStreamOnline = false;
+            //EndPostingStreamUpdates(); // wait until the posting thread stops
+            CurrStream.StreamEnd = Stopped;
+            CurrStream.ModeratorsPresent = ModUsers.Count;
+            CurrStream.VIPsPresent = VIPUsers.Count;
+            CurrStream.SubsPresent = SubUsers.Count;
+
+            // setting if user wants to save Stream Stat data
+            if (OptionFlags.ManageStreamStats)
             {
-                // TODO: add option to stop bot when stream goes offline
-
-                lock (CurrUsers)
-                {
-                    foreach (string U in CurrUsers)
-                    {
-                        PostDataUserLeft(U, Stopped);
-                    }
-                    CurrUsers.Clear();
-                }
-
-                OptionFlags.IsStreamOnline = false;
-                //EndPostingStreamUpdates(); // wait until the posting thread stops
-                CurrStream.StreamEnd = Stopped;
-                CurrStream.ModeratorsPresent = ModUsers.Count;
-                CurrStream.VIPsPresent = VIPUsers.Count;
-                CurrStream.SubsPresent = SubUsers.Count;
-
-                // setting if user wants to save Stream Stat data
-                if (OptionFlags.ManageStreamStats)
-                {
-                    DataManage.PostStreamStat(CurrStream);
-                }
-
-                CurrStream.Clear();
-                ModUsers.Clear();
-                SubUsers.Clear();
-                VIPUsers.Clear();
-                UniqueUserJoined.Clear();
-                UniqueUserChat.Clear();
+                DataManage.PostStreamStat(CurrStream);
             }
+
+            CurrStream.Clear();
+            ModUsers.Clear();
+            SubUsers.Clear();
+            VIPUsers.Clear();
+            UniqueUserJoined.Clear();
+            UniqueUserChat.Clear();
         }
 
         #region Stream Stat Methods
-        public void AddFollow()
+        public static void AddFollow()
         {
             lock (CurrStream)
             {
@@ -304,7 +305,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddSub()
+        public static void AddSub()
         {
             lock (CurrStream)
             {
@@ -312,7 +313,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddGiftSubs(int Gifted = 1)
+        public static void AddGiftSubs(int Gifted = 1)
         {
             lock (CurrStream)
             {
@@ -320,7 +321,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddBits(int BitCount)
+        public static void AddBits(int BitCount)
         {
             lock (CurrStream)
             {
@@ -328,7 +329,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddRaids()
+        public static void AddRaids()
         {
             lock (CurrStream)
             {
@@ -336,7 +337,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddHosted()
+        public static void AddHosted()
         {
             lock (CurrStream)
             {
@@ -344,7 +345,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddUserBanned()
+        public static void AddUserBanned()
         {
             lock (CurrStream)
             {
@@ -352,7 +353,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddUserTimedOut()
+        public static void AddUserTimedOut()
         {
             lock (CurrStream)
             {
@@ -360,7 +361,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddTotalChats()
+        public static void AddTotalChats()
         {
             lock (CurrStream)
             {
@@ -368,7 +369,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddCommands()
+        public static void AddCommands()
         {
             lock (CurrStream)
             {
@@ -376,7 +377,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddAutoEvents()
+        public static void AddAutoEvents()
         {
             lock (CurrStream)
             {
@@ -384,7 +385,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddAutoCommands()
+        public static void AddAutoCommands()
         {
             lock (CurrStream)
             {
@@ -392,7 +393,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddDiscord()
+        public static void AddDiscord()
         {
             lock (CurrStream)
             {
@@ -400,7 +401,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddClips()
+        public static void AddClips()
         {
             lock (CurrStream)
             {
@@ -408,7 +409,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddChannelPtsCount()
+        public static void AddChannelPtsCount()
         {
             lock (CurrStream)
             {
@@ -416,7 +417,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void AddChannelChallenge()
+        public static void AddChannelChallenge()
         {
             lock (CurrStream)
             {

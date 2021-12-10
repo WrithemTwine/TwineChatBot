@@ -527,7 +527,7 @@
                                                     <TextBlock TextWrapping="Wrap">Manage channel followers, including their followage. Requires User data.*</TextBlock>
                                                 </CheckBox>
                                                 <CheckBox x:Name="CheckBox_ManageStreamStat" IsChecked="{Binding ManageStreamStats}">
-                                                    <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream.*</TextBlock>
+                                                    <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream, including the categories table.*</TextBlock>
                                                 </CheckBox>
                                                 <CheckBox x:Name="CheckBox_ManageRaidData" IsChecked="{Binding ManageRaidData}">
                                                     <TextBlock TextWrapping="Wrap">Record Raid Stats for incoming raids.*</TextBlock>

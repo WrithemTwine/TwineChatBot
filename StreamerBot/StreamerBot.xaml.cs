@@ -31,7 +31,7 @@ namespace StreamerBot
     {
         public static BotController Controller { get; private set; } = new();
 
-        private GUITwitchBots guiTwitchBot;
+        private readonly GUITwitchBots guiTwitchBot;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private bool IsAddNewRow;
         private const string MultiLiveName = "MultiUserLiveBot";
@@ -129,27 +129,15 @@ namespace StreamerBot
                 else
                 {
                     ToggleInputEnabled(false);
-
-                    RadioButton radio;
-                    switch (e.BotName)
+                    RadioButton radio = e.BotName switch
                     {
-                        case Enum.Bots.TwitchChatBot:
-                            radio = Radio_Twitch_StartBot;
-                            break;
-                        case Enum.Bots.TwitchClipBot:
-                            radio = Radio_Twitch_ClipBotStart;
-                            break;
-                        case Enum.Bots.TwitchFollowBot:
-                            radio = Radio_Twitch_FollowBotStart;
-                            break;
-                        case Enum.Bots.TwitchLiveBot:
-                            radio = Radio_Twitch_LiveBotStart;
-                            break;
-                        default:
-                            radio = Radio_MultiLiveTwitch_StartBot;
-                            break;
-                    }
-
+                        Enum.Bots.TwitchChatBot => Radio_Twitch_StartBot,
+                        Enum.Bots.TwitchClipBot => Radio_Twitch_ClipBotStart,
+                        Enum.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStart,
+                        Enum.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
+                        Enum.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
+                        _ => Radio_MultiLiveTwitch_StartBot,
+                    };
                     HelperStartBot(radio);
                 }
             }), null);
@@ -157,32 +145,20 @@ namespace StreamerBot
 
         private void GUI_OnBotStopped(object sender, BotStartStopEventArgs e)
         {
-            Dispatcher.BeginInvoke(new BotOperation(() =>
-            {
-                ToggleInputEnabled(true);
-
-                RadioButton radio;
-                switch (e.BotName)
-                {
-                    case Enum.Bots.TwitchChatBot:
-                        radio = Radio_Twitch_StopBot;
-                        break;
-                    case Enum.Bots.TwitchClipBot:
-                        radio = Radio_Twitch_ClipBotStop;
-                        break;
-                    case Enum.Bots.TwitchFollowBot:
-                        radio = Radio_Twitch_FollowBotStop;
-                        break;
-                    case Enum.Bots.TwitchLiveBot:
-                        radio = Radio_Twitch_LiveBotStop;
-                        break;
-                    default:
-                        radio = Radio_MultiLiveTwitch_StopBot;
-                        break;
-                }
-
-                HelperStopBot(radio);
-            }), null);
+            _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+              {
+                  ToggleInputEnabled(true);
+                  RadioButton radio = e.BotName switch
+                  {
+                      Enum.Bots.TwitchChatBot => Radio_Twitch_StopBot,
+                      Enum.Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
+                      Enum.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
+                      Enum.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
+                      Enum.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
+                      _ => Radio_MultiLiveTwitch_StopBot,
+                  };
+                  HelperStopBot(radio);
+              }), null);
         }
 
         #endregion
@@ -544,12 +520,12 @@ namespace StreamerBot
 
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {
-            Controller.ClearWatchTime();
+            BotController.ClearWatchTime();
         }
 
         private void Button_ClearCurrencyAccrlValues_Click(object sender, RoutedEventArgs e)
         {
-            Controller.ClearAllCurrenciesValues();
+            BotController.ClearAllCurrenciesValues();
         }
 
         /// <summary>
@@ -631,14 +607,14 @@ namespace StreamerBot
             OnPropertyChanged("Opacity");
         }
 
-        private bool IsAppClosing;
+        private readonly bool IsAppClosing = true;
         private void CP_Closing(object sender, CancelEventArgs e)
         {
-            //    if (!IsAppClosing) // flag to really close the window
-            //    {
-            //        e.Cancel = true;
-            //        CP.Hide();
-            //    }
+            if (!IsAppClosing) // flag to really close the window
+            {
+                e.Cancel = true;
+                //CP.Hide();
+            }
         }
 
         #endregion
@@ -853,11 +829,12 @@ namespace StreamerBot
             {
                 DebugStreamStarted = DateTime.Now.ToLocalTime();
 
-                string User = TwitchBotsBase.TwitchChannelName;
+                string User = "";
                 string Category = "All";
+                string ID = "";
                 string Title = "Testing a debug stream";
 
-                Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, Category, true);
+                Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, true);
             }
 
         }
@@ -866,7 +843,7 @@ namespace StreamerBot
         {
             if (DebugStreamStarted != DateTime.MinValue)
             {
-                Controller.HandleOnStreamOffline();
+                BotController.HandleOnStreamOffline();
 
                 DebugStreamStarted = DateTime.MinValue;
             }

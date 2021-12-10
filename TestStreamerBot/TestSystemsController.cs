@@ -83,13 +83,13 @@ namespace TestStreamerBot
             DateTime RaidTime = DateTime.Now;
 
             systemsController.PostIncomingRaid(RaidName,RaidTime, viewers, Category);
-            systemsController.PostOutgoingRaid(RaidName, RaidTime);
+            SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
             Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
             Assert.True(SystemsBase.DataManage.TestOutRaidData(RaidName, RaidTime));
         }
 
-        [Theory, 
+        [Theory,
             InlineData("CuteChibiChu"),
             InlineData("DarkStreamPhantom"),
             InlineData("SevenOf9")]
@@ -101,7 +101,7 @@ namespace TestStreamerBot
 
             systemsController.UserJoined(new() { UserName });
             Assert.True(SystemsController.DataManage.CheckUser(UserName));
-            systemsController.UserLeft(UserName);
+            SystemsController.UserLeft(UserName);
         }
     }
 }
