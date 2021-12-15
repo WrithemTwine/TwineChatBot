@@ -124,7 +124,7 @@ namespace StreamerBot.Systems
                 lock (cmd) // lock the cmd because it's referenced in other threads
                 {
                     Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
-                    if (command == null)
+                    if (command == null) // when command disappears
                     {
                         repeat = 0;
                     }
