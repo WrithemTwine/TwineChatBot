@@ -155,8 +155,7 @@ namespace StreamerBot.Systems
 
         internal static void AddChatString(string UserName, string Message)
         {
-            ProcMessage Msg = UpdateMessage;
-            Application.Current.Dispatcher.BeginInvoke(Msg, UserName, Message);
+            Application.Current.Dispatcher.BeginInvoke(new ProcMessage(UpdateMessage), UserName, Message);
         }
 
         private static void UpdateMessage(string UserName, string Message)

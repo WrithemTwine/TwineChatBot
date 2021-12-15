@@ -10,7 +10,7 @@ namespace TestStreamerBot
 {
     public class TestSystemsController
     {
-        private bool setFile;
+        private bool Initialized;
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
         private string result = string.Empty;
@@ -19,7 +19,7 @@ namespace TestStreamerBot
 
         private void Initialize()
         {
-            if (!setFile)
+            if (!Initialized)
             {
                 if (File.Exists(DataFileXML))
                 {
@@ -32,7 +32,7 @@ namespace TestStreamerBot
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;
 
-                setFile = true;
+                Initialized = true;
             }
         }
 

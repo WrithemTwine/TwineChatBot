@@ -63,6 +63,7 @@ namespace StreamerBot.BotIOController
         public void SetDispatcher(Dispatcher dispatcher)
         {
             AppDispatcher = dispatcher;
+            Systems.SetDispatcher(dispatcher);
         }
 
         /// <summary>

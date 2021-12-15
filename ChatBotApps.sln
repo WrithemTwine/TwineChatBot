@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiUserLiveBot", "MultiUs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBot", "StreamerBot\StreamerBot.csproj", "{C807A207-AC56-4AA4-BFF1-F3D4853F817C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStreamerBot", "TestStreamerBot\TestStreamerBot.csproj", "{5BBA6290-982F-423B-B92F-AA02702527A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestStreamerBot", "TestStreamerBot\TestStreamerBot.csproj", "{5BBA6290-982F-423B-B92F-AA02702527A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -563,7 +563,7 @@ switches:
         {
             lock (_DataSource)
             {
-                CommandsRow row = (CommandsRow)_DataSource.Commands.Select($"CmdName='{Cmd}'").First();
+                CommandsRow row = (CommandsRow)_DataSource.Commands.Select($"CmdName='{Cmd}'").FirstOrDefault();
 
                 return (row == null) ? null : new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>());
             }
@@ -1275,7 +1275,7 @@ switches:
         {
             lock (_DataSource)
             {
-                CategoryListRow categoryList = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{newCategory.Replace("'", "''")}' OR CategoryId='{CategoryId}'").First();
+                CategoryListRow categoryList = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{newCategory.Replace("'", "''")}' OR CategoryId='{CategoryId}'").FirstOrDefault();
 
                 if (categoryList == null)
                 {

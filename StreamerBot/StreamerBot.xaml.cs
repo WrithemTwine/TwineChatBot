@@ -21,6 +21,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace StreamerBot
 {
@@ -36,6 +37,8 @@ namespace StreamerBot
         private bool IsAddNewRow;
         private const string MultiLiveName = "MultiUserLiveBot";
 
+        internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
+
         public StreamerBotWindow()
         {
             // move settings to the newest version, if the application version upgrades
@@ -49,7 +52,7 @@ namespace StreamerBot
             IsMultiProcActive = null;
             OptionFlags.SetSettings();
 
-            Controller.SetDispatcher(Application.Current.Dispatcher);
+            Controller.SetDispatcher(AppDispatcher);
 
             InitializeComponent();
 
@@ -230,7 +233,7 @@ namespace StreamerBot
 
         private void CheckDebug()
         {
-            StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Hidden;
+            StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
@@ -360,7 +363,7 @@ namespace StreamerBot
 
         private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
         {
-            BeginUpdateCategory();
+            BeginUpdateCategory(); 
         }
 
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
@@ -373,15 +376,12 @@ namespace StreamerBot
             // TODO: align current stream info to the current active stream
             guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
 
-            RefreshCategory refresh = UpdateCategory;
-
-            Dispatcher.BeginInvoke(refresh, null);
-
-            Button_RefreshCategory.IsEnabled = false;
+            Dispatcher.BeginInvoke(new RefreshCategory(UpdateCategory), null);
         }
 
         private void UpdateCategory()
         {
+            Button_RefreshCategory.IsEnabled = false;
             DefaultSettingValueAttribute defaultSetting = null;
             foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
                                      where m.Name == "TwitchChannelName"
@@ -710,8 +710,7 @@ namespace StreamerBot
 
         private void UpdateProc(bool IsActive)
         {
-            ProcWatch watch = SetMultiLiveActive;
-            _ = Application.Current.Dispatcher.BeginInvoke(watch, IsActive);
+            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
         }
 
         private void ProcessWatcher()
@@ -830,8 +829,8 @@ namespace StreamerBot
                 DebugStreamStarted = DateTime.Now.ToLocalTime();
 
                 string User = "";
-                string Category = "All";
-                string ID = "";
+                string Category = "Microsoft Flight Simulator";
+                string ID = "7193";
                 string Title = "Testing a debug stream";
 
                 Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, true);
@@ -852,5 +851,9 @@ namespace StreamerBot
 
         #endregion
 
+        private void TabItem_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBlock_TwitchBotLog.ScrollToEnd();
+        }
     }
 }

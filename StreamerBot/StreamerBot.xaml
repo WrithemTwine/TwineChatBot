@@ -430,7 +430,7 @@
                                                 </CheckBox>
                                                 <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}">
                                                     <CheckBox.ToolTip>
-                                                        <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 10+ viewers an hour or over 20 viewer chats in 15 minutes.</TextBlock>
+                                                        <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</TextBlock>
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable smart slow-down repeating commands</TextBlock>
                                                 </CheckBox>
@@ -820,7 +820,7 @@
             </TabItem>
             <TabItem Header="Logs">
                 <TabControl>
-                    <TabItem Header="Twitch Status">
+                    <TabItem Header="Twitch Status" GotFocus="TabItem_GotFocus">
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Width="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" DataContext="{Binding Source={x:Static s:Settings.Default}}">
@@ -833,7 +833,7 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="Bot Chat">
+            <TabItem Header="Bot Chat" Height="30" Margin="-2,0,0,0" VerticalAlignment="Bottom">
                 <DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
                         <Grid>

@@ -11,7 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Windows;
+using System.Windows.Threading;
 
 namespace StreamerBot.Systems
 {
@@ -21,9 +21,13 @@ namespace StreamerBot.Systems
 
         public static DataManager DataManage { get; private set; } = new();
 
+        private Thread HoldNewFollowsForBulkAdd;
+
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
         private CurrencySystem Currency { get; set; }
+
+        internal Dispatcher AppDispatcher { get; set; }
 
         public SystemsController()
         {
@@ -37,6 +41,11 @@ namespace StreamerBot.Systems
             Command.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
+        }
+
+        public void SetDispatcher(Dispatcher dispatcher)
+        {
+            AppDispatcher = dispatcher;
         }
 
         private void SendMessage(string message)
@@ -79,7 +88,7 @@ namespace StreamerBot.Systems
         }
 
 
-        private delegate void ProcFollowDelegate(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled);
+        private delegate void ProcFollowDelegate();
 
         public void AddNewFollowers(IEnumerable<Follow> FollowList)
         {
@@ -87,7 +96,14 @@ namespace StreamerBot.Systems
 
             if (DataManage.UpdatingFollowers)
             { // capture any followers found after starting the bot and before completing the bulk follower load
-                Application.Current.Dispatcher.BeginInvoke((ProcFollowDelegate)PerformFollow, FollowList, msg, FollowEnabled);
+                HoldNewFollowsForBulkAdd = new Thread(new ThreadStart(() =>
+                {
+                    while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+                    ProcessFollow(FollowList, msg, FollowEnabled);
+                }));
+
+                _ = AppDispatcher.BeginInvoke(new ProcFollowDelegate(PerformFollow));
             }
             else
             {
@@ -95,14 +111,9 @@ namespace StreamerBot.Systems
             }
         }
 
-        private void PerformFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
+        private void PerformFollow()
         {
-            new Thread(new ThreadStart(() =>
-            {
-                while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
-
-                ProcessFollow(FollowList, msg, FollowEnabled);
-            })).Start();
+            HoldNewFollowsForBulkAdd.Start();
         }
 
         private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
