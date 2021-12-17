@@ -8,6 +8,7 @@
         autohost,
         bits,
         category,
+        com,
         count,
         date,
         months,

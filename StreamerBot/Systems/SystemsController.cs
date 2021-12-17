@@ -11,9 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Windows;
-
-using TwitchLib.PubSub.Models.Responses;
+using System.Windows.Threading;
 
 namespace StreamerBot.Systems
 {
@@ -23,9 +21,13 @@ namespace StreamerBot.Systems
 
         public static DataManager DataManage { get; private set; } = new();
 
+        private Thread HoldNewFollowsForBulkAdd;
+
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
         private CurrencySystem Currency { get; set; }
+
+        internal Dispatcher AppDispatcher { get; set; }
 
         public SystemsController()
         {
@@ -39,6 +41,11 @@ namespace StreamerBot.Systems
             Command.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
+        }
+
+        public void SetDispatcher(Dispatcher dispatcher)
+        {
+            AppDispatcher = dispatcher;
         }
 
         private void SendMessage(string message)
@@ -65,23 +72,22 @@ namespace StreamerBot.Systems
 
         #region Followers
 
-        public void StartBulkFollowers()
+        public static void StartBulkFollowers()
         {
             DataManage.StartFollowers();
         }
 
-        public void UpdateFollowers(IEnumerable<Follow> Follows)
+        public static void UpdateFollowers(IEnumerable<Follow> Follows)
         {
             DataManage.UpdateFollowers(Follows);
         }
 
-        public void StopBulkFollowers()
+        public static void StopBulkFollowers()
         {
             DataManage.StopBulkFollows();
         }
 
-
-        private delegate void ProcFollowDelegate(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled);
+        private delegate void ProcFollowDelegate();
 
         public void AddNewFollowers(IEnumerable<Follow> FollowList)
         {
@@ -89,7 +95,14 @@ namespace StreamerBot.Systems
 
             if (DataManage.UpdatingFollowers)
             { // capture any followers found after starting the bot and before completing the bulk follower load
-                Application.Current.Dispatcher.BeginInvoke((ProcFollowDelegate)PerformFollow, FollowList, msg, FollowEnabled);
+                HoldNewFollowsForBulkAdd = new Thread(new ThreadStart(() =>
+                {
+                    while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+                    ProcessFollow(FollowList, msg, FollowEnabled);
+                }));
+
+                _ = AppDispatcher.BeginInvoke(new ProcFollowDelegate(PerformFollow));
             }
             else
             {
@@ -97,14 +110,9 @@ namespace StreamerBot.Systems
             }
         }
 
-        private void PerformFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
+        private void PerformFollow()
         {
-            new Thread(new ThreadStart(() =>
-            {
-                while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
-
-                ProcessFollow(FollowList, msg, FollowEnabled);
-            })).Start();
+            HoldNewFollowsForBulkAdd.Start();
         }
 
         private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
@@ -127,17 +135,17 @@ namespace StreamerBot.Systems
 
         #region Database Ops
 
-        public void ManageDatabase()
+        public static void ManageDatabase()
         {
             SystemsBase.ManageDatabase();
         }
 
-        public void ClearWatchTime()
+        public static void ClearWatchTime()
         {
             SystemsBase.ClearWatchTime();
         }
 
-        public void ClearAllCurrenciesValues()
+        public static void ClearAllCurrenciesValues()
         {
             SystemsBase.ClearAllCurrenciesValues();
         }
@@ -151,14 +159,14 @@ namespace StreamerBot.Systems
             return Stats.StreamOnline(CurrTime);
         }
 
-        public void StreamOffline(DateTime CurrTime)
+        public static void StreamOffline(DateTime CurrTime)
         {
-            Stats.StreamOffline(CurrTime);
+            StatisticsSystem.StreamOffline(CurrTime);
         }
 
-        public void SetCategory(string GameId, string GameName)
+        public static void SetCategory(string GameId, string GameName)
         {
-            Stats.SetCategory(GameId, GameName);
+            StatisticsSystem.SetCategory(GameId, GameName);
         }
 
         public void UpdatedStat(params StreamStatType[] streamStatTypes)
@@ -183,7 +191,7 @@ namespace StreamerBot.Systems
         {
 
             foreach (string user in from string user in users
-                                    where Stats.UserJoined(user, DateTime.Now.ToLocalTime())
+                                    where StatisticsSystem.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
             {
                 if (OptionFlags.FirstUserJoinedMsg)
@@ -193,21 +201,21 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void UserLeft(string User)
+        public static void UserLeft(string User)
         {
-            Stats.UserLeft(User, DateTime.Now.ToLocalTime());
+            StatisticsSystem.UserLeft(User, DateTime.Now.ToLocalTime());
         }
 
         #endregion
 
-        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
             return DataManage.GetWebhooks(webhooksKind);
         }
 
         public void AddChat(string Username)
         {
-            if (Stats.UserChat(Username) && OptionFlags.FirstUserChatMsg)
+            if (StatisticsSystem.UserChat(Username) && OptionFlags.FirstUserChatMsg)
             {
                 RegisterJoinedUser(Username);
             }
@@ -263,15 +271,15 @@ namespace StreamerBot.Systems
 
             if (IsSubscriber)
             {
-                Stats.SubJoined(UserName);
+                StatisticsSystem.SubJoined(UserName);
             }
             if (IsVip)
             {
-                Stats.VIPJoined(UserName);
+                StatisticsSystem.VIPJoined(UserName);
             }
             if (IsModerator)
             {
-                Stats.ModJoined(UserName);
+                StatisticsSystem.ModJoined(UserName);
             }
 
             // handle bit cheers
@@ -312,7 +320,7 @@ namespace StreamerBot.Systems
 
             if (OptionFlags.TwitchRaidShoutOut)
             {
-                Stats.UserJoined(UserName, RaidTime);
+                StatisticsSystem.UserJoined(UserName, RaidTime);
                 bool output = Command.CheckShout(UserName, out string response, false);
                 if (output)
                 {
@@ -322,11 +330,11 @@ namespace StreamerBot.Systems
 
             if (OptionFlags.ManageRaidData)
             {
-                Stats.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
+                StatisticsSystem.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
             }
         }
 
-        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        public static void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
             if (OptionFlags.ManageOutRaidData)
             {

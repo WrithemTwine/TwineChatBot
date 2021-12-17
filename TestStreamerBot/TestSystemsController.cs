@@ -1,6 +1,7 @@
 using StreamerBot.Static;
 using StreamerBot.Systems;
 
+using System;
 using System.IO;
 
 using Xunit;
@@ -9,7 +10,7 @@ namespace TestStreamerBot
 {
     public class TestSystemsController
     {
-        private bool setFile;
+        private bool Initialized;
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
         private string result = string.Empty;
@@ -18,7 +19,7 @@ namespace TestStreamerBot
 
         private void Initialize()
         {
-            if (!setFile)
+            if (!Initialized)
             {
                 if (File.Exists(DataFileXML))
                 {
@@ -31,7 +32,7 @@ namespace TestStreamerBot
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;
 
-                setFile = true;
+                Initialized = true;
             }
         }
 
@@ -66,6 +67,41 @@ namespace TestStreamerBot
 
             systemsController.AddChat("DarkStreamPhantom");
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public void RaidData()
+        {
+            Initialize();
+
+            OptionFlags.ManageRaidData = true;
+            OptionFlags.ManageOutRaidData = true;
+
+            string RaidName = "CuteChibiChu";
+            string viewers = "5000";
+            string Category = "New World";
+            DateTime RaidTime = DateTime.Now;
+
+            systemsController.PostIncomingRaid(RaidName, RaidTime, viewers, Category);
+            SystemsController.PostOutgoingRaid(RaidName, RaidTime);
+
+            Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
+            Assert.True(SystemsBase.DataManage.TestOutRaidData(RaidName, RaidTime));
+        }
+
+        [Theory]
+        [InlineData("CuteChibiChu")]
+        [InlineData("DarkStreamPhantom")]
+        [InlineData("SevenOf9")]
+        public void UserJoinLeave(string UserName)
+        {
+            Initialize();
+            OptionFlags.ManageUsers = true;
+            OptionFlags.IsStreamOnline = true;
+
+            systemsController.UserJoined(new() { UserName });
+            Assert.True(SystemsController.DataManage.CheckUser(UserName));
+            SystemsController.UserLeft(UserName);
         }
     }
 }

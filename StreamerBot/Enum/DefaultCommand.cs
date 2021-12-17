@@ -19,6 +19,7 @@
         follow,
         watchtime,
         uptime,
+        usage,
         followage
     }
 }

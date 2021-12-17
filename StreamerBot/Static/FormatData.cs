@@ -5,6 +5,7 @@ using StreamerBot.Systems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace StreamerBot.Static
 {
@@ -34,7 +35,23 @@ namespace StreamerBot.Static
         public static string Plurality(int src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
             string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
-            return src.ToString(CultureInfo.CurrentCulture) + " " + (Prefix + " ") ?? string.Empty + (src != 1 ? plural[1] : plural[0]) + (" " + Suffix) ?? string.Empty;
+
+            StringBuilder sb = new();
+            sb = sb.Append(src.ToString(CultureInfo.CurrentCulture));
+
+            if (Prefix != null)
+            {
+                sb = sb.Append(Prefix + " ");
+            }
+
+            sb = sb.Append(plural[src == 1 ? 0 : 1]);
+
+            if(Suffix!= null)
+            {
+                sb = sb.Append(Suffix + " ");
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

@@ -18,8 +18,6 @@ namespace StreamerBot.Systems
     {
         private Thread ElapsedThread;
 
-        // TODO: add "!time" command for current time per the streamer's location
-
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
 
@@ -47,7 +45,7 @@ namespace StreamerBot.Systems
         }
 
         private const int ChatCount = 20;
-        private const int ViewerCount = 25;
+        private const int ViewerCount = 15;
         private const int ThreadSleep = 5000;
         private DateTime chattime;
         private DateTime viewertime;
@@ -60,9 +58,6 @@ namespace StreamerBot.Systems
         /// </summary>
         private void ElapsedCommandTimers()
         {
-            // TODO: fix repeating commands not updating their time, duplicate commands running
-
-
             // TODO: consider some AI bot chat when channel is slower
             List<TimerCommand> RepeatList = new();
 
@@ -129,7 +124,7 @@ namespace StreamerBot.Systems
                 lock (cmd) // lock the cmd because it's referenced in other threads
                 {
                     Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
-                    if (command == null)
+                    if (command == null) // when command disappears
                     {
                         repeat = 0;
                     }
@@ -181,7 +176,7 @@ namespace StreamerBot.Systems
         /// </summary>
         /// <param name="chatMessage">The ChatMessage holding the characteristics of the user who invoked the chat command, which parses out the user permissions.</param>
         /// <returns>The ViewerType corresponding to the user's highest permission.</returns>
-        public ViewerTypes ParsePermission(CmdMessage chatMessage)
+        public static ViewerTypes ParsePermission(CmdMessage chatMessage)
         {
             if (chatMessage.IsBroadcaster)
             {
@@ -211,7 +206,7 @@ namespace StreamerBot.Systems
 
         public string EvalCommand(CmdMessage cmdMessage, out short multi)
         {
-            string result = "";
+            string result;
             ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
 
             CommandsRow cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
@@ -247,7 +242,7 @@ namespace StreamerBot.Systems
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
-                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi);
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out _);
                 return true;
             }
             else
@@ -324,8 +319,10 @@ namespace StreamerBot.Systems
                 {
                     new( MsgVars.user, paramvalue ),
                     new( MsgVars.url, paramvalue ),
-                    new( MsgVars.time, DateTime.Now.ToLocalTime().TimeOfDay.ToString() ),
-                    new( MsgVars.date, DateTime.Now.ToLocalTime().Date.ToString() )
+                    new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
+                    new( MsgVars.date, DateTime.Now.ToLocalTime().ToShortDateString() ),
+                    new( MsgVars.com, paramvalue),
+                    new( MsgVars.category, paramvalue)
                 });
 
                 if (cmdrow.lookupdata)
@@ -338,11 +335,11 @@ namespace StreamerBot.Systems
 
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
-            multi = cmdrow.RepeatMsg;
+            multi = cmdrow.SendMsgCount;
             return result;
         }
 
-        private string PartyCommand(string command, string DisplayName, string argument, CommandsRow cmdrow)
+        private static string PartyCommand(string command, string DisplayName, string argument, CommandsRow cmdrow)
         {
             UserJoin newuser = new() { ChatUser = DisplayName };
             if (argument != "")
@@ -369,11 +366,11 @@ namespace StreamerBot.Systems
             {
                 if (JoinCollection.Contains(newuser))
                 {
-                    response = string.Format("You have already joined. You are currently number {0}.", JoinCollection.IndexOf(newuser) + 1);
+                    response = $"You have already joined. You are currently number {JoinCollection.IndexOf(newuser) + 1}.";
                 }
                 else
                 {
-                    response = string.Format("You have joined the queue. You are currently {0}.", (JoinCollection.Count + 1));
+                    response = $"You have joined the queue. You are currently {JoinCollection.Count + 1}.";
                     JoinCollection.Add(newuser);
                 }
             }
@@ -397,7 +394,7 @@ namespace StreamerBot.Systems
             return response;
         }
 
-        private void LookupQuery(CommandsRow CommData, string paramvalue, ref Dictionary<string, string> datavalues)
+        private static void LookupQuery(CommandsRow CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
             //TODO: the commands with data lookup needs a lot of work!
 
@@ -448,7 +445,10 @@ namespace StreamerBot.Systems
                             output = querydata.ToString();
                         }
 
-                        VariableParser.AddData(ref datavalues, new Tuple<MsgVars, string>[] { new(MsgVars.query, output) });
+                        if (output != null)
+                        {
+                            VariableParser.AddData(ref datavalues, new Tuple<MsgVars, string>[] { new(MsgVars.query, output) });
+                        }
                         break;
                     }
             }

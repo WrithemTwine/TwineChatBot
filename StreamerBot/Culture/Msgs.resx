@@ -184,6 +184,9 @@
   <data name="Helpcategory" xml:space="preserve">
     <value>current category</value>
   </data>
+  <data name="Helpcom" xml:space="preserve">
+    <value>The parameter command used within the 'usage' command</value>
+  </data>
   <data name="HelpCommunitySubs" xml:space="preserve">
     <value>Thank you message for someone gifting subscription(s) to the channel</value>
   </data>
@@ -413,6 +416,9 @@
     <value>#user has been streaming for #uptime.</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgusage" xml:space="preserve">
+    <value>The #com usage is: #query</value>
+  </data>
   <data name="MsgUserJoined" xml:space="preserve">
     <value>Thanks #user for stopping by the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
@@ -498,8 +504,11 @@
     <value>-use:!uptime</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramusage" xml:space="preserve">
+    <value>-t:Commands -f:Usage -param:true -use:!usage &lt;command&gt;</value>
+  </data>
   <data name="Paramwatchtime" xml:space="preserve">
-    <value>"-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
+    <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramworklurk" xml:space="preserve">
@@ -567,6 +576,10 @@
   <data name="uptime" xml:space="preserve">
     <value>uptime</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>usage</value>
+    <comment>get command usage</comment>
   </data>
   <data name="watchtime" xml:space="preserve">
     <value>watchtime</value>
