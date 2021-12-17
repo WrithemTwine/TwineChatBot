@@ -52,7 +52,7 @@ namespace StreamerBot.GUI
             ChatData = SystemsBase.ChatData;
             JoinCollection = SystemsBase.JoinCollection;
             SetDataTableViews(SystemsController.DataManage);
-            SaveTableData = SystemsController.DataManage.NotifySaveData; // the database save data method
+            //SaveTableData = SystemsController.DataManage.NotifySaveData; // the database save data method
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -127,7 +127,7 @@ namespace StreamerBot.GUI
             NotifyPropertyChanged(nameof(BuiltInCommands));
             NotifyPropertyChanged(nameof(Users));
 
-            SaveTableData();
+            //SaveTableData();
         }
     }
 }
