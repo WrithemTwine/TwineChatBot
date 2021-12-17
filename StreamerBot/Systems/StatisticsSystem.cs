@@ -65,7 +65,7 @@ namespace StreamerBot.Systems
 
             if (OptionFlags.ManageStreamStats)
             {
-                DataManage.PostCategory(categoryId, category);
+                DataManage.AddCategory(categoryId, category);
             }
         }
 

@@ -321,7 +321,8 @@ namespace StreamerBot.Systems
                     new( MsgVars.url, paramvalue ),
                     new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
                     new( MsgVars.date, DateTime.Now.ToLocalTime().ToShortDateString() ),
-                    new( MsgVars.com, paramvalue)
+                    new( MsgVars.com, paramvalue),
+                    new( MsgVars.category, paramvalue)
                 });
 
                 if (cmdrow.lookupdata)

@@ -87,7 +87,6 @@ namespace StreamerBot.Systems
             DataManage.StopBulkFollows();
         }
 
-
         private delegate void ProcFollowDelegate();
 
         public void AddNewFollowers(IEnumerable<Follow> FollowList)

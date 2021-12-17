@@ -39,6 +39,12 @@ namespace StreamerBot.GUI
         public DataView InRaidData { get; private set; } // DataSource.InRaidDataDataTable
         public DataView OutRaidData { get; private set; } // DataSource.OutRaidDataDataTable
 
+        /// <summary>
+        /// provide delegate to method for saving the database data
+        /// </summary>
+        private delegate void SaveTableDataDelegate();
+        private SaveTableDataDelegate SaveTableData;
+
         #endregion
 
         public GUIDataManagerViews()
@@ -46,6 +52,7 @@ namespace StreamerBot.GUI
             ChatData = SystemsBase.ChatData;
             JoinCollection = SystemsBase.JoinCollection;
             SetDataTableViews(SystemsController.DataManage);
+            SaveTableData = SystemsController.DataManage.NotifySaveData; // the database save data method
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -119,7 +126,8 @@ namespace StreamerBot.GUI
             NotifyPropertyChanged(nameof(CurrFollowers));
             NotifyPropertyChanged(nameof(BuiltInCommands));
             NotifyPropertyChanged(nameof(Users));
-        }
 
+            SaveTableData();
+        }
     }
 }

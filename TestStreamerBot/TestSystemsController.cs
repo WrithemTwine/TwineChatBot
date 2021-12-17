@@ -82,17 +82,17 @@ namespace TestStreamerBot
             string Category = "New World";
             DateTime RaidTime = DateTime.Now;
 
-            systemsController.PostIncomingRaid(RaidName,RaidTime, viewers, Category);
+            systemsController.PostIncomingRaid(RaidName, RaidTime, viewers, Category);
             SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
             Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
             Assert.True(SystemsBase.DataManage.TestOutRaidData(RaidName, RaidTime));
         }
 
-        [Theory,
-            InlineData("CuteChibiChu"),
-            InlineData("DarkStreamPhantom"),
-            InlineData("SevenOf9")]
+        [Theory]
+        [InlineData("CuteChibiChu")]
+        [InlineData("DarkStreamPhantom")]
+        [InlineData("SevenOf9")]
         public void UserJoinLeave(string UserName)
         {
             Initialize();

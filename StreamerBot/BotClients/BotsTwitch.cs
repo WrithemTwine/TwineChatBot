@@ -31,7 +31,7 @@ namespace StreamerBot.BotClients
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
 
-        private const int BulkFollowSkipCount = 100;
+        private const int BulkFollowSkipCount = 400;
 
         public BotsTwitch()
         {

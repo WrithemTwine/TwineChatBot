@@ -77,7 +77,7 @@ namespace StreamerBot.Data
         /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
         /// </summary>
         public event EventHandler OnSaveData;
-        private void NotifySaveData()
+        public void NotifySaveData()
         {
             OnSaveData?.Invoke(this, new());
         }
@@ -97,7 +97,10 @@ namespace StreamerBot.Data
 
                 if (_DataSource.HasChanges())
                 {
-                    _DataSource.AcceptChanges();
+                    lock (_DataSource)
+                    {
+                        _DataSource.AcceptChanges();
+                    }
 
                     lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                     {
@@ -748,7 +751,7 @@ switches:
 
                 if (CurrStreamStatRow == null)
                 {
-                    _DataSource.StreamStats.AddStreamStatsRow(streamStat.StreamStart, streamStat.StreamEnd, streamStat.NewFollows, streamStat.NewSubscribers, streamStat.GiftSubs, streamStat.Bits, streamStat.Raids, streamStat.Hosted, streamStat.UsersBanned, streamStat.UsersTimedOut, streamStat.ModeratorsPresent, streamStat.SubsPresent, streamStat.VIPsPresent, streamStat.TotalChats, streamStat.Commands, streamStat.AutomatedEvents, streamStat.AutomatedCommands, streamStat.DiscordMsgs, streamStat.ClipsMade, streamStat.ChannelPtCount, streamStat.ChannelChallenge, streamStat.MaxUsers);
+                    _ = _DataSource.StreamStats.AddStreamStatsRow(StreamStart: streamStat.StreamStart, StreamEnd: streamStat.StreamEnd, NewFollows: streamStat.NewFollows, NewSubscribers: streamStat.NewSubscribers, GiftSubs: streamStat.GiftSubs, Bits: streamStat.Bits, Raids: streamStat.Raids, Hosted: streamStat.Hosted, UsersBanned: streamStat.UsersBanned, UsersTimedOut: streamStat.UsersTimedOut, ModeratorsPresent: streamStat.ModeratorsPresent, SubsPresent: streamStat.SubsPresent, VIPsPresent: streamStat.VIPsPresent, TotalChats: streamStat.TotalChats, Commands: streamStat.Commands, AutomatedEvents: streamStat.AutomatedEvents, AutomatedCommands: streamStat.AutomatedCommands, DiscordMsgs: streamStat.DiscordMsgs, ClipsMade: streamStat.ClipsMade, ChannelPtCount: streamStat.ChannelPtCount, ChannelChallenge: streamStat.ChannelChallenge, MaxUsers: streamStat.MaxUsers);
                 }
                 else
                 {
@@ -1270,9 +1273,12 @@ switches:
         /// <summary>
         /// Checks for the supplied category in the category list, adds if it isn't already saved.
         /// </summary>
+        /// <param name="CategoryId">The ID of the stream category.</param>
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
-        public void PostCategory(string CategoryId, string newCategory)
+        /// <returns>True if category OR game ID are found; False if no category nor game ID is found.</returns>
+        public bool AddCategory(string CategoryId, string newCategory)
         {
+            bool found = true;
             lock (_DataSource)
             {
                 CategoryListRow categoryList = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{newCategory.Replace("'", "''")}' OR CategoryId='{CategoryId}'").FirstOrDefault();
@@ -1280,6 +1286,7 @@ switches:
                 if (categoryList == null)
                 {
                     _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
+                    found = false;
                 }
                 else if (categoryList.CategoryId == null)
                 {
@@ -1292,6 +1299,7 @@ switches:
             }
 
             NotifySaveData();
+            return found;
         }
         #endregion
 
