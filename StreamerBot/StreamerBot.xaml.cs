@@ -647,14 +647,14 @@ namespace StreamerBot
         {
             if (IsMultiProcActive == false)
             {
-                Controller.TwitchBots.GetLiveMonitorSvc().MultiConnect();
+                BotController.ConnectTwitchMultiLive();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
                 Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
             }
             else if (IsMultiProcActive == true)
             {
                 MultiBotRadio();
-                Controller.TwitchBots.GetLiveMonitorSvc().MultiDisconnect();
+                BotController.DisconnectTwitchMultiLive();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
             }
         }
@@ -764,7 +764,7 @@ namespace StreamerBot
             {
                 if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
                 {
-                    Controller.TwitchBots.GetLiveMonitorSvc().StartMultiLive();
+                    BotController.StartTwitchMultiLive();
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StartBot.IsChecked = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
@@ -776,7 +776,7 @@ namespace StreamerBot
                 }
                 else
                 {
-                    Controller.TwitchBots.GetLiveMonitorSvc().StopMultiLive();
+                    BotController.StopTwitchMultiLive();
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StopBot.IsChecked = true;
@@ -812,7 +812,7 @@ namespace StreamerBot
 
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            Controller.TwitchBots.GetLiveMonitorSvc().UpdateChannels();
+            BotController.UpdateTwitchMultiLiveChannels();
             IsAddNewRow = false;
         }
 

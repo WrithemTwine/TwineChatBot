@@ -20,8 +20,8 @@ namespace StreamerBot.Systems
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
-
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
 
         public void NotifyPropertyChanged(string ParamName = "")
         {
@@ -113,7 +113,7 @@ namespace StreamerBot.Systems
             {
                 if (cmd.NextRun <= DateTime.Now.ToLocalTime())
                 {
-                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
                     lock (cmd)
                     {
                         cmd.UpdateTime(CheckDilute());
@@ -204,7 +204,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public string EvalCommand(CmdMessage cmdMessage, out short multi)
+        public string EvalCommand(CmdMessage cmdMessage, out short multi, Bots source)
         {
             string result;
             ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
@@ -223,7 +223,7 @@ namespace StreamerBot.Systems
             else
             {
                 // parse commands, either built-in or custom
-                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi);
+                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, source);
             }
 
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
@@ -237,12 +237,12 @@ namespace StreamerBot.Systems
         /// <param name="response">the response message template</param>
         /// <param name="AutoShout">true-check if the user is on the autoshout list, false-the method call is from a command, no autoshout check</param>
         /// <returns></returns>
-        public bool CheckShout(string UserName, out string response, bool AutoShout = true)
+        public bool CheckShout(string UserName, out string response, Bots Source, bool AutoShout = true)
         {
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
-                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out _);
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out _, Source);
                 return true;
             }
             else
@@ -251,7 +251,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, bool ElapsedTimer = false)
+        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
         {
             string result;
             Dictionary<string, string> datavalues = null;
@@ -321,8 +321,7 @@ namespace StreamerBot.Systems
                     new( MsgVars.url, paramvalue ),
                     new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
                     new( MsgVars.date, DateTime.Now.ToLocalTime().ToShortDateString() ),
-                    new( MsgVars.com, paramvalue),
-                    new( MsgVars.category, paramvalue)
+                    new( MsgVars.com, paramvalue)
                 });
 
                 if (cmdrow.lookupdata)
@@ -330,11 +329,32 @@ namespace StreamerBot.Systems
                     LookupQuery(cmdrow, paramvalue, ref datavalues);
                 }
 
-                result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                if (cmdrow.Message.Contains(MsgVars.category.ToString()))
+                {
+                    new Thread(new ThreadStart(() =>
+                    {
+                        VariableParser.AddData(ref datavalues,
+                        new Tuple<MsgVars, string>[] { new(MsgVars.category, BotIOController.BotController.GetUserCategory(paramvalue, Source)) });
+
+                        result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                        result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+                        int x = 0;
+
+                        do
+                        {
+                            ProcessedCommand?.Invoke(this, new() { Msg = result });
+                        } while (x < cmdrow.SendMsgCount);
+
+                    })).Start();
+
+                    result = "";
+                }
+                else
+                {
+                    result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                }
             }
-
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-
             multi = cmdrow.SendMsgCount;
             return result;
         }

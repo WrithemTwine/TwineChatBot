@@ -48,13 +48,14 @@ namespace TestStreamerBot
                 Initialized = true;
 
                 botController = new();
-                botController.Systems.PostChannelMessage += SystemsController_PostChannelMessage;
+                botController.OutputSentToBots += BotController_OutputSentToBots;
+                       
                 botController.SetDispatcher(Dispatcher.CurrentDispatcher);
                 dataManager = SystemsBase.DataManage;
             }
         }
 
-        private void SystemsController_PostChannelMessage(object sender, StreamerBot.Events.PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object sender, StreamerBot.Events.PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }
@@ -167,9 +168,9 @@ namespace TestStreamerBot
 
             botController.HandleNewSubscriber(DisplayName, Months, Subscription, SubscriptionName);
 
-            bool test;
+            Thread.Sleep(200);
 
-            Assert.Equal(VariableParser.ParseReplace(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out test), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, DisplayName), new(MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))), new(MsgVars.subplan, Subscription), new(MsgVars.subplanname, SubscriptionName) })), result);
+            Assert.Equal(VariableParser.ParseReplace(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, DisplayName), new(MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))), new(MsgVars.subplan, Subscription), new(MsgVars.subplanname, SubscriptionName) })), result);
         }
 
         [Fact]

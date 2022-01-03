@@ -11,7 +11,7 @@ namespace StreamerBot.Static
     /// </summary>
     public static class VariableParser
     {
-        public static string Prefix = "#";
+        public static readonly string Prefix = "#";
 
         public static string ConvertVars(MsgVars[] msgVars)
         {
@@ -60,9 +60,22 @@ namespace StreamerBot.Static
         /// </summary>
         /// <param name="message">The message to replace, may contain usage variables.</param>
         /// <param name="dictionary">The dictionary containing the parse keys.</param>
-        /// <returns></returns>
+        /// <returns>The message replaced with the dictionary key,value pairs.</returns>
         public static string ParseReplace(string message, Dictionary<string, string> dictionary)
         {
+            foreach(string k in dictionary.Keys)
+            {
+                if (message.Contains(k))
+                {
+                    message = message.Replace(k,
+                        (k == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix username with @
+                        (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
+                        dictionary[k]);
+                }
+            }
+
+            return message;
+#if OLD_CODE
             string temp = ""; // build the message to return
 
             string[] words = message.Split(' ');    // tokenize the message by ' ' delimiters
@@ -104,6 +117,7 @@ namespace StreamerBot.Static
             }
 
             return temp.Trim();
+#endif
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     public enum Bots
     {
+        Default, // default case for repeat timer, general commands with no bot origin
         TwitchChatBot,
         TwitchLiveBot,
         TwitchFollowBot,
