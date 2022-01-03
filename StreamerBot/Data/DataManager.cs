@@ -716,31 +716,34 @@ switches:
 
         public bool AddStream(DateTime StreamStart)
         {
-            bool returnvalue;
-
-            if (CheckStreamTime(StreamStart))
+            lock (_DataSource)
             {
-                returnvalue = false;
-            }
-            else
-            {
-                if (StreamStart != DateTime.MinValue.ToLocalTime())
-                {
-                    CurrStreamStart = StreamStart;
+                bool returnvalue;
 
-                    lock (_DataSource)
-                    {
-                        _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                        NotifySaveData();
-                        returnvalue = true;
-                    }
-                }
-                else
+                if (CheckStreamTime(StreamStart))
                 {
                     returnvalue = false;
                 }
+                else
+                {
+                    if (StreamStart != DateTime.MinValue.ToLocalTime())
+                    {
+                        CurrStreamStart = StreamStart;
+
+                        lock (_DataSource)
+                        {
+                            _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                            NotifySaveData();
+                            returnvalue = true;
+                        }
+                    }
+                    else
+                    {
+                        returnvalue = false;
+                    }
+                }
+                return returnvalue;
             }
-            return returnvalue;
         }
 
         public void PostStreamStat(StreamStat streamStat)

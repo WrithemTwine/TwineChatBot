@@ -77,23 +77,23 @@ namespace StreamerBot.BotClients.Twitch
 
         public GetChannelInformationResponse GetUserInfoId(string UserId)
         {
-            if (!IsInitalized) ConnectUserService();
+            if (!IsInitalized)
+            {
+                ConnectUserService();
+            }
 
-            //userLookupService.Start();
-            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId).Result;
-            //userLookupService.Stop();
-            
+            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId).Result;     
             return user;
         }
 
         public GetChannelInformationResponse GetUserInfoName(string UserName)
         {
-            if (!IsInitalized) ConnectUserService();
+            if (!IsInitalized)
+            {
+                ConnectUserService();
+            }
 
-            //userLookupService.Start();
             GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserName: UserName).Result;
-            //userLookupService.Stop();
-
             return user;
         }
     }

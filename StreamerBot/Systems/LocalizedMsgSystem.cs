@@ -121,7 +121,7 @@ namespace StreamerBot.Systems
             return VariableParser.ParseReplace(
                 Msgs.TwineBotInfo,
                 new Dictionary<string, string>() {
-                    { VariableParser.Prefix + "url", Resources.TwitchHomepage},
+                    { VariableParser.Prefix + "url", Resources.AuthorTwitch},
                     { VariableParser.Prefix + "author", Resources.AuthorTwitch}
                 }
                 );

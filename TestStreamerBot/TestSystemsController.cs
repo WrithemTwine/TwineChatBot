@@ -49,7 +49,7 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { "DarkStreamPhantom" });
+            systemsController.UserJoined(new() { "DarkStreamPhantom" }, StreamerBot.Enum.Bots.TwitchChatBot);
             Assert.Empty(result);
         }
 
@@ -61,11 +61,11 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { "DarkStreamPhantom" });
+            systemsController.UserJoined(new() { "DarkStreamPhantom" }, StreamerBot.Enum.Bots.TwitchChatBot);
 
             result = string.Empty;
 
-            systemsController.AddChat("DarkStreamPhantom");
+            systemsController.AddChat("DarkStreamPhantom", StreamerBot.Enum.Bots.TwitchChatBot);
             Assert.Empty(result);
         }
 
@@ -82,7 +82,7 @@ namespace TestStreamerBot
             string Category = "New World";
             DateTime RaidTime = DateTime.Now;
 
-            systemsController.PostIncomingRaid(RaidName, RaidTime, viewers, Category);
+            systemsController.PostIncomingRaid(RaidName, RaidTime, viewers, Category, StreamerBot.Enum.Bots.TwitchChatBot);
             SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
             Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
@@ -99,7 +99,7 @@ namespace TestStreamerBot
             OptionFlags.ManageUsers = true;
             OptionFlags.IsStreamOnline = true;
 
-            systemsController.UserJoined(new() { UserName });
+            systemsController.UserJoined(new() { UserName }, StreamerBot.Enum.Bots.TwitchChatBot);
             Assert.True(SystemsController.DataManage.CheckUser(UserName));
             SystemsController.UserLeft(UserName);
         }

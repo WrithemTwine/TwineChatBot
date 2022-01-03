@@ -178,7 +178,7 @@ namespace StreamerBot.BotClients
 
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-            string CategoryName = TwitchBotUserSvc.GetUserGameCategoryId(e.RaidNotification.UserId);
+            string CategoryName = GetUserCategory(e.RaidNotification.UserId);
 
             InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
         }
@@ -191,6 +191,25 @@ namespace StreamerBot.BotClients
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
             InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
+        }
+
+        #endregion
+
+        #region Twitch User Bot
+
+        public static string GetUserCategory(string UserId = null, string UserName = null)
+        {
+            if (UserId != null)
+            {
+                return TwitchBotUserSvc.GetUserGameCategoryId(UserId);
+            }
+            else if(UserName != null)
+            {
+                return TwitchBotUserSvc.GetUserGameCategoryName(UserName);
+            } else
+            {
+                return "";
+            }
         }
 
         #endregion
@@ -218,10 +237,7 @@ namespace StreamerBot.BotClients
             RegisterHandlers();
         }
 
-        public TwitchBotLiveMonitorSvc GetLiveMonitorSvc()
-        {
-            return TwitchLiveMonitor;
-        }
+        public static TwitchBotLiveMonitorSvc LiveMonitorSvc => TwitchLiveMonitor;
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
@@ -283,7 +299,7 @@ namespace StreamerBot.BotClients
 
         #region Threaded Ops
 
-        public void GetAllFollowers()
+        public override void GetAllFollowers()
         {
             if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
             {

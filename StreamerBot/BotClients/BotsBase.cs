@@ -58,6 +58,9 @@ namespace StreamerBot.BotClients
             BotEvent?.Invoke(sender, new() { MethodName = Botevent.ToString(), e = eventargs });
         }
 
-
+        public virtual void GetAllFollowers()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -125,7 +125,7 @@ namespace StreamerBot.GUI
             NotifyPropertyChanged(nameof(Users));
             NotifyPropertyChanged(nameof(CurrFollowers));
             NotifyPropertyChanged(nameof(BuiltInCommands));
-            NotifyPropertyChanged(nameof(Users));
+            NotifyPropertyChanged(nameof(Commands));
 
             //SaveTableData();
         }

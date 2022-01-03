@@ -26,11 +26,13 @@ namespace StreamerBot.BotIOController
 {
     public class BotController
     {
+        public event EventHandler<PostChannelMessageEventArgs> OutputSentToBots;
+
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
         internal Collection<IBotTypes> BotsList { get; private set; } = new();
 
-        public BotsTwitch TwitchBots { get; private set; }
+        private BotsTwitch TwitchBots { get; set; }
 
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
@@ -95,6 +97,8 @@ namespace StreamerBot.BotIOController
         /// <param name="s">The string to send.</param>
         public void Send(string s)
         {
+            OutputSentToBots?.Invoke(this, new() { Msg = s });
+
             foreach (IBotTypes bot in BotsList)
             {
                 lock (Operations)
@@ -168,7 +172,10 @@ namespace StreamerBot.BotIOController
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
             if (OptionFlags.ManageFollowers)
             {
-                TwitchBots.GetAllFollowers();
+                foreach(IBotTypes bot in BotsList)
+                {
+                    bot.GetAllFollowers();
+                }
             }
             // when management resumes, code upstream enables the startbot process 
         }
@@ -183,7 +190,42 @@ namespace StreamerBot.BotIOController
             SystemsController.ClearAllCurrenciesValues();
         }
 
+        public static string GetUserCategory(string ChannelName, Bots bots)
+        {
+            return bots switch
+            {
+                Bots.TwitchUserBot or Bots.TwitchChatBot => BotsTwitch.GetUserCategory(UserName: ChannelName),
+                _ => ""
+            };
+        }
+
         #region Twitch Bot Events
+
+        public static void ConnectTwitchMultiLive()
+        {
+            BotsTwitch.LiveMonitorSvc.MultiConnect();
+        }
+
+        public static void DisconnectTwitchMultiLive()
+        {
+            BotsTwitch.LiveMonitorSvc.MultiDisconnect();
+        }
+
+        public static void StartTwitchMultiLive()
+        {
+            BotsTwitch.LiveMonitorSvc.StartMultiLive();
+        }
+
+        public static void StopTwitchMultiLive()
+        {
+            BotsTwitch.LiveMonitorSvc.StopMultiLive();
+        }
+
+        public static void UpdateTwitchMultiLiveChannels()
+        {
+            BotsTwitch.LiveMonitorSvc.UpdateChannels();
+        }
+
         public void TwitchPostNewFollowers(OnNewFollowersDetectedArgs Follower)
         {
             HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers));
@@ -321,12 +363,12 @@ namespace StreamerBot.BotIOController
 
         public void TwitchExistingUsers(OnExistingUsersDetectedArgs e)
         {
-            HandleUserJoined(e.Users);
+            HandleUserJoined(e.Users, Bots.TwitchChatBot);
         }
 
         public void TwitchOnUserJoined(OnUserJoinedArgs e)
         {
-            HandleUserJoined(new() { e.Username });
+            HandleUserJoined(new() { e.Username }, Bots.TwitchChatBot);
         }
 
         public static void TwitchOnUserLeft(OnUserLeftArgs e)
@@ -348,17 +390,17 @@ namespace StreamerBot.BotIOController
 
         public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
         {
-            HandleAddChat(e.RitualNewChatter.DisplayName);
+            HandleAddChat(e.RitualNewChatter.DisplayName, Bots.TwitchChatBot);
         }
 
         public void TwitchMessageReceived(OnMessageReceivedArgs e)
         {
-            HandleMessageReceived(e.ChatMessage.DisplayName, e.ChatMessage.IsSubscriber, e.ChatMessage.IsVip, e.ChatMessage.IsModerator, e.ChatMessage.Bits, e.ChatMessage.Message);
+            HandleMessageReceived(e.ChatMessage.DisplayName, e.ChatMessage.IsSubscriber, e.ChatMessage.IsVip, e.ChatMessage.IsModerator, e.ChatMessage.Bits, e.ChatMessage.Message, Bots.TwitchChatBot);
         }
 
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
         {
-            HandleIncomingRaidData(e.DisplayName, e.RaidTime, e.ViewerCount, e.Category);
+            HandleIncomingRaidData(e.DisplayName, e.RaidTime, e.ViewerCount, e.Category, Bots.TwitchChatBot);
         }
 
         public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
@@ -381,7 +423,7 @@ namespace StreamerBot.BotIOController
                 IsVip = e.Command.ChatMessage.IsVip,
                 Message = e.Command.ChatMessage.Message,
                 UserType = System.Enum.Parse<ViewerTypes>(e.Command.ChatMessage.UserType.ToString())
-            });
+            }, Bots.TwitchChatBot);
         }
 
         #endregion
@@ -584,9 +626,9 @@ namespace StreamerBot.BotIOController
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
         }
 
-        public void HandleUserJoined(List<string> Users)
+        public void HandleUserJoined(List<string> Users, Bots Source)
         {
-            Systems.UserJoined(Users);
+            Systems.UserJoined(Users, Source);
         }
 
         public static void HandleUserLeft(string Users)
@@ -604,24 +646,24 @@ namespace StreamerBot.BotIOController
             Systems.UpdatedStat(StreamStatType.UserBanned);
         }
 
-        public void HandleAddChat(string UserName)
+        public void HandleAddChat(string UserName, Bots Source)
         {
-            Systems.AddChat(UserName);
+            Systems.AddChat(UserName, Source);
         }
 
-        public void HandleMessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message)
+        public void HandleMessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
         {
-            Systems.MessageReceived(UserName, IsSubscriber, IsVip, IsModerator, Bits, Message);
+            Systems.MessageReceived(UserName, IsSubscriber, IsVip, IsModerator, Bits, Message, Source);
         }
 
-        public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category)
+        public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category, Bots Source)
         {
-            Systems.PostIncomingRaid(UserName, RaidTime, ViewerCount, Category);
+            Systems.PostIncomingRaid(UserName, RaidTime, ViewerCount, Category, Source);
         }
 
-        public void HandleChatCommandReceived(Models.CmdMessage commandmsg)
+        public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Bots Source)
         {
-            Systems.ProcessCommand(commandmsg);
+            Systems.ProcessCommand(commandmsg, Source);
         }
 
         #endregion

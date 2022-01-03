@@ -39,8 +39,19 @@ namespace StreamerBot.Systems
             Currency = new();
 
             Command.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
+            Command.ProcessedCommand += Command_ProcessedCommand;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
+        }
+
+        /// <summary>
+        /// Handle if message is processed as multithreaded, due to one or more bot calls and wait for 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Command_ProcessedCommand(object sender, PostChannelMessageEventArgs e)
+        {
+            SendMessage(e.Msg);
         }
 
         public void SetDispatcher(Dispatcher dispatcher)
@@ -50,7 +61,7 @@ namespace StreamerBot.Systems
 
         private void SendMessage(string message)
         {
-            if (message != "" && message != "/me ")
+            if (message is not "" and not "/me ")
             {
                 PostChannelMessage?.Invoke(this, new() { Msg = message });
             }
@@ -187,7 +198,7 @@ namespace StreamerBot.Systems
             Stats.GetType()?.InvokeMember("Add" + streamStat.ToString(), BindingFlags.InvokeMethod, null, Stats, new object[] { value });
         }
 
-        public void UserJoined(List<string> users)
+        public void UserJoined(List<string> users, Bots Source)
         {
 
             foreach (string user in from string user in users
@@ -196,7 +207,7 @@ namespace StreamerBot.Systems
             {
                 if (OptionFlags.FirstUserJoinedMsg)
                 {
-                    RegisterJoinedUser(user);
+                    RegisterJoinedUser(user, Source);
                 }
             }
         }
@@ -213,15 +224,15 @@ namespace StreamerBot.Systems
             return DataManage.GetWebhooks(webhooksKind);
         }
 
-        public void AddChat(string Username)
+        public void AddChat(string Username, Bots Source)
         {
             if (StatisticsSystem.UserChat(Username) && OptionFlags.FirstUserChatMsg)
             {
-                RegisterJoinedUser(Username);
+                RegisterJoinedUser(Username, Source);
             }
         }
 
-        private void RegisterJoinedUser(string Username)
+        private void RegisterJoinedUser(string Username, Bots Source)
         {
             // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
@@ -256,7 +267,7 @@ namespace StreamerBot.Systems
 
             if (OptionFlags.AutoShout)
             {
-                bool output = Command.CheckShout(Username, out string response);
+                bool output = Command.CheckShout(Username, out string response, Source);
                 if (output)
                 {
                     SendMessage(response);
@@ -264,7 +275,7 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message)
+        public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
         {
             SystemsBase.AddChatString(UserName, Message);
             UpdatedStat(StreamStatType.TotalChats);
@@ -301,10 +312,10 @@ namespace StreamerBot.Systems
                 }
             }
 
-            AddChat(UserName);
+            AddChat(UserName, Source);
         }
 
-        public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
+        public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled);
             if (Enabled)
@@ -321,7 +332,7 @@ namespace StreamerBot.Systems
             if (OptionFlags.TwitchRaidShoutOut)
             {
                 StatisticsSystem.UserJoined(UserName, RaidTime);
-                bool output = Command.CheckShout(UserName, out string response, false);
+                bool output = Command.CheckShout(UserName, out string response, Source, false);
                 if (output)
                 {
                     SendMessage(response);
@@ -342,16 +353,16 @@ namespace StreamerBot.Systems
             }
         }
 
-        public void ProcessCommand(CmdMessage cmdMessage)
+        public void ProcessCommand(CmdMessage cmdMessage, Bots Source)
         {
             try
             {
-                string response = Command.EvalCommand(cmdMessage, out short multi);
+                string response = Command.EvalCommand(cmdMessage, out short multi, Source);
                 short x = 0;
 
                 do
                 {
-                    SendMessage(response);                    
+                    SendMessage(response);
                     x++;
                 } while (x <= multi);
             }
