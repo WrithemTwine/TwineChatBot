@@ -629,7 +629,7 @@ switches:
             {
                 ChannelEventsRow channelEventsRow = _DataSource.ChannelEvents.FindByName(criteria);
 
-                if(DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
+                if(channelEventsRow!=null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
                 {
                     channelEventsRow.RepeatMsg = 0;
                 }
