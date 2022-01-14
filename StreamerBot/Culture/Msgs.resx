@@ -447,6 +447,10 @@
   <data name="Msgworklurk" xml:space="preserve">
     <value>#user is lurking while making some moohla! See you soon!</value>
   </data>
+  <data name="or" xml:space="preserve">
+    <value>{0} or {1}</value>
+    <comment>translate "or", leave {0} and {1} for the message</comment>
+  </data>
   <data name="Paramaddcommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -545,7 +549,16 @@
     <value>bit, bits</value>
     <comment>comma separated 'single, plural'</comment>
   </data>
-  <data name="Pluralmonths" xml:space="preserve">
+  <data name="Pluralday" xml:space="preserve">
+    <value>day, days</value>
+  </data>
+  <data name="Pluralhour" xml:space="preserve">
+    <value>hour, hours</value>
+  </data>
+  <data name="Pluralminute" xml:space="preserve">
+    <value>minute, minutes</value>
+  </data>
+  <data name="Pluralmonth" xml:space="preserve">
     <value>month, months</value>
     <comment>comma separated 'single, plural'</comment>
   </data>
@@ -556,6 +569,9 @@
   <data name="Pluralviewers" xml:space="preserve">
     <value>viewer, viewers</value>
     <comment>comma separated 'single, plural'</comment>
+  </data>
+  <data name="Pluralyear" xml:space="preserve">
+    <value>year, years</value>
   </data>
   <data name="qinfo" xml:space="preserve">
     <value>qinfo</value>

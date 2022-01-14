@@ -25,10 +25,15 @@
         user,
         viewers,
         Pluralbits,
-        Pluralmonths,
+        Pluralmonth,
         Pluralsub,
         Pluralviewers,
         Total,
-        everyone
+        everyone,
+        Pluralyear,
+        Pluralday,
+        Pluralhour,
+        Pluralminute, 
+        or
     }
 }

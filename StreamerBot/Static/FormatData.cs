@@ -34,36 +34,39 @@ namespace StreamerBot.Static
         /// <returns>a string containing the culture adjusted plurality of the supplied number</returns>
         public static string Plurality(int src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
+            return Plurality((double)src, msgVars, Prefix, Suffix);
+        }
+
+        /// <summary>
+        /// Takes the incoming integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic] => 1 viewer in the Cultural Language format.
+        /// </summary>
+        /// <param name="src">Representative number</param>
+        /// <param name="msgVars">Specifies which resource string to use</param>
+        /// <param name="Prefix">The string to add to the beginning of the determined phrase</param>
+        /// <param name="Suffix">The string to add to the end of the determined phrase</param>
+        /// <returns>a string containing the culture adjusted plurality of the supplied number</returns>
+        public static string Plurality(double src, MsgVars msgVars, string Prefix = null, string Suffix = null)
+        {
             string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
 
             StringBuilder sb = new();
-            sb = sb.Append(src.ToString(CultureInfo.CurrentCulture));
+            sb = sb.Append(string.Format(CultureInfo.CurrentCulture, src % 1 == 0 ? "{0:N0}" : "{0:N}", src));
 
             if (Prefix != null)
             {
-                sb = sb.Append(Prefix + " ");
+                sb = sb.Append(Prefix);
             }
 
-            sb = sb.Append(plural[src == 1 ? 0 : 1]);
+            sb = sb.Append(' ');
 
-            if(Suffix!= null)
+           sb = sb.Append(plural[src == 1.0 ? 0 : 1]);
+
+            if (Suffix != null)
             {
                 sb = sb.Append(Suffix + " ");
             }
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Takes the incoming integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic], 1 viewer.
-        /// </summary>
-        /// <param name="src">Representative number</param>
-        /// <param name="single">Singular version of the word to return</param>
-        /// <param name="plural">Plural version of the word to return</param>
-        /// <returns>The source number and the version of word to match the plurality of src.</returns>
-        private static string Plurality(int src, string singular, string plural)
-        {
-            return src.ToString(CultureInfo.CurrentCulture) + " " + (src != 1 ? plural : singular);
         }
 
         /// <summary>
@@ -91,11 +94,11 @@ namespace StreamerBot.Static
             {
                 if (datakeys[k] != 0)
                 {
-                    output += Plurality(datakeys[k], k, k + "s") + ", ";
+                    output += Plurality(datakeys[k], (MsgVars) System.Enum.Parse( typeof(MsgVars), "Plural" + k) ) + ", ";
                 }
             }
 
-            return output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(','));
+            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours,2), MsgVars.Pluralhour), output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(',')));
         }
 
         /// <summary>
