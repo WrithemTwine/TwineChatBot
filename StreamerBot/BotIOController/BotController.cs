@@ -88,14 +88,14 @@ namespace StreamerBot.BotIOController
         /// <param name="e">Contains the message to send to the bots.</param>
         private void Systems_PostChannelMessage(object sender, PostChannelMessageEventArgs e)
         {
-            Send(e.Msg);
+            Send(e.Msg, e.RepeatMsg);
         }
 
         /// <summary>
         /// Send a response message to all bots incorporated into this app. The messages send through a thread managing a message delay to not flood the channel with immediate messages, channels often have limited received messages per minute.
         /// </summary>
         /// <param name="s">The string to send.</param>
-        public void Send(string s)
+        public void Send(string s, int Repeat=0)
         {
             OutputSentToBots?.Invoke(this, new() { Msg = s });
 
@@ -103,10 +103,13 @@ namespace StreamerBot.BotIOController
             {
                 lock (Operations)
                 {
-                    Operations.Enqueue(new Task(() =>
+                    for (int x = 0; x <= Repeat; x++)
                     {
-                        bot.Send(s);
-                    }));
+                        Operations.Enqueue(new Task(() =>
+                        {
+                            bot.Send(s);
+                        }));
+                    }
                 }
             }
         }
@@ -147,6 +150,8 @@ namespace StreamerBot.BotIOController
         {
             try
             {
+                Systems.Exit();
+
                 SendThread.Join(); // wait until all the messages are sent to ask bots to close
 
                 foreach (IBotTypes bot in BotsList)
@@ -379,13 +384,13 @@ namespace StreamerBot.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public void TwitchOnUserTimedout(OnUserTimedoutArgs e = null)
         {
-            HandleUserTimedOut();
+            HandleUserTimedOut(e);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public void TwitchOnUserBanned(OnUserBannedArgs e = null)
         {
-            HandleUserBanned();
+            HandleUserBanned(e);
         }
 
         public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
@@ -479,7 +484,7 @@ namespace StreamerBot.BotIOController
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
                         // get message, set a default if otherwise deleted/unavailable
-                        string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out bool Enabled);
+                        string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out bool Enabled, out _);
 
                         // keys for exchanging codes for representative names
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -536,7 +541,7 @@ namespace StreamerBot.BotIOController
 
         public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled);
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled, out short Multi);
             if (Enabled)
             {
                 Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
@@ -544,7 +549,7 @@ namespace StreamerBot.BotIOController
                 new( MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.subplan, Subscription ),
                 new( MsgVars.subplanname, SubscriptionName )
-                })));
+                })), Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
@@ -552,7 +557,7 @@ namespace StreamerBot.BotIOController
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled);
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled, out short Multi);
             if (Enabled)
             {
                 Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
@@ -569,7 +574,7 @@ namespace StreamerBot.BotIOController
                     VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, StreakMonths) });
                 }
 
-                Send(VariableParser.ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary), Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
@@ -577,7 +582,7 @@ namespace StreamerBot.BotIOController
 
         public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled);
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled, out short Multi);
             if (Enabled)
             {
                 Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
@@ -586,14 +591,14 @@ namespace StreamerBot.BotIOController
                     new(MsgVars.receiveuser, RecipientUserName ),
                     new(MsgVars.subplan, Subscription ),
                     new(MsgVars.subplanname, SubscriptionName)
-                })));
+                })), Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled);
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled, out short Multi);
             if (Enabled)
             {
                 Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
@@ -602,7 +607,7 @@ namespace StreamerBot.BotIOController
                     new(MsgVars.subplan, Subscription)
                 });
 
-                Send(VariableParser.ParseReplace(msg, dictionary));
+                Send(VariableParser.ParseReplace(msg, dictionary), Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
@@ -611,7 +616,7 @@ namespace StreamerBot.BotIOController
 
         public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled);
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled, out short Multi);
             if (Enabled)
             {
                 Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -620,7 +625,7 @@ namespace StreamerBot.BotIOController
                     new(MsgVars.autohost, LocalizedMsgSystem.DetermineHost(IsAutoHosted) ),
                     new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers
                      ))
-                })));
+                })), Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
@@ -636,12 +641,14 @@ namespace StreamerBot.BotIOController
             SystemsController.UserLeft(Users);
         }
 
-        public void HandleUserTimedOut()
-        {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public void HandleUserTimedOut(OnUserTimedoutArgs e)
+        {            
             Systems.UpdatedStat(StreamStatType.UserTimedOut);
         }
 
-        public void HandleUserBanned()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        public void HandleUserBanned(OnUserBannedArgs e)
         {
             Systems.UpdatedStat(StreamStatType.UserBanned);
         }

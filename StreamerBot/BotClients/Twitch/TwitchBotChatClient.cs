@@ -38,6 +38,9 @@ namespace StreamerBot.BotClients.Twitch
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
 
+        private bool IsInitialized = false;
+        private string ConnectedChannelName = "";
+
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …
         //20 per 30 seconds Users sending commands or messages to channels in which they do not have Moderator or Operator status
@@ -80,6 +83,9 @@ namespace StreamerBot.BotClients.Twitch
             RefreshSettings();
         }
 
+        /// <summary>
+        /// Create the initial client and connect events.
+        /// </summary>
         private void CreateClient()
         {
             ClientOptions options = new()
@@ -145,8 +151,18 @@ namespace StreamerBot.BotClients.Twitch
             }
             else
             {
-                TwitchChat.Initialize(credentials, TwitchChannelName);
+                if (!IsInitialized)
+                {
+                    TwitchChat.Initialize(credentials, TwitchChannelName);
+                    IsInitialized = true;
+                }
+                else if (ConnectedChannelName != TwitchChannelName) // if the user changes the channel to monitor, we need to disconnect the prior channel review
+                {
+                    TwitchChat.LeaveChannel(ConnectedChannelName);
+                    TwitchChat.JoinChannel(TwitchChannelName);
+                }
                 TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
+                ConnectedChannelName = TwitchChannelName;
                 TwitchChat.Connect();
                 isConnected = true;
             }
@@ -168,7 +184,7 @@ namespace StreamerBot.BotClients.Twitch
                 {
                     RefreshSettings();
                     Connected = Connect();
-                    if (Connected)
+                    if (Connected) // only connect if the joining channel name isn't null
                     {
                         IsStarted = true;
                         IsStopped = false;
@@ -280,6 +296,10 @@ namespace StreamerBot.BotClients.Twitch
 
         }
 
+        /// <summary>
+        /// Exit the bot when the app closes.
+        /// </summary>
+        /// <returns></returns>
         public override bool ExitBot()
         {
             if (TwitchChat.IsConnected)
@@ -291,15 +311,19 @@ namespace StreamerBot.BotClients.Twitch
             return base.ExitBot();
         }
 
+        /// <summary>
+        /// Reconnect the bot if in use but chat gets disconnected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TwitchChat_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
-            // the TwitchClient reports disconnected but user didn't click the 'start bot' button
+            // the TwitchClient reports disconnected but user didn't click the 'stop bot' button
             // the client should be started but is now disconnected
             // check is required so the bot doesn't keep restarting when the user actually clicked stop
             if (IsStarted && !TwitchChat.IsConnected)
             {
                 Connect();    // restart the bot
-                HandlersAdded = false;
             }
         }
     }

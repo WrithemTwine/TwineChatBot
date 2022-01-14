@@ -3,7 +3,7 @@
     public enum DefaultCommand
     {
         commands,
-        addcommand,
+        addcommand, editcommand, removecommand,
         lurk,
         unlurk,
         worklurk,

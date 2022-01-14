@@ -59,6 +59,7 @@ namespace StreamerBot.Systems
         private void ElapsedCommandTimers()
         {
             // TODO: consider some AI bot chat when channel is slower
+            // TODO: fix repeat timers to fire when going live to provide initial messages - or give option
             List<TimerCommand> RepeatList = new();
 
             chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
@@ -96,6 +97,8 @@ namespace StreamerBot.Systems
                 Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
             }
         }
+
+        //TODO: fix repeat command message <- it may be updated, repeat command should get updated message
 
         private void RepeatCmd(TimerCommand cmd)
         {
@@ -204,13 +207,13 @@ namespace StreamerBot.Systems
             }
         }
 
-        public string EvalCommand(CmdMessage cmdMessage, out short multi, Bots source)
+        public void EvalCommand(CmdMessage cmdMessage, Bots source)
         {
             string result;
             ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
 
             CommandsRow cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
-            multi = 0;
+            short multi = 0;
 
             if (cmdrow == null)
             {
@@ -227,7 +230,9 @@ namespace StreamerBot.Systems
             }
 
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-            return result;
+
+
+            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
         }
 
         /// <summary>
@@ -237,29 +242,43 @@ namespace StreamerBot.Systems
         /// <param name="response">the response message template</param>
         /// <param name="AutoShout">true-check if the user is on the autoshout list, false-the method call is from a command, no autoshout check</param>
         /// <returns></returns>
-        public bool CheckShout(string UserName, out string response, Bots Source, bool AutoShout = true)
+        public void CheckShout(string UserName, out string response, Bots Source, bool AutoShout = true)
         {
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
                 response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out _, Source);
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
 
         public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
         {
-            string result;
+            string result = "";
             Dictionary<string, string> datavalues = null;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
                 result = DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.editcommand))
+            {
+                string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
+                arglist.RemoveAt(0);
+                result = DataManage.EditCommand(newcom[1..], arglist);
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removecommand))
+            {
+                if (!LocalizedMsgSystem.CheckDefaultCommand(arglist[0]))
+                {
+                    result = DataManage.RemoveCommand(arglist[0])
+                        ? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.removecommand)
+                        : LocalizedMsgSystem.GetVar("Msgcommandnotfound");
+                }
+                else
+                {
+                    result = LocalizedMsgSystem.GetVar("Msgdefaultcommand");
+                }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {
@@ -338,13 +357,8 @@ namespace StreamerBot.Systems
 
                         result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                         result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-                        int x = 0;
 
-                        do
-                        {
-                            ProcessedCommand?.Invoke(this, new() { Msg = result });
-                        } while (x < cmdrow.SendMsgCount);
-
+                        ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
                     })).Start();
 
                     result = "";

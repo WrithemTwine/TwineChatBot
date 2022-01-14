@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace StreamerBot.Systems
@@ -29,6 +30,9 @@ namespace StreamerBot.Systems
 
         internal Dispatcher AppDispatcher { get; set; }
 
+        private Queue<Task> ProcMsgQueue { get; set; } = new();
+        private readonly Thread ProcessMsgs;
+
         public SystemsController()
         {
             SystemsBase.DataManage = DataManage;
@@ -42,6 +46,31 @@ namespace StreamerBot.Systems
             Command.ProcessedCommand += Command_ProcessedCommand;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
+
+            ProcessMsgs = new Thread(new ThreadStart(ActionProcessCmds));
+            ProcessMsgs.Start();
+        }
+
+        private void ActionProcessCmds()
+        {
+            while (OptionFlags.ActiveToken)
+            {
+                while (ProcMsgQueue.Count > 0)
+                {
+                    lock (ProcMsgQueue)
+                    {
+                        ProcMsgQueue.Dequeue().Start();
+                    }
+                    Thread.Sleep(300);
+                }
+
+                Thread.Sleep(1000);
+            }
+        }
+
+        public void Exit()
+        {
+            ProcessMsgs.Join();
         }
 
         /// <summary>
@@ -51,7 +80,7 @@ namespace StreamerBot.Systems
         /// <param name="e"></param>
         private void Command_ProcessedCommand(object sender, PostChannelMessageEventArgs e)
         {
-            SendMessage(e.Msg);
+            SendMessage(e.Msg, e.RepeatMsg);
         }
 
         public void SetDispatcher(Dispatcher dispatcher)
@@ -59,11 +88,11 @@ namespace StreamerBot.Systems
             AppDispatcher = dispatcher;
         }
 
-        private void SendMessage(string message)
+        private void SendMessage(string message, int Repeat = 0)
         {
             if (message is not "" and not "/me ")
             {
-                PostChannelMessage?.Invoke(this, new() { Msg = message });
+                PostChannelMessage?.Invoke(this, new() { Msg = message, RepeatMsg = Repeat });
             }
         }
 
@@ -102,7 +131,7 @@ namespace StreamerBot.Systems
 
         public void AddNewFollowers(IEnumerable<Follow> FollowList)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
+            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
 
             if (DataManage.UpdatingFollowers)
             { // capture any followers found after starting the bot and before completing the bulk follower load
@@ -250,7 +279,7 @@ namespace StreamerBot.Systems
                                     ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
                     }
 
-                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out _);
+                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out _, out short Multi);
                     SendMessage(
                         VariableParser.ParseReplace(
                             msg,
@@ -261,16 +290,18 @@ namespace StreamerBot.Systems
                                     }
                             )
                         )
-                    );
+                    , Repeat: Multi);
                 }
             }
 
             if (OptionFlags.AutoShout)
             {
-                bool output = Command.CheckShout(Username, out string response, Source);
-                if (output)
+                lock (ProcMsgQueue)
                 {
-                    SendMessage(response);
+                    ProcMsgQueue.Enqueue(new(() =>
+                    {
+                        Command.CheckShout(Username, out string response, Source);
+                    }));
                 }
             }
         }
@@ -296,19 +327,25 @@ namespace StreamerBot.Systems
             // handle bit cheers
             if (Bits > 0)
             {
-                string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out bool Enabled);
-                if (Enabled)
+                lock (ProcMsgQueue)
                 {
-                    Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    ProcMsgQueue.Enqueue(new(() =>
                     {
+                        string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out bool Enabled, out short Multi);
+                        if (Enabled)
+                        {
+                            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                            {
                     new(MsgVars.user, UserName),
                     new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
-                    });
+                            });
 
-                    SendMessage(VariableParser.ParseReplace(msg, dictionary));
+                            SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
 
-                    UpdatedStat(StreamStatType.Bits, Bits);
-                    UpdatedStat(StreamStatType.AutoEvents);
+                            UpdatedStat(StreamStatType.Bits, Bits);
+                            UpdatedStat(StreamStatType.AutoEvents);
+                        }
+                    }));
                 }
             }
 
@@ -317,28 +354,28 @@ namespace StreamerBot.Systems
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)
         {
-            string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled);
-            if (Enabled)
-            {
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
-                new(MsgVars.user, UserName ),
-                new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
-                });
-
-                SendMessage(VariableParser.ParseReplace(msg, dictionary));
-            }
-            UpdatedStat(StreamStatType.Raids, StreamStatType.AutoEvents);
-
-            if (OptionFlags.TwitchRaidShoutOut)
-            {
-                StatisticsSystem.UserJoined(UserName, RaidTime);
-                bool output = Command.CheckShout(UserName, out string response, Source, false);
-                if (output)
+            lock (ProcMsgQueue) {
+                ProcMsgQueue.Enqueue(new(() =>
                 {
-                    SendMessage(response);
-                }
-            }
+                    string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled, out short Multi);
+                    if (Enabled)
+                    {
+                        Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                            new(MsgVars.user, UserName ),
+                            new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
+                            });
 
+                        SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
+                    }
+                    UpdatedStat(StreamStatType.Raids, StreamStatType.AutoEvents);
+
+                    if (OptionFlags.TwitchRaidShoutOut)
+                    {
+                        StatisticsSystem.UserJoined(UserName, RaidTime);
+                        Command.CheckShout(UserName, out string response, Source, false);
+                    }
+                }));
+            }
             if (OptionFlags.ManageRaidData)
             {
                 StatisticsSystem.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
@@ -357,14 +394,13 @@ namespace StreamerBot.Systems
         {
             try
             {
-                string response = Command.EvalCommand(cmdMessage, out short multi, Source);
-                short x = 0;
-
-                do
+                lock (ProcMsgQueue)
                 {
-                    SendMessage(response);
-                    x++;
-                } while (x <= multi);
+                    ProcMsgQueue.Enqueue(new Task(() =>
+                    {
+                       Command.EvalCommand(cmdMessage, Source);
+                    }));
+                }
             }
             catch (InvalidOperationException InvalidOp)
             {
@@ -406,7 +442,13 @@ namespace StreamerBot.Systems
                 {
                     if (OptionFlags.TwitchClipPostChat)
                     {
-                        SendMessage(c.Url);
+                        lock (ProcMsgQueue)
+                        {
+                            ProcMsgQueue.Enqueue(new Task(() =>
+                            {
+                                SendMessage(c.Url);
+                            }));
+                        }
                     }
 
                     if (OptionFlags.TwitchClipPostDiscord)
@@ -421,7 +463,7 @@ namespace StreamerBot.Systems
                     UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
                 }
             }
-        }
+        }        
 
         #endregion
     }

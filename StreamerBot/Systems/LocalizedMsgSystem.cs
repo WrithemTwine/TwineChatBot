@@ -79,9 +79,10 @@ namespace StreamerBot.Systems
         /// <param name="dataRetrieve">Retrieve the message or if event is enabled</param>
         /// <param name="channelEventActions">Which event message to retrieve</param>
         /// <returns>A string containing variables to customize the event message.</returns>
-        public static string GetEventMsg(ChannelEventActions channelEventActions, out bool Enabled)
+        public static string GetEventMsg(ChannelEventActions channelEventActions, out bool Enabled, out short Multi)
         {
             Enabled = (bool)(_datamanager.GetRowData(DataRetrieve.EventEnabled, channelEventActions)??false);
+            Multi = (short)(_datamanager.GetRowData(DataRetrieve.EventRepeat, channelEventActions) ?? false);
 
             return (string)_datamanager.GetRowData(DataRetrieve.EventMessage, channelEventActions)
                 ?? RM.GetString("Msg" + channelEventActions.ToString(), CultureInfo.CurrentCulture);
@@ -110,6 +111,22 @@ namespace StreamerBot.Systems
         public static string GetVar<T>(T msgVars)
         {
             return RM.GetString(msgVars.ToString(), CultureInfo.CurrentCulture);
+        }
+
+        public static bool CheckDefaultCommand(string Command)
+        {
+            bool result = false;
+
+            foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
+            {
+                if(Command == GetVar(Command))
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
