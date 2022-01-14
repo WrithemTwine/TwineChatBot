@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace StreamerBot.Models
 {
@@ -28,6 +29,7 @@ namespace StreamerBot.Models
         public string Message { get; set; } = string.Empty;
         public bool AddMe { get; set; } = false;
         public bool Empty { get; set; } = false;
+        public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
 
         public static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
 
@@ -108,6 +110,9 @@ namespace StreamerBot.Models
                         case "m":
                             data.Message = keyvalue[0];
                             break;
+                        case "category":
+                            data.Category = value;
+                            break;
                         case "addme":
                             data.AddMe = bool.Parse(value);
                             break;
@@ -123,6 +128,69 @@ namespace StreamerBot.Models
             data.LookupData = !(data.Table == string.Empty);
 
             return data;
+        }
+
+        public static Dictionary<string,string> ParseEditCommandParams(List<string> arglist)
+        {
+            Dictionary<string, string> edit = new();
+            foreach (var (keyvalue, value) in from string param in arglist
+                                              let keyvalue = param.Split(':')
+                                              let value = (keyvalue.Length > 1) ? keyvalue[1].Trim() : ""
+                                              select (keyvalue, value))
+            {
+                switch (keyvalue[0])
+                {
+                    case "t":
+                        edit.Add("table", value);
+                        break;
+                    case "f":
+                        edit.Add("data_field", value);
+                        break;
+                    case "c":
+                        edit.Add("currency_field", value);
+                        break;
+                    case "unit":
+                        edit.Add("unit", value);
+                        break;
+                    case "p":
+                        edit.Add("Permission", (string)System.Enum.Parse(typeof(ViewerTypes), value));
+                        break;
+                    case "top":
+                        edit.Add("top", value);
+                        break;
+                    case "s":
+                        edit.Add("sort", Validate(value, typeof(CommandSort)));
+                        break;
+                    case "a":
+                        edit.Add("action", Validate(value, typeof(CommandAction)));
+                        break;
+                    case "param":
+                        edit.Add("AllowParam", value);
+                        break;
+                    case "timer":
+                        edit.Add("RepeatTimer", value);
+                        break;
+                    case "r":
+                        edit.Add("SendMsgCount", value);
+                        break;
+                    case "use":
+                        edit.Add("Usage", value);
+                        break;
+                    case "m":
+                        edit.Add("Message", value);
+                        break;
+                    case "category":
+                        edit.Add("Category", value);
+                        break;
+                    case "addme":
+                        edit.Add("AddMe", value);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return edit;
         }
 
         private static string Validate(string v, Type type)

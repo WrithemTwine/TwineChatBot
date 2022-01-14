@@ -26,6 +26,9 @@ namespace StreamerBot.BotClients.Twitch
             BotClientName = Bots.TwitchUserBot;
         }
 
+        // TODO: implement !setcategory including the API calls
+        // TODO: implement !settitle including the API calls
+
         public void ConnectUserService(string ClientName = null, string TwitchToken = null)
         {
             DefaultSettingValueAttribute defaultSetting = null;

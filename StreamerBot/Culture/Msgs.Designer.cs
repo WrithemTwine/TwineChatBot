@@ -106,6 +106,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to editcommand.
+        /// </summary>
+        internal static string editcommand {
+            get {
+                return ResourceManager.GetString("editcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to enqueue.
         /// </summary>
         internal static string enqueue {
@@ -223,7 +232,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to current category.
+        ///   Looks up a localized string similar to current category, can be used for current channel or referencing a viewer (as command parameter).
         /// </summary>
         internal static string Helpcategory {
             get {
@@ -565,7 +574,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Command added.
+        ///   Looks up a localized string similar to Command {0} added!.
         /// </summary>
         internal static string Msgaddcommand {
             get {
@@ -601,11 +610,20 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/.
+        ///   Looks up a localized string similar to TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed..
         /// </summary>
         internal static string Msgbot {
             get {
                 return ResourceManager.GetString("Msgbot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command not found..
+        /// </summary>
+        internal static string Msgcommandnotfound {
+            get {
+                return ResourceManager.GetString("Msgcommandnotfound", resourceCulture);
             }
         }
         
@@ -637,11 +655,29 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default command, not changed..
+        /// </summary>
+        internal static string Msgdefaultcommand {
+            get {
+                return ResourceManager.GetString("Msgdefaultcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Also with leave, user leaves the play list.
         /// </summary>
         internal static string Msgdequeue {
             get {
                 return ResourceManager.GetString("Msgdequeue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command {0} edited..
+        /// </summary>
+        internal static string Msgeditcommand {
+            get {
+                return ResourceManager.GetString("Msgeditcommand", resourceCulture);
             }
         }
         
@@ -790,6 +826,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command removed.
+        /// </summary>
+        internal static string Msgremovecommand {
+            get {
+                return ResourceManager.GetString("Msgremovecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thanks #user for re-subscribing!.
         /// </summary>
         internal static string MsgResubscribe {
@@ -907,7 +952,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -p:Mod -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;..
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;..
         /// </summary>
         internal static string Paramaddcommand {
             get {
@@ -948,6 +993,15 @@ namespace StreamerBot.Culture {
         internal static string Parameachsocial {
             get {
                 return ResourceManager.GetString("Parameachsocial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!editcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;..
+        /// </summary>
+        internal static string Parameditcommand {
+            get {
+                return ResourceManager.GetString("Parameditcommand", resourceCulture);
             }
         }
         
@@ -1038,6 +1092,15 @@ namespace StreamerBot.Culture {
         internal static string Paramqueue {
             get {
                 return ResourceManager.GetString("Paramqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!removecommand command. Does not remove default commands..
+        /// </summary>
+        internal static string Paramremovecommand {
+            get {
+                return ResourceManager.GetString("Paramremovecommand", resourceCulture);
             }
         }
         
@@ -1182,6 +1245,15 @@ namespace StreamerBot.Culture {
         internal static string Random {
             get {
                 return ResourceManager.GetString("Random", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to removecommand.
+        /// </summary>
+        internal static string removecommand {
+            get {
+                return ResourceManager.GetString("removecommand", resourceCulture);
             }
         }
         

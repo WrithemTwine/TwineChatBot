@@ -35,6 +35,7 @@ namespace StreamerBot.BotClients
 
         public BotsTwitch()
         {
+            // not including "TwitchBotUserSvc" bot, it's an authentication on-demand bot to get the info
             AddBot(TwitchFollower);
             AddBot(TwitchLiveMonitor);
             AddBot(TwitchBotClipSvc);

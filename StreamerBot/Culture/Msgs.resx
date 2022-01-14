@@ -137,6 +137,10 @@
     <value>dequeue</value>
     <comment>leave the player queue</comment>
   </data>
+  <data name="editcommand" xml:space="preserve">
+    <value>editcommand</value>
+    <comment>default command, can be translated</comment>
+  </data>
   <data name="enqueue" xml:space="preserve">
     <value>enqueue</value>
     <comment>join the player queue</comment>
@@ -182,7 +186,7 @@
     <value>The thank you message when a user donates bits to the channel.</value>
   </data>
   <data name="Helpcategory" xml:space="preserve">
-    <value>current category</value>
+    <value>current category, can be used for current channel or referencing a viewer (as command parameter)</value>
   </data>
   <data name="Helpcom" xml:space="preserve">
     <value>The parameter command used within the 'usage' command</value>
@@ -300,7 +304,8 @@
     <comment>default command, can be translated</comment>
   </data>
   <data name="Msgaddcommand" xml:space="preserve">
-    <value>Command added</value>
+    <value>Command {0} added!</value>
+    <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
   <data name="MsgAllCateogry" xml:space="preserve">
     <value>All</value>
@@ -315,7 +320,10 @@
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgbot" xml:space="preserve">
-    <value>TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/</value>
+    <value>TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
+  </data>
+  <data name="Msgcommandnotfound" xml:space="preserve">
+    <value>Command not found.</value>
   </data>
   <data name="Msgcommands" xml:space="preserve">
     <value>The list of commands: #query</value>
@@ -327,8 +335,15 @@
   <data name="MsgDataNotFound" xml:space="preserve">
     <value>data not found.</value>
   </data>
+  <data name="Msgdefaultcommand" xml:space="preserve">
+    <value>Default command, not changed.</value>
+  </data>
   <data name="Msgdequeue" xml:space="preserve">
     <value>Also with leave, user leaves the play list</value>
+  </data>
+  <data name="Msgeditcommand" xml:space="preserve">
+    <value>Command {0} edited.</value>
+    <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
   <data name="Msgenqueue" xml:space="preserve">
     <value>Also with join, user join the play list</value>
@@ -382,6 +397,9 @@
     <value>Thanks #user for bringing #viewers and raiding the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgremovecommand" xml:space="preserve">
+    <value>Command removed</value>
+  </data>
   <data name="MsgResubscribe" xml:space="preserve">
     <value>Thanks #user for re-subscribing!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
@@ -430,7 +448,7 @@
     <value>#user is lurking while making some moohla! See you soon!</value>
   </data>
   <data name="Paramaddcommand" xml:space="preserve">
-    <value>-p:Mod -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
+    <value>-p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Parambot" xml:space="preserve">
@@ -447,6 +465,10 @@
   </data>
   <data name="Parameachsocial" xml:space="preserve">
     <value>-use:!&lt;social_name&gt;</value>
+  </data>
+  <data name="Parameditcommand" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!editcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramenqueue" xml:space="preserve">
     <value>-use:!enqueue</value>
@@ -486,6 +508,10 @@
   </data>
   <data name="Paramqueue" xml:space="preserve">
     <value>-p:Mod -use:!queue mods only</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramremovecommand" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!removecommand command. Does not remove default commands.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramso" xml:space="preserve">
@@ -549,6 +575,10 @@
   </data>
   <data name="Random" xml:space="preserve">
     <value>Currently not used.</value>
+  </data>
+  <data name="removecommand" xml:space="preserve">
+    <value>removecommand</value>
+    <comment>default command, can be translated</comment>
   </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>

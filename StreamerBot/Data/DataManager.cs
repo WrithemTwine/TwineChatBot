@@ -191,6 +191,11 @@ namespace StreamerBot.Data
                     criteriacolumn = "Name";
                     datacolumn = "IsEnabled";
                     break;
+                case DataRetrieve.EventRepeat:
+                    table = DataSourceTableName.ChannelEvents.ToString();
+                    criteriacolumn = "Name";
+                    datacolumn = "RepeatMsg";
+                    break;
             }
 
             DataRow[] row = null;
@@ -229,6 +234,7 @@ switches:
 -param:<allow params to command>
 -timer:<seconds>
 -use:<usage message>
+-category:<All-defaul>
 
 -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
          */
@@ -392,13 +398,52 @@ switches:
             lock (_DataSource)
             {
                 //string strParams = Params.DBParamsString();
-                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").First();
-
+                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{Params.Category}'").First();
 
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.RepeatMsg, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 NotifySaveData();
             }
-            return string.Format(CultureInfo.CurrentCulture, "Command {0} added!", cmd);
+            return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
+        }
+
+        public string EditCommand(string cmd, List<string> Arglist)
+        {
+            string result = "";
+            lock (_DataSource)
+            {
+                CommandsRow commandsRow = _DataSource.Commands.FindByCmdName(cmd);
+                if (commandsRow != null)
+                {
+                    Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
+
+                    foreach (string k in EditParamsDict.Keys)
+                    {
+                        commandsRow[k] = EditParamsDict[k];
+                    }
+                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
+                }
+                else
+                {
+                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+                }
+            }
+            return result;
+        }
+
+        public bool RemoveCommand(string command)
+        {
+            bool removed = false;
+
+            lock (_DataSource)
+            {
+                if(_DataSource.Commands.FindByCmdName(command) != null)
+                {
+                    _DataSource.Commands.RemoveCommandsRow(_DataSource.Commands.FindByCmdName(command));
+                    removed = true;
+                }
+            }
+
+            return removed;
         }
 
         public string GetSocials()
@@ -596,51 +641,51 @@ switches:
             {
                 {
                     ChannelEventActions.BeingHosted,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers }))
                 },
                 {
                     ChannelEventActions.Bits,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits }))
                 },
                 {
                     ChannelEventActions.CommunitySubs,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan }))
                 },
                 {
                     ChannelEventActions.NewFollow,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 },
                 {
                     ChannelEventActions.GiftSub,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname }))
                 },
                 {
                     ChannelEventActions.Live,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone }))
                 },
                 {
                     ChannelEventActions.Raid,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers }))
                 },
                 {
                     ChannelEventActions.Resubscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak }))
                 },
                 {
                     ChannelEventActions.Subscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname }))
                 },
                 {
                     ChannelEventActions.UserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 },
                 {
                     ChannelEventActions.ReturnUserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 },
                 {
                     ChannelEventActions.SupporterJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 }
             };
             lock (_DataSource)
@@ -1113,7 +1158,7 @@ switches:
 
                     double ComputeCurrency(double Accrue, double Seconds)
                     {
-                        return Accrue * (currencyclock.TotalSeconds / Seconds);
+                        return Math.Round(Accrue * (currencyclock.TotalSeconds / Seconds), 2);
                     }
 
                     AddCurrencyRows(ref User);
@@ -1123,7 +1168,7 @@ switches:
 
                     foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                     {
-                        currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), 2), typeRow.MaxValue);
+                        currencyRow.Value = Math.Min(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), typeRow.MaxValue);
                     }
 
                     // set the current login date, always set regardless if currency accrual is started
