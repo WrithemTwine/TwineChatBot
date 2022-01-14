@@ -952,6 +952,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} or {1}.
+        /// </summary>
+        internal static string or {
+            get {
+                return ResourceManager.GetString("or", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;..
         /// </summary>
         internal static string Paramaddcommand {
@@ -1177,11 +1186,38 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to day, days.
+        /// </summary>
+        internal static string Pluralday {
+            get {
+                return ResourceManager.GetString("Pluralday", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hour, hours.
+        /// </summary>
+        internal static string Pluralhour {
+            get {
+                return ResourceManager.GetString("Pluralhour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minute, minutes.
+        /// </summary>
+        internal static string Pluralminute {
+            get {
+                return ResourceManager.GetString("Pluralminute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to month, months.
         /// </summary>
-        internal static string Pluralmonths {
+        internal static string Pluralmonth {
             get {
-                return ResourceManager.GetString("Pluralmonths", resourceCulture);
+                return ResourceManager.GetString("Pluralmonth", resourceCulture);
             }
         }
         
@@ -1200,6 +1236,15 @@ namespace StreamerBot.Culture {
         internal static string Pluralviewers {
             get {
                 return ResourceManager.GetString("Pluralviewers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to year, years.
+        /// </summary>
+        internal static string Pluralyear {
+            get {
+                return ResourceManager.GetString("Pluralyear", resourceCulture);
             }
         }
         

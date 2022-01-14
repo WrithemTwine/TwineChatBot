@@ -546,7 +546,7 @@ namespace StreamerBot.BotIOController
             {
                 Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
-                new( MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
+                new( MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.subplan, Subscription ),
                 new( MsgVars.subplanname, SubscriptionName )
                 })), Multi);
@@ -562,8 +562,8 @@ namespace StreamerBot.BotIOController
             {
                 Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
-                new( MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
-                new( MsgVars.submonths, FormatData.Plurality(TotalMonths, MsgVars.Pluralmonths, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))),
+                new( MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
+                new( MsgVars.submonths, FormatData.Plurality(TotalMonths, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))),
                 new( MsgVars.subplan, Subscription),
                 new( MsgVars.subplanname,SubscriptionName )
                 });
@@ -587,7 +587,7 @@ namespace StreamerBot.BotIOController
             {
                 Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                     new(MsgVars.user,DisplayName),
-                    new(MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonths)),
+                    new(MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth)),
                     new(MsgVars.receiveuser, RecipientUserName ),
                     new(MsgVars.subplan, Subscription ),
                     new(MsgVars.subplanname, SubscriptionName)
