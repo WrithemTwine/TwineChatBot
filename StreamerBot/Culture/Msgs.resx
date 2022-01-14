@@ -342,7 +342,7 @@
     <value>Also with leave, user leaves the play list</value>
   </data>
   <data name="Msgeditcommand" xml:space="preserve">
-    <value>Command {0} edited.</value>
+    <value>Command {0} edited!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
   <data name="Msgenqueue" xml:space="preserve">

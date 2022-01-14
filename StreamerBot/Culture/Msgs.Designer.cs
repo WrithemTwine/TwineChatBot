@@ -673,7 +673,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Command {0} edited..
+        ///   Looks up a localized string similar to Command {0} edited!.
         /// </summary>
         internal static string Msgeditcommand {
             get {

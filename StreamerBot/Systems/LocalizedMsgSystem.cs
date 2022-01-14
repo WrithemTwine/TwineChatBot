@@ -81,8 +81,8 @@ namespace StreamerBot.Systems
         /// <returns>A string containing variables to customize the event message.</returns>
         public static string GetEventMsg(ChannelEventActions channelEventActions, out bool Enabled, out short Multi)
         {
-            Enabled = (bool)(_datamanager.GetRowData(DataRetrieve.EventEnabled, channelEventActions)??false);
-            Multi = (short)(_datamanager.GetRowData(DataRetrieve.EventRepeat, channelEventActions) ?? false);
+            Enabled = (bool)(_datamanager.GetRowData(DataRetrieve.EventEnabled, channelEventActions) ?? false);
+            Multi = (short)(_datamanager.GetRowData(DataRetrieve.EventRepeat, channelEventActions) ?? short.Parse("0"));
 
             return (string)_datamanager.GetRowData(DataRetrieve.EventMessage, channelEventActions)
                 ?? RM.GetString("Msg" + channelEventActions.ToString(), CultureInfo.CurrentCulture);
