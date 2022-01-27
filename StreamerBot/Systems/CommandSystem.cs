@@ -98,8 +98,6 @@ namespace StreamerBot.Systems
             }
         }
 
-        //TODO: fix repeat command message <- it may be updated, repeat command should get updated message
-
         private void RepeatCmd(TimerCommand cmd)
         {
             int repeat = 0;

@@ -50,13 +50,11 @@ namespace StreamerBot.Data {
         
         private OutRaidDataDataTable tableOutRaidData;
         
-        private global::System.Data.DataRelation relationFK_Users_Currency;
-        
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
         
-        private global::System.Data.DataRelation relationUsers_Followers;
+        private global::System.Data.DataRelation relationFK_Users_Currency;
         
-        private global::System.Data.DataRelation relationCategoryList_Commands;
+        private global::System.Data.DataRelation relationUsers_Followers;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.ExcludeSchema;
         
@@ -490,10 +488,9 @@ namespace StreamerBot.Data {
                     this.tableOutRaidData.InitVars();
                 }
             }
-            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
-            this.relationCategoryList_Commands = this.Relations["CategoryList_Commands"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -531,16 +528,16 @@ namespace StreamerBot.Data {
             this.tableOutRaidData = new OutRaidDataDataTable();
             base.Tables.Add(this.tableOutRaidData);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -552,22 +549,18 @@ namespace StreamerBot.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn}, false);
-            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
             this.Relations.Add(this.relationUsers_Followers);
-            this.relationCategoryList_Commands = new global::System.Data.DataRelation("CategoryList_Commands", new global::System.Data.DataColumn[] {
-                        this.tableCategoryList.CategoryColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCommands.CategoryColumn}, false);
-            this.Relations.Add(this.relationCategoryList_Commands);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2661,7 +2654,7 @@ namespace StreamerBot.Data {
                         string Message, 
                         int RepeatTimer, 
                         short SendMsgCount, 
-                        CategoryListRow parentCategoryListRowByCategoryList_Commands, 
+                        string Category, 
                         bool AllowParam, 
                         string Usage, 
                         bool lookupdata, 
@@ -2682,7 +2675,7 @@ namespace StreamerBot.Data {
                         Message,
                         RepeatTimer,
                         SendMsgCount,
-                        null,
+                        Category,
                         AllowParam,
                         Usage,
                         lookupdata,
@@ -2694,9 +2687,6 @@ namespace StreamerBot.Data {
                         action,
                         top,
                         sort};
-                if ((parentCategoryListRowByCategoryList_Commands != null)) {
-                    columnValuesArray[7] = parentCategoryListRowByCategoryList_Commands[2];
-                }
                 rowCommandsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCommandsRow);
                 return rowCommandsRow;
@@ -5441,23 +5431,23 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public CurrencyTypeRow CurrencyTypeRow {
                 get {
                     return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
                 }
             }
             
@@ -6397,17 +6387,6 @@ namespace StreamerBot.Data {
                 }
                 set {
                     this[this.tableCommands.sortColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CategoryListRow CategoryListRow {
-                get {
-                    return ((CategoryListRow)(this.GetParentRow(this.Table.ParentRelations["CategoryList_Commands"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["CategoryList_Commands"]);
                 }
             }
             
@@ -7524,17 +7503,6 @@ namespace StreamerBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetCategoryNull() {
                 this[this.tableCategoryList.CategoryColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CommandsRow[] GetCommandsRows() {
-                if ((this.Table.ChildRelations["CategoryList_Commands"] == null)) {
-                    return new CommandsRow[0];
-                }
-                else {
-                    return ((CommandsRow[])(base.GetChildRows(this.Table.ChildRelations["CategoryList_Commands"])));
-                }
             }
         }
         

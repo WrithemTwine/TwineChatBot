@@ -108,25 +108,21 @@ namespace StreamerBot.Data
                         {
                             lock (_DataSource)
                             {
-                                string result = Path.GetRandomFileName();
                                 try
                                 {
-                                    _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
+                                    MemoryStream SaveData = new();  // new memory stream
 
-                                    DataSource testinput = new();
+                                    _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
 
-                                    XmlReader xmlReader = new XmlTextReader(result);
-                                    // test load
-                                    _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
-                                    xmlReader.Close();
+                                    DataSource testinput = new();   // start a new database
+                                    SaveData.Position = 0;          // reset the reader
+                                    testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
 
-                                    File.Move(result, DataFileName, true);
-                                    File.Delete(result);
+                                    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
                                 }
-                                catch (Exception ex)
+                                catch(Exception ex)
                                 {
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                    File.Delete(result);
                                 }
                             }
                         }));
@@ -254,8 +250,6 @@ switches:
                     _DataSource.CategoryList.AcceptChanges();
                 }
 
-                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").First();
-
                 bool CheckName(string criteria)
                 {
                     CommandsRow datarow = (CommandsRow)_DataSource.Commands.Select($"CmdName='{criteria}'").FirstOrDefault();
@@ -294,7 +288,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, categoryListRow, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -397,10 +391,7 @@ switches:
         {
             lock (_DataSource)
             {
-                //string strParams = Params.DBParamsString();
-                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{Params.Category}'").First();
-
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.RepeatMsg, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 NotifySaveData();
             }
             return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);

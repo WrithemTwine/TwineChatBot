@@ -306,9 +306,14 @@ namespace StreamerBot.BotIOController
             HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
         }
 
-        public static void TwitchStreamupdate(OnStreamUpdateArgs e)
+        public void TwitchStreamupdate(OnStreamUpdateArgs e)
         {
             HandleOnStreamUpdate(e.Stream.GameId, e.Stream.GameName);
+        }
+
+        public void TwitchCategoryUpdate(OnGetChannelGameNameEventArgs e)
+        {
+            HandleOnStreamUpdate(e.GameId, e.GameName);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]

@@ -16,6 +16,10 @@
 
             <Style TargetType="{x:Type DockPanel}">
                 <Setter Property="Margin" Value="5" />
+            </Style>            
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="Margin" Value="10,5,0,5" />
+                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
             </Style>
             <Style TargetType="{x:Type TabItem}">
                 <Setter Property="MinWidth" Value="50" />
@@ -31,10 +35,7 @@
                 <Setter Property="Margin" Value="5" />
                 <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
             </Style>
-            <Style TargetType="{x:Type RadioButton}">
-                <Setter Property="Margin" Value="10,5,0,5" />
-                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
-            </Style>
+
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="TextWrapping" Value="Wrap" />
                 <Setter Property="Padding" Value="5,0" />
@@ -47,8 +48,7 @@
                 <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
                 <Setter Property="CanUserAddRows" Value="False" />
                 <Setter Property="CanUserDeleteRows" Value="False" />
-            </Style>
-
+            </Style>       
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -113,7 +113,7 @@
                             <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.
                             </TextBlock>
-                            <WrapPanel>
+                            <WrapPanel HorizontalAlignment="Center">
                                 <GroupBox Header="LiveStream Monitor Service">
                                     <StackPanel Orientation="Vertical">
                                         <WrapPanel>
@@ -513,7 +513,7 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Data Management">
                                             <GroupBox.Resources>
-                                                <Style TargetType="{x:Type CheckBox}">
+                                                <Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="{x:Type CheckBox}">
                                                     <EventSetter Event="Click" Handler="CheckBox_ManageData_Click" />
                                                 </Style>
                                             </GroupBox.Resources>
@@ -757,13 +757,9 @@
                         <TabItem Header="MultiLive Monitor">
                             <Grid x:Name="TabItem_MultiUserLiveMonitor">
                                 <Grid.Resources>
-                                    <Style TargetType="DataGrid">
+                                    <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
                                         <Setter Property="Margin" Value="5"/>
-                                        <Setter Property="MaxColumnWidth" Value="160" />
-                                        <Setter Property="AlternationCount" Value="1" />
-                                        <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4" />
-                                        <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
-                                        <Setter Property="CanUserAddRows" Value="False" />
+                                        <Setter Property="MaxColumnWidth" Value="160" />                             
                                         <EventSetter Event="MouseEnter" Handler="DataGrid_MouseEnter" />
                                         <EventSetter Event="MouseLeave" Handler="DataGrid_MouseLeave" />
                                     </Style>
@@ -846,18 +842,17 @@
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0" Content="Join List to organize playing games with your viewers." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
                             <Label Grid.Row="1" Content="Click the 'remove' box next to the user name to remove from this list." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
-                            <GroupBox Grid.Row="2" Padding="10" Header="Join List Status" Grid.RowSpan="3" >
+                            <GroupBox Grid.Row="2" Padding="10" Header="Join List Status"  >
                                 <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
                                     <StackPanel.Resources>
-                                        <Style TargetType="{x:Type RadioButton}">
+                                        <Style BasedOn="{StaticResource {x:Type RadioButton}}" TargetType="{x:Type RadioButton}">
                                             <Setter Property="Margin" Value="3" />
                                         </Style>
                                     </StackPanel.Resources>
-                                    <RadioButton Content="Start Join List" IsChecked="{Binding UserPartyStart, Mode=TwoWay}" />
-                                    <RadioButton Content="Stop Join List" IsChecked="{Binding UserPartyStop, Mode=TwoWay}" />
+                                    <RadioButton IsChecked="{Binding UserPartyStart, Mode=TwoWay}" >Start Join List</RadioButton>
+                                    <RadioButton IsChecked="{Binding UserPartyStop, Mode=TwoWay}" >Stop Join List</RadioButton>
                                 </StackPanel>
                             </GroupBox>
-
                             <ListView Grid.Row="3" x:Name="LV_JoinList" MaxWidth="500" DataContext="{Binding Source={StaticResource DataViews}}"
                                       ItemsSource="{Binding JoinCollection, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" SelectionMode="Single" Margin="0,0,0,10">
                                 <ListView.Resources>

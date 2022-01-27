@@ -57,25 +57,30 @@ namespace StreamerBot.BotClients.Twitch
 
         public string GetUserGameCategoryId(string UserId)
         {
-            string result = GetUserInfoId(UserId)?.Data[0].GameName ?? "N/A";
+            ChannelInformation channelInformation = GetUserInfoId(UserId)?.Data[0];
+            string gameName = channelInformation.GameName ?? "N/A";
+            string gameId = channelInformation.GameId ?? "N/A";
 
-            PostEvent_GetChannelGameName(result);
+            PostEvent_GetChannelGameName(gameName, gameId);
 
-            return result;
+            return gameName;
         }
 
         public string GetUserGameCategoryName(string UserName)
         {
-            string result = GetUserInfoName(UserName)?.Data[0].GameName ?? "N/A";
+            ChannelInformation channelInformation = GetUserInfoName(UserName)?.Data[0];
 
-            PostEvent_GetChannelGameName(result);
+            string gameName = channelInformation.GameName ?? "N/A";
+            string gameId = channelInformation.GameId ?? "N/A";
 
-            return result;
+            PostEvent_GetChannelGameName(gameName, gameId);
+
+            return gameName;
         }
 
-        private void PostEvent_GetChannelGameName(string foundGameName)
+        private void PostEvent_GetChannelGameName(string foundGameName, string foundGameId)
         {
-            GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName });
+            GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName, GameId = foundGameId });
         }
 
         public GetChannelInformationResponse GetUserInfoId(string UserId)
@@ -85,7 +90,7 @@ namespace StreamerBot.BotClients.Twitch
                 ConnectUserService();
             }
 
-            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId).Result;     
+            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId).Result;
             return user;
         }
 

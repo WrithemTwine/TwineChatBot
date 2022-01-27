@@ -45,7 +45,12 @@ namespace StreamerBot.BotClients
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
+            TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+        }
 
+        private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchCategoryUpdate, e);
         }
 
         private void RegisterHandlers()

@@ -16,6 +16,7 @@
         TwitchStreamOffline,
         TwitchStreamOnline,
         TwitchStreamUpdate,
+        TwitchCategoryUpdate,
         TwitchNowHosting,
         TwitchExistingUsers,
         TwitchOnUserJoined,
