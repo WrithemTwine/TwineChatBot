@@ -158,32 +158,7 @@ namespace StreamerBot.Systems
         {
             return DataManage.CheckUser(User, DateTime.Now.ToLocalTime());
         }
-
-        #region Follower
-
-        //public void AddNewFollower(List<Follow> FollowList)
-        //{
-        //    string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled);
-
-        //    while (DataManage.UpdatingFollowers) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
-
-        //    foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
-        //    {
-        //        if (OptionFlags.ManageFollowers)
-        //        {
-        //            if (FollowEnabled)
-        //            {
-        //                CallbackSendMsg?.Invoke(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
-        //            }
-
-        //            AddFollow();
-        //            AddAutoEvents();
-        //        }
-        //    }
-        //}
-
-        #endregion Follower
-
+        
         #region Incoming Raids
 
         public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
@@ -223,9 +198,6 @@ namespace StreamerBot.Systems
                     found = false;
                 }
             }
-
-            // TODO: fix updating a new stream online stat - start time and end time
-            //PostStreamUpdates();
             MonitorWatchTime();
             StartCurrencyClock();
 
@@ -233,34 +205,13 @@ namespace StreamerBot.Systems
             return OptionFlags.ManageStreamStats && !found;
         }
 
-        //public void EndPostingStreamUpdates()
-        //{
-        //    StreamUpdateThread.Join();
-        //}
-
-        //private void PostStreamUpdates()
-        //{
-        //    if (!StreamUpdateClockStarted)
-        //    {
-        //        StreamUpdateClockStarted = true;
-        //        MonitorWatchTime();
-        //        StartCurrencyClock();
-
-        //        StreamUpdateThread = new Thread(new ThreadStart(() =>
-        //        {
-        //            while (OptionFlags.IsStreamOnline && OptionFlags.ManageStreamStats)
-        //            {
-        //                lock (CurrStream)
-        //                {
-        //                    DataManage.PostStreamStat(CurrStream);
-        //                }
-        //                Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
-        //            }
-        //            StreamUpdateClockStarted = false;
-        //        }));
-        //        StreamUpdateThread.Start();
-        //    }
-        //}
+        public void StreamDataUpdate()
+        {
+            CurrStream.ModeratorsPresent = ModUsers.Count;
+            CurrStream.VIPsPresent = VIPUsers.Count;
+            CurrStream.SubsPresent = SubUsers.Count;
+            DataManage.PostStreamStat(CurrStream);
+        }
 
         public static void StreamOffline(DateTime Stopped)
         {
@@ -276,7 +227,6 @@ namespace StreamerBot.Systems
             }
 
             OptionFlags.IsStreamOnline = false;
-            //EndPostingStreamUpdates(); // wait until the posting thread stops
             CurrStream.StreamEnd = Stopped;
             CurrStream.ModeratorsPresent = ModUsers.Count;
             CurrStream.VIPsPresent = VIPUsers.Count;

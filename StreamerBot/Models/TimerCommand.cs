@@ -35,20 +35,27 @@ namespace StreamerBot.Models
             UpdateTime(TimeDilute);
         }
 
+        /// <summary>
+        /// Change the time to run through direct time specification. The provided <paramref name="NewRepeatTime"/> seconds are added or subtracted from the existing timer adjusted by the <paramref name="TimeDilute"/> factor. The repeat timer seconds is replaced with the <paramref name="NewRepeatTime"/> seconds.
+        /// </summary>
+        /// <param name="NewRepeatTime">The number of seconds to repeat the timer commands. Used to adjust current repeat time.</param>
+        /// <param name="TimeDilute">The time factor to dilute the current amount of repeat time.</param>
         public void ModifyTime(int NewRepeatTime, double TimeDilute)
         {
-            if(NewRepeatTime < RepeatTime)
+            if (NewRepeatTime < RepeatTime)
             {
-                NextRun = DateTime.Now.ToLocalTime().AddSeconds((RepeatTime - NewRepeatTime) * TimeDilute);
-            } 
+                NextRun = NextRun.AddSeconds((RepeatTime - NewRepeatTime) * TimeDilute);
+            }
             else if (NewRepeatTime > RepeatTime)
             {
-                NextRun = DateTime.Now.ToLocalTime().AddSeconds((NewRepeatTime-RepeatTime) * TimeDilute);
+                NextRun = NextRun.AddSeconds((NewRepeatTime - RepeatTime) * TimeDilute);
             }
             RepeatTime = NewRepeatTime;
         }
 
-        public void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime*TimeDilute);
+        public void SetNow() => NextRun = DateTime.Now.ToLocalTime();
+
+        public void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime * TimeDilute);
 
         public bool CheckFireTime() => DateTime.Now.ToLocalTime() > NextRun;
 

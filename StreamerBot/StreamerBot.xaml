@@ -435,6 +435,19 @@
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable smart slow-down repeating commands</TextBlock>
                                                 </CheckBox>
+                                                <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
+                                                <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}">
+                                                    <CheckBox.ToolTip>
+                                                        <TextBlock>The repeating commands continually run whether stream is online or not. The repeat timers will fire at their designated time as inidcated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</TextBlock>
+                                                    </CheckBox.ToolTip>
+                                                    <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}">
+                                                    <CheckBox.ToolTip>
+                                                        <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</TextBlock>
+                                                    </CheckBox.ToolTip>
+                                                    <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
+                                                </CheckBox>
                                                 <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
                                             </StackPanel>
                                         </GroupBox>

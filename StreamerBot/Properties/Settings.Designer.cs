@@ -658,5 +658,29 @@ namespace StreamerBot.Properties {
                 this["ManageOutRaidData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatLiveReset {
+            get {
+                return ((bool)(this["RepeatLiveReset"]));
+            }
+            set {
+                this["RepeatLiveReset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatLiveResetShow {
+            get {
+                return ((bool)(this["RepeatLiveResetShow"]));
+            }
+            set {
+                this["RepeatLiveResetShow"] = value;
+            }
+        }
     }
 }

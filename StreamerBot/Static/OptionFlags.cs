@@ -1,6 +1,7 @@
 ﻿using StreamerBot.Properties;
 
 using System;
+using System.Windows.Data;
 
 namespace StreamerBot.Static
 {
@@ -36,6 +37,8 @@ namespace StreamerBot.Static
         public static bool RepeatTimer { get; set; }
         public static bool RepeatTimerDilute { get; set; }
         public static bool RepeatWhenLive { get; set; }
+        public static bool RepeatLiveReset { get; set; }  // reset repeat timers when stream goes live
+        public static bool RepeatLiveResetShow { get; set; }    // enable showing message when repeat timers reset for going live
 
         public static bool UserPartyStart { get; set; }
         public static bool UserPartyStop { get; set; }
@@ -91,6 +94,8 @@ namespace StreamerBot.Static
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
                 RepeatTimerDilute = Settings.Default.RepeatTimerComSlowdown;
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
+                RepeatLiveReset = Settings.Default.RepeatLiveReset;
+                RepeatLiveResetShow = Settings.Default.RepeatLiveResetShow;
 
                 UserPartyStart = Settings.Default.UserPartyStart;
                 UserPartyStop = Settings.Default.UserPartyStop;

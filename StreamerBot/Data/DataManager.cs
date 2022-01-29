@@ -61,6 +61,14 @@ namespace StreamerBot.Data
 
                 using XmlReader xmlreader = new XmlTextReader(DataFileName);
                 _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+
+
+                // see if clip dates are correctly formatted
+
+                foreach (ClipsRow c in _DataSource.Clips.Select())
+                {
+                    c.CreatedAt = DateTime.Parse(c.CreatedAt).ToLocalTime().ToString("yyyy/MM/dd HH:mm:ss");
+                }
             }
 
             SaveData(this, new());
@@ -1357,6 +1365,8 @@ switches:
         /// <returns><c>true</c> when clip added to database, <c>false</c> when clip is already added.</returns>
         public bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
+            bool result;
+
             lock (_DataSource)
             {
                 ClipsRow[] clipsRows = (ClipsRow[])_DataSource.Clips.Select($"Id='{ClipId}'");
@@ -1365,10 +1375,12 @@ switches:
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
                     NotifySaveData();
-                    return true;
+                    result = true;
                 }
-                return false;
+                result = false;
             }
+
+            return result;
         }
 
         #endregion

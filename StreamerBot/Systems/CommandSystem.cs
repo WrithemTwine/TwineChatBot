@@ -100,8 +100,9 @@ namespace StreamerBot.Systems
 
         private void RepeatCmd(TimerCommand cmd)
         {
-            int repeat = 0;
-            bool InCategory = false;
+            int repeat = 0;  // determined seconds for the repeat timer commands
+            bool InCategory = false; // flag to determine category matching
+            bool ResetLive = false; // flag to check reset when going live and going offline, to avoid continuous resets
 
             lock (cmd) // lock the cmd because it's referenced in other threads
             {
@@ -112,6 +113,22 @@ namespace StreamerBot.Systems
 
             while (OptionFlags.ActiveToken && repeat != 0 && InCategory)
             {
+                if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
+                {
+                    if (OptionFlags.RepeatLiveResetShow) // perform command when repeat timers are reset based on live online stream
+                    {
+                        lock (cmd)
+                        {
+                            cmd.SetNow(); // cause command to fire immediately
+                        }
+                    }
+                    ResetLive = true;
+                }
+                else if (!OptionFlags.IsStreamOnline && ResetLive)
+                {
+                    ResetLive = false;
+                }
+
                 if (cmd.NextRun <= DateTime.Now.ToLocalTime())
                 {
                     OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });

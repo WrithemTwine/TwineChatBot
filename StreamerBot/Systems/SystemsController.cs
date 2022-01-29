@@ -33,6 +33,9 @@ namespace StreamerBot.Systems
         private Queue<Task> ProcMsgQueue { get; set; } = new();
         private readonly Thread ProcessMsgs;
 
+        private delegate void BotOperation();
+
+
         public SystemsController()
         {
             SystemsBase.DataManage = DataManage;
@@ -196,7 +199,30 @@ namespace StreamerBot.Systems
 
         public bool StreamOnline(DateTime CurrTime)
         {
-            return Stats.StreamOnline(CurrTime);
+            bool streamstart = Stats.StreamOnline(CurrTime);
+
+            if(OptionFlags.ManageStreamStats)
+            {
+                BeginPostingStreamUpdates();
+            }
+
+            return streamstart;
+        }
+
+        private void BeginPostingStreamUpdates()
+        {
+            new Thread(new ThreadStart(() =>
+            {
+                while (OptionFlags.IsStreamOnline)
+                {
+                    AppDispatcher.BeginInvoke(new BotOperation(() =>
+                    {
+                        Stats.StreamDataUpdate();
+                    }), null);
+
+                    Thread.Sleep(30000); // wait 30 seconds
+                }
+            })).Start();
         }
 
         public static void StreamOffline(DateTime CurrTime)
