@@ -1,4 +1,4 @@
-﻿namespace StreamerBot.Enum
+﻿namespace StreamerBot.Enums
 {
     /// <summary>
     /// The different types of Twitch viewers. Do not sort because the order matters for access hierarchy

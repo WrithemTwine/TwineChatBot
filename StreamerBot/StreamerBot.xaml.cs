@@ -1,6 +1,7 @@
 ﻿using StreamerBot.BotClients;
 using StreamerBot.BotClients.Twitch;
 using StreamerBot.BotIOController;
+using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.GUI;
 using StreamerBot.Models;
@@ -39,6 +40,8 @@ namespace StreamerBot
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
 
+        private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
+
         public StreamerBotWindow()
         {
             // move settings to the newest version, if the application version upgrades
@@ -60,6 +63,7 @@ namespace StreamerBot
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
+            guiTwitchBot.OnBotStarted += guiTwitchBot_GiveawayEvents;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
 
@@ -134,11 +138,11 @@ namespace StreamerBot
                     ToggleInputEnabled(false);
                     RadioButton radio = e.BotName switch
                     {
-                        Enum.Bots.TwitchChatBot => Radio_Twitch_StartBot,
-                        Enum.Bots.TwitchClipBot => Radio_Twitch_ClipBotStart,
-                        Enum.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStart,
-                        Enum.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
-                        Enum.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
+                        Enums.Bots.TwitchChatBot => Radio_Twitch_StartBot,
+                        Enums.Bots.TwitchClipBot => Radio_Twitch_ClipBotStart,
+                        Enums.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStart,
+                        Enums.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
+                        Enums.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
                         _ => Radio_MultiLiveTwitch_StartBot,
                     };
                     HelperStartBot(radio);
@@ -153,11 +157,11 @@ namespace StreamerBot
                   ToggleInputEnabled(true);
                   RadioButton radio = e.BotName switch
                   {
-                      Enum.Bots.TwitchChatBot => Radio_Twitch_StopBot,
-                      Enum.Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
-                      Enum.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
-                      Enum.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
-                      Enum.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
+                      Enums.Bots.TwitchChatBot => Radio_Twitch_StopBot,
+                      Enums.Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
+                      Enums.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
+                      Enums.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
+                      Enums.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
                       _ => Radio_MultiLiveTwitch_StopBot,
                   };
                   HelperStopBot(radio);
@@ -215,6 +219,43 @@ namespace StreamerBot
                 }
             }
         }
+
+        #region Refresh data from bot
+
+        /// <summary>
+        /// The GUI provides buttons to click and refresh data to the interface. Still must handle response events from the bot.
+        /// </summary>
+        /// <param name="targetclick">The button to disable while the operation begins./param>
+        /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
+        private void UpdateData(Button targetclick, Action<string> InvokeMethod)
+        {
+            targetclick.IsEnabled = false;
+
+            DefaultSettingValueAttribute defaultSetting = null;
+            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
+                                     where m.Name == "TwitchChannelName"
+                                     select m)
+            {
+                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
+            }
+
+            if (Settings.Default.TwitchChannelName != defaultSetting.Value) // prevent operation if default value
+            {
+                new Thread(new ThreadStart(() =>
+                {
+                    try
+                    {
+                        InvokeMethod.Invoke(Settings.Default.TwitchChannelName);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    }
+                })).Start();
+            }
+        }
+
+        #endregion
 
         #endregion
 
@@ -275,7 +316,7 @@ namespace StreamerBot
 
             Controller.ManageDatabase();
         }
-       
+
         /// <summary>
         /// Check the conditions for starting the bot, where the data fields require data before the bot can be successfully started.
         /// </summary>
@@ -302,7 +343,7 @@ namespace StreamerBot
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if ((sender as RadioButton).IsEnabled)
-{
+            {
                 Dispatcher.BeginInvoke(new BotOperation(() =>
                 {
                     ((sender as RadioButton).DataContext as IOModule)?.StartBot();
@@ -315,7 +356,7 @@ namespace StreamerBot
         private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if ((sender as RadioButton).IsEnabled)
-{
+            {
                 Dispatcher.BeginInvoke(new BotOperation(() =>
                 {
                     ((sender as RadioButton).DataContext as IOModule)?.StopBot();
@@ -360,10 +401,9 @@ namespace StreamerBot
             CheckFocus();
         }
 
-
         private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
         {
-            BeginUpdateCategory(); 
+            BeginUpdateCategory();
         }
 
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
@@ -374,36 +414,9 @@ namespace StreamerBot
         private void BeginUpdateCategory()
         {
             // TODO: align current stream info to the current active stream
-            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;           
 
-            Dispatcher.BeginInvoke(new RefreshCategory(UpdateCategory), null);
-        }
-
-        private void UpdateCategory()
-        {
-            Button_RefreshCategory.IsEnabled = false;
-            DefaultSettingValueAttribute defaultSetting = null;
-            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                                     where m.Name == "TwitchChannelName"
-                                     select m)
-            {
-                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
-            }
-
-            if (Settings.Default.TwitchChannelName != defaultSetting.Value) // prevent operation if default value
-            {
-                new Thread(new ThreadStart(() =>
-                {
-                    try
-                    {
-                        guiTwitchBot.TwitchBotUserSvc.GetUserGameCategoryName(Settings.Default.TwitchChannelName);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    }
-                })).Start();
-            }
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s)=>guiTwitchBot.TwitchBotUserSvc.GetUserGameCategoryName(s)) );
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -700,7 +713,7 @@ namespace StreamerBot
         /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
         /// </summary>
         public event EventHandler NotifyExpiredCredentials;
- 
+
         /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
@@ -855,5 +868,118 @@ namespace StreamerBot
         {
             TextBlock_TwitchBotLog.ScrollToEnd();
         }
+
+        #region Giveaway
+
+        private delegate void RefreshChannelPoints();
+
+        private void guiTwitchBot_GiveawayEvents(object sender, BotStartStopEventArgs e)
+        {
+            if (e.BotName == Enums.Bots.TwitchChatBot)
+            {
+                BeginGiveawayChannelPtsUpdate();
+            }
+        }
+
+        private void Button_Giveaway_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
+        {
+            BeginGiveawayChannelPtsUpdate();
+        }
+
+        private void BeginGiveawayChannelPtsUpdate()
+        {
+            guiTwitchBot.TwitchBotUserSvc.GetChannelPoints += TwitchBotUserSvc_GetChannelPoints;
+
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.TwitchBotUserSvc.GetCustomRewardsName(s)));
+        }
+
+        private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ComboBox_Giveaway_ChanPts.ItemsSource = e.ChannelPointNames;
+                Button_Giveaway_RefreshChannelPoints.IsEnabled = false;
+            });
+            guiTwitchBot.TwitchBotUserSvc.GetChannelPoints -= TwitchBotUserSvc_GetChannelPoints;
+        }
+
+        private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)
+        {
+            GiveawayTypes givetype = GiveawayTypes.None;
+            if ((RadioButton) sender == RadioButton_GiveawayCommand)
+            {
+                givetype = GiveawayTypes.Command;
+            } else if((RadioButton)sender == RadioButton_GiveawayCustomRewards)
+            {
+                givetype = GiveawayTypes.CustomRewards;
+            }
+
+            string ItemName = "";
+            
+            switch (givetype)
+            {
+                case GiveawayTypes.Command:
+                   ItemName = (string) ComboBox_Giveaway_Coms.SelectedValue;
+                    break;
+                case GiveawayTypes.CustomRewards:
+                    ItemName = (string)ComboBox_Giveaway_ChanPts.SelectedValue;
+                    break;
+            }
+
+            Controller.HandleGiveawayBegin(givetype, ItemName);
+            Giveaway_Toggle(false);
+
+            Button_GiveawayEnd.IsEnabled = true;
+            Button_GiveawayPickWinner.IsEnabled = true;
+        }
+
+        private void Giveaway_Toggle(bool Enabled = true)
+        {
+            RadioButton_GiveawayCustomRewards.IsEnabled = Enabled;
+            RadioButton_GiveawayCommand.IsEnabled = Enabled;
+            ComboBox_Giveaway_ChanPts.IsEnabled = Enabled;
+            ComboBox_Giveaway_Coms.IsEnabled = Enabled;
+        }
+
+        private void Button_GiveawayEnd_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.HandleGiveawayEnd();
+            Giveaway_Toggle();
+        }
+
+        private void Button_GiveawayPickWinner_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.HandleGiveawayWinner();
+            Giveaway_Toggle();
+            Button_GiveawayBegin.IsEnabled = true;
+        }
+
+        private void ComboBox_Giveaway_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            switch (((ComboBox)sender).Name)
+            {
+                case "ComboBox_Giveaway_ChanPts":
+                    RadioButton_GiveawayCustomRewards.IsChecked = true;
+                    break;
+                case "ComboBox_Giveaway_Coms":
+                    RadioButton_GiveawayCommand.IsChecked = true;
+                    break;
+            }
+        }
+
+        private void ComboBox_Giveaway_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+
+            if (Radio_Twitch_StartBot.IsChecked == true && ((RadioButton_GiveawayCustomRewards.IsChecked == true && (string)ComboBox_Giveaway_ChanPts.SelectedValue != "")
+                || (RadioButton_GiveawayCommand.IsChecked == true && (string)ComboBox_Giveaway_Coms.SelectedValue != "")))
+            {
+                Button_GiveawayBegin.IsEnabled = true;
+            }
+        }
+
+        #endregion
+
+
     }
 }

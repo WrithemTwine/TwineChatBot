@@ -1,5 +1,5 @@
 ﻿using StreamerBot.Events;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Interfaces;
 
 using System;

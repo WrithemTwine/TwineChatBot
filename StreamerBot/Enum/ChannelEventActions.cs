@@ -1,4 +1,4 @@
-﻿namespace StreamerBot.Enum
+﻿namespace StreamerBot.Enums
 {
     // TwitchLib.Client.Enums.UserType
 

@@ -1,4 +1,4 @@
-﻿using StreamerBot.Enum;
+﻿using StreamerBot.Enums;
 using StreamerBot.Interfaces;
 using StreamerBot.Models;
 using StreamerBot.Static;
@@ -68,6 +68,14 @@ namespace StreamerBot.Data
                 foreach (ClipsRow c in _DataSource.Clips.Select())
                 {
                     c.CreatedAt = DateTime.Parse(c.CreatedAt).ToLocalTime().ToString("yyyy/MM/dd HH:mm:ss");
+                }
+
+                foreach (CommandsRow c in _DataSource.Commands.Select())
+                {
+                    if (DBNull.Value.Equals(c["IsEnabled"]))
+                    {
+                        c["IsEnabled"] = true;
+                    }
                 }
             }
 
@@ -235,6 +243,7 @@ switches:
 -top:<number>
 -s:<sort>
 -a:<action>
+-e:<true|false> // IsEnabled
 -param:<allow params to command>
 -timer:<seconds>
 -use:<usage message>
@@ -296,7 +305,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -399,7 +408,7 @@ switches:
         {
             lock (_DataSource)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 NotifySaveData();
             }
             return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
@@ -497,7 +506,7 @@ switches:
 
             lock (_DataSource)
             {
-                commandsRows = (CommandsRow[])_DataSource.Commands.Select($"Message <>'{DefaulSocialMsg}'");
+                commandsRows = (CommandsRow[])_DataSource.Commands.Select($"Message <>'{DefaulSocialMsg}' AND IsEnabled=True");
             }
 
             string result = "";
@@ -1129,6 +1138,17 @@ switches:
 
         #endregion Users and Followers
 
+        #region Giveaways
+        public void PostGiveawayData(string DisplayName, DateTime dateTime)
+        {
+            lock (_DataSource)
+            {
+                _ = _DataSource.GiveawayUserData.AddGiveawayUserDataRow(DisplayName, dateTime);
+            }
+        }
+
+        #endregion
+
         #region Currency
         /// <summary>
         /// For the supplied user string, update the currency based on the supplied time to the currency accrual rates the streamer specified for the currency.
@@ -1431,6 +1451,18 @@ switches:
             }
         }
 
+        /// <summary>
+        /// Removes all Giveaway table data from the database.
+        /// </summary>
+        public void RemoveAllGiveawayData()
+        {
+            lock (_DataSource)
+            {
+                _DataSource.GiveawayUserData.Clear();
+            }
+        }
+
         #endregion
+
     }
 }

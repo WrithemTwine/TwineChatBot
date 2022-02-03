@@ -1,4 +1,4 @@
-﻿namespace StreamerBot.Enum
+﻿namespace StreamerBot.Enums
 {
     public enum Bots
     {
@@ -8,6 +8,7 @@
         TwitchFollowBot,
         TwitchClipBot,
         TwitchMultiBot,
-        TwitchUserBot
+        TwitchUserBot,
+        TwitchPubSub
     }
 }

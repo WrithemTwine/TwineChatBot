@@ -1,15 +1,18 @@
 ﻿using StreamerBot.BotClients.Twitch.TwitchLib;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.Properties;
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 
 namespace StreamerBot.BotClients.Twitch
@@ -20,6 +23,7 @@ namespace StreamerBot.BotClients.Twitch
         private bool IsInitalized;
 
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
+        public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
 
         public TwitchBotUserSvc()
         {
@@ -34,8 +38,8 @@ namespace StreamerBot.BotClients.Twitch
             DefaultSettingValueAttribute defaultSetting = null;
 
             foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                              where m.Name == "TwitchClientID"
-                              select m)
+                                     where m.Name == "TwitchClientID"
+                                     select m)
             {
                 defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
             }
@@ -104,5 +108,65 @@ namespace StreamerBot.BotClients.Twitch
             GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserName: UserName).Result;
             return user;
         }
+
+        public List<string> GetUserCustomRewardsId(string UserId)
+        {
+            GetCustomRewardsResponse getCustom = GetCustomRewardsId(UserId);
+
+            List<string> CustomRewardsList = new();
+            CustomRewardsList.AddRange(getCustom.Data.Select(cr => cr.Title));
+            PostEvent_GetCustomRewards(CustomRewardsList);
+
+            return CustomRewardsList;
+        }
+
+        public List<string> GetUserCustomRewardsName(string UserName)
+        {
+            GetCustomRewardsResponse getCustom = GetCustomRewardsName(UserName);
+
+            List<string> CustomRewardsList = new();
+            CustomRewardsList.AddRange(getCustom.Data.Select(cr => cr.Title));
+            PostEvent_GetCustomRewards(CustomRewardsList);
+
+            return CustomRewardsList;
+        }
+
+        private void PostEvent_GetCustomRewards(List<string> CustomRewardsList)
+        {
+            GetChannelPoints?.Invoke(this, new OnGetChannelPointsEventArgs() { ChannelPointNames = CustomRewardsList });
+        }
+
+        public GetCustomRewardsResponse GetCustomRewardsId(string UserId)
+        {
+            if (!IsInitalized)
+            {
+                ConnectUserService();
+            }
+
+            GetCustomRewardsResponse points = userLookupService.GetChannelPointInformation(UserId: UserId).Result;
+            return points;
+        }
+
+        public GetCustomRewardsResponse GetCustomRewardsName(string UserName)
+        {
+            if (!IsInitalized)
+            {
+                ConnectUserService();
+            }
+
+            GetCustomRewardsResponse points = userLookupService.GetChannelPointInformation(UserName: UserName).Result;
+            return points;
+        }
+
+        public async Task<string> GetUserId(string UserName)
+        {
+            if (!IsInitalized)
+            {
+                ConnectUserService();
+            }
+
+            return await userLookupService.GetUserId(UserName);
+        }
+
     }
 }

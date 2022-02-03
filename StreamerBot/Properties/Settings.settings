@@ -167,5 +167,26 @@
     <Setting Name="RepeatLiveResetShow" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ManageGiveawayUsers" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GiveawayCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="GiveawayWinMsg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">The Giveaway winner is: #user!</Value>
+    </Setting>
+    <Setting Name="GiveawayBegMsg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">The message when beginning giveaway - blank is no chat message</Value>
+    </Setting>
+    <Setting Name="GiveawayEndMsg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">The message when ending giveaway - blank is no chat message</Value>
+    </Setting>
+    <Setting Name="GiveawayMultiUser" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TwitchPubSubChannelPoints" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

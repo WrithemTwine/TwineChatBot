@@ -1,5 +1,5 @@
 ﻿
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Static;
 
 using Microsoft.Extensions.Logging;
@@ -79,7 +79,6 @@ namespace StreamerBot.BotClients.Twitch
                 );
 
             CreateClient();
-
             RefreshSettings();
         }
 
@@ -151,19 +150,16 @@ namespace StreamerBot.BotClients.Twitch
             }
             else
             {
-                if (!IsInitialized)
+                if (!IsInitialized && TwitchChannelName != ConnectedChannelName)
                 {
-                    TwitchChat.Initialize(credentials, TwitchChannelName);
+                    TwitchChat.Initialize(credentials);
                     IsInitialized = true;
                 }
-                else if (ConnectedChannelName != TwitchChannelName) // if the user changes the channel to monitor, we need to disconnect the prior channel review
-                {
-                    TwitchChat.LeaveChannel(ConnectedChannelName);
-                    TwitchChat.JoinChannel(TwitchChannelName);
-                }
+
                 TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 ConnectedChannelName = TwitchChannelName;
                 TwitchChat.Connect();
+                TwitchChat.JoinChannel(ConnectedChannelName);
                 isConnected = true;
             }
 
@@ -212,23 +208,27 @@ namespace StreamerBot.BotClients.Twitch
         /// <returns>True when successful.</returns>
         public override bool StopBot()
         {
+            bool Stopped;
             try
             {
                 if (IsStarted)
                 {
                     IsStarted = false;
                     IsStopped = true;
+                    TwitchChat.LeaveChannel(ConnectedChannelName);
                     TwitchChat.Disconnect();
                     RefreshSettings();
                     InvokeBotStopped();
                 }
-                return true;
+                Stopped = true;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                return false;
+                Stopped = false;
             }
+
+            return Stopped;
         }
 
         /// <summary>

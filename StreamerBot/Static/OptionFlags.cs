@@ -52,6 +52,7 @@ namespace StreamerBot.Static
         public static bool ManageStreamStats { get; set; }
         public static bool ManageRaidData { get; set; }
         public static bool ManageOutRaidData { get; set; }
+        public static bool ManageGiveawayUsers { get; set; }
 
         public static bool TwitchChatBotConnectOnline { get; set; }
         public static bool TwitchChatBotDisconnectOffline { get; set; }
@@ -61,6 +62,14 @@ namespace StreamerBot.Static
 
         public static bool TwitchCurrencyStart { get; set; }
         public static bool TwitchCurrencyOnline { get; set; }
+
+        public static int GiveawayCount { get; set; }
+        public static string GiveawayWinMsg { get; set; }
+        public static string GiveawayBegMsg { get; set; }
+        public static string GiveawayEndMsg { get; set; }
+        public static bool GiveawayMultiUser { get; set; }
+
+        public static bool TwitchPubSubChannelPoints { get; set; }
 
         public static void SetSettings()
         {
@@ -108,6 +117,7 @@ namespace StreamerBot.Static
                 ManageStreamStats = Settings.Default.ManageStreamStats;
                 ManageRaidData = Settings.Default.ManageRaidData;
                 ManageOutRaidData = Settings.Default.ManageOutRaidData;
+                ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
 
                 TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
                 TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
@@ -117,6 +127,14 @@ namespace StreamerBot.Static
 
                 TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
                 TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
+
+                GiveawayCount = Settings.Default.GiveawayCount;
+                GiveawayBegMsg = Settings.Default.GiveawayBegMsg;
+                GiveawayEndMsg = Settings.Default.GiveawayEndMsg;
+                GiveawayWinMsg = Settings.Default.GiveawayWinMsg;
+                GiveawayMultiUser = Settings.Default.GiveawayMultiUser;
+
+                TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
             }
         }
 

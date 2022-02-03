@@ -1,7 +1,7 @@
 ﻿using StreamerBot.BotClients.Twitch;
 using StreamerBot.BotIOController;
 using StreamerBot.Data;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Models;
 using StreamerBot.Static;
 using StreamerBot.Systems;

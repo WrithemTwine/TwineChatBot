@@ -1,4 +1,4 @@
-﻿namespace StreamerBot.Enum
+﻿namespace StreamerBot.Enums
 {
     public enum BotEvents
     {
@@ -26,6 +26,7 @@
         TwitchRitualNewChatter,
         TwitchMessageReceived,
         TwitchIncomingRaid,
-        TwitchChatCommandReceived
+        TwitchChatCommandReceived,
+        TwitchChannelPointsRewardRedeemed
     }
 }

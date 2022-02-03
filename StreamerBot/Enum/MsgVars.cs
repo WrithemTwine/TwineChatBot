@@ -1,4 +1,4 @@
-﻿namespace StreamerBot.Enum
+﻿namespace StreamerBot.Enums
 {
     /// <summary>
     /// Holds all of the possible variables used in messages to maintain consistency with naming and prefix character

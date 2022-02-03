@@ -1,4 +1,4 @@
-﻿using StreamerBot.Enum;
+﻿using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.Models;
 using StreamerBot.Static;
@@ -225,7 +225,7 @@ namespace StreamerBot.Systems
         public void EvalCommand(CmdMessage cmdMessage, Bots source)
         {
             string result;
-            ViewerTypes InvokerPermission = ParsePermission(cmdMessage);
+            cmdMessage.UserType = ParsePermission(cmdMessage);
 
             CommandsRow cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
             short multi = 0;
@@ -234,7 +234,11 @@ namespace StreamerBot.Systems
             {
                 result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound);
             }
-            else if ((ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < InvokerPermission)
+            else if (!cmdrow.IsEnabled)
+            {
+                result = "";
+            }
+            else if ((ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
             {
                 result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
             }
@@ -244,8 +248,7 @@ namespace StreamerBot.Systems
                 result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, source);
             }
 
-            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-
+            result = $"{(cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
         }
@@ -400,12 +403,12 @@ namespace StreamerBot.Systems
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.queue))
             {
                 List<string> JoinChatUsers = new();
-                foreach(UserJoin u in JoinCollection)
+                foreach (UserJoin u in JoinCollection)
                 {
                     JoinChatUsers.Add(u.ChatUser);
                 }
 
-                response = string.Format("There are {0} users in the join queue: {1}", JoinCollection.Count, JoinCollection.Count==0 ? "no users!" : string.Join(", ", JoinChatUsers ) );
+                response = string.Format("There are {0} users in the join queue: {1}", JoinCollection.Count, JoinCollection.Count == 0 ? "no users!" : string.Join(", ", JoinChatUsers));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
             {

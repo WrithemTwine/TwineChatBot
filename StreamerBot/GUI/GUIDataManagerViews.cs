@@ -1,4 +1,4 @@
-﻿using StreamerBot.Enum;
+﻿using StreamerBot.Enums;
 using StreamerBot.Systems;
 using StreamerBot.Data;
 
@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Documents;
 using StreamerBot.Models;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace StreamerBot.GUI
 {
@@ -22,6 +23,7 @@ namespace StreamerBot.GUI
         public FlowDocument ChatData { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
+        public ObservableCollection<string> CommandCollection { get; set; } = new();
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -38,6 +40,7 @@ namespace StreamerBot.GUI
         public DataView Clips { get; private set; }  // DataSource.ClipsDataTable
         public DataView InRaidData { get; private set; } // DataSource.InRaidDataDataTable
         public DataView OutRaidData { get; private set; } // DataSource.OutRaidDataDataTable
+        public DataView GiveawayUserData { get; private set; } // DataSource.GiveawayUserDataDataTable
 
         /// <summary>
         /// provide delegate to method for saving the database data
@@ -99,6 +102,7 @@ namespace StreamerBot.GUI
             Clips = new(dataManager._DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
             InRaidData = new(dataManager._DataSource.InRaidData, null, "Id", DataViewRowState.CurrentRows);
             OutRaidData = new(dataManager._DataSource.OutRaidData, null, "Id", DataViewRowState.CurrentRows);
+            GiveawayUserData = new(dataManager._DataSource.GiveawayUserData, null, "Id", DataViewRowState.CurrentRows);
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
@@ -115,6 +119,9 @@ namespace StreamerBot.GUI
             Clips.ListChanged += DataView_ListChanged;
             InRaidData.ListChanged += DataView_ListChanged;
             OutRaidData.ListChanged += DataView_ListChanged;
+            GiveawayUserData.ListChanged += DataView_ListChanged;
+
+            SetCommandCollection();
         }
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
@@ -127,7 +134,22 @@ namespace StreamerBot.GUI
             NotifyPropertyChanged(nameof(BuiltInCommands));
             NotifyPropertyChanged(nameof(Commands));
 
+            if (sender == Commands)
+            {
+                SetCommandCollection();
+            }
             //SaveTableData();
+        }
+
+        private void SetCommandCollection()
+        {
+            foreach (DataSource.CommandsRow c in from DataSource.CommandsRow c in Commands.Table.Select()
+                              where !CommandCollection.Contains(c.CmdName)
+                              orderby c.CmdName
+                              select c)
+            {
+                CommandCollection.Add(c.CmdName);
+            }
         }
     }
 }

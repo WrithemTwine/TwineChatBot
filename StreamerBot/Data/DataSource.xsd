@@ -78,6 +78,7 @@
               <xs:element name="CmdName" msdata:Caption="Command Name" msprop:Generator_ColumnVarNameInTable="columnCmdName" msprop:Generator_ColumnPropNameInRow="CmdName" msprop:Generator_ColumnPropNameInTable="CmdNameColumn" msprop:Generator_UserColumnName="CmdName" type="xs:string" />
               <xs:element name="AddMe" msprop:Generator_ColumnVarNameInTable="columnAddMe" msprop:Generator_ColumnPropNameInRow="AddMe" msprop:Generator_ColumnPropNameInTable="AddMeColumn" msprop:Generator_UserColumnName="AddMe" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="Permission" msdata:Caption="Lowest Level of Permission for Command" msprop:Generator_ColumnVarNameInTable="columnPermission" msprop:Generator_ColumnPropNameInRow="Permission" msprop:Generator_ColumnPropNameInTable="PermissionColumn" msprop:Generator_UserColumnName="Permission" type="xs:string" minOccurs="0" />
+              <xs:element name="IsEnabled" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_UserColumnName="IsEnabled" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="Message" msprop:Generator_ColumnVarNameInTable="columnMessage" msprop:Generator_ColumnPropNameInRow="Message" msprop:Generator_ColumnPropNameInTable="MessageColumn" msprop:Generator_UserColumnName="Message" type="xs:string" minOccurs="0" />
               <xs:element name="RepeatTimer" msdata:Caption="Seconds between Repeat Events-works best with commands without input arguments" msprop:Generator_ColumnVarNameInTable="columnRepeatTimer" msprop:Generator_ColumnPropNameInRow="RepeatTimer" msprop:Generator_ColumnPropNameInTable="RepeatTimerColumn" msprop:Generator_UserColumnName="RepeatTimer" type="xs:int" minOccurs="0" />
               <xs:element name="SendMsgCount" msdata:Caption="Repeat Message" msprop:Generator_ColumnVarNameInTable="columnSendMsgCount" msprop:Generator_ColumnPropNameInRow="SendMsgCount" msprop:Generator_ColumnPropNameInTable="SendMsgCountColumn" msprop:Generator_UserColumnName="SendMsgCount" type="xs:short" default="0" minOccurs="0" />
@@ -185,6 +186,15 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="GiveawayUserData" msprop:Generator_TableClassName="GiveawayUserDataDataTable" msprop:Generator_TableVarName="tableGiveawayUserData" msprop:Generator_TablePropName="GiveawayUserData" msprop:Generator_RowDeletingName="GiveawayUserDataRowDeleting" msprop:Generator_RowChangingName="GiveawayUserDataRowChanging" msprop:Generator_RowEvHandlerName="GiveawayUserDataRowChangeEventHandler" msprop:Generator_RowDeletedName="GiveawayUserDataRowDeleted" msprop:Generator_UserTableName="GiveawayUserData" msprop:Generator_RowChangedName="GiveawayUserDataRowChanged" msprop:Generator_RowEvArgName="GiveawayUserDataRowChangeEvent" msprop:Generator_RowClassName="GiveawayUserDataRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="DisplayName" msprop:Generator_ColumnVarNameInTable="columnDisplayName" msprop:Generator_ColumnPropNameInRow="DisplayName" msprop:Generator_ColumnPropNameInTable="DisplayNameColumn" msprop:Generator_UserColumnName="DisplayName" type="xs:string" minOccurs="0" />
+              <xs:element name="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_UserColumnName="DateTime" type="xs:dateTime" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Currency_ClusteredKey" msdata:PrimaryKey="true">
@@ -263,6 +273,10 @@
     </xs:unique>
     <xs:unique name="OutRaidData_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
       <xs:selector xpath=".//mstns:OutRaidData" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="GiveawayUserData_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:GiveawayUserData" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
     <xs:keyref name="Users_Followers" refer="Users_Constraint2" msprop:rel_Generator_UserChildTable="Followers" msprop:rel_Generator_ChildPropName="GetFollowersRows" msprop:rel_Generator_UserRelationName="Users_Followers" msprop:rel_Generator_ParentPropName="UsersRow" msprop:rel_Generator_RelationVarName="relationUsers_Followers" msprop:rel_Generator_UserParentTable="Users" msdata:UpdateRule="None">

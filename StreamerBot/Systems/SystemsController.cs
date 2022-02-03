@@ -1,6 +1,6 @@
 ﻿using StreamerBot.BotClients;
 using StreamerBot.Data;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.Models;
 using StreamerBot.Static;
@@ -34,6 +34,9 @@ namespace StreamerBot.Systems
         private readonly Thread ProcessMsgs;
 
         private delegate void BotOperation();
+
+        private bool GiveawayStarted = false;
+        private List<string> GiveawayCollection = new();
 
 
         public SystemsController()
@@ -458,6 +461,57 @@ namespace StreamerBot.Systems
             }
             UpdatedStat(StreamStatType.AutoCommands);
         }
+
+
+        #region Giveaway
+        public void BeginGiveaway()
+        {
+            GiveawayStarted = true;
+            GiveawayCollection.Clear();
+
+            SendMessage(OptionFlags.GiveawayBegMsg);
+        }
+
+        /// <summary>
+        /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be started through <code>BeginGiveaway()</code>.
+        /// </summary>
+        /// <param name="DisplayName"></param>
+        public void ManageGiveaway(string DisplayName)
+        {
+            if (GiveawayStarted && (OptionFlags.GiveawayMultiUser || !GiveawayCollection.Contains(DisplayName)))
+            {
+                GiveawayCollection.Add(DisplayName);
+            }
+        }
+
+        public void EndGiveaway()
+        {
+            GiveawayStarted = false;
+            SendMessage(OptionFlags.GiveawayEndMsg);
+        }
+
+        public void PostGiveawayResult()
+        {
+            Random random = new();
+
+            string DisplayName = "";
+
+            for (int x = 0; x < OptionFlags.GiveawayCount; x++)
+            {
+                DisplayName += GiveawayCollection[random.Next(GiveawayCollection.Count)] + ", ";
+            }
+
+            DisplayName = DisplayName.Substring(0, DisplayName.Length - 2);
+
+            SendMessage(VariableParser.ParseReplace(OptionFlags.GiveawayWinMsg, VariableParser.BuildDictionary(new Tuple<string, string>[] { new("#user", DisplayName) })));
+
+            if (OptionFlags.ManageGiveawayUsers)
+            {
+                DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+            }
+        }
+
+        #endregion
 
         #region Clips
         public void ClipHelper(IEnumerable<Clip> Clips)

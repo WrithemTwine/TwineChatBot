@@ -1,6 +1,6 @@
 ﻿using StreamerBot.BotClients.Twitch;
 using StreamerBot.BotClients.Twitch.TwitchLib.Events.ClipService;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.Static;
 using StreamerBot.Systems;
@@ -17,6 +17,7 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
+using TwitchLib.PubSub.Events;
 
 namespace StreamerBot.BotClients
 {
@@ -27,6 +28,7 @@ namespace StreamerBot.BotClients
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = new();
         public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } = new();
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = new();
+        public static TwitchBotPubSub TwitchBotPubSub { get; private set; } = new();
 
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
@@ -40,14 +42,16 @@ namespace StreamerBot.BotClients
             AddBot(TwitchLiveMonitor);
             AddBot(TwitchBotClipSvc);
             AddBot(TwitchBotChatClient);
+            AddBot(TwitchBotPubSub);
 
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+            TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
         }
-
+              
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
             InvokeBotEvent(this, BotEvents.TwitchCategoryUpdate, e);
@@ -99,7 +103,14 @@ namespace StreamerBot.BotClients
 
                 TwitchBotClipSvc.HandlersAdded = true;
             }
+
+            if(TwitchBotPubSub.IsStarted && !TwitchBotPubSub.HandlersAdded)
+            {
+                TwitchBotPubSub.TwitchPubSub.OnChannelPointsRewardRedeemed += TwitchPubSub_OnChannelPointsRewardRedeemed;
+                TwitchBotPubSub.HandlersAdded = true;
+            }
         }
+
 
         #region Twitch Bot Chat Client
 
@@ -303,6 +314,20 @@ namespace StreamerBot.BotClients
 
         #endregion
 
+        #region PubSub
+        private void TwitchBotPubSub_OnBotStarted(object sender, EventArgs e)
+        {
+            RegisterHandlers();
+        }
+
+        private void TwitchPubSub_OnChannelPointsRewardRedeemed(object sender, OnChannelPointsRewardRedeemedArgs e)
+        {
+            Twitch.TwitchLib.Events.PubSub.OnChannelPointsRewardRedeemedArgs local = new() { ChannelId = e.ChannelId, RewardRedeemed = e.RewardRedeemed };
+            InvokeBotEvent(this, BotEvents.TwitchChannelPointsRewardRedeemed, local);
+        }
+
+        #endregion
+
         #region Threaded Ops
 
         public override void GetAllFollowers()
@@ -354,6 +379,7 @@ namespace StreamerBot.BotClients
         }
 
         #endregion
+
 
     }
 }

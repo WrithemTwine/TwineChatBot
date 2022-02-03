@@ -19,7 +19,7 @@
 
     <system:String x:Key="CredentialsLinkTwitchConsole">https://dev.twitch.tv/console</system:String>
     <system:String x:Key="CredentialsLinkTwitchTokenGen">https://twitchapps.com/tokengen/</system:String>
-    <system:String x:Key="CredentialsTwitchScopes">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows</system:String>
+    <system:String x:Key="CredentialsTwitchScopes">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows channel:read:redemptions</system:String>
 
     <system:String x:Key="CredentialsVisit">Visit: </system:String>
     <system:String x:Key="CredentialsAdd">Add:</system:String>
