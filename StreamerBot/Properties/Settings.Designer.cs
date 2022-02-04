@@ -766,5 +766,41 @@ namespace StreamerBot.Properties {
                 this["TwitchPubSubChannelPoints"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("From registered chatbot for Stream Channel at https://dev.twitch.tv/console")]
+        public string TwitchStreamClientId {
+            get {
+                return ((string)(this["TwitchStreamClientId"]));
+            }
+            set {
+                this["TwitchStreamClientId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Specify the OAuth access token for streamer channel bot authentication")]
+        public string TwitchStreamOauthToken {
+            get {
+                return ((string)(this["TwitchStreamOauthToken"]));
+            }
+            set {
+                this["TwitchStreamOauthToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
+        public global::System.DateTime TwitchStreamerTokenDate {
+            get {
+                return ((global::System.DateTime)(this["TwitchStreamerTokenDate"]));
+            }
+            set {
+                this["TwitchStreamerTokenDate"] = value;
+            }
+        }
     }
 }

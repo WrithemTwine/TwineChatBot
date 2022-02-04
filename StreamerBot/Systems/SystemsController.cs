@@ -496,18 +496,21 @@ namespace StreamerBot.Systems
 
             string DisplayName = "";
 
-            for (int x = 0; x < OptionFlags.GiveawayCount; x++)
+            for (int x = 0; x < OptionFlags.GiveawayCount && GiveawayCollection.Count > 0; x++)
             {
                 DisplayName += GiveawayCollection[random.Next(GiveawayCollection.Count)] + ", ";
             }
 
-            DisplayName = DisplayName.Substring(0, DisplayName.Length - 2);
+            DisplayName = DisplayName[0..^2];
 
-            SendMessage(VariableParser.ParseReplace(OptionFlags.GiveawayWinMsg, VariableParser.BuildDictionary(new Tuple<string, string>[] { new("#user", DisplayName) })));
-
-            if (OptionFlags.ManageGiveawayUsers)
+            if (DisplayName != "")
             {
-                DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+                SendMessage(VariableParser.ParseReplace(OptionFlags.GiveawayWinMsg, VariableParser.BuildDictionary(new Tuple<string, string>[] { new("#user", DisplayName) })));
+
+                if (OptionFlags.ManageGiveawayUsers)
+                {
+                    DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+                }
             }
         }
 

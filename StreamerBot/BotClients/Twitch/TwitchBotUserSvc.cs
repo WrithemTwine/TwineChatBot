@@ -2,12 +2,14 @@
 using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.Properties;
+using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TwitchLib.Api;
@@ -46,34 +48,17 @@ namespace StreamerBot.BotClients.Twitch
 
             if (Settings.Default.TwitchClientID != defaultSetting.Value)
             {
-                if (IsStarted)
-                {
-                    userLookupService.Stop();
-                }
+                userLookupService = null;
 
                 RefreshSettings();
-                ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
-                userLookupService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
-
-                IsInitalized = true;
+                ApiSettings api = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
+                userLookupService = new(new TwitchAPI(null, null, api, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
             }
         }
 
-        public string GetUserGameCategoryId(string UserId)
+        public string GetUserGameCategory(string UserId = null, string UserName = null)
         {
-            ChannelInformation channelInformation = GetUserInfoId(UserId)?.Data[0];
-            string gameName = channelInformation.GameName ?? "N/A";
-            string gameId = channelInformation.GameId ?? "N/A";
-
-            PostEvent_GetChannelGameName(gameName, gameId);
-
-            return gameName;
-        }
-
-        public string GetUserGameCategoryName(string UserName)
-        {
-            ChannelInformation channelInformation = GetUserInfoName(UserName)?.Data[0];
-
+            ChannelInformation channelInformation = GetUserInfo(UserId: UserId, UserName: UserName)?.Data[0];
             string gameName = channelInformation.GameName ?? "N/A";
             string gameId = channelInformation.GameId ?? "N/A";
 
@@ -87,45 +72,71 @@ namespace StreamerBot.BotClients.Twitch
             GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName, GameId = foundGameId });
         }
 
-        public GetChannelInformationResponse GetUserInfoId(string UserId)
+        public GetChannelInformationResponse GetUserInfo(string UserId = null, string UserName = null)
         {
-            if (!IsInitalized)
-            {
-                ConnectUserService();
-            }
-
-            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId).Result;
+            ConnectUserService();
+            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserId: UserId, UserName: UserName).Result;
             return user;
         }
 
-        public GetChannelInformationResponse GetUserInfoName(string UserName)
+        public string GetUserId(string UserName)
         {
-            if (!IsInitalized)
+            ConnectUserService();
+            string result = userLookupService.GetUserId(UserName).Result;
+            return result;
+        }
+
+        #region StreamerChannel Client Id and Request UserId must be the same
+        /// <summary>
+        /// Aware of whether to use the bot user client Id or streamer client Id, due to API calls requiring the client Id of the streaming channel to retrieve the data.
+        /// </summary>
+        private void ChooseConnectUserService()
+        {
+            string SettingsClientId = "";
+            string ClientId = "";
+            string OauthToken = "";
+
+            RefreshSettings();
+
+            if (OptionFlags.TwitchStreamerUseToken)
             {
-                ConnectUserService();
+                SettingsClientId = "TwitchStreamClientId";
+                ClientId = OptionFlags.TwitchStreamClientId;
+                OauthToken = OptionFlags.TwitchStreamOauthToken;
+            }
+            else
+            {
+                SettingsClientId = "TwitchClientID";
+                ClientId = Settings.Default.TwitchClientID;
+                OauthToken = Settings.Default.TwitchAccessToken;
             }
 
-            GetChannelInformationResponse user = userLookupService.GetChannelInformation(UserName: UserName).Result;
-            return user;
+
+            DefaultSettingValueAttribute defaultSetting = null;
+
+            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
+                                     where m.Name == SettingsClientId
+                                     select m)
+            {
+                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
+            }
+
+            if (ClientId != defaultSetting.Value)
+            {
+                userLookupService = null;
+
+                ApiSettings api = new() { AccessToken = OauthToken, ClientId = ClientId };
+                userLookupService = new(new TwitchAPI(null, null, api, null));
+            }
         }
 
-        public List<string> GetUserCustomRewardsId(string UserId)
+        public List<string> GetUserCustomRewards(string UserId = null, string UserName = null)
         {
-            GetCustomRewardsResponse getCustom = GetCustomRewardsId(UserId);
+            GetCustomRewardsResponse getCustom = GetCustomRewardsId(UserId: UserId, UserName: UserName);
 
             List<string> CustomRewardsList = new();
             CustomRewardsList.AddRange(getCustom.Data.Select(cr => cr.Title));
-            PostEvent_GetCustomRewards(CustomRewardsList);
-
-            return CustomRewardsList;
-        }
-
-        public List<string> GetUserCustomRewardsName(string UserName)
-        {
-            GetCustomRewardsResponse getCustom = GetCustomRewardsName(UserName);
-
-            List<string> CustomRewardsList = new();
-            CustomRewardsList.AddRange(getCustom.Data.Select(cr => cr.Title));
+            CustomRewardsList.Sort();
             PostEvent_GetCustomRewards(CustomRewardsList);
 
             return CustomRewardsList;
@@ -136,37 +147,14 @@ namespace StreamerBot.BotClients.Twitch
             GetChannelPoints?.Invoke(this, new OnGetChannelPointsEventArgs() { ChannelPointNames = CustomRewardsList });
         }
 
-        public GetCustomRewardsResponse GetCustomRewardsId(string UserId)
+        public GetCustomRewardsResponse GetCustomRewardsId(string UserId = null, string UserName = null)
         {
-            if (!IsInitalized)
-            {
-                ConnectUserService();
-            }
+            ChooseConnectUserService();
 
-            GetCustomRewardsResponse points = userLookupService.GetChannelPointInformation(UserId: UserId).Result;
+            GetCustomRewardsResponse points = userLookupService.GetChannelPointInformation(UserId: UserId, UserName: UserName).Result;
             return points;
         }
 
-        public GetCustomRewardsResponse GetCustomRewardsName(string UserName)
-        {
-            if (!IsInitalized)
-            {
-                ConnectUserService();
-            }
-
-            GetCustomRewardsResponse points = userLookupService.GetChannelPointInformation(UserName: UserName).Result;
-            return points;
-        }
-
-        public async Task<string> GetUserId(string UserName)
-        {
-            if (!IsInitalized)
-            {
-                ConnectUserService();
-            }
-
-            return await userLookupService.GetUserId(UserName);
-        }
-
+        #endregion
     }
 }

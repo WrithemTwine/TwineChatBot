@@ -152,14 +152,14 @@ namespace StreamerBot.BotClients.Twitch
             {
                 if (!IsInitialized && TwitchChannelName != ConnectedChannelName)
                 {
-                    TwitchChat.Initialize(credentials);
+                    TwitchChat.Initialize(credentials, TwitchChannelName);
                     IsInitialized = true;
                 }
 
                 TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 ConnectedChannelName = TwitchChannelName;
                 TwitchChat.Connect();
-                TwitchChat.JoinChannel(ConnectedChannelName);
+             //   TwitchChat.JoinChannel(ConnectedChannelName);
                 isConnected = true;
             }
 

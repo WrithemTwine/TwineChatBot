@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using StreamerBot.Events;
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,9 +18,11 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
         {
         }
 
+
         public async Task<string> GetUserId(string UserName)
         {
-            return (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id;
+            string result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id;
+            return result;
         }
 
         public async Task<GetChannelInformationResponse> GetChannelInformation(string UserId = null, string UserName = null)
@@ -36,10 +41,11 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
 
         public async Task<GetCustomRewardsResponse> GetChannelPointInformation(string UserId = null, string UserName = null)
         {
-            if(UserId != null)
+            if (UserId != null)
             {
                 return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId);
-            } else if(UserName != null)
+            }
+            else if (UserName != null)
             {
                 return await _api.Helix.ChannelPoints.GetCustomRewardAsync(await GetUserId(UserName));
             }

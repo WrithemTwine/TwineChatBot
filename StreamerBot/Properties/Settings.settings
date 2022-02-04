@@ -188,5 +188,14 @@
     <Setting Name="TwitchPubSubChannelPoints" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="TwitchStreamClientId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">From registered chatbot for Stream Channel at https://dev.twitch.tv/console</Value>
+    </Setting>
+    <Setting Name="TwitchStreamOauthToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Specify the OAuth access token for streamer channel bot authentication</Value>
+    </Setting>
+    <Setting Name="TwitchStreamerTokenDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">1900-01-01</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

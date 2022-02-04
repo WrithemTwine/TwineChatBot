@@ -19,7 +19,25 @@
 
     <system:String x:Key="CredentialsLinkTwitchConsole">https://dev.twitch.tv/console</system:String>
     <system:String x:Key="CredentialsLinkTwitchTokenGen">https://twitchapps.com/tokengen/</system:String>
-    <system:String x:Key="CredentialsTwitchScopes">bits:read chat:read chat:edit channel:moderate user:read:broadcast user:edit:follows channel:read:redemptions</system:String>
+    
+    
+    <!-- Begin- Manage Scopes-->
+    
+    <system:String x:Key="CredentialsTwitchScopesDiffOauthBot">bits:read chat:read chat:edit channel:moderate</system:String>
+    <system:String x:Key="CredentialsTwitchScopesDiffOauthChannel">channel:read:redemptions</system:String>
+    <system:String x:Key="CredentialsTwitchScopesOauthSame">bits:read chat:read chat:edit channel:moderate channel:read:redemptions</system:String>
+
+    <!-- End-Manage Scopes-->
+    
+    <!-- Begin - Streamer Channel specific, when bot login is different than streamer channel -->
+    <system:String x:Key="CredentialsTwitchExplainSameChannel">Twitch limits access to certain channel data only to the broadcaster channel account. To access this data, please create a ClientID and use the following scope(s) (hidden in expander section) to create the access token.</system:String>
+
+
+    <x:Array Type="system:String" x:Key="CredentialsTwitchStreamerFeatures">
+        <system:String>Channel Point Rewards</system:String>
+    </x:Array>
+    
+    <!-- End - Streamer Channel specific, when bot login is different than streamer channel -->
 
     <system:String x:Key="CredentialsVisit">Visit: </system:String>
     <system:String x:Key="CredentialsAdd">Add:</system:String>
@@ -38,7 +56,7 @@
 
     <system:String x:Key="CredentialsTwitchPasteClientId">Paste the 'Client Id' generated from above at: </system:String>
 
-    <system:String x:Key="CredentialsTwitchPasteScopes">For "Scopes", paste exactly</system:String>
+    <system:String x:Key="CredentialsTwitchPasteScopes">For "Scopes", paste exactly the following depending if you're acquiring a Bot or Stream access token</system:String>
 
     <system:String x:Key="CredentialsTwitchScopesExplained">*This permits specific access for the app functions. Please add these scopes. Currently, the app doesn't adjust to what user scopes you've selected if you don't want specific features enabled.</system:String>
 

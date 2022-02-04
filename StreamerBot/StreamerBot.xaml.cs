@@ -63,7 +63,7 @@ namespace StreamerBot
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
-            guiTwitchBot.OnBotStarted += guiTwitchBot_GiveawayEvents;
+            guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
 
@@ -76,7 +76,7 @@ namespace StreamerBot
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             CheckFocus();
-            if (OptionFlags.CurrentToTwitchRefreshDate() >= CheckRefreshDate)
+            if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
             {
                 List<Tuple<bool, RadioButton>> BotOps = new()
                 {
@@ -138,12 +138,12 @@ namespace StreamerBot
                     ToggleInputEnabled(false);
                     RadioButton radio = e.BotName switch
                     {
-                        Enums.Bots.TwitchChatBot => Radio_Twitch_StartBot,
-                        Enums.Bots.TwitchClipBot => Radio_Twitch_ClipBotStart,
-                        Enums.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStart,
-                        Enums.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
-                        Enums.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
-                        _ => Radio_MultiLiveTwitch_StartBot,
+                        Bots.TwitchChatBot => Radio_Twitch_StartBot,
+                        Bots.TwitchClipBot => Radio_Twitch_ClipBotStart,
+                        Bots.TwitchFollowBot => Radio_Twitch_FollowBotStart,
+                        Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
+                        Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
+                        Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart
                     };
                     HelperStartBot(radio);
                 }
@@ -157,12 +157,12 @@ namespace StreamerBot
                   ToggleInputEnabled(true);
                   RadioButton radio = e.BotName switch
                   {
-                      Enums.Bots.TwitchChatBot => Radio_Twitch_StopBot,
-                      Enums.Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
-                      Enums.Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
-                      Enums.Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
-                      Enums.Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
-                      _ => Radio_MultiLiveTwitch_StopBot,
+                      Bots.TwitchChatBot => Radio_Twitch_StopBot,
+                      Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
+                      Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
+                      Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
+                      Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
+                      Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop
                   };
                   HelperStopBot(radio);
               }), null);
@@ -322,12 +322,13 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
-            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate() >= new TimeSpan(0, 0, 0))
+            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
             {
                 Radio_Twitch_StartBot.IsEnabled = true;
                 Radio_Twitch_FollowBotStart.IsEnabled = true;
                 Radio_Twitch_LiveBotStart.IsEnabled = true;
                 Radio_Twitch_ClipBotStart.IsEnabled = true;
+                Radio_Twitch_PubSubBotStart.IsEnabled = true;
             }
             else
             {
@@ -335,7 +336,11 @@ namespace StreamerBot
                 Radio_Twitch_FollowBotStart.IsEnabled = false;
                 Radio_Twitch_LiveBotStart.IsEnabled = false;
                 Radio_Twitch_ClipBotStart.IsEnabled = false;
+                Radio_Twitch_PubSubBotStart.IsEnabled = false;
             }
+
+            // Twitch
+            GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text ? Visibility.Visible : Visibility.Collapsed;
 
             CheckDebug();
         }
@@ -344,10 +349,10 @@ namespace StreamerBot
         {
             if ((sender as RadioButton).IsEnabled)
             {
-                Dispatcher.BeginInvoke(new BotOperation(() =>
-                {
-                    ((sender as RadioButton).DataContext as IOModule)?.StartBot();
-                }), null);
+                  Dispatcher.BeginInvoke(new BotOperation(() =>
+                  {
+                      ((sender as RadioButton).DataContext as IOModule)?.StartBot();
+                  }), null);
             }
         }
 
@@ -371,11 +376,6 @@ namespace StreamerBot
 
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
-            if ((sender as TextBox).Name == "TB_Twitch_AccessToken")
-            {
-                RefreshButton_Click(this, null); // invoke date refresh when the access token is changed
-            }
-
             CheckFocus();
         }
 
@@ -396,8 +396,15 @@ namespace StreamerBot
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
+            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            CheckFocus();
+        }
+
+        private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
+        {
+            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
+            TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
 
@@ -414,9 +421,9 @@ namespace StreamerBot
         private void BeginUpdateCategory()
         {
             // TODO: align current stream info to the current active stream
-            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;           
+            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
 
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s)=>guiTwitchBot.TwitchBotUserSvc.GetUserGameCategoryName(s)) );
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.TwitchBotUserSvc.GetUserGameCategory(UserName: s)));
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -465,7 +472,7 @@ namespace StreamerBot
 
         private void DG_CommonMsgs_AutoGeneratedColumns(object sender, EventArgs e)
         {
-            DataGrid dg = (sender as DataGrid);
+            DataGrid dg = (DataGrid)sender;
 
             // find the new item, hide columns other than the primary data columns, i.e. relational columns
             switch (dg.Name)
@@ -739,7 +746,12 @@ namespace StreamerBot
                     IsMultiProcActive = processes.Length > 0;
                 }
 
-                if (OptionFlags.CurrentToTwitchRefreshDate() <= new TimeSpan(0, 5, sleep / 1000))
+                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
+                {
+                    NotifyExpiredCredentials?.Invoke(this, new());
+                }
+
+                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
                 {
                     NotifyExpiredCredentials?.Invoke(this, new());
                 }
@@ -873,9 +885,15 @@ namespace StreamerBot
 
         private delegate void RefreshChannelPoints();
 
-        private void guiTwitchBot_GiveawayEvents(object sender, BotStartStopEventArgs e)
+        private void TabItem_Giveaways_Loaded(object sender, RoutedEventArgs e)
         {
-            if (e.BotName == Enums.Bots.TwitchChatBot)
+            //BeginGiveawayChannelPtsUpdate();
+            CheckGiveawayFocusStatus();
+        }
+
+        private void GuiTwitchBot_GiveawayEvents(object sender, BotStartStopEventArgs e)
+        {
+            if (e.BotName == Bots.TwitchChatBot)
             {
                 BeginGiveawayChannelPtsUpdate();
             }
@@ -890,7 +908,7 @@ namespace StreamerBot
         {
             guiTwitchBot.TwitchBotUserSvc.GetChannelPoints += TwitchBotUserSvc_GetChannelPoints;
 
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.TwitchBotUserSvc.GetCustomRewardsName(s)));
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.TwitchBotUserSvc.GetUserCustomRewards(UserName: s)));
         }
 
         private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)
@@ -898,7 +916,7 @@ namespace StreamerBot
             Dispatcher.Invoke(() =>
             {
                 ComboBox_Giveaway_ChanPts.ItemsSource = e.ChannelPointNames;
-                Button_Giveaway_RefreshChannelPoints.IsEnabled = false;
+                Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
             });
             guiTwitchBot.TwitchBotUserSvc.GetChannelPoints -= TwitchBotUserSvc_GetChannelPoints;
         }
@@ -906,10 +924,11 @@ namespace StreamerBot
         private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)
         {
             GiveawayTypes givetype = GiveawayTypes.None;
-            if ((RadioButton) sender == RadioButton_GiveawayCommand)
+            if (RadioButton_GiveawayCommand.IsChecked == true)
             {
                 givetype = GiveawayTypes.Command;
-            } else if((RadioButton)sender == RadioButton_GiveawayCustomRewards)
+            }
+            else if (RadioButton_GiveawayCustomRewards.IsChecked == true)
             {
                 givetype = GiveawayTypes.CustomRewards;
             }
@@ -929,6 +948,7 @@ namespace StreamerBot
             Controller.HandleGiveawayBegin(givetype, ItemName);
             Giveaway_Toggle(false);
 
+            Button_GiveawayBegin.IsEnabled = true;
             Button_GiveawayEnd.IsEnabled = true;
             Button_GiveawayPickWinner.IsEnabled = true;
         }
@@ -967,11 +987,15 @@ namespace StreamerBot
             }
         }
 
-        private void ComboBox_Giveaway_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ComboBox_Giveaway_DropDownClosed(object sender, EventArgs e)
         {
+            CheckGiveawayFocusStatus();
+        }
 
-
-            if (Radio_Twitch_StartBot.IsChecked == true && ((RadioButton_GiveawayCustomRewards.IsChecked == true && (string)ComboBox_Giveaway_ChanPts.SelectedValue != "")
+        private void CheckGiveawayFocusStatus()
+        {
+            if (Radio_Twitch_StartBot.IsChecked == true &&
+                ((RadioButton_GiveawayCustomRewards.IsChecked == true && (string)ComboBox_Giveaway_ChanPts.SelectedValue != "" && Radio_Twitch_PubSubBotStart.IsChecked == true)
                 || (RadioButton_GiveawayCommand.IsChecked == true && (string)ComboBox_Giveaway_Coms.SelectedValue != "")))
             {
                 Button_GiveawayBegin.IsEnabled = true;

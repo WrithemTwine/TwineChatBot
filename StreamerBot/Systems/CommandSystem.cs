@@ -129,7 +129,7 @@ namespace StreamerBot.Systems
                     ResetLive = false;
                 }
 
-                if (cmd.NextRun <= DateTime.Now.ToLocalTime())
+                if (cmd.CheckFireTime())
                 {
                     OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
                     lock (cmd)

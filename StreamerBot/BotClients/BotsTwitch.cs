@@ -216,17 +216,7 @@ namespace StreamerBot.BotClients
 
         public static string GetUserCategory(string UserId = null, string UserName = null)
         {
-            if (UserId != null)
-            {
-                return TwitchBotUserSvc.GetUserGameCategoryId(UserId);
-            }
-            else if(UserName != null)
-            {
-                return TwitchBotUserSvc.GetUserGameCategoryName(UserName);
-            } else
-            {
-                return "";
-            }
+            return TwitchBotUserSvc.GetUserGameCategory(UserId: UserId, UserName: UserName);
         }
 
         #endregion

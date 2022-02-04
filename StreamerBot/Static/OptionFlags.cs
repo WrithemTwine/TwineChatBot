@@ -28,7 +28,6 @@ namespace StreamerBot.Static
         public static bool MsgPerComMe { get; set; }
 
         public static bool MsgWelcomeStreamer { get; set; }
-
         public static bool WelcomeCustomMsg { get; set; }
 
         public static bool AutoShout { get; set; }
@@ -70,6 +69,16 @@ namespace StreamerBot.Static
         public static bool GiveawayMultiUser { get; set; }
 
         public static bool TwitchPubSubChannelPoints { get; set; }
+
+        public static string TwitchStreamClientId { get; set; }
+        public static string TwitchStreamOauthToken { get; set; }
+        public static DateTime TwitchStreamerTokenDate { get; set; }
+        public static bool TwitchStreamerValidToken => CurrentToTwitchRefreshDate(TwitchStreamerTokenDate) > new TimeSpan(0, 0, 0);
+
+        /// <summary>
+        /// Flag to indicate whether the API should use Streamer Client Id credentials per Twitch requirements.
+        /// </summary>
+        public static bool TwitchStreamerUseToken { get; set; }
 
         public static void SetSettings()
         {
@@ -135,6 +144,12 @@ namespace StreamerBot.Static
                 GiveawayMultiUser = Settings.Default.GiveawayMultiUser;
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
+
+                TwitchStreamClientId = Settings.Default.TwitchStreamClientId;
+                TwitchStreamerTokenDate = Settings.Default.TwitchStreamerTokenDate;
+                TwitchStreamOauthToken = Settings.Default.TwitchStreamOauthToken;
+
+                TwitchStreamerUseToken = Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
             }
         }
 
@@ -146,9 +161,9 @@ namespace StreamerBot.Static
             SetSettings();
         }
 
-        public static TimeSpan CurrentToTwitchRefreshDate()
+        public static TimeSpan CurrentToTwitchRefreshDate(DateTime RefreshDate)
         {
-            return TwitchRefreshDate - DateTime.Now.ToLocalTime();
+            return RefreshDate - DateTime.Now.ToLocalTime();
         }
 
     }

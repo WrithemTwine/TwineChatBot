@@ -53,7 +53,9 @@ namespace StreamerBot.Models
             RepeatTime = NewRepeatTime;
         }
 
-        public void SetNow() => NextRun = DateTime.Now.ToLocalTime();
+        private Random random = new();
+
+        public void SetNow() => NextRun = DateTime.Now.AddSeconds(random.Next(60,450)).ToLocalTime();
 
         public void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime * TimeDilute);
 

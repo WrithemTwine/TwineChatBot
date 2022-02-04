@@ -83,6 +83,11 @@ namespace StreamerBot.Systems
             {
                 DataManage.RemoveAllOutRaidData();
             }
+
+            if (!OptionFlags.ManageGiveawayUsers)
+            {
+                DataManage.RemoveAllGiveawayData();
+            }
         }
 
         /// <summary>
@@ -142,13 +147,7 @@ namespace StreamerBot.Systems
         /// Returns the start of the current active online stream.
         /// </summary>
         /// <returns>The DateTime of the stream start time.</returns>
-        public DateTime GetCurrentStreamStart
-        {
-            get
-            {
-                return CurrStream.StreamStart;
-            }
-        }
+        public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
 
 
         private delegate void ProcMessage(string UserName, string Message);

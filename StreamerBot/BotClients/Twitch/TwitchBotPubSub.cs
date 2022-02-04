@@ -3,6 +3,7 @@ using StreamerBot.Static;
 
 using System;
 using System.Reflection;
+using System.Threading;
 
 using TwitchLib.PubSub;
 
@@ -23,56 +24,63 @@ namespace StreamerBot.BotClients.Twitch
 
         public override bool StartBot()
         {
-            bool Connected;
+            bool Connected = true;            
 
-            try
+            new Thread(new ThreadStart(() =>
             {
-                if (IsStopped || !IsStarted)
+                lock (this)
                 {
-                    RefreshSettings();
-                    UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(TwitchChannelName).Result;
+                    try
+                    {
+                        if (IsStopped || !IsStarted)
+                        {
+                            RefreshSettings();
+                            UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(TwitchChannelName);
 
-                    TwitchPubSub.Connect();
-                    Connected = true;
-                    IsStarted = true;
-                    IsStopped = false;
-                    InvokeBotStarted();
-                }
-                else
-                {
-                    Connected = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                            TwitchPubSub.Connect();
+                            Connected = true;
+                            IsStarted = true;
+                            IsStopped = false;
+                            InvokeBotStarted();
+                        }
+                        else
+                        {
+                            Connected = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
 
-                Connected = false;
-            }
+                        Connected = false;
+                    }
+                }
+            })).Start();
 
             return Connected;
         }
 
         public override bool StopBot()
         {
-            bool Stopped;
+            bool Stopped = true;
 
-            try
+            lock (this)
             {
-                if (IsStarted)
+                try
                 {
-                    IsStarted = false;
-                    IsStopped = true;
-                    TwitchPubSub.Disconnect();
-                    RefreshSettings();
-                    InvokeBotStopped();
+                    if (IsStarted)
+                    {
+                        IsStarted = false;
+                        IsStopped = true;
+                        TwitchPubSub.Disconnect();
+                        RefreshSettings();
+                        InvokeBotStopped();
+                    }
                 }
-                Stopped = true;
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                Stopped = false;
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
             }
 
             return Stopped;
