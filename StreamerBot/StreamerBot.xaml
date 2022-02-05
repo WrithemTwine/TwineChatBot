@@ -750,8 +750,8 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Row="0" Grid.Column="0">Setup Giveaways! <LineBreak />Be sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</TextBlock>
 
-                                        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
-                                            <StackPanel.Resources>
+                                        <DockPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                            <DockPanel.Resources>
                                                 <Style TargetType="Label">
                                                     <Setter Property="Width" Value="160" />
                                                 </Style>
@@ -759,14 +759,14 @@
                                                     <Setter Property="Width" Value="250"/>
                                                     <Setter Property="Height" Value="18" />
                                                 </Style>
-                                            </StackPanel.Resources>
-                                            <GroupBox Header="Select Giveaway Condition" Width="Auto" VerticalAlignment="Top">
+                                            </DockPanel.Resources>
+                                            <GroupBox DockPanel.Dock="Top" Header="Select Giveaway Condition" Width="Auto" VerticalAlignment="Top">
                                                 <GroupBox.ToolTip>Select the &quot;Command&quot; or &quot;Channel Points&quot; item a viewer uses to enter the giveaway.</GroupBox.ToolTip>
                                                 <StackPanel>
                                                     <RadioButton x:Name="RadioButton_GiveawayCommand" VerticalContentAlignment="Center">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Label Width="100">Command</Label>
-                                                            <ComboBox x:Name="ComboBox_Giveaway_Coms" MinWidth="200" ItemsSource="{Binding CommandCollection, Mode=OneWay}" PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
+                                                            <ComboBox x:Name="ComboBox_Giveaway_Coms" MinWidth="200" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding CommandCollection, Mode=OneWay}" PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
                                                         </StackPanel>
                                                     </RadioButton>
                                                     <RadioButton x:Name="RadioButton_GiveawayCustomRewards" VerticalContentAlignment="Center">
@@ -778,8 +778,8 @@
                                                     </RadioButton>
                                                 </StackPanel>
                                             </GroupBox>
-                                            <CheckBox Content="Allow more than 1 entry"/>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <CheckBox DockPanel.Dock="Top" Content="Allow more than 1 entry" IsChecked="{Binding GiveawayMultiUser}" />
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <StackPanel.Resources>
                                                     <Style TargetType="Button">
                                                         <Setter Property="Padding" Value="5,0" />
@@ -794,34 +794,43 @@
                                                 <Button x:Name="Button_GiveawayEnd" Content="End Giveaway" Click="Button_GiveawayEnd_Click" IsEnabled="False" />
                                                 <Button x:Name="Button_GiveawayPickWinner" Content="Pick Winners" Click="Button_GiveawayPickWinner_Click" IsEnabled="False" />
                                             </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Number of Winners:</Label>
-                                                <TextBox Width="30" HorizontalContentAlignment="Center" DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{Binding GiveawayCount, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings">
+                                                <TextBox Width="30" HorizontalContentAlignment="Center" Text="{Binding GiveawayCount, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings">
                                                     <TextBox.ToolTip>
                                                         <TextBlock>Specify how many viewers to select for the giveaway event.</TextBlock>
                                                     </TextBox.ToolTip>
                                                 </TextBox>
                                             </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Giveaway start message:</Label>
-                                                <TextBox DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{Binding GiveawayBegMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings"/>
+                                                <TextBox Text="{Binding GiveawayBegMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings"/>
                                             </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Giveaway end message:</Label>
-                                                <TextBox DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{Binding GiveawayEndMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings"/>
+                                                <TextBox Text="{Binding GiveawayEndMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings"/>
                                             </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Winner Message (#winner):</Label>
-                                                <TextBox DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{Binding GiveawayWinMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings">
+                                                <TextBox Text="{Binding GiveawayWinMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings">
                                                     <TextBox.ToolTip>
                                                         <TextBlock>Use #user to include the name in the Giveaway announcement text.</TextBlock>
                                                     </TextBox.ToolTip>
                                                 </TextBox>
                                             </StackPanel>
-                                        </StackPanel>
+                                            <Label DockPanel.Dock="Top" Margin="0,10,0,2" Content="Current Giveaway Entrants:" />
+                                            <ListView DockPanel.Dock="Top" x:Name="listView" Width="300" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayCollection}">
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridViewColumn Header="Entrant" Width="280"/>
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
+
+                                        </DockPanel>
 
                                         <TextBlock Grid.Row="0" Grid.Column="1">Results of prior Giveaways recorded here! <LineBreak /> Data management is enabled or disabled in the Options tab.</TextBlock>
-                                        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                                     </Grid>
                                 </TabItem>
 
@@ -865,7 +874,7 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <StackPanel Grid.Row="0">
-                                            <TextBlock Margin="5">To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat commands. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC.</TextBlock>
+                                            <TextBlock Margin="5">To use command repeat timers, set option in 'Option' tab and set the *seconds* within the command row. This repeat doesn't work with those commands requiring parameters. The '!socials', for example, is an ideal repeat command. 1 minute = 60 seconds, 10 minutes = 600 seconds, 15 minutes = 900 seconds, 30 minutes = 1800 seconds, 1 hour = 3600 seconds. Top can be '0' for a single item, '-1' for all items, and 'n' (positive integer) for the top n items as defined by 'sort = ASC or DESC.</TextBlock>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <Button x:Name="Button_BuiltInCommands_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_BuiltInCommands_Click" />
                                                 <Button x:Name="Button_BuiltInCommands_Disabled" Width="80" Content="Disable All" Click="Button_BuiltInCommands_Click" />

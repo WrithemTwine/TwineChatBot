@@ -36,7 +36,7 @@ namespace StreamerBot.Systems
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
-        private List<string> GiveawayCollection = new();
+        private List<string> GiveawayCollectionList = new();
 
 
         public SystemsController()
@@ -484,7 +484,8 @@ namespace StreamerBot.Systems
         public void BeginGiveaway()
         {
             GiveawayStarted = true;
-            GiveawayCollection.Clear();
+            GiveawayCollectionList.Clear();
+            SystemsBase.GiveawayCollection.Clear();
 
             SendMessage(OptionFlags.GiveawayBegMsg);
         }
@@ -495,9 +496,10 @@ namespace StreamerBot.Systems
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
         {
-            if (GiveawayStarted && (OptionFlags.GiveawayMultiUser || !GiveawayCollection.Contains(DisplayName)))
+            if (GiveawayStarted && (OptionFlags.GiveawayMultiUser || !GiveawayCollectionList.Contains(DisplayName)))
             {
-                GiveawayCollection.Add(DisplayName);
+                GiveawayCollectionList.Add(DisplayName);
+                SystemsBase.GiveawayCollection.Add(DisplayName);
             }
         }
 
@@ -516,9 +518,9 @@ namespace StreamerBot.Systems
 
             string DisplayName = "";
 
-            for (int x = 0; x < OptionFlags.GiveawayCount && GiveawayCollection.Count > 0; x++)
+            for (int x = 0; x < OptionFlags.GiveawayCount && GiveawayCollectionList.Count > 0; x++)
             {
-                DisplayName += GiveawayCollection[random.Next(GiveawayCollection.Count)] + ", ";
+                DisplayName += GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)] + ", ";
             }
 
             if (DisplayName != "")
