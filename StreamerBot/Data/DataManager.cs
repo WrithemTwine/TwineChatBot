@@ -625,6 +625,51 @@ switches:
             }
         }
 
+        public void SetSystemEventsEnabled(bool Enabled)
+        {
+            ChannelEventsRow[] channelEventsRows = (ChannelEventsRow[])_DataSource.ChannelEvents.Select();
+
+            foreach(ChannelEventsRow channelEventsRow in channelEventsRows)
+            {
+                channelEventsRow.IsEnabled = Enabled;
+            }
+        }
+
+        private static string ComFilter()
+        {
+            string filter = string.Empty;
+
+            foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
+            {
+                filter += "'" + d.ToString() + "',";
+            }
+
+            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+            {
+                filter += "'" + s.ToString() + "',";
+            }
+
+            return filter == string.Empty ? "" : filter[0..^1];
+        }
+
+        private void SetCommandsEnabledHelper(bool Enabled, CommandsRow[] commandsRows)
+        {
+            foreach(CommandsRow commandsRow in commandsRows)
+            {
+                commandsRow.IsEnabled = Enabled;
+            }
+        }
+
+        public void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + ComFilter() + ")"));
+        }
+
+        public void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName NOT IN (" + ComFilter() + ")"));
+        }
+
         #endregion
 
         #region Regular Channel Events
@@ -698,7 +743,7 @@ switches:
             };
             lock (_DataSource)
             {
-                foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
+                foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
                 {
                     // consider only the values in the dictionary, check if data is already defined in the data table
                     if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
@@ -1145,6 +1190,7 @@ switches:
             {
                 _ = _DataSource.GiveawayUserData.AddGiveawayUserDataRow(DisplayName, dateTime);
             }
+            NotifySaveData();
         }
 
         #endregion
@@ -1415,7 +1461,7 @@ switches:
             {
                 _DataSource.Users.Clear();
             }
-
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1427,6 +1473,7 @@ switches:
             {
                 _DataSource.Followers.Clear();
             }
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1438,6 +1485,7 @@ switches:
             {
                 _DataSource.InRaidData.Clear();
             }
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1449,6 +1497,7 @@ switches:
             {
                 _DataSource.OutRaidData.Clear();
             }
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1460,6 +1509,7 @@ switches:
             {
                 _DataSource.GiveawayUserData.Clear();
             }
+            NotifySaveData();
         }
 
         #endregion

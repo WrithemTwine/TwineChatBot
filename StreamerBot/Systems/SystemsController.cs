@@ -196,6 +196,21 @@ namespace StreamerBot.Systems
             SystemsBase.ClearAllCurrenciesValues();
         }
 
+        public static void SetSystemEventsEnabled(bool Enabled)
+        {
+            SystemsBase.SetSystemEventsEnabled(Enabled);
+        }
+
+        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            SystemsBase.SetBuiltInCommandsEnabled(Enabled);
+        }
+
+        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            SystemsBase.SetUserDefinedCommandsEnabled(Enabled);
+        }
+
         #endregion
 
         #region Statistics
@@ -484,6 +499,9 @@ namespace StreamerBot.Systems
             }
         }
 
+        /// <summary>
+        /// End the Giveaway event.
+        /// </summary>
         public void EndGiveaway()
         {
             GiveawayStarted = false;
@@ -501,11 +519,18 @@ namespace StreamerBot.Systems
                 DisplayName += GiveawayCollection[random.Next(GiveawayCollection.Count)] + ", ";
             }
 
-            DisplayName = DisplayName[0..^2];
-
             if (DisplayName != "")
             {
-                SendMessage(VariableParser.ParseReplace(OptionFlags.GiveawayWinMsg, VariableParser.BuildDictionary(new Tuple<string, string>[] { new("#user", DisplayName) })));
+                DisplayName = DisplayName[0..^2];
+                SendMessage(
+                    VariableParser.ParseReplace(
+                        OptionFlags.GiveawayWinMsg,
+                        VariableParser.BuildDictionary(
+                            new Tuple<MsgVars, string>[]
+                            {
+                                new(MsgVars.winner, DisplayName)
+                            }
+                            )));
 
                 if (OptionFlags.ManageGiveawayUsers)
                 {

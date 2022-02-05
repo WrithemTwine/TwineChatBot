@@ -1,6 +1,9 @@
 ﻿using StreamerBot.Properties;
 
 using System;
+using System.Configuration;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Data;
 
 namespace StreamerBot.Static
@@ -69,6 +72,10 @@ namespace StreamerBot.Static
         public static bool GiveawayMultiUser { get; set; }
 
         public static bool TwitchPubSubChannelPoints { get; set; }
+
+        public static string TwitchChannelName { get; set; }
+        public static string TwitchBotClientId { get; set; }
+        public static string TwitchBotAccessToken { get; set; }
 
         public static string TwitchStreamClientId { get; set; }
         public static string TwitchStreamOauthToken { get; set; }
@@ -145,6 +152,10 @@ namespace StreamerBot.Static
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
 
+                TwitchChannelName = Settings.Default.TwitchChannelName;
+                TwitchBotClientId = Settings.Default.TwitchClientID;
+                TwitchBotAccessToken = Settings.Default.TwitchAccessToken;
+
                 TwitchStreamClientId = Settings.Default.TwitchStreamClientId;
                 TwitchStreamerTokenDate = Settings.Default.TwitchStreamerTokenDate;
                 TwitchStreamOauthToken = Settings.Default.TwitchStreamOauthToken;
@@ -166,5 +177,24 @@ namespace StreamerBot.Static
             return RefreshDate - DateTime.Now.ToLocalTime();
         }
 
+        /// <summary>
+        /// Check if the setting is the default value or has changed.
+        /// </summary>
+        /// <param name="SettingName">The name in the "Settings.Default" to check.</param>
+        /// <param name="CheckSettingValue">The value to compare to the default settings.</param>
+        /// <returns>DefaultValue(SettingName).Value == CheckSettingValue; true if value is default</returns>
+        public static bool CheckSettingIsDefault(string SettingName, string CheckSettingValue)
+        {
+            DefaultSettingValueAttribute defaultSetting = null;
+
+            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
+                                     where m.Name == SettingName
+                                     select m)
+            {
+                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
+            }
+
+            return defaultSetting.Value == CheckSettingValue;
+        }
     }
 }

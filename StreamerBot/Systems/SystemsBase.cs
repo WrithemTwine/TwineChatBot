@@ -108,6 +108,21 @@ namespace StreamerBot.Systems
             DataManage.ClearAllCurrencyValues();
         }
 
+        public static void SetSystemEventsEnabled(bool Enabled)
+        {
+            DataManage.SetSystemEventsEnabled(Enabled);
+        }
+
+        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            DataManage.SetBuiltInCommandsEnabled(Enabled);
+        }
+
+        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            DataManage.SetUserDefinedCommandsEnabled(Enabled);
+        }
+
         public static bool AddClip(Clip c)
         {
             return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);

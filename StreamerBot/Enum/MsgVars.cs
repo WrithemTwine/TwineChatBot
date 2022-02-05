@@ -23,6 +23,7 @@
         uptime,
         url,
         user,
+        winner,
         viewers,
         Pluralbits,
         Pluralmonth,

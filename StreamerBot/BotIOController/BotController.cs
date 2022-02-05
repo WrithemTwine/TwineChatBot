@@ -1,5 +1,6 @@
 ﻿using StreamerBot.BotClients;
 using StreamerBot.BotClients.Twitch;
+using StreamerBot.BotClients.Twitch.TwitchLib.Events.PubSub;
 using StreamerBot.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBot.Enums;
 using StreamerBot.Events;
@@ -21,7 +22,6 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
-using TwitchLib.PubSub.Events;
 
 namespace StreamerBot.BotIOController
 {
@@ -198,6 +198,21 @@ namespace StreamerBot.BotIOController
         public static void ClearAllCurrenciesValues()
         {
             SystemsController.ClearAllCurrenciesValues();
+        }
+
+        public static void SetSystemEventsEnabled(bool Enabled)
+        {
+            SystemsController.SetSystemEventsEnabled(Enabled);
+        }
+
+        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            SystemsController.SetBuiltInCommandsEnabled(Enabled);
+        }
+
+        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            SystemsController.SetUserDefinedCommandsEnabled(Enabled);
         }
 
         public static string GetUserCategory(string ChannelName, Bots bots)
@@ -438,7 +453,7 @@ namespace StreamerBot.BotIOController
                 IsVip = e.Command.ChatMessage.IsVip,
                 Message = e.Command.ChatMessage.Message
             }, Bots.TwitchChatBot); ;
-        }
+}
 
 
         public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)

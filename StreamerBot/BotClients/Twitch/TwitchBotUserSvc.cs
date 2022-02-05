@@ -37,16 +37,7 @@ namespace StreamerBot.BotClients.Twitch
 
         public void ConnectUserService(string ClientName = null, string TwitchToken = null)
         {
-            DefaultSettingValueAttribute defaultSetting = null;
-
-            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                                     where m.Name == "TwitchClientID"
-                                     select m)
-            {
-                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
-            }
-
-            if (Settings.Default.TwitchClientID != defaultSetting.Value)
+            if(!OptionFlags.CheckSettingIsDefault("TwitchClientID", Settings.Default.TwitchClientID))
             {
                 userLookupService = null;
 
@@ -107,21 +98,11 @@ namespace StreamerBot.BotClients.Twitch
             else
             {
                 SettingsClientId = "TwitchClientID";
-                ClientId = Settings.Default.TwitchClientID;
-                OauthToken = Settings.Default.TwitchAccessToken;
+                ClientId = OptionFlags.TwitchBotClientId;
+                OauthToken = OptionFlags.TwitchBotAccessToken;
             }
 
-
-            DefaultSettingValueAttribute defaultSetting = null;
-
-            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                                     where m.Name == SettingsClientId
-                                     select m)
-            {
-                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
-            }
-
-            if (ClientId != defaultSetting.Value)
+            if(!OptionFlags.CheckSettingIsDefault(SettingsClientId, ClientId))
             {
                 userLookupService = null;
 
@@ -135,9 +116,16 @@ namespace StreamerBot.BotClients.Twitch
             GetCustomRewardsResponse getCustom = GetCustomRewardsId(UserId: UserId, UserName: UserName);
 
             List<string> CustomRewardsList = new();
-            CustomRewardsList.AddRange(getCustom.Data.Select(cr => cr.Title));
-            CustomRewardsList.Sort();
-            PostEvent_GetCustomRewards(CustomRewardsList);
+            if (getCustom != null)
+            {
+                CustomRewardsList.AddRange(getCustom.Data.Select(cr => cr.Title));
+                CustomRewardsList.Sort();
+                PostEvent_GetCustomRewards(CustomRewardsList);
+            }
+            else
+            {
+                CustomRewardsList.Add("");
+            }
 
             return CustomRewardsList;
         }
@@ -151,7 +139,16 @@ namespace StreamerBot.BotClients.Twitch
         {
             ChooseConnectUserService();
 
-            GetCustomRewardsResponse points = userLookupService.GetChannelPointInformation(UserId: UserId, UserName: UserName).Result;
+            GetCustomRewardsResponse points = null;
+            try
+            {
+                points = userLookupService?.GetChannelPointInformation(UserId: UserId, UserName: UserName).Result;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+
             return points;
         }
 

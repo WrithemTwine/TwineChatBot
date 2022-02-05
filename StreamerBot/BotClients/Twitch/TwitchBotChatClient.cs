@@ -113,7 +113,7 @@ namespace StreamerBot.BotClients.Twitch
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The payload of the event.</param>
-        private void TwitchChat_OnLog(object sender, OnLogArgs e)
+        internal void TwitchChat_OnLog(object sender, OnLogArgs e)
         {
             void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {

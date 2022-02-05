@@ -1,17 +1,24 @@
-﻿using StreamerBot.Enums;
+﻿using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+using StreamerBot.Enums;
 using StreamerBot.Static;
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using TwitchLib.PubSub;
+using TwitchLib.PubSub.Events;
 
 namespace StreamerBot.BotClients.Twitch
 {
     public class TwitchBotPubSub : TwitchBotsBase
     {
-        public TwitchPubSub TwitchPubSub { get; private set; } = new();
+        public TwitchPubSub TwitchPubSub { get; private set; }
+        private Logger<TwitchPubSub> LogData { get; set; }
 
         private string UserId;
 
@@ -19,12 +26,37 @@ namespace StreamerBot.BotClients.Twitch
         {
             BotClientName = Bots.TwitchPubSub;
 
+            LogData = new Logger<TwitchPubSub>(
+                new LoggerFactory(
+                    new List<ILoggerProvider>() {
+                        new ConsoleLoggerProvider(
+                            new OptionsMonitor<ConsoleLoggerOptions>(
+                                new OptionsFactory<ConsoleLoggerOptions>(
+                                    new List<ConfigureOptions<ConsoleLoggerOptions>>(),
+                                    new List<PostConfigureOptions<ConsoleLoggerOptions>>()
+                                ),
+                                new List<ConfigurationChangeTokenSource<ConsoleLoggerOptions>>(),
+                                new OptionsCache<ConsoleLoggerOptions>()
+                                )
+                            )
+                    }
+                    )
+                );
+
+            TwitchPubSub = new(LogData);
+
+            TwitchPubSub.OnLog += TwitchPubSub_OnLog;
             TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
+        }
+
+        private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
+        {
+            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender, new global::TwitchLib.Client.Events.OnLogArgs() { Data = $"PubSub {e.Data}", DateTime = DateTime.Now });
         }
 
         public override bool StartBot()
         {
-            bool Connected = true;            
+            bool Connected = true;
 
             new Thread(new ThreadStart(() =>
             {
@@ -41,7 +73,6 @@ namespace StreamerBot.BotClients.Twitch
                             Connected = true;
                             IsStarted = true;
                             IsStopped = false;
-                            InvokeBotStarted();
                         }
                         else
                         {
@@ -93,6 +124,14 @@ namespace StreamerBot.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceConnected(object sender, EventArgs e)
         {
+            string Token;
+            if (OptionFlags.TwitchStreamerUseToken)
+            {
+                Token = OptionFlags.TwitchStreamOauthToken;
+            } else
+            {
+                Token = OptionFlags.TwitchBotAccessToken;
+            }
 
             // add Listen to Topics here
             if (OptionFlags.TwitchPubSubChannelPoints)
@@ -101,7 +140,9 @@ namespace StreamerBot.BotClients.Twitch
             }
 
             // send the topics to listen
-            TwitchPubSub.SendTopics(TwitchAccessToken);
+            TwitchPubSub.SendTopics(Token);
+
+            InvokeBotStarted();
         }
 
     }

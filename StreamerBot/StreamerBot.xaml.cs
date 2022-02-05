@@ -220,6 +220,21 @@ namespace StreamerBot
             }
         }
 
+        private void Button_SystemEvents_Click(object sender, RoutedEventArgs e)
+        {
+            BotController.SetSystemEventsEnabled(((Button)sender).Name.Contains("Enabled"));
+        }
+
+        private void Button_BuiltInCommands_Click(object sender, RoutedEventArgs e)
+        {
+            BotController.SetBuiltInCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
+        }
+
+        private void Button_UserDefinedCommands_Click(object sender, RoutedEventArgs e)
+        {
+            BotController.SetUserDefinedCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
+        }
+
         #region Refresh data from bot
 
         /// <summary>
@@ -948,9 +963,8 @@ namespace StreamerBot
             Controller.HandleGiveawayBegin(givetype, ItemName);
             Giveaway_Toggle(false);
 
-            Button_GiveawayBegin.IsEnabled = true;
+            Button_GiveawayBegin.IsEnabled = false;
             Button_GiveawayEnd.IsEnabled = true;
-            Button_GiveawayPickWinner.IsEnabled = true;
         }
 
         private void Giveaway_Toggle(bool Enabled = true)
@@ -965,6 +979,9 @@ namespace StreamerBot
         {
             Controller.HandleGiveawayEnd();
             Giveaway_Toggle();
+            Button_GiveawayBegin.IsEnabled = true;
+            Button_GiveawayEnd.IsEnabled = false;
+            Button_GiveawayPickWinner.IsEnabled = true;
         }
 
         private void Button_GiveawayPickWinner_Click(object sender, RoutedEventArgs e)
@@ -1001,6 +1018,7 @@ namespace StreamerBot
                 Button_GiveawayBegin.IsEnabled = true;
             }
         }
+
 
         #endregion
 
