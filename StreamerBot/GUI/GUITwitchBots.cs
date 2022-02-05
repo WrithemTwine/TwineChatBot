@@ -18,6 +18,7 @@ namespace StreamerBot.GUI
         public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
         public TwitchBotClipSvc TwitchClip { get; private set; }
         public TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
+        public TwitchBotPubSub TwitchBotPubSub { get; private set; }
 
         public GUITwitchBots()
         {
@@ -26,21 +27,23 @@ namespace StreamerBot.GUI
             TwitchClip = BotsTwitch.TwitchBotClipSvc;
             TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
             TwitchBotUserSvc = BotsTwitch.TwitchBotUserSvc;
+            TwitchBotPubSub = BotsTwitch.TwitchBotPubSub;
 
-            TwitchIO.OnBotStarted += TwitchIO_OnBotStarted;
-            TwitchIO.OnBotStopped += TwitchIO_OnBotStopped;
+            TwitchIO.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchIO.OnBotStopped += TwitchBot_OnBotStopped;
 
-            TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
-            TwitchFollower.OnBotStopped += TwitchFollower_OnBotStopped;
+            TwitchFollower.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchFollower.OnBotStopped += TwitchBot_OnBotStopped;
 
-            TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
-            TwitchLiveMonitor.OnBotStopped += TwitchLiveMonitor_OnBotStopped;
+            TwitchLiveMonitor.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchLiveMonitor.OnBotStopped += TwitchBot_OnBotStopped;
 
-            TwitchClip.OnBotStarted += TwitchClip_OnBotStarted;
-            TwitchClip.OnBotStopped += TwitchClip_OnBotStopped;
+            TwitchClip.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchClip.OnBotStopped += TwitchBot_OnBotStopped;
+
+            TwitchBotPubSub.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchBotPubSub.OnBotStopped += TwitchBot_OnBotStopped;
         }
-
-
 
         public void Send(string msg)
         {
@@ -66,43 +69,13 @@ namespace StreamerBot.GUI
             OnLiveStreamStarted?.Invoke(this, new());
         }
 
-        private void TwitchLiveMonitor_OnBotStopped(object sender, EventArgs e)
+        private void TwitchBot_OnBotStopped(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsStopped });
         }
 
-        private void TwitchFollower_OnBotStarted(object sender, EventArgs e)
-        {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
-        }
-
-        private void TwitchFollower_OnBotStopped(object sender, EventArgs e)
-        {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsStopped });
-        }
-
-        private void TwitchIO_OnBotStarted(object sender, EventArgs e)
-        {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
-        }
-
-        private void TwitchIO_OnBotStopped(object sender, EventArgs e)
-        {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsStopped });
-        }
-
-        private void TwitchClip_OnBotStopped(object sender, EventArgs e)
-        {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsStopped });
-        }
-
-        private void TwitchClip_OnBotStarted(object sender, EventArgs e)
+        private void TwitchBot_OnBotStarted(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });

@@ -1,5 +1,5 @@
 ﻿
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Systems;
 
 using System;

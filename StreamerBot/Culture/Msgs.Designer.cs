@@ -520,6 +520,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to display winner of Giveaway event.
+        /// </summary>
+        internal static string Helpwinner {
+            get {
+                return ResourceManager.GetString("Helpwinner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hosting.
         /// </summary>
         internal static string host {

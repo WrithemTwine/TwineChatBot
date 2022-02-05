@@ -1,6 +1,6 @@
 ﻿using StreamerBot.Culture;
 using StreamerBot.Data;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Interfaces;
 using StreamerBot.Models;
 using StreamerBot.Properties;

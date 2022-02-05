@@ -1,4 +1,4 @@
-﻿namespace StreamerBot.Enum
+﻿namespace StreamerBot.Enums
 {
     /// <summary>
     /// Designated table and column pair to retrieve

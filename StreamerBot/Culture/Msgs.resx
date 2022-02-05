@@ -282,6 +282,9 @@
   <data name="Helpviewers" xml:space="preserve">
     <value>display name of the user sending action</value>
   </data>
+  <data name="Helpwinner" xml:space="preserve">
+    <value>display winner of Giveaway event</value>
+  </data>
   <data name="host" xml:space="preserve">
     <value>hosting</value>
   </data>

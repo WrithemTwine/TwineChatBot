@@ -1,7 +1,8 @@
 ﻿using StreamerBot.BotClients;
 using StreamerBot.BotClients.Twitch;
+using StreamerBot.BotClients.Twitch.TwitchLib.Events.PubSub;
 using StreamerBot.BotClients.Twitch.TwitchLib.Events.ClipService;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Events;
 using StreamerBot.Interfaces;
 using StreamerBot.Static;
@@ -31,6 +32,10 @@ namespace StreamerBot.BotIOController
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
         internal Collection<IBotTypes> BotsList { get; private set; } = new();
+
+        private GiveawayTypes GiveawayItemType = GiveawayTypes.None;
+        private string GiveawayItemName = "";
+        private bool GiveawayStarted = false;
 
         private BotsTwitch TwitchBots { get; set; }
 
@@ -195,6 +200,21 @@ namespace StreamerBot.BotIOController
             SystemsController.ClearAllCurrenciesValues();
         }
 
+        public static void SetSystemEventsEnabled(bool Enabled)
+        {
+            SystemsController.SetSystemEventsEnabled(Enabled);
+        }
+
+        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            SystemsController.SetBuiltInCommandsEnabled(Enabled);
+        }
+
+        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            SystemsController.SetUserDefinedCommandsEnabled(Enabled);
+        }
+
         public static string GetUserCategory(string ChannelName, Bots bots)
         {
             return bots switch
@@ -306,9 +326,14 @@ namespace StreamerBot.BotIOController
             HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
         }
 
-        public static void TwitchStreamupdate(OnStreamUpdateArgs e)
+        public void TwitchStreamUpdate(OnStreamUpdateArgs e)
         {
             HandleOnStreamUpdate(e.Stream.GameId, e.Stream.GameName);
+        }
+
+        public void TwitchCategoryUpdate(OnGetChannelGameNameEventArgs e)
+        {
+            HandleOnStreamUpdate(e.GameId, e.GameName);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -410,7 +435,7 @@ namespace StreamerBot.BotIOController
 
         public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
         {
-            HandleChatCommandReceived( new()
+            HandleChatCommandReceived(new()
             {
                 CommandArguments = e.Command.ArgumentsAsList,
                 CommandText = e.Command.CommandText,
@@ -426,9 +451,17 @@ namespace StreamerBot.BotIOController
                 IsSubscriber = e.Command.ChatMessage.IsSubscriber,
                 IsTurbo = e.Command.ChatMessage.IsTurbo,
                 IsVip = e.Command.ChatMessage.IsVip,
-                Message = e.Command.ChatMessage.Message,
-                UserType = System.Enum.Parse<ViewerTypes>(e.Command.ChatMessage.UserType.ToString())
-            }, Bots.TwitchChatBot);
+                Message = e.Command.ChatMessage.Message
+            }, Bots.TwitchChatBot); ;
+}
+
+
+        public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)
+        {
+            // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
+            // much more data exists in the resulting data output
+
+            HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title);
         }
 
         #endregion
@@ -670,8 +703,57 @@ namespace StreamerBot.BotIOController
 
         public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Bots Source)
         {
-            Systems.ProcessCommand(commandmsg, Source);
+            if (GiveawayItemType == GiveawayTypes.Command && commandmsg.CommandText == GiveawayItemName)
+            {
+                HandleGiveawayPostName(commandmsg.DisplayName);
+            }
+            else
+            {
+                Systems.ProcessCommand(commandmsg, Source);
+            }
         }
+
+        public void HandleCustomReward(string DisplayName, string RewardTitle)
+        {
+            if(GiveawayItemType == GiveawayTypes.CustomRewards && RewardTitle == GiveawayItemName)
+            {
+                HandleGiveawayPostName(DisplayName);
+            }
+        }
+
+        #region Giveaway
+        public void HandleGiveawayBegin(GiveawayTypes giveawayTypes, string ItemName)
+        {
+            GiveawayItemType = giveawayTypes;
+            GiveawayItemName = ItemName;
+            GiveawayStarted = true;
+
+            Systems.BeginGiveaway();
+        }
+
+        public void HandleGiveawayEnd()
+        {
+            Systems.EndGiveaway();
+
+            GiveawayItemType = GiveawayTypes.None;
+            GiveawayItemName = "";
+            GiveawayStarted = false;
+        }
+
+        public void HandleGiveawayPostName(string DisplayName)
+        {
+            Systems.ManageGiveaway(DisplayName);
+        }
+
+        public void HandleGiveawayWinner()
+        {
+            if (GiveawayStarted)
+            {
+                HandleGiveawayEnd();
+            }
+            Systems.PostGiveawayResult();
+        }
+        #endregion
 
         #endregion
 

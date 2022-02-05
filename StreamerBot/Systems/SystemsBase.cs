@@ -83,6 +83,11 @@ namespace StreamerBot.Systems
             {
                 DataManage.RemoveAllOutRaidData();
             }
+
+            if (!OptionFlags.ManageGiveawayUsers)
+            {
+                DataManage.RemoveAllGiveawayData();
+            }
         }
 
         /// <summary>
@@ -101,6 +106,21 @@ namespace StreamerBot.Systems
         public static void ClearAllCurrenciesValues()
         {
             DataManage.ClearAllCurrencyValues();
+        }
+
+        public static void SetSystemEventsEnabled(bool Enabled)
+        {
+            DataManage.SetSystemEventsEnabled(Enabled);
+        }
+
+        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            DataManage.SetBuiltInCommandsEnabled(Enabled);
+        }
+
+        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            DataManage.SetUserDefinedCommandsEnabled(Enabled);
         }
 
         public static bool AddClip(Clip c)
@@ -142,13 +162,7 @@ namespace StreamerBot.Systems
         /// Returns the start of the current active online stream.
         /// </summary>
         /// <returns>The DateTime of the stream start time.</returns>
-        public DateTime GetCurrentStreamStart
-        {
-            get
-            {
-                return CurrStream.StreamStart;
-            }
-        }
+        public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
 
 
         private delegate void ProcMessage(string UserName, string Message);

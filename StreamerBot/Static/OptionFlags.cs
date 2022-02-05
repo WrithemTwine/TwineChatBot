@@ -1,6 +1,10 @@
 ﻿using StreamerBot.Properties;
 
 using System;
+using System.Configuration;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Data;
 
 namespace StreamerBot.Static
 {
@@ -27,7 +31,6 @@ namespace StreamerBot.Static
         public static bool MsgPerComMe { get; set; }
 
         public static bool MsgWelcomeStreamer { get; set; }
-
         public static bool WelcomeCustomMsg { get; set; }
 
         public static bool AutoShout { get; set; }
@@ -36,6 +39,8 @@ namespace StreamerBot.Static
         public static bool RepeatTimer { get; set; }
         public static bool RepeatTimerDilute { get; set; }
         public static bool RepeatWhenLive { get; set; }
+        public static bool RepeatLiveReset { get; set; }  // reset repeat timers when stream goes live
+        public static bool RepeatLiveResetShow { get; set; }    // enable showing message when repeat timers reset for going live
 
         public static bool UserPartyStart { get; set; }
         public static bool UserPartyStop { get; set; }
@@ -49,6 +54,7 @@ namespace StreamerBot.Static
         public static bool ManageStreamStats { get; set; }
         public static bool ManageRaidData { get; set; }
         public static bool ManageOutRaidData { get; set; }
+        public static bool ManageGiveawayUsers { get; set; }
 
         public static bool TwitchChatBotConnectOnline { get; set; }
         public static bool TwitchChatBotDisconnectOffline { get; set; }
@@ -58,6 +64,28 @@ namespace StreamerBot.Static
 
         public static bool TwitchCurrencyStart { get; set; }
         public static bool TwitchCurrencyOnline { get; set; }
+
+        public static int GiveawayCount { get; set; }
+        public static string GiveawayWinMsg { get; set; }
+        public static string GiveawayBegMsg { get; set; }
+        public static string GiveawayEndMsg { get; set; }
+        public static bool GiveawayMultiUser { get; set; }
+
+        public static bool TwitchPubSubChannelPoints { get; set; }
+
+        public static string TwitchChannelName { get; set; }
+        public static string TwitchBotClientId { get; set; }
+        public static string TwitchBotAccessToken { get; set; }
+
+        public static string TwitchStreamClientId { get; set; }
+        public static string TwitchStreamOauthToken { get; set; }
+        public static DateTime TwitchStreamerTokenDate { get; set; }
+        public static bool TwitchStreamerValidToken => CurrentToTwitchRefreshDate(TwitchStreamerTokenDate) > new TimeSpan(0, 0, 0);
+
+        /// <summary>
+        /// Flag to indicate whether the API should use Streamer Client Id credentials per Twitch requirements.
+        /// </summary>
+        public static bool TwitchStreamerUseToken { get; set; }
 
         public static void SetSettings()
         {
@@ -91,6 +119,8 @@ namespace StreamerBot.Static
                 RepeatTimer = Settings.Default.RepeatTimerCommands;
                 RepeatTimerDilute = Settings.Default.RepeatTimerComSlowdown;
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
+                RepeatLiveReset = Settings.Default.RepeatLiveReset;
+                RepeatLiveResetShow = Settings.Default.RepeatLiveResetShow;
 
                 UserPartyStart = Settings.Default.UserPartyStart;
                 UserPartyStop = Settings.Default.UserPartyStop;
@@ -103,6 +133,7 @@ namespace StreamerBot.Static
                 ManageStreamStats = Settings.Default.ManageStreamStats;
                 ManageRaidData = Settings.Default.ManageRaidData;
                 ManageOutRaidData = Settings.Default.ManageOutRaidData;
+                ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
 
                 TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
                 TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
@@ -112,6 +143,24 @@ namespace StreamerBot.Static
 
                 TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
                 TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
+
+                GiveawayCount = Settings.Default.GiveawayCount;
+                GiveawayBegMsg = Settings.Default.GiveawayBegMsg;
+                GiveawayEndMsg = Settings.Default.GiveawayEndMsg;
+                GiveawayWinMsg = Settings.Default.GiveawayWinMsg;
+                GiveawayMultiUser = Settings.Default.GiveawayMultiUser;
+
+                TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
+
+                TwitchChannelName = Settings.Default.TwitchChannelName;
+                TwitchBotClientId = Settings.Default.TwitchClientID;
+                TwitchBotAccessToken = Settings.Default.TwitchAccessToken;
+
+                TwitchStreamClientId = Settings.Default.TwitchStreamClientId;
+                TwitchStreamerTokenDate = Settings.Default.TwitchStreamerTokenDate;
+                TwitchStreamOauthToken = Settings.Default.TwitchStreamOauthToken;
+
+                TwitchStreamerUseToken = Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
             }
         }
 
@@ -123,10 +172,29 @@ namespace StreamerBot.Static
             SetSettings();
         }
 
-        public static TimeSpan CurrentToTwitchRefreshDate()
+        public static TimeSpan CurrentToTwitchRefreshDate(DateTime RefreshDate)
         {
-            return TwitchRefreshDate - DateTime.Now.ToLocalTime();
+            return RefreshDate - DateTime.Now.ToLocalTime();
         }
 
+        /// <summary>
+        /// Check if the setting is the default value or has changed.
+        /// </summary>
+        /// <param name="SettingName">The name in the "Settings.Default" to check.</param>
+        /// <param name="CheckSettingValue">The value to compare to the default settings.</param>
+        /// <returns>DefaultValue(SettingName).Value == CheckSettingValue; true if value is default</returns>
+        public static bool CheckSettingIsDefault(string SettingName, string CheckSettingValue)
+        {
+            DefaultSettingValueAttribute defaultSetting = null;
+
+            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
+                                     where m.Name == SettingName
+                                     select m)
+            {
+                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
+            }
+
+            return defaultSetting.Value == CheckSettingValue;
+        }
     }
 }

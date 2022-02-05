@@ -1,10 +1,12 @@
 ﻿using StreamerBot.Events;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Interfaces;
 
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
+using StreamerBot.Static;
+using System.Reflection;
 
 namespace StreamerBot.BotClients
 {
@@ -35,21 +37,35 @@ namespace StreamerBot.BotClients
 
         public void StopBots()
         {
-            StopThreads();
-            foreach (IIOModule a in BotsList)
+            try
             {
-                a.ExitBot();
+                StopThreads();
+                foreach (IIOModule a in BotsList)
+                {
+                    a.ExitBot();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 
         private void StopThreads()
         {
-            foreach(Thread t in MultiThreadOps)
+            try
             {
-                if (t?.IsAlive == true)
+                foreach (Thread t in MultiThreadOps)
                 {
-                    t.Join();
+                    if (t?.IsAlive == true)
+                    {
+                        t.Join();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 

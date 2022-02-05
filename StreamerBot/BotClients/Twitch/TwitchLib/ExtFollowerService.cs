@@ -68,44 +68,8 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
             return allfollows;
         }
 
-        /// <summary>
-        /// Create the follow based on the user IDs
-        /// </summary>
-        /// <param name="from_id">The ID to follow another channel</param>
-        /// <param name="to_id">The ID of the channel to follow</param>
-        /// <param name="allownotification">Specifies whether to notify when the channel goes live</param>
-        public async void CreateUserFollowerId(string from_id, string to_id, bool? allownotification = null)
-        {
-            Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
 
-            // get user followers to the other channel
-            GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(fromId: from_id, toId: to_id);
 
-            if (followsResponse.Follows.Length == 0) // if not following, create the follow
-            {
-                try
-                {
-                    // add the follow
-                    await followers.CreateUserFollows(from_id, to_id, allownotification);
-                }
-                catch (Exception ex) { LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name); }
-            }
-            return;
-        }
-
-        /// <summary>
-        /// Accepts the user names for the 'from' and 'to' and will convert them to IDs for creating the user follow
-        /// </summary>
-        /// <param name="from_username">The username wanting to follow another channel</param>
-        /// <param name="to_username">The username of the channel to follow</param>
-        /// <param name="allownotification">Specifies whether to enable notifications when the channel goes live</param>
-        public async void CreateUserFollowerName(string from_username, string to_username, bool? allownotification = null)
-        {
-            string fromid = (await _api.Helix.Users.GetUsersAsync(logins: new() { from_username })).Users.FirstOrDefault()?.Id;
-            string toid = (await _api.Helix.Users.GetUsersAsync(logins: new() { to_username })).Users.FirstOrDefault()?.Id;
-            CreateUserFollowerId(fromid, toid, allownotification);
-            return;
-        }
 
     }
 }

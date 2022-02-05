@@ -1,4 +1,4 @@
-﻿using StreamerBot.Enum;
+﻿using StreamerBot.Enums;
 using StreamerBot.Properties;
 
 using System;

@@ -1,4 +1,4 @@
-﻿using StreamerBot.Enum;
+﻿using StreamerBot.Enums;
 using StreamerBot.Systems;
 
 using System;
@@ -27,6 +27,7 @@ namespace StreamerBot.Models
         public short RepeatMsg { get; set; } = 0;
         public string Usage { get; set; } = "!<command>";
         public string Message { get; set; } = string.Empty;
+        public bool IsEnabled { get; set; } = false;
         public bool AddMe { get; set; } = false;
         public bool Empty { get; set; } = false;
         public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
@@ -116,6 +117,9 @@ namespace StreamerBot.Models
                         case "addme":
                             data.AddMe = bool.Parse(value);
                             break;
+                        case "e":
+                            data.IsEnabled = bool.Parse(value);
+                            break;
                     }
                 }
 
@@ -184,6 +188,9 @@ namespace StreamerBot.Models
                         break;
                     case "addme":
                         edit.Add("AddMe", value);
+                        break;
+                    case "e":
+                        edit.Add("IsEnabled", value);
                         break;
                     default:
                         break;

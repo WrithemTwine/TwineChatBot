@@ -1,4 +1,4 @@
-﻿using StreamerBot.Enum;
+﻿using StreamerBot.Enums;
 using StreamerBot.Interfaces;
 using StreamerBot.Models;
 using StreamerBot.Static;
@@ -61,6 +61,22 @@ namespace StreamerBot.Data
 
                 using XmlReader xmlreader = new XmlTextReader(DataFileName);
                 _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+
+
+                // see if clip dates are correctly formatted
+
+                foreach (ClipsRow c in _DataSource.Clips.Select())
+                {
+                    c.CreatedAt = DateTime.Parse(c.CreatedAt).ToLocalTime().ToString("yyyy/MM/dd HH:mm:ss");
+                }
+
+                foreach (CommandsRow c in _DataSource.Commands.Select())
+                {
+                    if (DBNull.Value.Equals(c["IsEnabled"]))
+                    {
+                        c["IsEnabled"] = true;
+                    }
+                }
             }
 
             SaveData(this, new());
@@ -108,25 +124,21 @@ namespace StreamerBot.Data
                         {
                             lock (_DataSource)
                             {
-                                string result = Path.GetRandomFileName();
                                 try
                                 {
-                                    _DataSource.WriteXml(result, XmlWriteMode.DiffGram);
+                                    MemoryStream SaveData = new();  // new memory stream
 
-                                    DataSource testinput = new();
+                                    _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
 
-                                    XmlReader xmlReader = new XmlTextReader(result);
-                                    // test load
-                                    _ = testinput.ReadXml(xmlReader, XmlReadMode.DiffGram);
-                                    xmlReader.Close();
+                                    DataSource testinput = new();   // start a new database
+                                    SaveData.Position = 0;          // reset the reader
+                                    testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
 
-                                    File.Move(result, DataFileName, true);
-                                    File.Delete(result);
+                                    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
                                 }
-                                catch (Exception ex)
+                                catch(Exception ex)
                                 {
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                    File.Delete(result);
                                 }
                             }
                         }));
@@ -231,6 +243,7 @@ switches:
 -top:<number>
 -s:<sort>
 -a:<action>
+-e:<true|false> // IsEnabled
 -param:<allow params to command>
 -timer:<seconds>
 -use:<usage message>
@@ -253,8 +266,6 @@ switches:
                     _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                     _DataSource.CategoryList.AcceptChanges();
                 }
-
-                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").First();
 
                 bool CheckName(string criteria)
                 {
@@ -294,7 +305,7 @@ switches:
                     if (CheckName(key))
                     {
                         CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, categoryListRow, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     }
                 }
             }
@@ -397,10 +408,7 @@ switches:
         {
             lock (_DataSource)
             {
-                //string strParams = Params.DBParamsString();
-                CategoryListRow categoryListRow = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{Params.Category}'").First();
-
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.Message, Params.Timer, Params.RepeatMsg, categoryListRow, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
                 NotifySaveData();
             }
             return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
@@ -498,7 +506,7 @@ switches:
 
             lock (_DataSource)
             {
-                commandsRows = (CommandsRow[])_DataSource.Commands.Select($"Message <>'{DefaulSocialMsg}'");
+                commandsRows = (CommandsRow[])_DataSource.Commands.Select($"Message <>'{DefaulSocialMsg}' AND IsEnabled=True");
             }
 
             string result = "";
@@ -617,6 +625,51 @@ switches:
             }
         }
 
+        public void SetSystemEventsEnabled(bool Enabled)
+        {
+            ChannelEventsRow[] channelEventsRows = (ChannelEventsRow[])_DataSource.ChannelEvents.Select();
+
+            foreach(ChannelEventsRow channelEventsRow in channelEventsRows)
+            {
+                channelEventsRow.IsEnabled = Enabled;
+            }
+        }
+
+        private static string ComFilter()
+        {
+            string filter = string.Empty;
+
+            foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
+            {
+                filter += "'" + d.ToString() + "',";
+            }
+
+            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
+            {
+                filter += "'" + s.ToString() + "',";
+            }
+
+            return filter == string.Empty ? "" : filter[0..^1];
+        }
+
+        private void SetCommandsEnabledHelper(bool Enabled, CommandsRow[] commandsRows)
+        {
+            foreach(CommandsRow commandsRow in commandsRows)
+            {
+                commandsRow.IsEnabled = Enabled;
+            }
+        }
+
+        public void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + ComFilter() + ")"));
+        }
+
+        public void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName NOT IN (" + ComFilter() + ")"));
+        }
+
         #endregion
 
         #region Regular Channel Events
@@ -690,7 +743,7 @@ switches:
             };
             lock (_DataSource)
             {
-                foreach (ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions)))
+                foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
                 {
                     // consider only the values in the dictionary, check if data is already defined in the data table
                     if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
@@ -1130,6 +1183,18 @@ switches:
 
         #endregion Users and Followers
 
+        #region Giveaways
+        public void PostGiveawayData(string DisplayName, DateTime dateTime)
+        {
+            lock (_DataSource)
+            {
+                _ = _DataSource.GiveawayUserData.AddGiveawayUserDataRow(DisplayName, dateTime);
+            }
+            NotifySaveData();
+        }
+
+        #endregion
+
         #region Currency
         /// <summary>
         /// For the supplied user string, update the currency based on the supplied time to the currency accrual rates the streamer specified for the currency.
@@ -1366,6 +1431,8 @@ switches:
         /// <returns><c>true</c> when clip added to database, <c>false</c> when clip is already added.</returns>
         public bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
+            bool result;
+
             lock (_DataSource)
             {
                 ClipsRow[] clipsRows = (ClipsRow[])_DataSource.Clips.Select($"Id='{ClipId}'");
@@ -1374,10 +1441,12 @@ switches:
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime().ToString(), Title, GameId, Language, (decimal)Duration, Url);
                     NotifySaveData();
-                    return true;
+                    result = true;
                 }
-                return false;
+                result = false;
             }
+
+            return result;
         }
 
         #endregion
@@ -1392,7 +1461,7 @@ switches:
             {
                 _DataSource.Users.Clear();
             }
-
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1404,6 +1473,7 @@ switches:
             {
                 _DataSource.Followers.Clear();
             }
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1415,6 +1485,7 @@ switches:
             {
                 _DataSource.InRaidData.Clear();
             }
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1426,8 +1497,22 @@ switches:
             {
                 _DataSource.OutRaidData.Clear();
             }
+            NotifySaveData();
+        }
+
+        /// <summary>
+        /// Removes all Giveaway table data from the database.
+        /// </summary>
+        public void RemoveAllGiveawayData()
+        {
+            lock (_DataSource)
+            {
+                _DataSource.GiveawayUserData.Clear();
+            }
+            NotifySaveData();
         }
 
         #endregion
+
     }
 }

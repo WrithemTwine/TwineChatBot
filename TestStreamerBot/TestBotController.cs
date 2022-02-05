@@ -1,7 +1,7 @@
 ﻿using StreamerBot.BotClients.Twitch;
 using StreamerBot.BotIOController;
 using StreamerBot.Data;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 using StreamerBot.Models;
 using StreamerBot.Static;
 using StreamerBot.Systems;
@@ -179,6 +179,24 @@ namespace TestStreamerBot
             Initialize();
 
 
+
+        }
+
+        [Fact]
+        public void TestManyFunctions()
+        {
+            Initialize();
+
+            string Title = "Let's try this stream test!";
+            DateTime onlineTime = DateTime.Now.ToLocalTime();
+            string Id = "7193";
+            string Category = "Microsoft Flight Simulator";
+
+            botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
+
+            botController.HandleIncomingRaidData("Pitcy", DateTime.Now.ToLocalTime(), "13", "Fortnite", Bots.TwitchChatBot);
+            botController.HandleUserJoined(new() { "Pitcy", "DarkStreamPhantom", "OutlawTorn14", "MrTopiczz", "pitcyissmelly" }, Bots.TwitchChatBot);
+            botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName="Pitcy", IsModerator = true, Message = "!followage" }, Bots.TwitchChatBot);
 
         }
 

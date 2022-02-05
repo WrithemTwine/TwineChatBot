@@ -1,5 +1,5 @@
 ﻿using StreamerBot.Data;
-using StreamerBot.Enum;
+using StreamerBot.Enums;
 
 using System;
 using System.Collections.Generic;

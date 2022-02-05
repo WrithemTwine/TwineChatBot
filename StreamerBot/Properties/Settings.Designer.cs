@@ -658,5 +658,149 @@ namespace StreamerBot.Properties {
                 this["ManageOutRaidData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatLiveReset {
+            get {
+                return ((bool)(this["RepeatLiveReset"]));
+            }
+            set {
+                this["RepeatLiveReset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatLiveResetShow {
+            get {
+                return ((bool)(this["RepeatLiveResetShow"]));
+            }
+            set {
+                this["RepeatLiveResetShow"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ManageGiveawayUsers {
+            get {
+                return ((bool)(this["ManageGiveawayUsers"]));
+            }
+            set {
+                this["ManageGiveawayUsers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int GiveawayCount {
+            get {
+                return ((int)(this["GiveawayCount"]));
+            }
+            set {
+                this["GiveawayCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("The Giveaway winner is: #user!")]
+        public string GiveawayWinMsg {
+            get {
+                return ((string)(this["GiveawayWinMsg"]));
+            }
+            set {
+                this["GiveawayWinMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("The message when beginning giveaway - blank is no chat message")]
+        public string GiveawayBegMsg {
+            get {
+                return ((string)(this["GiveawayBegMsg"]));
+            }
+            set {
+                this["GiveawayBegMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("The message when ending giveaway - blank is no chat message")]
+        public string GiveawayEndMsg {
+            get {
+                return ((string)(this["GiveawayEndMsg"]));
+            }
+            set {
+                this["GiveawayEndMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GiveawayMultiUser {
+            get {
+                return ((bool)(this["GiveawayMultiUser"]));
+            }
+            set {
+                this["GiveawayMultiUser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TwitchPubSubChannelPoints {
+            get {
+                return ((bool)(this["TwitchPubSubChannelPoints"]));
+            }
+            set {
+                this["TwitchPubSubChannelPoints"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("From registered chatbot for Stream Channel at https://dev.twitch.tv/console")]
+        public string TwitchStreamClientId {
+            get {
+                return ((string)(this["TwitchStreamClientId"]));
+            }
+            set {
+                this["TwitchStreamClientId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Specify the OAuth access token for streamer channel bot authentication")]
+        public string TwitchStreamOauthToken {
+            get {
+                return ((string)(this["TwitchStreamOauthToken"]));
+            }
+            set {
+                this["TwitchStreamOauthToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1900-01-01")]
+        public global::System.DateTime TwitchStreamerTokenDate {
+            get {
+                return ((global::System.DateTime)(this["TwitchStreamerTokenDate"]));
+            }
+            set {
+                this["TwitchStreamerTokenDate"] = value;
+            }
+        }
     }
 }
