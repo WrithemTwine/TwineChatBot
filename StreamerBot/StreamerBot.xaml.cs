@@ -296,10 +296,11 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
+            // commented out to not hide data tabs
+            //static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
 
-            TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
-            TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
+            //TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
+            //TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
 
             if (CheckBox_ManageUsers.IsChecked == true)
             {
@@ -355,7 +356,27 @@ namespace StreamerBot
             }
 
             // Twitch
-            GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text ? Visibility.Visible : Visibility.Collapsed;
+
+            if(TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
+            {
+                GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
+                TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
+                TextBox_TwitchScopesOauthSame.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
+                Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
+                Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
+            } else
+            {
+                GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Collapsed;
+                TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Collapsed;
+                TextBox_TwitchScopesOauthSame.Visibility = Visibility.Visible;
+                Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
+            }
+
+
+
 
             CheckDebug();
         }

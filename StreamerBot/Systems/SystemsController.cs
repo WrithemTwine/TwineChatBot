@@ -273,7 +273,6 @@ namespace StreamerBot.Systems
 
         public void UserJoined(List<string> users, Bots Source)
         {
-
             foreach (string user in from string user in users
                                     where StatisticsSystem.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
@@ -323,18 +322,21 @@ namespace StreamerBot.Systems
                                     ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
                     }
 
-                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out _, out short Multi);
-                    SendMessage(
-                        VariableParser.ParseReplace(
-                            msg,
-                            VariableParser.BuildDictionary(
-                                new Tuple<MsgVars, string>[]
-                                    {
+                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
+                    if (Enabled)
+                    {
+                        SendMessage(
+                            VariableParser.ParseReplace(
+                                msg,
+                                VariableParser.BuildDictionary(
+                                    new Tuple<MsgVars, string>[]
+                                        {
                                         new( MsgVars.user, Username )
-                                    }
+                                        }
+                                )
                             )
-                        )
-                    , Repeat: Multi);
+                        , Repeat: Multi);
+                    }
                 }
             }
 

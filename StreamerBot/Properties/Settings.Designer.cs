@@ -709,7 +709,7 @@ namespace StreamerBot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("The Giveaway winner is: #user!")]
+        [global::System.Configuration.DefaultSettingValueAttribute("The Giveaway winner is: #winner!")]
         public string GiveawayWinMsg {
             get {
                 return ((string)(this["GiveawayWinMsg"]));
