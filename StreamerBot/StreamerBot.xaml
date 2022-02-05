@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="clr-namespace:StreamerBot.Properties"
-        xmlns:GUI="clr-namespace:StreamerBot.GUI" xmlns:Static="clr-namespace:StreamerBot.Static"
+        xmlns:GUI="clr-namespace:StreamerBot.GUI" 
+        xmlns:Static="clr-namespace:StreamerBot.Static"
+        xmlns:Models="clr-namespace:StreamerBot.Models"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="770" Width="1020"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
@@ -13,6 +15,7 @@
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
+            <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
 
             <Style TargetType="{x:Type DockPanel}">
                 <Setter Property="Margin" Value="5" />
@@ -818,11 +821,18 @@
                                                     </TextBox.ToolTip>
                                                 </TextBox>
                                             </StackPanel>
-                                            <Label DockPanel.Dock="Top" Margin="0,10,0,2" Content="Current Giveaway Entrants:" />
+                                            <StackPanel DockPanel.Dock="Top" Margin="0,10,0,2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Label Content="Current Giveaway Entrants:" />
+                                                <Label Width="Auto" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Content="{Binding GiveawayCollection.Count, Mode=OneWay}"  />
+                                            </StackPanel>
                                             <ListView DockPanel.Dock="Top" x:Name="listView" Width="300" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayCollection}">
                                                 <ListView.View>
                                                     <GridView>
-                                                        <GridViewColumn Header="Entrant" Width="280"/>
+                                                        <GridViewColumn Header="Order" Width="50" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                         AncestorType={x:Type ListViewItem}}, 
+                                         Converter={StaticResource IndexConverter}}"
+                                                                        />
+                                                        <GridViewColumn Header="Entrant" Width="220" DisplayMemberBinding="{Binding Mode=OneWay}" />
                                                     </GridView>
                                                 </ListView.View>
                                             </ListView>
