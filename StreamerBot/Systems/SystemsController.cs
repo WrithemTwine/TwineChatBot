@@ -496,11 +496,17 @@ namespace StreamerBot.Systems
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
         {
-            if (GiveawayStarted && (OptionFlags.GiveawayMultiUser || !GiveawayCollectionList.Contains(DisplayName)))
+            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMultiEntries) || !GiveawayCollectionList.Contains(DisplayName)))
             {
                 GiveawayCollectionList.Add(DisplayName);
                 SystemsBase.GiveawayCollection.Add(DisplayName);
             }
+
+            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMultiEntries)
+            {
+                GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == DisplayName));
+            }
+
         }
 
         /// <summary>
@@ -518,27 +524,33 @@ namespace StreamerBot.Systems
 
             string DisplayName = "";
 
-            for (int x = 0; x < OptionFlags.GiveawayCount && GiveawayCollectionList.Count > 0; x++)
+            if (GiveawayCollectionList.Count > 0)
             {
-                DisplayName += GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)] + ", ";
-            }
-
-            if (DisplayName != "")
-            {
-                DisplayName = DisplayName[0..^2];
-                SendMessage(
-                    VariableParser.ParseReplace(
-                        OptionFlags.GiveawayWinMsg,
-                        VariableParser.BuildDictionary(
-                            new Tuple<MsgVars, string>[]
-                            {
-                                new(MsgVars.winner, DisplayName)
-                            }
-                            )));
-
-                if (OptionFlags.ManageGiveawayUsers)
+                int x = 0;
+                while (x < OptionFlags.GiveawayCount)
                 {
-                    DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+                    string winner = GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)];
+                    GiveawayCollectionList.RemoveAll((w) => w == winner);
+                    DisplayName += (OptionFlags.GiveawayCount > 1 && x > 0 ? ", " : "") + winner;
+                    x++;
+                }
+
+                if (DisplayName != "")
+                {
+                    SendMessage(
+                        VariableParser.ParseReplace(
+                            OptionFlags.GiveawayWinMsg ?? "",
+                            VariableParser.BuildDictionary(
+                                new Tuple<MsgVars, string>[]
+                                {
+                                new(MsgVars.winner, DisplayName)
+                                }
+                                )));
+
+                    if (OptionFlags.ManageGiveawayUsers)
+                    {
+                        DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+                    }
                 }
             }
         }

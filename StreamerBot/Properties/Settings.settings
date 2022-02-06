@@ -197,5 +197,8 @@
     <Setting Name="TwitchStreamerTokenDate" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">1900-01-01</Value>
     </Setting>
+    <Setting Name="GiveawayMaxEntries" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

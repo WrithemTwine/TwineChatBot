@@ -9,7 +9,13 @@ namespace MultiUserLiveBot.Data
 {
     public class DataManager : INotifyPropertyChanged
     {
-        private static readonly string DataFileName = "MultiChatbotData.xml";
+        private static readonly string DataFileXML = "MultiChatbotData.xml";
+
+#if DEBUG
+        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\MultiUserLiveBot\bin\Debug\net5.0-windows", DataFileXML);
+#else
+        private static readonly string DataFileName = DataFileXML;
+#endif
 
         private readonly DataSource _DataSource;
 
@@ -32,6 +38,15 @@ namespace MultiUserLiveBot.Data
             Channels = new DataView(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
             MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, "Id", DataViewRowState.CurrentRows);
             LiveStream = new DataView(_DataSource.LiveStream, null, "ChannelName", DataViewRowState.CurrentRows);
+
+            Channels.ListChanged += DataView_ListChanged;
+            MsgEndPoints.ListChanged += DataView_ListChanged;
+            LiveStream.ListChanged += DataView_ListChanged;
+        }
+
+        private void DataView_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(sender));
         }
 
         #region Load and Exit Ops

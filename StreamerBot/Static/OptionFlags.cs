@@ -4,7 +4,6 @@ using System;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Data;
 
 namespace StreamerBot.Static
 {
@@ -70,6 +69,7 @@ namespace StreamerBot.Static
         public static string GiveawayBegMsg { get; set; }
         public static string GiveawayEndMsg { get; set; }
         public static bool GiveawayMultiUser { get; set; }
+        public static int GiveawayMultiEntries { get; set; }
 
         public static bool TwitchPubSubChannelPoints { get; set; }
 
@@ -149,6 +149,7 @@ namespace StreamerBot.Static
                 GiveawayEndMsg = Settings.Default.GiveawayEndMsg;
                 GiveawayWinMsg = Settings.Default.GiveawayWinMsg;
                 GiveawayMultiUser = Settings.Default.GiveawayMultiUser;
+                GiveawayMultiEntries = Settings.Default.GiveawayMaxEntries;
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
 

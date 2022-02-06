@@ -2,6 +2,7 @@
 using StreamerBot.BotIOController;
 using StreamerBot.Data;
 using StreamerBot.Enums;
+using StreamerBot.Events;
 using StreamerBot.Models;
 using StreamerBot.Static;
 using StreamerBot.Systems;
@@ -52,6 +53,20 @@ namespace TestStreamerBot
                 botController.SetDispatcher(Dispatcher.CurrentDispatcher);
                 dataManager = SystemsBase.DataManage;
             }
+        }
+
+        private OnGetChannelGameNameEventArgs GetRandomGameIdName()
+        {
+            if (!Initialized)
+            {
+                Initialize();
+            }
+
+            List<Tuple<string, string>> output = dataManager.GetGameCategories();
+            Random random = new();
+            Tuple<string, string> itemfound = output[random.Next(output.Count)];
+
+            return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
         private void BotController_OutputSentToBots(object sender, StreamerBot.Events.PostChannelMessageEventArgs e)
@@ -200,5 +215,36 @@ namespace TestStreamerBot
 
         }
 
+        [Fact]
+        public void TestGiveaway()
+        {
+            Initialize();
+
+            OnGetChannelGameNameEventArgs randomGame = GetRandomGameIdName();
+            botController.HandleOnStreamOnline("writhemtwine", "Test Giveaway", DateTime.Now.ToLocalTime(), randomGame.GameId, randomGame.GameName);
+
+            OptionFlags.GiveawayMultiEntries = 5;
+            OptionFlags.GiveawayMultiUser = true;
+            OptionFlags.GiveawayCount = 2;
+            OptionFlags.ManageGiveawayUsers = true;
+
+            List<string> entrylist = new() { "CuteChibiChu", "WrithemTwine", "DarkStreamPhantom", "OutlawTorn14" };
+
+            botController.HandleGiveawayBegin(GiveawayTypes.Command, "giveaway");
+
+            foreach(string s in entrylist)
+            {
+                int y = 0;
+                while (y < OptionFlags.GiveawayMultiEntries)
+                {
+                    botController.HandleGiveawayPostName(s);
+                    y++;
+                }
+            }
+
+            botController.HandleGiveawayEnd();
+            botController.HandleGiveawayWinner();
+
+        }
     }
 }

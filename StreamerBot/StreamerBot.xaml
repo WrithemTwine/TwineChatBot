@@ -1,12 +1,13 @@
 ﻿<Window x:Class="StreamerBot.StreamerBotWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:s="clr-namespace:StreamerBot.Properties"
-        xmlns:GUI="clr-namespace:StreamerBot.GUI" 
-        xmlns:Static="clr-namespace:StreamerBot.Static"
+        xmlns:GUI="clr-namespace:StreamerBot.GUI"
         xmlns:Models="clr-namespace:StreamerBot.Models"
+        xmlns:s="clr-namespace:StreamerBot.Properties"
+        xmlns:Static="clr-namespace:StreamerBot.Static"
+        xmlns:Enums="clr-namespace:StreamerBot.Enums"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="770" Width="1020"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
@@ -16,6 +17,7 @@
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
+            <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
 
             <Style TargetType="{x:Type DockPanel}">
                 <Setter Property="Margin" Value="5" />
@@ -97,6 +99,13 @@
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
+            <StatusBarItem>
+                <StackPanel>
+                    <Label>Token Expires:</Label>
+                    <Label x:Name="StatusBarItem_TokenDate"  />
+                </StackPanel>
+            </StatusBarItem>
+            <Separator Width="1" />
             <StatusBarItem Padding="0,0,0,0">
                 <Button Name="Button_RefreshCategory" Grid.Column="0" 
                         HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -111,7 +120,7 @@
         <TabControl DockPanel.Dock="Top" TabStripPlacement="Left">
             <TabItem Header="Bots">
                 <TabControl>
-                    <TabItem Header="Start">
+                    <TabItem Header="Start Bots">
                         <StackPanel>
                             <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />stops when the separate "MultiUserLiveBot" process starts.
                                     <LineBreak />For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.
@@ -135,7 +144,7 @@
                                                 <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
                                         </WrapPanel>
-                                        <GroupBox Header="MultiLive Monitoring Bot" Width="Auto">
+                                        <GroupBox Header="MultiLive Monitoring Bot" Width="Auto" Visibility="Collapsed">
                                             <WrapPanel Orientation="Vertical">
                                                 <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
                                                     <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
@@ -183,16 +192,17 @@
                                         <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                             <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                         </Label>
-
-                                        <Label Height="Auto">
-                                            <TextBlock TextWrapping="Wrap">Start and Stop bot when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the stream is detected online is when the Chat Bot would start.</TextBlock>
-                                        </Label>
-                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotConnectOnline}" LostFocus="Settings_LostFocus" >
-                                            <TextBlock>Connect bot when stream goes online</TextBlock>
-                                        </CheckBox>
-                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotDisconnectOffline}" LostFocus="Settings_LostFocus" >
-                                            <TextBlock>Disconnect bot when stream goes offline</TextBlock>
-                                        </CheckBox>
+                                        <StackPanel Visibility="Collapsed">
+                                            <Label Height="Auto">
+                                                <TextBlock TextWrapping="Wrap">Start and Stop bot when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the stream is detected online is when the Chat Bot would start.</TextBlock>
+                                            </Label>
+                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotConnectOnline}" LostFocus="Settings_LostFocus" >
+                                                <TextBlock>Connect bot when stream goes online</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotDisconnectOffline}" LostFocus="Settings_LostFocus" >
+                                                <TextBlock>Disconnect bot when stream goes offline</TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
                                     </WrapPanel>
                                 </GroupBox>
 
@@ -323,7 +333,7 @@
                                         </Expander>
                                     </StackPanel>
                                 </GroupBox>
-                                
+
                                 <StackPanel>
                                     <GroupBox Header="Setup Follower Operations" Width="Auto">
                                         <StackPanel>
@@ -475,7 +485,7 @@
                                         </FlowDocument>
                                     </FlowDocumentScrollViewer>
                                 </Expander>
-                                
+
                             </WrapPanel>
                         </ScrollViewer>
                     </TabItem>
@@ -718,7 +728,7 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                        <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
@@ -781,7 +791,11 @@
                                                     </RadioButton>
                                                 </StackPanel>
                                             </GroupBox>
-                                            <CheckBox DockPanel.Dock="Top" Content="Allow more than 1 entry" IsChecked="{Binding GiveawayMultiUser}" />
+                                            <StackPanel DockPanel.Dock="Top" Margin="5" Orientation="Horizontal">
+                                                <CheckBox  Content="Allow more than 1 entry" IsChecked="{Binding GiveawayMultiUser}" />
+                                                <Label Margin="50,0,0,0" Width="Auto" Content="Max Entries" />
+                                                <TextBox Width="40" Text="{Binding GiveawayMaxEntries}" ToolTip="Can be changed during giveaway, lowered will remove excess entrants." HorizontalContentAlignment="Center" />
+                                            </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <StackPanel.Resources>
                                                     <Style TargetType="Button">
@@ -843,7 +857,6 @@
                                         <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                                     </Grid>
                                 </TabItem>
-
                             </TabControl>
                         </TabItem>
                         <TabItem Header="System Events">
@@ -873,9 +886,16 @@
                         <TabItem Header="Commands">
                             <TabControl>
                                 <TabItem Header="Help">
-                                    <Grid>
+                                    <StackPanel Orientation="Vertical">
                                         <TextBlock><Run Text="The 'BuiltInCommands' are those established within the bot."/><LineBreak /><Run Text="The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. &quot;Visit me on Twitter at: http://wwww.twitter.com/myuser&quot;. The command will show all socials except messages that are blank or the default 'Social media url here'."/><LineBreak /><LineBreak /><Run Text="The variables within message to format a custom response:"/><LineBreak /><Run Text="#user: the user specific to the command; either 'command invoker' user or parameter to the command"/><LineBreak /><Run Text="#url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command"/><LineBreak /><Run Text="#fieldvalue: placeholder for the value from a table lookup"/><LineBreak /><Run Text="#currencyname: placeholder for the currency name - extracted from table"/><LineBreak /><Run Text="#currencyvalue: the value of a currency"/><LineBreak /><LineBreak /><Run Text="#date: the current date"/><LineBreak /><Run Text="#time: the current time"/><LineBreak /></TextBlock>
-                                    </Grid>
+                                        <Rectangle Width="800" Fill="Black" Stretch="Fill" Stroke="Black" Height="1" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Viewer Type Values: " />
+                                            <TextBlock Text="{Binding ViewerTypesValues, Mode=OneWay, Source={StaticResource ViewerTypesString}}" FlowDirection="LeftToRight" ToolTip="ViewerTypes for Command access rights" VerticalAlignment="Center" />
+                                        </StackPanel>
+
+                                        <Label Content="A value to the right permits access with the leftward values, e.g. selecting 'VIP' allows 'VIP, Mod, Broadcaster' access rights. "/>
+                                    </StackPanel>
                                 </TabItem>
                                 <TabItem Header="Built-In">
                                     <Grid>
@@ -991,12 +1011,14 @@
                                     <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
                                         <Setter Property="Margin" Value="5"/>
                                         <Setter Property="MaxColumnWidth" Value="160" />
+                                        <Setter Property="CanUserAddRows" Value="True" />
+                                        <Setter Property="CanUserDeleteRows" Value="True" />
                                         <EventSetter Event="MouseEnter" Handler="DataGrid_MouseEnter" />
                                         <EventSetter Event="MouseLeave" Handler="DataGrid_MouseLeave" />
                                     </Style>
                                 </Grid.Resources>
                                 <Grid.DataContext>
-                                    <Binding Path="TwitchLiveMonitor" Source="{StaticResource TwitchBot}"/>
+                                    <Binding Mode="OneWay" Path="TwitchLiveMonitor" Source="{StaticResource TwitchBot}"/>
                                 </Grid.DataContext>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50" />
@@ -1031,11 +1053,9 @@
                                     </TextBox.ToolTip>
                                 </TextBox>
 
-                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding"  />
-                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" 
-                              ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
-                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding MultiLiveDataManager.MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True" />
+                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding MultiLiveDataManager.Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
+                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding MultiLiveDataManager.LiveStream, Mode=TwoWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
 
                                 <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
                                     <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />

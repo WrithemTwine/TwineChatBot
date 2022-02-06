@@ -802,5 +802,17 @@ namespace StreamerBot.Properties {
                 this["TwitchStreamerTokenDate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int GiveawayMaxEntries {
+            get {
+                return ((int)(this["GiveawayMaxEntries"]));
+            }
+            set {
+                this["GiveawayMaxEntries"] = value;
+            }
+        }
     }
 }
