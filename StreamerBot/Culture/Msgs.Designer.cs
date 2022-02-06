@@ -862,7 +862,7 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Go check out #user at #url and consider following them!.
+        ///   Looks up a localized string similar to Go check out #user at #url and consider following them! #category.
         /// </summary>
         internal static string Msgso {
             get {

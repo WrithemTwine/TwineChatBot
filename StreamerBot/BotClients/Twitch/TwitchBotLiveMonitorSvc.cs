@@ -1,5 +1,6 @@
 ﻿
 using StreamerBot.Enums;
+using StreamerBot.Properties;
 using StreamerBot.Static;
 
 using System;
@@ -192,7 +193,6 @@ namespace StreamerBot.BotClients.Twitch
 
                 if (PostedLive)
                 {
-
                     bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, e.Stream.StartedAt);
 
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
@@ -206,7 +206,7 @@ namespace StreamerBot.BotClients.Twitch
                             { "#user", e.Stream.UserName },
                             { "#category", e.Stream.GameName },
                             { "#title", e.Stream.Title },
-                            { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
+                            { "#url", Resources.TwitchHomepage + e.Stream.UserName }
                         };
 
                         LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt);

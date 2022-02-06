@@ -1414,6 +1414,22 @@ switches:
             NotifySaveData();
             return found;
         }
+
+        /// <summary>
+        /// Retrieves all GameIds and GameCategories added to the database.
+        /// </summary>
+        /// <returns>Returns a list of <code>Tuple<string GameId, string GameName></code> objects.</returns>
+        public List<Tuple<string, string>> GetGameCategories()
+        {
+            List<Tuple<string, string>> GameIdNameList = new();
+            foreach (CategoryListRow c in _DataSource.CategoryList.Select())
+            {
+                GameIdNameList.Add(new(c.CategoryId, c.Category));
+            }
+
+            return GameIdNameList;
+        }
+
         #endregion
 
         #region Clips

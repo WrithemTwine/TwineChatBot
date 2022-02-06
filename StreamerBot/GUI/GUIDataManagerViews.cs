@@ -24,6 +24,7 @@ namespace StreamerBot.GUI
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
+        public ObservableCollection<string> GiveawayCollection { get; set; }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -54,6 +55,7 @@ namespace StreamerBot.GUI
         {
             ChatData = SystemsBase.ChatData;
             JoinCollection = SystemsBase.JoinCollection;
+            GiveawayCollection = SystemsBase.GiveawayCollection;
             SetDataTableViews(SystemsController.DataManage);
             //SaveTableData = SystemsController.DataManage.NotifySaveData; // the database save data method
         }

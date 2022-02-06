@@ -174,7 +174,7 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="GiveawayWinMsg" Type="System.String" Scope="User">
-      <Value Profile="(Default)">The Giveaway winner is: #user!</Value>
+      <Value Profile="(Default)">The Giveaway winner is: #winner!</Value>
     </Setting>
     <Setting Name="GiveawayBegMsg" Type="System.String" Scope="User">
       <Value Profile="(Default)">The message when beginning giveaway - blank is no chat message</Value>
@@ -196,6 +196,9 @@
     </Setting>
     <Setting Name="TwitchStreamerTokenDate" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">1900-01-01</Value>
+    </Setting>
+    <Setting Name="GiveawayMaxEntries" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

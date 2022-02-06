@@ -412,7 +412,7 @@
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgso" xml:space="preserve">
-    <value>Go check out #user at #url and consider following them!</value>
+    <value>Go check out #user at #url and consider following them! #category</value>
     <comment>message for "Shout Out" (so), to recognize another streamer/channel</comment>
   </data>
   <data name="Msgsocials" xml:space="preserve">

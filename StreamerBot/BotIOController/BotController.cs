@@ -707,10 +707,7 @@ namespace StreamerBot.BotIOController
             {
                 HandleGiveawayPostName(commandmsg.DisplayName);
             }
-            else
-            {
-                Systems.ProcessCommand(commandmsg, Source);
-            }
+            Systems.ProcessCommand(commandmsg, Source);
         }
 
         public void HandleCustomReward(string DisplayName, string RewardTitle)

@@ -709,7 +709,7 @@ namespace StreamerBot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("The Giveaway winner is: #user!")]
+        [global::System.Configuration.DefaultSettingValueAttribute("The Giveaway winner is: #winner!")]
         public string GiveawayWinMsg {
             get {
                 return ((string)(this["GiveawayWinMsg"]));
@@ -800,6 +800,18 @@ namespace StreamerBot.Properties {
             }
             set {
                 this["TwitchStreamerTokenDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int GiveawayMaxEntries {
+            get {
+                return ((int)(this["GiveawayMaxEntries"]));
+            }
+            set {
+                this["GiveawayMaxEntries"] = value;
             }
         }
     }

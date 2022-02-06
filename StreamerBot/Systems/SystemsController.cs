@@ -36,7 +36,7 @@ namespace StreamerBot.Systems
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
-        private List<string> GiveawayCollection = new();
+        private List<string> GiveawayCollectionList = new();
 
 
         public SystemsController()
@@ -273,7 +273,6 @@ namespace StreamerBot.Systems
 
         public void UserJoined(List<string> users, Bots Source)
         {
-
             foreach (string user in from string user in users
                                     where StatisticsSystem.UserJoined(user, DateTime.Now.ToLocalTime())
                                     select user)
@@ -323,18 +322,21 @@ namespace StreamerBot.Systems
                                     ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
                     }
 
-                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out _, out short Multi);
-                    SendMessage(
-                        VariableParser.ParseReplace(
-                            msg,
-                            VariableParser.BuildDictionary(
-                                new Tuple<MsgVars, string>[]
-                                    {
+                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
+                    if (Enabled)
+                    {
+                        SendMessage(
+                            VariableParser.ParseReplace(
+                                msg,
+                                VariableParser.BuildDictionary(
+                                    new Tuple<MsgVars, string>[]
+                                        {
                                         new( MsgVars.user, Username )
-                                    }
+                                        }
+                                )
                             )
-                        )
-                    , Repeat: Multi);
+                        , Repeat: Multi);
+                    }
                 }
             }
 
@@ -482,7 +484,8 @@ namespace StreamerBot.Systems
         public void BeginGiveaway()
         {
             GiveawayStarted = true;
-            GiveawayCollection.Clear();
+            GiveawayCollectionList.Clear();
+            SystemsBase.GiveawayCollection.Clear();
 
             SendMessage(OptionFlags.GiveawayBegMsg);
         }
@@ -493,10 +496,17 @@ namespace StreamerBot.Systems
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
         {
-            if (GiveawayStarted && (OptionFlags.GiveawayMultiUser || !GiveawayCollection.Contains(DisplayName)))
+            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMultiEntries) || !GiveawayCollectionList.Contains(DisplayName)))
             {
-                GiveawayCollection.Add(DisplayName);
+                GiveawayCollectionList.Add(DisplayName);
+                SystemsBase.GiveawayCollection.Add(DisplayName);
             }
+
+            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMultiEntries)
+            {
+                GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == DisplayName));
+            }
+
         }
 
         /// <summary>
@@ -514,27 +524,33 @@ namespace StreamerBot.Systems
 
             string DisplayName = "";
 
-            for (int x = 0; x < OptionFlags.GiveawayCount && GiveawayCollection.Count > 0; x++)
+            if (GiveawayCollectionList.Count > 0)
             {
-                DisplayName += GiveawayCollection[random.Next(GiveawayCollection.Count)] + ", ";
-            }
-
-            if (DisplayName != "")
-            {
-                DisplayName = DisplayName[0..^2];
-                SendMessage(
-                    VariableParser.ParseReplace(
-                        OptionFlags.GiveawayWinMsg,
-                        VariableParser.BuildDictionary(
-                            new Tuple<MsgVars, string>[]
-                            {
-                                new(MsgVars.winner, DisplayName)
-                            }
-                            )));
-
-                if (OptionFlags.ManageGiveawayUsers)
+                int x = 0;
+                while (x < OptionFlags.GiveawayCount)
                 {
-                    DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+                    string winner = GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)];
+                    GiveawayCollectionList.RemoveAll((w) => w == winner);
+                    DisplayName += (OptionFlags.GiveawayCount > 1 && x > 0 ? ", " : "") + winner;
+                    x++;
+                }
+
+                if (DisplayName != "")
+                {
+                    SendMessage(
+                        VariableParser.ParseReplace(
+                            OptionFlags.GiveawayWinMsg ?? "",
+                            VariableParser.BuildDictionary(
+                                new Tuple<MsgVars, string>[]
+                                {
+                                new(MsgVars.winner, DisplayName)
+                                }
+                                )));
+
+                    if (OptionFlags.ManageGiveawayUsers)
+                    {
+                        DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
+                    }
                 }
             }
         }

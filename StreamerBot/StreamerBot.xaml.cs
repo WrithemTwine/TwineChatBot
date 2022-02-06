@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -143,7 +142,10 @@ namespace StreamerBot
                         Bots.TwitchFollowBot => Radio_Twitch_FollowBotStart,
                         Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
                         Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
-                        Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart
+                        Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart,
+                        Bots.Default => throw new NotImplementedException(),
+                        Bots.TwitchUserBot => throw new NotImplementedException(),
+                        _ => throw new NotImplementedException()
                     };
                     HelperStartBot(radio);
                 }
@@ -162,7 +164,10 @@ namespace StreamerBot
                       Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
                       Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
                       Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
-                      Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop
+                      Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
+                      Bots.Default => throw new NotImplementedException(),
+                      Bots.TwitchUserBot => throw new NotImplementedException(),
+                      _ => throw new NotImplementedException()
                   };
                   HelperStopBot(radio);
               }), null);
@@ -246,15 +251,7 @@ namespace StreamerBot
         {
             targetclick.IsEnabled = false;
 
-            DefaultSettingValueAttribute defaultSetting = null;
-            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                                     where m.Name == "TwitchChannelName"
-                                     select m)
-            {
-                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
-            }
-
-            if (Settings.Default.TwitchChannelName != defaultSetting.Value) // prevent operation if default value
+            if(OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
             {
                 new Thread(new ThreadStart(() =>
                 {
@@ -296,10 +293,11 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
+            // commented out to not hide data tabs
+            //static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
 
-            TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
-            TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
+            //TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
+            //TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
 
             if (CheckBox_ManageUsers.IsChecked == true)
             {
@@ -355,7 +353,30 @@ namespace StreamerBot
             }
 
             // Twitch
-            GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text ? Visibility.Visible : Visibility.Collapsed;
+
+            if(TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
+            {
+                GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
+                TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
+                TextBox_TwitchScopesOauthSame.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
+                Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
+                Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
+            } else
+            {
+                GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Collapsed;
+                TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Collapsed;
+                TextBox_TwitchScopesOauthSame.Visibility = Visibility.Visible;
+                Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
+            }
+
+            // set earliest token expiration date
+
+            List<DateTime> RefreshTokenDateExpiry = new() { OptionFlags.TwitchRefreshDate, OptionFlags.TwitchStreamerTokenDate };
+            RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
+            StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry?.Min().ToShortDateString() ?? "None Valid";
 
             CheckDebug();
         }
@@ -766,7 +787,7 @@ namespace StreamerBot
                     NotifyExpiredCredentials?.Invoke(this, new());
                 }
 
-                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
+                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchStreamerTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
                 {
                     NotifyExpiredCredentials?.Invoke(this, new());
                 }

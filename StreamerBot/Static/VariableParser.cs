@@ -63,18 +63,20 @@ namespace StreamerBot.Static
         /// <returns>The message replaced with the dictionary key,value pairs.</returns>
         public static string ParseReplace(string message, Dictionary<string, string> dictionary)
         {
-            foreach(string k in dictionary.Keys)
+            if (message != null)
             {
-                if (message.Contains(k))
+                foreach (string k in dictionary.Keys)
                 {
-                    message = message.Replace(k,
-                        (k == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix username with @
-                        (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
-                        dictionary[k]);
+                    if (message.Contains(k))
+                    {
+                        message = message.Replace(k,
+                            (k == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix username with @
+                            (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
+                            dictionary[k]);
+                    }
                 }
             }
-
-            return message;
+            return message ?? "";
 #if OLD_CODE
             string temp = ""; // build the message to return
 
