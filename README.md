@@ -15,12 +15,10 @@ The user can add:
    - Live Stream Stats - can view/edit the data the bot monitors, disabled while the bot is active (the updates don't refresh and crash the GUI)
 
 ----------------------------------
-# Application - Twine Chat Bot 
+# Application - Twine Streamer Bot 
 (documentation updated periodically, may not reflect actual current feature set)
 
 Features: This bot utilizes TwitchLib.
-
-*Note: a current change is the 'executable' is not signed. Therefore, the settings (usually saved at c:\Users\<username>\App Data\ChatBot\) files will change folders and settings appear 'lost'. However, the settings still exist and can be moved (when the bot app is closed) to the newer location and will be restored. This is not a problem if you keep the bot in the same location and update it there.
 
 The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
 
@@ -29,6 +27,7 @@ Implements:
    - Twitch Live bot
    - Twitch Follower bot
    - Twitch "Clip" bot
+   - Twitch PubSub Bot
 
 (future scalability) the app setup allows adding more Twitch bots (different Twitch functions) and other platforms
    - TBD, next featured bot
@@ -38,7 +37,7 @@ Database management to organize:
    - followers to a channel (supporting follow age type commands)
    - a viewer list to auto shout out viewers when they are first recognized as arrived in the channel
    - Statistics for the current live stream
-   - save basic statistics for incoming raid users
+   - save basic statistics for incoming raid users, and outgoing raids
 - Responses to events occuring in the channel:
    - Messages to viewer actions and events: welcome a viewer message, incoming raids, subscriptions and resubscriptions, gifted subscriptions, bits (Twitch), new follower, hosting messages, and going live messages
    - Command system 
@@ -71,8 +70,12 @@ Options to manage bot actions (enable or disable):
       - when viewer joins channel
       - when viewer first chats
    - Auto shout out users (once per live stream)
-      - when viewer first appears, tied to welcoming viewers
+      - when viewer first appears or chats, tied to welcoming viewers
       - when viewer raids the channel
+   - Viewer Giveaways
+      - Specify Commands or Channel Points (requires PubSub bot active) for the user to enter
+      - Specify the user can enter 1 or more times up to a specified max limit
+      - Giveaway - Start, Stop, and Winner customizable messages can be sent to chat
 - Twitch Features:
    - Add "/me" to messages (i.e. italicized message)
       - all messages or 
@@ -83,13 +86,15 @@ Options to manage bot actions (enable or disable):
          - Remove non-followers from Followers table
          - Notification message for new follows
        - To other channels:
-         - Auto follow back when a viewer follows
-         - Auto follow when a raider arrives
          - Set the go live notification for the now followed channel
+   - Uses PubSub to listen to Channel Point Redemptions
+       - For Giveaways
+       - Future features upon request, regarding channel point redemptions
    - Automatically start when app starts:
       - Twitch Chat bot
       - Twitch Live bot
       - Twitch Follow bot
+      - Twitch Clip bot
       - Multi-Live bot features - when Multi-Live Bot app is not started
 
 Twitch (some features depend on settings)
@@ -105,6 +110,15 @@ Twitch (some features depend on settings)
    - Live bot
       - registers when your channel goes live or goes offline
       - monitors other channels to share when they go live
+   - Clip bot
+      - retrieves clips upon startup
+      - monitors channel for active clips
+        - option to post to chat
+        - option to post to Discord via Webhook
+   - PubSub bot
+      - listens to topics from Twitch to receive realtime updates
+        - Custom Rewards redemption (Channel Points)
+        - (future features) more topics available via Twitch API
     When Multi-Live Bot
       - is running, this feature is disabled
       - is not running, this feature is available and shares the same data file

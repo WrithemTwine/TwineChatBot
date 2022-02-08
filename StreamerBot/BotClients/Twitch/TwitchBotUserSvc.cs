@@ -6,11 +6,8 @@ using StreamerBot.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -22,7 +19,6 @@ namespace StreamerBot.BotClients.Twitch
     public class TwitchBotUserSvc : TwitchBotsBase
     {
         private UserLookupService userLookupService;
-        private bool IsInitalized;
 
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;

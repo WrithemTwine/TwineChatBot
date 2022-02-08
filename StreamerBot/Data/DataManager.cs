@@ -149,7 +149,7 @@ namespace StreamerBot.Data
 
         private void PerformSaveOp()
         {
-            if (OptionFlags.BotStarted) // don't sleep if exiting app
+            if (OptionFlags.ActiveToken) // don't sleep if exiting app
             {
                 Thread.Sleep(SaveThreadWait);
             }
