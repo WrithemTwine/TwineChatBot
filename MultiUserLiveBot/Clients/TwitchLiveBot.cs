@@ -30,6 +30,7 @@ namespace MultiUserLiveBot.Clients
         public TwitchLiveBot()
         {
             ChatClientName = "Twitch";
+            DataManage.LoadData();
             _ = RefreshSettings();
         }
 
@@ -52,7 +53,7 @@ namespace MultiUserLiveBot.Clients
                     { "#user", e.Stream.UserName },
                     { "#category", e.Stream.GameName },
                     { "#title", e.Stream.Title },
-                    { "#url", "https://www.twitch.tv/" + e.Stream.UserName }
+                    { "#url", Resources.TwitchHomepage + e.Stream.UserName }
                 };
 
                 // false if the date didn't match, true if an event matches
@@ -155,7 +156,7 @@ namespace MultiUserLiveBot.Clients
 
                 if (channels.Count > 0)
                 {
-                    LogEntry(string.Format(CultureInfo.CurrentCulture, "Monitored channels updated!", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(), channels.Count.ToString()), DateTime.Now.ToLocalTime());
+                    LogEntry(data: string.Format(CultureInfo.CurrentCulture,$"Monitored {LiveStreamMonitor.ChannelsToMonitor.Count} channels updated to {channels.Count}!"), dateTime: DateTime.Now.ToLocalTime());
 
                     LiveStreamMonitor.SetChannelsByName(channels);
                     return true;
@@ -163,6 +164,7 @@ namespace MultiUserLiveBot.Clients
                 else
                 {
                     LogEntry($"There are no channels to monitor. Please add channels to the table.", DateTime.Now.ToLocalTime());
+                    LiveStreamMonitor.SetChannelsByName(new()); // empty the channel list
                     return false;
                 }
             }

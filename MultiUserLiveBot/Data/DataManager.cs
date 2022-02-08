@@ -33,7 +33,6 @@ namespace MultiUserLiveBot.Data
         public DataManager()
         {
             _DataSource = new();
-            LoadData();
 
             Channels = new DataView(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
             MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, "Id", DataViewRowState.CurrentRows);
@@ -53,7 +52,7 @@ namespace MultiUserLiveBot.Data
         /// <summary>
         /// Load the data source and populate with default data
         /// </summary>
-        private void LoadData()
+        public void LoadData()
         {
             if (!File.Exists(DataFileName))
             {

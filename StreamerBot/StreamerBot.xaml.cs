@@ -39,7 +39,11 @@ namespace StreamerBot
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
 
+        #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
+        private delegate void BotOperation();
+
+        #endregion
 
         public StreamerBotWindow()
         {
@@ -68,58 +72,14 @@ namespace StreamerBot
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+
+#if !DEBUG
+            TabItem_Data_MultiLive.Visibility = Visibility.Collapsed;
+            TabItem_Data_Separator.Visibility = Visibility.Collapsed;
+            GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
+#endif
+
         }
-
-        #region Window Open and Close
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            CheckFocus();
-            if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
-            {
-                List<Tuple<bool, RadioButton>> BotOps = new()
-                {
-                    new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
-                    new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
-                    new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                    new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
-                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
-                };
-                foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
-                                                           where tuple.Item1 && tuple.Item2.IsEnabled
-                                                           select tuple)
-                {
-                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
-                    {
-                        Dispatcher.BeginInvoke(new BotOperation(() =>
-                        {
-                            (tuple.Item2.DataContext as IOModule)?.StartBot();
-                        }), null);
-                    }
-                    else
-                    {
-                        SetMultiLiveButtons();
-                        MultiBotRadio(true);
-                    }
-                }
-                BeginUpdateCategory();
-            }
-
-            // TODO: add follower service online, offline, and repeat timers to re-run service
-            // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
-        }
-
-        private void OnWindowClosing(object sender, CancelEventArgs e)
-        {
-            WatchProcessOps = false;
-            OptionFlags.IsStreamOnline = false;
-            OptionFlags.ActiveToken = false;
-            //CP.Close();
-            Controller.ExitBots();
-            OptionFlags.SetSettings();
-        }
-
-        #endregion
 
         #region Bot_Ops
         #region Controller Events
@@ -242,6 +202,7 @@ namespace StreamerBot
 
         #region Refresh data from bot
 
+
         /// <summary>
         /// The GUI provides buttons to click and refresh data to the interface. Still must handle response events from the bot.
         /// </summary>
@@ -249,10 +210,10 @@ namespace StreamerBot
         /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
         private void UpdateData(Button targetclick, Action<string> InvokeMethod)
         {
-            targetclick.IsEnabled = false;
-
-            if(OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
+            if(!OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
             {
+                targetclick.IsEnabled = false;
+
                 new Thread(new ThreadStart(() =>
                 {
                     try
@@ -267,9 +228,273 @@ namespace StreamerBot
             }
         }
 
-        #endregion
+        private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
+        {
+            BeginUpdateCategory();
+        }
+
+        private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
+        {
+            BeginUpdateCategory();
+        }
+
+        private void BeginUpdateCategory()
+        {
+            // TODO: align current stream info to the current active stream
+            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.TwitchBotUserSvc.GetUserGameCategory(UserName: s)));
+        }
+
+        private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                TextBlock_CurrentCategory.Text = e.GameName;
+                Button_RefreshCategory.IsEnabled = true;
+            });
+            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName -= TwitchBotUserSvc_GetChannelGameName;
+        }
 
         #endregion
+
+        #region BotOps-changes in token expiration
+
+        /// <summary>
+        /// Event to handle when the Bot Credentials expire. The expiration date 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
+        {
+            List<RadioButton> BotOps = new()
+            {
+                Radio_MultiLiveTwitch_StopBot,
+                Radio_Twitch_FollowBotStop,
+                Radio_Twitch_LiveBotStop,
+                Radio_Twitch_StopBot,
+                Radio_Twitch_ClipBotStop
+            };
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (RadioButton button in BotOps)
+                {
+                    HelperStopBot(button);
+                }
+
+                CheckFocus();
+            });
+        }
+
+        #endregion
+
+        #region MultiLive
+
+        private void SetMultiLiveActive(bool ProcessFound = false)
+        {
+            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
+            SetMultiLiveButtons();
+        }
+
+        private void SetMultiLiveButtons()
+        {
+            if (IsMultiProcActive == false)
+            {
+                SetMultiLiveTabItems(true);
+
+                BotController.ConnectTwitchMultiLive();
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = !Radio_Twitch_LiveBotStart.IsChecked ?? false;
+                Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
+                NotifyPropertyChanged(nameof(guiTwitchBot));
+            }
+            else if (IsMultiProcActive == true)
+            {
+                SetMultiLiveTabItems();
+                MultiBotRadio();
+                BotController.DisconnectTwitchMultiLive();
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
+            }
+        }
+
+        private void SetMultiLiveTabItems(bool Visible = false)
+        {
+            TabItem_Data_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
+            TabItem_Data_Separator.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
+        {
+            Radio_MultiLiveTwitch_StartBot.IsEnabled = IsMultiProcActive == false && ((sender as RadioButton).IsChecked ?? false);
+        }
+
+        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender != null)
+            {
+                MultiBotRadio();
+            }
+        }
+
+        private void BC_MultiLiveTwitch_BotOp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender == Radio_MultiLiveTwitch_StartBot)
+            {
+                MultiBotRadio(true);
+            }
+            else if (sender == Radio_MultiLiveTwitch_StopBot)
+            {
+                MultiBotRadio();
+            }
+        }
+
+        private void MultiBotRadio(bool Start = false)
+        {
+            if (Controller != null && guiTwitchBot != null && guiTwitchBot.TwitchLiveMonitor.IsMultiConnected)
+            {
+                if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
+                {
+                    BotController.StartTwitchMultiLive();
+                    Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
+                    Radio_MultiLiveTwitch_StartBot.IsChecked = true;
+                    Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
+
+                    DG_Multi_LiveStreamStats.ItemsSource = null;
+                    DG_Multi_LiveStreamStats.Visibility = Visibility.Collapsed;
+
+                    Panel_BotActivity.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    BotController.StopTwitchMultiLive();
+                    Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
+                    Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
+                    Radio_MultiLiveTwitch_StopBot.IsChecked = true;
+
+                    if (IsMultiProcActive == true)
+                    {
+                        DG_Multi_LiveStreamStats.ItemsSource = TwitchBotLiveMonitorSvc.MultiLiveDataManager.LiveStream;
+                    }
+                    DG_Multi_LiveStreamStats.Visibility = Visibility.Visible;
+
+                    Panel_BotActivity.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            int start = TB_LiveMsg.SelectionStart;
+
+            if (TB_LiveMsg.SelectionLength > 0)
+            {
+                TB_LiveMsg.Text = TB_LiveMsg.Text.Remove(start, TB_LiveMsg.SelectionLength);
+            }
+
+            TB_LiveMsg.Text = TB_LiveMsg.Text.Insert(start, (sender as MenuItem).Header.ToString());
+            TB_LiveMsg.SelectionStart = start;
+        }
+
+
+        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            BotController.UpdateTwitchMultiLiveChannels();
+            IsAddNewRow = false;
+        }
+
+        #endregion
+
+
+        #endregion
+
+        #region PopOut Chat Window
+        private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
+        {
+            //    CP.Show();
+            //    CP.Height = 500;
+            //    CP.Width = 300;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(string propname)
+        {
+            PropertyChanged?.Invoke(this, new(propname));
+        }
+
+        private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            NotifyPropertyChanged("Opacity");
+        }
+
+        private readonly bool IsAppClosing = true;
+        private void CP_Closing(object sender, CancelEventArgs e)
+        {
+            if (!IsAppClosing) // flag to really close the window
+            {
+                e.Cancel = true;
+                //CP.Hide();
+            }
+        }
+
+        #endregion
+
+        #region Helpers
+
+        #region Window Open and Close
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckFocus();
+            if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
+            {
+                List<Tuple<bool, RadioButton>> BotOps = new()
+                {
+                    new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
+                    new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
+                    new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
+                    new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
+                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
+                };
+                foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
+                                                           where tuple.Item1 && tuple.Item2.IsEnabled
+                                                           select tuple)
+                {
+                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                    {
+                        Dispatcher.BeginInvoke(new BotOperation(() =>
+                        {
+                            (tuple.Item2.DataContext as IOModule)?.StartBot();
+                        }), null);
+                    }
+                    else
+                    {
+                        SetMultiLiveButtons();
+                        MultiBotRadio(true);
+                    }
+                }
+                BeginUpdateCategory();
+            }
+
+            // TODO: add follower service online, offline, and repeat timers to re-run service
+            // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
+        }
+
+        private void OnWindowClosing(object sender, CancelEventArgs e)
+        {
+            WatchProcessOps = false;
+            OptionFlags.IsStreamOnline = false;
+            OptionFlags.ActiveToken = false;
+            //CP.Close();
+            Controller.ExitBots();
+            OptionFlags.SetSettings();
+        }
+
+        #endregion
+
+        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox).ScrollToEnd();
+        }
 
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -362,7 +587,8 @@ namespace StreamerBot
                 Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
                 Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
-            } else
+            }
+            else
             {
                 GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Collapsed;
                 TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Collapsed;
@@ -378,8 +604,68 @@ namespace StreamerBot
             RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
             StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry?.Min().ToShortDateString() ?? "None Valid";
 
+            MultiBotRadio();
             CheckDebug();
         }
+
+        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
+        {
+            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
+        }
+
+        /// <summary>
+        /// Disable or Enable UIElements to prevent user changes while bot is active.
+        /// Same method takes the opposite value for the start then stop then start, i.e. toggling start/stop bot operations.
+        /// </summary>
+        private void ToggleInputEnabled(bool setvalue = true)
+        {
+            TB_Twitch_AccessToken.IsEnabled = setvalue;
+            TB_Twitch_BotUser.IsEnabled = setvalue;
+            TB_Twitch_Channel.IsEnabled = setvalue;
+            TB_Twitch_ClientID.IsEnabled = setvalue;
+            Btn_Twitch_RefreshDate.IsEnabled = setvalue;
+            Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
+            Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
+            Slider_TimeClipPollSeconds.IsEnabled = setvalue;
+        }
+
+        private void TabItem_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBlock_TwitchBotLog.ScrollToEnd();
+        }
+
+        // TODO: fix scrolling in Sliders but not scroll the whole panel
+
+        private bool SliderMouseCaptured;
+
+        private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Slider curr = (Slider)sender;
+            curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
+        }
+
+        private void Slider_MouseEnter(object sender, MouseEventArgs e)
+        {
+            SliderMouseCaptured = true;
+        }
+
+        private void Slider_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SliderMouseCaptured = false;
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta != 0 && SliderMouseCaptured)
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+
+        #endregion
+
+        #region Data side
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -391,8 +677,6 @@ namespace StreamerBot
                   }), null);
             }
         }
-
-        private delegate void BotOperation();
 
         private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -442,68 +726,6 @@ namespace StreamerBot
             Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
-        }
-
-        private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
-        {
-            BeginUpdateCategory();
-        }
-
-        private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
-        {
-            BeginUpdateCategory();
-        }
-
-        private void BeginUpdateCategory()
-        {
-            // TODO: align current stream info to the current active stream
-            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
-
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.TwitchBotUserSvc.GetUserGameCategory(UserName: s)));
-        }
-
-        private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                TextBlock_CurrentCategory.Text = e.GameName;
-                Button_RefreshCategory.IsEnabled = true;
-            });
-            guiTwitchBot.TwitchBotUserSvc.GetChannelGameName -= TwitchBotUserSvc_GetChannelGameName;
-        }
-
-        private delegate void RefreshCategory();
-
-        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
-        {
-            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
-        }
-
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (e.Delta != 0 && SliderMouseCaptured)
-            {
-                e.Handled = true;
-                return;
-            }
-        }
-
-        private bool SliderMouseCaptured;
-
-        private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            Slider curr = (Slider)sender;
-            curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
-        }
-
-        private void Slider_MouseEnter(object sender, MouseEventArgs e)
-        {
-            SliderMouseCaptured = true;
-        }
-
-        private void Slider_MouseLeave(object sender, MouseEventArgs e)
-        {
-            SliderMouseCaptured = false;
         }
 
         private void DG_CommonMsgs_AutoGeneratedColumns(object sender, EventArgs e)
@@ -642,243 +864,6 @@ namespace StreamerBot
             }
         }
 
-        // TODO: fix scrolling in Sliders but not scroll the whole panel
-
-        #region PopOut Chat Window
-        private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
-        {
-            //    CP.Show();
-            //    CP.Height = 500;
-            //    CP.Width = 300;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propname)
-        {
-            PropertyChanged?.Invoke(this, new(propname));
-        }
-
-        private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            OnPropertyChanged("Opacity");
-        }
-
-        private readonly bool IsAppClosing = true;
-        private void CP_Closing(object sender, CancelEventArgs e)
-        {
-            if (!IsAppClosing) // flag to really close the window
-            {
-                e.Cancel = true;
-                //CP.Hide();
-            }
-        }
-
-        #endregion
-
-        #region Helpers
-
-        /// <summary>
-        /// Disable or Enable UIElements to prevent user changes while bot is active.
-        /// Same method takes the opposite value for the start then stop then start, i.e. toggling start/stop bot operations.
-        /// </summary>
-        private void ToggleInputEnabled(bool setvalue = true)
-        {
-            TB_Twitch_AccessToken.IsEnabled = setvalue;
-            TB_Twitch_BotUser.IsEnabled = setvalue;
-            TB_Twitch_Channel.IsEnabled = setvalue;
-            TB_Twitch_ClientID.IsEnabled = setvalue;
-            Btn_Twitch_RefreshDate.IsEnabled = setvalue;
-            Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
-            Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
-            Slider_TimeClipPollSeconds.IsEnabled = setvalue;
-        }
-
-        private void SetMultiLiveActive(bool ProcessFound = false)
-        {
-            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-            SetMultiLiveButtons();
-        }
-
-        private void SetMultiLiveButtons()
-        {
-            if (IsMultiProcActive == false)
-            {
-                BotController.ConnectTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
-                Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
-            }
-            else if (IsMultiProcActive == true)
-            {
-                MultiBotRadio();
-                BotController.DisconnectTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-            }
-        }
-
-        #endregion
-
-        #region BotOps-changes in token expiration
-
-        /// <summary>
-        /// Event to handle when the Bot Credentials expire. The expiration date 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
-        {
-            List<RadioButton> BotOps = new()
-            {
-                Radio_MultiLiveTwitch_StopBot,
-                Radio_Twitch_FollowBotStop,
-                Radio_Twitch_LiveBotStop,
-                Radio_Twitch_StopBot,
-                Radio_Twitch_ClipBotStop
-            };
-
-            Dispatcher.Invoke(() =>
-            {
-                foreach (RadioButton button in BotOps)
-                {
-                    HelperStopBot(button);
-                }
-
-                CheckFocus();
-            });
-        }
-
-        #endregion
-
-        #region WatcherTools
-
-        private bool WatchProcessOps;
-
-        /// <summary>
-        /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
-        /// </summary>
-        public event EventHandler NotifyExpiredCredentials;
-
-        /// <summary>
-        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
-        /// </summary>
-        private bool? IsMultiProcActive;
-
-        private delegate void ProcWatch(bool IsActive);
-
-        private void UpdateProc(bool IsActive)
-        {
-            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
-        }
-
-        private void ProcessWatcher()
-        {
-            const int sleep = 5000;
-
-            while (WatchProcessOps)
-            {
-                Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
-                {
-                    UpdateProc(processes.Length > 0);
-                    IsMultiProcActive = processes.Length > 0;
-                }
-
-                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
-                {
-                    NotifyExpiredCredentials?.Invoke(this, new());
-                }
-
-                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchStreamerTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
-                {
-                    NotifyExpiredCredentials?.Invoke(this, new());
-                }
-
-                Thread.Sleep(sleep);
-            }
-        }
-
-        #endregion
-
-        #region MultiLive
-        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
-        {
-            Radio_MultiLiveTwitch_StartBot.IsEnabled = IsMultiProcActive == false && ((sender as RadioButton).IsChecked ?? false);
-        }
-
-        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
-        {
-            MultiBotRadio();
-        }
-
-        private void BC_MultiLiveTwitch_StartBot(object sender, MouseButtonEventArgs e)
-        {
-            MultiBotRadio(true);
-        }
-
-        private void BC_MultiLiveTwitch_StopBot(object sender, MouseButtonEventArgs e)
-        {
-            MultiBotRadio();
-        }
-
-        private void MultiBotRadio(bool Start = false)
-        {
-            if (Controller != null && guiTwitchBot != null && guiTwitchBot.TwitchLiveMonitor.IsMultiConnected)
-            {
-                if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
-                {
-                    BotController.StartTwitchMultiLive();
-                    Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                    Radio_MultiLiveTwitch_StartBot.IsChecked = true;
-                    Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
-
-                    DG_Multi_LiveStreamStats.ItemsSource = null;
-                    DG_Multi_LiveStreamStats.Visibility = Visibility.Collapsed;
-
-                    Panel_BotActivity.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    BotController.StopTwitchMultiLive();
-                    Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-                    Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-                    Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-
-                    if (IsMultiProcActive == true)
-                    {
-                        DG_Multi_LiveStreamStats.ItemsSource = TwitchBotLiveMonitorSvc.MultiLiveDataManager.LiveStream;
-                    }
-                    DG_Multi_LiveStreamStats.Visibility = Visibility.Visible;
-
-                    Panel_BotActivity.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            int start = TB_LiveMsg.SelectionStart;
-
-            if (TB_LiveMsg.SelectionLength > 0)
-            {
-                TB_LiveMsg.Text = TB_LiveMsg.Text.Remove(start, TB_LiveMsg.SelectionLength);
-            }
-
-            TB_LiveMsg.Text = TB_LiveMsg.Text.Insert(start, (sender as MenuItem).Header.ToString());
-            TB_LiveMsg.SelectionStart = start;
-        }
-
-        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            (sender as TextBox).ScrollToEnd();
-        }
-
-        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            BotController.UpdateTwitchMultiLiveChannels();
-            IsAddNewRow = false;
-        }
-
-        #endregion
-
         #region Debug Empty Stream
 
         private DateTime DebugStreamStarted = DateTime.MinValue;
@@ -911,11 +896,6 @@ namespace StreamerBot
         }
 
         #endregion
-
-        private void TabItem_GotFocus(object sender, RoutedEventArgs e)
-        {
-            TextBlock_TwitchBotLog.ScrollToEnd();
-        }
 
         #region Giveaway
 
@@ -1040,6 +1020,57 @@ namespace StreamerBot
             }
         }
 
+        #endregion
+
+        #endregion
+
+        #region WatcherTools
+
+        private bool WatchProcessOps;
+
+        /// <summary>
+        /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
+        /// </summary>
+        public event EventHandler NotifyExpiredCredentials;
+
+        /// <summary>
+        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
+        /// </summary>
+        private bool? IsMultiProcActive;
+
+        private delegate void ProcWatch(bool IsActive);
+
+        private void UpdateProc(bool IsActive)
+        {
+            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
+        }
+
+        private void ProcessWatcher()
+        {
+            const int sleep = 5000;
+
+            while (WatchProcessOps)
+            {
+                Process[] processes = Process.GetProcessesByName(MultiLiveName);
+                if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
+                {
+                    UpdateProc(processes.Length > 0);
+                    IsMultiProcActive = processes.Length > 0;
+                }
+
+                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
+                {
+                    NotifyExpiredCredentials?.Invoke(this, new());
+                }
+
+                if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchStreamerTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
+                {
+                    NotifyExpiredCredentials?.Invoke(this, new());
+                }
+
+                Thread.Sleep(sleep);
+            }
+        }
 
         #endregion
 

@@ -69,6 +69,12 @@ namespace StreamerBot.BotClients.Twitch
                             RefreshSettings();
                             UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(TwitchChannelName);
 
+                            // add Listen to Topics here
+                            if (OptionFlags.TwitchPubSubChannelPoints)
+                            {
+                                TwitchPubSub.ListenToChannelPoints(UserId);
+                            }
+
                             TwitchPubSub.Connect();
                             Connected = true;
                             IsStarted = true;
@@ -131,12 +137,6 @@ namespace StreamerBot.BotClients.Twitch
             } else
             {
                 Token = OptionFlags.TwitchBotAccessToken;
-            }
-
-            // add Listen to Topics here
-            if (OptionFlags.TwitchPubSubChannelPoints)
-            {
-                TwitchPubSub.ListenToChannelPoints(UserId);
             }
 
             // send the topics to listen

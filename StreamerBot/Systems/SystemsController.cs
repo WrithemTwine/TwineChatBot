@@ -238,7 +238,7 @@ namespace StreamerBot.Systems
                         Stats.StreamDataUpdate();
                     }), null);
 
-                    Thread.Sleep(30000); // wait 30 seconds
+                    Thread.Sleep(10000); // wait 10 seconds
                 }
             })).Start();
         }

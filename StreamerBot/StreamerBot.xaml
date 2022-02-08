@@ -144,7 +144,7 @@
                                                 <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
                                         </WrapPanel>
-                                        <GroupBox Header="MultiLive Monitoring Bot" Width="Auto" Visibility="Collapsed">
+                                        <GroupBox x:Name="GroupBox_Bots_Starts_MultiLive" Header="MultiLive Monitoring Bot" Width="Auto">
                                             <WrapPanel Orientation="Vertical">
                                                 <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
                                                     <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
@@ -152,8 +152,8 @@
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
                                                     <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
-                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot" IsEnabled="False" HorizontalAlignment="Left" PreviewMouseDown="BC_MultiLiveTwitch_StartBot"/>
-                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" PreviewMouseDown="BC_MultiLiveTwitch_StopBot"/>
+                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot" IsEnabled="False" HorizontalAlignment="Left" PreviewMouseDown="BC_MultiLiveTwitch_BotOp"/>
+                                                <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" PreviewMouseDown="BC_MultiLiveTwitch_BotOp"/>
                                             </WrapPanel>
                                         </GroupBox>
                                     </StackPanel>
@@ -1004,8 +1004,8 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem IsEnabled="False" MinWidth="20" Width="20" />
-                        <TabItem Header="MultiLive Monitor">
+                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" />
+                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor">
                             <Grid x:Name="TabItem_MultiUserLiveMonitor">
                                 <Grid.Resources>
                                     <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
@@ -1053,9 +1053,9 @@
                                     </TextBox.ToolTip>
                                 </TextBox>
 
-                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding MultiLiveDataManager.MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True" />
-                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding MultiLiveDataManager.Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
-                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding MultiLiveDataManager.LiveStream, Mode=TwoWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
+                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
 
                                 <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
                                     <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
