@@ -652,7 +652,7 @@ switches:
             }
             else
             {
-                Parallel.ForEach(commandsRows, (commandsRow) => { commandsRow.IsEnabled = Enabled; });
+                _ = Parallel.ForEach(commandsRows, (commandsRow) => { commandsRow.IsEnabled = Enabled; });
             }
         }
 
@@ -780,7 +780,11 @@ switches:
             if (streamStatsRow != null)
             {
                 // can't use a simple method to duplicate this because "ref" can't be used with boxing
-                Parallel.ForEach(streamStat.GetType().GetProperties(), (property) => { property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow)); });
+                foreach (PropertyInfo property in streamStat.GetType().GetProperties())
+                {
+                    // use properties from 'StreamStat' since StreamStatRow has additional properties
+                    property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                }
             }
 
             return streamStat;
@@ -1121,10 +1125,20 @@ switches:
         {
             if (follows.Any())
             {
-                _ = Parallel.ForEach(follows, (f) =>
-                  {
-                      AddFollower(f.FromUserName, f.FollowedAt);
-                  });
+                if (follows.Count() <= UseParallelThreashold)
+                {
+                    foreach (Follow f in follows)
+                    {
+                        _ = AddFollower(f.FromUserName, f.FollowedAt);
+                    }
+                }
+                else
+                {
+                    _ = Parallel.ForEach(follows, (f) =>
+                      {
+                          _ = AddFollower(f.FromUserName, f.FollowedAt);
+                      });
+                }
             }
 
             NotifySaveData();
@@ -1158,10 +1172,17 @@ switches:
         {
             lock (_DataSource)
             {
-                Parallel.ForEach((UsersRow[])_DataSource.Users.Select(), (users) =>
+                if (_DataSource.Users.Count <= UseParallelThreashold)
                 {
-                    users.WatchTime = new(0);
-                });
+                    foreach (UsersRow users in (UsersRow[])_DataSource.Users.Select())
+                    {
+                        users.WatchTime = new(0);
+                    }
+                }
+                else
+                {
+                    _ = Parallel.ForEach((UsersRow[])_DataSource.Users.Select(), (users) => { users.WatchTime = new(0); });
+                }
             }
         }
 
@@ -1278,10 +1299,10 @@ switches:
                 }
                 else
                 {
-                    Parallel.For(0, UserRows.Length, (i) =>
-                     {
-                         AddCurrencyRows(ref UserRows[i]);
-                     });
+                    _ = Parallel.For(0, UserRows.Length, (i) =>
+                       {
+                           AddCurrencyRows(ref UserRows[i]);
+                       });
                 }
             }
             NotifySaveData();
@@ -1294,10 +1315,20 @@ switches:
         {
             lock (_DataSource)
             {
-                Parallel.ForEach((CurrencyRow[])_DataSource.Currency.Select(), (row) =>
+                if (_DataSource.Currency.Count <= UseParallelThreashold)
                 {
-                    row.Value = 0;
-                });
+                    foreach (CurrencyRow row in (CurrencyRow[])_DataSource.Currency.Select())
+                    {
+                        row.Value = 0;
+                    }
+                }
+                else
+                {
+                    _ = Parallel.ForEach((CurrencyRow[])_DataSource.Currency.Select(), (row) =>
+                      {
+                          row.Value = 0;
+                      });
+                }
             }
         }
 

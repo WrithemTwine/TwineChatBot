@@ -707,7 +707,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition MinWidth="600" Width="600*" />
                                             <ColumnDefinition Width="5" />
-                                            <ColumnDefinition MinWidth="350" Width="350*" />
+                                            <ColumnDefinition MinWidth="400" Width="400*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="User List"/>
                                         <Button x:Name="Button_ClearWatchTime" Content="Reset WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />

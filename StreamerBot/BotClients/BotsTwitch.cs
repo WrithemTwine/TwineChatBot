@@ -339,10 +339,10 @@ namespace StreamerBot.BotClients
 
                     follows.Reverse();
 
-                    Parallel.For(0, follows.Count/BulkFollowSkipCount, (int i) =>
+                    for (int i = 0; i < follows.Count; i++)
                     {
                         // break up the follower list so chunks of the big list are sent in parts via event
-                        List<Follow> pieces = new(follows.Skip(i*BulkFollowSkipCount).Take(BulkFollowSkipCount));
+                        List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
 
                         InvokeBotEvent(
                             this,
@@ -351,7 +351,7 @@ namespace StreamerBot.BotClients
                             {
                                 NewFollowers = pieces
                             });
-                    });
+                    }
 
                     InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, new EventArgs());
                 }));
