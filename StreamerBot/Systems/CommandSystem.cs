@@ -59,7 +59,6 @@ namespace StreamerBot.Systems
         private void ElapsedCommandTimers()
         {
             // TODO: consider some AI bot chat when channel is slower
-            // TODO: fix repeat timers to fire when going live to provide initial messages - or give option
             List<TimerCommand> RepeatList = new();
 
             chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
@@ -85,10 +84,13 @@ namespace StreamerBot.Systems
                         }
                         else
                         {
-                            TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
-                            if (Listcmd.RepeatTime == 0)
+                            lock (item)
                             {
-                                RepeatList.Remove(Listcmd);
+                                TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
+                                if (Listcmd.RepeatTime == 0)
+                                {
+                                    RepeatList.Remove(Listcmd);
+                                }
                             }
                         }
                     }
@@ -238,7 +240,7 @@ namespace StreamerBot.Systems
             {
                 result = "";
             }
-            else if ((ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
+            else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
             {
                 result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
             }
@@ -254,7 +256,7 @@ namespace StreamerBot.Systems
         }
 
         /// <summary>
-        /// See if the user is part of the user's auto-shout out list to determine if the message should be called
+        /// See if the user is part of the user's auto-shout out list to determine if the message should be called, or shout-out from a raid or other similar event.
         /// </summary>
         /// <param name="UserName">The user to check</param>
         /// <param name="response">the response message template</param>
@@ -322,21 +324,9 @@ namespace StreamerBot.Systems
                 || command == LocalizedMsgSystem.GetVar(DefaultCommand.queue)
                 || command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
             {
-                if (OptionFlags.UserPartyStart)
-                {
-                    result = PartyCommand(command, DisplayName, arglist.Count > 0 ? arglist[0] : "", cmdrow);
-                }
-                else
-                {
-                    if (ElapsedTimer)
-                    {
-                        result = "";
-                    }
-                    else
-                    {
-                        result = LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
-                    }
-                }
+                result = OptionFlags.UserPartyStart
+                    ? PartyCommand(command, DisplayName, arglist.Count > 0 ? arglist[0] : "", cmdrow)
+                    : ElapsedTimer ? "" : LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart) || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
             {
@@ -361,29 +351,36 @@ namespace StreamerBot.Systems
                     new( MsgVars.com, paramvalue)
                 });
 
-                if (cmdrow.lookupdata)
+                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotIOController.BotController.VerifyUserExist(paramvalue, Source))
                 {
-                    LookupQuery(cmdrow, paramvalue, ref datavalues);
-                }
-
-                if (cmdrow.Message.Contains(MsgVars.category.ToString()))
-                {
-                    new Thread(new ThreadStart(() =>
-                    {
-                        VariableParser.AddData(ref datavalues,
-                        new Tuple<MsgVars, string>[] { new(MsgVars.category, BotIOController.BotController.GetUserCategory(paramvalue, Source)) });
-
-                        result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                        result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-
-                        ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
-                    })).Start();
-
-                    result = "";
+                    result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
                 }
                 else
                 {
-                    result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                    if (cmdrow.lookupdata)
+                    {
+                        LookupQuery(cmdrow, paramvalue, ref datavalues);
+                    }
+
+                    if (cmdrow.Message.Contains(MsgVars.category.ToString()))
+                    {
+                        new Thread(new ThreadStart(() =>
+                        {
+                            VariableParser.AddData(ref datavalues,
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotIOController.BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+
+                            result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+
+                            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+                        })).Start();
+
+                        result = "";
+                    }
+                    else
+                    {
+                        result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                    }
                 }
             }
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
+using System.Linq;
 
 namespace StreamerBot.Systems
 {
@@ -116,14 +117,12 @@ namespace StreamerBot.Systems
         public static bool CheckDefaultCommand(string Command)
         {
             bool result = false;
-
-            foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
+            foreach (var _ in from DefaultCommand d in Enum.GetValues(typeof(DefaultCommand))
+                              where Command == GetVar(d)
+                              select new { })
             {
-                if(Command == GetVar(Command))
-                {
-                    result = true;
-                    break;
-                }
+                result = true;
+                break;
             }
 
             return result;

@@ -76,7 +76,7 @@ namespace TestStreamerBot
 
         [Theory]
         [InlineData(600)]
-        [InlineData(1000)]
+        [InlineData(100000)]
         public void TestBulkFollowers(int PickFollowers)
         {
             Initialize();
@@ -183,9 +183,11 @@ namespace TestStreamerBot
 
             botController.HandleNewSubscriber(DisplayName, Months, Subscription, SubscriptionName);
 
-            Thread.Sleep(200);
+            Thread.Sleep(800);
 
-            Assert.Equal(VariableParser.ParseReplace(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, DisplayName), new(MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))), new(MsgVars.subplan, Subscription), new(MsgVars.subplanname, SubscriptionName) })), result);
+            string subeventmsg = VariableParser.ParseReplace(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled, out _), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, DisplayName), new(MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))), new(MsgVars.subplan, Subscription), new(MsgVars.subplanname, SubscriptionName) }));
+
+            Assert.Equal(Enabled ? subeventmsg : "", result);
         }
 
         [Fact]
@@ -223,6 +225,9 @@ namespace TestStreamerBot
             OnGetChannelGameNameEventArgs randomGame = GetRandomGameIdName();
             botController.HandleOnStreamOnline("writhemtwine", "Test Giveaway", DateTime.Now.ToLocalTime(), randomGame.GameId, randomGame.GameName);
 
+            OptionFlags.GiveawayBegMsg = "Test Project Begin the Giveaway";
+            OptionFlags.GiveawayEndMsg = "Test Project End the Giveaway";
+            OptionFlags.GiveawayWinMsg = "Test Project the winner is #winner!";
             OptionFlags.GiveawayMultiEntries = 5;
             OptionFlags.GiveawayMultiUser = true;
             OptionFlags.GiveawayCount = 2;

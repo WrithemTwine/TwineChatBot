@@ -21,11 +21,11 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
 
         public async Task<string> GetUserId(string UserName)
         {
-            string result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id;
+            string result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id ?? null;
             return result;
         }
 
-        public async Task<GetChannelInformationResponse> GetChannelInformation(string UserId = null, string UserName = null)
+        public async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
             if (UserId != null)
             {
@@ -33,13 +33,14 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
             }
             else if (UserName != null)
             {
-                return await _api.Helix.Channels.GetChannelInformationAsync(await GetUserId(UserName));
+                string UserId_result = await GetUserId(UserName);
+                return UserId_result != null ? await _api.Helix.Channels.GetChannelInformationAsync(UserId_result) : null;
             }
 
             return null;
         }
 
-        public async Task<GetCustomRewardsResponse> GetChannelPointInformation(string UserId = null, string UserName = null)
+        public async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
             if (UserId != null)
             {

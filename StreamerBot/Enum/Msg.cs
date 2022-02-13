@@ -7,6 +7,8 @@
         MsgAllCateogry,
         MsgNotFollower,
         MsgNoUsage,
-        MsgDataNotFound
+        MsgDataNotFound,
+        MsgNoCategory,
+        MsgNoUserFound
     }
 }

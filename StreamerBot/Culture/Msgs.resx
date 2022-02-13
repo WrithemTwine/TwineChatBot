@@ -378,11 +378,18 @@
     <value>Thanks #user for the follow!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="MsgNoCategory" xml:space="preserve">
+    <value>No Category</value>
+    <comment>When user has no category</comment>
+  </data>
   <data name="MsgNotFollower" xml:space="preserve">
     <value>not a follower.</value>
   </data>
   <data name="MsgNoUsage" xml:space="preserve">
     <value>No usage available.</value>
+  </data>
+  <data name="MsgNoUserFound" xml:space="preserve">
+    <value>User not found.</value>
   </data>
   <data name="Msgqinfo" xml:space="preserve">
     <value>Use -!join 'gamertag'- (or !enqueue) to join the queue, and !leave (or !dequeue) to leave the queue.</value>

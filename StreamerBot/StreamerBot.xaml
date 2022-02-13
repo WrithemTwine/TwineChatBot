@@ -705,9 +705,9 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
+                                            <ColumnDefinition MinWidth="600" Width="600*" />
                                             <ColumnDefinition Width="5" />
-                                            <ColumnDefinition />
+                                            <ColumnDefinition MinWidth="350" Width="350*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="User List"/>
                                         <Button x:Name="Button_ClearWatchTime" Content="Reset WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />
@@ -943,9 +943,9 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem Header="Stream Data" x:Name="TabItem_StreamStats">
+                        <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
                             <TabControl>
-                                <TabItem Header="Stats">
+                                <TabItem x:Name="TabItem_StreamData_Stats" Header="Stats">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="25" />
@@ -955,7 +955,7 @@
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                        <DataGrid x:Name="DataGrid_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Raids">

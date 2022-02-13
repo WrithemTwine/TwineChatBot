@@ -51,7 +51,10 @@ namespace StreamerBot.Static
         {
             foreach (Tuple<T, string> t in paramArray)
             {
-                dictionary.Add(Prefix + t.Item1.ToString(), t.Item2);
+                if (t.Item2 != null)
+                {
+                    dictionary.Add(Prefix + t.Item1.ToString(), t.Item2);
+                }
             }
         }
 
