@@ -94,7 +94,7 @@ namespace StreamerBot.BotClients.Twitch
 
         public async Task<List<Follow>> GetAllFollowersAsync()
         {
-            return await FollowerService.GetAllFollowers(TwitchChannelName);
+            return await FollowerService.GetAllFollowersAsync(TwitchChannelName);
         }
 
         public override bool ExitBot()

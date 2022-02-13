@@ -98,7 +98,7 @@ namespace StreamerBot.GUI
             Currency = new(dataManager._DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
             BuiltInCommands = new(dataManager._DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             Commands = new(dataManager._DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
-            StreamStats = new(dataManager._DataSource.StreamStats, null, "StreamStart", DataViewRowState.CurrentRows);
+            StreamStats = new(dataManager._DataSource.StreamStats, null, "StreamStart DESC", DataViewRowState.CurrentRows);
             ShoutOuts = new(dataManager._DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
             Category = new(dataManager._DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
             Clips = new(dataManager._DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);

@@ -52,9 +52,9 @@ namespace StreamerBot.Data {
         
         private GiveawayUserDataDataTable tableGiveawayUserData;
         
-        private global::System.Data.DataRelation relationCurrency_CurrencyType;
-        
         private global::System.Data.DataRelation relationFK_Users_Currency;
+        
+        private global::System.Data.DataRelation relationCurrency_CurrencyType;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -512,8 +512,8 @@ namespace StreamerBot.Data {
                     this.tableGiveawayUserData.InitVars();
                 }
             }
-            this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
             this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
+            this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
         }
         
@@ -554,16 +554,16 @@ namespace StreamerBot.Data {
             this.tableGiveawayUserData = new GiveawayUserDataDataTable();
             base.Tables.Add(this.tableGiveawayUserData);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -575,14 +575,14 @@ namespace StreamerBot.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn}, false);
-            this.Relations.Add(this.relationCurrency_CurrencyType);
             this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
                         this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.UserNameColumn}, false);
             this.Relations.Add(this.relationFK_Users_Currency);
+            this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn}, false);
+            this.Relations.Add(this.relationCurrency_CurrencyType);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -1404,6 +1404,8 @@ namespace StreamerBot.Data {
             
             private global::System.Data.DataColumn columnId;
             
+            private global::System.Data.DataColumn columnIsEnabled;
+            
             private global::System.Data.DataColumn columnServer;
             
             private global::System.Data.DataColumn columnKind;
@@ -1450,6 +1452,14 @@ namespace StreamerBot.Data {
             public global::System.Data.DataColumn IdColumn {
                 get {
                     return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IsEnabledColumn {
+                get {
+                    return this.columnIsEnabled;
                 }
             }
             
@@ -1522,10 +1532,11 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public DiscordRow AddDiscordRow(string Server, string Kind, bool AddEveryone, string Webhook) {
+            public DiscordRow AddDiscordRow(bool IsEnabled, string Server, string Kind, bool AddEveryone, string Webhook) {
                 DiscordRow rowDiscordRow = ((DiscordRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
+                        IsEnabled,
                         Server,
                         Kind,
                         AddEveryone,
@@ -1560,6 +1571,7 @@ namespace StreamerBot.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
+                this.columnIsEnabled = base.Columns["IsEnabled"];
                 this.columnServer = base.Columns["Server"];
                 this.columnKind = base.Columns["Kind"];
                 this.columnAddEveryone = base.Columns["AddEveryone"];
@@ -1571,6 +1583,8 @@ namespace StreamerBot.Data {
             private void InitClass() {
                 this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
+                this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsEnabled);
                 this.columnServer = new global::System.Data.DataColumn("Server", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnServer);
                 this.columnKind = new global::System.Data.DataColumn("Kind", typeof(string), null, global::System.Data.MappingType.Element);
@@ -1586,6 +1600,7 @@ namespace StreamerBot.Data {
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnIsEnabled.DefaultValue = ((bool)(false));
                 this.columnKind.Caption = "Kind of Link";
                 this.columnAddEveryone.DefaultValue = ((bool)(false));
             }
@@ -5762,23 +5777,23 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CurrencyTypeRow CurrencyTypeRow {
-                get {
-                    return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public UsersRow UsersRow {
                 get {
                     return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CurrencyTypeRow CurrencyTypeRow {
+                get {
+                    return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
                 }
             }
             
@@ -5966,6 +5981,22 @@ namespace StreamerBot.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsEnabled {
+                get {
+                    try {
+                        return ((bool)(this[this.tableDiscord.IsEnabledColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsEnabled\' in table \'Discord\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDiscord.IsEnabledColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public string Server {
                 get {
                     try {
@@ -6026,6 +6057,18 @@ namespace StreamerBot.Data {
                 set {
                     this[this.tableDiscord.WebhookColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsIsEnabledNull() {
+                return this.IsNull(this.tableDiscord.IsEnabledColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetIsEnabledNull() {
+                this[this.tableDiscord.IsEnabledColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

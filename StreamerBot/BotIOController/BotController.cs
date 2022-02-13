@@ -55,6 +55,7 @@ namespace StreamerBot.BotIOController
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
             SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
+            OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
             BotsList.Add(TwitchBots);
 
@@ -220,7 +221,28 @@ namespace StreamerBot.BotIOController
             return bots switch
             {
                 Bots.TwitchUserBot or Bots.TwitchChatBot => BotsTwitch.GetUserCategory(UserName: ChannelName),
+                Bots.Default => throw new NotImplementedException(),
+                Bots.TwitchLiveBot => throw new NotImplementedException(),
+                Bots.TwitchFollowBot => throw new NotImplementedException(),
+                Bots.TwitchClipBot => throw new NotImplementedException(),
+                Bots.TwitchMultiBot => throw new NotImplementedException(),
+                Bots.TwitchPubSub => throw new NotImplementedException(),
                 _ => ""
+            };
+        }
+
+        public static bool VerifyUserExist(string ChannelName, Bots bots)
+        {
+            return bots switch
+            {
+                Bots.TwitchChatBot or Bots.TwitchUserBot => BotsTwitch.VerifyUserExist(ChannelName),
+                Bots.Default => throw new NotImplementedException(),
+                Bots.TwitchLiveBot => throw new NotImplementedException(),
+                Bots.TwitchFollowBot => throw new NotImplementedException(),
+                Bots.TwitchClipBot => throw new NotImplementedException(),
+                Bots.TwitchMultiBot => throw new NotImplementedException(),
+                Bots.TwitchPubSub => throw new NotImplementedException(),
+                _ => throw new NotImplementedException()
             };
         }
 

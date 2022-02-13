@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
@@ -33,7 +34,7 @@ namespace StreamerBot.BotClients
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
 
-        private const int BulkFollowSkipCount = 400;
+        private const int BulkFollowSkipCount = 1000;
 
         public BotsTwitch()
         {
@@ -117,8 +118,6 @@ namespace StreamerBot.BotClients
         private void TwitchBotChatClient_OnBotStarted(object sender, EventArgs e)
         {
             RegisterHandlers();
-
-            TwitchBotUserSvc.ConnectUserService();
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
@@ -217,6 +216,11 @@ namespace StreamerBot.BotClients
         public static string GetUserCategory(string UserId = null, string UserName = null)
         {
             return TwitchBotUserSvc.GetUserGameCategory(UserId: UserId, UserName: UserName);
+        }
+
+        public static bool VerifyUserExist(string UserName)
+        {
+            return TwitchBotUserSvc.GetUserId(UserName) != null;
         }
 
         #endregion
@@ -330,14 +334,15 @@ namespace StreamerBot.BotClients
 
                     InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, new EventArgs());
 
+                    // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
                     List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
 
                     follows.Reverse();
 
-                    for (int i = 0; i < follows.Count; i += BulkFollowSkipCount)
+                    for (int i = 0; i < follows.Count; i++)
                     {
                         // break up the follower list so chunks of the big list are sent in parts via event
-                        List<Follow> pieces = new(follows.Skip(i).Take(BulkFollowSkipCount));
+                        List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
 
                         InvokeBotEvent(
                             this,

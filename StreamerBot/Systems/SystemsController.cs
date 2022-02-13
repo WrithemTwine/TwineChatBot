@@ -36,7 +36,7 @@ namespace StreamerBot.Systems
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
-        private List<string> GiveawayCollectionList = new();
+        private readonly List<string> GiveawayCollectionList = new();
 
 
         public SystemsController()

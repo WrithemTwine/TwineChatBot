@@ -772,6 +772,15 @@ namespace StreamerBot.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Category.
+        /// </summary>
+        internal static string MsgNoCategory {
+            get {
+                return ResourceManager.GetString("MsgNoCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to not a follower..
         /// </summary>
         internal static string MsgNotFollower {
@@ -786,6 +795,15 @@ namespace StreamerBot.Culture {
         internal static string MsgNoUsage {
             get {
                 return ResourceManager.GetString("MsgNoUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User not found..
+        /// </summary>
+        internal static string MsgNoUserFound {
+            get {
+                return ResourceManager.GetString("MsgNoUserFound", resourceCulture);
             }
         }
         

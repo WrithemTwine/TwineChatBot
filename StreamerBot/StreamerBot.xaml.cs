@@ -321,6 +321,7 @@ namespace StreamerBot
         {
             TabItem_Data_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
             TabItem_Data_Separator.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
+            GroupBox_Bots_Starts_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
@@ -738,7 +739,7 @@ namespace StreamerBot
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "CurrLoginDate" and not "LastDateSeen" and not "WatchTime")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime")
                         {
                             dc.Visibility = Visibility.Collapsed;
                         }
@@ -1072,8 +1073,7 @@ namespace StreamerBot
             }
         }
 
+
         #endregion
-
-
     }
 }

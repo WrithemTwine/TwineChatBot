@@ -26,7 +26,7 @@ namespace StreamerBot.BotClients.Twitch.TwitchLib
         /// </summary>
         /// <param name="ChannelName">The channel to retrieve the followers</param>
         /// <returns>An async task with a list of 'Follow' objects.</returns>
-        public async Task<List<Follow>> GetAllFollowers(string ChannelName)
+        public async Task<List<Follow>> GetAllFollowersAsync(string ChannelName)
         {
             Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
 

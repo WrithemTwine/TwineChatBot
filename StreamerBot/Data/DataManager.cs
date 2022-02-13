@@ -37,6 +37,11 @@ namespace StreamerBot.Data
         private bool SaveThreadStarted = false;
         private const int SaveThreadWait = 10000;
 
+        /// <summary>
+        /// Record count to distinguish using Parallel For, ForEach loops
+        /// </summary>
+        private const int UseParallelThreashold = 5000;
+
         public bool UpdatingFollowers { get; set; }
 
         public DataManager()
@@ -136,7 +141,7 @@ namespace StreamerBot.Data
 
                                     _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
                                 }
-                                catch(Exception ex)
+                                catch (Exception ex)
                                 {
                                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                 }
@@ -276,7 +281,7 @@ switches:
                         {
                             datarow.Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
                         }
-                        if ( DBNull.Value.Equals(datarow["SendMsgCount"]) ) 
+                        if (DBNull.Value.Equals(datarow["SendMsgCount"]))
                         {
                             datarow.SendMsgCount = 0;
                         }
@@ -289,24 +294,23 @@ switches:
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new();
 
                 // add each of the default commands with localized strings
-                foreach (DefaultCommand com in System.Enum.GetValues(typeof(DefaultCommand)))
+                foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
                 {
                     DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
                 }
 
                 // add each of the social commands
-                foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
                 {
                     DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetDefaultComParam("eachsocial")));
                 }
 
-                foreach (string key in DefCommandsDictionary.Keys)
+                foreach (var (key, param) in from string key in DefCommandsDictionary.Keys
+                                             where CheckName(key)
+                                             let param = CommandParams.Parse(DefCommandsDictionary[key].Item2)
+                                             select (key, param))
                 {
-                    if (CheckName(key))
-                    {
-                        CommandParams param = CommandParams.Parse(DefCommandsDictionary[key].Item2);
-                        _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
-                    }
+                    _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                 }
             }
         }
@@ -353,7 +357,7 @@ switches:
 
                 if (rows != null && rows.Length > 0)
                 {
-                    ViewerTypes cmdpermission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+                    ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
 
                     return cmdpermission >= permission;
                 }
@@ -387,12 +391,11 @@ switches:
                     DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
                     if (k?.Length > 1)
                     {
-                        foreach (DataColumn d in k)
+                        foreach (var d in from DataColumn d in k
+                                          where d.ColumnName != "Id"
+                                          select d)
                         {
-                            if (d.ColumnName != "Id")
-                            {
-                                key = d.ColumnName;
-                            }
+                            key = d.ColumnName;
                         }
                     }
                     else
@@ -409,8 +412,8 @@ switches:
             lock (_DataSource)
             {
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
-                NotifySaveData();
             }
+            NotifySaveData();
             return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
         }
 
@@ -435,6 +438,7 @@ switches:
                     result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
                 }
             }
+            NotifySaveData();
             return result;
         }
 
@@ -444,13 +448,13 @@ switches:
 
             lock (_DataSource)
             {
-                if(_DataSource.Commands.FindByCmdName(command) != null)
+                if (_DataSource.Commands.FindByCmdName(command) != null)
                 {
                     _DataSource.Commands.RemoveCommandsRow(_DataSource.Commands.FindByCmdName(command));
                     removed = true;
                 }
             }
-
+            NotifySaveData();
             return removed;
         }
 
@@ -458,9 +462,11 @@ switches:
         {
             string filter = "";
 
-            foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
+            System.Collections.IList list = Enum.GetValues(typeof(DefaultSocials));
+            for (int i = 0; i < list.Count; i++)
             {
-                filter += "'" + s.ToString() + "',";
+                DefaultSocials s = (DefaultSocials)list[i];
+                filter += (i != 0 ? ", " : "") + "'" + s.ToString() + "'";
             }
 
             CommandsRow[] socialrows = null;
@@ -468,15 +474,14 @@ switches:
 
             lock (_DataSource)
             {
-                socialrows = (CommandsRow[])_DataSource.Commands.Select($"CmdName IN ({filter[0..^1]})");
+                socialrows = (CommandsRow[])_DataSource.Commands.Select($"CmdName IN ({filter})");
             }
 
-            foreach (CommandsRow com in socialrows)
+            foreach (CommandsRow com in from CommandsRow com in socialrows
+                                where com.Message != DefaulSocialMsg && com.Message != string.Empty
+                                select com)
             {
-                if (com.Message != DefaulSocialMsg && com.Message != string.Empty)
-                {
-                    socials += com.Message + " ";
-                }
+                socials += com.Message + " ";
             }
 
             return socials.Trim();
@@ -486,9 +491,7 @@ switches:
         {
             lock (_DataSource)
             {
-                CommandsRow[] usagerows = (CommandsRow[])_DataSource.Commands.Select($"CmdName='{command}'");
-
-                return usagerows[0]?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
+                return ((CommandsRow[])_DataSource.Commands.Select($"CmdName='{command}'"))[0]?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
             }
         }
 
@@ -511,14 +514,9 @@ switches:
 
             string result = "";
 
-            if (commandsRows.Length > 0)
+            for (int i = 0; i < commandsRows.Length; i++)
             {
-                result = "!" + commandsRows[0].CmdName;
-            }
-
-            foreach(CommandsRow c in commandsRows.Skip(1))
-            {
-                result += ", !" + c.CmdName;
+                result += (i != 0 ? ", " : "") + "!" + commandsRows[i].CmdName;
             }
 
             return result;
@@ -575,17 +573,12 @@ switches:
         public object[] PerformQuery(CommandsRow row, int Top = 0)
         {
             DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
-            DataRow[] output;
             List<Tuple<object, object>> outlist = new();
 
             lock (_DataSource)
             {
-                output = Top < 0 ? tabledata.Select() : tabledata.Select(null, row.key_field + " " + row.sort);
-
-                foreach (DataRow d in output)
-                {
-                    outlist.Add(new(d[row.key_field], d[row.data_field]));
-                }
+                outlist.AddRange(from DataRow d in Top < 0 ? tabledata.Select() : tabledata.Select(null, row.key_field + " " + row.sort)
+                                 select new Tuple<object, object>(d[row.key_field], d[row.data_field]));
             }
 
             if (Top > 0)
@@ -606,12 +599,8 @@ switches:
         {
             lock (_DataSource)
             {
-                List<Tuple<string, int, string[]>> TimerList = new();
-                foreach (CommandsRow row in (CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0"))
-                {
-                    TimerList.Add(new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>()));
-                }
-                return TimerList;
+                return new(from CommandsRow row in (CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0 AND IsEnabled=True")
+                                   select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
             }
         }
 
@@ -629,7 +618,7 @@ switches:
         {
             ChannelEventsRow[] channelEventsRows = (ChannelEventsRow[])_DataSource.ChannelEvents.Select();
 
-            foreach(ChannelEventsRow channelEventsRow in channelEventsRows)
+            foreach (ChannelEventsRow channelEventsRow in channelEventsRows)
             {
                 channelEventsRow.IsEnabled = Enabled;
             }
@@ -654,9 +643,16 @@ switches:
 
         private void SetCommandsEnabledHelper(bool Enabled, CommandsRow[] commandsRows)
         {
-            foreach(CommandsRow commandsRow in commandsRows)
+            if (commandsRows.Length <= UseParallelThreashold)
             {
-                commandsRow.IsEnabled = Enabled;
+                foreach (CommandsRow c in commandsRows)
+                {
+                    c.IsEnabled = Enabled;
+                }
+            }
+            else
+            {
+                _ = Parallel.ForEach(commandsRows, (commandsRow) => { commandsRow.IsEnabled = Enabled; });
             }
         }
 
@@ -682,7 +678,7 @@ switches:
             {
                 ChannelEventsRow channelEventsRow = _DataSource.ChannelEvents.FindByName(criteria);
 
-                if(channelEventsRow!=null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
+                if (channelEventsRow != null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
                 {
                     channelEventsRow.RepeatMsg = 0;
                 }
@@ -743,17 +739,13 @@ switches:
             };
             lock (_DataSource)
             {
-                foreach (ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions)))
+                foreach (var (command, values) in from ChannelEventActions command in Enum.GetValues(typeof(ChannelEventActions))// consider only the values in the dictionary, check if data is already defined in the data table
+                                                  where dictionary.ContainsKey(command) && CheckName(command.ToString())// extract the default data from the dictionary and add to the data table
+                                                  let values = dictionary[command]
+                                                  select (command, values))
                 {
-                    // consider only the values in the dictionary, check if data is already defined in the data table
-                    if (dictionary.ContainsKey(command) && CheckName(command.ToString()))
-                    {   // extract the default data from the dictionary and add to the data table
-                        Tuple<string, string> values = dictionary[command];
-
-                        _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), 0, false, true, values.Item1, values.Item2);
-                    }
+                    _ = _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), 0, false, true, values.Item1, values.Item2);
                 }
-
             }
         }
         #endregion Regular Channel Events
@@ -1129,21 +1121,27 @@ switches:
             NotifySaveData();
         }
 
-        public void UpdateFollowers( IEnumerable<Follow> follows)
+        public void UpdateFollowers(IEnumerable<Follow> follows)
         {
-            //new Thread(new ThreadStart(() =>
-            //{
-
             if (follows.Any())
             {
-                foreach (Follow f in follows)
+                if (follows.Count() <= UseParallelThreashold)
                 {
-                    AddFollower(f.FromUserName, f.FollowedAt);
+                    foreach (Follow f in follows)
+                    {
+                        _ = AddFollower(f.FromUserName, f.FollowedAt);
+                    }
+                }
+                else
+                {
+                    _ = Parallel.ForEach(follows, (f) =>
+                      {
+                          _ = AddFollower(f.FromUserName, f.FollowedAt);
+                      });
                 }
             }
 
             NotifySaveData();
-            //})).Start();
         }
 
         public void StopBulkFollows()
@@ -1155,8 +1153,8 @@ switches:
                     List<FollowersRow> temp = new();
                     temp.AddRange((FollowersRow[])_DataSource.Followers.Select());
                     foreach (FollowersRow f in from FollowersRow f in temp
-                                                          where !f.IsFollower
-                                                          select f)
+                                               where !f.IsFollower
+                                               select f)
                     {
                         _DataSource.Followers.RemoveFollowersRow(f);
                     }
@@ -1174,9 +1172,16 @@ switches:
         {
             lock (_DataSource)
             {
-                foreach (UsersRow users in _DataSource.Users.Select())
+                if (_DataSource.Users.Count <= UseParallelThreashold)
                 {
-                    users.WatchTime = new(0);
+                    foreach (UsersRow users in (UsersRow[])_DataSource.Users.Select())
+                    {
+                        users.WatchTime = new(0);
+                    }
+                }
+                else
+                {
+                    _ = Parallel.ForEach((UsersRow[])_DataSource.Users.Select(), (users) => { users.WatchTime = new(0); });
                 }
             }
         }
@@ -1283,10 +1288,21 @@ switches:
             lock (_DataSource)
             {
                 UsersRow[] UserRows = (UsersRow[])_DataSource.Users.Select();
-                for (int i = 0; i < UserRows.Length; i++)
+
+                if (UserRows.Length <= UseParallelThreashold)
                 {
-                    UsersRow users = UserRows[i];
-                    AddCurrencyRows(ref users);
+                    for (int i = 0; i < UserRows.Length; i++)
+                    {
+                        UsersRow users = UserRows[i];
+                        AddCurrencyRows(ref users);
+                    }
+                }
+                else
+                {
+                    _ = Parallel.For(0, UserRows.Length, (i) =>
+                       {
+                           AddCurrencyRows(ref UserRows[i]);
+                       });
                 }
             }
             NotifySaveData();
@@ -1299,9 +1315,19 @@ switches:
         {
             lock (_DataSource)
             {
-                foreach (CurrencyRow row in _DataSource.Currency.Select())
+                if (_DataSource.Currency.Count <= UseParallelThreashold)
                 {
-                    row.Value = 0;
+                    foreach (CurrencyRow row in (CurrencyRow[])_DataSource.Currency.Select())
+                    {
+                        row.Value = 0;
+                    }
+                }
+                else
+                {
+                    _ = Parallel.ForEach((CurrencyRow[])_DataSource.Currency.Select(), (row) =>
+                      {
+                          row.Value = 0;
+                      });
                 }
             }
         }
@@ -1314,42 +1340,36 @@ switches:
             lock (_DataSource)
             {
                 _ = _DataSource.InRaidData.AddInRaidDataRow(user, viewers, time, gamename);
-                NotifySaveData();
             }
+            NotifySaveData();
         }
 
         public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
         {
-            InRaidDataRow inRaidDataRow;
             lock (_DataSource)
             {
                 // 2021-12-06T01:19:16.0248427-05:00
                 //string.Format("UserName='{0}' and DateTime='{1}' and ViewerCount='{2}' and Category='{3}'", user, time, viewers, gamename)
-                inRaidDataRow = (InRaidDataRow)_DataSource.InRaidData.Select($"UserName='{user}' AND DateTime=#{time:O}# AND ViewerCount='{viewers}' AND Category='{gamename}'").FirstOrDefault();
+                return (InRaidDataRow)_DataSource.InRaidData.Select($"UserName='{user}' AND DateTime=#{time:O}# AND ViewerCount='{viewers}' AND Category='{gamename}'").FirstOrDefault() != null;
             }
-
-            return inRaidDataRow != null;
         }
 
         public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
         {
-            OutRaidDataRow outRaidDataRow;
             lock (_DataSource)
             {
-                //string.Format("ChannelRaided='{0}' and DateTime='{1}'", HostedChannel, dateTime)
-                outRaidDataRow = (OutRaidDataRow)_DataSource.OutRaidData.Select($"ChannelRaided='{HostedChannel}' AND DateTime=#{dateTime:O}#").FirstOrDefault();
+                // string.Format("ChannelRaided='{0}' and DateTime='{1}'", HostedChannel, dateTime)
+                return (OutRaidDataRow)_DataSource.OutRaidData.Select($"ChannelRaided='{HostedChannel}' AND DateTime=#{dateTime:O}#").FirstOrDefault() != null;
             }
-
-            return outRaidDataRow != null;
         }
 
         public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
             lock (_DataSource)
             {
-                _DataSource.OutRaidData.AddOutRaidDataRow(HostedChannel, dateTime);
-                NotifySaveData();
+                _ = _DataSource.OutRaidData.AddOutRaidDataRow(HostedChannel, dateTime);
             }
+            NotifySaveData();
         }
 
         #endregion
@@ -1363,22 +1383,10 @@ switches:
         {
             lock (_DataSource)
             {
-                DataRow[] dataRows = _DataSource.Discord.Select();
-
-                List<Tuple<bool, Uri>> uris = new();
-
-                foreach (DataRow d in dataRows)
-                {
-                    DiscordRow row = d as DiscordRow;
-
-                    if (row.Kind == webhooks.ToString())
-                    {
-                        uris.Add(new Tuple<bool, Uri>(row.AddEveryone, new Uri(row.Webhook)));
-                    }
-                }
-                return uris;
+                return new(((DiscordRow[])_DataSource.Discord.Select()).Where(d => d.Kind == webhooks.ToString() && d.IsEnabled == true).Select(d => new Tuple<bool, Uri>(d.AddEveryone, new Uri(d.Webhook))));
             }
         }
+
         #endregion Discord and Webhooks
 
         #region Category
@@ -1421,13 +1429,9 @@ switches:
         /// <returns>Returns a list of <code>Tuple<string GameId, string GameName></code> objects.</returns>
         public List<Tuple<string, string>> GetGameCategories()
         {
-            List<Tuple<string, string>> GameIdNameList = new();
-            foreach (CategoryListRow c in _DataSource.CategoryList.Select())
-            {
-                GameIdNameList.Add(new(c.CategoryId, c.Category));
-            }
-
-            return GameIdNameList;
+            return new(from CategoryListRow c in _DataSource.CategoryList.Select()
+                       let item = new Tuple<string, string>(c.CategoryId, c.Category)
+                       select item);
         }
 
         #endregion

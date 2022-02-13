@@ -1,5 +1,7 @@
 ﻿using StreamerBot.Data;
+using StreamerBot.Events;
 using StreamerBot.Models;
+using StreamerBot.Properties;
 using StreamerBot.Static;
 
 using System;
@@ -45,6 +47,13 @@ namespace StreamerBot.Systems
         protected static List<string> VIPUsers { get; private set; } = new();
 
         protected static StreamStat CurrStream { get; set; } = new();
+
+        /// <summary>
+        /// Returns the start of the current active online stream.
+        /// </summary>
+        /// <returns>The DateTime of the stream start time.</returns>
+        public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
+        private delegate void ProcMessage(string UserName, string Message);
 
         public SystemsBase() { }
 
@@ -160,21 +169,12 @@ namespace StreamerBot.Systems
             }
         }
 
-        /// <summary>
-        /// Returns the start of the current active online stream.
-        /// </summary>
-        /// <returns>The DateTime of the stream start time.</returns>
-        public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
-
-
-        private delegate void ProcMessage(string UserName, string Message);
-
         internal static void AddChatString(string UserName, string Message)
         {
-            Application.Current.Dispatcher.BeginInvoke(new ProcMessage(UpdateMessage), UserName, Message);
+            Application.Current?.Dispatcher.BeginInvoke(new ProcMessage(UpdateGUIChatMessages), UserName, Message);
         }
 
-        private static void UpdateMessage(string UserName, string Message)
+        private static void UpdateGUIChatMessages(string UserName, string Message)
         {
             Paragraph p = new();
             string time = DateTime.Now.ToLocalTime().ToString("h:mm", CultureInfo.CurrentCulture) + " ";
@@ -186,6 +186,11 @@ namespace StreamerBot.Systems
             //                                                  g: s.Color.G,
             //                                                  b: s.Color.B));
             ChatData.Blocks.Add(p);
+        }
+
+        internal static void OutputSentToBotsHandler(object sender, PostChannelMessageEventArgs e)
+        {
+            AddChatString(Settings.Default.TwitchBotUserName, e.Msg);
         }
 
     }

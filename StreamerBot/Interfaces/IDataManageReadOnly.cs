@@ -20,5 +20,7 @@ namespace StreamerBot.Interfaces
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd);
         public object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria);
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks);
+        bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
+        bool TestOutRaidData(string HostedChannel, DateTime dateTime);
     }
 }

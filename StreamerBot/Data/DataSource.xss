@@ -8,7 +8,7 @@
   <Shapes>
     <Shape ID="DesignTable:Currency" ZOrder="14" X="748" Y="141" Height="125" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="121" />
     <Shape ID="DesignTable:CurrencyType" ZOrder="13" X="532" Y="331" Height="144" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="140" />
-    <Shape ID="DesignTable:Discord" ZOrder="12" X="256" Y="656" Height="144" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="140" />
+    <Shape ID="DesignTable:Discord" ZOrder="12" X="256" Y="656" Height="163" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="159" />
     <Shape ID="DesignTable:ChannelEvents" ZOrder="11" X="646" Y="610" Height="182" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="178" />
     <Shape ID="DesignTable:Users" ZOrder="10" X="324" Y="100" Height="163" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="159" />
     <Shape ID="DesignTable:Commands" ZOrder="9" X="61" Y="354" Height="429" Width="150" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="425" />
@@ -22,18 +22,6 @@
     <Shape ID="DesignTable:GiveawayUserData" ZOrder="2" X="590" Y="20" Height="106" Width="174" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="102" />
   </Shapes>
   <Connectors>
-    <Connector ID="DesignRelation:FK_Users_Currency" ZOrder="17" LineWidth="11">
-      <RoutePoints>
-        <Point>
-          <X>474</X>
-          <Y>201</Y>
-        </Point>
-        <Point>
-          <X>748</X>
-          <Y>201</Y>
-        </Point>
-      </RoutePoints>
-    </Connector>
     <Connector ID="DesignRelation:Currency_CurrencyType" ZOrder="16" LineWidth="11">
       <RoutePoints>
         <Point>
@@ -47,6 +35,18 @@
         <Point>
           <X>748</X>
           <Y>231</Y>
+        </Point>
+      </RoutePoints>
+    </Connector>
+    <Connector ID="DesignRelation:FK_Users_Currency" ZOrder="17" LineWidth="11">
+      <RoutePoints>
+        <Point>
+          <X>474</X>
+          <Y>201</Y>
+        </Point>
+        <Point>
+          <X>748</X>
+          <Y>201</Y>
         </Point>
       </RoutePoints>
     </Connector>

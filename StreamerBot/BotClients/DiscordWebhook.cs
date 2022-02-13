@@ -30,7 +30,7 @@ namespace StreamerBot.BotClients
 
             if (!JobThread) // check if job thread is running
             {
-                new Thread(new ThreadStart(SendData)).Start();
+                new Thread(new ThreadStart(SendDataAsync)).Start();
 
                 lock (DataJobs)
                 {
@@ -39,7 +39,7 @@ namespace StreamerBot.BotClients
             }
         }
 
-        private async static void SendData()
+        private async static void SendDataAsync()
         {
             while (DataJobs.Count > 0)
             {
@@ -142,7 +142,8 @@ namespace StreamerBot.BotClients
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Names are required in this case because of the Discord/Webhook JSON specification.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Names are required in lower case because of the Discord/Webhook JSON specification.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CA1707:Underscores in Names", Justification = "The underscores in names are required for the Discord/Webhook JSON specification.")]
     public class WebhookJSON
     {
         //private const int max_embeds = 10;
