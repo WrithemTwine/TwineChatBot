@@ -1,5 +1,5 @@
-﻿using StreamerBot.BotClients;
-using StreamerBot.BotClients.Twitch;
+﻿using StreamerBotLib.BotClients;
+using StreamerBotLib.BotClients.Twitch;
 
 using Xunit;
 

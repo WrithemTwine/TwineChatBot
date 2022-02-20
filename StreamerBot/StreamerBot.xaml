@@ -3,11 +3,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:GUI="clr-namespace:StreamerBot.GUI"
-        xmlns:Models="clr-namespace:StreamerBot.Models"
-        xmlns:s="clr-namespace:StreamerBot.Properties"
-        xmlns:Static="clr-namespace:StreamerBot.Static"
-        xmlns:Enums="clr-namespace:StreamerBot.Enums"
+        xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=TwineStreamerBotDLL"
+        xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=TwineStreamerBotDLL"
+        xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=TwineStreamerBotDLL"
+        xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotDLL"
+        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotDLL"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="770" Width="1020"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
@@ -900,7 +900,7 @@
                                 <TabItem Header="Built-In">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="80" />
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <StackPanel Grid.Row="0">
@@ -920,7 +920,7 @@
                                 <TabItem Header="User-Defined">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="80" />
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
 
@@ -934,7 +934,7 @@
 
                                         <DockPanel Grid.Row="1">
                                             <Label DockPanel.Dock="Top" Content="User-Defined Commands:" />
-                                            <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Commands, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding"/>
+                                            <DataGrid x:Name="DG_UserDefinedCommands" DockPanel.Dock="Top" ItemsSource="{Binding Commands, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding"/>
                                         </DockPanel>
                                     </Grid>
                                 </TabItem>

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBot", "StreamerBot\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestStreamerBot", "TestStreamerBot\TestStreamerBot.csproj", "{5BBA6290-982F-423B-B92F-AA02702527A5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib", "StreamerBotDLL\StreamerBotLib.csproj", "{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5BBA6290-982F-423B-B92F-AA02702527A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BBA6290-982F-423B-B92F-AA02702527A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BBA6290-982F-423B-B92F-AA02702527A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

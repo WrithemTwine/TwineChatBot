@@ -1,11 +1,11 @@
-﻿using StreamerBot.BotClients.Twitch;
-using StreamerBot.BotIOController;
-using StreamerBot.Data;
-using StreamerBot.Enums;
-using StreamerBot.Events;
-using StreamerBot.Models;
-using StreamerBot.Static;
-using StreamerBot.Systems;
+﻿using StreamerBotLib.BotClients.Twitch;
+using StreamerBotLib.BotIOController;
+using StreamerBotLib.Data;
+using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
+using StreamerBotLib.Models;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace TestStreamerBot
             return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
-        private void BotController_OutputSentToBots(object sender, StreamerBot.Events.PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object sender, StreamerBotLib.Events.PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }
