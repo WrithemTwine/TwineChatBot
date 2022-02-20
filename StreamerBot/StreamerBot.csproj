@@ -48,7 +48,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
-    <ProjectReference Include="..\StreamerBotDLL\StreamerBotLib.csproj" />
+    <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
