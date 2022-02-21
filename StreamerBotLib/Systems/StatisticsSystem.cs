@@ -96,10 +96,7 @@ namespace StreamerBotLib.Systems
             if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
-                if (UniqueUserChat.UniqueAdd(User))
-                {
-                    result = true;
-                }
+                result = UniqueUserChat.UniqueAdd(User);
             }
             return result;
         }

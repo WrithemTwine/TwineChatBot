@@ -273,8 +273,10 @@ namespace StreamerBotLib.Systems
 
         public void UserJoined(List<string> users, Bots Source)
         {
+            DateTime Curr = DateTime.Now.ToLocalTime();
+
             foreach (string user in from string user in users
-                                    where StatisticsSystem.UserJoined(user, DateTime.Now.ToLocalTime())
+                                    where StatisticsSystem.UserJoined(user, Curr)
                                     select user)
             {
                 if (OptionFlags.FirstUserJoinedMsg)

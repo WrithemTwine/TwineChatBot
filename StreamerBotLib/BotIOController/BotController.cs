@@ -423,7 +423,7 @@ namespace StreamerBotLib.BotIOController
             HandleUserJoined(new() { e.Username }, Bots.TwitchChatBot);
         }
 
-        public static void TwitchOnUserLeft(OnUserLeftArgs e)
+        public void TwitchOnUserLeft(OnUserLeftArgs e)
         {
             HandleUserLeft(e.Username);
         }
@@ -691,7 +691,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UserJoined(Users, Source);
         }
 
-        public static void HandleUserLeft(string Users)
+        public void HandleUserLeft(string Users)
         {
             SystemsController.UserLeft(Users);
         }
@@ -720,7 +720,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category, Bots Source)
         {
-            Systems.PostIncomingRaid(UserName, RaidTime, ViewerCount, Category, Source);
+            Systems.PostIncomingRaid(UserName, RaidTime.ToLocalTime(), ViewerCount, Category, Source);
         }
 
         public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Bots Source)
