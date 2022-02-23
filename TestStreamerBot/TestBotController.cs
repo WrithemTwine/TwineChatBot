@@ -1,11 +1,11 @@
-﻿using StreamerBot.BotClients.Twitch;
-using StreamerBot.BotIOController;
-using StreamerBot.Data;
-using StreamerBot.Enums;
-using StreamerBot.Events;
-using StreamerBot.Models;
-using StreamerBot.Static;
-using StreamerBot.Systems;
+﻿using StreamerBotLib.BotClients.Twitch;
+using StreamerBotLib.BotIOController;
+using StreamerBotLib.Data;
+using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
+using StreamerBotLib.Models;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
 
 using System;
 using System.Collections.Generic;
@@ -23,9 +23,12 @@ namespace TestStreamerBot
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
         private string result = string.Empty;
+        private const int Viewers = 80;
 
         private BotController botController;
         private DataManager dataManager;
+
+        private Random Random { get; set; } = new();
 
         private void Initialize()
         {
@@ -69,7 +72,7 @@ namespace TestStreamerBot
             return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
-        private void BotController_OutputSentToBots(object sender, StreamerBot.Events.PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object sender, StreamerBotLib.Events.PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }
@@ -251,5 +254,37 @@ namespace TestStreamerBot
             botController.HandleGiveawayWinner();
 
         }
+
+        [Theory]
+        [InlineData("xFreakDuchessx")]
+        public void TestRaid(string RaidUserName)
+        {
+            Initialize();
+
+            string Title = "Let's try this stream test!";
+            DateTime onlineTime = DateTime.Now.ToLocalTime();
+            string Id = "7193";
+            string Category = "Microsoft Flight Simulator";
+
+            botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
+
+            Thread.Sleep(1000);
+            Assert.False(dataManager.AddStream(onlineTime));
+            Assert.True(dataManager.AddCategory(Id, Category));
+
+            botController.HandleIncomingRaidData(RaidUserName, DateTime.Now, Random.Next(5, Viewers).ToString(), GetRandomGameIdName().GameName, Bots.TwitchChatBot);
+            Thread.Sleep(5000); // wait for category
+
+            Assert.False(StatisticsSystem.UserChat(RaidUserName));
+
+            botController.HandleUserJoined(new() { RaidUserName }, Bots.TwitchChatBot);
+            Assert.False(StatisticsSystem.UserChat(RaidUserName));
+
+            botController.HandleUserLeft(RaidUserName);
+
+            Assert.True(StatisticsSystem.UserChat(RaidUserName)); // should be able to add the user again
+
+        }
+
     }
 }

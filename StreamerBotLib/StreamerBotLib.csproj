@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyVersion>0.1.11.4</AssemblyVersion>
+    <FileVersion>0.1.11.4</FileVersion>
+    <Version>0.1.11.4</Version>
+    <PackageId>TwineStreamerBotLib</PackageId>
+    <AssemblyName>TwineStreamerBotLib</AssemblyName>
+    <Authors>TwineStreamerBotLib</Authors>
+    <Company>TwineStreamerBotLib</Company>
+    <Product>TwineStreamerBotLib</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="TwitchLib" Version="3.3.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.4.1" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.4.1" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="BotClients\Twitch\TwitchLib\Core\ServiceTimer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Culture\Msgs.Designer.cs">
+      <DependentUpon>Msgs.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Data\DataSource.Designer.cs">
+      <DependentUpon>DataSource.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Culture\Msgs.resx">
+      <LastGenOutput>Msgs.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\DataSource.xsd">
+      <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+</Project>
