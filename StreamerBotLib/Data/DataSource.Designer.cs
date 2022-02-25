@@ -52,9 +52,11 @@ namespace StreamerBotLib.Data {
         
         private GiveawayUserDataDataTable tableGiveawayUserData;
         
-        private global::System.Data.DataRelation relationFK_Users_Currency;
+        private CustomWelcomeDataTable tableCustomWelcome;
         
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
+        
+        private global::System.Data.DataRelation relationFK_Users_Currency;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -127,6 +129,9 @@ namespace StreamerBotLib.Data {
                 }
                 if ((ds.Tables["GiveawayUserData"] != null)) {
                     base.Tables.Add(new GiveawayUserDataDataTable(ds.Tables["GiveawayUserData"]));
+                }
+                if ((ds.Tables["CustomWelcome"] != null)) {
+                    base.Tables.Add(new CustomWelcomeDataTable(ds.Tables["CustomWelcome"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -288,6 +293,16 @@ namespace StreamerBotLib.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public CustomWelcomeDataTable CustomWelcome {
+            get {
+                return this.tableCustomWelcome;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.BrowsableAttribute(true)]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Visible)]
         public override global::System.Data.SchemaSerializationMode SchemaSerializationMode {
@@ -394,6 +409,9 @@ namespace StreamerBotLib.Data {
                 }
                 if ((ds.Tables["GiveawayUserData"] != null)) {
                     base.Tables.Add(new GiveawayUserDataDataTable(ds.Tables["GiveawayUserData"]));
+                }
+                if ((ds.Tables["CustomWelcome"] != null)) {
+                    base.Tables.Add(new CustomWelcomeDataTable(ds.Tables["CustomWelcome"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -512,8 +530,14 @@ namespace StreamerBotLib.Data {
                     this.tableGiveawayUserData.InitVars();
                 }
             }
-            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
+            this.tableCustomWelcome = ((CustomWelcomeDataTable)(base.Tables["CustomWelcome"]));
+            if ((initTable == true)) {
+                if ((this.tableCustomWelcome != null)) {
+                    this.tableCustomWelcome.InitVars();
+                }
+            }
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
         }
         
@@ -553,17 +577,19 @@ namespace StreamerBotLib.Data {
             base.Tables.Add(this.tableOutRaidData);
             this.tableGiveawayUserData = new GiveawayUserDataDataTable();
             base.Tables.Add(this.tableGiveawayUserData);
+            this.tableCustomWelcome = new CustomWelcomeDataTable();
+            base.Tables.Add(this.tableCustomWelcome);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -575,14 +601,14 @@ namespace StreamerBotLib.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn}, false);
-            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -670,6 +696,12 @@ namespace StreamerBotLib.Data {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         private bool ShouldSerializeGiveawayUserData() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        private bool ShouldSerializeCustomWelcome() {
             return false;
         }
         
@@ -769,6 +801,9 @@ namespace StreamerBotLib.Data {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         public delegate void GiveawayUserDataRowChangeEventHandler(object sender, GiveawayUserDataRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public delegate void CustomWelcomeRowChangeEventHandler(object sender, CustomWelcomeRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -5707,6 +5742,290 @@ namespace StreamerBotLib.Data {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class CustomWelcomeDataTable : global::System.Data.TypedTableBase<CustomWelcomeRow> {
+            
+            private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnUserName;
+            
+            private global::System.Data.DataColumn columnMessage;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CustomWelcomeDataTable() {
+                this.TableName = "CustomWelcome";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal CustomWelcomeDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected CustomWelcomeDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UserNameColumn {
+                get {
+                    return this.columnUserName;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn MessageColumn {
+                get {
+                    return this.columnMessage;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CustomWelcomeRow this[int index] {
+                get {
+                    return ((CustomWelcomeRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CustomWelcomeRowChangeEventHandler CustomWelcomeRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CustomWelcomeRowChangeEventHandler CustomWelcomeRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CustomWelcomeRowChangeEventHandler CustomWelcomeRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public event CustomWelcomeRowChangeEventHandler CustomWelcomeRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void AddCustomWelcomeRow(CustomWelcomeRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CustomWelcomeRow AddCustomWelcomeRow(string UserName, string Message) {
+                CustomWelcomeRow rowCustomWelcomeRow = ((CustomWelcomeRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        null,
+                        UserName,
+                        Message};
+                rowCustomWelcomeRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowCustomWelcomeRow);
+                return rowCustomWelcomeRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                CustomWelcomeDataTable cln = ((CustomWelcomeDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new CustomWelcomeDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal void InitVars() {
+                this.columnId = base.Columns["Id"];
+                this.columnUserName = base.Columns["UserName"];
+                this.columnMessage = base.Columns["Message"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            private void InitClass() {
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
+                this.columnUserName = new global::System.Data.DataColumn("UserName", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserName);
+                this.columnMessage = new global::System.Data.DataColumn("Message", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnMessage);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnId}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnUserName}, false));
+                this.columnId.AutoIncrement = true;
+                this.columnId.AllowDBNull = false;
+                this.columnId.Unique = true;
+                this.columnUserName.AllowDBNull = false;
+                this.columnUserName.Unique = true;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CustomWelcomeRow NewCustomWelcomeRow() {
+                return ((CustomWelcomeRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new CustomWelcomeRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(CustomWelcomeRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.CustomWelcomeRowChanged != null)) {
+                    this.CustomWelcomeRowChanged(this, new CustomWelcomeRowChangeEvent(((CustomWelcomeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.CustomWelcomeRowChanging != null)) {
+                    this.CustomWelcomeRowChanging(this, new CustomWelcomeRowChangeEvent(((CustomWelcomeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.CustomWelcomeRowDeleted != null)) {
+                    this.CustomWelcomeRowDeleted(this, new CustomWelcomeRowChangeEvent(((CustomWelcomeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.CustomWelcomeRowDeleting != null)) {
+                    this.CustomWelcomeRowDeleting(this, new CustomWelcomeRowChangeEvent(((CustomWelcomeRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void RemoveCustomWelcomeRow(CustomWelcomeRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DataSource ds = new DataSource();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "CustomWelcomeDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class CurrencyRow : global::System.Data.DataRow {
@@ -5776,23 +6095,23 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public CurrencyTypeRow CurrencyTypeRow {
                 get {
                     return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
                 }
             }
             
@@ -8455,6 +8774,71 @@ namespace StreamerBotLib.Data {
         }
         
         /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class CustomWelcomeRow : global::System.Data.DataRow {
+            
+            private CustomWelcomeDataTable tableCustomWelcome;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            internal CustomWelcomeRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableCustomWelcome = ((CustomWelcomeDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int Id {
+                get {
+                    return ((int)(this[this.tableCustomWelcome.IdColumn]));
+                }
+                set {
+                    this[this.tableCustomWelcome.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string UserName {
+                get {
+                    return ((string)(this[this.tableCustomWelcome.UserNameColumn]));
+                }
+                set {
+                    this[this.tableCustomWelcome.UserNameColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Message {
+                get {
+                    try {
+                        return ((string)(this[this.tableCustomWelcome.MessageColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Message\' in table \'CustomWelcome\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCustomWelcome.MessageColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsMessageNull() {
+                return this.IsNull(this.tableCustomWelcome.MessageColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetMessageNull() {
+                this[this.tableCustomWelcome.MessageColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -8916,6 +9300,40 @@ namespace StreamerBotLib.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public GiveawayUserDataRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+        public class CustomWelcomeRowChangeEvent : global::System.EventArgs {
+            
+            private CustomWelcomeRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CustomWelcomeRowChangeEvent(CustomWelcomeRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public CustomWelcomeRow Row {
                 get {
                     return this.eventRow;
                 }

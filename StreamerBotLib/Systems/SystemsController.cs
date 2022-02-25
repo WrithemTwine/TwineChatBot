@@ -311,8 +311,10 @@ namespace StreamerBotLib.Systems
             // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
             if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
             {
-                if ((Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture)) || OptionFlags.MsgWelcomeStreamer)
+                if ((Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
                 {
+                    string msg = Command.CheckWelcomeUser(Username);
+                  
                     ChannelEventActions selected = ChannelEventActions.UserJoined;
 
                     if (OptionFlags.WelcomeCustomMsg)
@@ -324,7 +326,10 @@ namespace StreamerBotLib.Systems
                                     ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
                     }
 
-                    string msg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
+                    string TempWelcomeMsg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
+
+                    msg = msg == "" ? TempWelcomeMsg : msg;
+
                     if (Enabled)
                     {
                         SendMessage(
@@ -384,8 +389,8 @@ namespace StreamerBotLib.Systems
                         {
                             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                             {
-                    new(MsgVars.user, UserName),
-                    new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
+                                new(MsgVars.user, UserName),
+                                new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
                             });
 
                             SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);

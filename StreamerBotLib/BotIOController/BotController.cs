@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
+using TwitchLib.Api.Helix.Models.Schedule;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -28,6 +29,7 @@ namespace StreamerBotLib.BotIOController
     public class BotController
     {
         public event EventHandler<PostChannelMessageEventArgs> OutputSentToBots;
+        public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
 
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
@@ -334,7 +336,6 @@ namespace StreamerBotLib.BotIOController
                     Title = SrcClip.Title,
                     Url = SrcClip.Url
                 };
-
             }));
         }
 
@@ -524,6 +525,12 @@ namespace StreamerBotLib.BotIOController
         #endregion
 
         #region LiveStream
+
+        private void PostGameCategoryEvent(string GameId, string GameName)
+        {
+            OnStreamCategoryChanged?.Invoke(this, new() { GameId = GameId, GameName = GameName });
+        }
+
         public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string GameId, string Category, bool Debug = false)
         {
             try
@@ -535,6 +542,7 @@ namespace StreamerBotLib.BotIOController
                 {
                     bool MultiLive = StatisticsSystem.CheckStreamTime(StartedAt);
                     SystemsController.SetCategory(GameId, Category);
+                    PostGameCategoryEvent(GameId, Category);
 
                     if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)
                     {
@@ -575,9 +583,11 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        public static void HandleOnStreamUpdate(string gameId, string gameName)
+        public void HandleOnStreamUpdate(string gameId, string gameName)
         {
             SystemsController.SetCategory(gameId, gameName);
+            PostGameCategoryEvent(gameId, gameName);
+
         }
 
         public static void HandleOnStreamOffline(string HostedChannel = null)

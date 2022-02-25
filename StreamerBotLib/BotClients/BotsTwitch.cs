@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.BotClients;
-using StreamerBotLib.BotClients.Twitch;
+﻿using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
@@ -278,10 +277,12 @@ namespace StreamerBotLib.BotClients
             {
                 if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
                 {
-                    TwitchBotChatClient.StartBot();
+                    // disable until chatbot start sorted
+                    //TwitchBotChatClient.StartBot();
                 }
 
                 InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
+                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new OnUserJoinedArgs() { Username = TwitchBotsBase.TwitchBotUserName, Channel = TwitchBotsBase.TwitchChannelName });
             }
         }
 

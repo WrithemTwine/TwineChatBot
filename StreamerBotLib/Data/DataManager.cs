@@ -911,6 +911,21 @@ switches:
             }
         }
 
+        /// <summary>
+        /// Check the CustomWelcome table for the user and provide the message.
+        /// </summary>
+        /// <param name="User">The user to check for a welcome message.</param>
+        /// <returns>The welcome message if user is available, or empty string if not found.</returns>
+        public string CheckWelcomeUser(string User)
+        {
+            lock (_DataSource)
+            {
+                CustomWelcomeRow custom = (CustomWelcomeRow)_DataSource.CustomWelcome.Select($"UserName='{User}'").FirstOrDefault();
+
+                return custom == null ? "" : custom.Message;
+            }
+        }
+
         public void UserLeft(string User, DateTime LastSeen)
         {
             lock (_DataSource)

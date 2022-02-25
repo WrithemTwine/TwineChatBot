@@ -271,6 +271,11 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        public string CheckWelcomeUser(string User)
+        {
+            return DataManage.CheckWelcomeUser(User);
+        }
+
         public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
         {
             string result = "";
