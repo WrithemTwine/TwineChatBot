@@ -43,6 +43,7 @@ namespace StreamerBotLib.GUI
         public DataView InRaidData { get; private set; } // DataSource.InRaidDataDataTable
         public DataView OutRaidData { get; private set; } // DataSource.OutRaidDataDataTable
         public DataView GiveawayUserData { get; private set; } // DataSource.GiveawayUserDataDataTable
+        public DataView CustomWelcomeData { get; private set; } // DataSource.CustomWelcomeDataTable
 
         /// <summary>
         /// provide delegate to method for saving the database data
@@ -106,6 +107,7 @@ namespace StreamerBotLib.GUI
             InRaidData = new(dataManager._DataSource.InRaidData, null, "Id", DataViewRowState.CurrentRows);
             OutRaidData = new(dataManager._DataSource.OutRaidData, null, "Id", DataViewRowState.CurrentRows);
             GiveawayUserData = new(dataManager._DataSource.GiveawayUserData, null, "Id", DataViewRowState.CurrentRows);
+            CustomWelcomeData = new(dataManager._DataSource.CustomWelcome, null, "Id", DataViewRowState.CurrentRows);
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
@@ -123,6 +125,7 @@ namespace StreamerBotLib.GUI
             InRaidData.ListChanged += DataView_ListChanged;
             OutRaidData.ListChanged += DataView_ListChanged;
             GiveawayUserData.ListChanged += DataView_ListChanged;
+            CustomWelcomeData.ListChanged += DataView_ListChanged;
 
             SetCommandCollection();
         }

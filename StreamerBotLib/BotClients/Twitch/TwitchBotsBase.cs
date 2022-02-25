@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.Events;
-using StreamerBotLib.Properties;
+﻿using StreamerBotLib.Properties;
 
 using System;
 

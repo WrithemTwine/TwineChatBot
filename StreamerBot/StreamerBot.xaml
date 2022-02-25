@@ -724,11 +724,16 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="450" />
-                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="450*" />
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition Width="350*" />
                                         </Grid.ColumnDefinitions>
+                                        
                                         <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True" />
+
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Specify a custom message per UserName, tied to Welcome Message options - first appearance or first message. Otherwise, system falls back onto default." />
+                                        <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding CustomWelcomeData, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True"/>
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">

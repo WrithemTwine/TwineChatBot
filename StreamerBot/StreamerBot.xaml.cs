@@ -71,8 +71,8 @@ namespace StreamerBot
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.RegisterGetCategory(TwitchBotUserSvc_GetChannelGameName);
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
+            Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
 
             new Thread(new ThreadStart(ProcessWatcher)).Start();
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
@@ -249,7 +249,7 @@ namespace StreamerBot
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
         }
 
-        private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -932,6 +932,11 @@ namespace StreamerBot
                 string Title = "Testing a debug stream";
 
                 Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, true);
+
+                List<Tuple<string, string>> output = StreamerBotLib.Systems.SystemsController.DataManage.GetGameCategories();
+                Random random = new();
+                Tuple<string, string> itemfound = output[random.Next(output.Count)];
+                Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
             }
 
         }
