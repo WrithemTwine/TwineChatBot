@@ -36,6 +36,11 @@ namespace StreamerBotLib.Data
         private readonly Queue<Task> SaveTasks = new();
         private bool SaveThreadStarted = false;
         private const int SaveThreadWait = 10000;
+        
+        private int BackupSaveToken = 0;
+        private const int BackupSaveIntervalMins = 15;
+        private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
+        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
 
         /// <summary>
         /// Record count to distinguish using Parallel For, ForEach loops
@@ -46,8 +51,12 @@ namespace StreamerBotLib.Data
 
         public DataManager()
         {
+            BackupSaveToken = DateTime.Now.Minute / BackupSaveIntervalMins;
+
             _DataSource = new();
+            _DataSource.BeginInit();
             LoadData();
+            _DataSource.EndInit();
             OnSaveData += SaveData;
         }
 
@@ -57,6 +66,11 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void LoadData()
         {
+            foreach(DataTable table in _DataSource.Tables)
+            {
+                table.BeginLoadData();
+            }
+
             lock (_DataSource)
             {
                 if (!File.Exists(DataFileName))
@@ -84,6 +98,11 @@ namespace StreamerBotLib.Data
                 }
             }
 
+            foreach (DataTable table in _DataSource.Tables)
+            {
+                table.EndLoadData();
+            }
+
             SaveData(this, new());
         }
 
@@ -108,6 +127,18 @@ namespace StreamerBotLib.Data
         /// </summary>
         public void SaveData(object sender, EventArgs e)
         {
+            int CurrMins = DateTime.Now.Minute;
+            bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
+
+            if (IsBackup)
+            {
+                lock (BackupDataFileXML)
+                {
+                    BackupSaveToken = (CurrMins / BackupSaveIntervalMins) % BackupHrInterval;
+
+                }
+            }
+
             if (!UpdatingFollowers) // block saving data until the follower updating is completed
             {
                 if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
@@ -140,6 +171,13 @@ namespace StreamerBotLib.Data
                                     testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
 
                                     _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+
+                                    // determine if current time is within a certain time frame, and perform the save
+                                    if (IsBackup && OptionFlags.IsStreamOnline)
+                                    {
+                                        // write backup file
+                                        _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -564,6 +602,9 @@ switches:
                 {
                     CommandsRow commandsRow = (CommandsRow)result;
                     return commandsRow[row.data_field];
+                } else if(resulttype == typeof(CustomWelcomeRow)){
+                    CustomWelcomeRow customWelcomeRow = (CustomWelcomeRow)result;
+                    return customWelcomeRow[row.data_field];
                 }
             }
 
@@ -918,11 +959,17 @@ switches:
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
         public string CheckWelcomeUser(string User)
         {
+            string found = "";
             lock (_DataSource)
             {
-                CustomWelcomeRow custom = (CustomWelcomeRow)_DataSource.CustomWelcome.Select($"UserName='{User}'").FirstOrDefault();
+                foreach (CustomWelcomeRow row in from CustomWelcomeRow welcomerow in (CustomWelcomeRow[])_DataSource.CustomWelcome.Select()
+                                    where welcomerow.UserName.ToLower() == User.ToLower()
+                                    select welcomerow)
+                {
+                    found = row.Message;
+                }
 
-                return custom == null ? "" : custom.Message;
+                return found;
             }
         }
 
@@ -1043,7 +1090,9 @@ switches:
             {
                 FollowersRow datafollowers = (FollowersRow)_DataSource.Followers.Select($"UserName='{User}'").FirstOrDefault();
 
-                return datafollowers != null && datafollowers.IsFollower && datafollowers.FollowedDate <= ToDateTime;
+                return datafollowers != null
+                    && datafollowers.IsFollower
+                    && datafollowers.FollowedDate <= ToDateTime;
             }
         }
 
@@ -1467,15 +1516,16 @@ switches:
 
             lock (_DataSource)
             {
-                ClipsRow[] clipsRows = (ClipsRow[])_DataSource.Clips.Select($"Id='{ClipId}'");
-
-                if (clipsRows.Length == 0)
+                if (((ClipsRow[])_DataSource.Clips.Select($"Id='{ClipId}'")).Length == 0)
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime(), Title, GameId, Language, (decimal)Duration, Url);
                     NotifySaveData();
                     result = true;
                 }
-                result = false;
+                else
+                {
+                    result = false;
+                }
             }
 
             return result;

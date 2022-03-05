@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
-using TwitchLib.Api.Helix.Models.Schedule;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -57,6 +56,7 @@ namespace StreamerBotLib.BotIOController
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
             SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
+            SystemsBase.ChannelName = TwitchBotsBase.TwitchChannelName;
             OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
             BotsList.Add(TwitchBots);
@@ -291,7 +291,7 @@ namespace StreamerBotLib.BotIOController
             {
                 return new Models.Follow()
                 {
-                    FollowedAt = f.FollowedAt,
+                    FollowedAt = f.FollowedAt.ToLocalTime(),
                     FromUserId = f.FromUserId,
                     FromUserName = f.FromUserName,
                     ToUserId = f.ToUserId,
@@ -720,7 +720,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleAddChat(string UserName, Bots Source)
         {
-            Systems.AddChat(UserName, Source);
+            Systems.UserJoined(new() { UserName }, Source);
         }
 
         public void HandleMessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)

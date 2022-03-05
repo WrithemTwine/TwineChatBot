@@ -843,6 +843,15 @@ namespace StreamerBot
                         }
                     }
                     break;
+                case "DG_CustomWelcome":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() is "Message")
+                        {
+                            SetWidth(dc, MsgColWidth);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }

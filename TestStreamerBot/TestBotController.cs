@@ -72,7 +72,7 @@ namespace TestStreamerBot
             return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
-        private void BotController_OutputSentToBots(object sender, StreamerBotLib.Events.PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object sender, PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }
@@ -170,7 +170,7 @@ namespace TestStreamerBot
             string newId = "981578";
             string newCategory = "DebugStreamCategory";
 
-            BotController.HandleOnStreamUpdate(newId, newCategory);
+            botController.HandleOnStreamUpdate(newId, newCategory);
 
             Assert.True(dataManager.AddCategory(newId, newCategory));
 
@@ -284,6 +284,33 @@ namespace TestStreamerBot
 
             Assert.True(StatisticsSystem.UserChat(RaidUserName)); // should be able to add the user again
 
+        }
+
+        [Fact]
+        public void TestNewClip()
+        {
+            string ClipName = Path.GetRandomFileName();
+
+            Initialize();
+            OptionFlags.TwitchClipPostChat = true;
+
+            botController.HandleBotEventPostNewClip(new()
+            {
+                new()
+                {
+                    ClipId = ClipName,
+                    CreatedAt = DateTime.Now.ToString(),
+                    Duration = Random.Next(30),
+                    GameId = GetRandomGameIdName().GameId,
+                    Language = "English",
+                    Title = "My Random Test Clip",
+                    Url = $"http://debug.app/{ClipName}"
+                }
+            });
+
+            Thread.Sleep(2000);
+
+            Assert.NotEmpty(result);
         }
 
     }

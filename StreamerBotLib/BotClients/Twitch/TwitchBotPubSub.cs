@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+
+using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
 using System;
@@ -10,8 +12,6 @@ using System.Threading;
 
 using TwitchLib.PubSub;
 using TwitchLib.PubSub.Events;
-using StreamerBotLib.BotClients;
-using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.BotClients.Twitch
 {

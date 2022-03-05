@@ -65,7 +65,7 @@ namespace TestStreamerBot
 
             result = string.Empty;
             
-            systemsController.AddChat("DarkStreamPhantom", StreamerBotLib.Enums.Bots.TwitchChatBot);
+            systemsController.UserJoined(new() { "DarkStreamPhantom" }, StreamerBotLib.Enums.Bots.TwitchChatBot);
             Assert.Empty(result);
         }
 

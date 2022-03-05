@@ -1,12 +1,12 @@
-﻿using StreamerBotLib.Events;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Static;
 
 using System;
 using System.Collections.ObjectModel;
-using System.Threading;
-using StreamerBotLib.Static;
 using System.Reflection;
-using StreamerBotLib.Enums;
+using System.Threading;
 
 namespace StreamerBotLib.BotClients
 {
