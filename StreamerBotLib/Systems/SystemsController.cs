@@ -271,24 +271,22 @@ namespace StreamerBotLib.Systems
             Stats.GetType()?.InvokeMember("Add" + streamStat.ToString(), BindingFlags.InvokeMethod, null, Stats, new object[] { value });
         }
 
-        public void UserJoined(List<string> users, Bots Source)
+        public void UserJoined(List<string> UserNames, Bots Source)
         {
             DateTime Curr = DateTime.Now.ToLocalTime();
 
-            foreach (string user in from string user in users
-                                    where StatisticsSystem.UserJoined(user, Curr)
-                                    select user)
+            foreach (string user in UserNames)
             {
-                if (OptionFlags.FirstUserJoinedMsg)
+                if (RegisterJoinedUser(user, Curr, JoinedUserMsg: OptionFlags.FirstUserJoinedMsg))
                 {
-                    RegisterJoinedUser(user, Source);
+                    UserWelcomeMessage(user, Source);
                 }
             }
         }
 
-        public static void UserLeft(string User)
+        public static void UserLeft(string UserName)
         {
-            StatisticsSystem.UserLeft(User, DateTime.Now.ToLocalTime());
+            StatisticsSystem.UserLeft(UserName, DateTime.Now.ToLocalTime());
         }
 
         #endregion
@@ -298,52 +296,54 @@ namespace StreamerBotLib.Systems
             return DataManage.GetWebhooks(webhooksKind);
         }
 
-        public void AddChat(string Username, Bots Source)
+        private bool RegisterJoinedUser(string UserName, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
-            if (StatisticsSystem.UserChat(Username) && OptionFlags.FirstUserChatMsg)
+            bool FoundUserJoined = StatisticsSystem.UserJoined(UserName, UserTime);
+            bool FoundUserChat = false;
+
+            if (ChatUserMessage) 
+                // have to separate, else the user registered before actually registered
             {
-                RegisterJoinedUser(Username, Source);
+                FoundUserChat = StatisticsSystem.UserChat(UserName);
             }
+
+            return (JoinedUserMsg && FoundUserJoined) || (ChatUserMessage && FoundUserChat);
         }
 
-        private void RegisterJoinedUser(string Username, Bots Source)
+        private void UserWelcomeMessage(string UserName, Bots Source)
         {
-            // TODO: fix welcome message if user just joined as a follower, then says hello, welcome message says -welcome back to channel
-            if (OptionFlags.FirstUserJoinedMsg || OptionFlags.FirstUserChatMsg)
+            if ((UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
             {
-                if ((Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (Username.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
+                string msg = Command.CheckWelcomeUser(UserName);
+
+                ChannelEventActions selected = ChannelEventActions.UserJoined;
+
+                if (OptionFlags.WelcomeCustomMsg)
                 {
-                    string msg = Command.CheckWelcomeUser(Username);
-                  
-                    ChannelEventActions selected = ChannelEventActions.UserJoined;
+                    selected =
+                        StatisticsSystem.IsFollower(UserName) ?
+                        ChannelEventActions.SupporterJoined :
+                            StatisticsSystem.IsReturningUser(UserName) ?
+                                ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
+                }
 
-                    if (OptionFlags.WelcomeCustomMsg)
-                    {
-                        selected =
-                            StatisticsSystem.IsFollower(Username) ?
-                            ChannelEventActions.SupporterJoined :
-                                StatisticsSystem.IsReturningUser(Username) ?
-                                    ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
-                    }
+                string TempWelcomeMsg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
 
-                    string TempWelcomeMsg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
+                msg = msg == "" ? TempWelcomeMsg : msg;
 
-                    msg = msg == "" ? TempWelcomeMsg : msg;
-
-                    if (Enabled)
-                    {
-                        SendMessage(
-                            VariableParser.ParseReplace(
-                                msg,
-                                VariableParser.BuildDictionary(
-                                    new Tuple<MsgVars, string>[]
-                                        {
-                                        new( MsgVars.user, Username )
-                                        }
-                                )
+                if (Enabled)
+                {
+                    SendMessage(
+                        VariableParser.ParseReplace(
+                            msg,
+                            VariableParser.BuildDictionary(
+                                new Tuple<MsgVars, string>[]
+                                    {
+                                        new( MsgVars.user, UserName )
+                                    }
                             )
-                        , Repeat: Multi);
-                    }
+                        )
+                    , Repeat: Multi);
                 }
             }
 
@@ -353,13 +353,13 @@ namespace StreamerBotLib.Systems
                 {
                     ProcMsgQueue.Enqueue(new(() =>
                     {
-                        Command.CheckShout(Username, out string response, Source);
+                        Command.CheckShout(UserName, out string response, Source);
                     }));
                 }
             }
         }
 
-        public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
+         public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
         {
             SystemsBase.AddChatString(UserName, Message);
             UpdatedStat(StreamStatType.TotalChats);
@@ -402,7 +402,10 @@ namespace StreamerBotLib.Systems
                 }
             }
 
-            AddChat(UserName, Source);
+            if (RegisterJoinedUser(UserName, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
+            {
+                UserWelcomeMessage(UserName, Source);
+            }
         }
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)

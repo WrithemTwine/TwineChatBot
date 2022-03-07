@@ -3,7 +3,6 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace StreamerBotLib.Systems
 {
@@ -77,17 +76,22 @@ namespace StreamerBotLib.Systems
         /// <returns></returns>
         public static bool UserJoined(string User, DateTime CurrTime)
         {
+            bool result = false;
             lock (CurrUsers)
             {
-                CurrUsers.UniqueAdd(User);
+                result = CurrUsers.UniqueAdd(User);
             }
 
-            if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
+            if (OptionFlags.IsStreamOnline)
             {
-                DataManage.UserJoined(User, CurrTime);
+                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
+                if (OptionFlags.ManageUsers)
+                {
+                    DataManage.UserJoined(User, CurrTime);
+                }
             }
 
-            return UserChat(User);
+            return result;
         }
 
         public static bool UserChat(string User)

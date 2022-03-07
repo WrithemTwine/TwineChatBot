@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
-using StreamerBotLib.Static;
-
 using StreamerBotLib.Enums;
+using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;

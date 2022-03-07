@@ -1,7 +1,6 @@
-﻿using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Properties;
-
-using StreamerBotLib.Enums;
 
 using System;
 

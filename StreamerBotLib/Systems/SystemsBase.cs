@@ -1,8 +1,7 @@
-﻿using StreamerBotLib.Properties;
-
-using StreamerBotLib.Data;
+﻿using StreamerBotLib.Data;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System;
@@ -139,8 +138,7 @@ namespace StreamerBotLib.Systems
         {
             return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
-
-        /// <summary>
+    /// <summary>
         /// Retrieves the current users within the channel during the stream.
         /// </summary>
         /// <returns>The current user count as of now.</returns>
@@ -154,7 +152,6 @@ namespace StreamerBotLib.Systems
                 }
             }
         }
-
         /// <summary>
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>

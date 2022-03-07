@@ -1,7 +1,6 @@
-﻿using StreamerBotLib.Properties;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
-
-using StreamerBotLib.Enums;
 
 using System;
 using System.Collections.Generic;

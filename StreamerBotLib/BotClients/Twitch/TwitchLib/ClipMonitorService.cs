@@ -28,7 +28,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// The amount of followers queried per request.
         /// </summary>
         public int QueryCountPerRequest { get; }
-
         /// <summary>
         /// The maximum amount of followers cached per channel.
         /// </summary>
