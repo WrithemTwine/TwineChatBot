@@ -53,7 +53,7 @@ namespace StreamerBotLib.BotClients
 
                 _ = await client.PostAsync(job.Item1.AbsoluteUri, job.Item2);
 
-                // wait so Discord doesn't complain about bots posting to fast to a page
+                // wait so Discord doesn't complain about bots posting too fast to a page
                 Thread.Sleep(20000); // wait 20 seconds between posting, 3 posts a minute
             }
 
