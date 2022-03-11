@@ -23,6 +23,11 @@ using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 
+
+// TODO: Thread Manager - include count total threads created
+// TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
+// TODO: add streaming category count, track number of streams per category 
+
 namespace StreamerBotLib.BotIOController
 {
     public class BotController

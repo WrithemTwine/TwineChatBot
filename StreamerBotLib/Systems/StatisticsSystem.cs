@@ -148,12 +148,12 @@ namespace StreamerBotLib.Systems
 
         public static bool IsFollower(string User)
         {
-            return DataManage.CheckFollower(User, DateTime.Now.ToLocalTime());
+            return DataManage.CheckFollower(User, CurrStream.StreamStart);
         }
 
         public static bool IsReturningUser(string User)
         {
-            return DataManage.CheckUser(User, DateTime.Now.ToLocalTime());
+            return DataManage.CheckUser(User, CurrStream.StreamStart);
         }
         
         #region Incoming Raids

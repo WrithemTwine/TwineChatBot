@@ -20,6 +20,7 @@
     <PackageReleaseNotes>Updated repeating command process</PackageReleaseNotes>
     <Authors>TwineStreamerBot</Authors>
     <Company>TwineStreamerBot</Company>
+    <ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

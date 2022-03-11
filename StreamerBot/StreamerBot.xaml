@@ -970,12 +970,14 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="500" />
+                                            <ColumnDefinition Width="550" />
                                             <ColumnDefinition Width="5" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Row="0" Grid.Column="0">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
                                         <TextBlock Grid.Row="0" Grid.Column="2">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
+                                        
+                                        
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding InRaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                                         <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding OutRaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
                                     </Grid>
