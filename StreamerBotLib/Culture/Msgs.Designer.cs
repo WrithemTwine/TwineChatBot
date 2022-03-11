@@ -628,6 +628,42 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to $&quot;Fatal error, both main data and backup data files failed to properly load. All further data saves have been suspended until the Bot restarts. Please close and review the data files for improper XML formatting, retore from backups - ensure using the &apos;{StreamerBotLib.Data.DataManager.DataFileXML}&apos; filename. Without restoration, the datafile will need to be restarted from default.&quot;.
+        /// </summary>
+        internal static string MsgBoxDataLoadedMsg {
+            get {
+                return ResourceManager.GetString("MsgBoxDataLoadedMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fatal DataFile Load.
+        /// </summary>
+        internal static string MsgBoxDataLoadedTitle {
+            get {
+                return ResourceManager.GetString("MsgBoxDataLoadedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user is responsible for managing the datafile archives. The bot saves a backup file every approximate 15 minutes during a live stream. The bot attempts to load the original datafile first, then if there&apos;s an error, will attempt to load the backup file. With user requests, the bot could be programmed to save a timestamp named backup file to aid in this archive process. Possible future features include allowing the user to specify a SQL Database connection string, therefore archiving and backups could the [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string MsgBoxManageDataArchiveMsg {
+            get {
+                return ResourceManager.GetString("MsgBoxManageDataArchiveMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only Shows Once and When Setting Is Reset to Default.
+        /// </summary>
+        internal static string MsgBoxManageDataArchiveTitle {
+            get {
+                return ResourceManager.GetString("MsgBoxManageDataArchiveTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command not found..
         /// </summary>
         internal static string Msgcommandnotfound {

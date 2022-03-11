@@ -13,17 +13,23 @@ namespace StreamerBotLib.Static
 
         public static void WriteLog(LogType ChooseLog, string line)
         {
-            StreamWriter s = new(ChooseLog == LogType.LogBotStatus ? StatusLog : ChooseLog == LogType.LogExceptions ? ExceptionLog : "", true);
-            s.WriteLine(line);
-            s.Close();
+            lock (StatusLog)
+            {
+                StreamWriter s = new(ChooseLog == LogType.LogBotStatus ? StatusLog : ChooseLog == LogType.LogExceptions ? ExceptionLog : "", true);
+                s.WriteLine(line);
+                s.Close();
+            }
         }
 
         public static void LogException(Exception ex, string Method)
         {
-            if (OptionFlags.LogExceptions)
+            lock (ExceptionLog)
             {
-                WriteLog(LogType.LogExceptions, DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture) + " " + Method);
-                WriteLog(LogType.LogExceptions, ex.Message + "\nStack Trace: " + ex.StackTrace);
+                if (OptionFlags.LogExceptions)
+                {
+                    WriteLog(LogType.LogExceptions, DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture) + " " + Method);
+                    WriteLog(LogType.LogExceptions, ex.Message + "\nStack Trace: " + ex.StackTrace);
+                }
             }
         }
     }

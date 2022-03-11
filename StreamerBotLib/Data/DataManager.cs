@@ -22,10 +22,10 @@ namespace StreamerBotLib.Data
     public partial class DataManager : IDataManageReadOnly
     {
         #region DataSource
-        private static readonly string DataFileXML = "ChatDataStore.xml";
+        public static readonly string DataFileXML = "ChatDataStore.xml";
 
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows", DataFileXML);
+        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
@@ -62,48 +62,63 @@ namespace StreamerBotLib.Data
 
         #region Load and Exit Ops
         /// <summary>
-        /// Load the data source and populate with default data
+        /// Load the data source and populate with default data; if regular data source is corrupted, attempt to load backup data.
         /// </summary>
         private void LoadData()
         {
-            foreach(DataTable table in _DataSource.Tables)
+            void LoadFile(string filename)
             {
-                table.BeginLoadData();
-            }
-
-            lock (_DataSource)
-            {
-                if (!File.Exists(DataFileName))
+                lock (_DataSource)
                 {
-                    _DataSource.WriteXml(DataFileName);
-                }
-
-                using XmlReader xmlreader = new XmlTextReader(DataFileName);
-                _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
-
-
-                // see if clip dates are correctly formatted
-
-                //foreach (ClipsRow c in _DataSource.Clips.Select())
-                //{
-                //    c.CreatedAt = DateTime.Parse(c.CreatedAt).ToLocalTime().ToString("yyyy/MM/dd HH:mm:ss");
-                //}
-
-                foreach (CommandsRow c in _DataSource.Commands.Select())
-                {
-                    if (DBNull.Value.Equals(c["IsEnabled"]))
+                    if (!File.Exists(filename))
                     {
-                        c["IsEnabled"] = true;
+                        _DataSource.WriteXml(filename);
+                    }
+
+                    using XmlReader xmlreader = new XmlTextReader(filename);
+                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+
+                    foreach (CommandsRow c in _DataSource.Commands.Select())
+                    {
+                        if (DBNull.Value.Equals(c["IsEnabled"]))
+                        {
+                            c["IsEnabled"] = true;
+                        }
                     }
                 }
+                OptionFlags.DataLoaded = true;
             }
 
-            foreach (DataTable table in _DataSource.Tables)
+            try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
             {
-                table.EndLoadData();
+                try // try the regular working file
+                {
+                    foreach (DataTable table in _DataSource.Tables)
+                    {
+                        table.BeginLoadData();
+                    }
+                    LoadFile(DataFileName);
+                }
+                catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    File.Copy(DataFileName, $"Failed_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}_{DataFileName}");
+                    LoadFile(BackupDataFileXML);
+                }
             }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            finally
+            {
+                foreach (DataTable table in _DataSource.Tables)
+                {
+                    table.EndLoadData();
+                }
 
-            SaveData(this, new());
+                SaveData(this, new());
+            }
         }
 
         public void Initialize()
@@ -127,42 +142,44 @@ namespace StreamerBotLib.Data
         /// </summary>
         public void SaveData(object sender, EventArgs e)
         {
-            int CurrMins = DateTime.Now.Minute;
-            bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
-
-            if (IsBackup)
+            if (OptionFlags.DataLoaded)
             {
-                lock (BackupDataFileXML)
-                {
-                    BackupSaveToken = (CurrMins / BackupSaveIntervalMins) % BackupHrInterval;
+                int CurrMins = DateTime.Now.Minute;
+                bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
 
-                }
-            }
-
-            if (!UpdatingFollowers) // block saving data until the follower updating is completed
-            {
-                if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                if (IsBackup)
                 {
-                    SaveThreadStarted = true;
-                    new Thread(new ThreadStart(PerformSaveOp)).Start();
-                }
-
-                if (_DataSource.HasChanges())
-                {
-                    lock (_DataSource)
+                    lock (BackupDataFileXML)
                     {
-                        _DataSource.AcceptChanges();
+                        BackupSaveToken = (CurrMins / BackupSaveIntervalMins) % BackupHrInterval;
+
+                    }
+                }
+
+                if (!UpdatingFollowers) // block saving data until the follower updating is completed
+                {
+                    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+                    {
+                        SaveThreadStarted = true;
+                        new Thread(new ThreadStart(PerformSaveOp)).Start();
                     }
 
-                    lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+                    if (_DataSource.HasChanges())
                     {
-                        SaveTasks.Enqueue(new(() =>
+                        lock (_DataSource)
                         {
-                            lock (_DataSource)
+                            _DataSource.AcceptChanges();
+                        }
+
+                        lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+                        {
+                            SaveTasks.Enqueue(new(() =>
                             {
-                                try
+                                lock (_DataSource)
                                 {
-                                    MemoryStream SaveData = new();  // new memory stream
+                                    try
+                                    {
+                                        MemoryStream SaveData = new();  // new memory stream
 
                                     _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
 
@@ -174,17 +191,18 @@ namespace StreamerBotLib.Data
 
                                     // determine if current time is within a certain time frame, and perform the save
                                     if (IsBackup && OptionFlags.IsStreamOnline)
-                                    {
+                                        {
                                         // write backup file
                                         _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
                                     }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                    }
                                 }
-                                catch (Exception ex)
-                                {
-                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                }
-                            }
-                        }));
+                            }));
+                        }
                     }
                 }
             }

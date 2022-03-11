@@ -23,6 +23,11 @@ using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 
+
+// TODO: Thread Manager - include count total threads created
+// TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
+// TODO: add streaming category count, track number of streams per category 
+
 namespace StreamerBotLib.BotIOController
 {
     public class BotController
@@ -712,10 +717,10 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.UserTimedOut);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public void HandleUserBanned(OnUserBannedArgs e)
         {
             Systems.UpdatedStat(StreamStatType.UserBanned);
+            HandleUserLeft(e.UserBan.Username);
         }
 
         public void HandleAddChat(string UserName, Bots Source)

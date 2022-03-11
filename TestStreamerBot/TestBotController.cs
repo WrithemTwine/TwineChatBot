@@ -79,7 +79,7 @@ namespace TestStreamerBot
 
         [Theory]
         [InlineData(600)]
-        [InlineData(100000)]
+        [InlineData(10)]
         public void TestBulkFollowers(int PickFollowers)
         {
             Initialize();
@@ -275,14 +275,16 @@ namespace TestStreamerBot
             botController.HandleIncomingRaidData(RaidUserName, DateTime.Now, Random.Next(5, Viewers).ToString(), GetRandomGameIdName().GameName, Bots.TwitchChatBot);
             Thread.Sleep(5000); // wait for category
 
-            Assert.False(StatisticsSystem.UserChat(RaidUserName));
+            Assert.True(StatisticsSystem.UserChat(RaidUserName));
 
             botController.HandleUserJoined(new() { RaidUserName }, Bots.TwitchChatBot);
             Assert.False(StatisticsSystem.UserChat(RaidUserName));
 
             botController.HandleUserLeft(RaidUserName);
 
-            Assert.True(StatisticsSystem.UserChat(RaidUserName)); // should be able to add the user again
+            Thread.Sleep(2000);
+
+            Assert.False(StatisticsSystem.UserChat(RaidUserName)); // should be able to add the user again
 
         }
 

@@ -48,12 +48,15 @@ namespace StreamerBotLib.Static
         public static bool PostMultiLive { get; set; }
         public static string LiveMsg { get; set; }
 
+        public static bool DataLoaded { get; set; } = false;
+
         public static bool ManageUsers { get; set; }
         public static bool ManageFollowers { get; set; }
         public static bool ManageStreamStats { get; set; }
         public static bool ManageRaidData { get; set; }
         public static bool ManageOutRaidData { get; set; }
         public static bool ManageGiveawayUsers { get; set; }
+        public static bool ManageDataArchiveMsg { get; set; }
 
         public static bool TwitchChatBotConnectOnline { get; set; }
         public static bool TwitchChatBotDisconnectOffline { get; set; }
@@ -87,6 +90,9 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchStreamerUseToken { get; set; }
 
+        /// <summary>
+        /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
+        /// </summary>
         public static void SetSettings()
         {
             lock (Settings.Default)
@@ -134,6 +140,7 @@ namespace StreamerBotLib.Static
                 ManageRaidData = Settings.Default.ManageRaidData;
                 ManageOutRaidData = Settings.Default.ManageOutRaidData;
                 ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
+                ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
 
                 TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
                 TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
@@ -165,6 +172,10 @@ namespace StreamerBotLib.Static
             }
         }
 
+        /// <summary>
+        /// Sets whether the "Join Party" list is started or not, and refreshes the settings.
+        /// </summary>
+        /// <param name="Start">Whether the party is started.</param>
         public static void SetParty(bool Start = true)
         {
             Settings.Default.UserPartyStart = Start;
@@ -173,6 +184,11 @@ namespace StreamerBotLib.Static
             SetSettings();
         }
 
+        /// <summary>
+        /// Provides deference between the provided date and "Now".
+        /// </summary>
+        /// <param name="RefreshDate">The date to use in the calculation for the difference from "Now".</param>
+        /// <returns>The difference between <paramref name="RefreshDate"/> and "Now" in a TimeSpan.</returns>
         public static TimeSpan CurrentToTwitchRefreshDate(DateTime RefreshDate)
         {
             return RefreshDate - DateTime.Now.ToLocalTime();

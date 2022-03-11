@@ -55,7 +55,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             }
 
-            while (followsResponse?.Follows.Length == 100) // loop until the last response is less than 100; each retrieval provides 100 items at a time
+            while (followsResponse?.Follows.Length == 100 && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
             {
                 try
                 {
