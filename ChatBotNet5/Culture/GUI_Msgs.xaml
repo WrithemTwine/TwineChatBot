@@ -1,7 +1,0 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
-    <system:String x:Key="Disabled">Disabled</system:String>
-    <system:String x:Key="ExplainFollowBack">This bot permits following a user who raids or follows the streamer's channel. But, if the bot account is different than streamer account, this fails per Twitch rules. This section adds the streamer's account just for performing follow-back operations when the option is enabled.</system:String>
-    <system:String x:Key="ExpiredToken">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
-</ResourceDictionary>
