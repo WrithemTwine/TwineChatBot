@@ -28,35 +28,26 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <returns>An async task with a list of 'Follow' objects.</returns>
         public async Task<List<Follow>> GetAllFollowersAsync(string ChannelName)
         {
-            Users followers = new(_api.Settings, new BypassLimiter(), new TwitchWebRequest());
+            Users followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
 
             List<Follow> allfollows = new();
-            
+
             string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
 
-            GetUsersFollowsResponse followsResponse = null;
-
-            while (followsResponse == null) // loop until getting a response
+            try
             {
-                try
-                {
-                    followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
-                    allfollows.AddRange(followsResponse.Follows);
-                }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-            }
+                GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
+                allfollows.AddRange(followsResponse.Follows);
 
-            while (followsResponse?.Follows.Length == 100 && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
-            {
-                try
+                while (followsResponse?.Follows.Length == 100 && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: 100, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
-                catch (Exception ex) { LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name); }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
 
             return allfollows;
