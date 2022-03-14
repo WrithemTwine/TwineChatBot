@@ -47,12 +47,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                 }
-                finally
-                {
-                    followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
-                    allfollows.AddRange(followsResponse.Follows);
-                }
-
             }
 
             while (followsResponse?.Follows.Length == 100 && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
@@ -67,9 +61,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             return allfollows;
         }
-
-
-
 
     }
 }
