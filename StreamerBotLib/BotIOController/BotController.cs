@@ -223,6 +223,11 @@ namespace StreamerBotLib.BotIOController
             SystemsController.SetUserDefinedCommandsEnabled(Enabled);
         }
 
+        public static void SetDiscordWebhooksEnabled(bool Enabled)
+        {
+            SystemsController.SetDiscordWebhooksEnabled(Enabled);
+        }
+
         public static string GetUserCategory(string ChannelName, Bots bots)
         {
             return bots switch

@@ -7,6 +7,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -33,6 +34,8 @@ namespace StreamerBotLib.Systems
         private Queue<Task> ProcMsgQueue { get; set; } = new();
         private readonly Thread ProcessMsgs;
 
+        private const int SleepWait = 6000;
+
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
@@ -53,7 +56,7 @@ namespace StreamerBotLib.Systems
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
 
-            ProcessMsgs = new Thread(new ThreadStart(ActionProcessCmds));
+            ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, 10);
             ProcessMsgs.Start();
         }
 
@@ -141,12 +144,12 @@ namespace StreamerBotLib.Systems
 
             if (DataManage.UpdatingFollowers)
             { // capture any followers found after starting the bot and before completing the bulk follower load
-                HoldNewFollowsForBulkAdd = new Thread(new ThreadStart(() =>
+                HoldNewFollowsForBulkAdd = ThreadManager.CreateThread(() =>
                 {
                     while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
                     ProcessFollow(FollowList, msg, FollowEnabled);
-                }));
+                }, ThreadWaitStates.Wait, 50);
 
                 _ = AppDispatcher.BeginInvoke(new ProcFollowDelegate(PerformFollow));
             }
@@ -211,6 +214,16 @@ namespace StreamerBotLib.Systems
             SystemsBase.SetUserDefinedCommandsEnabled(Enabled);
         }
 
+        public static void SetDiscordWebhooksEnabled(bool Enabled)
+        {
+            SystemsBase.SetDiscordWebhooksEnabled(Enabled);
+        }
+
+        public static void PostUpdatedDataRow(DataRow UpdatedData)
+        {
+            DataManage.PostUpdatedDataRow(UpdatedData);
+        }
+
         #endregion
 
         #region Statistics
@@ -229,7 +242,7 @@ namespace StreamerBotLib.Systems
 
         private void BeginPostingStreamUpdates()
         {
-            new Thread(new ThreadStart(() =>
+            ThreadManager.CreateThreadStart(() =>
             {
                 while (OptionFlags.IsStreamOnline)
                 {
@@ -238,9 +251,9 @@ namespace StreamerBotLib.Systems
                         Stats.StreamDataUpdate();
                     }), null);
 
-                    Thread.Sleep(10000); // wait 10 seconds
+                    Thread.Sleep(SleepWait); // wait 10 seconds
                 }
-            })).Start();
+            });
         }
 
         public static void StreamOffline(DateTime CurrTime)
@@ -277,7 +290,7 @@ namespace StreamerBotLib.Systems
 
             foreach (string user in UserNames)
             {
-                if (RegisterJoinedUser(user, Curr, JoinedUserMsg: OptionFlags.FirstUserJoinedMsg))
+                if (RegisterJoinedUser(user, Curr, JoinedUserMsg: true))
                 {
                     UserWelcomeMessage(user, Source);
                 }
@@ -298,16 +311,22 @@ namespace StreamerBotLib.Systems
 
         private bool RegisterJoinedUser(string UserName, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
-            bool FoundUserJoined = StatisticsSystem.UserJoined(UserName, UserTime);
+            bool FoundUserJoined = false;
             bool FoundUserChat = false;
 
-            if (ChatUserMessage) 
-                // have to separate, else the user registered before actually registered
+            if (JoinedUserMsg) // use a straight flag for user to join the channel
             {
-                FoundUserChat = StatisticsSystem.UserChat(UserName);
+                FoundUserJoined = StatisticsSystem.UserJoined(UserName, UserTime);
             }
 
-            return (JoinedUserMsg && FoundUserJoined) || (ChatUserMessage && FoundUserChat);
+            if (ChatUserMessage)
+            {
+                // have to separate, else the user registered before actually registered
+
+                FoundUserChat = StatisticsSystem.UserChat(UserName);
+            }
+            // use the OptionFlags.FirstUserJoinedMsg flag to determine the welcome message is through user joined
+            return (OptionFlags.FirstUserJoinedMsg && FoundUserJoined) || (ChatUserMessage && FoundUserChat);
         }
 
         private void UserWelcomeMessage(string UserName, Bots Source)

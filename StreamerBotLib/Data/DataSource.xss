@@ -23,18 +23,6 @@
     <Shape ID="DesignTable:CustomWelcome" ZOrder="1" X="458" Y="294" Height="106" Width="164" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="102" />
   </Shapes>
   <Connectors>
-    <Connector ID="DesignRelation:FK_Users_Currency" ZOrder="18" LineWidth="11">
-      <RoutePoints>
-        <Point>
-          <X>474</X>
-          <Y>201</Y>
-        </Point>
-        <Point>
-          <X>748</X>
-          <Y>201</Y>
-        </Point>
-      </RoutePoints>
-    </Connector>
     <Connector ID="DesignRelation:Currency_CurrencyType" ZOrder="17" LineWidth="11">
       <RoutePoints>
         <Point>
@@ -44,6 +32,18 @@
         <Point>
           <X>799</X>
           <Y>266</Y>
+        </Point>
+      </RoutePoints>
+    </Connector>
+    <Connector ID="DesignRelation:FK_Users_Currency" ZOrder="18" LineWidth="11">
+      <RoutePoints>
+        <Point>
+          <X>474</X>
+          <Y>201</Y>
+        </Point>
+        <Point>
+          <X>748</X>
+          <Y>201</Y>
         </Point>
       </RoutePoints>
     </Connector>

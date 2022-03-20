@@ -161,7 +161,7 @@ namespace StreamerBotLib.Data
                     if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
                     {
                         SaveThreadStarted = true;
-                        new Thread(new ThreadStart(PerformSaveOp)).Start();
+                        ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, 40); // need to wait, else could corrupt datafile
                     }
 
                     if (_DataSource.HasChanges())
@@ -286,6 +286,30 @@ namespace StreamerBotLib.Data
 
             return list.ToArray();
         }
+
+        public void PostUpdatedDataRow(DataRow UpdatedDataRow)
+        {
+            DataTable table = UpdatedDataRow.Table;
+
+            DataRow currRow = UpdatedDataRow.Table.Select($"Id={UpdatedDataRow["Id"].ToString()}").FirstOrDefault();
+
+            if (currRow != null)
+            {
+                foreach (DataColumn col in table.Columns)
+                {
+                    if (!col.ReadOnly)
+                    {
+                        currRow[col] = UpdatedDataRow[col];
+                    }
+                }
+            } else
+            {
+                table.Rows.Add(UpdatedDataRow);
+            }
+
+            NotifySaveData();
+        }
+
         #endregion Helpers
 
         #region CommandSystem
@@ -721,6 +745,15 @@ switches:
         {
             SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName NOT IN (" + ComFilter() + ")"));
         }
+
+        public void SetDiscordWebhooksEnabled(bool Enabled)
+        {
+            foreach(DiscordRow discordRow in _DataSource.Discord.Select())
+            {
+                discordRow.IsEnabled = Enabled;
+            }
+        }
+
 
         #endregion
 

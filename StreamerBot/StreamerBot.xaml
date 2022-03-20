@@ -15,9 +15,15 @@
         <ResourceDictionary>
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
+            <GUI:GUIAppStats x:Name="AppStats" x:Key="AppStats" />
             <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
+            <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
+            <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
+                <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
+                <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
+            </ContextMenu>
 
             <Style TargetType="{x:Type DockPanel}">
                 <Setter Property="Margin" Value="5" />
@@ -50,9 +56,9 @@
                 <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4"/>
                 <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
                 <Setter Property="AutoGenerateColumns" Value="True" />
-                <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
                 <Setter Property="CanUserAddRows" Value="False" />
-                <Setter Property="CanUserDeleteRows" Value="False" />
+                <Setter Property="CanUserDeleteRows" Value="True" />
+                <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}" />
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
@@ -71,7 +77,7 @@
             </StatusBar.DataContext>
             <StatusBarItem>
                 <StackPanel>
-                    <Label>All Viewers (Users):</Label>
+                    <Label ToolTip="All Users who visited the stream while online.">All Viewers:</Label>
                     <Label Content="{Binding Users.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
@@ -80,7 +86,7 @@
                 <StackPanel>
                     <Label>
                         <Label.ToolTip>Select options to manage followers. Currently not updated in real-time when a follower stops following.</Label.ToolTip>
-                        <Label.Content>Current Followers:</Label.Content>
+                        <Label.Content>Curr Followers:</Label.Content>
                     </Label>
                     <Label Content="{Binding CurrFollowers.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
@@ -88,20 +94,20 @@
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel>
-                    <Label>Built-in Commands:</Label>
+                    <Label ToolTip="Built-in Commands">Built-in Coms:</Label>
                     <Label Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label>User-Defined Commands:</Label>
+                    <Label ToolTip="User-Define Commands">User-Def Coms:</Label>
                     <Label Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel>
-                    <Label>Token Expires:</Label>
+                    <Label ToolTip="The earliest token expiration date.">Token Exp:</Label>
                     <Label x:Name="StatusBarItem_TokenDate"  />
                 </StackPanel>
             </StatusBarItem>
@@ -686,15 +692,17 @@
                             </ListView>
                         </TabItem>
                         <TabItem Header="Discord">
-                            <StackPanel>
-                                <TextBlock IsEnabled="False">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
+                            <DockPanel LastChildFill="True">
+                                <TextBlock IsEnabled="False" DockPanel.Dock="Top">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
                                 Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.<LineBreak />
                                 Current implemented<LineBreak />'Kind':</TextBlock>
-                                <StackPanel Orientation="Horizontal">
-                                    <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single" />
-                                    <DataGrid x:Name="DG_Webhooks" Height="200" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" AllowDrop="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
-                                </StackPanel>
+                            <ListView ItemsSource="{Binding KindsWebhooks, Mode=OneWay}" SelectionMode="Single" DockPanel.Dock="Left"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10">
+                                  <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_DiscordWebhooks_Click" />
+                                  <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
                             </StackPanel>
+                            <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" Margin="10,0" AutoGenerateColumns="True" d:LayoutOverrides="LeftMargin, RightMargin" ItemsSource="{Binding Discord, Mode=OneWay}" />
+                            </DockPanel>
                         </TabItem>
                         <TabItem Header="User Data" x:Name="TabItem_Users">
                             <TabControl>
@@ -714,7 +722,7 @@
                                         <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
                                         <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_AutoGeneratedColumns"/>
 
-                                        <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" CanUserDeleteRows="True" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_AutoGeneratedColumns"/>
+                                        <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_AutoGeneratedColumns"/>
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Auto-SO">
@@ -730,10 +738,10 @@
                                         </Grid.ColumnDefinitions>
                                         
                                         <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True" />
+                                        <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" />
 
                                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Specify a custom message per UserName, tied to Welcome Message options - first appearance or first message. Otherwise, system falls back onto default." />
-                                        <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding CustomWelcomeData, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" CanUserDeleteRows="True" CanUserAddRows="True"/>
+                                        <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding CustomWelcomeData, Mode=OneWay}" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
@@ -752,8 +760,8 @@
                                             <TextBlock Width="744">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
                                         </Label>
                                         <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
-                                        <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" CanUserDeleteRows="True" CanUserAddRows="True"/>
-                                        <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" Grid.Row="1" Grid.Column="2" />
+                                        <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" />
+                                        <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Giveaways" x:Name="TabItem_Giveaways" Loaded="TabItem_Giveaways_Loaded">
@@ -859,7 +867,7 @@
                                         </DockPanel>
 
                                         <TextBlock Grid.Row="0" Grid.Column="1">Results of prior Giveaways recorded here! <LineBreak /> Data management is enabled or disabled in the Options tab.</TextBlock>
-                                        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
+                                        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                                     </Grid>
                                 </TabItem>
                             </TabControl>
@@ -881,7 +889,7 @@
                                         <Button x:Name="Button_SystemEvents_Disabled" Width="80" Content="Disable All" Click="Button_SystemEvents_Click" />
                                     </StackPanel>
                                 </StackPanel>
-                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2">
+                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2" CanUserDeleteRows="False">
                                     <DataGrid.ToolTip>
                                         <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;, the &quot; #&quot; needs to be the first character in the word."/></TextBlock>
                                     </DataGrid.ToolTip>
@@ -918,7 +926,7 @@
 
                                         <DockPanel Grid.Row="1">
                                             <Label DockPanel.Dock="Top" Content="Built-in Commands:" />
-                                            <DataGrid DockPanel.Dock="Top" x:Name="DG_BuiltInCommands" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
+                                            <DataGrid DockPanel.Dock="Top" x:Name="DG_BuiltInCommands" ItemsSource="{Binding BuiltInCommands, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" />
                                         </DockPanel>
                                     </Grid>
                                 </TabItem>
@@ -939,12 +947,9 @@
 
                                         <DockPanel Grid.Row="1">
                                             <Label DockPanel.Dock="Top" Content="User-Defined Commands:" />
-                                            <DataGrid x:Name="DG_UserDefinedCommands" DockPanel.Dock="Top" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding"/>
+                                            <DataGrid x:Name="DG_UserDefinedCommands" DockPanel.Dock="Top" ItemsSource="{Binding Commands, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                                         </DockPanel>
                                     </Grid>
-                                </TabItem>
-                                <TabItem Header="Add New">
-                                    <Label>Reserved for input form to aid in creating new user-defined commands.</Label>
                                 </TabItem>
                             </TabControl>
                         </TabItem>
@@ -960,7 +965,7 @@
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DataGrid_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding StreamStats, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                        <DataGrid x:Name="DataGrid_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding StreamStats, Mode=OneWay}" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Raids">
@@ -978,8 +983,8 @@
                                         <TextBlock Grid.Row="0" Grid.Column="2">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
                                         
                                         
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding InRaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
-                                        <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding OutRaidData, Mode=OneWay}" CanUserDeleteRows="True" MouseEnter="DataGrid_MouseEnter" MouseLeave="DataGrid_MouseLeave" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                        <DataGrid Grid.Row="1" ItemsSource="{Binding InRaidData, Mode=OneWay}" />
+                                        <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding OutRaidData, Mode=OneWay}" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Categories" x:Name="TabItem_Category">
@@ -988,7 +993,7 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="450"/>
+                                            <ColumnDefinition Width="450"/>                                            
                                             <ColumnDefinition Width="5"/>
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
@@ -1006,22 +1011,20 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="Clip List"/>
-                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" CanUserDeleteRows="True" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
+                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                                     </Grid>
                                 </TabItem>
                             </TabControl>
                         </TabItem>
                         <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" />
                         <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor">
-                            <Grid x:Name="TabItem_MultiUserLiveMonitor">
+                            <Grid x:Name="TabItem_MultiUserLiveMonitor" IsEnabled="False">
                                 <Grid.Resources>
                                     <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
                                         <Setter Property="Margin" Value="5"/>
                                         <Setter Property="MaxColumnWidth" Value="160" />
                                         <Setter Property="CanUserAddRows" Value="True" />
                                         <Setter Property="CanUserDeleteRows" Value="True" />
-                                        <EventSetter Event="MouseEnter" Handler="DataGrid_MouseEnter" />
-                                        <EventSetter Event="MouseLeave" Handler="DataGrid_MouseLeave" />
                                     </Style>
                                 </Grid.Resources>
                                 <Grid.DataContext>
@@ -1060,9 +1063,9 @@
                                     </TextBox.ToolTip>
                                 </TextBox>
 
-                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
-                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding Channels, Mode=OneWay}" RowEditEnding="DG_ChannelNames_RowEditEnding" InitializingNewItem="DataGrid_InitializingNewItem" />
-                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" InitializingNewItem="DataGrid_InitializingNewItem" RowEditEnding="DataGrid_RowEditEnding" />
+                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" />
+                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding Channels, Mode=OneWay}" />
+                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" />
 
                                 <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
                                     <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
@@ -1075,6 +1078,25 @@
             </TabItem>
             <TabItem Header="Logs">
                 <TabControl>
+                    <TabItem Header="Bot Status" DataContext="{DynamicResource AppStats}" >
+                        <TabItem.Resources>
+                            <DataTemplate x:Key="AppStatTemplate">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Width="250" Content="{Binding Name}" />
+                                    <Label Width="200" Content="{Binding Value, Converter={StaticResource AppDataConverter}}" />
+                                </StackPanel>
+                            </DataTemplate>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="ContentTemplate" Value="{StaticResource AppStatTemplate}" />
+                            </Style>
+                        </TabItem.Resources>
+                        <ListView BorderBrush="#FF36373A" BorderThickness="2,2,1,2" Padding="5">
+                            <ListViewItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="#FF191717" />
+                            <ListViewItem Content="{Binding Path=Threads}" />
+                            <ListViewItem Content="{Binding Path=ClosedThreads}" />
+                            <ListViewItem Content="{Binding Path=Uptime}" />
+                        </ListView>
+                    </TabItem>
                     <TabItem Header="Twitch Status" GotFocus="TabItem_GotFocus">
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Width="Auto">
                             <DockPanel>

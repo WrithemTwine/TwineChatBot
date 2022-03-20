@@ -295,7 +295,7 @@ namespace StreamerBotLib.BotClients
             RegisterHandlers();
 
             // start thread to retrieve all clips
-            BulkLoadClips = new Thread(new ThreadStart(ProcessClips));
+            BulkLoadClips = ThreadManager.CreateThread(ProcessClips);
             MultiThreadOps.Add(BulkLoadClips);
             BulkLoadClips.Start();
         }
@@ -329,7 +329,7 @@ namespace StreamerBotLib.BotClients
         {
             if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
             {
-                BulkLoadFollows = new Thread(new ThreadStart(() =>
+                BulkLoadFollows = ThreadManager.CreateThread(() =>
                 {
                     string ChannelName = TwitchBotsBase.TwitchChannelName;
 
@@ -355,7 +355,7 @@ namespace StreamerBotLib.BotClients
                     }
 
                     InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, new EventArgs());
-                }));
+                });
                 MultiThreadOps.Add(BulkLoadFollows);
                 BulkLoadFollows.Start();
             }
