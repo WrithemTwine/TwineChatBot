@@ -34,13 +34,12 @@ namespace StreamerBot
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
         internal static BotController Controller { get; private set; }
-        private ManageWindows PopupWindows { get; set; }
+        private ManageWindows PopupWindows { get; set; } = new();
 
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
         private readonly DateTime StartBotDate;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
-        private bool IsAddNewRow;
         private const string MultiLiveName = "MultiUserLiveBot";
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
@@ -67,7 +66,6 @@ namespace StreamerBot
 
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
-            PopupWindows = new(Controller.Systems);
 
             InitializeComponent();
 
@@ -416,7 +414,6 @@ namespace StreamerBot
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             BotController.UpdateTwitchMultiLiveChannels();
-            IsAddNewRow = false;
         }
 
         #endregion
@@ -872,7 +869,7 @@ namespace StreamerBot
                 case "DG_CategoryList" or "DG_CategoryList_Clips":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Category" and not "CategoryId")
+                        if (dc.Header.ToString() is not "Category" and not "CategoryId" and not "StreamCount")
                         {
                             Collapse(dc);
                         }
@@ -961,7 +958,7 @@ namespace StreamerBot
 
                 Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, true);
 
-                List<Tuple<string, string>> output = StreamerBotLib.Systems.SystemsController.DataManage.GetGameCategories();
+                List<Tuple<string, string>> output = SystemsController.DataManage.GetGameCategories();
                 Random random = new();
                 Tuple<string, string> itemfound = output[random.Next(output.Count)];
                 Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);

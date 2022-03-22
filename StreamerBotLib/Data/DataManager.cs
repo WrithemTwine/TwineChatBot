@@ -89,20 +89,21 @@ namespace StreamerBotLib.Data
                 OptionFlags.DataLoaded = true;
             }
 
+            foreach (DataTable table in _DataSource.Tables)
+            {
+                table.BeginLoadData();
+            }
+
             try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
             {
                 try // try the regular working file
                 {
-                    foreach (DataTable table in _DataSource.Tables)
-                    {
-                        table.BeginLoadData();
-                    }
                     LoadFile(DataFileName);
                 }
                 catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    File.Copy(DataFileName, $"Failed_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}_{DataFileName}");
+                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{DataFileName}");
                     LoadFile(BackupDataFileXML);
                 }
             }
@@ -110,14 +111,35 @@ namespace StreamerBotLib.Data
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
-            finally
-            {
-                foreach (DataTable table in _DataSource.Tables)
-                {
-                    table.EndLoadData();
-                }
 
-                SaveData(this, new());
+            UpdateCategoryList();
+
+            foreach (DataTable table in _DataSource.Tables)
+            {
+                table.EndLoadData();
+            }
+
+            SaveData(this, new());
+        }
+
+        /// <summary>
+        /// New field in table contains "Null" values, this initializes the values to 0.
+        /// </summary>
+        private void UpdateCategoryList()
+        {
+            foreach (CategoryListRow categoryList in _DataSource.CategoryList.Select())
+            {
+                try
+                {
+                    if (DBNull.Value.Equals(categoryList.StreamCount))
+                    {
+                        categoryList.StreamCount = 0;
+                    }
+                }
+                catch
+                {
+                    categoryList.StreamCount = 0;
+                }
             }
         }
 
@@ -291,7 +313,7 @@ namespace StreamerBotLib.Data
         {
             DataTable table = UpdatedDataRow.Table;
 
-            DataRow currRow = UpdatedDataRow.Table.Select($"Id={UpdatedDataRow["Id"].ToString()}").FirstOrDefault();
+            DataRow currRow = UpdatedDataRow.Table.Select($"Id={UpdatedDataRow["Id"]}").FirstOrDefault();
 
             if (currRow != null)
             {
@@ -348,7 +370,7 @@ switches:
             {
                 if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
+                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry), 0);
                     _DataSource.CategoryList.AcceptChanges();
                 }
 
@@ -1518,16 +1540,18 @@ switches:
 
                 if (categoryList == null)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
+                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 0);
                     found = false;
                 }
-                else if (categoryList.CategoryId == null)
+                else
                 {
                     categoryList.CategoryId = CategoryId;
-                }
-                else if (categoryList.Category == null)
-                {
                     categoryList.Category = newCategory;
+
+                    if (OptionFlags.IsStreamOnline)
+                    {
+                        categoryList.StreamCount++;
+                    }
                 }
             }
 

@@ -446,7 +446,6 @@ namespace StreamerBotLib.Systems
 
                     if (OptionFlags.TwitchRaidShoutOut)
                     {
-                        StatisticsSystem.UserJoined(UserName, RaidTime);
                         Command.CheckShout(UserName, out string response, Source, false);
                     }
                 }));

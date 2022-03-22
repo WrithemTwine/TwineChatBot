@@ -54,9 +54,9 @@ namespace StreamerBotLib.Data {
         
         private CustomWelcomeDataTable tableCustomWelcome;
         
-        private global::System.Data.DataRelation relationFK_Users_Currency;
-        
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
+        
+        private global::System.Data.DataRelation relationFK_Users_Currency;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -536,8 +536,8 @@ namespace StreamerBotLib.Data {
                     this.tableCustomWelcome.InitVars();
                 }
             }
-            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
         }
         
@@ -580,16 +580,16 @@ namespace StreamerBotLib.Data {
             this.tableCustomWelcome = new CustomWelcomeDataTable();
             base.Tables.Add(this.tableCustomWelcome);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -601,14 +601,14 @@ namespace StreamerBotLib.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn}, false);
-            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -4271,6 +4271,8 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnCategory;
             
+            private global::System.Data.DataColumn columnStreamCount;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public CategoryListDataTable() {
@@ -4330,6 +4332,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn StreamCountColumn {
+                get {
+                    return this.columnStreamCount;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -4365,12 +4375,13 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CategoryListRow AddCategoryListRow(string CategoryId, string Category) {
+            public CategoryListRow AddCategoryListRow(string CategoryId, string Category, int StreamCount) {
                 CategoryListRow rowCategoryListRow = ((CategoryListRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         CategoryId,
-                        Category};
+                        Category,
+                        StreamCount};
                 rowCategoryListRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCategoryListRow);
                 return rowCategoryListRow;
@@ -4396,6 +4407,7 @@ namespace StreamerBotLib.Data {
                 this.columnId = base.Columns["Id"];
                 this.columnCategoryId = base.Columns["CategoryId"];
                 this.columnCategory = base.Columns["Category"];
+                this.columnStreamCount = base.Columns["StreamCount"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4407,11 +4419,14 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnCategoryId);
                 this.columnCategory = new global::System.Data.DataColumn("Category", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCategory);
+                this.columnStreamCount = new global::System.Data.DataColumn("StreamCount", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStreamCount);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnStreamCount.DefaultValue = ((int)(0));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -6105,23 +6120,23 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public CurrencyTypeRow CurrencyTypeRow {
                 get {
                     return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
                 }
             }
             
@@ -8201,6 +8216,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int StreamCount {
+                get {
+                    try {
+                        return ((int)(this[this.tableCategoryList.StreamCountColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'StreamCount\' in table \'CategoryList\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCategoryList.StreamCountColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsIdNull() {
                 return this.IsNull(this.tableCategoryList.IdColumn);
             }
@@ -8233,6 +8264,18 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetCategoryNull() {
                 this[this.tableCategoryList.CategoryColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsStreamCountNull() {
+                return this.IsNull(this.tableCategoryList.StreamCountColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetStreamCountNull() {
+                this[this.tableCategoryList.StreamCountColumn] = global::System.Convert.DBNull;
             }
         }
         

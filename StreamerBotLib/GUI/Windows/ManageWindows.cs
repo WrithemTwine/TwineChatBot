@@ -7,11 +7,9 @@ namespace StreamerBotLib.GUI.Windows
     public class ManageWindows
     {
         private EditData EditDataWindow { get; set; }
-        private SystemsController SystemsController { get; set; }
 
-        public ManageWindows(SystemsController controller)
+        public ManageWindows()
         {
-            SystemsController = controller;
         }
 
         public void DataGridAddNewItem(DataTable dataTable)
