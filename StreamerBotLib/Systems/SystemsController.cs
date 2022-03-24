@@ -331,7 +331,7 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(string UserName, Bots Source)
         {
-            if ((UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
+            if ((UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName?.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
             {
                 string msg = Command.CheckWelcomeUser(UserName);
 

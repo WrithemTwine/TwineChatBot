@@ -54,7 +54,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         public static double TwitchFrequencyClipTime { get; set; }
 
-        public override bool RefreshSettings()
+        public override void RefreshSettings()
         {
             SaveParams();
             TwitchAccessToken = Settings.Default.TwitchAccessToken;
@@ -67,7 +67,6 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchRefreshToken = Settings.Default.TwitchRefreshToken;
             TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
             ShowConnectionMsg = Settings.Default.MsgBotConnection;
-            return true;
         }
 
     }

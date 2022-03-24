@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Xml.Linq;
 
 namespace ConvertDataSourceFile
 {
@@ -13,12 +12,14 @@ namespace ConvertDataSourceFile
             if (File.Exists(DataFileXML))
             {
                 ConvertDataSource_v_0_1_12_0();
+                ConvertDataSource_v_0_1_12_4();
             }
         }
 
         private static void ConvertDataSource_v_0_1_12_0()
         {
             /*
+
              <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
                 <DataSource xmlns="http://tempuri.org/DataSource.xsd">
                   <ChannelEvents diffgr:id="ChannelEvents1" msdata:rowOrder="0">
@@ -42,7 +43,8 @@ namespace ConvertDataSourceFile
                   <Duration>10.8</Duration>
                   <Url>https://clips.twitch.tv/DependableInexpensiveGarageTooSpicy-hTDYSGRHyQ3_kllT</Url>
                 </Clips>
-            */
+
+             */
 
             File.Move(DataFileXML, "temp_" + DataFileXML);
             string tempfile = "temp_" + DataFileXML;
@@ -68,7 +70,7 @@ namespace ConvertDataSourceFile
                     {
                         DateTime ParseTime = DateTime.Parse(line.Replace(starttag, "").Replace(endtag, ""));
 
-                        line = starttag + ParseTime.ToString(Format) + endtag;
+                        line = $"{starttag}{ParseTime.ToString(Format)}{endtag}";
                     }
 
                     output.WriteLine(line);
@@ -82,5 +84,56 @@ namespace ConvertDataSourceFile
             File.Delete(tempfile);
         }
 
+        private static void ConvertDataSource_v_0_1_12_4()
+        {
+            /*
+
+            <CategoryList diffgr:id="CategoryList2" msdata:rowOrder="1">
+                  <Id>1</Id>
+                  <CategoryId>517330</CategoryId>
+                  <Category>Assassin's Creed Valhalla</Category>
+                  <StreamCount>0</StreamCount>
+            </CategoryList> 
+
+             * */
+
+            File.Move(DataFileXML, "temp_" + DataFileXML);
+            string tempfile = "temp_" + DataFileXML;
+
+            StreamWriter output = new(DataFileXML);
+
+            bool Found = false;
+
+            using (StreamReader sr = new(tempfile))
+            {
+                do
+                {
+                    string line = sr.ReadLine();
+
+                    if (line.Contains("StreamCount"))
+                    {
+                        Found = true;
+                    }
+
+                    if(line.Contains("</CategoryList>"))
+                    {
+                        if (!Found)
+                        {
+                            output.WriteLine("<StreamCount>0</StreamCount>");
+                        }
+
+                        Found = false;
+                    }
+
+                    output.WriteLine(line);
+                }
+                while (!sr.EndOfStream);
+
+                sr.Close();
+            }
+
+            output.Close();
+            File.Delete(tempfile);
+        }
     }
 }

@@ -112,35 +112,12 @@ namespace StreamerBotLib.Data
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
 
-            UpdateCategoryList();
-
             foreach (DataTable table in _DataSource.Tables)
             {
                 table.EndLoadData();
             }
 
             SaveData(this, new());
-        }
-
-        /// <summary>
-        /// New field in table contains "Null" values, this initializes the values to 0.
-        /// </summary>
-        private void UpdateCategoryList()
-        {
-            foreach (CategoryListRow categoryList in _DataSource.CategoryList.Select())
-            {
-                try
-                {
-                    if (DBNull.Value.Equals(categoryList.StreamCount))
-                    {
-                        categoryList.StreamCount = 0;
-                    }
-                }
-                catch
-                {
-                    categoryList.StreamCount = 0;
-                }
-            }
         }
 
         public void Initialize()
@@ -360,7 +337,6 @@ switches:
          */
 
         private readonly string DefaulSocialMsg = "Social media url here";
-
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
@@ -488,7 +464,7 @@ switches:
             {
                 string key = "";
 
-                if (Table != "")
+                if (Table != null && Table != "")
                 {
                     DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
                     if (k?.Length > 1)
@@ -564,7 +540,7 @@ switches:
         {
             string filter = "";
 
-            System.Collections.IList list = System.Enum.GetValues(typeof(DefaultSocials));
+            System.Collections.IList list = Enum.GetValues(typeof(DefaultSocials));
             for (int i = 0; i < list.Count; i++)
             {
                 DefaultSocials s = (DefaultSocials)list[i];
@@ -730,12 +706,12 @@ switches:
         {
             string filter = string.Empty;
 
-            foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
+            foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
             {
                 filter += "'" + d.ToString() + "',";
             }
 
-            foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
+            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
             {
                 filter += "'" + s.ToString() + "',";
             }
@@ -776,6 +752,41 @@ switches:
             }
         }
 
+        public List<string> GetTableNames()
+        {
+            List<string> names = new();
+
+            foreach(DataTable table in _DataSource.Tables)
+            {
+                names.Add(table.TableName);
+            }
+
+            return names;
+        }
+
+        public List<string> GetTableFields(string TableName)
+        {
+            List<string> fields = new();
+
+            foreach (DataColumn dataColumn in _DataSource.Tables[TableName].Columns)
+            {
+                fields.Add(dataColumn.ColumnName);
+            }
+
+            return fields;
+        }
+
+        public List<string> GetCurrencyNames()
+        {
+            List<string> currency = new();
+
+            foreach(CurrencyTypeRow typerow in _DataSource.CurrencyType.Select())
+            {
+                currency.Add(typerow.CurrencyName);
+            }
+
+            return currency;
+        }
 
         #endregion
 
@@ -1050,11 +1061,11 @@ switches:
         {
             lock (_DataSource)
             {
-                UsersRow[] user = (UsersRow[])_DataSource.Users.Select($"UserName='{User}'");
+                UsersRow user = (UsersRow)_DataSource.Users.Select($"UserName='{User}'").FirstOrDefault();
                 if (user != null)
                 {
-                    UpdateWatchTime(ref user[0], LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(ref user[0], LastSeen); // will update the "CurrLoginDate"
+                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
 
                     NotifySaveData();
                 }
@@ -1545,8 +1556,8 @@ switches:
                 }
                 else
                 {
-                    categoryList.CategoryId = CategoryId;
-                    categoryList.Category = newCategory;
+                    categoryList.CategoryId = CategoryId ?? categoryList.CategoryId;
+                    categoryList.Category = newCategory ?? categoryList.Category;
 
                     if (OptionFlags.IsStreamOnline)
                     {
@@ -1565,7 +1576,7 @@ switches:
         /// <returns>Returns a list of <code>Tuple<string GameId, string GameName></code> objects.</returns>
         public List<Tuple<string, string>> GetGameCategories()
         {
-            return new(from CategoryListRow c in _DataSource.CategoryList.Select()
+            return new(from CategoryListRow c in _DataSource.CategoryList.Select() orderby c.Category
                        let item = new Tuple<string, string>(c.CategoryId, c.Category)
                        select item);
         }

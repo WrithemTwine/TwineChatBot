@@ -26,7 +26,7 @@ namespace StreamerBotLib.GUI.Windows
         {
             EditDataWindow = new();
             EditDataWindow.UpdatedDataRow += EditDataWindow_UpdatedDataRow;
-            EditDataWindow.UpdateDictionary(dataTable, dataRow);
+            EditDataWindow.LoadData(dataTable, dataRow);
             EditDataWindow.Show();
         }
 

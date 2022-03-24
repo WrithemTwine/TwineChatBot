@@ -410,7 +410,6 @@ namespace StreamerBot
             TB_LiveMsg.SelectionStart = start;
         }
 
-
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             BotController.UpdateTwitchMultiLiveChannels();
@@ -899,31 +898,52 @@ namespace StreamerBot
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // TODO: Setup MultiLiveBot Context Menu Add/Edit records
-            if( sender.GetType() == typeof(DataGrid))
+            if (sender.GetType() == typeof(DataGrid))
             {
-                if( ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs")
+                if (((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs")
                 {
                     ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = false;
-                } else
+                }
+                else
                 {
                     ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = true;
                 }
             }
         }
+
+        private void DG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGrid item = sender as DataGrid;
+
+            Popup_DataEdit(item, false);
+        }
+
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
 
+            Popup_DataEdit(item);
+        }
+
+        private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
+        {
             DataRowView dataView = null;
 
-            foreach (var itemsource in item.ItemsSource)
+            if (AddNew)
             {
-                dataView = (DataRowView)itemsource;
+                dataView = (DataRowView)sourceDataGrid.ItemsSource.GetEnumerator().Current;
+                if (dataView != null)
+                {
+                    PopupWindows.DataGridAddNewItem(dataView.Row.Table);
+                }
             }
-
-            if (item != null)
+            else
             {
-                PopupWindows.DataGridAddNewItem(dataView.Row.Table);
+                dataView = (DataRowView)sourceDataGrid.SelectedItem;
+                if (dataView != null)
+                {
+                    PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
+                }
             }
         }
 
@@ -931,12 +951,7 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
 
-            DataRowView dataView = (DataRowView)item.SelectedItem;
-
-            if (dataView != null)
-            {
-                PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
-            }
+            Popup_DataEdit(item, false);
         }
 
         #endregion
@@ -1162,8 +1177,8 @@ namespace StreamerBot
 
 
 
-        #endregion
 
+        #endregion
 
     }
 }
