@@ -1559,6 +1559,7 @@ switches:
                     categoryList.CategoryId = CategoryId ?? categoryList.CategoryId;
                     categoryList.Category = newCategory ?? categoryList.Category;
 
+                    //TODO: track active category, such that a 'channel update' may not change the category but this counter would likely increment
                     if (OptionFlags.IsStreamOnline)
                     {
                         categoryList.StreamCount++;

@@ -25,6 +25,8 @@ namespace StreamerBotLib.Systems
 
         private Thread HoldNewFollowsForBulkAdd;
 
+        private static Tuple<string, string> CurrCategory { get; set; } = new("","");
+
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
         private CurrencySystem Currency { get; set; }
@@ -263,7 +265,11 @@ namespace StreamerBotLib.Systems
 
         public static void SetCategory(string GameId, string GameName)
         {
-            StatisticsSystem.SetCategory(GameId, GameName);
+            if (CurrCategory.Item1 != GameId && CurrCategory.Item2 != GameName)
+            {
+                StatisticsSystem.SetCategory(GameId, GameName);
+                CurrCategory = new(GameId, GameName);
+            }
         }
 
         public void UpdatedStat(params StreamStatType[] streamStatTypes)

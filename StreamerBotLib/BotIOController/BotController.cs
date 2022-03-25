@@ -597,7 +597,6 @@ namespace StreamerBotLib.BotIOController
         {
             SystemsController.SetCategory(gameId, gameName);
             PostGameCategoryEvent(gameId, gameName);
-
         }
 
         public static void HandleOnStreamOffline(string HostedChannel = null)
