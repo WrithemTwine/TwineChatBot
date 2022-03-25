@@ -1,4 +1,6 @@
 ﻿
+#define TwitchLib_ConnectProblem
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -78,8 +80,11 @@ namespace StreamerBotLib.BotClients.Twitch
                     )
                 );
 
-            CreateClient();
             RefreshSettings();
+
+#if !TwitchLib_ConnectProblem
+            CreateClient();
+#endif
         }
 
         /// <summary>
@@ -87,6 +92,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void CreateClient()
         {
+            RefreshSettings();
             ClientOptions options = new()
             {
                 UseSsl = true,
@@ -136,6 +142,7 @@ namespace StreamerBotLib.BotClients.Twitch
             NotifyPropertyChanged(nameof(StatusLog));
         }
 
+#if !TwitchLib_ConnectProblem
         /// <summary>
         /// Initializes and connects the Twitch client
         /// </summary>
@@ -215,7 +222,92 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     IsStarted = false;
                     IsStopped = true;
-                    TwitchChat.LeaveChannel(ConnectedChannelName);
+                    TwitchChat.Disconnect();
+                    RefreshSettings();
+                    InvokeBotStopped();
+                }
+                Stopped = true;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                Stopped = false;
+            }
+
+            return Stopped;
+        }
+#else
+        /// <summary>
+        /// Initializes and connects the Twitch client
+        /// </summary>
+        /// <returns>True for a successful connection.</returns>
+        public override bool Connect()
+        {
+            bool isConnected;
+
+            ConnectionCredentials credentials = new(TwitchBotUserName, TwitchAccessToken);
+            if (TwitchChannelName == null)
+            {
+                isConnected = false;
+            }
+            else
+            {
+                TwitchChat.Initialize(credentials, TwitchChannelName);
+                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
+                TwitchChat.Connect();
+                isConnected = true;
+            }
+
+            return isConnected;
+        }
+
+        /// <summary>
+        /// call Connect() first!
+        /// </summary>
+        /// <returns>true for successful bot start</returns>
+        public override bool StartBot()
+        {
+            bool Connected = false;
+
+            try
+            {
+                if (IsStopped || !IsStarted)
+                {
+                    TwitchChat = null;
+                    CreateClient();
+                    Connected = Connect();
+                    if (Connected)
+                    {
+                        IsStarted = true;
+                        IsStopped = false;
+                        InvokeBotStarted();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                Connected = false;
+            }
+
+            return Connected;
+        }
+
+        /// <summary>
+        /// Stops the Twitch client and the services.
+        /// </summary>
+        /// <returns>True when successful.</returns>
+        public override bool StopBot()
+        {
+            bool Stopped;
+
+            try
+            {
+                if (IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
                     TwitchChat.Disconnect();
                     RefreshSettings();
                     InvokeBotStopped();
@@ -231,12 +323,14 @@ namespace StreamerBotLib.BotClients.Twitch
             return Stopped;
         }
 
-        /// <summary>
-        /// Attempt to send the whisper to a user.
-        /// </summary>
-        /// <param name="user">The user to send the whisper.</param>
-        /// <param name="s">The message to send.</param>
-        /// <returns>True when succesulf whisper sent.</returns>
+#endif
+
+            /// <summary>
+            /// Attempt to send the whisper to a user.
+            /// </summary>
+            /// <param name="user">The user to send the whisper.</param>
+            /// <param name="s">The message to send.</param>
+            /// <returns>True when succesulf whisper sent.</returns>
         public override bool SendWhisper(string user, string s)
         {
             throw new();
@@ -302,11 +396,11 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns></returns>
         public override bool ExitBot()
         {
-            if (TwitchChat.IsConnected)
+            if (TwitchChat != null && TwitchChat.IsConnected)
             {
                 StopBot();
+                TwitchChat = null;
             }
-            TwitchChat = null;
 
             return base.ExitBot();
         }
@@ -318,6 +412,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchChat_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
+
+#if !TwitchLib_ConnectProblem
             // the TwitchClient reports disconnected but user didn't click the 'stop bot' button
             // the client should be started but is now disconnected
             // check is required so the bot doesn't keep restarting when the user actually clicked stop
@@ -325,6 +421,13 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 Connect();    // restart the bot
             }
+#else
+            if (IsStarted && !TwitchChat.IsConnected)
+            {
+                IsStarted = false;
+                StartBot();
+            }
+#endif
         }
     }
 }

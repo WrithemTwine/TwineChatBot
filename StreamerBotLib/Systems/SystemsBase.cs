@@ -36,7 +36,7 @@ namespace StreamerBotLib.Systems
         public static string ChannelName { get; set; }
         public static string BotUserName { get; set; }
 
-        protected const int SecondsDelay = 5000;
+        protected const int SecondsDelay = 2000;
         protected static bool StreamUpdateClockStarted;
 
         protected static List<string> CurrUsers { get; private set; } = new();
@@ -132,6 +132,11 @@ namespace StreamerBotLib.Systems
         public static void SetUserDefinedCommandsEnabled(bool Enabled)
         {
             DataManage.SetUserDefinedCommandsEnabled(Enabled);
+        }
+
+        public static void SetDiscordWebhooksEnabled(bool Enabled)
+        {
+            DataManage.SetDiscordWebhooksEnabled(Enabled);
         }
 
         public static bool AddClip(Clip c)

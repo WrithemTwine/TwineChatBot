@@ -1295,10 +1295,13 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnMaxValue);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnCurrencyName}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnId}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AutoIncrementSeed = 1;
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
+                this.columnId.Unique = true;
                 this.columnCurrencyName.AllowDBNull = false;
                 this.columnCurrencyName.Unique = true;
                 this.columnAccrueAmt.DefaultValue = ((double)(10D));
@@ -3216,6 +3219,7 @@ namespace StreamerBotLib.Data {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
                                 this.columnUserName}, true));
                 this.columnId.AllowDBNull = false;
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnUserName.AllowDBNull = false;
                 this.columnUserName.ReadOnly = true;
@@ -4124,6 +4128,7 @@ namespace StreamerBotLib.Data {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
                                 this.columnUserName}, true));
                 this.columnId.AutoIncrement = true;
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnUserName.AllowDBNull = false;
                 this.columnUserName.Unique = true;
@@ -4266,6 +4271,8 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnCategory;
             
+            private global::System.Data.DataColumn columnStreamCount;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public CategoryListDataTable() {
@@ -4325,6 +4332,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn StreamCountColumn {
+                get {
+                    return this.columnStreamCount;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -4360,12 +4375,13 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CategoryListRow AddCategoryListRow(string CategoryId, string Category) {
+            public CategoryListRow AddCategoryListRow(string CategoryId, string Category, int StreamCount) {
                 CategoryListRow rowCategoryListRow = ((CategoryListRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         CategoryId,
-                        Category};
+                        Category,
+                        StreamCount};
                 rowCategoryListRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowCategoryListRow);
                 return rowCategoryListRow;
@@ -4391,6 +4407,7 @@ namespace StreamerBotLib.Data {
                 this.columnId = base.Columns["Id"];
                 this.columnCategoryId = base.Columns["CategoryId"];
                 this.columnCategory = base.Columns["Category"];
+                this.columnStreamCount = base.Columns["StreamCount"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4402,10 +4419,14 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnCategoryId);
                 this.columnCategory = new global::System.Data.DataColumn("Category", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCategory);
+                this.columnStreamCount = new global::System.Data.DataColumn("StreamCount", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStreamCount);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.columnId.AutoIncrement = true;
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnStreamCount.DefaultValue = ((int)(0));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4739,6 +4760,7 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnUrl);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnId.Caption = "ClipId";
             }
@@ -5047,6 +5069,7 @@ namespace StreamerBotLib.Data {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.columnId.AutoIncrement = true;
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
             }
             
@@ -5334,6 +5357,7 @@ namespace StreamerBotLib.Data {
                                 this.columnId}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
             }
             
@@ -5896,6 +5920,7 @@ namespace StreamerBotLib.Data {
                                 this.columnUserName}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
+                this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnUserName.AllowDBNull = false;
                 this.columnUserName.Unique = true;
@@ -8191,6 +8216,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public int StreamCount {
+                get {
+                    try {
+                        return ((int)(this[this.tableCategoryList.StreamCountColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'StreamCount\' in table \'CategoryList\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableCategoryList.StreamCountColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsIdNull() {
                 return this.IsNull(this.tableCategoryList.IdColumn);
             }
@@ -8223,6 +8264,18 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetCategoryNull() {
                 this[this.tableCategoryList.CategoryColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsStreamCountNull() {
+                return this.IsNull(this.tableCategoryList.StreamCountColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetStreamCountNull() {
+                this[this.tableCategoryList.StreamCountColumn] = global::System.Convert.DBNull;
             }
         }
         

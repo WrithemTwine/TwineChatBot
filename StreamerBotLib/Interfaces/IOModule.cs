@@ -77,9 +77,9 @@ namespace StreamerBotLib.BotClients
             return true;
         }
 
-        public virtual bool RefreshSettings()
+        public virtual void RefreshSettings()
         {
-            return true;
+            return;
         }
 
         public virtual bool SaveParams()

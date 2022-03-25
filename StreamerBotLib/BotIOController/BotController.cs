@@ -223,6 +223,11 @@ namespace StreamerBotLib.BotIOController
             SystemsController.SetUserDefinedCommandsEnabled(Enabled);
         }
 
+        public static void SetDiscordWebhooksEnabled(bool Enabled)
+        {
+            SystemsController.SetDiscordWebhooksEnabled(Enabled);
+        }
+
         public static string GetUserCategory(string ChannelName, Bots bots)
         {
             return bots switch
@@ -443,7 +448,7 @@ namespace StreamerBotLib.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public void TwitchOnUserBanned(OnUserBannedArgs e = null)
         {
-            HandleUserBanned(e);
+            HandleUserBanned(e.UserBan.Username);
         }
 
         public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
@@ -717,10 +722,17 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.UserTimedOut);
         }
 
-        public void HandleUserBanned(OnUserBannedArgs e)
+        public void HandleUserBanned(string UserName)
         {
-            Systems.UpdatedStat(StreamStatType.UserBanned);
-            HandleUserLeft(e.UserBan.Username);
+            try
+            {
+                Systems.UpdatedStat(StreamStatType.UserBanned);
+                HandleUserLeft(UserName);
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         public void HandleAddChat(string UserName, Bots Source)

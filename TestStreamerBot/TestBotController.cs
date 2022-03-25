@@ -315,5 +315,64 @@ namespace TestStreamerBot
             Assert.NotEmpty(result);
         }
 
+        [Theory]
+        [InlineData("BanMeUser1","Buy follows or else")]
+        [InlineData("BanMeUser2", "You must buy follows or else", true)]
+        [InlineData("BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
+        [InlineData("BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
+        public void TestUserBanned(string UserName, string Msg, bool Joined = false, bool JoinBan = false)
+        {
+            Initialize();
+
+            string Title = "Let's try this stream test!";
+            DateTime onlineTime = DateTime.Now.ToLocalTime();
+
+            OnGetChannelGameNameEventArgs random = GetRandomGameIdName();
+
+            string Id = random.GameId;
+            string Category = random.GameName;
+
+            // go online
+            botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
+
+            // wait a bit
+            Thread.Sleep(20000);
+
+            // add some good/friendly users, waiting for joining
+            foreach (string U in new List<string> { "DarkStreamPhantom", "Jijijava", "CuteChibiChu", "BlkbryOnline", "NewUser", "OutlawTorn14" })
+            {
+                botController.HandleUserJoined(new() { U }, Bots.TwitchChatBot);
+                Thread.Sleep(Random.Next(10000, 80000));
+                botController.HandleMessageReceived(U, 0 == Random.Next(0, 1), false, false, 0, "Hey stud!", Bots.TwitchChatBot);
+            }
+
+            // wait a little more
+            Thread.Sleep(18000);
+
+            // receive the hostile ban message
+            botController.HandleMessageReceived(UserName, false, false, false, 0, Msg, Bots.TwitchChatBot);
+
+            // wait a moment to recognize the message
+            Thread.Sleep(5000);
+
+            // ban before or after they join, or don't join at all
+            if(!JoinBan)
+            {
+                botController.HandleUserBanned(UserName);
+                Thread.Sleep(5000);
+            }
+
+            if (Joined)
+            {
+                botController.HandleUserJoined(new() { UserName }, Bots.TwitchChatBot);
+                Thread.Sleep(5000);
+            }
+
+            if (JoinBan)
+            {
+                botController.HandleUserBanned(UserName);
+            }
+
+        }
     }
 }

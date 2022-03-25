@@ -58,7 +58,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Connected = true;
 
-            new Thread(new ThreadStart(() =>
+            ThreadManager.CreateThreadStart(() =>
             {
                 lock (this)
                 {
@@ -92,7 +92,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         Connected = false;
                     }
                 }
-            })).Start();
+            });
 
             return Connected;
         }

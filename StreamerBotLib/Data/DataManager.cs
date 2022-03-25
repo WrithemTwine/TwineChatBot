@@ -89,20 +89,21 @@ namespace StreamerBotLib.Data
                 OptionFlags.DataLoaded = true;
             }
 
+            foreach (DataTable table in _DataSource.Tables)
+            {
+                table.BeginLoadData();
+            }
+
             try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
             {
                 try // try the regular working file
                 {
-                    foreach (DataTable table in _DataSource.Tables)
-                    {
-                        table.BeginLoadData();
-                    }
                     LoadFile(DataFileName);
                 }
                 catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    File.Copy(DataFileName, $"Failed_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}_{DataFileName}");
+                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{DataFileName}");
                     LoadFile(BackupDataFileXML);
                 }
             }
@@ -110,15 +111,13 @@ namespace StreamerBotLib.Data
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
-            finally
-            {
-                foreach (DataTable table in _DataSource.Tables)
-                {
-                    table.EndLoadData();
-                }
 
-                SaveData(this, new());
+            foreach (DataTable table in _DataSource.Tables)
+            {
+                table.EndLoadData();
             }
+
+            SaveData(this, new());
         }
 
         public void Initialize()
@@ -161,7 +160,7 @@ namespace StreamerBotLib.Data
                     if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
                     {
                         SaveThreadStarted = true;
-                        new Thread(new ThreadStart(PerformSaveOp)).Start();
+                        ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, 40); // need to wait, else could corrupt datafile
                     }
 
                     if (_DataSource.HasChanges())
@@ -286,6 +285,30 @@ namespace StreamerBotLib.Data
 
             return list.ToArray();
         }
+
+        public void PostUpdatedDataRow(DataRow UpdatedDataRow)
+        {
+            DataTable table = UpdatedDataRow.Table;
+
+            DataRow currRow = UpdatedDataRow.Table.Select($"Id={UpdatedDataRow["Id"]}").FirstOrDefault();
+
+            if (currRow != null)
+            {
+                foreach (DataColumn col in table.Columns)
+                {
+                    if (!col.ReadOnly)
+                    {
+                        currRow[col] = UpdatedDataRow[col];
+                    }
+                }
+            } else
+            {
+                table.Rows.Add(UpdatedDataRow);
+            }
+
+            NotifySaveData();
+        }
+
         #endregion Helpers
 
         #region CommandSystem
@@ -314,7 +337,6 @@ switches:
          */
 
         private readonly string DefaulSocialMsg = "Social media url here";
-
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
@@ -324,7 +346,7 @@ switches:
             {
                 if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
+                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry), 0);
                     _DataSource.CategoryList.AcceptChanges();
                 }
 
@@ -442,7 +464,7 @@ switches:
             {
                 string key = "";
 
-                if (Table != "")
+                if (Table != null && Table != "")
                 {
                     DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
                     if (k?.Length > 1)
@@ -518,7 +540,7 @@ switches:
         {
             string filter = "";
 
-            System.Collections.IList list = System.Enum.GetValues(typeof(DefaultSocials));
+            System.Collections.IList list = Enum.GetValues(typeof(DefaultSocials));
             for (int i = 0; i < list.Count; i++)
             {
                 DefaultSocials s = (DefaultSocials)list[i];
@@ -684,12 +706,12 @@ switches:
         {
             string filter = string.Empty;
 
-            foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
+            foreach (DefaultCommand d in Enum.GetValues(typeof(DefaultCommand)))
             {
                 filter += "'" + d.ToString() + "',";
             }
 
-            foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
+            foreach (DefaultSocials s in Enum.GetValues(typeof(DefaultSocials)))
             {
                 filter += "'" + s.ToString() + "',";
             }
@@ -720,6 +742,50 @@ switches:
         public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
             SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName NOT IN (" + ComFilter() + ")"));
+        }
+
+        public void SetDiscordWebhooksEnabled(bool Enabled)
+        {
+            foreach(DiscordRow discordRow in _DataSource.Discord.Select())
+            {
+                discordRow.IsEnabled = Enabled;
+            }
+        }
+
+        public List<string> GetTableNames()
+        {
+            List<string> names = new();
+
+            foreach(DataTable table in _DataSource.Tables)
+            {
+                names.Add(table.TableName);
+            }
+
+            return names;
+        }
+
+        public List<string> GetTableFields(string TableName)
+        {
+            List<string> fields = new();
+
+            foreach (DataColumn dataColumn in _DataSource.Tables[TableName].Columns)
+            {
+                fields.Add(dataColumn.ColumnName);
+            }
+
+            return fields;
+        }
+
+        public List<string> GetCurrencyNames()
+        {
+            List<string> currency = new();
+
+            foreach(CurrencyTypeRow typerow in _DataSource.CurrencyType.Select())
+            {
+                currency.Add(typerow.CurrencyName);
+            }
+
+            return currency;
         }
 
         #endregion
@@ -995,11 +1061,11 @@ switches:
         {
             lock (_DataSource)
             {
-                UsersRow[] user = (UsersRow[])_DataSource.Users.Select($"UserName='{User}'");
+                UsersRow user = (UsersRow)_DataSource.Users.Select($"UserName='{User}'").FirstOrDefault();
                 if (user != null)
                 {
-                    UpdateWatchTime(ref user[0], LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(ref user[0], LastSeen); // will update the "CurrLoginDate"
+                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
 
                     NotifySaveData();
                 }
@@ -1485,16 +1551,18 @@ switches:
 
                 if (categoryList == null)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory);
+                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 0);
                     found = false;
                 }
-                else if (categoryList.CategoryId == null)
+                else
                 {
-                    categoryList.CategoryId = CategoryId;
-                }
-                else if (categoryList.Category == null)
-                {
-                    categoryList.Category = newCategory;
+                    categoryList.CategoryId = CategoryId ?? categoryList.CategoryId;
+                    categoryList.Category = newCategory ?? categoryList.Category;
+
+                    if (OptionFlags.IsStreamOnline)
+                    {
+                        categoryList.StreamCount++;
+                    }
                 }
             }
 
@@ -1508,7 +1576,7 @@ switches:
         /// <returns>Returns a list of <code>Tuple<string GameId, string GameName></code> objects.</returns>
         public List<Tuple<string, string>> GetGameCategories()
         {
-            return new(from CategoryListRow c in _DataSource.CategoryList.Select()
+            return new(from CategoryListRow c in _DataSource.CategoryList.Select() orderby c.Category
                        let item = new Tuple<string, string>(c.CategoryId, c.Category)
                        select item);
         }

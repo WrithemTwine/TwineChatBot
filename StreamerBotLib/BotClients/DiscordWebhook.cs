@@ -32,7 +32,7 @@ namespace StreamerBotLib.BotClients
 
             if (!JobThread) // check if job thread is running
             {
-                new Thread(new ThreadStart(SendDataAsync)).Start();
+                ThreadManager.CreateThreadStart(SendDataAsync);
 
                 lock (DataJobs)
                 {

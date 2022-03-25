@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 using static StreamerBotLib.Data.DataSource;
@@ -36,7 +37,7 @@ namespace StreamerBotLib.Systems
 
         private void StartElapsedTimerThread()
         {
-            ElapsedThread = new Thread(new ThreadStart(ElapsedCommandTimers));
+            ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
             ElapsedThread.Start();
         }
 
@@ -69,34 +70,41 @@ namespace StreamerBotLib.Systems
 
             double DiluteTime;
 
-            while (OptionFlags.ActiveToken)
+            try
             {
-                DiluteTime = CheckDilute();
-
-                foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
+                while (OptionFlags.ActiveToken)
                 {
-                    if (Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
+                    DiluteTime = CheckDilute();
+
+                    foreach (Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands())
                     {
-                        TimerCommand item = new(Timers, DiluteTime);
-                        if (RepeatList.UniqueAdd(item))
+                        if (Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)))
                         {
-                            new Thread(new ThreadStart(() => RepeatCmd(item))).Start();
-                        }
-                        else
-                        {
-                            lock (item)
+                            TimerCommand item = new(Timers, DiluteTime);
+                            if (RepeatList.UniqueAdd(item))
                             {
-                                TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
-                                if (Listcmd.RepeatTime == 0)
+                                ThreadManager.CreateThreadStart(() => RepeatCmd(item));
+                            }
+                            else
+                            {
+                                lock (item)
                                 {
-                                    RepeatList.Remove(Listcmd);
+                                    TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
+                                    if (Listcmd.RepeatTime == 0)
+                                    {
+                                        RepeatList.Remove(Listcmd);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
+                    Thread.Sleep(ThreadSleep * (1 + DateTime.Now.Second / 60)); // wait for awhile before checking commands again
+                }
+            }
+            catch (ThreadInterruptedException ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 
@@ -113,49 +121,56 @@ namespace StreamerBotLib.Systems
                 InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
             }
 
-            while (OptionFlags.ActiveToken && repeat != 0 && InCategory)
+            try
             {
-                if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory)
                 {
-                    if (OptionFlags.RepeatLiveResetShow) // perform command when repeat timers are reset based on live online stream
+                    if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
+                        if (OptionFlags.RepeatLiveResetShow) // perform command when repeat timers are reset based on live online stream
+                        {
+                            lock (cmd)
+                            {
+                                cmd.SetNow(); // cause command to fire immediately
+                            }
+                        }
+                        ResetLive = true;
+                    }
+                    else if (!OptionFlags.IsStreamOnline && ResetLive)
+                    {
+                        ResetLive = false;
+                    }
+
+                    if (cmd.CheckFireTime())
+                    {
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
                         lock (cmd)
                         {
-                            cmd.SetNow(); // cause command to fire immediately
+                            cmd.UpdateTime(CheckDilute());
                         }
                     }
-                    ResetLive = true;
-                }
-                else if (!OptionFlags.IsStreamOnline && ResetLive)
-                {
-                    ResetLive = false;
-                }
+                    Thread.Sleep(ThreadSleep * (1 + (DateTime.Now.Second / 60)));
 
-                if (cmd.CheckFireTime())
-                {
-                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
-                    lock (cmd)
+                    lock (cmd) // lock the cmd because it's referenced in other threads
                     {
-                        cmd.UpdateTime(CheckDilute());
+                        Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
+                        if (command == null) // when command disappears
+                        {
+                            repeat = 0;
+                        }
+                        else
+                        {
+                            repeat = command.Item2;
+                            cmd.ModifyTime(repeat, CheckDilute());
+                        }
+                        // verify if the category is different and the command is no longer applicable
+                        InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                     }
                 }
-                Thread.Sleep(ThreadSleep * (1 + (DateTime.Now.Second / 60)));
-
-                lock (cmd) // lock the cmd because it's referenced in other threads
-                {
-                    Tuple<string, int, string[]> command = DataManage.GetTimerCommand(cmd.Command);
-                    if (command == null) // when command disappears
-                    {
-                        repeat = 0;
-                    }
-                    else
-                    {
-                        repeat = command.Item2;
-                        cmd.ModifyTime(repeat, CheckDilute());
-                    }
-                    // verify if the category is different and the command is no longer applicable
-                    InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
-                }
+            }
+            catch (ThreadInterruptedException ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 
@@ -369,16 +384,16 @@ namespace StreamerBotLib.Systems
 
                     if (cmdrow.Message.Contains(MsgVars.category.ToString()))
                     {
-                        new Thread(new ThreadStart(() =>
+                        ThreadManager.CreateThreadStart(() =>
                         {
-                            VariableParser.AddData(ref datavalues,
-                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                             VariableParser.AddData(ref datavalues,
+                             new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
-                            result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+                             result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
-                            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
-                        })).Start();
+                             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+                        });
 
                         result = "";
                     }

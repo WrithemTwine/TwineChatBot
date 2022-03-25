@@ -78,13 +78,13 @@ namespace StreamerBotLib.Static
         {
             const double monthdays = 30.0;
             const double yeardays = 365.242;
-            
+
             string output = "";
 
             Dictionary<string, int> datakeys = new()
             {
-                { "year", (int) Math.Floor( timeSpan.Days / yeardays ) },
-                { "month", (int) Math.Floor(timeSpan.Days/monthdays) },
+                { "year", (int)Math.Floor(timeSpan.Days / yeardays) },
+                { "month", (int)Math.Floor(timeSpan.Days / monthdays) },
                 { "day", timeSpan.Days % (int)monthdays },
                 { "hour", timeSpan.Hours },
                 { "minute", timeSpan.Minutes }
@@ -94,11 +94,11 @@ namespace StreamerBotLib.Static
             {
                 if (datakeys[k] != 0)
                 {
-                    output += Plurality(datakeys[k], (MsgVars) System.Enum.Parse( typeof(MsgVars), "Plural" + k) ) + ", ";
+                    output += Plurality(datakeys[k], (MsgVars)Enum.Parse(typeof(MsgVars), "Plural" + k)) + ", ";
                 }
             }
 
-            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours,2), MsgVars.Pluralhour), output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(',')));
+            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour), output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(',')));
         }
 
         /// <summary>
