@@ -931,10 +931,10 @@ namespace StreamerBot
 
             if (AddNew)
             {
-                dataView = (DataRowView)sourceDataGrid.ItemsSource.GetEnumerator().Current;
-                if (dataView != null)
+                DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
+                if (CurrdataView != null)
                 {
-                    PopupWindows.DataGridAddNewItem(dataView.Row.Table);
+                    PopupWindows.DataGridAddNewItem(CurrdataView.Table);
                 }
             }
             else

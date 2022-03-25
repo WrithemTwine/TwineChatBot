@@ -19,7 +19,6 @@ namespace StreamerBotLib.GUI.Windows
     {
         private bool IsClosing;
 
-        private string[] DataSource { get; set; } = new[] { "DataManager", "MultiLiveDataManager" };
         private DataManager DataManage { get; set; } = SystemsController.DataManage;
         private DataRow SaveDataRow { get; set; }
 
@@ -48,8 +47,9 @@ namespace StreamerBotLib.GUI.Windows
 
             const int NameWidth = 150;
             bool CheckLockTable = false;
+            SaveDataRow = dataRow ?? dataTable.NewRow();
 
-            if (dataRow.Table.TableName is "Commands" or "ChannelEvents")
+            if (SaveDataRow.Table.TableName is "Commands" or "ChannelEvents")
             {
                 List<string> builtInCmds = new();
 
@@ -64,16 +64,13 @@ namespace StreamerBotLib.GUI.Windows
                 }
             }
 
-            SaveDataRow = dataRow ?? dataTable.NewRow();
 
             foreach (DataColumn dataColumn in dataTable.Columns)
             {
                 UIElement dataname = new Label() { Content = dataColumn.ColumnName, Width = NameWidth };
                 object datavalue = DBNull.Value.Equals(SaveDataRow[dataColumn]) ? "" : SaveDataRow[dataColumn];
 
-                string Src = dataTable.TableName is "MsgEndPoints" or "Channels" or "LiveStream" ? DataSource[1] : DataSource[0];
-
-                UIElement dataout = Convert(datavalue, dataColumn, Src, CheckLockTable);
+                UIElement dataout = Convert(datavalue, dataColumn, CheckLockTable);
                 UIElement datatable = new Label() { Content = dataTable.TableName, Visibility = Visibility.Collapsed };
 
                 StackPanel row = new() { Orientation = Orientation.Horizontal };
@@ -92,7 +89,7 @@ namespace StreamerBotLib.GUI.Windows
             foreach (StackPanel data in ListBox_DataList.Items)
             {
                 string name = ((Label)data.Children[0]).Content.ToString();
-                string result = ConvertBack(data.Children[1], name, ((Label)data.Children[2]).Content.ToString());
+                string result = ConvertBack(data.Children[1]);
 
                 SaveData.Add(name, result);
             }
@@ -124,7 +121,7 @@ namespace StreamerBotLib.GUI.Windows
             CancelButton_Click(this, new());
         }
 
-        public UIElement Convert(object datavalue, DataColumn dataColumn, string Source, bool LockedTable = false)
+        public UIElement Convert(object datavalue, DataColumn dataColumn, bool LockedTable = false)
         {
             const int ValueWidth = 325;
             UIElement dataout = null;
@@ -209,7 +206,7 @@ namespace StreamerBotLib.GUI.Windows
                             selection.AddRange(((string)datavalue).Split(", "));
                             foreach (Tuple<string, string> tuple in DataManage.GetGameCategories())
                             {
-                                CheckBox item = new CheckBox()
+                                CheckBox item = new()
                                 {
                                     Content = tuple.Item2,
                                     IsChecked = selection.Contains(tuple.Item2)
@@ -333,6 +330,11 @@ namespace StreamerBotLib.GUI.Windows
             return dataout;
         }
 
+         /// <summary>
+        /// Check the Category checkboxes and ensure only "All" or the other items are selected, but not both.
+        /// </summary>
+        /// <param name="sender">The sending CheckBox.</param>
+        /// <param name="e">Selection changed events.</param> 
         private void EditData_Category_Checked(object sender, RoutedEventArgs e)
         {
             if (sender != CurrCheckedItem && CurrCheckedItem != null)
@@ -377,16 +379,6 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-        /// <summary>
-        /// Check the Category checkboxes and ensure only "All" or the other items are selected, but not both.
-        /// </summary>
-        /// <param name="sender">The sending ListView.</param>
-        /// <param name="e">Selection changed events.</param>
-        private void EditData_Category_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
         private void TableData_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             KeyFieldElement.ItemsSource = new List<string>() { DataManage.GetKey((string)TableElement.SelectedValue) };
@@ -415,7 +407,7 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-        public string ConvertBack(UIElement dataElement, string ColumnName, string DataTableName)
+        public string ConvertBack(UIElement dataElement)
         {
             string result = "";
 
