@@ -45,12 +45,16 @@ namespace StreamerBotLib.BotClients
             AddBot(TwitchBotPubSub);
 
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
+            TwitchBotChatClient.OnBotStopping += TwitchBotChatClient_OnBotStopping;
+            TwitchBotChatClient.OnBotStopped += TwitchBotChatClient_OnBotStopped;
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
         }
+
+
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -117,6 +121,18 @@ namespace StreamerBotLib.BotClients
         private void TwitchBotChatClient_OnBotStarted(object sender, EventArgs e)
         {
             RegisterHandlers();
+
+            InvokeBotEvent(this, BotEvents.TwitchChatBotStarted, new());
+        }
+
+        private void TwitchBotChatClient_OnBotStopping(object sender, EventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchChatBotStopping, new());
+        }
+
+        private void TwitchBotChatClient_OnBotStopped(object sender, EventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchChatBotStopped, new());
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)

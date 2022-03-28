@@ -306,6 +306,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStarted)
                 {
+                    InvokeBotStopping();
                     IsStarted = false;
                     IsStopped = true;
                     TwitchChat.Disconnect();

@@ -24,6 +24,7 @@ namespace StreamerBotLib.BotClients
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;
+        public event EventHandler OnBotStopping;
 
         protected void InvokeBotStarted()
         {
@@ -33,6 +34,11 @@ namespace StreamerBotLib.BotClients
         protected void InvokeBotStopped()
         {
             OnBotStopped?.Invoke(this, new EventArgs());
+        }
+
+        protected void InvokeBotStopping()
+        {
+            OnBotStopping?.Invoke(this, new EventArgs());
         }
 
         public IOModule()

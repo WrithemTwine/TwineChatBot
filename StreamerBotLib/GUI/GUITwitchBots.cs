@@ -11,6 +11,7 @@ namespace StreamerBotLib.GUI
     {
         public event EventHandler OnLiveStreamStarted;
         public event EventHandler OnLiveStreamUpdated;
+        public event EventHandler OnFollowerBotStarted;
 
         /// <summary>
         /// Specifically Twitch Lib chat bot.
@@ -35,6 +36,7 @@ namespace StreamerBotLib.GUI
             TwitchIO.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchFollower.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchFollower.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchLiveMonitor.OnBotStarted += TwitchBot_OnBotStarted;
@@ -82,6 +84,13 @@ namespace StreamerBotLib.GUI
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
         }
+
+
+        private void TwitchFollower_OnBotStarted(object sender, EventArgs e)
+        {
+            OnFollowerBotStarted?.Invoke(this, new());
+        }
+
 
         #region Events
         public void RegisterGetCategory(EventHandler<OnGetChannelGameNameEventArgs> GetCategoryEvent)

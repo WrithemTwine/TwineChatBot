@@ -26,11 +26,15 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
         public ObservableCollection<string> GiveawayCollection { get; set; }
+        public int CurrFollowers { get
+            {
+                return Followers.Table.Select("IsFollower=true").Count();
+            }
+        }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
         public DataView Followers { get; private set; } // DataSource.FollowersDataTable
-        public DataView CurrFollowers { get; private set; }
         public DataView Discord { get; private set; } // DataSource.DiscordDataTable
         public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
         public DataView CurrencyType { get; private set; }  // DataSource.CurrencyTypeDataTable
@@ -59,7 +63,6 @@ namespace StreamerBotLib.GUI
             JoinCollection = SystemsBase.JoinCollection;
             GiveawayCollection = SystemsBase.GiveawayCollection;
             SetDataTableViews(SystemsController.DataManage);
-            //SaveTableData = SystemsController.DataManage.NotifySaveData; // the database save data method
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -92,27 +95,25 @@ namespace StreamerBotLib.GUI
             }
 
             ChannelEvents = dataManager._DataSource.ChannelEvents.DefaultView;
-            Users = new(dataManager._DataSource.Users, null, "UserName", DataViewRowState.CurrentRows);
-            Followers = new(dataManager._DataSource.Followers, null, "FollowedDate", DataViewRowState.CurrentRows);
-            CurrFollowers = new(dataManager._DataSource.Followers, "IsFollower=True", "FollowedDate", DataViewRowState.CurrentRows);
+            Users = dataManager._DataSource.Users.DefaultView;
+            Followers = dataManager._DataSource.Followers.DefaultView;
             Discord = dataManager._DataSource.Discord.DefaultView;
-            CurrencyType = new(dataManager._DataSource.CurrencyType, null, "CurrencyName", DataViewRowState.CurrentRows);
-            Currency = new(dataManager._DataSource.Currency, null, "UserName", DataViewRowState.CurrentRows);
+            CurrencyType = dataManager._DataSource.CurrencyType.DefaultView;
+            Currency = dataManager._DataSource.Currency.DefaultView;
             BuiltInCommands = new(dataManager._DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
             Commands = new(dataManager._DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
-            StreamStats = new(dataManager._DataSource.StreamStats, null, "StreamStart DESC", DataViewRowState.CurrentRows);
-            ShoutOuts = new(dataManager._DataSource.ShoutOuts, null, "UserName", DataViewRowState.CurrentRows);
-            Category = new(dataManager._DataSource.CategoryList, null, "Id", DataViewRowState.CurrentRows);
-            Clips = new(dataManager._DataSource.Clips, null, "Id", DataViewRowState.CurrentRows);
-            InRaidData = new(dataManager._DataSource.InRaidData, null, "Id", DataViewRowState.CurrentRows);
-            OutRaidData = new(dataManager._DataSource.OutRaidData, null, "Id", DataViewRowState.CurrentRows);
-            GiveawayUserData = new(dataManager._DataSource.GiveawayUserData, null, "Id", DataViewRowState.CurrentRows);
-            CustomWelcomeData = new(dataManager._DataSource.CustomWelcome, null, "Id", DataViewRowState.CurrentRows);
+            StreamStats = dataManager._DataSource.StreamStats.DefaultView;
+            ShoutOuts = dataManager._DataSource.ShoutOuts.DefaultView;
+            Category = dataManager._DataSource.CategoryList.DefaultView;
+            Clips = dataManager._DataSource.Clips.DefaultView;
+            InRaidData = dataManager._DataSource.InRaidData.DefaultView;
+            OutRaidData = dataManager._DataSource.OutRaidData.DefaultView;
+            GiveawayUserData = dataManager._DataSource.GiveawayUserData.DefaultView;
+            CustomWelcomeData = dataManager._DataSource.CustomWelcome.DefaultView;
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
             Followers.ListChanged += DataView_ListChanged;
-            CurrFollowers.ListChanged += DataView_ListChanged;
             Discord.ListChanged += DataView_ListChanged;
             CurrencyType.ListChanged += DataView_ListChanged;
             Currency.ListChanged += DataView_ListChanged;

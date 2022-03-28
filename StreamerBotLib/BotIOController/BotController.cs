@@ -24,9 +24,8 @@ using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 
 
-// TODO: Thread Manager - include count total threads created
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
-// TODO: add streaming category count, track number of streams per category 
+// TODO: *finished-test for reliability* add streaming category count, track number of streams per category 
 
 namespace StreamerBotLib.BotIOController
 {
@@ -38,6 +37,8 @@ namespace StreamerBotLib.BotIOController
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
         internal Collection<IBotTypes> BotsList { get; private set; } = new();
+        public List<Bots> StartedChatBots { get; private set; } = new();
+        private bool ChatBotStopping;
 
         private GiveawayTypes GiveawayItemType = GiveawayTypes.None;
         private string GiveawayItemName = "";
@@ -49,7 +50,7 @@ namespace StreamerBotLib.BotIOController
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
-        private readonly Thread SendThread;  // the thread for sending messages back to the monitored  channels
+        private Thread SendThread;  // the thread for sending messages back to the monitored  channels
 
         public BotController()
         {
@@ -65,10 +66,6 @@ namespace StreamerBotLib.BotIOController
             OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
             BotsList.Add(TwitchBots);
-
-
-            SendThread = new(new ThreadStart(BeginProcMsgs));
-            SendThread.Start();
         }
 
         /// <summary>
@@ -134,8 +131,9 @@ namespace StreamerBotLib.BotIOController
         {
             // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
-            while (OptionFlags.ActiveToken || Operations.Count > 0)
+            while ((OptionFlags.ActiveToken || Operations.Count > 0) && StartedChatBots.Count > 0)
             {
+                while (ChatBotStopping) { } // spin while a bot is stopping, to prevent sending any messages
                 Task temp = null;
                 lock (Operations)
                 {
@@ -165,7 +163,7 @@ namespace StreamerBotLib.BotIOController
             {
                 Systems.Exit();
 
-                SendThread.Join(); // wait until all the messages are sent to ask bots to close
+                SendThread?.Join(); // wait until all the messages are sent to ask bots to close
 
                 foreach (IBotTypes bot in BotsList)
                 {
@@ -285,6 +283,11 @@ namespace StreamerBotLib.BotIOController
             BotsTwitch.LiveMonitorSvc.UpdateChannels();
         }
 
+        public void TwitchStartUpdateAllFollowers()
+        {
+            TwitchBots.GetAllFollowers();
+        }
+
         public void TwitchPostNewFollowers(OnNewFollowersDetectedArgs Follower)
         {
             HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers));
@@ -308,6 +311,21 @@ namespace StreamerBotLib.BotIOController
                     ToUserName = f.ToUserName
                 };
             });
+        }
+
+        public void TwitchChatBotStarted(EventArgs args = null)
+        {
+            HandleChatBotStarted(Bots.TwitchChatBot);
+        }
+
+        public void TwitchChatBotStopping(EventArgs args = null)
+        {
+            HandleChatBotStopped(Bots.TwitchChatBot);
+        }
+
+        public void TwitchChatBotStopped(EventArgs args = null)
+        {
+            HandleChatBotStopped(Bots.TwitchChatBot);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -488,7 +506,6 @@ namespace StreamerBotLib.BotIOController
             }, Bots.TwitchChatBot); ;
         }
 
-
         public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)
         {
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
@@ -612,6 +629,34 @@ namespace StreamerBotLib.BotIOController
         #endregion
 
         #region Chat Bot
+
+        public void HandleChatBotStarted(Bots Source)
+        {
+            lock(StartedChatBots)
+            {
+                StartedChatBots.UniqueAdd(Source);
+            }
+
+            if(StartedChatBots.Count == 1)
+            {
+                SendThread = ThreadManager.CreateThread(BeginProcMsgs);
+                SendThread.Start();
+            }
+        }
+
+        public void HandleChatBotStopping(Bots Source)
+        {
+            lock (StartedChatBots)
+            {
+                StartedChatBots.RemoveAll((s) => s == Source);
+            }
+            ChatBotStopping = true;
+        }
+
+        public void HandleChatBotStopped(Bots Source)
+        {
+            ChatBotStopping = false;
+        }
 
         public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
         {

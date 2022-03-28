@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace StreamerBotLib.GUI.Windows
 {
@@ -321,10 +322,14 @@ namespace StreamerBotLib.GUI.Windows
             {
                 dataout.IsEnabled = !dataColumn.ReadOnly;
             }
-            
+
             if (LockedTable && (dataColumn.ColumnName is "Id" or "CmdName" or "AllowParam" or "Usage" or "lookupdata" or "table" or "key_field" or "data_field" or "currency_field" or "unit" or "action" or "top" or "Name"))
             {
                 dataout.IsEnabled = false;
+            } 
+            else if(dataout.GetType() == typeof(TextBox))
+            {
+                dataout.PreviewMouseLeftButtonDown += PreviewMouseLeftButton_SelectAll;
             }
 
             return dataout;
@@ -445,6 +450,11 @@ namespace StreamerBotLib.GUI.Windows
             }
 
             return result;
+        }
+
+        private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
+        {
+            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
     }
 }

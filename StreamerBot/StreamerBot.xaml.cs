@@ -39,6 +39,8 @@ namespace StreamerBot
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
         private readonly DateTime StartBotDate;
+        private DateTime TwitchFollowRefresh;
+        private int TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private const string MultiLiveName = "MultiUserLiveBot";
 
@@ -76,10 +78,15 @@ namespace StreamerBot
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
+
+            List<int> hrslist = new() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = hrslist;
+            SetTwitchFollowerRefreshTime();
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
@@ -89,7 +96,6 @@ namespace StreamerBot
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
 #endif
-
         }
 
         #region Bot_Ops
@@ -218,7 +224,6 @@ namespace StreamerBot
 
         #region Refresh data from bot
 
-
         /// <summary>
         /// The GUI provides buttons to click and refresh data to the interface. Still must handle response events from the bot.
         /// </summary>
@@ -256,8 +261,6 @@ namespace StreamerBot
 
         private void BeginUpdateCategory()
         {
-            // TODO: align current stream info to the current active stream
-
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
         }
 
@@ -428,11 +431,6 @@ namespace StreamerBot
             //    CP.Width = 300;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propname)
-        {
-            PropertyChanged?.Invoke(this, new(propname));
-        }
 
         private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -505,6 +503,12 @@ namespace StreamerBot
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(string propname)
+        {
+            PropertyChanged?.Invoke(this, new(propname));
+        }
 
         private void CheckMessageBoxes()
         {
@@ -644,7 +648,7 @@ namespace StreamerBot
             CheckDebug();
         }
 
-        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
+        private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
@@ -1164,6 +1168,12 @@ namespace StreamerBot
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }
 
+                    if( OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
+                    {
+                        Controller.TwitchStartUpdateAllFollowers();
+                        TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
+                    }
+
                     UpdateAppTime();
 
                     Thread.Sleep(sleep);
@@ -1175,8 +1185,53 @@ namespace StreamerBot
             }
         }
 
+        #region Refresh Followers
 
+        private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
+        {
+            SetTwitchFollowerRefreshTime();
+        }
 
+        /// <summary>
+        /// Initialize the DateTime used to refresh Twitch Followers in the Follower Refresh process after user specified hours.
+        /// Activates with constructor and when "follow bot" is started - to prevent null/non-sensible values - and spec is 'refresh every N hours after follow bot starts".
+        /// </summary>
+        private void SetTwitchFollowerRefreshTime()
+        {
+            TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
+        }
+
+        private void CheckBox_TwitchFollower_AutoRefresh_Checked(object sender, RoutedEventArgs e)
+        {
+            if (StackPanel_TwitchFollows_RefreshHrs != null && CheckBox_TwitchFollower_AutoRefresh != null)
+            {
+                StackPanel_TwitchFollows_RefreshHrs.Visibility = CheckBox_TwitchFollower_AutoRefresh.IsChecked switch
+                {
+                    true => Visibility.Visible,
+                    _ => Visibility.Hidden,
+                };
+            }
+        }
+
+        private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox srchrs = sender as ComboBox;
+            int hrs = (int)srchrs.SelectedValue;
+
+            OptionFlags.SetSettings();
+            CheckDebug();
+
+            // changes the refresh time - which is already set at this point
+            TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
+            TwitchFollowerCurrRefreshHrs = hrs;
+        }
+
+        private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.TwitchStartUpdateAllFollowers();
+        }
+
+        #endregion
 
         #endregion
 

@@ -59,6 +59,7 @@
                 <Setter Property="CanUserAddRows" Value="False" />
                 <Setter Property="CanUserDeleteRows" Value="True" />
                 <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
+                <Setter Property="IsReadOnly" Value="True" />
                 <EventSetter Event="MouseDoubleClick" Handler="DG_MouseDoubleClick" />
             </Style>
             <ResourceDictionary.MergedDictionaries>
@@ -67,15 +68,12 @@
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
-        <StatusBar DockPanel.Dock="Bottom">
+        <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
             <StatusBar.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal" />
                 </Style>
             </StatusBar.Resources>
-            <StatusBar.DataContext>
-                <Binding Mode="OneWay" Source="{StaticResource DataViews}"/>
-            </StatusBar.DataContext>
             <StatusBarItem>
                 <StackPanel>
                     <Label ToolTip="All Users who visited the stream while online.">All Viewers:</Label>
@@ -84,13 +82,17 @@
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
-                <StackPanel>
-                    <Label>
-                        <Label.ToolTip>Select options to manage followers. Currently not updated in real-time when a follower stops following.</Label.ToolTip>
-                        <Label.Content>Curr Followers:</Label.Content>
-                    </Label>
-                    <Label Content="{Binding CurrFollowers.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
-                </StackPanel>
+                <Button Click="StatusBar_Button_UpdateFollows_Click">
+                    <StackPanel>
+                        <Label>
+                            <Label.ToolTip>
+                                <TextBlock>Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow. Click here to refresh now.</TextBlock>
+                            </Label.ToolTip>
+                            <Label.Content>Curr Followers:</Label.Content>
+                        </Label>
+                        <Label Content="{Binding CurrFollowers, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                    </StackPanel>
+                </Button>
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
@@ -262,8 +264,8 @@
                                 <Setter Property="Width" Value="250" />
                                 <Setter Property="Height" Value="Auto" />
                                 <Setter Property="TextWrapping" Value="Wrap" />
-                                <EventSetter Event="PreviewMouseLeftButtonUp" Handler="PreviewMoustLeftButton_SelectAll" />
-                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="PreviewMoustLeftButton_SelectAll" />
+                                <EventSetter Event="PreviewMouseLeftButtonUp" Handler="PreviewMouseLeftButton_SelectAll" />
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="PreviewMouseLeftButton_SelectAll" />
                                 <EventSetter Event="LostFocus" Handler="Settings_LostFocus" />
                             </Style>
                         </TabItem.Resources>
@@ -398,7 +400,7 @@
                                                         <Paragraph>
                                                             <Run Text="{DynamicResource CredentialsVisit}"/>
                                                             <InlineUIContainer>
-                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
                                                             </InlineUIContainer>
                                                             <Run Text="{DynamicResource CredentialsTwitchAppRegister}"/>
                                                         </Paragraph>
@@ -413,7 +415,7 @@
                                                                     <Run Text="Add:"/>
                                                                     <LineBreak />
                                                                     <InlineUIContainer>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
+                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
                                                                     </InlineUIContainer>
                                                                     <Run Text="{DynamicResource CredentialsTwitchAcctOAuthRedirect}"/>
                                                                 </Paragraph>
@@ -434,7 +436,7 @@
                                                         <Paragraph>
                                                             <Run Text="{DynamicResource CredentialsAccessTokens}"/>
                                                             <InlineUIContainer>
-                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
                                                             </InlineUIContainer>
                                                         </Paragraph>
                                                         <List>
@@ -455,19 +457,19 @@
                                                                     <InlineUIContainer>
                                                                         <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot">
                                                                             <Label Width="Auto">Bot account not equal to Streamer Channel - Bot Token Scopes</Label>
-                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll"  Text="{DynamicResource CredentialsTwitchScopesDiffOauthBot}"/>
+                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  Text="{DynamicResource CredentialsTwitchScopesDiffOauthBot}"/>
                                                                         </StackPanel>
                                                                     </InlineUIContainer>
                                                                     <InlineUIContainer>
                                                                         <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Streamer">
                                                                             <Label Width="Auto">Bot account not equal to Streamer Channel - Streamer Token Scopes</Label>
-                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll"  Text="{DynamicResource CredentialsTwitchScopesDiffOauthChannel}"/>
+                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  Text="{DynamicResource CredentialsTwitchScopesDiffOauthChannel}"/>
                                                                         </StackPanel>
                                                                     </InlineUIContainer>
                                                                     <InlineUIContainer>
                                                                         <StackPanel x:Name="Help_TwitchBot_SameAuthScopes">
                                                                             <Label Width="Auto">Bot account and Streamer Channel account the same - Token Scopes</Label>
-                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMoustLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMoustLeftButton_SelectAll"  Text="{DynamicResource CredentialsTwitchScopesOauthSame}"/>
+                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  Text="{DynamicResource CredentialsTwitchScopesOauthSame}"/>
                                                                         </StackPanel>
                                                                     </InlineUIContainer>
                                                                     <Rectangle Fill="Black" Width="400" Height="3" HorizontalAlignment="Center" />
@@ -594,6 +596,16 @@
                                                 <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                     <TextBlock TextWrapping="Wrap">Enable action to remove non-followers from the Follower list when bot starts.</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox x:Name="CheckBox_TwitchFollower_AutoRefresh" IsChecked="{Binding TwitchFollowerAutoRefresh, Mode=TwoWay}" Checked="CheckBox_TwitchFollower_AutoRefresh_Checked" Unchecked="CheckBox_TwitchFollower_AutoRefresh_Checked">
+                                                    <CheckBox.ToolTip>
+                                                        <TextBlock>The Twitch API doesn't provide notices when someone unfollows. This refreshes follower list while bot is running - instead of restarting the Follow bot.</TextBlock>
+                                                    </CheckBox.ToolTip>
+                                                    <TextBlock>Enable Regular Follower Updatess</TextBlock>
+                                                </CheckBox>
+                                                <StackPanel x:Name="StackPanel_TwitchFollows_RefreshHrs" Orientation="Horizontal" Visibility="Hidden" Loaded="CheckBox_TwitchFollower_AutoRefresh_Checked">
+                                                    <Label>Select Refresh Hours:</Label>
+                                                    <ComboBox x:Name="ComboBox_TwitchFollower_RefreshHrs" Width="60" ToolTip="Select Frequency in Hours to Refresh Followers" SelectedValue="{Binding TwitchFollowerRefreshHrs, Mode=TwoWay}" SelectionChanged="ComboBox_TwitchFollower_RefreshHrs_SelectionChanged"/>
+                                                </StackPanel>
                                             </StackPanel>
                                         </GroupBox>
                                         <GroupBox Header="Twitch - Shout Out Viewers">
@@ -697,11 +709,11 @@
                                 <TextBlock IsEnabled="False" DockPanel.Dock="Top">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
                                 Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.<LineBreak />
                                 </TextBlock>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10">
-                                  <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_DiscordWebhooks_Click" />
-                                  <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
-                            </StackPanel>
-                            <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" ItemsSource="{Binding Discord, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10">
+                                    <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_DiscordWebhooks_Click" />
+                                    <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
+                                </StackPanel>
+                                <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" ItemsSource="{Binding Discord, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                             </DockPanel>
                         </TabItem>
                         <TabItem Header="User Data" x:Name="TabItem_Users">
@@ -736,7 +748,7 @@
                                             <ColumnDefinition Width="5"/>
                                             <ColumnDefinition Width="350*" />
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" />
 
@@ -981,8 +993,8 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Row="0" Grid.Column="0">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
                                         <TextBlock Grid.Row="0" Grid.Column="2">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
-                                        
-                                        
+
+
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding InRaidData, Mode=OneWay}" />
                                         <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding OutRaidData, Mode=OneWay}" />
                                     </Grid>
@@ -993,7 +1005,7 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="450"/>                                            
+                                            <ColumnDefinition Width="450"/>
                                             <ColumnDefinition Width="5"/>
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>

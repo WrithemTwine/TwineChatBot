@@ -826,5 +826,29 @@ namespace StreamerBotLib.Properties {
                 this["ManageDataArchiveMsg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerAutoRefresh {
+            get {
+                return ((bool)(this["TwitchFollowerAutoRefresh"]));
+            }
+            set {
+                this["TwitchFollowerAutoRefresh"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        public int TwitchFollowerRefreshHrs {
+            get {
+                return ((int)(this["TwitchFollowerRefreshHrs"]));
+            }
+            set {
+                this["TwitchFollowerRefreshHrs"] = value;
+            }
+        }
     }
 }

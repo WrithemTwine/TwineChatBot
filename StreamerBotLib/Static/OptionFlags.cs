@@ -14,11 +14,12 @@ namespace StreamerBotLib.Static
 
         public static bool ActiveToken { get; set; }  // whether to process ops or not
         public static bool IsStreamOnline { get; set; } // whether stream is online
-        public static bool BotStarted { get; set; } // whether bots are started
 
         public static bool TwitchAddFollowersStart { get; set; }
         public static bool TwitchPruneNonFollowers { get; set; }
         public static bool TwitchAddFollowerNotification { get; set; }
+        public static bool TwitchFollowerAutoRefresh { get; set; }
+        public static int TwitchFollowerRefreshHrs { get; set; }
 
         public static bool FirstUserJoinedMsg { get; set; }
         public static bool FirstUserChatMsg { get; set; }
@@ -105,6 +106,8 @@ namespace StreamerBotLib.Static
                 TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
                 TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
                 TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
+                TwitchFollowerAutoRefresh = Settings.Default.TwitchFollowerAutoRefresh;
+                TwitchFollowerRefreshHrs = Settings.Default.TwitchFollowerRefreshHrs;
 
                 FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
                 FirstUserChatMsg = Settings.Default.FirstUserChatMsg;

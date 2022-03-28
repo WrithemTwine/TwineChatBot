@@ -26,7 +26,7 @@ namespace StreamerBotLib.Static
             CurrThreads = new();
             ClosedThreads = 0;
 
-            TrackThread = new Thread ( new ThreadStart(ThreadManagerBegin));
+            TrackThread = new Thread(new ThreadStart(ThreadManagerBegin));
             TrackThread.Start();
         }
 
