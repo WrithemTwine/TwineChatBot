@@ -212,8 +212,6 @@ namespace StreamerBotLib.Systems
 
         public static void StreamOffline(DateTime Stopped)
         {
-            // TODO: add option to stop bot when stream goes offline
-
             lock (CurrUsers)
             {
                 foreach (string U in CurrUsers)

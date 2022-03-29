@@ -36,7 +36,7 @@ namespace StreamerBotLib.BotClients
         private const int BulkFollowSkipCount = 1000;
 
         public BotsTwitch()
-        {            
+        {
             // not including "TwitchBotUserSvc" bot, it's an authentication on-demand bot to get the info
             AddBot(TwitchFollower);
             AddBot(TwitchLiveMonitor);
@@ -53,8 +53,6 @@ namespace StreamerBotLib.BotClients
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
         }
-
-
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -293,8 +291,7 @@ namespace StreamerBotLib.BotClients
             {
                 if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
                 {
-                    // disable until chatbot start sorted
-                    //TwitchBotChatClient.StartBot();
+                    TwitchBotChatClient.StartBot();
                 }
 
                 InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);

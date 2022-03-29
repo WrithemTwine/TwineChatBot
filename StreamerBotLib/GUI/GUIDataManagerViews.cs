@@ -49,12 +49,6 @@ namespace StreamerBotLib.GUI
         public DataView GiveawayUserData { get; private set; } // DataSource.GiveawayUserDataDataTable
         public DataView CustomWelcomeData { get; private set; } // DataSource.CustomWelcomeDataTable
 
-        /// <summary>
-        /// provide delegate to method for saving the database data
-        /// </summary>
-        private delegate void SaveTableDataDelegate();
-        private SaveTableDataDelegate SaveTableData;
-
         #endregion
 
         public GUIDataManagerViews()

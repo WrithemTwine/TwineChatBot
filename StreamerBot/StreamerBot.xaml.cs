@@ -55,7 +55,7 @@ namespace StreamerBot
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
-            // move settings to the newest version, if the application version upgrades
+
             if (Settings.Default.UpgradeRequired)
             {
                 Settings.Default.Upgrade();
@@ -488,8 +488,7 @@ namespace StreamerBot
 
             CheckMessageBoxes();
 
-            // TODO: add follower service online, offline, and repeat timers to re-run service
-            // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
+            // TODO: research auto-refreshing token
         }
 
         private void OnWindowClosing(object sender, CancelEventArgs e)

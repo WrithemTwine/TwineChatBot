@@ -632,15 +632,16 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleChatBotStarted(Bots Source)
         {
-            lock(StartedChatBots)
+            lock (StartedChatBots)
             {
                 StartedChatBots.UniqueAdd(Source);
             }
 
-            if(StartedChatBots.Count == 1)
+            if (StartedChatBots.Count == 1)
             {
-                SendThread = ThreadManager.CreateThread(BeginProcMsgs);
+                SendThread = ThreadManager.CreateThread(BeginProcMsgs, Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
+                Systems.NotifyBotStart();
             }
         }
 
@@ -649,6 +650,11 @@ namespace StreamerBotLib.BotIOController
             lock (StartedChatBots)
             {
                 StartedChatBots.RemoveAll((s) => s == Source);
+            }
+
+            if (StartedChatBots.Count == 0)
+            {
+                Systems.NotifyBotStop();
             }
             ChatBotStopping = true;
         }

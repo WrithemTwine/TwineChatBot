@@ -19,6 +19,12 @@ namespace StreamerBotLib.Systems
     public class CommandSystem : SystemsBase, INotifyPropertyChanged
     {
         private Thread ElapsedThread;
+        private bool ChatBotStarted;
+
+        // TODO: add account merging for a user, approval by a mod+ (moderator, broadcaster)
+        // TODO: add approval to manage channel point redemption for custom welcome message
+        // TODO: add quotes
+        // TODO: add bannable phrase - e.g. "Buy follows", and probably relies on machine learning
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
@@ -32,18 +38,20 @@ namespace StreamerBotLib.Systems
 
         public CommandSystem()
         {
-            StartElapsedTimerThread();
+            //StartElapsedTimerThread();
         }
 
-        private void StartElapsedTimerThread()
+        public void StartElapsedTimerThread()
         {
+            ChatBotStarted = true;
             ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
             ElapsedThread.Start();
         }
 
         public void StopElapsedTimerThread()
         {
-            ElapsedThread.Join();
+            ChatBotStarted = false;
+            ElapsedThread?.Join();
         }
 
         private const int ChatCount = 20;
@@ -72,7 +80,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken)
+                while (OptionFlags.ActiveToken && ChatBotStarted)
                 {
                     DiluteTime = CheckDilute();
 
@@ -123,7 +131,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory)
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted)
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {

@@ -201,7 +201,7 @@
                                         <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                             <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                         </Label>
-                                        <StackPanel Visibility="Collapsed">
+                                        <StackPanel>
                                             <Label Height="Auto">
                                                 <TextBlock TextWrapping="Wrap">Start and Stop bot when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the stream is detected online is when the Chat Bot would start.</TextBlock>
                                             </Label>

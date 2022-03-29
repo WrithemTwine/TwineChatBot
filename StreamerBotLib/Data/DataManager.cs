@@ -160,7 +160,7 @@ namespace StreamerBotLib.Data
                     if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
                     {
                         SaveThreadStarted = true;
-                        ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, 40); // need to wait, else could corrupt datafile
+                        ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
                     }
 
                     if (_DataSource.HasChanges())

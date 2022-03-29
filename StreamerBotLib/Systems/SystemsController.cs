@@ -34,7 +34,8 @@ namespace StreamerBotLib.Systems
         internal Dispatcher AppDispatcher { get; set; }
 
         private Queue<Task> ProcMsgQueue { get; set; } = new();
-        private readonly Thread ProcessMsgs;
+        private Thread ProcessMsgs;
+        private bool ChatBotStarted;
 
         private const int SleepWait = 6000;
 
@@ -57,14 +58,11 @@ namespace StreamerBotLib.Systems
             Command.ProcessedCommand += Command_ProcessedCommand;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
-
-            ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, 10);
-            ProcessMsgs.Start();
         }
 
         private void ActionProcessCmds()
         {
-            while (OptionFlags.ActiveToken)
+            while (OptionFlags.ActiveToken && ChatBotStarted)
             {
                 while (ProcMsgQueue.Count > 0)
                 {
@@ -84,6 +82,7 @@ namespace StreamerBotLib.Systems
             ProcessMsgs.Join();
         }
 
+        #region Chatbot
         /// <summary>
         /// Handle if message is processed as multithreaded, due to one or more bot calls and wait for 
         /// </summary>
@@ -106,6 +105,25 @@ namespace StreamerBotLib.Systems
                 PostChannelMessage?.Invoke(this, new() { Msg = message, RepeatMsg = Repeat });
             }
         }
+
+        public void NotifyBotStart()
+        {
+            ChatBotStarted = true;
+            ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
+            ProcessMsgs.Start();
+
+            Command.StartElapsedTimerThread();
+        }
+
+        public void NotifyBotStop()
+        {
+            ChatBotStarted = false;
+
+            Command.StopElapsedTimerThread();
+            ProcessMsgs?.Join();
+        }
+
+        #endregion
 
         #region Currency System
 
@@ -151,7 +169,7 @@ namespace StreamerBotLib.Systems
                     while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
                     ProcessFollow(FollowList, msg, FollowEnabled);
-                }, ThreadWaitStates.Wait, 50);
+                }, ThreadWaitStates.Wait, ThreadExitPriority.High);
 
                 _ = AppDispatcher.BeginInvoke(new ProcFollowDelegate(PerformFollow));
             }
@@ -384,7 +402,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-         public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
+        public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
         {
             SystemsBase.AddChatString(UserName, Message);
             UpdatedStat(StreamStatType.TotalChats);
