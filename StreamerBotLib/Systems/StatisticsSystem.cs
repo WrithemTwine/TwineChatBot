@@ -138,6 +138,18 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        public static void ClearUserList(DateTime Stopped)
+        {
+            lock (CurrUsers)
+            {
+                foreach (string U in CurrUsers)
+                {
+                    PostDataUserLeft(U, Stopped);
+                }
+                CurrUsers.Clear();
+            }
+        }
+
         private static void PostDataUserLeft(string User, DateTime CurrTime)
         {
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
@@ -212,14 +224,7 @@ namespace StreamerBotLib.Systems
 
         public static void StreamOffline(DateTime Stopped)
         {
-            lock (CurrUsers)
-            {
-                foreach (string U in CurrUsers)
-                {
-                    PostDataUserLeft(U, Stopped);
-                }
-                CurrUsers.Clear();
-            }
+            ClearUserList(Stopped);
 
             OptionFlags.IsStreamOnline = false;
             CurrStream.StreamEnd = Stopped;

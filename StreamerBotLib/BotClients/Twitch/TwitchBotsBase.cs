@@ -10,7 +10,7 @@ namespace StreamerBotLib.BotClients.Twitch
     public abstract class TwitchBotsBase : IOModule
     {
         /// <summary>
-        /// User name used in the connection
+        /// App Client Id for bot account used in the connection, connects with Access Token
         /// </summary>
         public static string TwitchClientID { get; set; }
 
@@ -20,9 +20,19 @@ namespace StreamerBotLib.BotClients.Twitch
         public static string TwitchBotUserName { get; set; }
 
         /// <summary>
+        /// User Id of the Bot Account
+        /// </summary>
+        public static string TwitchBotUserId { get; set; }
+
+        /// <summary>
         /// Channel name used in the connection
         /// </summary>
         public static string TwitchChannelName { get; set; }
+
+        /// <summary>
+        /// UserId of the Channel Name
+        /// </summary>
+        public static string TwitchChannelId { get; set; }
 
         /// <summary>
         /// Token used for the connection.

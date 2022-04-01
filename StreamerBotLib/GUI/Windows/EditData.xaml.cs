@@ -149,7 +149,7 @@ namespace StreamerBotLib.GUI.Windows
                 case PopupEditTableDataType.comboenum:
                     List<string> enumlist = new();
 
-                    if (dataColumn.ColumnName == "Permission")
+                    if (dataColumn.ColumnName is "Permission" or "ViewerTypes")
                     {
                         foreach (ViewerTypes s in Enum.GetValues(typeof(ViewerTypes)))
                         {
@@ -173,6 +173,27 @@ namespace StreamerBotLib.GUI.Windows
                     else if (dataColumn.ColumnName == "sort")
                     {
                         foreach (DataSort s in Enum.GetValues(typeof(DataSort)))
+                        {
+                            enumlist.Add(s.ToString());
+                        }
+                    }
+                    else if (dataColumn.ColumnName == "ModAction")
+                    {
+                        foreach (ModActions s in Enum.GetValues(typeof(ModActions)))
+                        {
+                            enumlist.Add(s.ToString());
+                        }
+                    }
+                    else if (dataColumn.ColumnName == "MsgType")
+                    {
+                        foreach (MsgTypes s in Enum.GetValues(typeof(MsgTypes)))
+                        {
+                            enumlist.Add(s.ToString());
+                        }
+                    }
+                    else if (dataColumn.ColumnName == "BanReason")
+                    {
+                        foreach (BanReason s in Enum.GetValues(typeof(BanReason)))
                         {
                             enumlist.Add(s.ToString());
                         }
@@ -399,7 +420,7 @@ namespace StreamerBotLib.GUI.Windows
             {
                 case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata":
                     return PopupEditTableDataType.databool;
-                case "Permission" or "Kind" or "action" or "sort":
+                case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes" or "BanReason":
                     return PopupEditTableDataType.comboenum;
                 case "":
                     return PopupEditTableDataType.combolist;

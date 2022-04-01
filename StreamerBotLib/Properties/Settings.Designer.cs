@@ -850,5 +850,29 @@ namespace StreamerBotLib.Properties {
                 this["TwitchFollowerRefreshHrs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ModerateUsersWarn {
+            get {
+                return ((bool)(this["ModerateUsersWarn"]));
+            }
+            set {
+                this["ModerateUsersWarn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModerateUsersAction {
+            get {
+                return ((bool)(this["ModerateUsersAction"]));
+            }
+            set {
+                this["ModerateUsersAction"] = value;
+            }
+        }
     }
 }

@@ -52,6 +52,8 @@ namespace StreamerBotLib.BotClients
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
+
+            
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -79,6 +81,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnUserJoined += Client_OnUserJoined;
                 TwitchBotChatClient.TwitchChat.OnUserLeft += Client_OnUserLeft;
                 TwitchBotChatClient.TwitchChat.OnUserTimedout += Client_OnUserTimedout;
+                TwitchBotChatClient.TwitchChat.OnMessageCleared += Client_OnMessageCleared;
 
                 TwitchBotChatClient.HandlersAdded = true;
             }
@@ -113,7 +116,6 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-
         #region Twitch Bot Chat Client
 
         private void TwitchBotChatClient_OnBotStarted(object sender, EventArgs e)
@@ -131,6 +133,8 @@ namespace StreamerBotLib.BotClients
         private void TwitchBotChatClient_OnBotStopped(object sender, EventArgs e)
         {
             InvokeBotEvent(this, BotEvents.TwitchChatBotStopped, new());
+
+            TwitchBotChatClient.HandlersAdded = false;
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
@@ -220,6 +224,11 @@ namespace StreamerBotLib.BotClients
         private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
             InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
+        }
+
+        private void Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
+        {
+            
         }
 
         #endregion

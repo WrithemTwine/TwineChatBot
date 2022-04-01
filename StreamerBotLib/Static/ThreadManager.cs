@@ -109,7 +109,7 @@ namespace StreamerBotLib.Static
         /// <returns>A new ThreadData object data bundle.</returns>
         private static ThreadData CreateThreadData(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            ThreadData threadData = new() { ThreadItem = new Thread(new ThreadStart(action)) { IsBackground = true }, CloseState = waitState, ThreadPriority = GetThreadPriority(Priority) };
+            ThreadData threadData = new() { ThreadItem = new Thread(new ThreadStart(action)), CloseState = waitState, ThreadPriority = GetThreadPriority(Priority) };
             ThreadAdd(threadData);
 
             return threadData;

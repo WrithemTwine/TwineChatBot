@@ -19,6 +19,7 @@
         Subscribe,
         UserJoined,
         ReturnUserJoined,
-        SupporterJoined
+        SupporterJoined,
+        BannedUser
     }
 }

@@ -22,13 +22,20 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Reports Game Category Name from querying a channel
         /// </summary>
-        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
-        
+        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;        
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
 
         public TwitchBotUserSvc()
         {
             BotClientName = Bots.TwitchUserBot;
+
+            RefreshSettings();
+
+            ThreadManager.CreateThreadStart(() =>
+            {
+                TwitchBotUserId = GetUserId(TwitchBotUserName);
+                TwitchChannelId = GetUserId(TwitchChannelName);
+            });
         }
 
         // TODO: implement !setcategory including the API calls
@@ -69,6 +76,12 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         #region ClientId can be different between Bot and Channel
+
+        public void BanUser(string BannedUserName, ModActions modActions, BanReason banReason, int Duration = 0)
+        {
+            ChooseConnectUserService();
+            _ = userLookupService.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
+        }
 
         /// <summary>
         /// Retrieves the Game Category for a channel. Performs event <code>Post_GetChannelGameName</code> when <paramref name="UserName"/> equals the TwitchChannelName.
@@ -157,7 +170,6 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             GetChannelPoints?.Invoke(this, new OnGetChannelPointsEventArgs() { ChannelPointNames = CustomRewardsList });
         }
-
 
         #endregion
     }

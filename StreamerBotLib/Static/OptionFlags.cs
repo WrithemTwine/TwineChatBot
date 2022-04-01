@@ -91,6 +91,9 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchStreamerUseToken { get; set; }
 
+        public static bool ModerateUsersWarn { get; set; }
+        public static bool ModerateUsersAction { get; set; }
+
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
@@ -172,6 +175,9 @@ namespace StreamerBotLib.Static
                 TwitchStreamOauthToken = Settings.Default.TwitchStreamOauthToken;
 
                 TwitchStreamerUseToken = Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
+
+                ModerateUsersWarn = Settings.Default.ModerateUsersWarn;
+                ModerateUsersAction = Settings.Default.ModerateUsersAction;
             }
         }
 

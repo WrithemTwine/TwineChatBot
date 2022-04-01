@@ -18,7 +18,7 @@ namespace StreamerBotLib.Systems
 {
     public class CommandSystem : SystemsBase, INotifyPropertyChanged
     {
-        private Thread ElapsedThread;
+        private static Thread ElapsedThread;
         private bool ChatBotStarted;
 
         // TODO: add account merging for a user, approval by a mod+ (moderator, broadcaster)
@@ -213,7 +213,6 @@ namespace StreamerBotLib.Systems
             return temp;
         }
 
-        #region New Command Code
         /// <summary>
         /// Establishes the permission level for the user who sends the message.
         /// </summary>
@@ -263,7 +262,7 @@ namespace StreamerBotLib.Systems
             {
                 result = "";
             }
-            else if ((ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
+            else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
             {
                 result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
             }
@@ -531,6 +530,5 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        #endregion
     }
 }

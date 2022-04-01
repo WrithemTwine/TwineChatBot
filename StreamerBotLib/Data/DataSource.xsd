@@ -206,6 +206,35 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="BanRules" msprop:Generator_TableClassName="BanRulesDataTable" msprop:Generator_TableVarName="tableBanRules" msprop:Generator_RowChangedName="BanRulesRowChanged" msprop:Generator_TablePropName="BanRules" msprop:Generator_RowDeletingName="BanRulesRowDeleting" msprop:Generator_RowChangingName="BanRulesRowChanging" msprop:Generator_RowEvHandlerName="BanRulesRowChangeEventHandler" msprop:Generator_RowDeletedName="BanRulesRowDeleted" msprop:Generator_RowClassName="BanRulesRow" msprop:Generator_UserTableName="BanRules" msprop:Generator_RowEvArgName="BanRulesRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="ViewerTypes" msprop:Generator_ColumnVarNameInTable="columnViewerTypes" msprop:Generator_ColumnPropNameInRow="ViewerTypes" msprop:Generator_ColumnPropNameInTable="ViewerTypesColumn" msprop:Generator_UserColumnName="ViewerTypes" type="xs:string" minOccurs="0" />
+              <xs:element name="MsgType" msprop:Generator_ColumnVarNameInTable="columnMsgType" msprop:Generator_ColumnPropNameInRow="MsgType" msprop:Generator_ColumnPropNameInTable="MsgTypeColumn" msprop:Generator_UserColumnName="MsgType" type="xs:string" minOccurs="0" />
+              <xs:element name="ModAction" msprop:Generator_ColumnVarNameInTable="columnModAction" msprop:Generator_ColumnPropNameInRow="ModAction" msprop:Generator_ColumnPropNameInTable="ModActionColumn" msprop:Generator_UserColumnName="ModAction" type="xs:string" minOccurs="0" />
+              <xs:element name="TimeoutSeconds" msdata:Caption="Timeout seconds - max 1,209,600" msprop:Generator_ColumnVarNameInTable="columnTimeoutSeconds" msprop:Generator_ColumnPropNameInRow="TimeoutSeconds" msprop:Generator_ColumnPropNameInTable="TimeoutSecondsColumn" msprop:Generator_UserColumnName="TimeoutSeconds" type="xs:string" default="0" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="LearnMsgs" msprop:Generator_TableClassName="LearnMsgsDataTable" msprop:Generator_TableVarName="tableLearnMsgs" msprop:Generator_RowChangedName="LearnMsgsRowChanged" msprop:Generator_TablePropName="LearnMsgs" msprop:Generator_RowDeletingName="LearnMsgsRowDeleting" msprop:Generator_RowChangingName="LearnMsgsRowChanging" msprop:Generator_RowEvHandlerName="LearnMsgsRowChangeEventHandler" msprop:Generator_RowDeletedName="LearnMsgsRowDeleted" msprop:Generator_RowClassName="LearnMsgsRow" msprop:Generator_UserTableName="LearnMsgs" msprop:Generator_RowEvArgName="LearnMsgsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="MsgType" msprop:Generator_ColumnVarNameInTable="columnMsgType" msprop:Generator_ColumnPropNameInRow="MsgType" msprop:Generator_ColumnPropNameInTable="MsgTypeColumn" msprop:Generator_UserColumnName="MsgType" type="xs:string" minOccurs="0" />
+              <xs:element name="TeachingMsg" msprop:Generator_ColumnVarNameInTable="columnTeachingMsg" msprop:Generator_ColumnPropNameInRow="TeachingMsg" msprop:Generator_ColumnPropNameInTable="TeachingMsgColumn" msprop:Generator_UserColumnName="TeachingMsg" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="BanReasons" msprop:Generator_TableClassName="BanReasonsDataTable" msprop:Generator_TableVarName="tableBanReasons" msprop:Generator_RowChangedName="BanReasonsRowChanged" msprop:Generator_TablePropName="BanReasons" msprop:Generator_RowDeletingName="BanReasonsRowDeleting" msprop:Generator_RowChangingName="BanReasonsRowChanging" msprop:Generator_RowEvHandlerName="BanReasonsRowChangeEventHandler" msprop:Generator_RowDeletedName="BanReasonsRowDeleted" msprop:Generator_RowClassName="BanReasonsRow" msprop:Generator_UserTableName="BanReasons" msprop:Generator_RowEvArgName="BanReasonsRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
+              <xs:element name="MsgType" msprop:Generator_ColumnVarNameInTable="columnMsgType" msprop:Generator_ColumnPropNameInRow="MsgType" msprop:Generator_ColumnPropNameInTable="MsgTypeColumn" msprop:Generator_UserColumnName="MsgType" type="xs:string" minOccurs="0" />
+              <xs:element name="BanReason" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="BanReason" msprop:Generator_ColumnVarNameInTable="columnBanReason" msprop:Generator_ColumnPropNameInTable="BanReasonColumn" msprop:Generator_UserColumnName="BanReason" type="xs:string" default="None" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
     <xs:unique name="Currency_ClusteredKey" msdata:PrimaryKey="true">
@@ -301,6 +330,18 @@
     <xs:unique name="CustomWelcome_Constraint2" msdata:ConstraintName="Constraint2">
       <xs:selector xpath=".//mstns:CustomWelcome" />
       <xs:field xpath="mstns:UserName" />
+    </xs:unique>
+    <xs:unique name="BanRules_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:BanRules" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="LearnMsgs_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:LearnMsgs" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="BanReasons_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:BanReasons" />
+      <xs:field xpath="mstns:Id" />
     </xs:unique>
     <xs:keyref name="Users_Followers" refer="Users_Constraint2" msprop:rel_Generator_UserChildTable="Followers" msprop:rel_Generator_ChildPropName="GetFollowersRows" msprop:rel_Generator_UserRelationName="Users_Followers" msprop:rel_Generator_ParentPropName="UsersRow" msprop:rel_Generator_RelationVarName="relationUsers_Followers" msprop:rel_Generator_UserParentTable="Users" msdata:UpdateRule="None">
       <xs:selector xpath=".//mstns:Followers" />

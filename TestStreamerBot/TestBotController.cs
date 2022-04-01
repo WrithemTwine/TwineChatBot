@@ -343,14 +343,14 @@ namespace TestStreamerBot
             {
                 botController.HandleUserJoined(new() { U }, Bots.TwitchChatBot);
                 Thread.Sleep(Random.Next(10000, 80000));
-                botController.HandleMessageReceived(U, 0 == Random.Next(0, 1), false, false, 0, "Hey stud!", Bots.TwitchChatBot);
+                botController.HandleMessageReceived(new() { DisplayName=U, IsSubscriber = 0 == Random.Next(0, 1), Message="Hey stud!" }, Bots.TwitchChatBot);
             }
 
             // wait a little more
             Thread.Sleep(18000);
 
             // receive the hostile ban message
-            botController.HandleMessageReceived(UserName, false, false, false, 0, Msg, Bots.TwitchChatBot);
+            botController.HandleMessageReceived(new() { DisplayName = UserName, IsSubscriber = 0 == Random.Next(0, 1), Message = Msg }, Bots.TwitchChatBot);
 
             // wait a moment to recognize the message
             Thread.Sleep(5000);

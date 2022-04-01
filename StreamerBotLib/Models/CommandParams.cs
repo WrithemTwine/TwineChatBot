@@ -84,7 +84,7 @@ namespace StreamerBotLib.Models
                             data.Unit = value;
                             break;
                         case "p":
-                            data.Permission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), value);
+                            data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), value);
                             break;
                         case "top":
                             data.Top = int.Parse(value);
@@ -157,7 +157,7 @@ namespace StreamerBotLib.Models
                         edit.Add("unit", value);
                         break;
                     case "p":
-                        edit.Add("Permission", (string)System.Enum.Parse(typeof(ViewerTypes), value));
+                        edit.Add("Permission", (string)Enum.Parse(typeof(ViewerTypes), value));
                         break;
                     case "top":
                         edit.Add("top", value);

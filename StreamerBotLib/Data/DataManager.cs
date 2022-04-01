@@ -42,6 +42,8 @@ namespace StreamerBotLib.Data
         private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
         private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
 
+        private bool LearnMsgChanged = true; // always true to begin one learning cycle
+
         /// <summary>
         /// Record count to distinguish using Parallel For, ForEach loops
         /// </summary>
@@ -58,6 +60,10 @@ namespace StreamerBotLib.Data
             LoadData();
             _DataSource.EndInit();
             OnSaveData += SaveData;
+
+            _DataSource.LearnMsgs.TableNewRow += LearnMsgs_TableNewRow;
+            _DataSource.LearnMsgs.LearnMsgsRowChanged += LearnMsgs_LearnMsgsRowChanged;
+            _DataSource.LearnMsgs.LearnMsgsRowDeleted += LearnMsgs_LearnMsgsRowDeleted;
         }
 
         #region Load and Exit Ops
@@ -254,17 +260,17 @@ namespace StreamerBotLib.Data
             switch (dataRetrieve)
             {
                 case DataRetrieve.EventMessage:
-                    table = DataSourceTableName.ChannelEvents.ToString();
+                    table = _DataSource.ChannelEvents.TableName;
                     criteriacolumn = "Name";
                     datacolumn = "Message";
                     break;
                 case DataRetrieve.EventEnabled:
-                    table = DataSourceTableName.ChannelEvents.ToString();
+                    table = _DataSource.ChannelEvents.TableName;
                     criteriacolumn = "Name";
                     datacolumn = "IsEnabled";
                     break;
                 case DataRetrieve.EventRepeat:
-                    table = DataSourceTableName.ChannelEvents.ToString();
+                    table = _DataSource.ChannelEvents.TableName;
                     criteriacolumn = "Name";
                     datacolumn = "RepeatMsg";
                     break;
@@ -435,7 +441,7 @@ switches:
 
                 if (rows != null && rows.Length > 0)
                 {
-                    ViewerTypes cmdpermission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
+                    ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
 
                     return cmdpermission >= permission;
                 }
@@ -857,6 +863,10 @@ switches:
                 {
                     ChannelEventActions.SupporterJoined,
                     new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                },
+                {
+                    ChannelEventActions.BannedUser,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 }
             };
             lock (_DataSource)
@@ -1616,6 +1626,51 @@ switches:
             }
 
             return result;
+        }
+
+        #endregion
+
+        #region Machine Learning Moderation
+
+        private void LearnMsgs_LearnMsgsRowDeleted(object sender, LearnMsgsRowChangeEvent e)
+        {
+            LearnMsgChanged = true;
+        }
+
+        private void LearnMsgs_LearnMsgsRowChanged(object sender, LearnMsgsRowChangeEvent e)
+        {
+            LearnMsgChanged = true;
+        }
+
+        private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
+        {
+            LearnMsgChanged = true;
+        }
+
+        public List<LearnMsgsRow> UpdateLearnedMsgs()
+        {
+            if (LearnMsgChanged)
+            {
+                LearnMsgChanged = false;
+                return new((LearnMsgsRow[])_DataSource.LearnMsgs.Select());
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Tuple<ModActions, BanReason, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        {
+            BanReason banReason;
+
+            BanReasonsRow banrow = (BanReasonsRow)_DataSource.BanReasons.Select($"MsgType='{msgTypes}'").FirstOrDefault();
+
+            banReason = banrow != null ? (BanReason)Enum.Parse(typeof(BanReason), banrow.BanReason) : BanReason.None;
+
+            BanRulesRow banRulesRow = (BanRulesRow)_DataSource.BanRules.Select($"ViewerTypes='{viewerTypes}' and MsgType='{msgTypes}'").FirstOrDefault();
+
+            return new((ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction), banReason, int.Parse(banRulesRow.TimeoutSeconds));
         }
 
         #endregion

@@ -20,6 +20,9 @@ namespace StreamerBotLib.Systems
     public class SystemsController
     {
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
+        public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
+
+        // TODO: fix - "stream started and live, user clicks 'enable repeat timers', 'repeat timers' should restart"
 
         public static DataManager DataManage { get; private set; } = new();
 
@@ -30,6 +33,7 @@ namespace StreamerBotLib.Systems
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
         private CurrencySystem Currency { get; set; }
+        private ModerationSystem Moderation { get; set; }
 
         internal Dispatcher AppDispatcher { get; set; }
 
@@ -44,7 +48,6 @@ namespace StreamerBotLib.Systems
         private bool GiveawayStarted = false;
         private readonly List<string> GiveawayCollectionList = new();
 
-
         public SystemsController()
         {
             SystemsBase.DataManage = DataManage;
@@ -53,6 +56,7 @@ namespace StreamerBotLib.Systems
             Stats = new();
             Command = new();
             Currency = new();
+            Moderation = new();
 
             Command.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             Command.ProcessedCommand += Command_ProcessedCommand;
@@ -79,7 +83,7 @@ namespace StreamerBotLib.Systems
 
         public void Exit()
         {
-            ProcessMsgs.Join();
+            ProcessMsgs?.Join();
         }
 
         #region Chatbot
@@ -108,11 +112,14 @@ namespace StreamerBotLib.Systems
 
         public void NotifyBotStart()
         {
+            StatisticsSystem.ClearUserList(DateTime.Now.ToLocalTime());
+
             ChatBotStarted = true;
             ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
             ProcessMsgs.Start();
 
             Command.StartElapsedTimerThread();
+            Moderation.ManageLearnedMsgList();
         }
 
         public void NotifyBotStop()
@@ -310,6 +317,8 @@ namespace StreamerBotLib.Systems
 
         public void UserJoined(List<string> UserNames, Bots Source)
         {
+            while (!ChatBotStarted) { } // ChatBot starts and a method clears user list, this holds until ready
+
             DateTime Curr = DateTime.Now.ToLocalTime();
 
             foreach (string user in UserNames)
@@ -402,26 +411,53 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
+        public void MessageReceived(CmdMessage MsgReceived, Bots Source)
         {
-            SystemsBase.AddChatString(UserName, Message);
+            MsgReceived.UserType = CommandSystem.ParsePermission(MsgReceived);
+
+            if (OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn)
+            {
+                Tuple<ModActions, int, MsgTypes, BanReason> action = Moderation.ModerateMessage(MsgReceived);
+
+                if (OptionFlags.ModerateUsersWarn)
+                {
+                    if (action.Item1 is ModActions.Ban or ModActions.Timeout)
+                    {
+                        SendMessage($"Moderator should {action.Item1} User for {action.Item4} due to {action.Item3} message.");
+                    }
+                }
+                else if (OptionFlags.ModerateUsersAction)
+                {
+                    // don't fix it yet
+                    if (action.Item1 == ModActions.Ban)
+                    {
+
+                    }
+                    else if (action.Item1 == ModActions.Timeout)
+                    {
+
+                    }
+                }
+            }
+
+            SystemsBase.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
             UpdatedStat(StreamStatType.TotalChats);
 
-            if (IsSubscriber)
+            if (MsgReceived.IsSubscriber)
             {
-                StatisticsSystem.SubJoined(UserName);
+                StatisticsSystem.SubJoined(MsgReceived.DisplayName);
             }
-            if (IsVip)
+            if (MsgReceived.IsVip)
             {
-                StatisticsSystem.VIPJoined(UserName);
+                StatisticsSystem.VIPJoined(MsgReceived.DisplayName);
             }
-            if (IsModerator)
+            if (MsgReceived.IsModerator)
             {
-                StatisticsSystem.ModJoined(UserName);
+                StatisticsSystem.ModJoined(MsgReceived.DisplayName);
             }
 
             // handle bit cheers
-            if (Bits > 0)
+            if (MsgReceived.Bits > 0)
             {
                 lock (ProcMsgQueue)
                 {
@@ -432,23 +468,24 @@ namespace StreamerBotLib.Systems
                         {
                             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                             {
-                                new(MsgVars.user, UserName),
-                                new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
+                                new(MsgVars.user, MsgReceived.DisplayName),
+                                new(MsgVars.bits, FormatData.Plurality(MsgReceived.Bits, MsgVars.Pluralbits) )
                             });
 
                             SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
 
-                            UpdatedStat(StreamStatType.Bits, Bits);
+                            UpdatedStat(StreamStatType.Bits, MsgReceived.Bits);
                             UpdatedStat(StreamStatType.AutoEvents);
                         }
                     }));
                 }
             }
 
-            if (RegisterJoinedUser(UserName, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
+            if (RegisterJoinedUser(MsgReceived.DisplayName, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
             {
-                UserWelcomeMessage(UserName, Source);
+                UserWelcomeMessage(MsgReceived.DisplayName, Source);
             }
+
         }
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)

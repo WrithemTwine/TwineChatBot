@@ -22,10 +22,10 @@
     
     
     <!-- Begin- Manage Scopes-->
-    
-    <system:String x:Key="CredentialsTwitchScopesDiffOauthBot">bits:read chat:read chat:edit channel:moderate</system:String>
+
+    <system:String x:Key="CredentialsTwitchScopesDiffOauthBot">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users</system:String>
     <system:String x:Key="CredentialsTwitchScopesDiffOauthChannel">channel:read:redemptions</system:String>
-    <system:String x:Key="CredentialsTwitchScopesOauthSame">bits:read chat:read chat:edit channel:moderate channel:read:redemptions</system:String>
+    <system:String x:Key="CredentialsTwitchScopesOauthSame">bits:read chat:read chat:edit channel:moderate channel:read:redemptions moderator:manage:banned_users</system:String>
 
     <!-- End-Manage Scopes-->
     

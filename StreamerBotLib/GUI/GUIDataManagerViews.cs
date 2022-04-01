@@ -48,6 +48,9 @@ namespace StreamerBotLib.GUI
         public DataView OutRaidData { get; private set; } // DataSource.OutRaidDataDataTable
         public DataView GiveawayUserData { get; private set; } // DataSource.GiveawayUserDataDataTable
         public DataView CustomWelcomeData { get; private set; } // DataSource.CustomWelcomeDataTable
+        public DataView LearnMsgs { get; private set; }
+        public DataView BanRules { get; private set; }
+        public DataView BanReasons { get; private set; }
 
         #endregion
 
@@ -104,6 +107,9 @@ namespace StreamerBotLib.GUI
             OutRaidData = dataManager._DataSource.OutRaidData.DefaultView;
             GiveawayUserData = dataManager._DataSource.GiveawayUserData.DefaultView;
             CustomWelcomeData = dataManager._DataSource.CustomWelcome.DefaultView;
+            LearnMsgs = dataManager._DataSource.LearnMsgs.DefaultView;
+            BanRules = dataManager._DataSource.BanRules.DefaultView;
+            BanReasons = dataManager._DataSource.BanReasons.DefaultView;
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
@@ -121,35 +127,43 @@ namespace StreamerBotLib.GUI
             OutRaidData.ListChanged += DataView_ListChanged;
             GiveawayUserData.ListChanged += DataView_ListChanged;
             CustomWelcomeData.ListChanged += DataView_ListChanged;
+            LearnMsgs.ListChanged += DataView_ListChanged;
+            BanRules.ListChanged += DataView_ListChanged;
+            BanReasons.ListChanged += DataView_ListChanged;
 
             SetCommandCollection();
         }
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            NotifyPropertyChanged(nameof(sender));
-
-            // refresh the 'status bar' count items
-            NotifyPropertyChanged(nameof(Users));
-            NotifyPropertyChanged(nameof(CurrFollowers));
-            NotifyPropertyChanged(nameof(BuiltInCommands));
-            NotifyPropertyChanged(nameof(Commands));
-
-            if (sender == Commands)
+            lock (Users)
             {
-                SetCommandCollection();
+                NotifyPropertyChanged(nameof(sender));
+
+                // refresh the 'status bar' count items
+                NotifyPropertyChanged(nameof(Users));
+                NotifyPropertyChanged(nameof(CurrFollowers));
+                NotifyPropertyChanged(nameof(BuiltInCommands));
+                NotifyPropertyChanged(nameof(Commands));
+
+                if (sender == Commands)
+                {
+                    SetCommandCollection();
+                }
             }
-            //SaveTableData();
         }
 
         private void SetCommandCollection()
         {
-            foreach (DataSource.CommandsRow c in from DataSource.CommandsRow c in Commands.Table.Select()
-                              where !CommandCollection.Contains(c.CmdName)
-                              orderby c.CmdName
-                              select c)
+            lock (Commands)
             {
-                CommandCollection.Add(c.CmdName);
+                foreach (DataSource.CommandsRow c in from DataSource.CommandsRow c in Commands.Table.Select()
+                                                     where !CommandCollection.Contains(c.CmdName)
+                                                     orderby c.CmdName
+                                                     select c)
+                {
+                    CommandCollection.Add(c.CmdName);
+                }
             }
         }
     }

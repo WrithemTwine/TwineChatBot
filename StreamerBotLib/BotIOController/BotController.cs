@@ -476,7 +476,25 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchMessageReceived(OnMessageReceivedArgs e)
         {
-            HandleMessageReceived(e.ChatMessage.DisplayName, e.ChatMessage.IsSubscriber, e.ChatMessage.IsVip, e.ChatMessage.IsModerator, e.ChatMessage.Bits, e.ChatMessage.Message, Bots.TwitchChatBot);
+            HandleMessageReceived(
+                new()
+                {
+                    DisplayName = e.ChatMessage.DisplayName,
+                    Channel = e.ChatMessage.Channel,
+                    IsBroadcaster = e.ChatMessage.IsBroadcaster,
+                    IsHighlighted = e.ChatMessage.IsHighlighted,
+                    IsMe = e.ChatMessage.IsMe,
+                    IsModerator = e.ChatMessage.IsModerator,
+                    IsPartner = e.ChatMessage.IsPartner,
+                    IsSkippingSubMode = e.ChatMessage.IsSkippingSubMode,
+                    IsStaff = e.ChatMessage.IsStaff,
+                    IsSubscriber = e.ChatMessage.IsSubscriber,
+                    IsTurbo = e.ChatMessage.IsTurbo,
+                    IsVip = e.ChatMessage.IsVip,
+                    Message = e.ChatMessage.Message,
+                    Bits = e.ChatMessage.Bits
+                }
+                , Bots.TwitchChatBot);
         }
 
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
@@ -790,9 +808,9 @@ namespace StreamerBotLib.BotIOController
             Systems.UserJoined(new() { UserName }, Source);
         }
 
-        public void HandleMessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
+        public void HandleMessageReceived(Models.CmdMessage MsgReceived, Bots Source)
         {
-            Systems.MessageReceived(UserName, IsSubscriber, IsVip, IsModerator, Bits, Message, Source);
+            Systems.MessageReceived(MsgReceived, Source);
         }
 
         public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category, Bots Source)
