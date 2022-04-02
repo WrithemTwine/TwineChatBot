@@ -1,4 +1,6 @@
-﻿using Accord.MachineLearning;
+﻿#define UPDATELEARN
+
+using Accord.MachineLearning;
 using Accord.Math.Distances;
 
 using StreamerBotLib.Enums;
@@ -7,17 +9,18 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace StreamerBotLib.MachineLearning
 {
     public static class MessageAnalysis
     {
-        private static KNearestNeighbors<string> KNearest;
         private static List<BotModAction> ModActions { get; set; } = new();
         private static List<string> StopWords { get; set; } = new();
         private static List<string> Punctuation { get; } = new() { "!", "­¡", "?", "¿", "(", ")", "[", "]", "{", "}", "+", "-", "*", "/", "\"", "<", ">", "'", ":", ";", "&", "|", "@", "#", "$", "%", "^", "~", "`", "_", "\\" };
+
+        private static List<string> PreppedInputs { get; set; } = new();
+        private static List<int> PreppedOutputs { get; set; } = new();
 
         static MessageAnalysis()
         {
@@ -920,71 +923,54 @@ zero
 
         public static void UpdateLearningList(List<BotModAction> botModActions)
         {
-            ModActions.UniqueAddRange(botModActions);
+            if (botModActions.Count > 0)
+            {
+                ModActions.Clear();
+                ModActions.UniqueAddRange(botModActions);
+            }
 
             LearnModel();
         }
 
         private static void LearnModel()
         {
-            KNearest = new(k: 3, distance: new Levenshtein());
 
-            List<string> inputs = new();
-            List<int> outputs = new();
+            PreppedInputs.Clear();
+            PreppedOutputs.Clear();
 
             foreach (BotModAction action in ModActions)
             {
-                   inputs.Add(string.Join(" ", PrepString(action.LearnMsg)));
-                    outputs.Add((int)action.ModActions);
+                PreppedInputs.Add(string.Join(" ", PrepString(action.LearnMsg)));
+                PreppedOutputs.Add((int)action.ModActions);
             }
 
-            KNearest.Learn(inputs.ToArray(), outputs.ToArray());
+#if UPDATELEARN
+            KNearest = new(k: 3, distance: new Levenshtein());
+
+            KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
+#endif
         }
+
+
+        private static KNearestNeighbors<string> KNearest { get; set; }
 
         public static MsgTypes Predict(string PredictText)
         {
             try
-            { 
-                /*
-                string guess = PrepString(PredictText);                
-                List<int> outputs = new();
+            {
+#if !UPDATELEARN
+                KNearest = new(k: 2, distance: new Levenshtein());
 
-                outputs.Add(KNearest.Decide(guess));
-
-                Dictionary<int, int> decisionmatrix = new();
-
-                foreach (int Out in outputs)
-                {
-                    if (decisionmatrix.ContainsKey(Out))
-                    {
-                        decisionmatrix[Out]++;
-                    }
-                    else
-                    {
-                        decisionmatrix.Add(Out, 1);
-                    }
-                }
-
-
-                int MaxResult = -1;
-
-                foreach (int K in decisionmatrix.Keys)
-                {
-                    if (decisionmatrix[K] > MaxResult)
-                    {
-                        MaxResult = decisionmatrix[K];
-                    }
-                }
-                */
+                KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
+#endif
 
                 return (MsgTypes)KNearest.Decide(PrepString(PredictText));
-
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
 
-                return MsgTypes.Allow;
+                return MsgTypes.LearnMore;
             }
         }
 

@@ -8,6 +8,6 @@ namespace StreamerBotLib.Events
     {
         public string UserName { get; set; }
         public int Duration { get; set; }
-        public BanReason BanReason { get; set; }
+        public BanReasons BanReason { get; set; }
     }
 }

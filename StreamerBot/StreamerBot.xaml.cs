@@ -33,6 +33,9 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
+        // TODO: add remove users who aren't followers
+        // TODO: add 'delete rows' context menu for datagrids
+
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 

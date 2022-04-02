@@ -31,13 +31,13 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public Tuple<ModActions, int, MsgTypes, BanReason> ModerateMessage(CmdMessage MsgReceived)
+        public Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)
         {
             ManageLearnedMsgList();
 
             MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
 
-            Tuple<ModActions, BanReason, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
+            Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
 
             return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
         }

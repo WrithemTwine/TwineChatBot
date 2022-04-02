@@ -193,7 +193,7 @@ namespace StreamerBotLib.GUI.Windows
                     }
                     else if (dataColumn.ColumnName == "BanReason")
                     {
-                        foreach (BanReason s in Enum.GetValues(typeof(BanReason)))
+                        foreach (BanReasons s in Enum.GetValues(typeof(BanReasons)))
                         {
                             enumlist.Add(s.ToString());
                         }

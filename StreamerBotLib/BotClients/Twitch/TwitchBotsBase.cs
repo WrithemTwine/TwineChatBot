@@ -22,7 +22,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// User Id of the Bot Account
         /// </summary>
-        public static string TwitchBotUserId { get; set; }
+        public static string TwitchBotUserId { get; set; } = null;
 
         /// <summary>
         /// Channel name used in the connection
@@ -32,7 +32,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// UserId of the Channel Name
         /// </summary>
-        public static string TwitchChannelId { get; set; }
+        public static string TwitchChannelId { get; set; } = null;
 
         /// <summary>
         /// Token used for the connection.
@@ -78,6 +78,5 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
             ShowConnectionMsg = Settings.Default.MsgBotConnection;
         }
-
     }
 }

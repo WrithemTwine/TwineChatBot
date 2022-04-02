@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.MachineLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -130,6 +131,7 @@ namespace StreamerBotLib.Data
         {
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
+            SetLearnedMessages();
             NotifySaveData();
         }
 
@@ -1632,6 +1634,34 @@ switches:
 
         #region Machine Learning Moderation
 
+        private void SetLearnedMessages()
+        {
+            if (!_DataSource.LearnMsgs.Select().Any())
+            {
+                foreach(LearnedMessage M in LearnedMessagesPrimer.PrimerList)
+                {
+                    _DataSource.LearnMsgs.AddLearnMsgsRow(M.MsgType.ToString(), M.Message);
+                }
+            }
+
+            if (!_DataSource.BanReasons.Select().Any())
+            {
+                foreach (BanReason B in LearnedMessagesPrimer.BanReasonList)
+                {
+                    _DataSource.BanReasons.AddBanReasonsRow(B.MsgType.ToString(), B.Reason.ToString());
+                }
+            }
+
+            if (!_DataSource.BanRules.Select().Any())
+            {
+                foreach(BanViewerRule BVR in LearnedMessagesPrimer.BanViewerRulesList)
+                {
+                    _DataSource.BanRules.AddBanRulesRow(BVR.ViewerType.ToString(), BVR.MsgType.ToString(), BVR.ModAction.ToString(), BVR.TimeoutSeconds);
+                }
+            }
+
+        }
+
         private void LearnMsgs_LearnMsgsRowDeleted(object sender, LearnMsgsRowChangeEvent e)
         {
             LearnMsgChanged = true;
@@ -1660,18 +1690,35 @@ switches:
             }
         }
 
-        public Tuple<ModActions, BanReason, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        public void AddLearnMsgsRow(string Message, MsgTypes MsgType)
         {
-            BanReason banReason;
+            bool found = (from LearnMsgsRow learnMsgsRow in _DataSource.LearnMsgs.Select()
+                          where learnMsgsRow.TeachingMsg == Message
+                          select new { }).Any();
+
+            if (!found)
+            {
+                _DataSource.LearnMsgs.AddLearnMsgsRow(MsgType.ToString(), Message);
+            }
+        }
+
+        public Tuple<ModActions, BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        {
+            BanReasons banReason;
 
             BanReasonsRow banrow = (BanReasonsRow)_DataSource.BanReasons.Select($"MsgType='{msgTypes}'").FirstOrDefault();
 
-            banReason = banrow != null ? (BanReason)Enum.Parse(typeof(BanReason), banrow.BanReason) : BanReason.None;
+            banReason = banrow != null ? (BanReasons)Enum.Parse(typeof(BanReasons), banrow.BanReason) : BanReasons.None;
 
             BanRulesRow banRulesRow = (BanRulesRow)_DataSource.BanRules.Select($"ViewerTypes='{viewerTypes}' and MsgType='{msgTypes}'").FirstOrDefault();
 
-            return new((ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction), banReason, int.Parse(banRulesRow.TimeoutSeconds));
+            int Timeout = banRulesRow == null ? 0 : int.Parse(banRulesRow.TimeoutSeconds);
+            ModActions action = banRulesRow == null ? ModActions.Allow : (ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction);
+
+            return new(action, banReason, Timeout);
         }
+
+
 
         #endregion
 

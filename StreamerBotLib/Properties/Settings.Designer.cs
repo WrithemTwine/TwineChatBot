@@ -874,5 +874,17 @@ namespace StreamerBotLib.Properties {
                 this["ModerateUsersAction"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModerateUserLearnMsgs {
+            get {
+                return ((bool)(this["ModerateUserLearnMsgs"]));
+            }
+            set {
+                this["ModerateUserLearnMsgs"] = value;
+            }
+        }
     }
 }

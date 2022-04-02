@@ -7,7 +7,7 @@
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=TwineStreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=TwineStreamerBotLib"
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
-        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
+        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"    
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="770" Width="1020"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
@@ -583,6 +583,19 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
+                                        <GroupBox Header="Any - Moderation">
+                                            <StackPanel>
+                                                <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
+                                                    <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding ModerateUsersWarn}" Click="CheckBox_Click_SaveSettings">
+                                                    <TextBlock>Provide chat message of probable moderator action.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding ModerateUsersAction}" Click="CheckBox_Click_SaveSettings">
+                                                    <TextBlock>The bot performs the moderation action</TextBlock>
+                                                </CheckBox>
+                                            </StackPanel>
+                                        </GroupBox>
                                         <GroupBox Header="Twitch - Format Bot messages">
                                             <StackPanel>
                                                 <Label Content="/me changes message to all italics" />
@@ -678,21 +691,19 @@
                                             </StackPanel>
                                         </GroupBox>
 
+                                        <!-- Settings Template                                
+                                            <GroupBox Header="Twitch -">
+                                                <StackPanel>
+                                                    <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
+                                                        <TextBlock>Auto </TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
+                                                        <TextBlock>Enable </TextBlock>
+                                                    </CheckBox>
+                                                </StackPanel>
+                                            </GroupBox>
+                                            -->
 
-                                        <!-- Settings Template
-                                
-                                <GroupBox Header="Twitch -">
-                                    <StackPanel>
-                                        <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Auto </TextBlock>
-                                        </CheckBox>
-                                        <CheckBox IsChecked="{Binding TwitchRaidShoutOut}" Click="CheckBox_Click_SaveSettings">
-                                            <TextBlock>Enable </TextBlock>
-                                        </CheckBox>
-                                    </StackPanel>
-                                </GroupBox>
-                                
-                                -->
                                     </WrapPanel>
                                 </DockPanel>
                             </ScrollViewer>
@@ -725,8 +736,8 @@
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
                                 <DockPanel DockPanel.Dock="Top">
-                                    <DataGrid ItemsSource="{Binding BanReasons}" DockPanel.Dock="Left" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
-                                    <DataGrid ItemsSource="{Binding BanRules}" DockPanel.Dock="Right" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
+                                    <DataGrid Height="250" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="True" DockPanel.Dock="Left" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
+                                    <DataGrid Height="250" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" DockPanel.Dock="Right" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                                     <TextBlock>
                                         Timeout is marked in seconds, min is 1 and max is 1,209,600 (2 weeks). <LineBreak />
                                         When 'ModAction' is set to 'Ban', the timeout isn't used. <LineBreak />

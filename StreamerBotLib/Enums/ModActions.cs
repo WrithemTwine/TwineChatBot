@@ -2,6 +2,6 @@
 {
     public enum ModActions
     {
-        Ban, Timeout, Allow
+        Ban, Timeout, Allow, Respond
     }
 }

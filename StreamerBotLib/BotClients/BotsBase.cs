@@ -78,5 +78,10 @@ namespace StreamerBotLib.BotClients
         {
             throw new NotImplementedException();
         }
+
+        public virtual void SetIds()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

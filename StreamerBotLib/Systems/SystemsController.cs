@@ -15,6 +15,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
+using static StreamerBotLib.Data.DataSource;
+
 namespace StreamerBotLib.Systems
 {
     public class SystemsController
@@ -415,15 +417,19 @@ namespace StreamerBotLib.Systems
         {
             MsgReceived.UserType = CommandSystem.ParsePermission(MsgReceived);
 
-            if (OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn)
+            if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
             {
-                Tuple<ModActions, int, MsgTypes, BanReason> action = Moderation.ModerateMessage(MsgReceived);
+                Tuple<ModActions, int, MsgTypes, Enums.BanReasons> action = Moderation.ModerateMessage(MsgReceived);
 
                 if (OptionFlags.ModerateUsersWarn)
                 {
                     if (action.Item1 is ModActions.Ban or ModActions.Timeout)
                     {
                         SendMessage($"Moderator should {action.Item1} User for {action.Item4} due to {action.Item3} message.");
+                    }
+                    else if (action.Item3 == MsgTypes.LearnMore)
+                    {
+                        SendMessage("I am unable to make a determination. Please teach me more so I can better decide.");
                     }
                 }
                 else if (OptionFlags.ModerateUsersAction)
@@ -438,6 +444,11 @@ namespace StreamerBotLib.Systems
 
                     }
                 }
+            }
+
+            if (OptionFlags.ModerateUserLearnMsgs)
+            {
+                DataManage.AddLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
             }
 
             SystemsBase.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);

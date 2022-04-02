@@ -22,7 +22,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Reports Game Category Name from querying a channel
         /// </summary>
-        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;        
+        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
 
         public TwitchBotUserSvc()
@@ -30,12 +30,6 @@ namespace StreamerBotLib.BotClients.Twitch
             BotClientName = Bots.TwitchUserBot;
 
             RefreshSettings();
-
-            ThreadManager.CreateThreadStart(() =>
-            {
-                TwitchBotUserId = GetUserId(TwitchBotUserName);
-                TwitchChannelId = GetUserId(TwitchChannelName);
-            });
         }
 
         // TODO: implement !setcategory including the API calls
@@ -66,7 +60,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 OauthToken = OptionFlags.TwitchBotAccessToken;
             }
 
-            if(!OptionFlags.CheckSettingIsDefault(SettingsClientId, ClientId))
+            if (!OptionFlags.CheckSettingIsDefault(SettingsClientId, ClientId))
             {
                 userLookupService = null;
 
@@ -75,11 +69,21 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        public void SetIds()
+        {
+            if (TwitchChannelId == null && TwitchBotUserId == null)
+            {
+                TwitchBotUserId = GetUserId(TwitchBotUserName);
+                TwitchChannelId = GetUserId(TwitchChannelName);
+            }
+        }
+
         #region ClientId can be different between Bot and Channel
 
-        public void BanUser(string BannedUserName, ModActions modActions, BanReason banReason, int Duration = 0)
+        public void BanUser(string BannedUserName, BanReasons banReason, int Duration = 0)
         {
             ChooseConnectUserService();
+            SetIds();
             _ = userLookupService.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
         }
 

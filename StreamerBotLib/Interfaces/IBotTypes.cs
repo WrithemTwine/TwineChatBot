@@ -13,5 +13,7 @@ namespace StreamerBotLib.Interfaces
         public void StopBots();
 
         public void GetAllFollowers();
+
+        public void SetIds();
     }
 }

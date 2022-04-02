@@ -27,15 +27,34 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
-            return await _api.Helix.Channels.GetChannelInformationAsync(UserId ?? await GetUserId(UserName));
+            if (UserId != null)
+            {
+                return await _api.Helix.Channels.GetChannelInformationAsync(UserId);
+            }
+            else if (UserName != null)
+            {
+                string UserId_result = await GetUserId(UserName);
+                return UserId_result != null ? await _api.Helix.Channels.GetChannelInformationAsync(UserId_result) : null;
+            }
+
+            return null;
         }
 
         public async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
-            return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId ?? await GetUserId(UserName));
+            if (UserId != null)
+            {
+                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId);
+            }
+            else if (UserName != null)
+            {
+                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(await GetUserId(UserName));
+            }
+
+            return null;
         }
 
-        public async Task<BanUserResponse> BanUser(string UserId = null, string UserName = null, int forDuration = 0, BanReason banReason = BanReason.UnsolicitedSpamBot)
+        public async Task<BanUserResponse> BanUser(string UserId = null, string UserName = null, int forDuration = 0, BanReasons banReason = BanReasons.UnsolicitedSpam)
         {
             BanUserRequest userRequest = new() { UserId = UserId ?? await GetUserId(UserName), Duration = forDuration, Reason = banReason.ToString() };
 

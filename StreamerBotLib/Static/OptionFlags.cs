@@ -78,6 +78,7 @@ namespace StreamerBotLib.Static
         public static bool TwitchPubSubChannelPoints { get; set; }
 
         public static string TwitchChannelName { get; set; }
+        public static string TwitchBotUserName { get; set; }
         public static string TwitchBotClientId { get; set; }
         public static string TwitchBotAccessToken { get; set; }
 
@@ -93,6 +94,7 @@ namespace StreamerBotLib.Static
 
         public static bool ModerateUsersWarn { get; set; }
         public static bool ModerateUsersAction { get; set; }
+        public static bool ModerateUserLearnMsgs { get; set; }
 
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
@@ -167,6 +169,7 @@ namespace StreamerBotLib.Static
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
 
                 TwitchChannelName = Settings.Default.TwitchChannelName;
+                TwitchBotUserName = Settings.Default.TwitchBotUserName;
                 TwitchBotClientId = Settings.Default.TwitchClientID;
                 TwitchBotAccessToken = Settings.Default.TwitchAccessToken;
 
@@ -178,6 +181,7 @@ namespace StreamerBotLib.Static
 
                 ModerateUsersWarn = Settings.Default.ModerateUsersWarn;
                 ModerateUsersAction = Settings.Default.ModerateUsersAction;
+                ModerateUserLearnMsgs = Settings.Default.ModerateUserLearnMsgs;
             }
         }
 

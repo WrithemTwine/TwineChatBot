@@ -2,6 +2,6 @@
 {
     public enum MsgTypes
     {
-        InstantBanHateSpeech, InstantBanSpam, Questionable, Allow
+        InstantBanHateSpeech, InstantBanSpam, Questionable, Allow, UnidentifiedChatInput, LearnMore, Respond
     }
 }
