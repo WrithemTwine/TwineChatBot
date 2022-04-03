@@ -886,5 +886,53 @@ namespace StreamerBotLib.Properties {
                 this["ModerateUserLearnMsgs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int TwitchFollowerMsgLimit {
+            get {
+                return ((int)(this["TwitchFollowerMsgLimit"]));
+            }
+            set {
+                this["TwitchFollowerMsgLimit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerAutoBanBots {
+            get {
+                return ((bool)(this["TwitchFollowerAutoBanBots"]));
+            }
+            set {
+                this["TwitchFollowerAutoBanBots"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int TwitchFollowerAutoBanCount {
+            get {
+                return ((int)(this["TwitchFollowerAutoBanCount"]));
+            }
+            set {
+                this["TwitchFollowerAutoBanCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerEnableMsgLimit {
+            get {
+                return ((bool)(this["TwitchFollowerEnableMsgLimit"]));
+            }
+            set {
+                this["TwitchFollowerEnableMsgLimit"] = value;
+            }
+        }
     }
 }

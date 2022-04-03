@@ -58,6 +58,7 @@ namespace StreamerBotLib.BotIOController
 
             Systems = new();
             Systems.PostChannelMessage += Systems_PostChannelMessage;
+            Systems.BanUserRequest += Systems_BanUserRequest;
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
@@ -868,6 +869,19 @@ namespace StreamerBotLib.BotIOController
             Systems.PostGiveawayResult();
         }
         #endregion
+
+        #endregion
+
+        #region UserBot
+
+
+        private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
+        {
+            if(e.Source == Bots.TwitchChatBot)
+            {
+                TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
+            }
+        }
 
         #endregion
 

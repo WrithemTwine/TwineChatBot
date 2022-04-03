@@ -705,6 +705,62 @@ namespace StreamerBot
             }
         }
 
+        private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
+        {
+            CheckBox CBSource = null;
+            StackPanel SPSource = null;
+            if (sender.GetType() == typeof(CheckBox))
+            {
+                CBSource = (CheckBox)sender;
+            }
+            else if (sender.GetType() == typeof(StackPanel))
+            {
+                SPSource = (StackPanel)sender;
+            }
+
+            void SetVisibility(CheckBox box, StackPanel panel)
+            {
+                if (panel != null)
+                {
+                    panel.Visibility = (box.IsChecked == true) switch
+                    {
+                        true => Visibility.Visible,
+                        false => Visibility.Collapsed
+                    };
+                }
+            }
+
+            if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
+            {
+                SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
+            }
+            else if (CBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
+            {
+                SetVisibility(CheckBox_TwitchFollower_LimitMsgs, StackPanel_TwitchFollower_LimitMsgs_Count);
+            }
+            else if (CBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
+            {
+                SetVisibility(CheckBox_TwitchFollower_AutoRefresh, StackPanel_TwitchFollows_RefreshHrs);
+            }
+        }
+
+        private void TextBox_Follower_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox src = (TextBox)sender;
+
+            if(int.TryParse(src.Text, out int result))
+            {
+                if(result is <1 or > 100)
+                {
+                    src.Text = (result < 1 ? 1 : result > 100 ? 100 : result).ToString();
+                }
+            }
+        }
+
+        #region Moderate Followers
+
+        #endregion
+
         #region GUIAppStats
         private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
         {
@@ -1216,18 +1272,6 @@ namespace StreamerBot
             TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
         }
 
-        private void CheckBox_TwitchFollower_AutoRefresh_Checked(object sender, RoutedEventArgs e)
-        {
-            if (StackPanel_TwitchFollows_RefreshHrs != null && CheckBox_TwitchFollower_AutoRefresh != null)
-            {
-                StackPanel_TwitchFollows_RefreshHrs.Visibility = CheckBox_TwitchFollower_AutoRefresh.IsChecked switch
-                {
-                    true => Visibility.Visible,
-                    _ => Visibility.Hidden,
-                };
-            }
-        }
-
         private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox srchrs = sender as ComboBox;
@@ -1245,6 +1289,7 @@ namespace StreamerBot
         {
             Controller.TwitchStartUpdateAllFollowers();
         }
+
 
         #endregion
 

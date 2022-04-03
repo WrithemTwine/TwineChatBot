@@ -243,6 +243,11 @@ namespace StreamerBotLib.BotClients
             return TwitchBotUserSvc.GetUserId(UserName) != null;
         }
 
+        public void BanUserRequest(string UserName, BanReasons Reason, int Duration = 0)
+        {
+            TwitchBotUserSvc.BanUser(UserName, Reason, Duration);
+        }
+
         #endregion
 
         #region Follower Bot

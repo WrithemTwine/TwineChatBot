@@ -419,7 +419,7 @@ namespace StreamerBotLib.Systems
 
             if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
             {
-                Tuple<ModActions, int, MsgTypes, Enums.BanReasons> action = Moderation.ModerateMessage(MsgReceived);
+                Tuple<ModActions, int, MsgTypes, BanReasons> action = Moderation.ModerateMessage(MsgReceived);
 
                 if (OptionFlags.ModerateUsersWarn)
                 {
@@ -437,11 +437,11 @@ namespace StreamerBotLib.Systems
                     // don't fix it yet
                     if (action.Item1 == ModActions.Ban)
                     {
-
+                        RequestBanUser(Source, MsgReceived.DisplayName, action.Item4);
                     }
                     else if (action.Item1 == ModActions.Timeout)
                     {
-
+                        RequestBanUser(Source, MsgReceived.DisplayName, action.Item4, action.Item2);
                     }
                 }
             }
@@ -497,6 +497,11 @@ namespace StreamerBotLib.Systems
                 UserWelcomeMessage(MsgReceived.DisplayName, Source);
             }
 
+        }
+
+        private void RequestBanUser(Bots Source, string UserName, BanReasons Reason, int Duration = 0)
+        {
+            BanUserRequest?.Invoke(this, new() { Source = Source, UserName = UserName, BanReason = Reason, Duration = Duration });
         }
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)

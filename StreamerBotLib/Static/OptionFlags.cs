@@ -20,6 +20,10 @@ namespace StreamerBotLib.Static
         public static bool TwitchAddFollowerNotification { get; set; }
         public static bool TwitchFollowerAutoRefresh { get; set; }
         public static int TwitchFollowerRefreshHrs { get; set; }
+        public static bool TwitchFollowerEnableMsgLimit { get; set; }
+        public static int TwitchFollowerMsgLimit { get; set; }
+        public static bool TwitchFollowerAutoBanBots { get; set; }
+        public static int TwitchFollowerAutoBanCount { get; set; }
 
         public static bool FirstUserJoinedMsg { get; set; }
         public static bool FirstUserChatMsg { get; set; }
@@ -113,6 +117,10 @@ namespace StreamerBotLib.Static
                 TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
                 TwitchFollowerAutoRefresh = Settings.Default.TwitchFollowerAutoRefresh;
                 TwitchFollowerRefreshHrs = Settings.Default.TwitchFollowerRefreshHrs;
+                TwitchFollowerEnableMsgLimit = Settings.Default.TwitchFollowerEnableMsgLimit;
+                TwitchFollowerMsgLimit = Settings.Default.TwitchFollowerMsgLimit;
+                TwitchFollowerAutoBanBots = Settings.Default.TwitchFollowerAutoBanBots;
+                TwitchFollowerAutoBanCount = Settings.Default.TwitchFollowerAutoBanCount;
 
                 FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
                 FirstUserChatMsg = Settings.Default.FirstUserChatMsg;

@@ -583,7 +583,22 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Any - Moderation">
+                                        <GroupBox Header="Any - Moderate Follows">
+                                            <StackPanel>
+                                                <CheckBox x:Name="CheckBox_ModFollower_BanEnable" IsChecked="{Binding TwitchFollowerAutoBanBots}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">Enable auto-banning Follow bots</CheckBox>
+                                                <StackPanel x:Name="StackPanel_ModerateFollowers_Count" Orientation="Vertical" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
+                                                    <TextBlock>When Follow-bot looks every N seconds, total new follows are detected at one time. A cluster can indicate a follow-bot attack (or you're very popular).</TextBlock>
+
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Label>Choose (1 to 100):</Label>
+                                                        <TextBox Width="40" Height="18" Text="{Binding TwitchFollowerAutoBanCount, Mode=TwoWay}" HorizontalContentAlignment="Center"  LostFocus="TextBox_Follower_LostFocus" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                    </StackPanel>
+
+                                                    <Slider Value="{Binding TwitchFollowerAutoBanCount, Mode=TwoWay}" Maximum="100" Minimum="1" IsSnapToTickEnabled="True" IsSelectionRangeEnabled="True" SelectionEnd="1" SelectionStart="1" SmallChange="1" TickPlacement="Both" LargeChange="5" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <GroupBox Header="Any - Moderation Messages">
                                             <StackPanel>
                                                 <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
                                                     <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
@@ -612,13 +627,26 @@
                                                 <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                     <TextBlock TextWrapping="Wrap">Enable action to remove non-followers from the Follower list when bot starts.</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox x:Name="CheckBox_TwitchFollower_AutoRefresh" IsChecked="{Binding TwitchFollowerAutoRefresh, Mode=TwoWay}" Checked="CheckBox_TwitchFollower_AutoRefresh_Checked" Unchecked="CheckBox_TwitchFollower_AutoRefresh_Checked">
+
+                                                <CheckBox x:Name="CheckBox_TwitchFollower_LimitMsgs" IsChecked="{Binding TwitchFollowerEnableMsgLimit}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">Enable Limited Follower Messages</CheckBox>
+
+                                                <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count" Orientation="Vertical" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
+                                                    <TextBlock>Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</TextBlock>
+
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Label>Choose (1 to 100):</Label>
+                                                        <TextBox Width="40" Height="18" Text="{Binding TwitchFollowerMsgLimit, Mode=TwoWay}" HorizontalContentAlignment="Center" LostFocus="TextBox_Follower_LostFocus" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                    </StackPanel>
+
+                                                    <Slider Value="{Binding TwitchFollowerMsgLimit, Mode=TwoWay}" Maximum="100" Minimum="1" IsSnapToTickEnabled="True" IsSelectionRangeEnabled="True" SelectionEnd="1" SelectionStart="1" SmallChange="1" TickPlacement="Both" LargeChange="5" />
+                                                </StackPanel>
+                                                <CheckBox x:Name="CheckBox_TwitchFollower_AutoRefresh" IsChecked="{Binding TwitchFollowerAutoRefresh, Mode=TwoWay}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
                                                     <CheckBox.ToolTip>
                                                         <TextBlock>The Twitch API doesn't provide notices when someone unfollows. This refreshes follower list while bot is running - instead of restarting the Follow bot.</TextBlock>
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable Regular Follower Updatess</TextBlock>
                                                 </CheckBox>
-                                                <StackPanel x:Name="StackPanel_TwitchFollows_RefreshHrs" Orientation="Horizontal" Visibility="Hidden" Loaded="CheckBox_TwitchFollower_AutoRefresh_Checked">
+                                                <StackPanel x:Name="StackPanel_TwitchFollows_RefreshHrs" Orientation="Horizontal" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
                                                     <Label>Select Refresh Hours:</Label>
                                                     <ComboBox x:Name="ComboBox_TwitchFollower_RefreshHrs" Width="60" ToolTip="Select Frequency in Hours to Refresh Followers" SelectedValue="{Binding TwitchFollowerRefreshHrs, Mode=TwoWay}" SelectionChanged="ComboBox_TwitchFollower_RefreshHrs_SelectionChanged"/>
                                                 </StackPanel>
