@@ -15,8 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-using static StreamerBotLib.Data.DataSource;
-
 namespace StreamerBotLib.Systems
 {
     public class SystemsController
@@ -195,17 +193,51 @@ namespace StreamerBotLib.Systems
 
         private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
         {
-            foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+            if (OptionFlags.TwitchFollowerAutoBanBots && FollowList.Count() >= OptionFlags.TwitchFollowerAutoBanCount)
             {
-                if (OptionFlags.ManageFollowers)
+                foreach(Follow F in FollowList)
                 {
-                    if (FollowEnabled)
-                    {
-                        SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
-                    }
-
-                    UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
+                    // TODO: FIX - because users will be banned just for bot retrieving data
+                    //RequestBanUser(Bots.TwitchChatBot, F.FromUserName, BanReasons.FollowBot);
+                    LogWriter.WriteLog(LogType.LogBotStatus, $"TwineBot would have banned {F.FromUserName}, testing experimental feature.");
                 }
+            }
+            else
+            {
+                List<string> UserList = new();
+
+                foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+                {
+                    if (OptionFlags.ManageFollowers)
+                    {
+                        if (FollowEnabled)
+                        {
+                            if (OptionFlags.TwitchFollowerEnableMsgLimit && FollowList.Count() >= OptionFlags.TwitchFollowerMsgLimit)
+                            {
+                                UserList.Add(f.FromUserName);
+                            }
+                            else
+                            {
+                                SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
+                            }
+                        }
+
+                        UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
+                    }
+                }
+
+                if (UserList.Count > 0)
+                {
+                    int Pick = 5;
+                    int i = 0;
+
+                    while (i * Pick < UserList.Count)
+                    {
+                        SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) })));
+                        i++;
+                    }
+                }
+
             }
         }
 
@@ -226,6 +258,11 @@ namespace StreamerBotLib.Systems
         public static void ClearAllCurrenciesValues()
         {
             SystemsBase.ClearAllCurrenciesValues();
+        }
+
+        internal static void ClearUsersNonFollowers()
+        {
+            SystemsBase.ClearUsersNonFollowers();
         }
 
         public static void SetSystemEventsEnabled(bool Enabled)
@@ -250,7 +287,12 @@ namespace StreamerBotLib.Systems
 
         public static void PostUpdatedDataRow(DataRow UpdatedData)
         {
-            DataManage.PostUpdatedDataRow(UpdatedData);
+            SystemsBase.PostUpdatedDataRow(UpdatedData);
+        }
+
+        public static void DeleteRows(IEnumerable<DataRow> dataRows)
+        {
+            SystemsBase.DeleteRows(dataRows);
         }
 
         #endregion
@@ -319,8 +361,6 @@ namespace StreamerBotLib.Systems
 
         public void UserJoined(List<string> UserNames, Bots Source)
         {
-            while (!ChatBotStarted) { } // ChatBot starts and a method clears user list, this holds until ready
-
             DateTime Curr = DateTime.Now.ToLocalTime();
 
             foreach (string user in UserNames)

@@ -175,7 +175,10 @@ namespace StreamerBotLib.Data
                     {
                         lock (_DataSource)
                         {
-                            _DataSource.AcceptChanges();
+                            lock (GUI.GUIDataManagerViews.DataLock)
+                            {
+                                _DataSource.AcceptChanges();
+                            }
                         }
 
                         lock (SaveTasks) // lock the Queue, block thread if currently save task has started
@@ -184,28 +187,31 @@ namespace StreamerBotLib.Data
                             {
                                 lock (_DataSource)
                                 {
-                                    try
+                                    lock (GUI.GUIDataManagerViews.DataLock)
                                     {
-                                        MemoryStream SaveData = new();  // new memory stream
-
-                                    _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
-
-                                    DataSource testinput = new();   // start a new database
-                                    SaveData.Position = 0;          // reset the reader
-                                    testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-
-                                    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
-
-                                    // determine if current time is within a certain time frame, and perform the save
-                                    if (IsBackup && OptionFlags.IsStreamOnline)
+                                        try
                                         {
-                                        // write backup file
-                                        _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                    }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                            MemoryStream SaveData = new();  // new memory stream
+
+                                            _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
+
+                                            DataSource testinput = new();   // start a new database
+                                            SaveData.Position = 0;          // reset the reader
+                                            testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
+
+                                            _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+
+                                            // determine if current time is within a certain time frame, and perform the save
+                                            if (IsBackup && OptionFlags.IsStreamOnline)
+                                            {
+                                                // write backup file
+                                                _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                        }
                                     }
                                 }
                             }));
@@ -314,6 +320,15 @@ namespace StreamerBotLib.Data
                 table.Rows.Add(UpdatedDataRow);
             }
 
+            NotifySaveData();
+        }
+
+        public void DeleteRows(IEnumerable<DataRow> dataRows)
+        {
+            foreach(DataRow D in dataRows)
+            {
+                D.Delete();
+            }
             NotifySaveData();
         }
 
@@ -626,37 +641,16 @@ switches:
 
                 Type resulttype = result.GetType();
 
-                // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
-                if (resulttype == typeof(UsersRow))
-                {
-                    UsersRow usersRow = (UsersRow)result;
-                    return usersRow[row.data_field];
-                }
-                else if (resulttype == typeof(FollowersRow))
+                if (result.GetType() == typeof(FollowersRow))
                 {
                     FollowersRow follower = (FollowersRow)result;
-
                     return follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
-                }
-                else if (resulttype == typeof(CurrencyRow))
+                }                 
+                else
                 {
-
-                }
-                else if (resulttype == typeof(CurrencyTypeRow))
-                {
-
-                }
-                else if (resulttype == typeof(CommandsRow))
-                {
-                    CommandsRow commandsRow = (CommandsRow)result;
-                    return commandsRow[row.data_field];
-                } else if(resulttype == typeof(CustomWelcomeRow)){
-                    CustomWelcomeRow customWelcomeRow = (CustomWelcomeRow)result;
-                    return customWelcomeRow[row.data_field];
+                    return result[row.data_field];
                 }
             }
-
-            return result;
         }
 
         public object[] PerformQuery(CommandsRow row, int Top = 0)
@@ -740,6 +734,7 @@ switches:
             {
                 _ = Parallel.ForEach(commandsRows, (commandsRow) => { commandsRow.IsEnabled = Enabled; });
             }
+            NotifySaveData();
         }
 
         public void SetBuiltInCommandsEnabled(bool Enabled)
@@ -758,29 +753,20 @@ switches:
             {
                 discordRow.IsEnabled = Enabled;
             }
+            NotifySaveData();
         }
 
         public List<string> GetTableNames()
         {
-            List<string> names = new();
-
-            foreach(DataTable table in _DataSource.Tables)
-            {
-                names.Add(table.TableName);
-            }
-
+            List<string> names = new(from DataTable table in _DataSource.Tables
+                           select table.TableName);
             return names;
         }
 
         public List<string> GetTableFields(string TableName)
         {
-            List<string> fields = new();
-
-            foreach (DataColumn dataColumn in _DataSource.Tables[TableName].Columns)
-            {
-                fields.Add(dataColumn.ColumnName);
-            }
-
+            List<string> fields = new(from DataColumn dataColumn in _DataSource.Tables[TableName].Columns
+                            select dataColumn.ColumnName);
             return fields;
         }
 
@@ -926,15 +912,9 @@ switches:
 
         public bool CheckMultiStreams(DateTime dateTime)
         {
-            int x = 0;
-            foreach (StreamStatsRow row in GetAllStreamData())
-            {
-                if (row.StreamStart.ToShortDateString() == dateTime.ToShortDateString())
-                {
-                    x++;
-                }
-            }
-
+            int x = (from StreamStatsRow row in GetAllStreamData()
+                     where row.StreamStart.ToShortDateString() == dateTime.ToShortDateString()
+                     select row).Count();
             return x > 1;
         }
 
@@ -1023,6 +1003,7 @@ switches:
             lock (_DataSource)
             {
                 _DataSource.StreamStats.Clear();
+                NotifySaveData();
             }
         }
 
@@ -1240,7 +1221,6 @@ switches:
                 {
                     usersRow = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
                     //AddCurrencyRows(ref usersRow);
-                    NotifySaveData();
                 }
             }
 
@@ -1255,6 +1235,7 @@ switches:
                 }
             }
 
+            NotifySaveData();
             return usersRow;
         }
 
@@ -1340,6 +1321,7 @@ switches:
                 {
                     _ = Parallel.ForEach((UsersRow[])_DataSource.Users.Select(), (users) => { users.WatchTime = new(0); });
                 }
+                NotifySaveData();
             }
         }
 
@@ -1400,6 +1382,7 @@ switches:
 
                     // set the current login date, always set regardless if currency accrual is started
                     User.CurrLoginDate = CurrTime;
+                    NotifySaveData();
                 }
             }
             return;
@@ -1466,6 +1449,28 @@ switches:
         }
 
         /// <summary>
+        /// Clear all User rows for users not included in the Followers table.
+        /// </summary>
+        public void ClearUsersNotFollowers()
+        {
+            List<long> RemoveIds = new();
+
+            foreach(UsersRow U in _DataSource.Users.Select())
+            {
+                if (_DataSource.Followers.Select("Id=" + U.Id).FirstOrDefault() == null)
+                {
+                    RemoveIds.Add(U.Id);
+                }
+            }
+
+            foreach(long Id in RemoveIds)
+            {
+                ((UsersRow)_DataSource.Users.Select("Id=" + Id).FirstOrDefault()).Delete();
+            }
+            NotifySaveData();
+        }
+
+        /// <summary>
         /// Empty every currency to 0, for all users for all currencies.
         /// </summary>
         public void ClearAllCurrencyValues()
@@ -1486,6 +1491,7 @@ switches:
                           row.Value = 0;
                       });
                 }
+                NotifySaveData();
             }
         }
 
@@ -1563,15 +1569,20 @@ switches:
 
                 if (categoryList == null)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 0);
+                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
                     found = false;
                 }
                 else
                 {
-                    categoryList.CategoryId = CategoryId ?? categoryList.CategoryId;
-                    categoryList.Category = newCategory ?? categoryList.Category;
+                    if (categoryList.CategoryId == null)
+                    {
+                        categoryList.CategoryId = CategoryId;
+                    }
+                    if(categoryList.Category == null)
+                    {
+                        categoryList.Category = newCategory;
+                    }
 
-                    //TODO: track active category, such that a 'channel update' may not change the category but this counter would likely increment
                     if (OptionFlags.IsStreamOnline)
                     {
                         categoryList.StreamCount++;
@@ -1636,30 +1647,33 @@ switches:
 
         private void SetLearnedMessages()
         {
-            if (!_DataSource.LearnMsgs.Select().Any())
+            lock (_DataSource)
             {
-                foreach(LearnedMessage M in LearnedMessagesPrimer.PrimerList)
+                if (!_DataSource.LearnMsgs.Select().Any())
                 {
-                    _DataSource.LearnMsgs.AddLearnMsgsRow(M.MsgType.ToString(), M.Message);
+                    foreach (LearnedMessage M in LearnedMessagesPrimer.PrimerList)
+                    {
+                        _DataSource.LearnMsgs.AddLearnMsgsRow(M.MsgType.ToString(), M.Message);
+                    }
                 }
-            }
 
-            if (!_DataSource.BanReasons.Select().Any())
-            {
-                foreach (BanReason B in LearnedMessagesPrimer.BanReasonList)
+                if (!_DataSource.BanReasons.Select().Any())
                 {
-                    _DataSource.BanReasons.AddBanReasonsRow(B.MsgType.ToString(), B.Reason.ToString());
+                    foreach (BanReason B in LearnedMessagesPrimer.BanReasonList)
+                    {
+                        _DataSource.BanReasons.AddBanReasonsRow(B.MsgType.ToString(), B.Reason.ToString());
+                    }
                 }
-            }
 
-            if (!_DataSource.BanRules.Select().Any())
-            {
-                foreach(BanViewerRule BVR in LearnedMessagesPrimer.BanViewerRulesList)
+                if (!_DataSource.BanRules.Select().Any())
                 {
-                    _DataSource.BanRules.AddBanRulesRow(BVR.ViewerType.ToString(), BVR.MsgType.ToString(), BVR.ModAction.ToString(), BVR.TimeoutSeconds);
+                    foreach (BanViewerRule BVR in LearnedMessagesPrimer.BanViewerRulesList)
+                    {
+                        _DataSource.BanRules.AddBanRulesRow(BVR.ViewerType.ToString(), BVR.MsgType.ToString(), BVR.ModAction.ToString(), BVR.TimeoutSeconds);
+                    }
                 }
+                NotifySaveData();
             }
-
         }
 
         private void LearnMsgs_LearnMsgsRowDeleted(object sender, LearnMsgsRowChangeEvent e)
@@ -1698,8 +1712,12 @@ switches:
 
             if (!found)
             {
-                _DataSource.LearnMsgs.AddLearnMsgsRow(MsgType.ToString(), Message);
+                lock (_DataSource)
+                {
+                    _DataSource.LearnMsgs.AddLearnMsgsRow(MsgType.ToString(), Message);
+                }
             }
+            NotifySaveData();
         }
 
         public Tuple<ModActions, BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)

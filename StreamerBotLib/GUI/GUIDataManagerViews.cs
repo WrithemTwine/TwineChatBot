@@ -17,6 +17,12 @@ namespace StreamerBotLib.GUI
     public class GUIDataManagerViews : INotifyPropertyChanged
     {
         #region DataManager TableViews
+
+        /// <summary>
+        /// Used to coordinate data between here and DataManager
+        /// </summary>
+        public static string DataLock { get; private set; } = "GUI Thread Lock";
+
         // datatable views to display the data in the GUI
 
         public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
@@ -26,11 +32,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
         public ObservableCollection<string> GiveawayCollection { get; set; }
-        public int CurrFollowers { get
-            {
-                return Followers.Table.Select("IsFollower=true").Count();
-            }
-        }
+        public int CurrFollowers => Followers.Table.Select("IsFollower=true").Count();
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -136,7 +138,7 @@ namespace StreamerBotLib.GUI
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            lock (Users)
+            lock (DataLock)
             {
                 NotifyPropertyChanged(nameof(sender));
 
@@ -155,7 +157,7 @@ namespace StreamerBotLib.GUI
 
         private void SetCommandCollection()
         {
-            lock (Commands)
+            lock (DataLock)
             {
                 foreach (DataSource.CommandsRow c in from DataSource.CommandsRow c in Commands.Table.Select()
                                                      where !CommandCollection.Contains(c.CmdName)

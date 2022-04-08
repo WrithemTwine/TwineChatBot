@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestStreamerBot", "TestStre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib", "StreamerBotLib\StreamerBotLib.csproj", "{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertDataSourceFile", "ConvertDataSourceFile\ConvertDataSourceFile.csproj", "{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertDataSourceFile", "ConvertDataSourceFile\ConvertDataSourceFile.csproj", "{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamerBotLib.MachineLearning", "StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj", "{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

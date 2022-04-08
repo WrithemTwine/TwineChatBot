@@ -1,9 +1,7 @@
 ﻿#define UPDATELEARN
 
-using Accord.MachineLearning;
-using Accord.Math.Distances;
-
 using StreamerBotLib.Enums;
+using StreamerBotLib.MachineLearning.Accord;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
@@ -896,7 +894,7 @@ zero
         /// <returns>A prepared string wihtout stopwords and no punctuation.</returns>
         private static string PrepString(string Input)
         {
-            List<string> SrcList = new(Input.Tokenize());
+            List<string> SrcList = new(Input.Split(' '));
 
             for (int i = 0; i < SrcList.Count; i++)
             {
@@ -964,7 +962,7 @@ zero
                 KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
 #endif
 
-                return (MsgTypes)KNearest.Decide(PrepString(PredictText));
+                return MsgTypes.Allow; // (MsgTypes)KNearest.Decide(PrepString(PredictText));
             }
             catch (Exception ex)
             {

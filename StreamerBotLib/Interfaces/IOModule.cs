@@ -20,7 +20,7 @@ namespace StreamerBotLib.BotClients
 
         public bool IsStarted { get; set; }
         public bool HandlersAdded { get; set; }
-        public bool IsStopped { get; set; }
+        public bool IsStopped { get; set; } = true;
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;

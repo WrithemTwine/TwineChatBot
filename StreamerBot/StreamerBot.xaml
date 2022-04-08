@@ -23,6 +23,7 @@
             <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
                 <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
                 <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
+                <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
             </ContextMenu>
 
             <Style TargetType="{x:Type DockPanel}">
@@ -508,9 +509,6 @@
                                 <Style TargetType="{x:Type StackPanel}">
                                     <Setter Property="Margin" Value="5" />
                                 </Style>
-                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                    <Setter Property="Width" Value="200" />
-                                </Style>
                             </TabItem.Resources>
                             <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                                 <DockPanel Margin="10" DataContext="{Binding Source={x:Static s:Settings.Default}}" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
@@ -585,7 +583,17 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Moderate Follows">
                                             <StackPanel>
-                                                <CheckBox x:Name="CheckBox_ModFollower_BanEnable" IsChecked="{Binding TwitchFollowerAutoBanBots}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">Enable auto-banning Follow bots</CheckBox>
+                                                <CheckBox x:Name="CheckBox_ModFollower_BanEnable" IsChecked="{Binding TwitchFollowerAutoBanBots}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
+                                                    <StackPanel>
+                                                        <TextBlock >
+                                                            <TextBlock.TextDecorations>
+                                                                <TextDecoration Location="Strikethrough"/>
+                                                            </TextBlock.TextDecorations>Enable auto-banning Follow bots</TextBlock>
+                                                        <TextBlock>
+                                                            Currently sends "ban candidates" to the "Status Log" - to test and ensure real users are not accidentally banned.
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </CheckBox>
                                                 <StackPanel x:Name="StackPanel_ModerateFollowers_Count" Orientation="Vertical" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
                                                     <TextBlock>When Follow-bot looks every N seconds, total new follows are detected at one time. A cluster can indicate a follow-bot attack (or you're very popular).</TextBlock>
 
@@ -593,7 +601,6 @@
                                                         <Label>Choose (1 to 100):</Label>
                                                         <TextBox Width="40" Height="18" Text="{Binding TwitchFollowerAutoBanCount, Mode=TwoWay}" HorizontalContentAlignment="Center"  LostFocus="TextBox_Follower_LostFocus" PreviewMouseLeftButtonUp="PreviewMouseLeftButton_SelectAll" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
                                                     </StackPanel>
-
                                                     <Slider Value="{Binding TwitchFollowerAutoBanCount, Mode=TwoWay}" Maximum="100" Minimum="1" IsSnapToTickEnabled="True" IsSelectionRangeEnabled="True" SelectionEnd="1" SelectionStart="1" SmallChange="1" TickPlacement="Both" LargeChange="5" />
                                                 </StackPanel>
                                             </StackPanel>
@@ -763,7 +770,7 @@
                                 <TextBlock DockPanel.Dock="Top">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
-                                <DockPanel DockPanel.Dock="Top">
+                                <DockPanel DockPanel.Dock="Top" MaxHeight="150">
                                     <DataGrid Height="250" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="True" DockPanel.Dock="Left" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                                     <DataGrid Height="250" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" DockPanel.Dock="Right" AutoGeneratedColumns="DG_AutoGeneratedColumns" />
                                     <TextBlock>
@@ -790,6 +797,11 @@
                                             <ColumnDefinition MinWidth="400" Width="400*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="User List"/>
+                                        <Button Content="Clear Non-Followers" Height="20" Width="120" Click="Button_ClearNonFollowers_Click">
+                                            <Button.ToolTip>
+                                                <TextBlock>Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</TextBlock>
+                                            </Button.ToolTip>
+                                        </Button>
                                         <Button x:Name="Button_ClearWatchTime" Content="Reset All WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />
                                         <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
                                         <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_AutoGeneratedColumns"/>

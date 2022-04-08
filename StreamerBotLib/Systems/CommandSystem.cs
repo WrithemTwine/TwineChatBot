@@ -24,7 +24,6 @@ namespace StreamerBotLib.Systems
         // TODO: add account merging for a user, approval by a mod+ (moderator, broadcaster)
         // TODO: add approval to manage channel point redemption for custom welcome message
         // TODO: add quotes
-        // TODO: add bannable phrase - e.g. "Buy follows", and probably relies on machine learning
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
@@ -61,7 +60,6 @@ namespace StreamerBotLib.Systems
         private DateTime viewertime;
         private int chats;
         private int viewers;
-
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.

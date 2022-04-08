@@ -207,6 +207,11 @@ namespace StreamerBotLib.BotIOController
             SystemsController.ClearAllCurrenciesValues();
         }
 
+        public static void ClearUsersNonFollowers()
+        {
+            SystemsController.ClearUsersNonFollowers();
+        }
+
         public static void SetSystemEventsEnabled(bool Enabled)
         {
             SystemsController.SetSystemEventsEnabled(Enabled);
@@ -874,12 +879,13 @@ namespace StreamerBotLib.BotIOController
 
         #region UserBot
 
-
         private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
         {
             if(e.Source == Bots.TwitchChatBot)
             {
-                TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
+                // TODO: verify users are correctly determined to be banned before banning, added to log
+                LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.UserName} for {e.BanReason} for {e.Duration} seconds.");
+                //TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
             }
         }
 

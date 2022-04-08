@@ -121,6 +121,11 @@ namespace StreamerBotLib.BotClients
             RegisterHandlers();
 
             InvokeBotEvent(this, BotEvents.TwitchChatBotStarted, new());
+
+            if (OptionFlags.TwitchChatBotConnectOnline || OptionFlags.IsStreamOnline)
+            {
+                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new OnUserJoinedArgs() { Username = TwitchBotsBase.TwitchBotUserName, Channel = TwitchBotsBase.TwitchChannelName });
+            }
         }
 
         private void TwitchBotChatClient_OnBotStopping(object sender, EventArgs e)
@@ -261,7 +266,24 @@ namespace StreamerBotLib.BotClients
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchPostNewFollowers, e);
+            bool found = false;
+
+            if (TwitchFollower.FollowerService.BulkAddFollows != null)
+            {
+                found = TwitchFollower.FollowerService.BulkAddFollows.Intersect(e.NewFollowers).Any();
+
+                if (found)
+                {
+                    e.NewFollowers = new(TwitchFollower.FollowerService.BulkAddFollows.Intersect(e.NewFollowers));
+                }
+
+                TwitchFollower.FollowerService.BulkAddFollows = null;
+            }
+
+            if (found)
+            {
+                InvokeBotEvent(this, BotEvents.TwitchPostNewFollowers, e);
+            }
         }
 
         #endregion
@@ -274,6 +296,36 @@ namespace StreamerBotLib.BotClients
         }
 
         public static TwitchBotLiveMonitorSvc LiveMonitorSvc => TwitchLiveMonitor;
+
+        private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
+        {
+            if (e.Channel != TwitchBotsBase.TwitchChannelName)
+            {
+                TwitchLiveMonitor.SendMultiLiveMsg(e);
+            }
+            else
+            {
+                if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
+                {
+                    TwitchBotChatClient.StartBot();
+                }
+                else
+                {
+                    ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
+                }
+
+                InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
+                if (!OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStarted)
+                {
+                    InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new OnUserJoinedArgs() { Username = TwitchBotsBase.TwitchBotUserName, Channel = TwitchBotsBase.TwitchChannelName });
+                }
+            }
+        }
+
+        private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+        }
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
@@ -288,26 +340,15 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
+        private void CheckStreamOnlineChatBot()
         {
-            InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
-        }
-
-        private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
-        {
-            if (e.Channel != TwitchBotsBase.TwitchChannelName)
+            while(OptionFlags.IsStreamOnline && !TwitchBotChatClient.IsStarted)
             {
-                TwitchLiveMonitor.SendMultiLiveMsg(e);
-            }
-            else
-            {
-                if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
+                if (OptionFlags.TwitchChatBotConnectOnline)
                 {
                     TwitchBotChatClient.StartBot();
                 }
-
-                InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
-                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new OnUserJoinedArgs() { Username = TwitchBotsBase.TwitchBotUserName, Channel = TwitchBotsBase.TwitchChannelName });
+                Thread.Sleep(5000);
             }
         }
 

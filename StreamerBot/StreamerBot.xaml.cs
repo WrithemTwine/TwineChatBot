@@ -33,9 +33,6 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
-        // TODO: add remove users who aren't followers
-        // TODO: add 'delete rows' context menu for datagrids
-
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -491,6 +488,8 @@ namespace StreamerBot
 
             CheckMessageBoxes();
 
+            CheckBox_ManageData_Click(sender, new());
+
             // TODO: research auto-refreshing token
         }
 
@@ -560,12 +559,6 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            // commented out to not hide data tabs
-            //static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
-
-            //TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
-            //TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
-
             if (CheckBox_ManageUsers.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
@@ -578,6 +571,7 @@ namespace StreamerBot
 
             if (CheckBox_ManageFollowers.IsChecked == true)
             {
+                CheckBox_ManageUsers.IsEnabled = false;
                 if (Settings.Default.TwitchFollowerSvcAutoStart)
                 {
                     Dispatcher.BeginInvoke(new BotOperation(() =>
@@ -588,6 +582,7 @@ namespace StreamerBot
             }
             else
             {
+                CheckBox_ManageUsers.IsEnabled = true;
                 Dispatcher.BeginInvoke(new BotOperation(() =>
                 {
                     (Radio_Twitch_FollowBotStart.DataContext as IOModule).StopBot();
@@ -970,6 +965,11 @@ namespace StreamerBot
             BotController.ClearAllCurrenciesValues();
         }
 
+        private void Button_ClearNonFollowers_Click(object sender, RoutedEventArgs e)
+        {
+            BotController.ClearUsersNonFollowers();
+        }
+
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // TODO: Setup MultiLiveBot Context Menu Add/Edit records
@@ -978,10 +978,12 @@ namespace StreamerBot
                 if (((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs")
                 {
                     ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = false;
+                    ((MenuItem)Resources["DataGridContextMenu_DeleteItems"]).IsEnabled = false;
                 }
                 else
                 {
                     ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = true;
+                    ((MenuItem)Resources["DataGridContextMenu_DeleteItems"]).IsEnabled = true;
                 }
             }
         }
@@ -1002,8 +1004,6 @@ namespace StreamerBot
 
         private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
         {
-            DataRowView dataView = null;
-
             if (AddNew)
             {
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
@@ -1014,7 +1014,7 @@ namespace StreamerBot
             }
             else
             {
-                dataView = (DataRowView)sourceDataGrid.SelectedItem;
+                DataRowView dataView = (DataRowView)sourceDataGrid.SelectedItem;
                 if (dataView != null)
                 {
                     PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
@@ -1027,6 +1027,13 @@ namespace StreamerBot
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
 
             Popup_DataEdit(item, false);
+        }
+
+        private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+
+            SystemsController.DeleteRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)));
         }
 
         #endregion
@@ -1230,11 +1237,6 @@ namespace StreamerBot
                     }
 
                     if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
-                    {
-                        NotifyExpiredCredentials?.Invoke(this, new());
-                    }
-
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchStreamerTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }

@@ -14,16 +14,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Accord.MachineLearning" Version="3.8.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="TwitchLib" Version="3.3.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.5.0" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.5.0" />
-    <PackageReference Include="TwitchLib.Api.Helix" Version="3.5.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.5.2" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.5.2" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.5.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
+    <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,9 +67,6 @@
     <None Update="Data\DataSource.xsd">
       <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
       <Generator>MSDataSetGenerator</Generator>
-    </None>
-    <None Update="MachineLearning\stop_words_english.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
