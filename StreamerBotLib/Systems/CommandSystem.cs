@@ -275,6 +275,23 @@ namespace StreamerBotLib.Systems
             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
         }
 
+        public void AutoShoutUsers(Bots Source)
+        {
+            List<string> CurrActiveUsers;
+            lock (CurrUsers)
+            {
+                CurrActiveUsers = new(CurrUsers);
+            }
+
+            ThreadManager.CreateThreadStart(() =>
+            {
+                foreach (string U in CurrActiveUsers)
+                {
+                    CheckShout(U, out _, Source);
+                }
+            });
+        }
+
         /// <summary>
         /// See if the user is part of the user's auto-shout out list to determine if the message should be called, or shout-out from a raid or other similar event.
         /// </summary>
@@ -287,7 +304,13 @@ namespace StreamerBotLib.Systems
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
-                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out _, Source);
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi, Source);
+
+                // handle when returned without #category in the message
+                if (response != "")
+                {
+                    ProcessedCommand?.Invoke(this, new() { Msg = response, RepeatMsg = multi });
+                }
             }
         }
 
@@ -360,6 +383,10 @@ namespace StreamerBotLib.Systems
                 NotifyPropertyChanged("UserPartyStart");
                 NotifyPropertyChanged("UserPartyStop");
             }
+            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
+            {
+                AutoShoutUsers(Source);
+            }
             else
             {
                 string paramvalue = cmdrow.AllowParam
@@ -391,13 +418,13 @@ namespace StreamerBotLib.Systems
                     {
                         ThreadManager.CreateThreadStart(() =>
                         {
-                             VariableParser.AddData(ref datavalues,
-                             new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                            VariableParser.AddData(ref datavalues,
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
-                             result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+                            result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
-                             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+                            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
                         });
 
                         result = "";

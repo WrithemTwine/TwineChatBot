@@ -278,7 +278,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            return String.Format("[{0}, {1}]", 
+            return String.Format("[{0}, {1}]",
                 min.ToString(format, formatProvider),
                 max.ToString(format, formatProvider));
         }

@@ -19,8 +19,8 @@
 //    License along with this library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
-    using System;
-    using System.Globalization;
+using System;
+using System.Globalization;
 namespace StreamerBotLib.MachineLearning.Accord
 {
 
@@ -120,7 +120,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         ///   Gets the IMatrixFormatProvider which uses the CultureInfo used by the current thread.
         /// </summary>
         /// 
-        public static CSharpMatrixFormatProvider CurrentCulture 
+        public static CSharpMatrixFormatProvider CurrentCulture
         {
             get { return currentCulture; }
         }
@@ -134,7 +134,7 @@ namespace StreamerBotLib.MachineLearning.Accord
             get { return invariantCulture; }
         }
 
-        
+
         private static readonly CSharpMatrixFormatProvider currentCulture =
             new CSharpMatrixFormatProvider(CultureInfo.CurrentCulture);
 

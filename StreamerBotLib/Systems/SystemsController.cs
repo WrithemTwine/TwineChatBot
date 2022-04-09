@@ -285,9 +285,9 @@ namespace StreamerBotLib.Systems
             SystemsBase.SetDiscordWebhooksEnabled(Enabled);
         }
 
-        public static void PostUpdatedDataRow(DataRow UpdatedData)
+        public static void PostUpdatedDataRow(bool RowChanged)
         {
-            SystemsBase.PostUpdatedDataRow(UpdatedData);
+            SystemsBase.PostUpdatedDataRow(RowChanged);
         }
 
         public static void DeleteRows(IEnumerable<DataRow> dataRows)

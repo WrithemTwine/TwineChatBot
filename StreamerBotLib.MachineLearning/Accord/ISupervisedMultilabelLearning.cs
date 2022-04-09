@@ -35,22 +35,22 @@ namespace StreamerBotLib.MachineLearning.Accord
             ISupervisedLearning<TModel, TInput, int[]>,
             ISupervisedLearning<TModel, TInput, bool[]>
             where TModel : IMultilabelClassifier<TInput>
-        {
+    {
 
-        }
-
-        /// <summary>
-        ///   Common interface for supervised learning algorithms for 
-        ///   <see cref="IMultilabelClassifier{TInput}">multi-label classifiers</see>.
-        /// </summary>
-        /// 
-        /// <typeparam name="TModel">The type for the model being learned.</typeparam>
-        /// 
-        public interface ISupervisedMultilabelLearning<out TModel> :
-            ISupervisedMultilabelLearning<TModel, int[]>,
-            ISupervisedMultilabelLearning<TModel, float[]>,
-            ISupervisedMultilabelLearning<TModel, double[]>
-            where TModel : IMultilabelClassifier
-        {
-        }
     }
+
+    /// <summary>
+    ///   Common interface for supervised learning algorithms for 
+    ///   <see cref="IMultilabelClassifier{TInput}">multi-label classifiers</see>.
+    /// </summary>
+    /// 
+    /// <typeparam name="TModel">The type for the model being learned.</typeparam>
+    /// 
+    public interface ISupervisedMultilabelLearning<out TModel> :
+        ISupervisedMultilabelLearning<TModel, int[]>,
+        ISupervisedMultilabelLearning<TModel, float[]>,
+        ISupervisedMultilabelLearning<TModel, double[]>
+        where TModel : IMultilabelClassifier
+    {
+    }
+}

@@ -19,13 +19,13 @@
 //    License along with this library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
+using Accord.AMath;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using Accord.AMath;
 namespace StreamerBotLib.MachineLearning.Accord
 {
 

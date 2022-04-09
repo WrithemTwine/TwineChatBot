@@ -50,7 +50,7 @@ namespace StreamerBotLib.MachineLearning.Accord
     /// 
     public sealed class JaggedQrDecompositionD : ICloneable, ISolverArrayDecomposition<Decimal>
     {
-        private int n; 
+        private int n;
         private int m;
         private int p;
         private bool economy;
@@ -58,7 +58,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         private Decimal[][] qr;
         private Decimal[] Rdiag;
 
-		// cache for lazy evaluation
+        // cache for lazy evaluation
         private bool? fullRank;
         private Decimal[][] orthogonalFactor;
         private Decimal[][] upperTriangularFactor;
@@ -72,7 +72,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// <param name="economy">True to perform the economy decomposition, where only
         ///.the information needed to solve linear systems is computed. If set to false,
         /// the full QR decomposition will be computed.</param>
-        public JaggedQrDecompositionD(Decimal[][] value, bool transpose = false, 
+        public JaggedQrDecompositionD(Decimal[][] value, bool transpose = false,
             bool economy = true, bool inPlace = false)
         {
             if (value == null)
@@ -300,7 +300,7 @@ namespace StreamerBotLib.MachineLearning.Accord
             return X.First(p);
         }
 
-		/// <summary>
+        /// <summary>
         ///   Solves a set of equation systems of type <c>A * X = B</c> where B is a diagonal matrix.
         /// </summary>
         /// <param name="diagonal">Diagonal fo the right hand side matrix with as many rows as <c>A</c>.</param>
@@ -320,8 +320,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.fullRank.HasValue)
-					return this.fullRank.Value;
+                if (this.fullRank.HasValue)
+                    return this.fullRank.Value;
 
                 for (int i = 0; i < p; i++)
                     if (this.Rdiag[i] == 0)
@@ -336,8 +336,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.upperTriangularFactor != null)
-					return this.upperTriangularFactor;
+                if (this.upperTriangularFactor != null)
+                    return this.upperTriangularFactor;
 
                 int rows = economy ? m : n;
                 var x = Jagged.Zeros<Decimal>(rows, p);
@@ -364,8 +364,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.orthogonalFactor != null)
-					return this.orthogonalFactor;
+                if (this.orthogonalFactor != null)
+                    return this.orthogonalFactor;
 
                 int cols = economy ? m : n;
                 var x = Jagged.Zeros<Decimal>(n, cols);

@@ -34,29 +34,29 @@ namespace StreamerBotLib.MachineLearning.Accord
     /// 
     public interface ISupervisedLearning<out TModel, in TInput, in TOutput>
             where TModel : ITransform<TInput, TOutput>
-        {
+    {
 
-            /// <summary>
-            ///   Gets or sets a cancellation token that can be used to 
-            ///   stop the learning algorithm while it is running.
-            /// </summary>
-            /// 
-            CancellationToken Token { get; set; }
+        /// <summary>
+        ///   Gets or sets a cancellation token that can be used to 
+        ///   stop the learning algorithm while it is running.
+        /// </summary>
+        /// 
+        CancellationToken Token { get; set; }
 
-            // TModel Model { get; set; }
+        // TModel Model { get; set; }
 
-            /// <summary>
-            ///   Learns a model that can map the given inputs to the given outputs.
-            /// </summary>
-            /// 
-            /// <param name="x">The model inputs.</param>
-            /// <param name="y">The desired outputs associated with each <paramref name="x">inputs</paramref>.</param>
-            /// <param name="weights">The weight of importance for each input-output pair (if supported by the learning algorithm).</param>
-            /// 
-            /// <returns>A model that has learned how to produce <paramref name="y"/> given <paramref name="x"/>.</returns>
-            /// 
-            TModel Learn(TInput[] x, TOutput[] y, double[] weights = null);
-
-        }
+        /// <summary>
+        ///   Learns a model that can map the given inputs to the given outputs.
+        /// </summary>
+        /// 
+        /// <param name="x">The model inputs.</param>
+        /// <param name="y">The desired outputs associated with each <paramref name="x">inputs</paramref>.</param>
+        /// <param name="weights">The weight of importance for each input-output pair (if supported by the learning algorithm).</param>
+        /// 
+        /// <returns>A model that has learned how to produce <paramref name="y"/> given <paramref name="x"/>.</returns>
+        /// 
+        TModel Learn(TInput[] x, TOutput[] y, double[] weights = null);
 
     }
+
+}

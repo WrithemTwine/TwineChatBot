@@ -19,10 +19,8 @@
 //    License along with this library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
-    using System;
-    using System.Collections.Generic;
-
-using StreamerBotLib.MachineLearning.Accord;
+using System;
+using System.Collections.Generic;
 namespace Accord.AMath
 {
 
@@ -91,7 +89,7 @@ namespace Accord.AMath
         public static void Set<T>(this T[][] destination, T[][] value, int[] rowIndices, int startColumn, int endColumn)
         {
             int endIndex = end(endColumn, destination.Columns());
-            int[] columnIndices =Accord.AMath.Vector.Range(startColumn, endIndex);
+            int[] columnIndices = Accord.AMath.Vector.Range(startColumn, endIndex);
             set(destination, rowIndices, columnIndices, value, rowIndices, columnIndices);
         }
 
@@ -108,7 +106,7 @@ namespace Accord.AMath
         public static void Set<T>(this T[,] destination, T[,] value, int[] rowIndices, int startColumn, int endColumn)
         {
             int endIndex = end(endColumn, destination.Columns());
-            int[] columnIndices =Accord.AMath.Vector.Range(startColumn, endIndex);
+            int[] columnIndices = Accord.AMath.Vector.Range(startColumn, endIndex);
             set(destination, rowIndices, columnIndices, value, rowIndices, columnIndices);
         }
 
@@ -140,7 +138,7 @@ namespace Accord.AMath
         public static void Set<T>(this T[,] destination, T[,] value, int startRow, int endRow, int[] columnIndices)
         {
             int endIndex = end(endRow, destination.Rows());
-            int[] rowIndices =Accord.AMath.Vector.Range(startRow, endIndex);
+            int[] rowIndices = Accord.AMath.Vector.Range(startRow, endIndex);
             set(destination, rowIndices, columnIndices, value, rowIndices, columnIndices);
         }
 
@@ -157,7 +155,7 @@ namespace Accord.AMath
         public static void Set<T>(this T[][] destination, T[][] value, int startRow, int endRow, int[] columnIndices)
         {
             int endIndex = end(endRow, destination.Rows());
-            int[] rowIndices =Accord.AMath.Vector.Range(startRow, endIndex);
+            int[] rowIndices = Accord.AMath.Vector.Range(startRow, endIndex);
             set(destination, rowIndices, columnIndices, value, rowIndices, columnIndices);
         }
 
@@ -225,9 +223,9 @@ namespace Accord.AMath
         {
             T[][] values = Jagged.Create<T>(destination.Rows(), destination.Columns(), value);
             int rowIndex = end(endRow, destination.Rows());
-            int[] rowIndices =Accord.AMath.Vector.Range(startRow, rowIndex);
+            int[] rowIndices = Accord.AMath.Vector.Range(startRow, rowIndex);
             int colIndex = end(endCol, destination.Columns());
-            int[] columnIndices =Accord.AMath.Vector.Range(startCol, colIndex);
+            int[] columnIndices = Accord.AMath.Vector.Range(startCol, colIndex);
             set(destination, rowIndices, columnIndices, values, rowIndices, columnIndices);
         }
 
@@ -246,7 +244,7 @@ namespace Accord.AMath
         {
             T[,] values = Matrix.Create<T>(destination.Rows(), destination.Columns(), value);
             int rowIndex = end(endRow, destination.Rows());
-            int[] rowIndices =Accord.AMath.Vector.Range(startRow, rowIndex);
+            int[] rowIndices = Accord.AMath.Vector.Range(startRow, rowIndex);
             int colIndex = end(endCol, destination.Columns());
             int[] columnIndices = Accord.AMath.Vector.Range(startCol, colIndex);
             set(destination, rowIndices, columnIndices, values, rowIndices, columnIndices);

@@ -136,7 +136,7 @@ namespace Accord.AMath
 
             return imin;
         }
-      
+
         #endregion
 
 
@@ -267,7 +267,7 @@ namespace Accord.AMath
         ///   Gets the minimum element in a vector.
         /// </summary>
         /// 
-        public static T Min<T>(this T[] values) 
+        public static T Min<T>(this T[] values)
             where T : IComparable<T>
         {
             int imin;

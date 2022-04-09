@@ -95,15 +95,18 @@ namespace StreamerBotLib.GUI.Windows
                 SaveData.Add(name, result);
             }
 
-            foreach (DataColumn dataColumn in SaveDataRow.Table.Columns)
+            lock (SaveDataRow)
             {
-                if (!dataColumn.ReadOnly)
+                foreach (DataColumn dataColumn in SaveDataRow.Table.Columns)
                 {
-                    SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
+                    if (!dataColumn.ReadOnly)
+                    {
+                        SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
+                    }
                 }
             }
 
-            UpdatedDataRow?.Invoke(this, new() { UpdatedDataRow = SaveDataRow });
+            UpdatedDataRow?.Invoke(this, new() { RowChanged = true });
             Close();
         }
 

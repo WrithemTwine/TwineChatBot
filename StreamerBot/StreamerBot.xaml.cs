@@ -222,6 +222,21 @@ namespace StreamerBot
             BotController.SetDiscordWebhooksEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
+        private void ShoutUsers_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.HandleChatCommandReceived(
+                new()
+                {
+                    CommandText = $"!{DefaultCommand.soactive}",
+                    UserType = ViewerTypes.Broadcaster,
+                    IsBroadcaster = true,
+                    DisplayName = OptionFlags.TwitchChannelName,
+                    Channel = OptionFlags.TwitchChannelName,
+                    Message = $"!{DefaultCommand.soactive}"
+                },
+                Bots.TwitchChatBot);
+        }
+
         #region Refresh data from bot
 
         /// <summary>
@@ -1296,6 +1311,7 @@ namespace StreamerBot
         #endregion
 
         #endregion
+
 
     }
 }

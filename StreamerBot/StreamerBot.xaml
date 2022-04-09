@@ -104,7 +104,7 @@
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label ToolTip="User-Define Commands">User-Def Coms:</Label>
+                    <Label ToolTip="User-Defined Commands">User-Def Coms:</Label>
                     <Label Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
@@ -767,7 +767,7 @@
                         </TabItem>
                         <TabItem Header="Moderation">
                             <DockPanel>
-                                <TextBlock DockPanel.Dock="Top">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
+                                <TextBlock DockPanel.Dock="Top" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
                                 <DockPanel DockPanel.Dock="Top" MaxHeight="150">
@@ -812,7 +812,7 @@
                                 <TabItem Header="Auto-SO">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="55" />
+                                            <RowDefinition Height="85" />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -821,7 +821,11 @@
                                             <ColumnDefinition Width="350*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
+                                        <StackPanel Grid.Row="0">
+                                            <TextBlock TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
+                                        <Button Width="250" Height="20" Content="Shout these Users if in Chat" Margin="10,10,10,10" Click="ShoutUsers_Click"/>
+                                        </StackPanel>
+                                        
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" />
 
                                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Specify a custom message per UserName, tied to Welcome Message options - first appearance or first message. Otherwise, system falls back onto default." />

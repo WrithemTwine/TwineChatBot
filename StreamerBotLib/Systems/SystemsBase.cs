@@ -145,14 +145,14 @@ namespace StreamerBotLib.Systems
             DataManage.SetDiscordWebhooksEnabled(Enabled);
         }
 
-        public static void PostUpdatedDataRow(DataRow UpdatedData)
+        public static void PostUpdatedDataRow(bool RowChanged)
         {
-            DataManage.PostUpdatedDataRow(UpdatedData);
+            DataManage.PostUpdatedDataRow(RowChanged);
         }
 
         public static void DeleteRows(IEnumerable<DataRow> dataRows)
         {
-            DataManage.DeleteRows(dataRows);
+            DataManage.DeleteDataRows(dataRows);
         }
 
         public static bool AddClip(Clip c)

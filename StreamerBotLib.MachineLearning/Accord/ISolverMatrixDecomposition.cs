@@ -27,7 +27,7 @@ namespace StreamerBotLib.MachineLearning.Accord
     ///   can be used to solve linear systems of equations.
     /// </summary>
     /// 
-    public interface ISolverMatrixDecomposition<T>  where T : struct
+    public interface ISolverMatrixDecomposition<T> where T : struct
     {
 
         /// <summary>

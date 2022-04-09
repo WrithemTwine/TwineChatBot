@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Sort = StreamerBotLib.MachineLearning.Accord.Sort;
-
 namespace Accord.AMath
 {
 
@@ -183,7 +181,7 @@ namespace Accord.AMath
         ///   Gets a row vector from a matrix.
         /// </summary>
         /// 
-        public static T[][] GetRows<T>(this T[][] m, params  int[] index)
+        public static T[][] GetRows<T>(this T[][] m, params int[] index)
         {
             return GetRows(m, index, null);
         }

@@ -50,7 +50,7 @@ namespace StreamerBotLib.MachineLearning.Accord
     /// 
     public sealed class QrDecompositionD : ICloneable, ISolverMatrixDecomposition<Decimal>
     {
-        private int n; 
+        private int n;
         private int m;
         private int p;
         private bool economy;
@@ -58,7 +58,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         private Decimal[,] qr;
         private Decimal[] Rdiag;
 
-		// cache for lazy evaluation
+        // cache for lazy evaluation
         private bool? fullRank;
         private Decimal[,] orthogonalFactor;
         private Decimal[,] upperTriangularFactor;
@@ -72,7 +72,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// <param name="economy">True to perform the economy decomposition, where only
         ///.the information needed to solve linear systems is computed. If set to false,
         /// the full QR decomposition will be computed.</param>
-        public QrDecompositionD(Decimal[,] value, bool transpose = false, 
+        public QrDecompositionD(Decimal[,] value, bool transpose = false,
             bool economy = true, bool inPlace = false)
         {
             if (value == null)
@@ -306,14 +306,14 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.fullRank.HasValue)
-					return this.fullRank.Value;
+                if (this.fullRank.HasValue)
+                    return this.fullRank.Value;
 
                 for (int i = 0; i < p; i++)
                     if (this.Rdiag[i] == 0)
-						return (bool)(this.fullRank = false);
-                
-				return (bool)(this.fullRank = true);
+                        return (bool)(this.fullRank = false);
+
+                return (bool)(this.fullRank = true);
             }
         }
 
@@ -322,8 +322,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.upperTriangularFactor != null)
-					return this.upperTriangularFactor;
+                if (this.upperTriangularFactor != null)
+                    return this.upperTriangularFactor;
 
                 int rows = economy ? m : n;
                 var x = Matrix.Zeros<Decimal>(rows, p);
@@ -350,8 +350,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.orthogonalFactor != null)
-					return this.orthogonalFactor;
+                if (this.orthogonalFactor != null)
+                    return this.orthogonalFactor;
 
                 int cols = economy ? m : n;
                 var x = Matrix.Zeros<Decimal>(n, cols);

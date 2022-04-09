@@ -423,7 +423,7 @@ namespace StreamerBotLib.MachineLearning.Accord
             return X;
         }
 
-		/// <summary>
+        /// <summary>
         ///   Solves a set of equation systems of type <c>A * X = B</c> where B is a diagonal matrix.
         /// </summary>
         /// <param name="diagonal">Diagonal fo the right hand side matrix with as many rows as <c>A</c>.</param>

@@ -19,14 +19,14 @@
 //    License along with this library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 #if !NETSTANDARD1_4
-    using System.Data;
+using System.Data;
 #endif
-    using System.Globalization;
-    using System.Linq;
+using System.Globalization;
+using System.Linq;
 
 using StreamerBotLib.MachineLearning.Accord;
 

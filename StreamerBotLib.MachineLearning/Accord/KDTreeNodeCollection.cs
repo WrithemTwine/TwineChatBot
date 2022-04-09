@@ -491,7 +491,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                 if (distances[u] < distances[u - 1])
                 {
                     // Swap with it's pair
-                    u = swap(u, u - 1); 
+                    u = swap(u, u - 1);
 
                     // If smaller than smaller parent pair
                     if (distances[u] < distances[p - 1])

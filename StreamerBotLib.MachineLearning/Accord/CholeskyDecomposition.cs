@@ -95,7 +95,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         ///   location (lower part will contain the decomposition's L matrix, upper part will contains 
         ///   the original matrix).</param>
         /// 
-        public CholeskyDecomposition(Double[,] value, bool robust = false, 
+        public CholeskyDecomposition(Double[,] value, bool robust = false,
             bool inPlace = false, MatrixType valueType = MatrixType.UpperTriangular)
         {
             if (value.Rows() != value.Columns())
@@ -154,7 +154,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                 {
                     if (destroyed)
                         throw new InvalidOperationException("The decomposition has been destroyed.");
-                        
+
                     if (undefined)
                         throw new InvalidOperationException("The decomposition is undefined (zero in diagonal).");
 
@@ -177,7 +177,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                 {
                     if (destroyed)
                         throw new InvalidOperationException("The decomposition has been destroyed.");
-                        
+
                     diagonalMatrix = Matrix.Diagonal(D);
                 }
 
@@ -206,7 +206,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                 {
                     if (destroyed)
                         throw new InvalidOperationException("The decomposition has been destroyed.");
-                        
+
                     if (undefined)
                         throw new InvalidOperationException("The decomposition is undefined (zero in diagonal).");
 
@@ -240,7 +240,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                 {
                     if (destroyed)
                         throw new InvalidOperationException("The decomposition has been destroyed.");
-                        
+
                     if (undefined)
                         throw new InvalidOperationException("The decomposition is undefined (zero in diagonal).");
 
@@ -274,10 +274,10 @@ namespace StreamerBotLib.MachineLearning.Accord
                 {
                     if (destroyed)
                         throw new InvalidOperationException("The decomposition has been destroyed.");
-                    
+
                     if (undefined)
                         throw new InvalidOperationException("The decomposition is undefined (zero in diagonal).");
-                    
+
                     bool nonSingular = true;
                     for (int i = 0; i < n && nonSingular; i++)
                         if (L[i, i] == 0 || D[i] == 0) nonSingular = false;
@@ -344,14 +344,14 @@ namespace StreamerBotLib.MachineLearning.Accord
                 // If one of the diagonal elements is zero, the 
                 // decomposition (without pivoting) is undefined.
                 if (v[i] == 0) { undefined = true; return; }
-                
+
                 Parallel.For(i + 1, n, k =>
                 {
-                     Double s = 0;
-                     for (int j = 0; j < i; j++)
-                         s += L[k, j] * v[j];
+                    Double s = 0;
+                    for (int j = 0; j < i; j++)
+                        s += L[k, j] * v[j];
 
-                     L[k, i] = (L[i, k] - s) / d;
+                    L[k, i] = (L[i, k] - s) / d;
                 });
             }
 
@@ -475,7 +475,7 @@ namespace StreamerBotLib.MachineLearning.Accord
 
             if (!robust && !positiveDefinite)
                 throw new NonPositiveDefiniteMatrixException("Decomposed matrix is not positive definite.");
-            
+
             if (undefined)
                 throw new InvalidOperationException("The decomposition is undefined (zero in diagonal).");
 
@@ -505,7 +505,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                     B[k] -= B[i] * L[i, k];
                 B[k] /= L[k, k];
             }
-            
+
             return B;
         }
 
@@ -526,7 +526,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             return InverseDiagonal(new Double[n], destroy);
         }
-        
+
         /// <summary>
         ///   Computes the diagonal of the inverse of the decomposed matrix.
         /// </summary>
@@ -622,7 +622,7 @@ namespace StreamerBotLib.MachineLearning.Accord
 
             if (destroyed)
                 throw new InvalidOperationException("The decomposition has been destroyed.");
-                
+
             Double[,] S;
 
             if (destroy)
@@ -655,7 +655,7 @@ namespace StreamerBotLib.MachineLearning.Accord
             // Compute the 2-norm squared of the rows
             // of the upper (right) triangular matrix S.
             Double trace = 0;
-            
+
             if (robust)
             {
                 for (int i = 0; i < n; i++)
@@ -668,7 +668,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                     for (int j = i; j < n; j++)
                         trace += S[i, j] * S[i, j];
             }
-            
+
             return trace;
         }
 
@@ -680,7 +680,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             if (destroyed)
                 throw new InvalidOperationException("The decomposition has been destroyed.");
-                
+
             if (undefined)
                 throw new InvalidOperationException("The decomposition is undefined (zero in diagonal).");
 

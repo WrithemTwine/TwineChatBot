@@ -36,24 +36,24 @@
             ISupervisedMultilabelLearning<TModel, TInput>,
             ISupervisedLearning<TModel, TInput, int>
             where TModel : IMulticlassClassifier<TInput>
-        {
+    {
 
-        }
+    }
 
-        /// <summary>
-        ///   Common interface for supervised learning algorithms for
-        ///   <see cref="IMulticlassClassifier{TInput}">multi-class
-        ///   classifiers</see>.
-        /// </summary>
-        /// 
-        /// <typeparam name="TModel">The type for the model being learned.</typeparam>
-        /// 
-        public interface ISupervisedMulticlassLearning<out TModel> :
-            ISupervisedMulticlassLearning<TModel, int[]>,
-            ISupervisedMulticlassLearning<TModel, float[]>,
-            ISupervisedMulticlassLearning<TModel, double[]>
-            where TModel : IMulticlassClassifier
-        {
-        }
-    
+    /// <summary>
+    ///   Common interface for supervised learning algorithms for
+    ///   <see cref="IMulticlassClassifier{TInput}">multi-class
+    ///   classifiers</see>.
+    /// </summary>
+    /// 
+    /// <typeparam name="TModel">The type for the model being learned.</typeparam>
+    /// 
+    public interface ISupervisedMulticlassLearning<out TModel> :
+        ISupervisedMulticlassLearning<TModel, int[]>,
+        ISupervisedMulticlassLearning<TModel, float[]>,
+        ISupervisedMulticlassLearning<TModel, double[]>
+        where TModel : IMulticlassClassifier
+    {
+    }
+
 }

@@ -442,6 +442,9 @@
     <value>Go check out #user at #url and consider following them! They were last streaming: #category</value>
     <comment>message for "Shout Out" (so), to recognize another streamer/channel</comment>
   </data>
+  <data name="Msgsoactive" xml:space="preserve">
+    <value>The message isn't used in response.</value>
+  </data>
   <data name="Msgsocials" xml:space="preserve">
     <value>Here are my social media connections: </value>
   </data>
@@ -552,6 +555,10 @@
     <value>-p:Mod -param:true -use:!so username - only mods can use !so.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramsoactive" xml:space="preserve">
+    <value>-use:!soactive -p:Mod</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
   <data name="Paramsocials" xml:space="preserve">
     <value>-use:!socials</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -566,6 +573,7 @@
   </data>
   <data name="Paramusage" xml:space="preserve">
     <value>-t:Commands -f:Usage -param:true -use:!usage &lt;command&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramwatchtime" xml:space="preserve">
     <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
@@ -631,6 +639,10 @@
   </data>
   <data name="so" xml:space="preserve">
     <value>so</value>
+    <comment>default command, can be translated</comment>
+  </data>
+  <data name="soactive" xml:space="preserve">
+    <value>soactive</value>
     <comment>default command, can be translated</comment>
   </data>
   <data name="socials" xml:space="preserve">

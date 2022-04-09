@@ -76,12 +76,12 @@ namespace StreamerBotLib.MachineLearning.Accord
         private const Single tiny = Constants.SingleSmall;
 
         int? rank;
-		Single? determinant;
+        Single? determinant;
         Single? lndeterminant;
         Single? pseudoDeterminant;
         Single? lnpseudoDeterminant;
 
-		Single[,] diagonalMatrix;
+        Single[,] diagonalMatrix;
 
         /// <summary>
         ///   Returns the condition number <c>max(S) / min(S)</c>.
@@ -120,8 +120,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get
             {
-				if (this.rank.HasValue)
-					return this.rank.Value;
+                if (this.rank.HasValue)
+                    return this.rank.Value;
 
                 Single tol = System.Math.Max(m, n) * s[0] * eps;
 
@@ -157,13 +157,13 @@ namespace StreamerBotLib.MachineLearning.Accord
         ///
         public Single[,] DiagonalMatrix
         {
-            get 
-			{	
-				if (this.diagonalMatrix != null)
-					return this.diagonalMatrix;
+            get
+            {
+                if (this.diagonalMatrix != null)
+                    return this.diagonalMatrix;
 
-				return diagonalMatrix = Matrix.Diagonal(u.Columns(), v.Columns(), s);
-			}
+                return diagonalMatrix = Matrix.Diagonal(u.Columns(), v.Columns(), s);
+            }
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         ///   case JAMA's assumptions about the dimensionality of the matrix are violated.
         ///   Pass <see langword="false"/> otherwise. Default is <see langword="false"/>.</param>
         /// 
-        public SingularValueDecompositionF(Single[,] value, 
+        public SingularValueDecompositionF(Single[,] value,
             bool computeLeftSingularVectors, bool computeRightSingularVectors, bool autoTranspose)
             : this(value, computeLeftSingularVectors, computeRightSingularVectors, autoTranspose, false)
         {
@@ -367,13 +367,13 @@ namespace StreamerBotLib.MachineLearning.Accord
             m = value.Rows();    // rows
 
             if (m == 0)
-              throw new ArgumentException("Matrix does not have any rows.", "value");
+                throw new ArgumentException("Matrix does not have any rows.", "value");
 
             n = value.Columns(); // cols
 
             if (n == 0)
-               throw new ArgumentException("Matrix does not have any columns.", "value");
-            
+                throw new ArgumentException("Matrix does not have any columns.", "value");
+
             if (m < n) // Check if we are violating JAMA's assumption
             {
                 if (!autoTranspose) // Yes, check if we should correct it
@@ -442,68 +442,68 @@ namespace StreamerBotLib.MachineLearning.Accord
                     for (int i = k; i < a.Rows(); i++)
                         s[k] = Tools.Hypotenuse(s[k], a[i, k]);
 
-                    if (s[k] != 0) 
+                    if (s[k] != 0)
                     {
-                       if (a[k, k] < 0)
-                          s[k] = -s[k];
+                        if (a[k, k] < 0)
+                            s[k] = -s[k];
 
-                       for (int i = k; i < a.Rows(); i++) 
-                          a[i, k] /= s[k];
-               
-                       a[k, k] += 1;
+                        for (int i = k; i < a.Rows(); i++)
+                            a[i, k] /= s[k];
+
+                        a[k, k] += 1;
                     }
 
                     s[k] = -s[k];
                 }
 
-                for (int j = k+1; j < n; j++)
+                for (int j = k + 1; j < n; j++)
                 {
                     if ((k < nct) & (s[k] != 0))
                     {
                         // Apply the transformation.
                         Single t = 0;
                         for (int i = k; i < a.Rows(); i++)
-                          t += a[i, k] * a[i, j];
+                            t += a[i, k] * a[i, j];
 
-                       t = -t / a[k, k];
+                        t = -t / a[k, k];
 
-                       for (int i = k; i < a.Rows(); i++)
-                          a[i, j] += t * a[i, k];
-                     }
+                        for (int i = k; i < a.Rows(); i++)
+                            a[i, j] += t * a[i, k];
+                    }
 
-                     // Place the k-th row of A into e for the
-                     // subsequent calculation of the row transformation.
+                    // Place the k-th row of A into e for the
+                    // subsequent calculation of the row transformation.
 
-                     e[j] = a[k, j];
-                 }
+                    e[j] = a[k, j];
+                }
 
-                 if (wantu & (k < nct))
-                 {
+                if (wantu & (k < nct))
+                {
                     // Place the transformation in U for subsequent back
                     // multiplication.
 
                     for (int i = k; i < a.Rows(); i++)
-                       u[i, k] = a[i, k];
-                 }
+                        u[i, k] = a[i, k];
+                }
 
-                 if (k < nrt)
-                 {
+                if (k < nrt)
+                {
                     // Compute the k-th row transformation and place the
                     // k-th super-diagonal in e[k].
                     // Compute 2-norm without under/overflow.
                     e[k] = 0;
                     for (int i = k + 1; i < e.Rows(); i++)
-                       e[k] = Tools.Hypotenuse(e[k], e[i]);
+                        e[k] = Tools.Hypotenuse(e[k], e[i]);
 
                     if (e[k] != 0)
                     {
-                       if (e[k+1] < 0) 
-                          e[k] = -e[k];
+                        if (e[k + 1] < 0)
+                            e[k] = -e[k];
 
-                       for (int i = k + 1; i < e.Rows(); i++) 
-                          e[i] /= e[k];
+                        for (int i = k + 1; i < e.Rows(); i++)
+                            e[i] /= e[k];
 
-                       e[k+1] += 1;
+                        e[k + 1] += 1;
                     }
 
                     e[k] = -e[k];
@@ -517,12 +517,12 @@ namespace StreamerBotLib.MachineLearning.Accord
                             for (int j = k + 1; j < a.Columns(); j++)
                                 work[i] += e[j] * a[i, j];
 
-                       for (int j = k + 1; j < n; j++)
-                       {
-                          Single t = -e[j] / e[k+1];
-                          for (int i = k + 1; i < work.Rows(); i++) 
-                             a[i, j] += t * work[i];
-                       }
+                        for (int j = k + 1; j < n; j++)
+                        {
+                            Single t = -e[j] / e[k + 1];
+                            for (int i = k + 1; i < work.Rows(); i++)
+                                a[i, j] += t * work[i];
+                        }
                     }
 
                     if (wantv)
@@ -531,18 +531,18 @@ namespace StreamerBotLib.MachineLearning.Accord
                         // back multiplication.
 
                         for (int i = k + 1; i < v.Rows(); i++)
-                           v[i, k] = e[i];
+                            v[i, k] = e[i];
                     }
                 }
             }
 
             // Set up the final bidiagonal matrix or order p.
             int p = System.Math.Min(n, m + 1);
-            if (nct < n) 
+            if (nct < n)
                 s[nct] = a[nct, nct];
-            if (m < p) 
+            if (m < p)
                 s[p - 1] = 0;
-            if (nrt + 1 < p) 
+            if (nrt + 1 < p)
                 e[nrt] = a[nrt, p - 1];
             e[p - 1] = 0;
 
@@ -551,13 +551,13 @@ namespace StreamerBotLib.MachineLearning.Accord
             {
                 for (int j = nct; j < nu; j++)
                 {
-                    for (int i = 0; i < u.Rows(); i++) 
+                    for (int i = 0; i < u.Rows(); i++)
                         u[i, j] = 0;
 
                     u[j, j] = 1;
                 }
 
-                for (int k = nct-1; k >= 0; k--)
+                for (int k = nct - 1; k >= 0; k--)
                 {
                     if (s[k] != 0)
                     {
@@ -573,22 +573,22 @@ namespace StreamerBotLib.MachineLearning.Accord
                                 u[i, j] += t * u[i, k];
                         }
 
-                        for (int i = k; i < u.Rows(); i++ )
+                        for (int i = k; i < u.Rows(); i++)
                             u[i, k] = -u[i, k];
 
                         u[k, k] = 1 + u[k, k];
-                        for (int i = 0; i < k - 1; i++) 
+                        for (int i = 0; i < k - 1; i++)
                             u[i, k] = 0;
                     }
                     else
                     {
-                        for (int i = 0; i < u.Rows(); i++) 
+                        for (int i = 0; i < u.Rows(); i++)
                             u[i, k] = 0;
                         u[k, k] = 1;
                     }
-                    }
+                }
             }
-              
+
 
             // If required, generate V.
             if (wantv)
@@ -614,7 +614,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                             for (int i = k + 1; i < v.Rows(); i++)
                                 t += v[i, k] * v[i, j];
 
-                            t = -t / v[k+1, k];
+                            t = -t / v[k + 1, k];
                             for (int i = k + 1; i < v.Rows(); i++)
                                 v[i, j] += t * v[i, k];
                         }
@@ -628,12 +628,12 @@ namespace StreamerBotLib.MachineLearning.Accord
 
             // Main iteration loop for the singular values.
 
-            int pp = p-1;
+            int pp = p - 1;
             int iter = 0;
             Single eps = Constants.SingleEpsilon;
             while (p > 0)
             {
-                int k,kase;
+                int k, kase;
 
                 // Here is where a test for too many iterations would go.
 
@@ -660,7 +660,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                     }
                 }
 
-                if (k == p-2)
+                if (k == p - 2)
                     kase = 4;
 
                 else
@@ -668,167 +668,167 @@ namespace StreamerBotLib.MachineLearning.Accord
                     int ks;
                     for (ks = p - 1; ks >= k; ks--)
                     {
-                       if (ks == k)
-                          break;
+                        if (ks == k)
+                            break;
 
-                       Single t = (ks != p     ? Math.Abs(e[ks])   : (Single)0) + 
-                                  (ks != k + 1 ? Math.Abs(e[ks-1]) : (Single)0);
+                        Single t = (ks != p ? Math.Abs(e[ks]) : (Single)0) +
+                                   (ks != k + 1 ? Math.Abs(e[ks - 1]) : (Single)0);
 
-                       if (Math.Abs(s[ks]) <= eps*t) 
-                       {
-                          s[ks] = 0;
-                          break;
-                       }
+                        if (Math.Abs(s[ks]) <= eps * t)
+                        {
+                            s[ks] = 0;
+                            break;
+                        }
                     }
 
                     if (ks == k)
-                       kase = 3;
+                        kase = 3;
 
-                    else if (ks == p-1)
-                       kase = 1;
+                    else if (ks == p - 1)
+                        kase = 1;
 
                     else
                     {
-                       kase = 2;
-                       k = ks;
+                        kase = 2;
+                        k = ks;
                     }
-                 }
+                }
 
-                 k++;
+                k++;
 
-                 // Perform the task indicated by kase.
-                 switch (kase)
-                 {
+                // Perform the task indicated by kase.
+                switch (kase)
+                {
                     // Deflate negligible s(p).
                     case 1:
-                    {
-                       Single f = e[p - 2];
-                       e[p-2] = 0;
-                       for (int j = p - 2; j >= k; j--) 
-                       {
-                          Single t = Tools.Hypotenuse(s[j],f);
-                          Single cs = s[j] / t;
-                          Single sn = f / t;
-                          s[j] = t;
-                          if (j != k) 
-                          {
-                             f = -sn * e[j - 1];
-                             e[j - 1] = cs * e[j - 1];
-                          }
-                          if (wantv) 
-                          {
-                             for (int i = 0; i < v.Rows(); i++) 
-                             {
-                                t = cs * v[i, j] + sn * v[i, p-1];
-                                v[i, p-1] = -sn * v[i, j] + cs * v[i, p-1];
-                                v[i, j] = t;
-                             }
-                          }
-                       }
-                    }
-                    break;
+                        {
+                            Single f = e[p - 2];
+                            e[p - 2] = 0;
+                            for (int j = p - 2; j >= k; j--)
+                            {
+                                Single t = Tools.Hypotenuse(s[j], f);
+                                Single cs = s[j] / t;
+                                Single sn = f / t;
+                                s[j] = t;
+                                if (j != k)
+                                {
+                                    f = -sn * e[j - 1];
+                                    e[j - 1] = cs * e[j - 1];
+                                }
+                                if (wantv)
+                                {
+                                    for (int i = 0; i < v.Rows(); i++)
+                                    {
+                                        t = cs * v[i, j] + sn * v[i, p - 1];
+                                        v[i, p - 1] = -sn * v[i, j] + cs * v[i, p - 1];
+                                        v[i, j] = t;
+                                    }
+                                }
+                            }
+                        }
+                        break;
 
                     // Split at negligible s(k).
 
                     case 2:
-                    {
-                       Single f = e[k - 1];
-                       e[k - 1] = 0;
-                       for (int j = k; j < p; j++)
-                       {
-                          Single t = Tools.Hypotenuse(s[j], f);
-                          Single cs = s[j] / t;
-                          Single sn = f / t;
-                          s[j] = t;
-                          f = -sn * e[j];
-                          e[j] = cs * e[j];
-                          if (wantu) 
-                          {
-                                for (int i = 0; i < u.Rows(); i++) 
+                        {
+                            Single f = e[k - 1];
+                            e[k - 1] = 0;
+                            for (int j = k; j < p; j++)
+                            {
+                                Single t = Tools.Hypotenuse(s[j], f);
+                                Single cs = s[j] / t;
+                                Single sn = f / t;
+                                s[j] = t;
+                                f = -sn * e[j];
+                                e[j] = cs * e[j];
+                                if (wantu)
                                 {
-                                    t = cs * u[i, j] + sn * u[i, k-1];
-                                    u[i, k - 1] = -sn * u[i, j] + cs * u[i, k-1];
-                                    u[i, j] = t;
+                                    for (int i = 0; i < u.Rows(); i++)
+                                    {
+                                        t = cs * u[i, j] + sn * u[i, k - 1];
+                                        u[i, k - 1] = -sn * u[i, j] + cs * u[i, k - 1];
+                                        u[i, j] = t;
+                                    }
                                 }
-                          }
-                       }
-                    }
-                    break;
+                            }
+                        }
+                        break;
 
                     // Perform one qr step.
                     case 3:
                         {
-                           // Calculate the shift.
-                           Single scale = Math.Max(Math.Max(Math.Max(Math.Max(
-                                   Math.Abs(s[p-1]),Math.Abs(s[p-2])),Math.Abs(e[p-2])), 
-                                   Math.Abs(s[k])),Math.Abs(e[k]));
-                           Single sp = s[p-1] / scale;
-                           Single spm1 = s[p-2] / scale;
-                           Single epm1 = e[p-2] / scale;
-                           Single sk = s[k] / scale;
-                           Single ek = e[k] / scale;
-                           Single b = ((spm1 + sp)*(spm1 - sp) + epm1*epm1)/2;
-                           Single c = (sp*epm1)*(sp*epm1);
-                           Single shift = 0;
-                           if ((b != 0) || (c != 0))
-                           {
-                            if (b < 0)
-                                shift = -(Single)System.Math.Sqrt(b * b + c);
-                            else
-                                shift = (Single)System.Math.Sqrt(b * b + c);
-                              shift = c / (b + shift);
-                           }
+                            // Calculate the shift.
+                            Single scale = Math.Max(Math.Max(Math.Max(Math.Max(
+                                    Math.Abs(s[p - 1]), Math.Abs(s[p - 2])), Math.Abs(e[p - 2])),
+                                    Math.Abs(s[k])), Math.Abs(e[k]));
+                            Single sp = s[p - 1] / scale;
+                            Single spm1 = s[p - 2] / scale;
+                            Single epm1 = e[p - 2] / scale;
+                            Single sk = s[k] / scale;
+                            Single ek = e[k] / scale;
+                            Single b = ((spm1 + sp) * (spm1 - sp) + epm1 * epm1) / 2;
+                            Single c = (sp * epm1) * (sp * epm1);
+                            Single shift = 0;
+                            if ((b != 0) || (c != 0))
+                            {
+                                if (b < 0)
+                                    shift = -(Single)System.Math.Sqrt(b * b + c);
+                                else
+                                    shift = (Single)System.Math.Sqrt(b * b + c);
+                                shift = c / (b + shift);
+                            }
 
-                           Single f = (sk + sp)*(sk - sp) + (Single)shift;
-                           Single g = sk*ek;
-   
-                           // Chase zeros.
-                           for (int j = k; j < p - 1; j++)
-                           {
-                              Single t = Tools.Hypotenuse(f, g);
-                              Single cs = f / t;
-                              Single sn = g / t;
+                            Single f = (sk + sp) * (sk - sp) + (Single)shift;
+                            Single g = sk * ek;
 
-                              if (j != k)
-                                 e[j - 1] = t;
+                            // Chase zeros.
+                            for (int j = k; j < p - 1; j++)
+                            {
+                                Single t = Tools.Hypotenuse(f, g);
+                                Single cs = f / t;
+                                Single sn = g / t;
 
-                              f = cs * s[j] + sn * e[j];
-                              e[j] = cs * e[j] - sn * s[j];
-                              g = sn * s[j + 1];
-                              s[j+1] = cs * s[j + 1];
+                                if (j != k)
+                                    e[j - 1] = t;
 
-                              if (wantv)
-                              {
-                                 for (int i = 0; i < v.Rows(); i++)
-                                 {
-                                    t = cs * v[i, j] + sn * v[i, j + 1];
-                                    v[i, j + 1] = -sn*v[i, j] + cs*v[i, j + 1];
-                                    v[i, j] = t;
-                                 }
-                              }
+                                f = cs * s[j] + sn * e[j];
+                                e[j] = cs * e[j] - sn * s[j];
+                                g = sn * s[j + 1];
+                                s[j + 1] = cs * s[j + 1];
 
-                              t = Tools.Hypotenuse(f,g);
-                              cs = f / t;
-                              sn = g / t;
-                              s[j] = t;
-                              f = cs * e[j] + sn * s[j + 1];
-                              s[j + 1] = -sn * e[j] + cs * s[j + 1];
-                              g = sn * e[j + 1];
-                              e[j + 1] = cs * e[j + 1];
+                                if (wantv)
+                                {
+                                    for (int i = 0; i < v.Rows(); i++)
+                                    {
+                                        t = cs * v[i, j] + sn * v[i, j + 1];
+                                        v[i, j + 1] = -sn * v[i, j] + cs * v[i, j + 1];
+                                        v[i, j] = t;
+                                    }
+                                }
 
-                              if (wantu && (j < m - 1))
-                              {
-                                 for (int i = 0; i < u.Rows(); i++)
-                                 {
-                                    t = cs * u[i, j] + sn * u[i, j + 1];
-                                    u[i, j + 1] = -sn * u[i, j] + cs * u[i, j + 1];
-                                    u[i, j] = t;
-                                 }
-                              }
-                           }
+                                t = Tools.Hypotenuse(f, g);
+                                cs = f / t;
+                                sn = g / t;
+                                s[j] = t;
+                                f = cs * e[j] + sn * s[j + 1];
+                                s[j + 1] = -sn * e[j] + cs * s[j + 1];
+                                g = sn * e[j + 1];
+                                e[j + 1] = cs * e[j + 1];
 
-                           e[p - 2] = f;
-                           iter = iter + 1;
+                                if (wantu && (j < m - 1))
+                                {
+                                    for (int i = 0; i < u.Rows(); i++)
+                                    {
+                                        t = cs * u[i, j] + sn * u[i, j + 1];
+                                        u[i, j + 1] = -sn * u[i, j] + cs * u[i, j + 1];
+                                        u[i, j] = t;
+                                    }
+                                }
+                            }
+
+                            e[p - 2] = f;
+                            iter = iter + 1;
                         }
                         break;
 
@@ -842,11 +842,11 @@ namespace StreamerBotLib.MachineLearning.Accord
 
                                 if (wantv)
                                 {
-                                    for (int i = 0; i <= pp; i++) 
+                                    for (int i = 0; i <= pp; i++)
                                         v[i, k] = -v[i, k];
                                 }
                             }
-   
+
                             // Order the singular values.
                             while (k < pp)
                             {
@@ -855,13 +855,13 @@ namespace StreamerBotLib.MachineLearning.Accord
 
                                 Single t = s[k];
                                 s[k] = s[k + 1];
-                                s[k+1] = t;
+                                s[k + 1] = t;
                                 if (wantv && (k < n - 1))
                                 {
                                     for (int i = 0; i < n; i++)
                                     {
                                         t = v[i, k + 1];
-                                        v[i, k + 1] = v[i, k]; 
+                                        v[i, k + 1] = v[i, k];
                                         v[i, k] = t;
                                     }
                                 }
@@ -870,8 +870,8 @@ namespace StreamerBotLib.MachineLearning.Accord
                                 {
                                     for (int i = 0; i < u.Rows(); i++)
                                     {
-                                        t = u[i, k + 1]; 
-                                        u[i, k + 1] = u[i, k]; 
+                                        t = u[i, k + 1];
+                                        u[i, k + 1] = u[i, k];
                                         u[i, k] = t;
                                     }
                                 }
@@ -885,7 +885,7 @@ namespace StreamerBotLib.MachineLearning.Accord
                         break;
                 }
             }
-            
+
 
             // If we are violating JAMA's assumption about 
             // the input dimension, we need to swap u and v.

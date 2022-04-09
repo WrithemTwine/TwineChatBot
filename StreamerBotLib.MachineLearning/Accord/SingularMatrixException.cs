@@ -48,7 +48,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// <param name="message">Message providing some additional information.</param>
         /// 
         public SingularMatrixException(string message) :
-            base(message) { }
+            base(message)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingularMatrixException"/> class.
@@ -58,7 +59,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         /// 
         public SingularMatrixException(string message, Exception innerException) :
-            base(message, innerException) { }
+            base(message, innerException)
+        { }
 
 
         /// <summary>
@@ -75,7 +77,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// </exception>
         /// 
         protected SingularMatrixException(SerializationInfo info, StreamingContext context) :
-            base(info, context) { }
+            base(info, context)
+        { }
 
     }
 }

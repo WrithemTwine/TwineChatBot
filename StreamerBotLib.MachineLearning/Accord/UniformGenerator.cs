@@ -127,7 +127,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         }
     }
 
-    internal class RandomNumberGeneratorAdapter : 
+    internal class RandomNumberGeneratorAdapter :
         IRandomNumberGenerator<double>,
         IRandomNumberGenerator<float>
     {
@@ -136,7 +136,7 @@ namespace StreamerBotLib.MachineLearning.Accord
 
         public RandomNumberGeneratorAdapter(IRandomNumberGenerator rng)
         {
-            this.rng = rng;       
+            this.rng = rng;
         }
 
         public float Generate()

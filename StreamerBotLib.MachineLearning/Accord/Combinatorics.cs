@@ -478,7 +478,7 @@ namespace StreamerBotLib.MachineLearning.Accord
 #if NET35
             IEnumerable<T>
 #else
-            ISet<T> 
+            ISet<T>
 #endif
             set, bool inPlace = false)
         {
@@ -501,7 +501,7 @@ namespace StreamerBotLib.MachineLearning.Accord
 #if NET35
             IEnumerable<T>
 #else
-            ISet<T> 
+            ISet<T>
 #endif
             set, int k, bool inPlace = false)
         {

@@ -113,7 +113,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             get { return currentCulture; }
         }
-        
+
         /// <summary>
         ///   Gets the IMatrixFormatProvider which uses the invariant system culture.
         /// </summary>

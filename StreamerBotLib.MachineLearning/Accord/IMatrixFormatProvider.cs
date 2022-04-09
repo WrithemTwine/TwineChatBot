@@ -90,7 +90,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         ///   to be used during parsing or formatting.
         /// </summary>
         IFormatProvider InnerProvider { get; }
-        
+
     }
 
 

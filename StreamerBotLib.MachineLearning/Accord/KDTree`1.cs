@@ -310,5 +310,5 @@ namespace StreamerBotLib.MachineLearning.Accord
 
 
 
-  
+
 }

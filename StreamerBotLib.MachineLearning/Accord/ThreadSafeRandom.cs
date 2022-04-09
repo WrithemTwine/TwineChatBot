@@ -79,7 +79,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// 
         public override int Next(int maxValue)
         {
-            lock (sync) 
+            lock (sync)
                 return base.Next(maxValue);
         }
 
@@ -99,7 +99,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         ///
         public override int Next(int minValue, int maxValue)
         {
-            lock (sync) 
+            lock (sync)
                 return base.Next(minValue, maxValue);
         }
 

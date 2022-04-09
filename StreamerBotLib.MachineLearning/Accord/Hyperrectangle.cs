@@ -269,13 +269,13 @@ namespace StreamerBotLib.MachineLearning.Accord
 
             if (NumberOfDimensions == 2)
             {
-                return String.Format(formatProvider, format, 
+                return String.Format(formatProvider, format,
                     "X = {0} Y = {1} Width = {2} Height = {3}",
                     min[0], min[1], max[0] - min[0], max[1] - min[1]);
             }
 
             return String.Format(formatProvider, format,
-                "Min = {0} Max = {1} (Length = {2})", 
+                "Min = {0} Max = {1} (Length = {2})",
                 min, max, GetLength());
         }
     }
