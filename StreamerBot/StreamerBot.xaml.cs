@@ -39,6 +39,8 @@ namespace StreamerBot
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
         private readonly DateTime StartBotDate;
+        private DateTime TwitchFollowRefresh;
+        private int TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private const string MultiLiveName = "MultiUserLiveBot";
 
@@ -53,7 +55,7 @@ namespace StreamerBot
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
-            // move settings to the newest version, if the application version upgrades
+
             if (Settings.Default.UpgradeRequired)
             {
                 Settings.Default.Upgrade();
@@ -76,10 +78,15 @@ namespace StreamerBot
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
+
+            List<int> hrslist = new() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = hrslist;
+            SetTwitchFollowerRefreshTime();
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
@@ -89,7 +96,6 @@ namespace StreamerBot
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
 #endif
-
         }
 
         #region Bot_Ops
@@ -216,8 +222,22 @@ namespace StreamerBot
             BotController.SetDiscordWebhooksEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
-        #region Refresh data from bot
+        private void ShoutUsers_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.HandleChatCommandReceived(
+                new()
+                {
+                    CommandText = $"!{DefaultCommand.soactive}",
+                    UserType = ViewerTypes.Broadcaster,
+                    IsBroadcaster = true,
+                    DisplayName = OptionFlags.TwitchChannelName,
+                    Channel = OptionFlags.TwitchChannelName,
+                    Message = $"!{DefaultCommand.soactive}"
+                },
+                Bots.TwitchChatBot);
+        }
 
+        #region Refresh data from bot
 
         /// <summary>
         /// The GUI provides buttons to click and refresh data to the interface. Still must handle response events from the bot.
@@ -256,8 +276,6 @@ namespace StreamerBot
 
         private void BeginUpdateCategory()
         {
-            // TODO: align current stream info to the current active stream
-
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
         }
 
@@ -428,11 +446,6 @@ namespace StreamerBot
             //    CP.Width = 300;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propname)
-        {
-            PropertyChanged?.Invoke(this, new(propname));
-        }
 
         private void Slider_PopOut_Opacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -490,8 +503,9 @@ namespace StreamerBot
 
             CheckMessageBoxes();
 
-            // TODO: add follower service online, offline, and repeat timers to re-run service
-            // TODO: *done*turn off bots & prevent starting if the token is expired*done* - research auto-refreshing token
+            CheckBox_ManageData_Click(sender, new());
+
+            // TODO: research auto-refreshing token
         }
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
@@ -505,6 +519,12 @@ namespace StreamerBot
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(string propname)
+        {
+            PropertyChanged?.Invoke(this, new(propname));
+        }
 
         private void CheckMessageBoxes()
         {
@@ -554,12 +574,6 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            // commented out to not hide data tabs
-            //static Visibility SetVisibility(bool Check) { return Check ? Visibility.Visible : Visibility.Collapsed; }
-
-            //TabItem_Users.Visibility = SetVisibility(OptionFlags.ManageUsers);
-            //TabItem_StreamStats.Visibility = SetVisibility(OptionFlags.ManageStreamStats);
-
             if (CheckBox_ManageUsers.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
@@ -572,6 +586,7 @@ namespace StreamerBot
 
             if (CheckBox_ManageFollowers.IsChecked == true)
             {
+                CheckBox_ManageUsers.IsEnabled = false;
                 if (Settings.Default.TwitchFollowerSvcAutoStart)
                 {
                     Dispatcher.BeginInvoke(new BotOperation(() =>
@@ -582,6 +597,7 @@ namespace StreamerBot
             }
             else
             {
+                CheckBox_ManageUsers.IsEnabled = true;
                 Dispatcher.BeginInvoke(new BotOperation(() =>
                 {
                     (Radio_Twitch_FollowBotStart.DataContext as IOModule).StopBot();
@@ -644,7 +660,7 @@ namespace StreamerBot
             CheckDebug();
         }
 
-        private async void PreviewMoustLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
+        private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
@@ -698,6 +714,62 @@ namespace StreamerBot
                 return;
             }
         }
+
+        private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
+        {
+            CheckBox CBSource = null;
+            StackPanel SPSource = null;
+            if (sender.GetType() == typeof(CheckBox))
+            {
+                CBSource = (CheckBox)sender;
+            }
+            else if (sender.GetType() == typeof(StackPanel))
+            {
+                SPSource = (StackPanel)sender;
+            }
+
+            void SetVisibility(CheckBox box, StackPanel panel)
+            {
+                if (panel != null)
+                {
+                    panel.Visibility = (box.IsChecked == true) switch
+                    {
+                        true => Visibility.Visible,
+                        false => Visibility.Collapsed
+                    };
+                }
+            }
+
+            if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
+            {
+                SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
+            }
+            else if (CBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
+            {
+                SetVisibility(CheckBox_TwitchFollower_LimitMsgs, StackPanel_TwitchFollower_LimitMsgs_Count);
+            }
+            else if (CBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
+            {
+                SetVisibility(CheckBox_TwitchFollower_AutoRefresh, StackPanel_TwitchFollows_RefreshHrs);
+            }
+        }
+
+        private void TextBox_Follower_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox src = (TextBox)sender;
+
+            if(int.TryParse(src.Text, out int result))
+            {
+                if(result is <1 or > 100)
+                {
+                    src.Text = (result < 1 ? 1 : result > 100 ? 100 : result).ToString();
+                }
+            }
+        }
+
+        #region Moderate Followers
+
+        #endregion
 
         #region GUIAppStats
         private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
@@ -801,7 +873,7 @@ namespace StreamerBot
                 // TODO: Research and update setting column width based on actual value, currently doesn't appear available when "autogeneratedcolumns" occurs
 
                 // change the column width only if the specified value is less than current width
-                if (dgc.Width.DisplayValue > Width || (dgc.Header.ToString() == "Message") || (dgc.Header.ToString() == "WebHook") || (dgc.Header.ToString() == "Webhook"))
+                if (dgc.Width.DisplayValue > Width || (dgc.Header.ToString() is "Message" or "WebHook" or "Webhook" or "TeachingMsg"))
                 {
                     dgc.Width = Width;
                 }
@@ -880,6 +952,19 @@ namespace StreamerBot
                         SetWidth(dc);
                     }
                     break;
+                case "BanRules" or "LearnMsgs":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() is "LearnMsgsBanReasons" or "BanRulesLearnMsgs")
+                        {
+                            Collapse(dc);
+                        }
+                        else
+                        {
+                            SetWidth(dc);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -895,6 +980,11 @@ namespace StreamerBot
             BotController.ClearAllCurrenciesValues();
         }
 
+        private void Button_ClearNonFollowers_Click(object sender, RoutedEventArgs e)
+        {
+            BotController.ClearUsersNonFollowers();
+        }
+
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // TODO: Setup MultiLiveBot Context Menu Add/Edit records
@@ -903,10 +993,12 @@ namespace StreamerBot
                 if (((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs")
                 {
                     ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = false;
+                    ((MenuItem)Resources["DataGridContextMenu_DeleteItems"]).IsEnabled = false;
                 }
                 else
                 {
                     ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = true;
+                    ((MenuItem)Resources["DataGridContextMenu_DeleteItems"]).IsEnabled = true;
                 }
             }
         }
@@ -927,8 +1019,6 @@ namespace StreamerBot
 
         private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
         {
-            DataRowView dataView = null;
-
             if (AddNew)
             {
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
@@ -939,7 +1029,7 @@ namespace StreamerBot
             }
             else
             {
-                dataView = (DataRowView)sourceDataGrid.SelectedItem;
+                DataRowView dataView = (DataRowView)sourceDataGrid.SelectedItem;
                 if (dataView != null)
                 {
                     PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
@@ -952,6 +1042,13 @@ namespace StreamerBot
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
 
             Popup_DataEdit(item, false);
+        }
+
+        private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+
+            SystemsController.DeleteRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)));
         }
 
         #endregion
@@ -1159,9 +1256,10 @@ namespace StreamerBot
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }
 
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchStreamerTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
+                    if( OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
                     {
-                        NotifyExpiredCredentials?.Invoke(this, new());
+                        Controller.TwitchStartUpdateAllFollowers();
+                        TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
                     }
 
                     UpdateAppTime();
@@ -1175,10 +1273,45 @@ namespace StreamerBot
             }
         }
 
+        #region Refresh Followers
 
+        private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
+        {
+            SetTwitchFollowerRefreshTime();
+        }
+
+        /// <summary>
+        /// Initialize the DateTime used to refresh Twitch Followers in the Follower Refresh process after user specified hours.
+        /// Activates with constructor and when "follow bot" is started - to prevent null/non-sensible values - and spec is 'refresh every N hours after follow bot starts".
+        /// </summary>
+        private void SetTwitchFollowerRefreshTime()
+        {
+            TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
+        }
+
+        private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox srchrs = sender as ComboBox;
+            int hrs = (int)srchrs.SelectedValue;
+
+            OptionFlags.SetSettings();
+            CheckDebug();
+
+            // changes the refresh time - which is already set at this point
+            TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
+            TwitchFollowerCurrRefreshHrs = hrs;
+        }
+
+        private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.TwitchStartUpdateAllFollowers();
+        }
 
 
         #endregion
+
+        #endregion
+
 
     }
 }

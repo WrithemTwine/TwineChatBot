@@ -32,7 +32,7 @@ namespace StreamerBotLib.GUI.Windows
 
         private void EditDataWindow_UpdatedDataRow(object sender, Events.UpdatedDataRowArgs e)
         {
-            SystemsController.PostUpdatedDataRow(e.UpdatedDataRow);
+            SystemsController.PostUpdatedDataRow(e.RowChanged);
         }
     }
 }

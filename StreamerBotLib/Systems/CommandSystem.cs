@@ -18,7 +18,12 @@ namespace StreamerBotLib.Systems
 {
     public class CommandSystem : SystemsBase, INotifyPropertyChanged
     {
-        private Thread ElapsedThread;
+        private static Thread ElapsedThread;
+        private bool ChatBotStarted;
+
+        // TODO: add account merging for a user, approval by a mod+ (moderator, broadcaster)
+        // TODO: add approval to manage channel point redemption for custom welcome message
+        // TODO: add quotes
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
@@ -32,18 +37,20 @@ namespace StreamerBotLib.Systems
 
         public CommandSystem()
         {
-            StartElapsedTimerThread();
+            //StartElapsedTimerThread();
         }
 
-        private void StartElapsedTimerThread()
+        public void StartElapsedTimerThread()
         {
+            ChatBotStarted = true;
             ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
             ElapsedThread.Start();
         }
 
         public void StopElapsedTimerThread()
         {
-            ElapsedThread.Join();
+            ChatBotStarted = false;
+            ElapsedThread?.Join();
         }
 
         private const int ChatCount = 20;
@@ -53,7 +60,6 @@ namespace StreamerBotLib.Systems
         private DateTime viewertime;
         private int chats;
         private int viewers;
-
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
@@ -72,7 +78,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken)
+                while (OptionFlags.ActiveToken && ChatBotStarted)
                 {
                     DiluteTime = CheckDilute();
 
@@ -123,7 +129,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory)
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted)
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -205,7 +211,6 @@ namespace StreamerBotLib.Systems
             return temp;
         }
 
-        #region New Command Code
         /// <summary>
         /// Establishes the permission level for the user who sends the message.
         /// </summary>
@@ -255,7 +260,7 @@ namespace StreamerBotLib.Systems
             {
                 result = "";
             }
-            else if ((ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
+            else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
             {
                 result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
             }
@@ -271,6 +276,29 @@ namespace StreamerBotLib.Systems
         }
 
         /// <summary>
+        /// Call to check all users in the stream, and shout them.
+        /// </summary>
+        /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
+        public void AutoShoutUsers(Bots Source)
+        {
+            // TODO: if adding non-Twitch platforms, need to adjust to call the correct platform-to get the channel category
+
+            List<string> CurrActiveUsers;
+            lock (CurrUsers)
+            {
+                CurrActiveUsers = new(CurrUsers);
+            }
+
+            ThreadManager.CreateThreadStart(() =>
+            {
+                foreach (string U in CurrActiveUsers)
+                {
+                    CheckShout(U, out _, Source);
+                }
+            });
+        }
+
+        /// <summary>
         /// See if the user is part of the user's auto-shout out list to determine if the message should be called, or shout-out from a raid or other similar event.
         /// </summary>
         /// <param name="UserName">The user to check</param>
@@ -282,7 +310,13 @@ namespace StreamerBotLib.Systems
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
-                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out _, Source);
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi, Source);
+
+                // handle when returned without #category in the message
+                if (response != "")
+                {
+                    ProcessedCommand?.Invoke(this, new() { Msg = response, RepeatMsg = multi });
+                }
             }
         }
 
@@ -355,6 +389,10 @@ namespace StreamerBotLib.Systems
                 NotifyPropertyChanged("UserPartyStart");
                 NotifyPropertyChanged("UserPartyStop");
             }
+            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
+            {
+                AutoShoutUsers(Source);
+            }
             else
             {
                 string paramvalue = cmdrow.AllowParam
@@ -386,13 +424,13 @@ namespace StreamerBotLib.Systems
                     {
                         ThreadManager.CreateThreadStart(() =>
                         {
-                             VariableParser.AddData(ref datavalues,
-                             new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                            VariableParser.AddData(ref datavalues,
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
-                             result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+                            result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
-                             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+                            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
                         });
 
                         result = "";
@@ -523,6 +561,5 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        #endregion
     }
 }

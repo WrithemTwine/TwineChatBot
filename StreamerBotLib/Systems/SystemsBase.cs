@@ -7,6 +7,7 @@ using StreamerBotLib.Static;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Documents;
@@ -119,6 +120,11 @@ namespace StreamerBotLib.Systems
             DataManage.ClearAllCurrencyValues();
         }
 
+        public static void ClearUsersNonFollowers()
+        {
+            DataManage.ClearUsersNotFollowers();
+        }
+
         public static void SetSystemEventsEnabled(bool Enabled)
         {
             DataManage.SetSystemEventsEnabled(Enabled);
@@ -139,11 +145,22 @@ namespace StreamerBotLib.Systems
             DataManage.SetDiscordWebhooksEnabled(Enabled);
         }
 
+        public static void PostUpdatedDataRow(bool RowChanged)
+        {
+            DataManage.PostUpdatedDataRow(RowChanged);
+        }
+
+        public static void DeleteRows(IEnumerable<DataRow> dataRows)
+        {
+            DataManage.DeleteDataRows(dataRows);
+        }
+
         public static bool AddClip(Clip c)
         {
             return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
-    /// <summary>
+
+        /// <summary>
         /// Retrieves the current users within the channel during the stream.
         /// </summary>
         /// <returns>The current user count as of now.</returns>
@@ -157,6 +174,7 @@ namespace StreamerBotLib.Systems
                 }
             }
         }
+
         /// <summary>
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>

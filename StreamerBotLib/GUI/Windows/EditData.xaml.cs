@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace StreamerBotLib.GUI.Windows
 {
@@ -94,15 +95,18 @@ namespace StreamerBotLib.GUI.Windows
                 SaveData.Add(name, result);
             }
 
-            foreach (DataColumn dataColumn in SaveDataRow.Table.Columns)
+            lock (SaveDataRow)
             {
-                if (!dataColumn.ReadOnly)
+                foreach (DataColumn dataColumn in SaveDataRow.Table.Columns)
                 {
-                    SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
+                    if (!dataColumn.ReadOnly)
+                    {
+                        SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
+                    }
                 }
             }
 
-            UpdatedDataRow?.Invoke(this, new() { UpdatedDataRow = SaveDataRow });
+            UpdatedDataRow?.Invoke(this, new() { RowChanged = true });
             Close();
         }
 
@@ -148,7 +152,7 @@ namespace StreamerBotLib.GUI.Windows
                 case PopupEditTableDataType.comboenum:
                     List<string> enumlist = new();
 
-                    if (dataColumn.ColumnName == "Permission")
+                    if (dataColumn.ColumnName is "Permission" or "ViewerTypes")
                     {
                         foreach (ViewerTypes s in Enum.GetValues(typeof(ViewerTypes)))
                         {
@@ -172,6 +176,27 @@ namespace StreamerBotLib.GUI.Windows
                     else if (dataColumn.ColumnName == "sort")
                     {
                         foreach (DataSort s in Enum.GetValues(typeof(DataSort)))
+                        {
+                            enumlist.Add(s.ToString());
+                        }
+                    }
+                    else if (dataColumn.ColumnName == "ModAction")
+                    {
+                        foreach (ModActions s in Enum.GetValues(typeof(ModActions)))
+                        {
+                            enumlist.Add(s.ToString());
+                        }
+                    }
+                    else if (dataColumn.ColumnName == "MsgType")
+                    {
+                        foreach (MsgTypes s in Enum.GetValues(typeof(MsgTypes)))
+                        {
+                            enumlist.Add(s.ToString());
+                        }
+                    }
+                    else if (dataColumn.ColumnName == "BanReason")
+                    {
+                        foreach (BanReasons s in Enum.GetValues(typeof(BanReasons)))
                         {
                             enumlist.Add(s.ToString());
                         }
@@ -321,10 +346,14 @@ namespace StreamerBotLib.GUI.Windows
             {
                 dataout.IsEnabled = !dataColumn.ReadOnly;
             }
-            
+
             if (LockedTable && (dataColumn.ColumnName is "Id" or "CmdName" or "AllowParam" or "Usage" or "lookupdata" or "table" or "key_field" or "data_field" or "currency_field" or "unit" or "action" or "top" or "Name"))
             {
                 dataout.IsEnabled = false;
+            } 
+            else if(dataout.GetType() == typeof(TextBox))
+            {
+                dataout.PreviewMouseLeftButtonDown += PreviewMouseLeftButton_SelectAll;
             }
 
             return dataout;
@@ -394,7 +423,7 @@ namespace StreamerBotLib.GUI.Windows
             {
                 case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata":
                     return PopupEditTableDataType.databool;
-                case "Permission" or "Kind" or "action" or "sort":
+                case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes" or "BanReason":
                     return PopupEditTableDataType.comboenum;
                 case "":
                     return PopupEditTableDataType.combolist;
@@ -445,6 +474,11 @@ namespace StreamerBotLib.GUI.Windows
             }
 
             return result;
+        }
+
+        private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
+        {
+            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
         }
     }
 }

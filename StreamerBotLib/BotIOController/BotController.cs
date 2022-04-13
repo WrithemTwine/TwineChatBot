@@ -24,9 +24,8 @@ using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 
 
-// TODO: Thread Manager - include count total threads created
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
-// TODO: add streaming category count, track number of streams per category 
+// TODO: *finished-test for reliability* add streaming category count, track number of streams per category 
 
 namespace StreamerBotLib.BotIOController
 {
@@ -38,6 +37,8 @@ namespace StreamerBotLib.BotIOController
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
         internal Collection<IBotTypes> BotsList { get; private set; } = new();
+        public List<Bots> StartedChatBots { get; private set; } = new();
+        private bool ChatBotStopping;
 
         private GiveawayTypes GiveawayItemType = GiveawayTypes.None;
         private string GiveawayItemName = "";
@@ -49,7 +50,7 @@ namespace StreamerBotLib.BotIOController
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
         private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
-        private readonly Thread SendThread;  // the thread for sending messages back to the monitored  channels
+        private Thread SendThread;  // the thread for sending messages back to the monitored  channels
 
         public BotController()
         {
@@ -57,6 +58,7 @@ namespace StreamerBotLib.BotIOController
 
             Systems = new();
             Systems.PostChannelMessage += Systems_PostChannelMessage;
+            Systems.BanUserRequest += Systems_BanUserRequest;
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
@@ -65,10 +67,6 @@ namespace StreamerBotLib.BotIOController
             OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
             BotsList.Add(TwitchBots);
-
-
-            SendThread = new(new ThreadStart(BeginProcMsgs));
-            SendThread.Start();
         }
 
         /// <summary>
@@ -134,8 +132,9 @@ namespace StreamerBotLib.BotIOController
         {
             // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
-            while (OptionFlags.ActiveToken || Operations.Count > 0)
+            while ((OptionFlags.ActiveToken || Operations.Count > 0) && StartedChatBots.Count > 0)
             {
+                while (ChatBotStopping) { } // spin while a bot is stopping, to prevent sending any messages
                 Task temp = null;
                 lock (Operations)
                 {
@@ -165,7 +164,7 @@ namespace StreamerBotLib.BotIOController
             {
                 Systems.Exit();
 
-                SendThread.Join(); // wait until all the messages are sent to ask bots to close
+                SendThread?.Join(); // wait until all the messages are sent to ask bots to close
 
                 foreach (IBotTypes bot in BotsList)
                 {
@@ -206,6 +205,11 @@ namespace StreamerBotLib.BotIOController
         public static void ClearAllCurrenciesValues()
         {
             SystemsController.ClearAllCurrenciesValues();
+        }
+
+        public static void ClearUsersNonFollowers()
+        {
+            SystemsController.ClearUsersNonFollowers();
         }
 
         public static void SetSystemEventsEnabled(bool Enabled)
@@ -285,6 +289,11 @@ namespace StreamerBotLib.BotIOController
             BotsTwitch.LiveMonitorSvc.UpdateChannels();
         }
 
+        public void TwitchStartUpdateAllFollowers()
+        {
+            TwitchBots.GetAllFollowers();
+        }
+
         public void TwitchPostNewFollowers(OnNewFollowersDetectedArgs Follower)
         {
             HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers));
@@ -308,6 +317,21 @@ namespace StreamerBotLib.BotIOController
                     ToUserName = f.ToUserName
                 };
             });
+        }
+
+        public void TwitchChatBotStarted(EventArgs args = null)
+        {
+            HandleChatBotStarted(Bots.TwitchChatBot);
+        }
+
+        public void TwitchChatBotStopping(EventArgs args = null)
+        {
+            HandleChatBotStopped(Bots.TwitchChatBot);
+        }
+
+        public void TwitchChatBotStopped(EventArgs args = null)
+        {
+            HandleChatBotStopped(Bots.TwitchChatBot);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -458,7 +482,25 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchMessageReceived(OnMessageReceivedArgs e)
         {
-            HandleMessageReceived(e.ChatMessage.DisplayName, e.ChatMessage.IsSubscriber, e.ChatMessage.IsVip, e.ChatMessage.IsModerator, e.ChatMessage.Bits, e.ChatMessage.Message, Bots.TwitchChatBot);
+            HandleMessageReceived(
+                new()
+                {
+                    DisplayName = e.ChatMessage.DisplayName,
+                    Channel = e.ChatMessage.Channel,
+                    IsBroadcaster = e.ChatMessage.IsBroadcaster,
+                    IsHighlighted = e.ChatMessage.IsHighlighted,
+                    IsMe = e.ChatMessage.IsMe,
+                    IsModerator = e.ChatMessage.IsModerator,
+                    IsPartner = e.ChatMessage.IsPartner,
+                    IsSkippingSubMode = e.ChatMessage.IsSkippingSubMode,
+                    IsStaff = e.ChatMessage.IsStaff,
+                    IsSubscriber = e.ChatMessage.IsSubscriber,
+                    IsTurbo = e.ChatMessage.IsTurbo,
+                    IsVip = e.ChatMessage.IsVip,
+                    Message = e.ChatMessage.Message,
+                    Bits = e.ChatMessage.Bits
+                }
+                , Bots.TwitchChatBot);
         }
 
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
@@ -487,7 +529,6 @@ namespace StreamerBotLib.BotIOController
                 Message = e.Command.ChatMessage.Message
             }, Bots.TwitchChatBot); ;
         }
-
 
         public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)
         {
@@ -597,7 +638,6 @@ namespace StreamerBotLib.BotIOController
         {
             SystemsController.SetCategory(gameId, gameName);
             PostGameCategoryEvent(gameId, gameName);
-
         }
 
         public static void HandleOnStreamOffline(string HostedChannel = null)
@@ -613,6 +653,40 @@ namespace StreamerBotLib.BotIOController
         #endregion
 
         #region Chat Bot
+
+        public void HandleChatBotStarted(Bots Source)
+        {
+            lock (StartedChatBots)
+            {
+                StartedChatBots.UniqueAdd(Source);
+            }
+
+            if (StartedChatBots.Count == 1)
+            {
+                SendThread = ThreadManager.CreateThread(BeginProcMsgs, Priority: ThreadExitPriority.Normal);
+                SendThread.Start();
+                Systems.NotifyBotStart();
+            }
+        }
+
+        public void HandleChatBotStopping(Bots Source)
+        {
+            lock (StartedChatBots)
+            {
+                StartedChatBots.RemoveAll((s) => s == Source);
+            }
+
+            if (StartedChatBots.Count == 0)
+            {
+                Systems.NotifyBotStop();
+            }
+            ChatBotStopping = true;
+        }
+
+        public void HandleChatBotStopped(Bots Source)
+        {
+            ChatBotStopping = false;
+        }
 
         public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
         {
@@ -740,9 +814,9 @@ namespace StreamerBotLib.BotIOController
             Systems.UserJoined(new() { UserName }, Source);
         }
 
-        public void HandleMessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
+        public void HandleMessageReceived(Models.CmdMessage MsgReceived, Bots Source)
         {
-            Systems.MessageReceived(UserName, IsSubscriber, IsVip, IsModerator, Bits, Message, Source);
+            Systems.MessageReceived(MsgReceived, Source);
         }
 
         public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category, Bots Source)
@@ -800,6 +874,20 @@ namespace StreamerBotLib.BotIOController
             Systems.PostGiveawayResult();
         }
         #endregion
+
+        #endregion
+
+        #region UserBot
+
+        private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
+        {
+            if(e.Source == Bots.TwitchChatBot)
+            {
+                // TODO: verify users are correctly determined to be banned before banning, added to log
+                LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.UserName} for {e.BanReason} for {e.Duration} seconds.");
+                //TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
+            }
+        }
 
         #endregion
 

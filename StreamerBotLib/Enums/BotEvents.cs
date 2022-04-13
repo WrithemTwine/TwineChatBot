@@ -2,6 +2,9 @@
 {
     public enum BotEvents
     {
+        TwitchChatBotStarted,
+        TwitchChatBotStopping,
+        TwitchChatBotStopped,
         TwitchBeingHosted,
         TwitchBulkPostFollowers,
         TwitchStartBulkFollowers,

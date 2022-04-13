@@ -214,6 +214,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message to give when a user is banned..
+        /// </summary>
+        internal static string HelpBannedUser {
+            get {
+                return ResourceManager.GetString("HelpBannedUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The message displayed when a user hosts the channel. Currently only supported when the bot&apos;s user name is the same as the streamer&apos;s user name..
         /// </summary>
         internal static string HelpBeingHosted {
@@ -601,6 +610,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #user was just banned..
+        /// </summary>
+        internal static string MsgBannedUser {
+            get {
+                return ResourceManager.GetString("MsgBannedUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thanks #user for #autohost this channel!.
         /// </summary>
         internal static string MsgBeingHosted {
@@ -916,11 +934,20 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Go check out #user at #url and consider following them! #category.
+        ///   Looks up a localized string similar to Go check out #user at #url and consider following them! They were last streaming: #category.
         /// </summary>
         internal static string Msgso {
             get {
                 return ResourceManager.GetString("Msgso", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message isn&apos;t used in response..
+        /// </summary>
+        internal static string Msgsoactive {
+            get {
+                return ResourceManager.GetString("Msgsoactive", resourceCulture);
             }
         }
         
@@ -1186,6 +1213,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -use:!soactive -p:Mod.
+        /// </summary>
+        internal static string Paramsoactive {
+            get {
+                return ResourceManager.GetString("Paramsoactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -use:!socials.
         /// </summary>
         internal static string Paramsocials {
@@ -1380,6 +1416,15 @@ namespace StreamerBotLib.Culture {
         internal static string so {
             get {
                 return ResourceManager.GetString("so", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to soactive.
+        /// </summary>
+        internal static string soactive {
+            get {
+                return ResourceManager.GetString("soactive", resourceCulture);
             }
         }
         

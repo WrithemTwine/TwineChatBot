@@ -40,8 +40,8 @@ namespace StreamerBotLib.BotClients.Twitch
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
 
-        private bool IsInitialized = false;
-        private string ConnectedChannelName = "";
+        //private bool IsInitialized = false;
+        //private string ConnectedChannelName = "";
 
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …
@@ -306,6 +306,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStarted)
                 {
+                    InvokeBotStopping();
                     IsStarted = false;
                     IsStopped = true;
                     TwitchChat.Disconnect();
@@ -325,7 +326,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
 #endif
 
-            /// <summary>
+        /// <summary>
             /// Attempt to send the whisper to a user.
             /// </summary>
             /// <param name="user">The user to send the whisper.</param>

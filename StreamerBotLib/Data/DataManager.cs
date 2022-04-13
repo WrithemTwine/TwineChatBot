@@ -1,5 +1,5 @@
 ﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.MachineLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -11,15 +11,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml;
 
 using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Data
 {
-    public partial class DataManager : IDataManageReadOnly
+    public partial class DataManager
     {
         #region DataSource
         public static readonly string DataFileXML = "ChatDataStore.xml";
@@ -33,19 +30,8 @@ namespace StreamerBotLib.Data
         internal readonly DataSource _DataSource;
         #endregion DataSource
 
-        private readonly Queue<Task> SaveTasks = new();
-        private bool SaveThreadStarted = false;
-        private const int SaveThreadWait = 10000;
-        
-        private int BackupSaveToken = 0;
-        private const int BackupSaveIntervalMins = 15;
-        private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
-        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
 
-        /// <summary>
-        /// Record count to distinguish using Parallel For, ForEach loops
-        /// </summary>
-        private const int UseParallelThreashold = 5000;
+        private bool LearnMsgChanged = true; // always true to begin one learning cycle
 
         public bool UpdatingFollowers { get; set; }
 
@@ -58,258 +44,43 @@ namespace StreamerBotLib.Data
             LoadData();
             _DataSource.EndInit();
             OnSaveData += SaveData;
+
+            _DataSource.LearnMsgs.TableNewRow += LearnMsgs_TableNewRow;
+            _DataSource.LearnMsgs.LearnMsgsRowChanged += LearnMsgs_LearnMsgsRowChanged;
+            _DataSource.LearnMsgs.LearnMsgsRowDeleted += LearnMsgs_LearnMsgsRowDeleted;
         }
 
-        #region Load and Exit Ops
-        /// <summary>
-        /// Load the data source and populate with default data; if regular data source is corrupted, attempt to load backup data.
-        /// </summary>
-        private void LoadData()
-        {
-            void LoadFile(string filename)
-            {
-                lock (_DataSource)
-                {
-                    if (!File.Exists(filename))
-                    {
-                        _DataSource.WriteXml(filename);
-                    }
-
-                    using XmlReader xmlreader = new XmlTextReader(filename);
-                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
-
-                    foreach (CommandsRow c in _DataSource.Commands.Select())
-                    {
-                        if (DBNull.Value.Equals(c["IsEnabled"]))
-                        {
-                            c["IsEnabled"] = true;
-                        }
-                    }
-                }
-                OptionFlags.DataLoaded = true;
-            }
-
-            foreach (DataTable table in _DataSource.Tables)
-            {
-                table.BeginLoadData();
-            }
-
-            try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
-            {
-                try // try the regular working file
-                {
-                    LoadFile(DataFileName);
-                }
-                catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{DataFileName}");
-                    LoadFile(BackupDataFileXML);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-
-            foreach (DataTable table in _DataSource.Tables)
-            {
-                table.EndLoadData();
-            }
-
-            SaveData(this, new());
-        }
-
-        public void Initialize()
-        {
-            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
-            SetDefaultCommandsTable(); // check all default Commands
-            NotifySaveData();
-        }
-
-        /// <summary>
-        /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
-        /// </summary>
-        public event EventHandler OnSaveData;
-        public void NotifySaveData()
-        {
-            OnSaveData?.Invoke(this, new());
-        }
-
-        /// <summary>
-        /// Save data to file upon exit and after data changes. Pauses for 15 seconds (unless exiting) to slow down multiple saves in a short time.
-        /// </summary>
-        public void SaveData(object sender, EventArgs e)
-        {
-            if (OptionFlags.DataLoaded)
-            {
-                int CurrMins = DateTime.Now.Minute;
-                bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
-
-                if (IsBackup)
-                {
-                    lock (BackupDataFileXML)
-                    {
-                        BackupSaveToken = (CurrMins / BackupSaveIntervalMins) % BackupHrInterval;
-
-                    }
-                }
-
-                if (!UpdatingFollowers) // block saving data until the follower updating is completed
-                {
-                    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
-                    {
-                        SaveThreadStarted = true;
-                        ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, 40); // need to wait, else could corrupt datafile
-                    }
-
-                    if (_DataSource.HasChanges())
-                    {
-                        lock (_DataSource)
-                        {
-                            _DataSource.AcceptChanges();
-                        }
-
-                        lock (SaveTasks) // lock the Queue, block thread if currently save task has started
-                        {
-                            SaveTasks.Enqueue(new(() =>
-                            {
-                                lock (_DataSource)
-                                {
-                                    try
-                                    {
-                                        MemoryStream SaveData = new();  // new memory stream
-
-                                    _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
-
-                                    DataSource testinput = new();   // start a new database
-                                    SaveData.Position = 0;          // reset the reader
-                                    testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-
-                                    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
-
-                                    // determine if current time is within a certain time frame, and perform the save
-                                    if (IsBackup && OptionFlags.IsStreamOnline)
-                                        {
-                                        // write backup file
-                                        _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                    }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                    }
-                                }
-                            }));
-                        }
-                    }
-                }
-            }
-        }
-
-        private void PerformSaveOp()
-        {
-            if (OptionFlags.ActiveToken) // don't sleep if exiting app
-            {
-                Thread.Sleep(SaveThreadWait);
-            }
-
-            lock (SaveTasks) // in case save actions arrive during save try
-            {
-                if (SaveTasks.Count >= 1)
-                {
-                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
-                }
-                SaveTasks.Clear();
-            }
-            SaveThreadStarted = false; // indicate start another thread to save data
-        }
-
-        #endregion
-
-        #region Helpers
+        #region Channel Events
         /// <summary>
         /// Access the DataSource to retrieve the first row matching the search criteria.
         /// </summary>
         /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
         /// <param name="rowcriteria">The search string for a particular row.</param>
         /// <returns>Null for no value or the first row found using the <i>rowcriteria</i></returns>
-        public object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
+        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi)
         {
-            return GetAllRowData(dataRetrieve, rowcriteria).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Access the DataSource to retrieve the first row matching the search criteria.
-        /// </summary>
-        /// <param name="dataRetrieve">The name of the table and column to retrieve.</param>
-        /// <param name="rowcriteria">The search string for a particular row.</param>
-        /// <returns>All data found using the <i>rowcriteria</i></returns>
-        public object[] GetAllRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria)
-        {
-            string criteriacolumn = "";
-            string datacolumn = "";
-            string table = "";
-
-            switch (dataRetrieve)
-            {
-                case DataRetrieve.EventMessage:
-                    table = DataSourceTableName.ChannelEvents.ToString();
-                    criteriacolumn = "Name";
-                    datacolumn = "Message";
-                    break;
-                case DataRetrieve.EventEnabled:
-                    table = DataSourceTableName.ChannelEvents.ToString();
-                    criteriacolumn = "Name";
-                    datacolumn = "IsEnabled";
-                    break;
-                case DataRetrieve.EventRepeat:
-                    table = DataSourceTableName.ChannelEvents.ToString();
-                    criteriacolumn = "Name";
-                    datacolumn = "RepeatMsg";
-                    break;
-            }
-
-            DataRow[] row = null;
+            string Msg = "";
 
             lock (_DataSource)
             {
-                row = _DataSource.Tables[table].Select($"{criteriacolumn}='{rowcriteria}'");
-            }
+                ChannelEventsRow channelEventsRow = (ChannelEventsRow)GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{rowcriteria}'");
 
-            List<object> list = new();
-            foreach (DataRow d in row)
-            {
-                list.Add(d.Field<object>(datacolumn));
-            }
-
-            return list.ToArray();
-        }
-
-        public void PostUpdatedDataRow(DataRow UpdatedDataRow)
-        {
-            DataTable table = UpdatedDataRow.Table;
-
-            DataRow currRow = UpdatedDataRow.Table.Select($"Id={UpdatedDataRow["Id"]}").FirstOrDefault();
-
-            if (currRow != null)
-            {
-                foreach (DataColumn col in table.Columns)
+                if (channelEventsRow != null)
                 {
-                    if (!col.ReadOnly)
-                    {
-                        currRow[col] = UpdatedDataRow[col];
-                    }
+                    Multi = channelEventsRow.RepeatMsg;
+                    Enabled = channelEventsRow.IsEnabled;
+                    Msg = channelEventsRow.Message;
                 }
-            } else
-            {
-                table.Rows.Add(UpdatedDataRow);
+                else
+                {
+                    Multi = 0;
+                    Enabled = false;
+                }
             }
-
-            NotifySaveData();
+            return Msg;
         }
 
-        #endregion Helpers
+        #endregion
 
         #region CommandSystem
 
@@ -336,90 +107,6 @@ switches:
 -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
          */
 
-        private readonly string DefaulSocialMsg = "Social media url here";
-        /// <summary>
-        /// Add all of the default commands to the table, ensure they are available
-        /// </summary>
-        private void SetDefaultCommandsTable()
-        {
-            lock (_DataSource)
-            {
-                if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
-                {
-                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry), 0);
-                    _DataSource.CategoryList.AcceptChanges();
-                }
-
-                bool CheckName(string criteria)
-                {
-                    CommandsRow datarow = (CommandsRow)_DataSource.Commands.Select($"CmdName='{criteria}'").FirstOrDefault();
-                    if (datarow != null)
-                    {
-                        if (datarow.Category == string.Empty)
-                        {
-                            datarow.Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
-                        }
-                        if (DBNull.Value.Equals(datarow["SendMsgCount"]))
-                        {
-                            datarow.SendMsgCount = 0;
-                        }
-                    }
-                    return datarow == null;
-                }
-
-                // dictionary with commands, messages, and parameters
-                // command name     // msg   // params
-                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new();
-
-                // add each of the default commands with localized strings
-                foreach (DefaultCommand com in System.Enum.GetValues(typeof(DefaultCommand)))
-                {
-                    DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
-                }
-
-                // add each of the social commands
-                foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
-                {
-                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetDefaultComParam("eachsocial")));
-                }
-
-                foreach (var (key, param) in from string key in DefCommandsDictionary.Keys
-                                             where CheckName(key)
-                                             let param = CommandParams.Parse(DefCommandsDictionary[key].Item2)
-                                             select (key, param))
-                {
-                    _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Check if the provided table exists within the database system.
-        /// </summary>
-        /// <param name="table">The table name to check.</param>
-        /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
-        public bool CheckTable(string table)
-        {
-            lock (_DataSource)
-            {
-                return _DataSource.Tables.Contains(table);
-            }
-        }
-
-        /// <summary>
-        /// Check if the provided field is part of the supplied table.
-        /// </summary>
-        /// <param name="table">The table to check.</param>
-        /// <param name="field">The field within the table to see if it exists.</param>
-        /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
-        public bool CheckField(string table, string field)
-        {
-            lock (_DataSource)
-            {
-                return _DataSource.Tables[table].Columns.Contains(field);
-            }
-        }
-
         /// <summary>
         /// Determine if the user invoking the command has permission to access the command.
         /// </summary>
@@ -429,19 +116,16 @@ switches:
         /// <exception cref="InvalidOperationException">The command is not found.</exception>
         public bool CheckPermission(string cmd, ViewerTypes permission)
         {
-            lock (_DataSource)
+            CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
+
+            if (row != null)
             {
-                CommandsRow[] rows = (CommandsRow[])_DataSource.Commands.Select($"CmdName='{cmd}'");
+                ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), row.Permission);
 
-                if (rows != null && rows.Length > 0)
-                {
-                    ViewerTypes cmdpermission = (ViewerTypes)System.Enum.Parse(typeof(ViewerTypes), rows[0].Permission);
-
-                    return cmdpermission >= permission;
-                }
-                else
-                    throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidOpCommand));
+                return cmdpermission >= permission;
             }
+            else
+                throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidOpCommand));
         }
 
         /// <summary>
@@ -452,37 +136,7 @@ switches:
         /// <remarks>Thread-safe</remarks>
         public bool CheckShoutName(string UserName)
         {
-            lock (_DataSource)
-            {
-                return _DataSource.ShoutOuts.Select($"UserName='{UserName}'").Length > 0;
-            }
-        }
-
-        public string GetKey(string Table)
-        {
-            lock (_DataSource)
-            {
-                string key = "";
-
-                if (Table != null && Table != "")
-                {
-                    DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
-                    if (k?.Length > 1)
-                    {
-                        foreach (var d in from DataColumn d in k
-                                          where d.ColumnName != "Id"
-                                          select d)
-                        {
-                            key = d.ColumnName;
-                        }
-                    }
-                    else
-                    {
-                        key = k?[0].ColumnName;
-                    }
-                }
-                return key;
-            }
+            return GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") != null;
         }
 
         public string AddCommand(string cmd, CommandParams Params)
@@ -498,9 +152,10 @@ switches:
         public string EditCommand(string cmd, List<string> Arglist)
         {
             string result = "";
+
+            CommandsRow commandsRow = (CommandsRow)GetRow(_DataSource.Commands, cmd);
             lock (_DataSource)
             {
-                CommandsRow commandsRow = _DataSource.Commands.FindByCmdName(cmd);
                 if (commandsRow != null)
                 {
                     Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
@@ -520,20 +175,14 @@ switches:
             return result;
         }
 
+        /// <summary>
+        /// Remove the specified command.
+        /// </summary>
+        /// <param name="command">The "CmdName" of the command to remove.</param>
+        /// <returns><c>True</c> with successful removal, <c>False</c> with command not found.</returns>
         public bool RemoveCommand(string command)
         {
-            bool removed = false;
-
-            lock (_DataSource)
-            {
-                if (_DataSource.Commands.FindByCmdName(command) != null)
-                {
-                    _DataSource.Commands.RemoveCommandsRow(_DataSource.Commands.FindByCmdName(command));
-                    removed = true;
-                }
-            }
-            NotifySaveData();
-            return removed;
+            return DeleteDataRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{command}'");
         }
 
         public string GetSocials()
@@ -544,20 +193,14 @@ switches:
             for (int i = 0; i < list.Count; i++)
             {
                 DefaultSocials s = (DefaultSocials)list[i];
-                filter += (i != 0 ? ", " : "") + "'" + s.ToString() + "'";
+                filter += $"{(i != 0 ? ", " : "")}'{s}'";
             }
 
-            CommandsRow[] socialrows = null;
             string socials = "";
 
-            lock (_DataSource)
-            {
-                socialrows = (CommandsRow[])_DataSource.Commands.Select($"CmdName IN ({filter})");
-            }
-
-            foreach (CommandsRow com in from CommandsRow com in socialrows
-                                where com.Message != DefaulSocialMsg && com.Message != string.Empty
-                                select com)
+            foreach (CommandsRow com in from CommandsRow com in GetRows(_DataSource.Commands, $"CmdName IN ({filter})")
+                                        where com.Message != DefaulSocialMsg && com.Message != string.Empty
+                                        select com)
             {
                 socials += com.Message + " ";
             }
@@ -567,34 +210,26 @@ switches:
 
         public string GetUsage(string command)
         {
-            lock (_DataSource)
-            {
-                return ((CommandsRow[])_DataSource.Commands.Select($"CmdName='{command}'"))[0]?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
-            }
+            return GetCommand(command)?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
         }
 
         public CommandsRow GetCommand(string cmd)
         {
-            lock (_DataSource)
-            {
-                return (CommandsRow)_DataSource.Commands.Select($"CmdName='{cmd}'").FirstOrDefault();
-            }
+            return (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
         }
 
         public string GetCommands()
         {
-            CommandsRow[] commandsRows = null;
-
-            lock (_DataSource)
-            {
-                commandsRows = (CommandsRow[])_DataSource.Commands.Select($"Message <>'{DefaulSocialMsg}' AND IsEnabled=True");
-            }
+            CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True");
 
             string result = "";
 
-            for (int i = 0; i < commandsRows.Length; i++)
+            lock (_DataSource)
             {
-                result += (i != 0 ? ", " : "") + "!" + commandsRows[i].CmdName;
+                for (int i = 0; i < commandsRows.Length; i++)
+                {
+                    result += (i != 0 ? ", " : "") + "!" + commandsRows[i].CmdName;
+                }
             }
 
             return result;
@@ -602,65 +237,35 @@ switches:
 
         public object PerformQuery(CommandsRow row, string ParamValue)
         {
+            object output;
             //CommandParams query = CommandParams.Parse(row.Params);
-            DataRow result = null;
 
-            lock (_DataSource)
+            DataRow result = GetRows(_DataSource.Tables[row.table], $"{row.key_field}='{ParamValue}'").FirstOrDefault();
+
+            if (result == null)
             {
-                DataRow[] temp = _DataSource.Tables[row.table].Select($"{row.key_field}='{ParamValue}'");
-
-                result = temp.Length > 0 ? temp[0] : null;
-
-                if (result == null)
-                {
-                    return LocalizedMsgSystem.GetVar(Msg.MsgDataNotFound);
-                }
-
-                Type resulttype = result.GetType();
-
-                // certain tables have certain outputs - still deciphering how to optimize the data query portion of commands
-                if (resulttype == typeof(UsersRow))
-                {
-                    UsersRow usersRow = (UsersRow)result;
-                    return usersRow[row.data_field];
-                }
-                else if (resulttype == typeof(FollowersRow))
+                output = LocalizedMsgSystem.GetVar(Msg.MsgDataNotFound);
+            }
+            else
+            {
+                if (result.GetType() == typeof(FollowersRow))
                 {
                     FollowersRow follower = (FollowersRow)result;
-
-                    return follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
+                    output = follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
                 }
-                else if (resulttype == typeof(CurrencyRow))
+                else
                 {
-
-                }
-                else if (resulttype == typeof(CurrencyTypeRow))
-                {
-
-                }
-                else if (resulttype == typeof(CommandsRow))
-                {
-                    CommandsRow commandsRow = (CommandsRow)result;
-                    return commandsRow[row.data_field];
-                } else if(resulttype == typeof(CustomWelcomeRow)){
-                    CustomWelcomeRow customWelcomeRow = (CustomWelcomeRow)result;
-                    return customWelcomeRow[row.data_field];
+                    output = result[row.data_field];
                 }
             }
 
-            return result;
+            return output;
         }
 
         public object[] PerformQuery(CommandsRow row, int Top = 0)
         {
-            DataTable tabledata = _DataSource.Tables[row.table]; // the table to query
-            List<Tuple<object, object>> outlist = new();
-
-            lock (_DataSource)
-            {
-                outlist.AddRange(from DataRow d in Top < 0 ? tabledata.Select() : tabledata.Select(null, row.key_field + " " + row.sort)
-                                 select new Tuple<object, object>(d[row.key_field], d[row.data_field]));
-            }
+            List<Tuple<object, object>> outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.table], Sort: Top < 0 ? null : row.key_field + " " + row.sort)
+                                                      select new Tuple<object, object>(d[row.key_field], d[row.data_field]));
 
             if (Top > 0)
             {
@@ -678,28 +283,21 @@ switches:
         /// <returns>The list of commands and the seconds to repeat the command.</returns>
         public List<Tuple<string, int, string[]>> GetTimerCommands()
         {
-            lock (_DataSource)
-            {
-                return new(from CommandsRow row in (CommandsRow[])_DataSource.Commands.Select("RepeatTimer>0 AND IsEnabled=True") select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
-            }
+            return new(from CommandsRow row in (CommandsRow[])GetRows(_DataSource.Commands, "RepeatTimer>0 AND IsEnabled=True") select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
         }
 
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
         {
-            lock (_DataSource)
+            CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{Cmd}'");
+            lock (row)
             {
-                CommandsRow row = (CommandsRow)_DataSource.Commands.Select($"CmdName='{Cmd}'").FirstOrDefault();
-
                 return (row == null) ? null : new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>());
             }
         }
 
         public void SetSystemEventsEnabled(bool Enabled)
         {
-            foreach (ChannelEventsRow channelEventsRow in (ChannelEventsRow[])_DataSource.ChannelEvents.Select())
-            {
-                channelEventsRow.IsEnabled = Enabled;
-            }
+            SetDataTableFieldRows(_DataSource.ChannelEvents, _DataSource.ChannelEvents.IsEnabledColumn, Enabled);
         }
 
         private static string ComFilter()
@@ -719,243 +317,96 @@ switches:
             return filter == string.Empty ? "" : filter[0..^1];
         }
 
-        private void SetCommandsEnabledHelper(bool Enabled, CommandsRow[] commandsRows)
-        {
-            if (commandsRows.Length <= UseParallelThreashold)
-            {
-                foreach (CommandsRow c in commandsRows)
-                {
-                    c.IsEnabled = Enabled;
-                }
-            }
-            else
-            {
-                _ = Parallel.ForEach(commandsRows, (commandsRow) => { commandsRow.IsEnabled = Enabled; });
-            }
-        }
-
         public void SetBuiltInCommandsEnabled(bool Enabled)
         {
-            SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName IN (" + ComFilter() + ")"));
+            SetDataTableFieldRows(_DataSource.Commands, _DataSource.Commands.IsEnabledColumn, Enabled, "CmdName IN (" + ComFilter() + ")");
         }
 
         public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
-            SetCommandsEnabledHelper(Enabled, (CommandsRow[])_DataSource.Commands.Select("CmdName NOT IN (" + ComFilter() + ")"));
+            SetDataTableFieldRows(_DataSource.Commands, _DataSource.Commands.IsEnabledColumn, Enabled, "CmdName NOT IN (" + ComFilter() + ")");
         }
 
         public void SetDiscordWebhooksEnabled(bool Enabled)
         {
-            foreach(DiscordRow discordRow in _DataSource.Discord.Select())
-            {
-                discordRow.IsEnabled = Enabled;
-            }
-        }
-
-        public List<string> GetTableNames()
-        {
-            List<string> names = new();
-
-            foreach(DataTable table in _DataSource.Tables)
-            {
-                names.Add(table.TableName);
-            }
-
-            return names;
-        }
-
-        public List<string> GetTableFields(string TableName)
-        {
-            List<string> fields = new();
-
-            foreach (DataColumn dataColumn in _DataSource.Tables[TableName].Columns)
-            {
-                fields.Add(dataColumn.ColumnName);
-            }
-
-            return fields;
+            SetDataTableFieldRows(_DataSource.Discord, _DataSource.Discord.IsEnabledColumn, Enabled);
         }
 
         public List<string> GetCurrencyNames()
         {
-            List<string> currency = new();
-
-            foreach(CurrencyTypeRow typerow in _DataSource.CurrencyType.Select())
-            {
-                currency.Add(typerow.CurrencyName);
-            }
-
-            return currency;
+            return GetRowsDataColumn(_DataSource.CurrencyType, _DataSource.CurrencyType.CurrencyNameColumn).ConvertAll((value) => value.ToString());
         }
 
         #endregion
 
-        #region Regular Channel Events
-        /// <summary>
-        /// Add default data to Channel Events table, to ensure the data is available to use in event messages.
-        /// </summary>
-        private void SetDefaultChannelEventsTable()
-        {
-            bool CheckName(string criteria)
-            {
-                ChannelEventsRow channelEventsRow = _DataSource.ChannelEvents.FindByName(criteria);
 
-                if (channelEventsRow != null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
-                {
-                    channelEventsRow.RepeatMsg = 0;
-                }
-
-                return channelEventsRow == null;
-            }
-
-            Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
-            {
-                {
-                    ChannelEventActions.BeingHosted,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers }))
-                },
-                {
-                    ChannelEventActions.Bits,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits }))
-                },
-                {
-                    ChannelEventActions.CommunitySubs,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan }))
-                },
-                {
-                    ChannelEventActions.NewFollow,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
-                },
-                {
-                    ChannelEventActions.GiftSub,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname }))
-                },
-                {
-                    ChannelEventActions.Live,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone }))
-                },
-                {
-                    ChannelEventActions.Raid,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers }))
-                },
-                {
-                    ChannelEventActions.Resubscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak }))
-                },
-                {
-                    ChannelEventActions.Subscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname }))
-                },
-                {
-                    ChannelEventActions.UserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
-                },
-                {
-                    ChannelEventActions.ReturnUserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
-                },
-                {
-                    ChannelEventActions.SupporterJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
-                }
-            };
-            lock (_DataSource)
-            {
-                foreach (var (command, values) in from ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions))// consider only the values in the dictionary, check if data is already defined in the data table
-                                                  where dictionary.ContainsKey(command) && CheckName(command.ToString())// extract the default data from the dictionary and add to the data table
-                                                  let values = dictionary[command]
-                                                  select (command, values))
-                {
-                    _ = _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), 0, false, true, values.Item1, values.Item2);
-                }
-            }
-        }
-        #endregion Regular Channel Events
 
         #region Stream Statistics
         private StreamStatsRow CurrStreamStatRow;
 
         public StreamStatsRow[] GetAllStreamData()
         {
-            return (StreamStatsRow[])_DataSource.StreamStats.Select();
+            return (StreamStatsRow[])GetRows(_DataSource.StreamStats);
         }
 
         private StreamStatsRow GetAllStreamData(DateTime dateTime)
         {
             lock (_DataSource)
             {
-                foreach (StreamStatsRow streamStatsRow in from StreamStatsRow streamStatsRow in GetAllStreamData()
-                                                          where streamStatsRow.StreamStart == dateTime
-                                                          select streamStatsRow)
-                {
-                    return streamStatsRow;
-                }
+                return (from StreamStatsRow streamStatsRow in GetAllStreamData()
+                        where streamStatsRow.StreamStart == dateTime
+                        select streamStatsRow).FirstOrDefault();
             }
-            return null;
         }
 
         public StreamStat GetStreamData(DateTime dateTime)
         {
             StreamStatsRow streamStatsRow = GetAllStreamData(dateTime);
-            StreamStat streamStat = new();
-
-            if (streamStatsRow != null)
+            lock (streamStatsRow)
             {
-                // can't use a simple method to duplicate this because "ref" can't be used with boxing
-                foreach (PropertyInfo property in streamStat.GetType().GetProperties())
-                {
-                    // use properties from 'StreamStat' since StreamStatRow has additional properties
-                    property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
-                }
-            }
+                StreamStat streamStat = new();
 
-            return streamStat;
+                if (streamStatsRow != null)
+                {
+                    // can't use a simple method to duplicate this because "ref" can't be used with boxing
+                    foreach (PropertyInfo property in streamStat.GetType().GetProperties())
+                    {
+                        // use properties from 'StreamStat' since StreamStatRow has additional properties
+                        property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                    }
+                }
+
+                return streamStat;
+            }
         }
 
         public bool CheckMultiStreams(DateTime dateTime)
         {
-            int x = 0;
-            foreach (StreamStatsRow row in GetAllStreamData())
-            {
-                if (row.StreamStart.ToShortDateString() == dateTime.ToShortDateString())
-                {
-                    x++;
-                }
-            }
-
-            return x > 1;
+            return (from StreamStatsRow row in GetAllStreamData()
+                    where row.StreamStart.ToShortDateString() == dateTime.ToShortDateString()
+                    select row).Count() > 1;
         }
 
         public bool AddStream(DateTime StreamStart)
         {
-            lock (_DataSource)
+            bool returnvalue;
+
+            if (StreamStart == DateTime.MinValue.ToLocalTime() || CheckStreamTime(StreamStart))
             {
-                bool returnvalue;
-
-                if (CheckStreamTime(StreamStart))
-                {
-                    returnvalue = false;
-                }
-                else
-                {
-                    if (StreamStart != DateTime.MinValue.ToLocalTime())
-                    {
-                        CurrStreamStart = StreamStart;
-
-                        lock (_DataSource)
-                        {
-                            _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                            NotifySaveData();
-                            returnvalue = true;
-                        }
-                    }
-                    else
-                    {
-                        returnvalue = false;
-                    }
-                }
-                return returnvalue;
+                returnvalue = false;
             }
+            else
+            {
+                CurrStreamStart = StreamStart;
+
+                lock (_DataSource)
+                {
+                    _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    NotifySaveData();
+                    returnvalue = true;
+                }
+            }
+            return returnvalue;
         }
 
         public void PostStreamStat(StreamStat streamStat)
@@ -974,13 +425,9 @@ switches:
 
                     foreach (PropertyInfo srcprop in CurrStreamStatRow.GetType().GetProperties())
                     {
-                        bool found = false;
-                        foreach (var _ in from PropertyInfo trgtprop in typeof(StreamStat).GetProperties()
-                                          where trgtprop.Name == srcprop.Name
-                                          select new { })
-                        {
-                            found = true;
-                        }
+                        bool found = (from PropertyInfo trgtprop in typeof(StreamStat).GetProperties()
+                                      where trgtprop.Name == srcprop.Name
+                                      select new { }).Any();
 
                         if (found)
                         {
@@ -1008,10 +455,7 @@ switches:
         /// </summary>
         public void RemoveAllStreamStats()
         {
-            lock (_DataSource)
-            {
-                _DataSource.StreamStats.Clear();
-            }
+            DeleteDataRows(GetRows(_DataSource.StreamStats));
         }
 
         #endregion
@@ -1022,10 +466,7 @@ switches:
 
         public void UserJoined(string User, DateTime NowSeen)
         {
-            static DateTime Max(DateTime A, DateTime B)
-            {
-                return A <= B ? B : A;
-            }
+            static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
 
             lock (_DataSource)
             {
@@ -1043,32 +484,16 @@ switches:
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
         public string CheckWelcomeUser(string User)
         {
-            string found = "";
-            lock (_DataSource)
-            {
-                foreach (CustomWelcomeRow row in from CustomWelcomeRow welcomerow in (CustomWelcomeRow[])_DataSource.CustomWelcome.Select()
-                                    where welcomerow.UserName.ToLower() == User.ToLower()
-                                    select welcomerow)
-                {
-                    found = row.Message;
-                }
-
-                return found;
-            }
+            return ((CustomWelcomeRow)GetRow(_DataSource.CustomWelcome, Filter: $"{_DataSource.CustomWelcome.UserNameColumn.ColumnName}='{User}'"))?.Message ?? "";
         }
 
         public void UserLeft(string User, DateTime LastSeen)
         {
-            lock (_DataSource)
+            UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
+            if (user != null)
             {
-                UsersRow user = (UsersRow)_DataSource.Users.Select($"UserName='{User}'").FirstOrDefault();
-                if (user != null)
-                {
-                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
-                    UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
-
-                    NotifySaveData();
-                }
+                UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
             }
         }
 
@@ -1076,18 +501,20 @@ switches:
         {
             if (User != null)
             {
-                if (User.LastDateSeen <= CurrStreamStart)
+                lock (User)
                 {
-                    User.LastDateSeen = CurrStreamStart;
+                    if (User.LastDateSeen <= CurrStreamStart)
+                    {
+                        User.LastDateSeen = CurrStreamStart;
+                    }
+
+                    if (CurrTime >= User.LastDateSeen && CurrTime >= CurrStreamStart)
+                    {
+                        User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
+                    }
+
+                    User.LastDateSeen = CurrTime;
                 }
-
-                if (CurrTime >= User.LastDateSeen && CurrTime >= CurrStreamStart)
-                {
-                    User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
-                }
-
-                User.LastDateSeen = CurrTime;
-
                 NotifySaveData();
             }
         }
@@ -1101,7 +528,7 @@ switches:
         {
             lock (_DataSource)
             {
-                UsersRow user = (UsersRow)_DataSource.Users.Select($"UserName='{UserName}'").FirstOrDefault();
+                UsersRow user = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{UserName}'").FirstOrDefault();
                 UpdateWatchTime(ref user, CurrTime);
             }
         }
@@ -1146,7 +573,7 @@ switches:
         {
             lock (_DataSource)
             {
-                UsersRow user = (UsersRow)_DataSource.Users.Select($"UserName='{User}'").FirstOrDefault();
+                UsersRow user = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'").FirstOrDefault();
 
                 return user != null && user.FirstDateSeen <= ToDateTime;
             }
@@ -1172,7 +599,7 @@ switches:
         {
             lock (_DataSource)
             {
-                FollowersRow datafollowers = (FollowersRow)_DataSource.Followers.Select($"UserName='{User}'").FirstOrDefault();
+                FollowersRow datafollowers = (FollowersRow)_DataSource.Followers.Select($"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'").FirstOrDefault();
 
                 return datafollowers != null
                     && datafollowers.IsFollower
@@ -1193,7 +620,7 @@ switches:
                 bool newfollow;
 
                 UsersRow users = AddNewUser(User, FollowedDate);
-                FollowersRow followers = (FollowersRow)_DataSource.Followers.Select($"UserName='{User}'").FirstOrDefault();
+                FollowersRow followers = (FollowersRow)_DataSource.Followers.Select($"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'").FirstOrDefault();
 
                 if (followers != null)
                 {
@@ -1228,14 +655,13 @@ switches:
                 {
                     usersRow = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
                     //AddCurrencyRows(ref usersRow);
-                    NotifySaveData();
                 }
             }
 
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock (_DataSource)
             {
-                usersRow = (UsersRow)_DataSource.Users.Select($"UserName='{User}'").First();
+                usersRow = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'").First();
 
                 if (FirstSeen <= usersRow.FirstDateSeen)
                 {
@@ -1243,16 +669,9 @@ switches:
                 }
             }
 
+            NotifySaveData();
             return usersRow;
         }
-
-
-        //public event EventHandler<OnFoundNewFollowerEventArgs> OnFoundNewFollower;
-
-        //private void InvokeFoundNewFollower(string fromUserName, DateTime followedAt)
-        //{
-        //    OnFoundNewFollower?.Invoke(this, new() { FromUserName = fromUserName, FollowedAt = followedAt });
-        //}
 
         public void StartFollowers()
         {
@@ -1260,7 +679,7 @@ switches:
             lock (_DataSource)
             {
                 List<FollowersRow> temp = new();
-                temp.AddRange((FollowersRow[])_DataSource.Followers.Select());
+                temp.AddRange((FollowersRow[])GetRows(_DataSource.Followers));
                 temp.ForEach((f) => f.IsFollower = false);
             }
             NotifySaveData();
@@ -1270,19 +689,9 @@ switches:
         {
             if (follows.Any())
             {
-                if (follows.Count() <= UseParallelThreashold)
+                foreach (Follow f in follows)
                 {
-                    foreach (Follow f in follows)
-                    {
-                        _ = AddFollower(f.FromUserName, f.FollowedAt);
-                    }
-                }
-                else
-                {
-                    _ = Parallel.ForEach(follows, (f) =>
-                      {
-                          _ = AddFollower(f.FromUserName, f.FollowedAt);
-                      });
+                    _ = AddFollower(f.FromUserName, f.FollowedAt);
                 }
             }
 
@@ -1296,7 +705,7 @@ switches:
                 lock (_DataSource)
                 {
                     List<FollowersRow> temp = new();
-                    temp.AddRange((FollowersRow[])_DataSource.Followers.Select());
+                    temp.AddRange((FollowersRow[])GetRows(_DataSource.Followers));
                     foreach (FollowersRow f in from FollowersRow f in temp
                                                where !f.IsFollower
                                                select f)
@@ -1315,20 +724,7 @@ switches:
         /// </summary>
         public void ClearWatchTime()
         {
-            lock (_DataSource)
-            {
-                if (_DataSource.Users.Count <= UseParallelThreashold)
-                {
-                    foreach (UsersRow users in (UsersRow[])_DataSource.Users.Select())
-                    {
-                        users.WatchTime = new(0);
-                    }
-                }
-                else
-                {
-                    _ = Parallel.ForEach((UsersRow[])_DataSource.Users.Select(), (users) => { users.WatchTime = new(0); });
-                }
-            }
+            SetDataTableFieldRows(_DataSource.Users, _DataSource.Users.WatchTimeColumn, new TimeSpan(0));
         }
 
         #endregion Users and Followers
@@ -1353,7 +749,7 @@ switches:
         /// <param name="dateTime">The time to base the currency calculation.</param>
         public void UpdateCurrency(string User, DateTime dateTime)
         {
-            UsersRow user = _DataSource.Users.FindByUserName(User);
+            UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
             UpdateCurrency(ref user, dateTime);
             NotifySaveData();
         }
@@ -1365,7 +761,7 @@ switches:
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
         public void UpdateCurrency(ref UsersRow User, DateTime CurrTime)
         {
-            lock (_DataSource)
+            lock (User)
             {
                 if (User != null)
                 {
@@ -1373,21 +769,23 @@ switches:
 
                     double ComputeCurrency(double Accrue, double Seconds)
                     {
-                        return Math.Round(Accrue * (currencyclock.TotalSeconds / Seconds), 2);
+                        return Accrue * (currencyclock.TotalSeconds / Seconds);
                     }
 
                     AddCurrencyRows(ref User);
 
-                    CurrencyTypeRow[] currencyType = (CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                    CurrencyRow[] userCurrency = (CurrencyRow[])_DataSource.Currency.Select($"Id='{User.Id}'");
+                    CurrencyTypeRow[] currencyType = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
+                    CurrencyRow[] userCurrency = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.IdColumn.ColumnName}='{User.Id}'");
 
-                    foreach (var (typeRow, currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
+                    foreach ((CurrencyTypeRow typeRow, CurrencyRow currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                     {
-                        currencyRow.Value = Math.Min(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), typeRow.MaxValue);
+                        currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), 2), typeRow.MaxValue);
+
                     }
 
                     // set the current login date, always set regardless if currency accrual is started
                     User.CurrLoginDate = CurrTime;
+                    NotifySaveData();
                 }
             }
             return;
@@ -1399,26 +797,23 @@ switches:
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
         public void AddCurrencyRows(ref UsersRow usersRow)
         {
-            lock (_DataSource)
+            CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
+            if (usersRow != null)
             {
-                CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])_DataSource.CurrencyType.Select();
-                if (usersRow != null)
+                CurrencyRow[] currencyRows = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{usersRow.UserName}'");
+                foreach (CurrencyTypeRow typeRow in currencyTypeRows)
                 {
-                    CurrencyRow[] currencyRows = (CurrencyRow[])_DataSource.Currency.Select($"UserName='{usersRow.UserName}'");
-                    foreach (CurrencyTypeRow typeRow in currencyTypeRows)
+                    bool found = false;
+                    foreach (CurrencyRow CR in currencyRows)
                     {
-                        bool found = false;
-                        foreach (CurrencyRow CR in currencyRows)
+                        if (CR.CurrencyName == typeRow.CurrencyName)
                         {
-                            if (CR.CurrencyName == typeRow.CurrencyName)
-                            {
-                                found = true;
-                            }
+                            found = true;
                         }
-                        if (!found)
-                        {
-                            _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
-                        }
+                    }
+                    if (!found)
+                    {
+                        _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
                     }
                 }
             }
@@ -1430,25 +825,33 @@ switches:
         /// </summary>
         public void AddCurrencyRows()
         {
-            lock (_DataSource)
-            {
-                UsersRow[] UserRows = (UsersRow[])_DataSource.Users.Select();
+            UsersRow[] UserRows = (UsersRow[])GetRows(_DataSource.Users);
 
-                if (UserRows.Length <= UseParallelThreashold)
+            for (int i = 0; i < UserRows.Length; i++)
+            {
+                UsersRow users = UserRows[i];
+                AddCurrencyRows(ref users);
+            }
+        }
+
+        /// <summary>
+        /// Clear all User rows for users not included in the Followers table.
+        /// </summary>
+        public void ClearUsersNotFollowers()
+        {
+            List<string> RemoveIds = new();
+
+            foreach (UsersRow U in GetRows(_DataSource.Users))
+            {
+                if (_DataSource.Followers.Select($"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'").FirstOrDefault() == null)
                 {
-                    for (int i = 0; i < UserRows.Length; i++)
-                    {
-                        UsersRow users = UserRows[i];
-                        AddCurrencyRows(ref users);
-                    }
+                    RemoveIds.Add(U.Id.ToString());
                 }
-                else
-                {
-                    _ = Parallel.For(0, UserRows.Length, (i) =>
-                       {
-                           AddCurrencyRows(ref UserRows[i]);
-                       });
-                }
+            }
+
+            foreach (string Id in RemoveIds)
+            {
+                ((UsersRow)_DataSource.Users.Select($"{_DataSource.Users.IdColumn.ColumnName}='{Id}'").FirstOrDefault()).Delete();
             }
             NotifySaveData();
         }
@@ -1458,23 +861,7 @@ switches:
         /// </summary>
         public void ClearAllCurrencyValues()
         {
-            lock (_DataSource)
-            {
-                if (_DataSource.Currency.Count <= UseParallelThreashold)
-                {
-                    foreach (CurrencyRow row in (CurrencyRow[])_DataSource.Currency.Select())
-                    {
-                        row.Value = 0;
-                    }
-                }
-                else
-                {
-                    _ = Parallel.ForEach((CurrencyRow[])_DataSource.Currency.Select(), (row) =>
-                      {
-                          row.Value = 0;
-                      });
-                }
-            }
+            SetDataTableFieldRows(_DataSource.Currency, _DataSource.Currency.ValueColumn, 0);
         }
 
         #endregion
@@ -1495,7 +882,7 @@ switches:
             {
                 // 2021-12-06T01:19:16.0248427-05:00
                 //string.Format("UserName='{0}' and DateTime='{1}' and ViewerCount='{2}' and Category='{3}'", user, time, viewers, gamename)
-                return (InRaidDataRow)_DataSource.InRaidData.Select($"UserName='{user}' AND DateTime=#{time:O}# AND ViewerCount='{viewers}' AND Category='{gamename}'").FirstOrDefault() != null;
+                return (InRaidDataRow)GetRow(_DataSource.InRaidData, $"{_DataSource.InRaidData.UserNameColumn.ColumnName}='{user}' AND {_DataSource.InRaidData.DateTimeColumn.ColumnName}=#{time:O}# AND {_DataSource.InRaidData.ViewerCountColumn.ColumnName}='{viewers}' AND {_DataSource.InRaidData.CategoryColumn.ColumnName}='{gamename}'") != null;
             }
         }
 
@@ -1504,7 +891,7 @@ switches:
             lock (_DataSource)
             {
                 // string.Format("ChannelRaided='{0}' and DateTime='{1}'", HostedChannel, dateTime)
-                return (OutRaidDataRow)_DataSource.OutRaidData.Select($"ChannelRaided='{HostedChannel}' AND DateTime=#{dateTime:O}#").FirstOrDefault() != null;
+                return (OutRaidDataRow)GetRow(_DataSource.OutRaidData, $"{_DataSource.OutRaidData.ChannelRaidedColumn.ColumnName}='{HostedChannel}' AND {_DataSource.OutRaidData.DateTimeColumn.ColumnName}=#{dateTime:O}#") != null;
             }
         }
 
@@ -1526,10 +913,7 @@ switches:
         /// <returns></returns>
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
         {
-            lock (_DataSource)
-            {
-                return new(((DiscordRow[])_DataSource.Discord.Select()).Where(d => d.Kind == webhooks.ToString() && d.IsEnabled).Select(d => new Tuple<bool, Uri>(d.AddEveryone, new Uri(d.Webhook))));
-            }
+            return new(((DiscordRow[])GetRows(_DataSource.Discord, $"{_DataSource.Discord.KindColumn.ColumnName}='{webhooks}' AND {_DataSource.Discord.IsEnabledColumn.ColumnName}=True")).Select(d => new Tuple<bool, Uri>(d.AddEveryone, new Uri(d.Webhook))));
         }
 
         #endregion Discord and Webhooks
@@ -1544,20 +928,27 @@ switches:
         /// <returns>True if category OR game ID are found; False if no category nor game ID is found.</returns>
         public bool AddCategory(string CategoryId, string newCategory)
         {
-            bool found = true;
-            lock (_DataSource)
-            {
-                CategoryListRow categoryList = (CategoryListRow)_DataSource.CategoryList.Select($"Category='{newCategory.Replace("'", "''")}' OR CategoryId='{CategoryId}'").FirstOrDefault();
+            CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{newCategory.Replace("'", "''")}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
 
-                if (categoryList == null)
+            if (categoryList == null)
+            {
+                lock (_DataSource)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 0);
-                    found = false;
+                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
                 }
-                else
+            }
+            else
+            {
+                lock (categoryList)
                 {
-                    categoryList.CategoryId = CategoryId ?? categoryList.CategoryId;
-                    categoryList.Category = newCategory ?? categoryList.Category;
+                    if (categoryList.CategoryId == null)
+                    {
+                        categoryList.CategoryId = CategoryId;
+                    }
+                    if (categoryList.Category == null)
+                    {
+                        categoryList.Category = newCategory;
+                    }
 
                     if (OptionFlags.IsStreamOnline)
                     {
@@ -1567,7 +958,7 @@ switches:
             }
 
             NotifySaveData();
-            return found;
+            return categoryList != null;
         }
 
         /// <summary>
@@ -1576,7 +967,8 @@ switches:
         /// <returns>Returns a list of <code>Tuple<string GameId, string GameName></code> objects.</returns>
         public List<Tuple<string, string>> GetGameCategories()
         {
-            return new(from CategoryListRow c in _DataSource.CategoryList.Select() orderby c.Category
+            return new(from CategoryListRow c in GetRows(_DataSource.CategoryList)
+                       orderby c.Category
                        let item = new Tuple<string, string>(c.CategoryId, c.Category)
                        select item);
         }
@@ -1600,22 +992,118 @@ switches:
         {
             bool result;
 
-            lock (_DataSource)
+            if (!((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Any())
             {
-                if (((ClipsRow[])_DataSource.Clips.Select($"Id='{ClipId}'")).Length == 0)
+                lock (_DataSource)
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime(), Title, GameId, Language, (decimal)Duration, Url);
                     NotifySaveData();
                     result = true;
                 }
-                else
-                {
-                    result = false;
-                }
+            }
+            else
+            {
+                result = false;
             }
 
             return result;
         }
+
+        #endregion
+
+        #region Machine Learning Moderation
+
+        private void SetLearnedMessages()
+        {
+            lock (_DataSource)
+            {
+                if (!GetRows(_DataSource.LearnMsgs).Any())
+                {
+                    foreach (LearnedMessage M in LearnedMessagesPrimer.PrimerList)
+                    {
+                        _DataSource.LearnMsgs.AddLearnMsgsRow(M.MsgType.ToString(), M.Message);
+                    }
+                }
+
+                if (!GetRows(_DataSource.BanReasons).Any())
+                {
+                    foreach (BanReason B in LearnedMessagesPrimer.BanReasonList)
+                    {
+                        _DataSource.BanReasons.AddBanReasonsRow(B.MsgType.ToString(), B.Reason.ToString());
+                    }
+                }
+
+                if (!GetRows(_DataSource.BanRules).Any())
+                {
+                    foreach (BanViewerRule BVR in LearnedMessagesPrimer.BanViewerRulesList)
+                    {
+                        _DataSource.BanRules.AddBanRulesRow(BVR.ViewerType.ToString(), BVR.MsgType.ToString(), BVR.ModAction.ToString(), BVR.TimeoutSeconds);
+                    }
+                }
+                NotifySaveData();
+            }
+        }
+
+        private void LearnMsgs_LearnMsgsRowDeleted(object sender, LearnMsgsRowChangeEvent e)
+        {
+            LearnMsgChanged = true;
+        }
+
+        private void LearnMsgs_LearnMsgsRowChanged(object sender, LearnMsgsRowChangeEvent e)
+        {
+            LearnMsgChanged = true;
+        }
+
+        private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
+        {
+            LearnMsgChanged = true;
+        }
+
+        public List<LearnMsgsRow> UpdateLearnedMsgs()
+        {
+            if (LearnMsgChanged)
+            {
+                LearnMsgChanged = false;
+                return new((LearnMsgsRow[])GetRows(_DataSource.LearnMsgs));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void AddLearnMsgsRow(string Message, MsgTypes MsgType)
+        {
+            bool found = (from LearnMsgsRow learnMsgsRow in GetRows(_DataSource.LearnMsgs, $"{_DataSource.LearnMsgs.TeachingMsgColumn.ColumnName}='{Message}'")
+                          select new { }).Any();
+
+            if (!found)
+            {
+                lock (_DataSource)
+                {
+                    _DataSource.LearnMsgs.AddLearnMsgsRow(MsgType.ToString(), Message);
+                }
+                NotifySaveData();
+            }
+        }
+
+        public Tuple<ModActions, BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        {
+            BanReasons banReason;
+
+            BanReasonsRow banrow = (BanReasonsRow)GetRow(_DataSource.BanReasons, $"{_DataSource.BanReasons.MsgTypeColumn.ColumnName}='{msgTypes}'");
+
+            banReason = banrow != null ? (BanReasons)Enum.Parse(typeof(BanReasons), banrow.BanReason) : BanReasons.None;
+
+            BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules, $"{_DataSource.BanRules.ViewerTypesColumn.ColumnName}='{viewerTypes}' and {_DataSource.BanRules.MsgTypeColumn.ColumnName}='{msgTypes}'");
+
+            int Timeout = banRulesRow == null ? 0 : int.Parse(banRulesRow.TimeoutSeconds);
+            ModActions action = banRulesRow == null ? ModActions.Allow : (ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction);
+
+            return new(action, banReason, Timeout);
+        }
+
+
 
         #endregion
 
@@ -1625,11 +1113,7 @@ switches:
         /// </summary>
         public void RemoveAllUsers()
         {
-            lock (_DataSource)
-            {
-                _DataSource.Users.Clear();
-            }
-            NotifySaveData();
+            DeleteDataRows(GetRows(_DataSource.Users));
         }
 
         /// <summary>
@@ -1637,11 +1121,7 @@ switches:
         /// </summary>
         public void RemoveAllFollowers()
         {
-            lock (_DataSource)
-            {
-                _DataSource.Followers.Clear();
-            }
-            NotifySaveData();
+            DeleteDataRows(GetRows(_DataSource.Followers));
         }
 
         /// <summary>
@@ -1649,11 +1129,7 @@ switches:
         /// </summary>
         public void RemoveAllInRaidData()
         {
-            lock (_DataSource)
-            {
-                _DataSource.InRaidData.Clear();
-            }
-            NotifySaveData();
+            DeleteDataRows(GetRows(_DataSource.InRaidData));
         }
 
         /// <summary>
@@ -1661,11 +1137,7 @@ switches:
         /// </summary>
         public void RemoveAllOutRaidData()
         {
-            lock (_DataSource)
-            {
-                _DataSource.OutRaidData.Clear();
-            }
-            NotifySaveData();
+            DeleteDataRows(GetRows(_DataSource.OutRaidData));
         }
 
         /// <summary>
@@ -1673,11 +1145,7 @@ switches:
         /// </summary>
         public void RemoveAllGiveawayData()
         {
-            lock (_DataSource)
-            {
-                _DataSource.GiveawayUserData.Clear();
-            }
-            NotifySaveData();
+            DeleteDataRows(GetRows(_DataSource.GiveawayUserData));
         }
 
         #endregion

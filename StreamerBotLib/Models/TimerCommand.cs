@@ -55,7 +55,7 @@ namespace StreamerBotLib.Models
 
         private Random random = new();
 
-        public void SetNow() => NextRun = DateTime.Now.AddSeconds(random.Next(60,450)).ToLocalTime();
+        public void SetNow() => NextRun = DateTime.Now.AddSeconds(random.Next(60,1250)).ToLocalTime();
 
         public void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime * TimeDilute);
 

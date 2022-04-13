@@ -17,6 +17,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public class ExtFollowerService : FollowerService
     {
+        public List<Follow> BulkAddFollows { get; set; }
+
         public ExtFollowerService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 300) : base(api, checkIntervalInSeconds, queryCountPerRequest, cacheSize)
         {
         }
@@ -28,6 +30,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <returns>An async task with a list of 'Follow' objects.</returns>
         public async Task<List<Follow>> GetAllFollowersAsync(string ChannelName)
         {
+            int MaxFollowers = 100; // use the max for bulk retrieve
+
             Users followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
 
             List<Follow> allfollows = new();
@@ -36,18 +40,26 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             try
             {
-                GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(first: 100, toId: channelId);
+                GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(first: MaxFollowers, toId: channelId);
+
                 allfollows.AddRange(followsResponse.Follows);
 
-                while (followsResponse?.Follows.Length == 100 && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
+                while (followsResponse?.Follows.Length == MaxFollowers && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
                 {
-                    followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: 100, toId: channelId);
+                    followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
                 }
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+
+            if (!KnownFollowers.TryGetValue(channelId, out List<Follow> knownFollowers))
+            {
+                //allfollows.Reverse();
+                BulkAddFollows = allfollows.Take(MaxFollowers).ToList();
+                //allfollows.Reverse();
             }
 
             return allfollows;

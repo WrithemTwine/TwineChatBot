@@ -20,10 +20,11 @@ namespace StreamerBotLib.BotClients
 
         public bool IsStarted { get; set; }
         public bool HandlersAdded { get; set; }
-        public bool IsStopped { get; set; }
+        public bool IsStopped { get; set; } = true;
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;
+        public event EventHandler OnBotStopping;
 
         protected void InvokeBotStarted()
         {
@@ -33,6 +34,11 @@ namespace StreamerBotLib.BotClients
         protected void InvokeBotStopped()
         {
             OnBotStopped?.Invoke(this, new EventArgs());
+        }
+
+        protected void InvokeBotStopping()
+        {
+            OnBotStopping?.Invoke(this, new EventArgs());
         }
 
         public IOModule()

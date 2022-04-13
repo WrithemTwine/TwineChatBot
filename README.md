@@ -1,5 +1,5 @@
 # TwineChatBot
-Twitch bots written using .NET 5.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file. 
+Twitch bots written using .NET 5.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file and future support may include SQL databases for storage. 
 
 --------------------------
 # Application - Multi-Live Bot:
@@ -56,7 +56,7 @@ Options to manage bot actions (enable or disable):
 - App Features:
    - Manage channel viewers - saving in the database
    - Manage channel followers - saving in the database
-   - Save stats for each live stream
+   - Save stats for each live stream, including the current stream
    - Save stats for incoming stream raid users
    - Notify the channel when the bot connects
    - Post go live messages to social media
@@ -81,15 +81,13 @@ Options to manage bot actions (enable or disable):
       - all messages or 
       - user specified selected message
    - Managing follows:
-      - To your channel:
-         - Update followers when bot starts
-         - Remove non-followers from Followers table
-         - Notification message for new follows
-       - To other channels:
-         - Set the go live notification for the now followed channel
+      - Update all followers when bot starts
+      - Remove non-followers from Followers table
+      - Notification message for new follows
+      - Option to refresh all followers every specified number of hours - after Follow bot starts
    - Uses PubSub to listen to Channel Point Redemptions
        - For Giveaways
-       - Future features upon request, regarding channel point redemptions
+       - Future features upon request, per PubSub API
    - Automatically start when app starts:
       - Twitch Chat bot
       - Twitch Live bot
@@ -105,7 +103,7 @@ Twitch (some features depend on settings)
    - Follow bot
       - registers new follows to the channel
       - when started: retrieves followers and removes non-followers from the database
-      - (future feature?) routinely retrieve followers and remove non-followers without restarting the follow bot
+      - routinely retrieve followers and remove non-followers without restarting the follow bot
       - (future feature?) message spam protection for large groups of followers
    - Live bot
       - registers when your channel goes live or goes offline
@@ -130,3 +128,5 @@ Future features not implemented - and may not be implemented:
 
 - Considering a compact webserver to provide notifications for streaming software.
 - Possibly a Twitch extension to connect to the webserver, to help provide overlays when streaming e.g. Xbox or Playstation without using a capture card to overlay a camera and notifications before sending to a streaming platform
+
+- Considering options for attaching bot to a user-specified SQL database, which would be easier to manage sizes and data archives.

@@ -20,19 +20,26 @@ namespace StreamerBotLib.Systems
     public class SystemsController
     {
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
+        public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
+
+        // TODO: fix - "stream started and live, user clicks 'enable repeat timers', 'repeat timers' should restart"
 
         public static DataManager DataManage { get; private set; } = new();
 
         private Thread HoldNewFollowsForBulkAdd;
 
+        private static Tuple<string, string> CurrCategory { get; set; } = new("","");
+
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
         private CurrencySystem Currency { get; set; }
+        private ModerationSystem Moderation { get; set; }
 
         internal Dispatcher AppDispatcher { get; set; }
 
         private Queue<Task> ProcMsgQueue { get; set; } = new();
-        private readonly Thread ProcessMsgs;
+        private Thread ProcessMsgs;
+        private bool ChatBotStarted;
 
         private const int SleepWait = 6000;
 
@@ -40,7 +47,6 @@ namespace StreamerBotLib.Systems
 
         private bool GiveawayStarted = false;
         private readonly List<string> GiveawayCollectionList = new();
-
 
         public SystemsController()
         {
@@ -50,19 +56,17 @@ namespace StreamerBotLib.Systems
             Stats = new();
             Command = new();
             Currency = new();
+            Moderation = new();
 
             Command.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             Command.ProcessedCommand += Command_ProcessedCommand;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
-
-            ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, 10);
-            ProcessMsgs.Start();
         }
 
         private void ActionProcessCmds()
         {
-            while (OptionFlags.ActiveToken)
+            while (OptionFlags.ActiveToken && ChatBotStarted)
             {
                 while (ProcMsgQueue.Count > 0)
                 {
@@ -79,9 +83,10 @@ namespace StreamerBotLib.Systems
 
         public void Exit()
         {
-            ProcessMsgs.Join();
+            ProcessMsgs?.Join();
         }
 
+        #region Chatbot
         /// <summary>
         /// Handle if message is processed as multithreaded, due to one or more bot calls and wait for 
         /// </summary>
@@ -104,6 +109,28 @@ namespace StreamerBotLib.Systems
                 PostChannelMessage?.Invoke(this, new() { Msg = message, RepeatMsg = Repeat });
             }
         }
+
+        public void NotifyBotStart()
+        {
+            StatisticsSystem.ClearUserList(DateTime.Now.ToLocalTime());
+
+            ChatBotStarted = true;
+            ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
+            ProcessMsgs.Start();
+
+            Command.StartElapsedTimerThread();
+            Moderation.ManageLearnedMsgList();
+        }
+
+        public void NotifyBotStop()
+        {
+            ChatBotStarted = false;
+
+            Command.StopElapsedTimerThread();
+            ProcessMsgs?.Join();
+        }
+
+        #endregion
 
         #region Currency System
 
@@ -149,7 +176,7 @@ namespace StreamerBotLib.Systems
                     while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
 
                     ProcessFollow(FollowList, msg, FollowEnabled);
-                }, ThreadWaitStates.Wait, 50);
+                }, ThreadWaitStates.Wait, ThreadExitPriority.High);
 
                 _ = AppDispatcher.BeginInvoke(new ProcFollowDelegate(PerformFollow));
             }
@@ -166,17 +193,51 @@ namespace StreamerBotLib.Systems
 
         private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
         {
-            foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+            if (OptionFlags.TwitchFollowerAutoBanBots && FollowList.Count() >= OptionFlags.TwitchFollowerAutoBanCount)
             {
-                if (OptionFlags.ManageFollowers)
+                foreach(Follow F in FollowList)
                 {
-                    if (FollowEnabled)
-                    {
-                        SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
-                    }
-
-                    UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
+                    // TODO: FIX - because users will be banned just for bot retrieving data
+                    //RequestBanUser(Bots.TwitchChatBot, F.FromUserName, BanReasons.FollowBot);
+                    LogWriter.WriteLog(LogType.LogBotStatus, $"TwineBot would have banned {F.FromUserName}, testing experimental feature.");
                 }
+            }
+            else
+            {
+                List<string> UserList = new();
+
+                foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+                {
+                    if (OptionFlags.ManageFollowers)
+                    {
+                        if (FollowEnabled)
+                        {
+                            if (OptionFlags.TwitchFollowerEnableMsgLimit && FollowList.Count() >= OptionFlags.TwitchFollowerMsgLimit)
+                            {
+                                UserList.Add(f.FromUserName);
+                            }
+                            else
+                            {
+                                SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
+                            }
+                        }
+
+                        UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
+                    }
+                }
+
+                if (UserList.Count > 0)
+                {
+                    int Pick = 5;
+                    int i = 0;
+
+                    while (i * Pick < UserList.Count)
+                    {
+                        SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) })));
+                        i++;
+                    }
+                }
+
             }
         }
 
@@ -199,6 +260,11 @@ namespace StreamerBotLib.Systems
             SystemsBase.ClearAllCurrenciesValues();
         }
 
+        internal static void ClearUsersNonFollowers()
+        {
+            SystemsBase.ClearUsersNonFollowers();
+        }
+
         public static void SetSystemEventsEnabled(bool Enabled)
         {
             SystemsBase.SetSystemEventsEnabled(Enabled);
@@ -219,9 +285,14 @@ namespace StreamerBotLib.Systems
             SystemsBase.SetDiscordWebhooksEnabled(Enabled);
         }
 
-        public static void PostUpdatedDataRow(DataRow UpdatedData)
+        public static void PostUpdatedDataRow(bool RowChanged)
         {
-            DataManage.PostUpdatedDataRow(UpdatedData);
+            SystemsBase.PostUpdatedDataRow(RowChanged);
+        }
+
+        public static void DeleteRows(IEnumerable<DataRow> dataRows)
+        {
+            SystemsBase.DeleteRows(dataRows);
         }
 
         #endregion
@@ -263,7 +334,11 @@ namespace StreamerBotLib.Systems
 
         public static void SetCategory(string GameId, string GameName)
         {
-            StatisticsSystem.SetCategory(GameId, GameName);
+            if (CurrCategory.Item1 != GameId && CurrCategory.Item2 != GameName)
+            {
+                StatisticsSystem.SetCategory(GameId, GameName);
+                CurrCategory = new(GameId, GameName);
+            }
         }
 
         public void UpdatedStat(params StreamStatType[] streamStatTypes)
@@ -378,26 +453,62 @@ namespace StreamerBotLib.Systems
             }
         }
 
-         public void MessageReceived(string UserName, bool IsSubscriber, bool IsVip, bool IsModerator, int Bits, string Message, Bots Source)
+        public void MessageReceived(CmdMessage MsgReceived, Bots Source)
         {
-            SystemsBase.AddChatString(UserName, Message);
+            MsgReceived.UserType = CommandSystem.ParsePermission(MsgReceived);
+
+            if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
+            {
+                Tuple<ModActions, int, MsgTypes, BanReasons> action = Moderation.ModerateMessage(MsgReceived);
+
+                if (OptionFlags.ModerateUsersWarn)
+                {
+                    if (action.Item1 is ModActions.Ban or ModActions.Timeout)
+                    {
+                        SendMessage($"Moderator should {action.Item1} User for {action.Item4} due to {action.Item3} message.");
+                    }
+                    else if (action.Item3 == MsgTypes.LearnMore)
+                    {
+                        SendMessage("I am unable to make a determination. Please teach me more so I can better decide.");
+                    }
+                }
+                else if (OptionFlags.ModerateUsersAction)
+                {
+                    // don't fix it yet
+                    if (action.Item1 == ModActions.Ban)
+                    {
+                        RequestBanUser(Source, MsgReceived.DisplayName, action.Item4);
+                    }
+                    else if (action.Item1 == ModActions.Timeout)
+                    {
+                        RequestBanUser(Source, MsgReceived.DisplayName, action.Item4, action.Item2);
+                    }
+                }
+            }
+
+            if (OptionFlags.ModerateUserLearnMsgs)
+            {
+                DataManage.AddLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
+            }
+
+            SystemsBase.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
             UpdatedStat(StreamStatType.TotalChats);
 
-            if (IsSubscriber)
+            if (MsgReceived.IsSubscriber)
             {
-                StatisticsSystem.SubJoined(UserName);
+                StatisticsSystem.SubJoined(MsgReceived.DisplayName);
             }
-            if (IsVip)
+            if (MsgReceived.IsVip)
             {
-                StatisticsSystem.VIPJoined(UserName);
+                StatisticsSystem.VIPJoined(MsgReceived.DisplayName);
             }
-            if (IsModerator)
+            if (MsgReceived.IsModerator)
             {
-                StatisticsSystem.ModJoined(UserName);
+                StatisticsSystem.ModJoined(MsgReceived.DisplayName);
             }
 
             // handle bit cheers
-            if (Bits > 0)
+            if (MsgReceived.Bits > 0)
             {
                 lock (ProcMsgQueue)
                 {
@@ -408,23 +519,29 @@ namespace StreamerBotLib.Systems
                         {
                             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                             {
-                                new(MsgVars.user, UserName),
-                                new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
+                                new(MsgVars.user, MsgReceived.DisplayName),
+                                new(MsgVars.bits, FormatData.Plurality(MsgReceived.Bits, MsgVars.Pluralbits) )
                             });
 
                             SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
 
-                            UpdatedStat(StreamStatType.Bits, Bits);
+                            UpdatedStat(StreamStatType.Bits, MsgReceived.Bits);
                             UpdatedStat(StreamStatType.AutoEvents);
                         }
                     }));
                 }
             }
 
-            if (RegisterJoinedUser(UserName, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
+            if (RegisterJoinedUser(MsgReceived.DisplayName, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
             {
-                UserWelcomeMessage(UserName, Source);
+                UserWelcomeMessage(MsgReceived.DisplayName, Source);
             }
+
+        }
+
+        private void RequestBanUser(Bots Source, string UserName, BanReasons Reason, int Duration = 0)
+        {
+            BanUserRequest?.Invoke(this, new() { Source = Source, UserName = UserName, BanReason = Reason, Duration = Duration });
         }
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)

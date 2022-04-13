@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using StreamerBotLib.Enums;
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
+using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
@@ -48,6 +52,17 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
 
             return null;
+        }
+
+        public async Task<BanUserResponse> BanUser(string UserId = null, string UserName = null, int forDuration = 0, BanReasons banReason = BanReasons.UnsolicitedSpam)
+        {
+            BanUserRequest userRequest = new() { UserId = UserId ?? await GetUserId(UserName), Duration = forDuration, Reason = banReason.ToString() };
+
+            userRequest.Duration = forDuration is < 0 or > 1209600
+                ? throw new ArgumentOutOfRangeException(nameof(forDuration), "Duration is only allowed between 1 to 1,209,600 seconds.")
+                : forDuration > 0 ? forDuration : null;
+
+            return await _api.Helix.Moderation.BanUserAsync(TwitchBotsBase.TwitchChannelId, TwitchBotsBase.TwitchBotUserId, userRequest);
         }
     }
 }

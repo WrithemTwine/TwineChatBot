@@ -11,10 +11,22 @@ namespace StreamerBotLib.Static
 {
     public static class ThreadManager
     {
-        private static List<ThreadData> CurrThreads;
+        private static readonly List<ThreadData> CurrThreads = new();
         private static int ClosedThreads;
 
-        private static Thread TrackThread;
+        private static readonly List<int> PriorityList = new();
+        private static readonly int PriorityGap = 20000;
+        private static readonly Dictionary<ThreadExitPriority, int> PrioritySchedule = new()
+        {
+            { ThreadExitPriority.VeryHigh, 0 },
+            { ThreadExitPriority.High, 20000 },
+            { ThreadExitPriority.Normal, 40000 },
+            { ThreadExitPriority.Low, 60000 },
+            { ThreadExitPriority.VeryLow, 80000 }
+        };
+
+
+        private static readonly Thread TrackThread;
 
         /// <summary>
         /// Provides how many Threads this application creates during execution.
@@ -23,10 +35,9 @@ namespace StreamerBotLib.Static
 
         static ThreadManager()
         {
-            CurrThreads = new();
             ClosedThreads = 0;
 
-            TrackThread = new Thread ( new ThreadStart(ThreadManagerBegin));
+            TrackThread = new Thread(new ThreadStart(ThreadManagerBegin)) { IsBackground = true };
             TrackThread.Start();
         }
 
@@ -61,6 +72,7 @@ namespace StreamerBotLib.Static
                     foreach(ThreadData R in ToRemove)
                     {
                         CurrThreads.Remove(R);
+                        PriorityList.Remove(R.ThreadPriority);
                     }
                 }
                 if (Changed)
@@ -82,7 +94,7 @@ namespace StreamerBotLib.Static
         /// <param name="waitState">Whether to "Wait" or "Close" the Thread when application is exiting.</param>
         /// <param name="Priority">The relative order of the Thread priority, 1-Highest Priority, 2+ in descending priority; 0 is neutral priority. The Highest Priority threads are waited on first when exiting.</param>
         /// <returns>The created Thread.</returns>
-        public static Thread CreateThread(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, int Priority = 0)
+        public static Thread CreateThread(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
             ThreadData threadData = CreateThreadData(action, waitState, Priority);
             return threadData.ThreadItem;
@@ -95,9 +107,9 @@ namespace StreamerBotLib.Static
         /// <param name="waitState">Whether to "Wait" or "Close" the Thread when application is exiting.</param>
         /// <param name="Priority">The relative order of the Thread priority, 1-Highest Priority, 2+ in descending priority; 0 is neutral priority. The Highest Priority threads are waited on first when exiting.</param>
         /// <returns>A new ThreadData object data bundle.</returns>
-        private static ThreadData CreateThreadData(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, int Priority = 0)
+        private static ThreadData CreateThreadData(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            ThreadData threadData = new() { ThreadItem = new Thread(new ThreadStart(action)), CloseState = waitState, ThreadPriority = Priority };
+            ThreadData threadData = new() { ThreadItem = new Thread(new ThreadStart(action)), CloseState = waitState, ThreadPriority = GetThreadPriority(Priority) };
             ThreadAdd(threadData);
 
             return threadData;
@@ -109,10 +121,28 @@ namespace StreamerBotLib.Static
         /// <param name="action">The action to perform in the thread.</param>
         /// <param name="waitState">Whether to "Wait" or "Close" the Thread when application is exiting.</param>
         /// <param name="Priority">The relative order of the Thread priority, 1-Highest Priority, 2+ in descending priority; 0 is neutral priority. The Highest Priority threads are waited on first when exiting.</param>
-        public static void CreateThreadStart(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, int Priority = 0)
+        public static void CreateThreadStart(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
             ThreadData threadData = CreateThreadData(action, waitState, Priority);
             threadData.ThreadItem.Start();
+        }
+
+        private static int GetThreadPriority(ThreadExitPriority threadExitPriority)
+        {
+            //    VeryHigh, High, Normal, Low, VeryLow
+
+            int floor = PrioritySchedule[threadExitPriority];
+
+            int idx = floor;
+
+            while(!PriorityList.Contains(idx) && idx < floor+PriorityGap)
+            {
+                idx++;
+            }
+
+            PriorityList.Add(idx);
+
+            return idx;
         }
 
         /// <summary>
@@ -144,7 +174,6 @@ namespace StreamerBotLib.Static
 
             PostUpdatedCount();
         }
-
 
         private static void Exit()
         {

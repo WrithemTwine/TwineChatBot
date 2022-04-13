@@ -23,12 +23,13 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Reports Game Category Name from querying a channel
         /// </summary>
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
-        
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
 
         public TwitchBotUserSvc()
         {
             BotClientName = Bots.TwitchUserBot;
+
+            RefreshSettings();
         }
 
         // TODO: implement !setcategory including the API calls
@@ -59,7 +60,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 OauthToken = OptionFlags.TwitchBotAccessToken;
             }
 
-            if(!OptionFlags.CheckSettingIsDefault(SettingsClientId, ClientId))
+            if (!OptionFlags.CheckSettingIsDefault(SettingsClientId, ClientId))
             {
                 userLookupService = null;
 
@@ -68,7 +69,23 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        public void SetIds()
+        {
+            if (TwitchChannelId == null && TwitchBotUserId == null)
+            {
+                TwitchBotUserId = GetUserId(TwitchBotUserName);
+                TwitchChannelId = GetUserId(TwitchChannelName);
+            }
+        }
+
         #region ClientId can be different between Bot and Channel
+
+        public void BanUser(string BannedUserName, BanReasons banReason, int Duration = 0)
+        {
+            ChooseConnectUserService();
+            SetIds();
+            _ = userLookupService.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
+        }
 
         /// <summary>
         /// Retrieves the Game Category for a channel. Performs event <code>Post_GetChannelGameName</code> when <paramref name="UserName"/> equals the TwitchChannelName.
@@ -157,7 +174,6 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             GetChannelPoints?.Invoke(this, new OnGetChannelPointsEventArgs() { ChannelPointNames = CustomRewardsList });
         }
-
 
         #endregion
     }

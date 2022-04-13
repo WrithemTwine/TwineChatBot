@@ -179,6 +179,9 @@
     <value>permits distinguishing if the channel is hosted or autohosted</value>
     <comment>describes variable used within message</comment>
   </data>
+  <data name="HelpBannedUser" xml:space="preserve">
+    <value>The message to give when a user is banned.</value>
+  </data>
   <data name="HelpBeingHosted" xml:space="preserve">
     <value>The message displayed when a user hosts the channel. Currently only supported when the bot's user name is the same as the streamer's user name.</value>
   </data>
@@ -314,6 +317,9 @@
     <value>All</value>
     <comment>The default gaming category a command applies, actual categories will get added this is default 'all' categories.</comment>
   </data>
+  <data name="MsgBannedUser" xml:space="preserve">
+    <value>#user was just banned.</value>
+  </data>
   <data name="MsgBeingHosted" xml:space="preserve">
     <value>Thanks #user for #autohost this channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
@@ -433,8 +439,11 @@
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgso" xml:space="preserve">
-    <value>Go check out #user at #url and consider following them! #category</value>
+    <value>Go check out #user at #url and consider following them! They were last streaming: #category</value>
     <comment>message for "Shout Out" (so), to recognize another streamer/channel</comment>
+  </data>
+  <data name="Msgsoactive" xml:space="preserve">
+    <value>The message isn't used in response.</value>
   </data>
   <data name="Msgsocials" xml:space="preserve">
     <value>Here are my social media connections: </value>
@@ -546,6 +555,10 @@
     <value>-p:Mod -param:true -use:!so username - only mods can use !so.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramsoactive" xml:space="preserve">
+    <value>-use:!soactive -p:Mod</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
   <data name="Paramsocials" xml:space="preserve">
     <value>-use:!socials</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -560,6 +573,7 @@
   </data>
   <data name="Paramusage" xml:space="preserve">
     <value>-t:Commands -f:Usage -param:true -use:!usage &lt;command&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramwatchtime" xml:space="preserve">
     <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
@@ -625,6 +639,10 @@
   </data>
   <data name="so" xml:space="preserve">
     <value>so</value>
+    <comment>default command, can be translated</comment>
+  </data>
+  <data name="soactive" xml:space="preserve">
+    <value>soactive</value>
     <comment>default command, can be translated</comment>
   </data>
   <data name="socials" xml:space="preserve">

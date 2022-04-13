@@ -9,7 +9,7 @@
         worklurk,
         socials,
         bot,
-        so,
+        so, soactive,
         join, enqueue,
         leave, dequeue,
         queue,

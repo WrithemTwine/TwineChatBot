@@ -62,7 +62,6 @@ namespace StreamerBotLib.Systems
 
          * 
          */
-
         private static IDataManageReadOnly _datamanager;
         private static readonly ResourceManager RM = Msgs.ResourceManager;
 
@@ -77,20 +76,18 @@ namespace StreamerBotLib.Systems
         /// <summary>
         /// If for some reason the data table fails and doesn't return a message, provide default user defined messages. Adjusted for current language culture
         /// </summary>
-        /// <param name="dataRetrieve">Retrieve the message or if event is enabled</param>
         /// <param name="channelEventActions">Which event message to retrieve</param>
+        /// <param name="Enabled">Retrieves if the Event is enabled, whether to send the message - via datamanager.</param>
+        /// <param name="Multi">Retrieves how many times user wants message to repeat - via datamanager.</param>
         /// <returns>A string containing variables to customize the event message.</returns>
         public static string GetEventMsg(ChannelEventActions channelEventActions, out bool Enabled, out short Multi)
         {
-            Enabled = (bool)(_datamanager.GetRowData(DataRetrieve.EventEnabled, channelEventActions) ?? false);
-            Multi = (short)(_datamanager.GetRowData(DataRetrieve.EventRepeat, channelEventActions) ?? short.Parse("0"));
-
-            return (string)_datamanager.GetRowData(DataRetrieve.EventMessage, channelEventActions)
+            return _datamanager.GetEventRowData(channelEventActions, out Enabled, out Multi)
                 ?? RM.GetString("Msg" + channelEventActions.ToString(), CultureInfo.CurrentCulture);
         }
 
         /// <summary>
-        /// Retreives localized strings for the default commands.
+        /// Retrieves localized strings for the default commands.
         /// </summary>
         /// <param name="defaultCommand">The command to retrieve.</param>
         /// <returns>The localized command message string.</returns>
@@ -99,25 +96,36 @@ namespace StreamerBotLib.Systems
             return RM.GetString("Msg" + defaultCommand.ToString(), CultureInfo.CurrentCulture);
         }
 
+        /// <summary>
+        /// Retrieves the parameters for the default commands.
+        /// </summary>
+        /// <param name="defaultCommand">The command to review.</param>
+        /// <returns>The parameter value for the command.</returns>
         public static string GetDefaultComParam(DefaultCommand defaultCommand)
         {
             return RM.GetString("Param" + defaultCommand.ToString(), CultureInfo.CurrentCulture);
         }
 
-        public static string GetDefaultComParam(string defaultCommand)
-        {
-            return RM.GetString("Param" + defaultCommand, CultureInfo.CurrentCulture);
-        }
-
+        /// <summary>
+        /// Retrieve any localized value.
+        /// </summary>
+        /// <typeparam name="T">The types that could be in the localized strings, including Enumerated strings.</typeparam>
+        /// <param name="msgVars">The name of the message to retrieve.</param>
+        /// <returns>The value of the requested variable.</returns>
         public static string GetVar<T>(T msgVars)
         {
             return RM.GetString(msgVars.ToString(), CultureInfo.CurrentCulture);
         }
 
+        /// <summary>
+        /// Verify if the provided command is a defined Default Command.
+        /// </summary>
+        /// <param name="Command">The name of the command to check.</param>
+        /// <returns></returns>
         public static bool CheckDefaultCommand(string Command)
         {
             bool result = false;
-            foreach (var _ in from DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand))
+            foreach (var _ in from DefaultCommand d in Enum.GetValues(typeof(DefaultCommand))
                               where Command == GetVar(d)
                               select new { })
             {
@@ -143,16 +151,25 @@ namespace StreamerBotLib.Systems
                 );
         }
 
+        /// <summary>
+        /// Retrieves the 'autohost' or 'host' message, based on <paramref name="Hosting"/>.
+        /// </summary>
+        /// <param name="Hosting">True or false.</param>
+        /// <returns><c>True</c> provides 'autohost' message, <c>False</c> provides 'host' message.</returns>
         public static string DetermineHost(bool Hosting)
         {
             return Hosting ? Msgs.autohost : Msgs.host;
         }
 
+        /// <summary>
+        /// Provides the Help information for all default commands.
+        /// </summary>
+        /// <returns>A list of command name-help pairs.</returns>
         public static List<Command> GetCommandHelp()
         {
             List<Command> temp = new();
 
-            foreach (MsgVars a in System.Enum.GetValues(typeof(MsgVars)))
+            foreach (MsgVars a in Enum.GetValues(typeof(MsgVars)))
             {
                 try // not every MsgVars has a help available
                 {

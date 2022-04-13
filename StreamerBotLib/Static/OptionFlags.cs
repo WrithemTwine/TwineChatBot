@@ -14,11 +14,16 @@ namespace StreamerBotLib.Static
 
         public static bool ActiveToken { get; set; }  // whether to process ops or not
         public static bool IsStreamOnline { get; set; } // whether stream is online
-        public static bool BotStarted { get; set; } // whether bots are started
 
         public static bool TwitchAddFollowersStart { get; set; }
         public static bool TwitchPruneNonFollowers { get; set; }
         public static bool TwitchAddFollowerNotification { get; set; }
+        public static bool TwitchFollowerAutoRefresh { get; set; }
+        public static int TwitchFollowerRefreshHrs { get; set; }
+        public static bool TwitchFollowerEnableMsgLimit { get; set; }
+        public static int TwitchFollowerMsgLimit { get; set; }
+        public static bool TwitchFollowerAutoBanBots { get; set; }
+        public static int TwitchFollowerAutoBanCount { get; set; }
 
         public static bool FirstUserJoinedMsg { get; set; }
         public static bool FirstUserChatMsg { get; set; }
@@ -77,6 +82,7 @@ namespace StreamerBotLib.Static
         public static bool TwitchPubSubChannelPoints { get; set; }
 
         public static string TwitchChannelName { get; set; }
+        public static string TwitchBotUserName { get; set; }
         public static string TwitchBotClientId { get; set; }
         public static string TwitchBotAccessToken { get; set; }
 
@@ -89,6 +95,10 @@ namespace StreamerBotLib.Static
         /// Flag to indicate whether the API should use Streamer Client Id credentials per Twitch requirements.
         /// </summary>
         public static bool TwitchStreamerUseToken { get; set; }
+
+        public static bool ModerateUsersWarn { get; set; }
+        public static bool ModerateUsersAction { get; set; }
+        public static bool ModerateUserLearnMsgs { get; set; }
 
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
@@ -105,6 +115,12 @@ namespace StreamerBotLib.Static
                 TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
                 TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
                 TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
+                TwitchFollowerAutoRefresh = Settings.Default.TwitchFollowerAutoRefresh;
+                TwitchFollowerRefreshHrs = Settings.Default.TwitchFollowerRefreshHrs;
+                TwitchFollowerEnableMsgLimit = Settings.Default.TwitchFollowerEnableMsgLimit;
+                TwitchFollowerMsgLimit = Settings.Default.TwitchFollowerMsgLimit;
+                TwitchFollowerAutoBanBots = Settings.Default.TwitchFollowerAutoBanBots;
+                TwitchFollowerAutoBanCount = Settings.Default.TwitchFollowerAutoBanCount;
 
                 FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
                 FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
@@ -161,6 +177,7 @@ namespace StreamerBotLib.Static
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
 
                 TwitchChannelName = Settings.Default.TwitchChannelName;
+                TwitchBotUserName = Settings.Default.TwitchBotUserName;
                 TwitchBotClientId = Settings.Default.TwitchClientID;
                 TwitchBotAccessToken = Settings.Default.TwitchAccessToken;
 
@@ -169,6 +186,10 @@ namespace StreamerBotLib.Static
                 TwitchStreamOauthToken = Settings.Default.TwitchStreamOauthToken;
 
                 TwitchStreamerUseToken = Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
+
+                ModerateUsersWarn = Settings.Default.ModerateUsersWarn;
+                ModerateUsersAction = Settings.Default.ModerateUsersAction;
+                ModerateUserLearnMsgs = Settings.Default.ModerateUserLearnMsgs;
             }
         }
 

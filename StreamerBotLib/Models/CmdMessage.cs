@@ -21,6 +21,7 @@ namespace StreamerBotLib.Models
         public bool IsTurbo { get; set; }
         public bool IsVip { get; set; }
         public string Message { get; set; }
+        public int Bits { get; set; }
         public ViewerTypes UserType { get; set; }
     }
 }

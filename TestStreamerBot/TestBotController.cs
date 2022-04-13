@@ -296,23 +296,24 @@ namespace TestStreamerBot
             Initialize();
             OptionFlags.TwitchClipPostChat = true;
 
-            botController.HandleBotEventPostNewClip(new()
+            Clip TestClip = new()
             {
-                new()
-                {
-                    ClipId = ClipName,
-                    CreatedAt = DateTime.Now.ToString(),
-                    Duration = Random.Next(30),
-                    GameId = GetRandomGameIdName().GameId,
-                    Language = "English",
-                    Title = "My Random Test Clip",
-                    Url = $"http://debug.app/{ClipName}"
-                }
-            });
+                ClipId = ClipName,
+                CreatedAt = DateTime.Now.ToString(),
+                Duration = Random.Next(30),
+                GameId = GetRandomGameIdName().GameId,
+                Language = "English",
+                Title = "My Random Test Clip",
+                Url = $"http://debug.app/{ClipName}"
+            };
+
+            botController.HandleBotEventPostNewClip(new() { TestClip });
 
             Thread.Sleep(2000);
-
-            Assert.NotEmpty(result);
+            
+            Assert.False(
+                dataManager.AddClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
+                );
         }
 
         [Theory]
@@ -343,14 +344,14 @@ namespace TestStreamerBot
             {
                 botController.HandleUserJoined(new() { U }, Bots.TwitchChatBot);
                 Thread.Sleep(Random.Next(10000, 80000));
-                botController.HandleMessageReceived(U, 0 == Random.Next(0, 1), false, false, 0, "Hey stud!", Bots.TwitchChatBot);
+                botController.HandleMessageReceived(new() { DisplayName=U, IsSubscriber = 0 == Random.Next(0, 1), Message="Hey stud!" }, Bots.TwitchChatBot);
             }
 
             // wait a little more
             Thread.Sleep(18000);
 
             // receive the hostile ban message
-            botController.HandleMessageReceived(UserName, false, false, false, 0, Msg, Bots.TwitchChatBot);
+            botController.HandleMessageReceived(new() { DisplayName = UserName, IsSubscriber = 0 == Random.Next(0, 1), Message = Msg }, Bots.TwitchChatBot);
 
             // wait a moment to recognize the message
             Thread.Sleep(5000);

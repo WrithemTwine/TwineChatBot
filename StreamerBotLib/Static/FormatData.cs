@@ -9,6 +9,8 @@ using System.Text;
 
 namespace StreamerBotLib.Static
 {
+    // TODO: Fix "months" portion of output:  "1 year, 14 months, ..."
+
     // specific partial class for the common messages processes
     public static class FormatData
     {
@@ -76,15 +78,15 @@ namespace StreamerBotLib.Static
         /// <returns>A string from <paramref name="timeSpan"/> data with 'x days, y hours, and z minutes'; and the time unit is adjusted to plurality, e.g. 0 days, 1 day, 2 days etc</returns>
         public static string FormatTimes(TimeSpan timeSpan)
         {
-            const double monthdays = 30.0;
             const double yeardays = 365.242;
+            const double monthdays = yeardays / 12;
 
             string output = "";
 
             Dictionary<string, int> datakeys = new()
             {
                 { "year", (int)Math.Floor(timeSpan.Days / yeardays) },
-                { "month", (int)Math.Floor(timeSpan.Days / monthdays) },
+                { "month", (int)Math.Floor((timeSpan.Days % yeardays) / monthdays) },
                 { "day", timeSpan.Days % (int)monthdays },
                 { "hour", timeSpan.Hours },
                 { "minute", timeSpan.Minutes }

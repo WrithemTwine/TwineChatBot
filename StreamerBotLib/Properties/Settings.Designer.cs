@@ -826,5 +826,113 @@ namespace StreamerBotLib.Properties {
                 this["ManageDataArchiveMsg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerAutoRefresh {
+            get {
+                return ((bool)(this["TwitchFollowerAutoRefresh"]));
+            }
+            set {
+                this["TwitchFollowerAutoRefresh"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        public int TwitchFollowerRefreshHrs {
+            get {
+                return ((int)(this["TwitchFollowerRefreshHrs"]));
+            }
+            set {
+                this["TwitchFollowerRefreshHrs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ModerateUsersWarn {
+            get {
+                return ((bool)(this["ModerateUsersWarn"]));
+            }
+            set {
+                this["ModerateUsersWarn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModerateUsersAction {
+            get {
+                return ((bool)(this["ModerateUsersAction"]));
+            }
+            set {
+                this["ModerateUsersAction"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModerateUserLearnMsgs {
+            get {
+                return ((bool)(this["ModerateUserLearnMsgs"]));
+            }
+            set {
+                this["ModerateUserLearnMsgs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int TwitchFollowerMsgLimit {
+            get {
+                return ((int)(this["TwitchFollowerMsgLimit"]));
+            }
+            set {
+                this["TwitchFollowerMsgLimit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerAutoBanBots {
+            get {
+                return ((bool)(this["TwitchFollowerAutoBanBots"]));
+            }
+            set {
+                this["TwitchFollowerAutoBanBots"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int TwitchFollowerAutoBanCount {
+            get {
+                return ((int)(this["TwitchFollowerAutoBanCount"]));
+            }
+            set {
+                this["TwitchFollowerAutoBanCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerEnableMsgLimit {
+            get {
+                return ((bool)(this["TwitchFollowerEnableMsgLimit"]));
+            }
+            set {
+                this["TwitchFollowerEnableMsgLimit"] = value;
+            }
+        }
     }
 }
