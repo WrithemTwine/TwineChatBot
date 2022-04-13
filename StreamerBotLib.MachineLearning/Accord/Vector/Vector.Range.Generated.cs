@@ -65,6 +65,22 @@ namespace Accord.AMath
             return r;
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         ///   Creates a range vector (like NumPy's arange function).
         /// </summary>

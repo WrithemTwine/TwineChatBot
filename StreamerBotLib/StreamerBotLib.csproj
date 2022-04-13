@@ -11,6 +11,8 @@
     <Authors>TwineStreamerBotLib</Authors>
     <Company>TwineStreamerBotLib</Company>
     <Product>TwineStreamerBotLib</Product>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
-    <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
   </ItemGroup>
 
   <ItemGroup>

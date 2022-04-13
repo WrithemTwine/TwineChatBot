@@ -31,6 +31,73 @@ namespace Accord.AMath
 
     public static partial class Matrix
     {
+        /// <summary>
+        ///   Retrieves the bottom <c>count</c> values of an array.
+        /// </summary>
+        /// 
+        public static int[] Bottom<T>(this T[] values, int count, bool inPlace = false)
+            where T : IComparable<T>
+        {
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException("count",
+                "The number of elements to be selected must be positive.");
+            }
+
+            if (count == 0)
+                return new int[0];
+
+            if (count > values.Length)
+                return AMath.Vector.Range(0, values.Length);
+
+            T[] work = (inPlace) ? values : (T[])values.Clone();
+            int[] idx = AMath.Vector.Range(values.Length);
+            work.NthElement(idx, 0, work.Length, count, asc: true);
+            StreamerBotLib.MachineLearning.Accord.Sort.Insertion(work, idx, 0, count, asc: true);
+            return idx.First(count);
+        }
+
+        /// <summary>
+        ///   Gets the number of distinct values 
+        ///   present in each column of a matrix.
+        /// </summary>
+        /// 
+        public static int DistinctCount<T>(this T[] values)
+        {
+            return values.Distinct().Length;
+        }
+
+        /// <summary>
+        ///   Retrieves only distinct values contained in an array.
+        /// </summary>
+        /// 
+        /// <param name="values">The array.</param>
+        /// 
+        /// <returns>An array containing only the distinct values in <paramref name="values"/>.</returns>
+        /// 
+        public static T[] Distinct<T>(this T[] values)
+        {
+            var set = new HashSet<T>(values);
+
+            return set.ToArray();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         #region Remove
         /// <summary>Returns a sub matrix extracted from the current matrix.</summary>
@@ -1057,20 +1124,7 @@ namespace Accord.AMath
             return result;
         }
 
-        /// <summary>
-        ///   Retrieves only distinct values contained in an array.
-        /// </summary>
-        /// 
-        /// <param name="values">The array.</param>
-        /// 
-        /// <returns>An array containing only the distinct values in <paramref name="values"/>.</returns>
-        /// 
-        public static T[] Distinct<T>(this T[] values)
-        {
-            var set = new HashSet<T>(values);
 
-            return set.ToArray();
-        }
 
         /// <summary>
         ///   Retrieves only distinct values contained in an array.
@@ -1143,15 +1197,7 @@ namespace Accord.AMath
             return counts;
         }
 
-        /// <summary>
-        ///   Gets the number of distinct values 
-        ///   present in each column of a matrix.
-        /// </summary>
-        /// 
-        public static int DistinctCount<T>(this T[] values)
-        {
-            return values.Distinct().Length;
-        }
+
 
         /// <summary>
         ///   Sorts the columns of a matrix by sorting keys.
@@ -1298,31 +1344,7 @@ namespace Accord.AMath
             return idx.First(count);
         }
 
-        /// <summary>
-        ///   Retrieves the bottom <c>count</c> values of an array.
-        /// </summary>
-        /// 
-        public static int[] Bottom<T>(this T[] values, int count, bool inPlace = false)
-            where T : IComparable<T>
-        {
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException("count",
-                "The number of elements to be selected must be positive.");
-            }
 
-            if (count == 0)
-                return new int[0];
-
-            if (count > values.Length)
-                return AMath.Vector.Range(0, values.Length);
-
-            T[] work = (inPlace) ? values : (T[])values.Clone();
-            int[] idx = AMath.Vector.Range(values.Length);
-            work.NthElement(idx, 0, work.Length, count, asc: true);
-            StreamerBotLib.MachineLearning.Accord.Sort.Insertion(work, idx, 0, count, asc: true);
-            return idx.First(count);
-        }
 
 
         /// <summary>

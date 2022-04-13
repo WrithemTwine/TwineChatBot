@@ -240,15 +240,15 @@ namespace StreamerBotLib.Data
                 Dictionary<string, Tuple<string, string>> DefCommandsDictionary = new();
 
                 // add each of the default commands with localized strings
-                foreach (DefaultCommand com in System.Enum.GetValues(typeof(DefaultCommand)))
+                foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
                 {
                     DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
                 }
 
                 // add each of the social commands
-                foreach (DefaultSocials social in System.Enum.GetValues(typeof(DefaultSocials)))
+                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
                 {
-                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetDefaultComParam("eachsocial")));
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
                 }
 
                 foreach (var (key, param) in from string key in DefCommandsDictionary.Keys

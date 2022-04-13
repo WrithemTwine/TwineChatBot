@@ -76,23 +76,27 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             if (x == null || x.Length == 0)
             {
-                if (y == null || y.Length == 0)
-                    return 0;
-                return y.Length;
+                return y == null || y.Length == 0 ? 0 : y.Length;
             }
             else
             {
                 if (y == null || y.Length == 0)
+                {
                     return x.Length;
+                }
             }
 
             int[,] d = new int[x.Length + 1, y.Length + 1];
 
             for (int i = 0; i <= x.Length; i++)
+            {
                 d[i, 0] = i;
+            }
 
             for (int i = 0; i <= y.Length; i++)
+            {
                 d[0, i] = i;
+            }
 
             for (int i = 0; i < x.Length; i++)
             {

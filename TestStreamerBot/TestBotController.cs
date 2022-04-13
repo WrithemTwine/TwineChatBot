@@ -296,23 +296,24 @@ namespace TestStreamerBot
             Initialize();
             OptionFlags.TwitchClipPostChat = true;
 
-            botController.HandleBotEventPostNewClip(new()
+            Clip TestClip = new()
             {
-                new()
-                {
-                    ClipId = ClipName,
-                    CreatedAt = DateTime.Now.ToString(),
-                    Duration = Random.Next(30),
-                    GameId = GetRandomGameIdName().GameId,
-                    Language = "English",
-                    Title = "My Random Test Clip",
-                    Url = $"http://debug.app/{ClipName}"
-                }
-            });
+                ClipId = ClipName,
+                CreatedAt = DateTime.Now.ToString(),
+                Duration = Random.Next(30),
+                GameId = GetRandomGameIdName().GameId,
+                Language = "English",
+                Title = "My Random Test Clip",
+                Url = $"http://debug.app/{ClipName}"
+            };
+
+            botController.HandleBotEventPostNewClip(new() { TestClip });
 
             Thread.Sleep(2000);
-
-            Assert.NotEmpty(result);
+            
+            Assert.False(
+                dataManager.AddClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
+                );
         }
 
         [Theory]

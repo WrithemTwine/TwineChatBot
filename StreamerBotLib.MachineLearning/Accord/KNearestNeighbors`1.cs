@@ -98,13 +98,13 @@ namespace StreamerBotLib.MachineLearning.Accord
         }
 
 
-        /// <summary>
-        ///   Creates a new <see cref="KNearestNeighbors"/>.
-        /// </summary>
-        /// 
-        public KNearestNeighbors()
-        {
-        }
+        ///// <summary>
+        /////   Creates a new <see cref="KNearestNeighbors"/>.
+        ///// </summary>
+        ///// 
+        //public KNearestNeighbors()
+        //{
+        //}
 
         /// <summary>
         ///   Creates a new <see cref="KNearestNeighbors"/>.
@@ -254,132 +254,126 @@ namespace StreamerBotLib.MachineLearning.Accord
         }
 
 
-        private static void checkArgs(int k, int? classes, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
-        {
-            if (k <= 0)
-                throw new ArgumentOutOfRangeException("k", "Number of neighbors should be greater than zero.");
+        //private static void checkArgs(int k, int? classes, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
+        //{
+        //    if (k <= 0)
+        //        throw new ArgumentOutOfRangeException("k", "Number of neighbors should be greater than zero.");
 
-            if (classes != null && classes <= 0)
-                throw new ArgumentOutOfRangeException("k", "Number of classes should be greater than zero.");
+        //    if (classes != null && classes <= 0)
+        //        throw new ArgumentOutOfRangeException("k", "Number of classes should be greater than zero.");
 
-            if (inputs == null)
-                throw new ArgumentNullException("inputs");
+        //    if (inputs == null)
+        //        throw new ArgumentNullException("inputs");
 
-            if (outputs == null)
-                throw new ArgumentNullException("inputs");
+        //    if (outputs == null)
+        //        throw new ArgumentNullException("inputs");
 
-            if (inputs.Length != outputs.Length)
-                throw new DimensionMismatchException("outputs",
-                    "The number of input vectors should match the number of corresponding output labels");
+        //    if (inputs.Length != outputs.Length)
+        //        throw new DimensionMismatchException("outputs",
+        //            "The number of input vectors should match the number of corresponding output labels");
 
-            if (distance == null)
-                throw new ArgumentNullException("distance");
-        }
-
-
-
-
-
-
+        //    if (distance == null)
+        //        throw new ArgumentNullException("distance");
+        //}
 
         #region Obsolete
-        /// <summary>
-        ///   Creates a new <see cref="KNearestNeighbors"/>.
-        /// </summary>
-        /// 
-        /// <param name="k">The number of nearest neighbors to be used in the decision.</param>
-        /// 
-        /// <param name="inputs">The input data points.</param>
-        /// <param name="outputs">The associated labels for the input points.</param>
-        /// <param name="distance">The distance measure to use in the decision.</param>
-        /// 
-        [Obsolete("Please use KNearestNeighbors(int k, IDistance<T> distance) constructor instead.")]
-        public KNearestNeighbors(int k, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
-        {
-            K = k;
-            Distance = distance;
-            Learn(inputs, outputs);
-        }
+        ///// <summary>
+        /////   Creates a new <see cref="KNearestNeighbors"/>.
+        ///// </summary>
+        ///// 
+        ///// <param name="k">The number of nearest neighbors to be used in the decision.</param>
+        ///// 
+        ///// <param name="inputs">The input data points.</param>
+        ///// <param name="outputs">The associated labels for the input points.</param>
+        ///// <param name="distance">The distance measure to use in the decision.</param>
+        ///// 
+        //[Obsolete("Please use KNearestNeighbors(int k, IDistance<T> distance) constructor instead.")]
+        //public KNearestNeighbors(int k, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
+        //{
+        //    K = k;
+        //    Distance = distance;
+        //    Learn(inputs, outputs);
+        //}
 
-        /// <summary>
-        ///   Creates a new <see cref="KNearestNeighbors"/>.
-        /// </summary>
-        /// 
-        /// <param name="k">The number of nearest neighbors to be used in the decision.</param>
-        /// <param name="classes">The number of classes in the classification problem.</param>
-        /// 
-        /// <param name="inputs">The input data points.</param>
-        /// <param name="outputs">The associated labels for the input points.</param>
-        /// <param name="distance">The distance measure to use in the decision.</param>
-        /// 
-        [Obsolete("Please use KNearestNeighbors(int k, IDistance<T> distance) constructor instead.")]
-        public KNearestNeighbors(int k, int classes, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
-            : this(k, inputs, outputs, distance)
-        {
-            if (classes != NumberOfOutputs)
-                throw new ArgumentException("classes");
-        }
+        ///// <summary>
+        /////   Creates a new <see cref="KNearestNeighbors"/>.
+        ///// </summary>
+        ///// 
+        ///// <param name="k">The number of nearest neighbors to be used in the decision.</param>
+        ///// <param name="classes">The number of classes in the classification problem.</param>
+        ///// 
+        ///// <param name="inputs">The input data points.</param>
+        ///// <param name="outputs">The associated labels for the input points.</param>
+        ///// <param name="distance">The distance measure to use in the decision.</param>
+        ///// 
+        //[Obsolete("Please use KNearestNeighbors(int k, IDistance<T> distance) constructor instead.")]
+        //public KNearestNeighbors(int k, int classes, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
+        //    : this(k, inputs, outputs, distance)
+        //{
+        //    if (classes != NumberOfOutputs)
+        //        throw new ArgumentException("classes");
+        //}
 
-        /// <summary>
-        ///   Gets the number of class labels
-        ///   handled by this classifier.
-        /// </summary>
-        /// 
-        [Obsolete("Please use NumberOfOutputs instead.")]
-        public int ClassCount
-        {
-            get { return NumberOfOutputs; }
-        }
+        ///// <summary>
+        /////   Gets the number of class labels
+        /////   handled by this classifier.
+        ///// </summary>
+        ///// 
+        //[Obsolete("Please use NumberOfOutputs instead.")]
+        //public int ClassCount
+        //{
+        //    get { return NumberOfOutputs; }
+        //}
 
-        /// <summary>
-        ///   Computes the most likely label of a new given point.
-        /// </summary>
-        /// 
-        /// <param name="input">A point to be classified.</param>
-        /// 
-        /// <returns>The most likely label for the given point.</returns>
-        /// 
-        [Obsolete("Please use the Decide(input) method instead.")]
-        public int Compute(TInput input)
-        {
-            return Decide(input);
-        }
+        ///// <summary>
+        /////   Computes the most likely label of a new given point.
+        ///// </summary>
+        ///// 
+        ///// <param name="input">A point to be classified.</param>
+        ///// 
+        ///// <returns>The most likely label for the given point.</returns>
+        ///// 
+        //[Obsolete("Please use the Decide(input) method instead.")]
+        //public int Compute(TInput input)
+        //{
+        //    return Decide(input);
+        //}
 
-        /// <summary>
-        ///   Computes the most likely label of a new given point.
-        /// </summary>
-        /// 
-        /// <param name="input">A point to be classified.</param>
-        /// <param name="response">A value between 0 and 1 giving 
-        /// the strength of the classification in relation to the
-        /// other classes.</param>
-        /// 
-        /// <returns>The most likely label for the given point.</returns>
-        /// 
-        [Obsolete("Please use the Score(input, out decision) method instead.")]
-        public int Compute(TInput input, out double response)
-        {
-            int decision;
-            response = Score(input, out decision);
-            return decision;
-        }
+        ///// <summary>
+        /////   Computes the most likely label of a new given point.
+        ///// </summary>
+        ///// 
+        ///// <param name="input">A point to be classified.</param>
+        ///// <param name="response">A value between 0 and 1 giving 
+        ///// the strength of the classification in relation to the
+        ///// other classes.</param>
+        ///// 
+        ///// <returns>The most likely label for the given point.</returns>
+        ///// 
+        //[Obsolete("Please use the Score(input, out decision) method instead.")]
+        //public int Compute(TInput input, out double response)
+        //{
+        //    int decision;
+        //    response = Score(input, out decision);
+        //    return decision;
+        //}
 
-        /// <summary>
-        ///   Computes the most likely label of a new given point.
-        /// </summary>
-        /// 
-        /// <param name="input">A point to be classified.</param>
-        /// <param name="scores">The distance score for each possible class.</param>
-        /// 
-        /// <returns>The most likely label for the given point.</returns>
-        /// 
-        [Obsolete("Please use the Scores(input, out decision) method instead.")]
-        public virtual int Compute(TInput input, out double[] scores)
-        {
-            int decision;
-            scores = Scores(input, out decision);
-            return decision;
-        }
+        ///// <summary>
+        /////   Computes the most likely label of a new given point.
+        ///// </summary>
+        ///// 
+        ///// <param name="input">A point to be classified.</param>
+        ///// <param name="scores">The distance score for each possible class.</param>
+        ///// 
+        ///// <returns>The most likely label for the given point.</returns>
+        ///// 
+        //[Obsolete("Please use the Scores(input, out decision) method instead.")]
+        //public virtual int Compute(TInput input, out double[] scores)
+        //{
+        //    int decision;
+        //    scores = Scores(input, out decision);
+        //    return decision;
+        //}
         #endregion
 
     }

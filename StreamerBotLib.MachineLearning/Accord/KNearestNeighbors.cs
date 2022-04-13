@@ -105,8 +105,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// 
         public KNearestNeighbors(int k)
         {
-            this.K = k;
-            this.Distance = new Euclidean();
+            K = k;
+            Distance = new Euclidean();
         }
 
         /// <summary>
@@ -115,8 +115,8 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// 
         public KNearestNeighbors(int k, IMetric<double[]> distance)
         {
-            this.K = k;
-            this.Distance = distance;
+            K = k;
+            Distance = distance;
         }
 
 
@@ -130,7 +130,7 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// <returns>System.Double[].</returns>
         public override double[] Scores(double[] input, double[] result)
         {
-            if (this.weightedTree == null)
+            if (weightedTree == null)
             {
                 KDTreeNodeCollection<KDTreeNode<int>> neighbors = tree.Nearest(input, this.K);
                 foreach (NodeDistance<KDTreeNode<int>> point in neighbors)
@@ -229,12 +229,14 @@ namespace StreamerBotLib.MachineLearning.Accord
         /// 
         public static KNearestNeighbors FromTree(KDTree<int> tree, int k, int classes, double[][] inputs, int[] outputs)
         {
-            var knn = new KNearestNeighbors();
-            knn.K = k;
-            knn.Inputs = inputs;
-            knn.Outputs = outputs;
-            knn.NumberOfInputs = inputs.Columns();
-            knn.NumberOfOutputs = outputs.DistinctCount();
+            var knn = new KNearestNeighbors
+            {
+                K = k,
+                Inputs = inputs,
+                Outputs = outputs,
+                NumberOfInputs = inputs.Columns(),
+                NumberOfOutputs = outputs.DistinctCount()
+            };
             knn.NumberOfClasses = knn.NumberOfOutputs;
             knn.tree = tree;
 
@@ -256,21 +258,21 @@ namespace StreamerBotLib.MachineLearning.Accord
         {
             CheckArgs(K, x, y, Distance, weights);
 
-            this.NumberOfInputs = GetNumberOfInputs(x);
-            this.Inputs = x;
-            this.Outputs = y;
-            this.Weights = weights;
+            NumberOfInputs = GetNumberOfInputs(x);
+            Inputs = x;
+            Outputs = y;
+            Weights = weights;
 
-            this.NumberOfOutputs = y.DistinctCount();
-            this.NumberOfClasses = this.NumberOfOutputs;
+            NumberOfOutputs = y.DistinctCount();
+            NumberOfClasses = this.NumberOfOutputs;
             if (weights == null)
             {
-                this.tree = KDTree.FromData(points: x, values: y, distance: Distance);
+                tree = KDTree.FromData(points: x, values: y, distance: Distance);
             }
             else
             {
                 Tuple<int, double>[] pairs = y.Zip(weights, Tuple.Create).ToArray();
-                this.weightedTree = KDTree.FromData(points: x, values: pairs, distance: Distance);
+                weightedTree = KDTree.FromData(points: x, values: pairs, distance: Distance);
             }
 
             return this;

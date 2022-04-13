@@ -1,7 +1,7 @@
 ﻿#define UPDATELEARN
 
 using StreamerBotLib.Enums;
-using StreamerBotLib.MachineLearning.Accord;
+//using StreamerBotLib.MachineLearning.Accord;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
@@ -943,14 +943,14 @@ zero
             }
 
 #if UPDATELEARN
-            KNearest = new(k: 3, distance: new Levenshtein());
+          //  KNearest = new(k: 3, distance: new Levenshtein());
 
-            KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
+          //  KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
 #endif
         }
 
 
-        private static KNearestNeighbors<string> KNearest { get; set; }
+        //private static KNearestNeighbors<string> KNearest { get; set; }
 
         public static MsgTypes Predict(string PredictText)
         {

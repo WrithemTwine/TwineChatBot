@@ -3,6 +3,7 @@ using StreamerBotLib.Enums;
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace StreamerBotLib.Interfaces
 {
@@ -18,10 +19,16 @@ namespace StreamerBotLib.Interfaces
         public DataSource.CommandsRow GetCommand(string cmd);
         public List<Tuple<string, int, string[]>> GetTimerCommands();
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd);
-        public object GetRowData(DataRetrieve dataRetrieve, ChannelEventActions rowcriteria);
+        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks);
         bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
         bool TestOutRaidData(string HostedChannel, DateTime dateTime);
         List<DataSource.LearnMsgsRow> UpdateLearnedMsgs();
+        List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn);
+        DataRow[] GetRows(DataTable dataTable, string Filter = null, string Sort = null);
+        DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null);
+        List<string> GetTableFields(DataTable dataTable);
+        List<string> GetTableFields(string TableName);
+        List<string> GetTableNames();
     }
 }

@@ -275,8 +275,14 @@ namespace StreamerBotLib.Systems
             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
         }
 
+        /// <summary>
+        /// Call to check all users in the stream, and shout them.
+        /// </summary>
+        /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
         public void AutoShoutUsers(Bots Source)
         {
+            // TODO: if adding non-Twitch platforms, need to adjust to call the correct platform-to get the channel category
+
             List<string> CurrActiveUsers;
             lock (CurrUsers)
             {

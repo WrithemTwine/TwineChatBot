@@ -29,6 +29,66 @@ namespace Accord.AMath
     public static partial class Matrix
     {
 
+
+        /// <summary>
+        ///   Returns a subvector extracted from the current vector.
+        /// </summary>
+        /// 
+        /// <param name="source">The vector to return the subvector from.</param>
+        /// <param name="indexes">Array of indices.</param>
+        /// <param name="inPlace">True to return the results in place, changing the
+        ///   original <paramref name="source"/> vector; false otherwise.</param>
+        /// 
+        public static T[] Get<T>(this T[] source, int[] indexes, bool inPlace = false)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (indexes == null)
+                throw new ArgumentNullException("indexes");
+
+            if (inPlace && source.Length != indexes.Length)
+                throw new DimensionMismatchException("Source and indexes arrays must have the same dimension for in-place operations.");
+
+            var destination = new T[indexes.Length];
+            for (int i = 0; i < indexes.Length; i++)
+            {
+                int j = indexes[i];
+                if (j >= 0)
+                    destination[i] = source[j];
+                else
+                    destination[i] = source[source.Length + j];
+            }
+
+            if (inPlace)
+            {
+                for (int i = 0; i < destination.Length; i++)
+                    source[i] = destination[i];
+            }
+
+            return destination;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         ///   Returns a sub matrix extracted from the current matrix.
         /// </summary>
@@ -578,44 +638,7 @@ namespace Accord.AMath
 
 
 
-        /// <summary>
-        ///   Returns a subvector extracted from the current vector.
-        /// </summary>
-        /// 
-        /// <param name="source">The vector to return the subvector from.</param>
-        /// <param name="indexes">Array of indices.</param>
-        /// <param name="inPlace">True to return the results in place, changing the
-        ///   original <paramref name="source"/> vector; false otherwise.</param>
-        /// 
-        public static T[] Get<T>(this T[] source, int[] indexes, bool inPlace = false)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
 
-            if (indexes == null)
-                throw new ArgumentNullException("indexes");
-
-            if (inPlace && source.Length != indexes.Length)
-                throw new DimensionMismatchException("Source and indexes arrays must have the same dimension for in-place operations.");
-
-            var destination = new T[indexes.Length];
-            for (int i = 0; i < indexes.Length; i++)
-            {
-                int j = indexes[i];
-                if (j >= 0)
-                    destination[i] = source[j];
-                else
-                    destination[i] = source[source.Length + j];
-            }
-
-            if (inPlace)
-            {
-                for (int i = 0; i < destination.Length; i++)
-                    source[i] = destination[i];
-            }
-
-            return destination;
-        }
 
         /// <summary>
         ///   Returns a subvector extracted from the current vector.

@@ -9,7 +9,7 @@
     <AssemblyOriginatorKeyFile>TwineChatBot_SignCert.pfx</AssemblyOriginatorKeyFile>
     <Copyright>MIT</Copyright>
     <Description>A bot monitoring multiple channels for when they go live. Currently posts to Discord through WebHook URLs.</Description>
-    <ApplicationIcon>MultiBot.ico</ApplicationIcon>
+    <ApplicationIcon>img\MultiBot.ico</ApplicationIcon>
     <AssemblyVersion>1.0.5.0</AssemblyVersion>
     <FileVersion>1.0.5.0</FileVersion>
     <DelaySign>false</DelaySign>
