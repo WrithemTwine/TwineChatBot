@@ -279,11 +279,11 @@ namespace StreamerBotLib.Systems
         /// Call to check all users in the stream, and shout them.
         /// </summary>
         /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
-        public void AutoShoutUsers(Bots Source)
+        public void AutoShoutUsers()
         {
             // TODO: if adding non-Twitch platforms, need to adjust to call the correct platform-to get the channel category
 
-            List<string> CurrActiveUsers;
+            List<LiveUser> CurrActiveUsers;
             lock (CurrUsers)
             {
                 CurrActiveUsers = new(CurrUsers);
@@ -291,9 +291,9 @@ namespace StreamerBotLib.Systems
 
             ThreadManager.CreateThreadStart(() =>
             {
-                foreach (string U in CurrActiveUsers)
+                foreach (LiveUser U in CurrActiveUsers)
                 {
-                    CheckShout(U, out _, Source);
+                    CheckShout(U.UserName, out _, U.Source);
                 }
             });
         }
@@ -391,7 +391,7 @@ namespace StreamerBotLib.Systems
             }
             else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
             {
-                AutoShoutUsers(Source);
+                AutoShoutUsers();
             }
             else
             {

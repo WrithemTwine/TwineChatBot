@@ -295,6 +295,11 @@ namespace StreamerBotLib.Systems
             SystemsBase.DeleteRows(dataRows);
         }
 
+        public static void AddNewAutoShoutUser(string UserName)
+        {
+            SystemsBase.AddNewAutoShoutUser(UserName);
+        }
+
         #endregion
 
         #region Statistics
@@ -365,16 +370,16 @@ namespace StreamerBotLib.Systems
 
             foreach (string user in UserNames)
             {
-                if (RegisterJoinedUser(user, Curr, JoinedUserMsg: true))
+                if (RegisterJoinedUser(user, Curr, Source, JoinedUserMsg: true))
                 {
                     UserWelcomeMessage(user, Source);
                 }
             }
         }
 
-        public static void UserLeft(string UserName)
+        public static void UserLeft(string UserName, Bots Source)
         {
-            StatisticsSystem.UserLeft(UserName, DateTime.Now.ToLocalTime());
+            StatisticsSystem.UserLeft(UserName, DateTime.Now.ToLocalTime(), Source);
         }
 
         #endregion
@@ -384,14 +389,14 @@ namespace StreamerBotLib.Systems
             return DataManage.GetWebhooks(webhooksKind);
         }
 
-        private bool RegisterJoinedUser(string UserName, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
+        private bool RegisterJoinedUser(string UserName, DateTime UserTime, Bots Source, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
             bool FoundUserJoined = false;
             bool FoundUserChat = false;
 
             if (JoinedUserMsg) // use a straight flag for user to join the channel
             {
-                FoundUserJoined = StatisticsSystem.UserJoined(UserName, UserTime);
+                FoundUserJoined = StatisticsSystem.UserJoined(UserName, UserTime, Source);
             }
 
             if (ChatUserMessage)
@@ -532,7 +537,7 @@ namespace StreamerBotLib.Systems
                 }
             }
 
-            if (RegisterJoinedUser(MsgReceived.DisplayName, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
+            if (RegisterJoinedUser(MsgReceived.DisplayName, DateTime.Now.ToLocalTime(), Source, ChatUserMessage: OptionFlags.FirstUserChatMsg))
             {
                 UserWelcomeMessage(MsgReceived.DisplayName, Source);
             }

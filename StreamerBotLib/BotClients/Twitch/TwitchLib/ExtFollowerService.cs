@@ -17,8 +17,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public class ExtFollowerService : FollowerService
     {
-        public List<Follow> BulkAddFollows { get; set; }
-
         public ExtFollowerService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 300) : base(api, checkIntervalInSeconds, queryCountPerRequest, cacheSize)
         {
         }
@@ -53,13 +51,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-
-            if (!KnownFollowers.TryGetValue(channelId, out List<Follow> knownFollowers))
-            {
-                //allfollows.Reverse();
-                BulkAddFollows = allfollows.Take(MaxFollowers).ToList();
-                //allfollows.Reverse();
             }
 
             return allfollows;

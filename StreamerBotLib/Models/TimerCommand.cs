@@ -44,11 +44,11 @@ namespace StreamerBotLib.Models
         {
             if (NewRepeatTime < RepeatTime)
             {
-                NextRun = NextRun.AddSeconds((RepeatTime - NewRepeatTime) * TimeDilute);
+                NextRun = NextRun.AddSeconds((NewRepeatTime - RepeatTime) * TimeDilute);
             }
             else if (NewRepeatTime > RepeatTime)
             {
-                NextRun = NextRun.AddSeconds((NewRepeatTime - RepeatTime) * TimeDilute);
+                NextRun = NextRun.AddSeconds((RepeatTime - NewRepeatTime) * TimeDilute);
             }
             RepeatTime = NewRepeatTime;
         }

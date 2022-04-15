@@ -52,6 +52,8 @@ namespace StreamerBotLib.BotClients
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
+
+            DataManager = SystemsController.DataManage;
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -266,22 +268,19 @@ namespace StreamerBotLib.BotClients
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            bool found = false;
+            List<Follow> newFollows = new();
 
-            if (TwitchFollower.FollowerService.BulkAddFollows != null)
+            foreach(Follow F in e.NewFollowers)
             {
-                found = TwitchFollower.FollowerService.BulkAddFollows.Intersect(e.NewFollowers).Any();
-
-                if (found)
+                if (!DataManager.CheckFollower(F.FromUserName))
                 {
-                    e.NewFollowers = new(TwitchFollower.FollowerService.BulkAddFollows.Intersect(e.NewFollowers));
+                    newFollows.Add(F);
                 }
-
-                TwitchFollower.FollowerService.BulkAddFollows = null;
             }
 
-            if (found)
+            if (newFollows.Count > 0)
             {
+                e.NewFollowers = newFollows;
                 InvokeBotEvent(this, BotEvents.TwitchPostNewFollowers, e);
             }
         }

@@ -210,6 +210,7 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void SetDefaultCommandsTable()
         {
+            // TODO: move !intro to default commands <- for the custom welcome message
             lock (_DataSource)
             {
                 if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
@@ -269,7 +270,7 @@ namespace StreamerBotLib.Data
         {
             bool CheckName(string criteria)
             {
-                ChannelEventsRow channelEventsRow = _DataSource.ChannelEvents.FindByName(criteria);
+                ChannelEventsRow channelEventsRow = (ChannelEventsRow)GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{criteria}'");
 
                 if (channelEventsRow != null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
                 {

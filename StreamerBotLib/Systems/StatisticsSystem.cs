@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System;
@@ -43,11 +44,11 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrUsers)
             {
-                foreach (string U in CurrUsers)
+                foreach (LiveUser U in CurrUsers)
                 {
                     if (OptionFlags.ManageUsers)
                     {
-                        DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
+                        DataManage.UserJoined(U.UserName, SpecifyTime.ToLocalTime());
                     }
                 }
             }
@@ -74,12 +75,12 @@ namespace StreamerBotLib.Systems
         /// <param name="User">User's DisplayName</param>
         /// <param name="CurrTime">The current time the user joined</param>
         /// <returns></returns>
-        public static bool UserJoined(string User, DateTime CurrTime)
+        public static bool UserJoined(string User, DateTime CurrTime, Bots Source)
         {
             bool result = false;
             lock (CurrUsers)
             {
-                result = CurrUsers.UniqueAdd(User);
+                result = CurrUsers.UniqueAdd(new(User, Source));
             }
 
             if (OptionFlags.IsStreamOnline)
@@ -129,12 +130,12 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void UserLeft(string User, DateTime CurrTime)
+        public static void UserLeft(string User, DateTime CurrTime, Bots Source)
         {
             lock (CurrUsers)
             {
                 PostDataUserLeft(User, CurrTime);
-                CurrUsers.Remove(User);
+                CurrUsers.Remove(new(User, Source));
             }
         }
 
@@ -142,9 +143,9 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrUsers)
             {
-                foreach (string U in CurrUsers)
+                foreach (LiveUser U in CurrUsers)
                 {
-                    PostDataUserLeft(U, Stopped);
+                    PostDataUserLeft(U.UserName, Stopped);
                 }
                 CurrUsers.Clear();
             }

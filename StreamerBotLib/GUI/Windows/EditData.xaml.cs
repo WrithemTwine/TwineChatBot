@@ -1,6 +1,6 @@
-﻿using StreamerBotLib.Data;
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Systems;
 
 using System;
@@ -20,8 +20,9 @@ namespace StreamerBotLib.GUI.Windows
     {
         private bool IsClosing;
 
-        private DataManager DataManage { get; set; } = SystemsController.DataManage;
+        private IDataManageReadOnly DataManage { get; set; } = SystemsController.DataManage;
         private DataRow SaveDataRow { get; set; }
+        private bool IsNewRow { get; set; }
 
         private ListView CategoryListView;
         private CheckBox CurrCheckedItem = null;
@@ -40,14 +41,21 @@ namespace StreamerBotLib.GUI.Windows
         public EditData()
         {
             InitializeComponent();
+            IsNewRow = false;
         }
 
+        /// <summary>
+        /// Supply the data to populate into the Popup Window.
+        /// </summary>
+        /// <param name="dataTable">The DataTable used in the current context.</param>
+        /// <param name="dataRow">An existing row of data. If null, specifies the user is adding a new data row.</param>
         public void LoadData(DataTable dataTable, DataRow dataRow = null)
         {
             Title = dataRow == null ? $"Add new {dataTable.TableName} Row" : $"Edit {dataTable.TableName} Row";
 
             const int NameWidth = 150;
             bool CheckLockTable = false;
+            IsNewRow = dataRow == null;
             SaveDataRow = dataRow ?? dataTable.NewRow();
 
             if (SaveDataRow.Table.TableName is "Commands" or "ChannelEvents")
@@ -59,7 +67,7 @@ namespace StreamerBotLib.GUI.Windows
                     builtInCmds.Add(d.ToString());
                 }
 
-                if (builtInCmds.Contains(dataRow["CmdName"].ToString()) || dataRow.Table.TableName is "ChannelEvents")
+                if (builtInCmds.Contains( dataRow.Table.Columns.Contains("CmdName") ? dataRow["CmdName"].ToString() : "" ) || dataRow.Table.TableName is "ChannelEvents")
                 {
                     CheckLockTable = true;
                 }
@@ -83,6 +91,14 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
+        /// <summary>
+        /// Handles when the user clicks the Apply button, and saves the resulting data.
+        /// Retrieves the data from the popup window and converts it back to the DataTable.
+        /// 
+        /// Added this functionality due to unreliable data edits in 'DataGrid' objects.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             Dictionary<string, string> SaveData = new();
@@ -104,12 +120,23 @@ namespace StreamerBotLib.GUI.Windows
                         SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
                     }
                 }
+                if (IsNewRow) // if this row is new, we have to add it to the DataTable, and not just modify it.
+                {
+                    SaveDataRow.Table.Rows.Add(SaveDataRow);
+                }
             }
 
             UpdatedDataRow?.Invoke(this, new() { RowChanged = true });
             Close();
         }
 
+        /// <summary>
+        /// Event to handle if the user cancels the addition. 
+        /// Clears the saved row so it doesn't interfere with other data edits.
+        /// Closes the current window.
+        /// </summary>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Results of the action sending the event.</param>
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             SaveDataRow = null;
@@ -119,13 +146,26 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
+        /// <summary>
+        /// Handles event when user closes the window.
+        /// Effectively, closing the window is clicking the cancel button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             IsClosing = true;
             CancelButton_Click(this, new());
         }
 
-        public UIElement Convert(object datavalue, DataColumn dataColumn, bool LockedTable = false)
+        /// <summary>
+        /// Method is responsible for mapping the data row into UIElements suitable for displaying in the popup window.
+        /// </summary>
+        /// <param name="datavalue">The value of the object to set in the UIElement.</param>
+        /// <param name="dataColumn">The data column containing information about the current item to be stored.</param>
+        /// <param name="LockedTable">True or False to indicate the data is locked from edit - standard messages - but is shown so the user can see context.</param>
+        /// <returns>The UIElement suitable for the datatype, CheckBox for bool, ComboBox for list (e.g. enum types), TextBox for strings, dates, and ints.</returns>
+        private UIElement Convert(object datavalue, DataColumn dataColumn, bool LockedTable = false)
         {
             const int ValueWidth = 325;
             UIElement dataout = null;
@@ -272,7 +312,7 @@ namespace StreamerBotLib.GUI.Windows
                         {
                             ComboBox GUItable = TableElement;
 
-                            if (GUItable != null)
+                            if (GUItable != null && GUItable.SelectedValue != null)
                             {
                                 combocollection.Add(DataManage.GetKey((string)GUItable.SelectedValue));
                             }
@@ -408,6 +448,11 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
+        /// <summary>
+        /// A helper method for ComboBoxes related to Commands. Some CombobBoxes need updating when the user selects a certain table - such as updating the table key fields and the data field list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TableData_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             KeyFieldElement.ItemsSource = new List<string>() { DataManage.GetKey((string)TableElement.SelectedValue) };
@@ -417,6 +462,11 @@ namespace StreamerBotLib.GUI.Windows
             UpdatePropertyChanged(nameof(DataFieldElement));
         }
 
+        /// <summary>
+        /// Helper method to map column names to datatypes. The default is text.
+        /// </summary>
+        /// <param name="ColumnName">The name of the column to be verified.</param>
+        /// <returns>A datatype in line with UIElement types.</returns>
         private PopupEditTableDataType CheckColumn(string ColumnName)
         {
             switch (ColumnName)
@@ -436,7 +486,12 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-        public string ConvertBack(UIElement dataElement)
+        /// <summary>
+        /// Reads from the UIElement and returns the data value.
+        /// </summary>
+        /// <param name="dataElement">The UIElement to retrieve the data value.</param>
+        /// <returns>The data value from the element, as a string.</returns>
+        private string ConvertBack(UIElement dataElement)
         {
             string result = "";
 
@@ -476,6 +531,11 @@ namespace StreamerBotLib.GUI.Windows
             return result;
         }
 
+        /// <summary>
+        /// Event to allow the user to click a TextBox and the cursor highlights all text.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
         {
             await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);

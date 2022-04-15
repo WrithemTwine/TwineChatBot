@@ -934,5 +934,41 @@ namespace StreamerBotLib.Properties {
                 this["TwitchFollowerEnableMsgLimit"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayEnabled {
+            get {
+                return ((bool)(this["MediaOverlayEnabled"]));
+            }
+            set {
+                this["MediaOverlayEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayChannelPoints {
+            get {
+                return ((bool)(this["MediaOverlayChannelPoints"]));
+            }
+            set {
+                this["MediaOverlayChannelPoints"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ManageClearButtonEnabled {
+            get {
+                return ((bool)(this["ManageClearButtonEnabled"]));
+            }
+            set {
+                this["ManageClearButtonEnabled"] = value;
+            }
+        }
     }
 }
