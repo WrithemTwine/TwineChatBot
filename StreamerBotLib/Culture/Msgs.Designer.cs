@@ -19,7 +19,7 @@ namespace StreamerBotLib.Culture {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Msgs {
@@ -781,6 +781,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #query.
+        /// </summary>
+        internal static string Msgintro {
+            get {
+                return ResourceManager.GetString("Msgintro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The message isn&apos;t used in response..
         /// </summary>
         internal static string Msgjoin {
@@ -1128,6 +1137,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramfollowage {
             get {
                 return ResourceManager.GetString("Paramfollowage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -f:Message -use:!intro username.
+        /// </summary>
+        internal static string Paramintro {
+            get {
+                return ResourceManager.GetString("Paramintro", resourceCulture);
             }
         }
         

@@ -280,7 +280,7 @@ namespace TestStreamerBot
             botController.HandleUserJoined(new() { RaidUserName }, Bots.TwitchChatBot);
             Assert.False(StatisticsSystem.UserChat(RaidUserName));
 
-            botController.HandleUserLeft(RaidUserName);
+            botController.HandleUserLeft(RaidUserName, Bots.TwitchChatBot);
 
             Thread.Sleep(2000);
 
@@ -359,7 +359,7 @@ namespace TestStreamerBot
             // ban before or after they join, or don't join at all
             if(!JoinBan)
             {
-                botController.HandleUserBanned(UserName);
+                botController.HandleUserBanned(UserName, Bots.TwitchChatBot);
                 Thread.Sleep(5000);
             }
 
@@ -371,7 +371,7 @@ namespace TestStreamerBot
 
             if (JoinBan)
             {
-                botController.HandleUserBanned(UserName);
+                botController.HandleUserBanned(UserName, Bots.TwitchChatBot);
             }
 
         }

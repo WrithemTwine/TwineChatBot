@@ -1,6 +1,7 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
 using System;
@@ -9,6 +10,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace StreamerBotLib.GUI.Windows
@@ -23,6 +25,7 @@ namespace StreamerBotLib.GUI.Windows
         private IDataManageReadOnly DataManage { get; set; } = SystemsController.DataManage;
         private DataRow SaveDataRow { get; set; }
         private bool IsNewRow { get; set; }
+        private List<EditPopupTime> DateList { get; set; } = new();
 
         private ListView CategoryListView;
         private CheckBox CurrCheckedItem = null;
@@ -67,7 +70,7 @@ namespace StreamerBotLib.GUI.Windows
                     builtInCmds.Add(d.ToString());
                 }
 
-                if (builtInCmds.Contains( dataRow.Table.Columns.Contains("CmdName") ? dataRow["CmdName"].ToString() : "" ) || dataRow.Table.TableName is "ChannelEvents")
+                if (builtInCmds.Contains(dataRow.Table.Columns.Contains("CmdName") ? dataRow["CmdName"].ToString() : "") || dataRow.Table.TableName is "ChannelEvents")
                 {
                     CheckLockTable = true;
                 }
@@ -183,63 +186,44 @@ namespace StreamerBotLib.GUI.Windows
                     };
                     break;
                 case PopupEditTableDataType.datestring:
+                    EditPopupTime currColumn = new() { Time = (DateTime)datavalue };
+                    DateList.Add(currColumn);
+
+                    Binding DateBind = new("Time")
+                    {
+                        Source = currColumn,
+                        Mode = BindingMode.TwoWay
+                    };
+
                     dataout = new TextBox()
                     {
-                        Text = $"{(DateTime)datavalue:yyyy-MM-dd HH-mm-ss}",
+                        // TODO: add 'edit row' popup window, a datetime validator for textbox
+                        Text = datavalue.ToString(),
                         Width = ValueWidth
                     };
+
+                    ((TextBox)dataout).SetBinding(TextBox.TextProperty, DateBind);
+
                     break;
                 case PopupEditTableDataType.comboenum:
                     List<string> enumlist = new();
 
-                    if (dataColumn.ColumnName is "Permission" or "ViewerTypes")
-                    {
-                        foreach (ViewerTypes s in Enum.GetValues(typeof(ViewerTypes)))
+                    Dictionary<string, Array> ColEnums =
+                        new()
                         {
-                            enumlist.Add(s.ToString());
-                        }
-                    }
-                    else if (dataColumn.ColumnName == "Kind")
+                            { "Permission", Enum.GetValues(typeof(ViewerTypes)) },
+                            { "ViewerTypes", Enum.GetValues(typeof(ViewerTypes)) },
+                            { "Kind", Enum.GetValues(typeof(WebhooksKind)) },
+                            { "action", Enum.GetValues(typeof(CommandAction)) },
+                            { "sort", Enum.GetValues(typeof(DataSort)) },
+                            { "ModAction", Enum.GetValues(typeof(ModActions)) },
+                            { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
+                            { "BanReason", Enum.GetValues(typeof(BanReasons)) }
+                        };
+
+                    foreach (var E in ColEnums[dataColumn.ColumnName])
                     {
-                        foreach (WebhooksKind s in Enum.GetValues(typeof(WebhooksKind)))
-                        {
-                            enumlist.Add(s.ToString());
-                        }
-                    }
-                    else if (dataColumn.ColumnName == "action")
-                    {
-                        foreach (CommandAction s in Enum.GetValues(typeof(CommandAction)))
-                        {
-                            enumlist.Add(s.ToString());
-                        }
-                    }
-                    else if (dataColumn.ColumnName == "sort")
-                    {
-                        foreach (DataSort s in Enum.GetValues(typeof(DataSort)))
-                        {
-                            enumlist.Add(s.ToString());
-                        }
-                    }
-                    else if (dataColumn.ColumnName == "ModAction")
-                    {
-                        foreach (ModActions s in Enum.GetValues(typeof(ModActions)))
-                        {
-                            enumlist.Add(s.ToString());
-                        }
-                    }
-                    else if (dataColumn.ColumnName == "MsgType")
-                    {
-                        foreach (MsgTypes s in Enum.GetValues(typeof(MsgTypes)))
-                        {
-                            enumlist.Add(s.ToString());
-                        }
-                    }
-                    else if (dataColumn.ColumnName == "BanReason")
-                    {
-                        foreach (BanReasons s in Enum.GetValues(typeof(BanReasons)))
-                        {
-                            enumlist.Add(s.ToString());
-                        }
+                        enumlist.Add(E.ToString());
                     }
 
                     dataout = new ComboBox()
@@ -390,8 +374,8 @@ namespace StreamerBotLib.GUI.Windows
             if (LockedTable && (dataColumn.ColumnName is "Id" or "CmdName" or "AllowParam" or "Usage" or "lookupdata" or "table" or "key_field" or "data_field" or "currency_field" or "unit" or "action" or "top" or "Name"))
             {
                 dataout.IsEnabled = false;
-            } 
-            else if(dataout.GetType() == typeof(TextBox))
+            }
+            else if (dataout.GetType() == typeof(TextBox))
             {
                 dataout.PreviewMouseLeftButtonDown += PreviewMouseLeftButton_SelectAll;
             }
@@ -493,8 +477,7 @@ namespace StreamerBotLib.GUI.Windows
         /// <returns>The data value from the element, as a string.</returns>
         private string ConvertBack(UIElement dataElement)
         {
-            string result = "";
-
+            string result;
             if (dataElement.GetType() == typeof(CheckBox))
             {
                 result = ((CheckBox)dataElement).IsChecked.Value.ToString();

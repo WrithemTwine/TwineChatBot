@@ -7,7 +7,7 @@
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=TwineStreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=TwineStreamerBotLib"
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
-        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"    
+        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="770" Width="1020"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
@@ -90,7 +90,7 @@
                             <Label.ToolTip>
                                 <TextBlock>Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow. Click here to refresh now.</TextBlock>
                             </Label.ToolTip>
-                            <Label.Content>Curr Followers:</Label.Content>
+                            <Label.Content>Curr Follows:</Label.Content>
                         </Label>
                         <Label Content="{Binding CurrFollowers, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                     </StackPanel>
@@ -238,27 +238,28 @@
 
                                 <GroupBox Header="Pub Sub" Visibility="Visible">
                                     <StackPanel Orientation="Vertical">
-                                    <WrapPanel>
-                                        <WrapPanel.ToolTip>
-                                            <TextBlock>The Twitch PubSub client establishes a constant connection with the server. For this reason, this service should be started and stopped only when it is needed.</TextBlock>
-                                        </WrapPanel.ToolTip>
-                                        <Label x:Name="Label_TwitchPubSub_Start" Foreground="Green" Visibility="Collapsed">
-                                            <TextBlock>The Twitch PubSub Client is started!</TextBlock>
-                                        </Label>
-                                        <Label x:Name="Label_TwitchPubSub_Stop" Foreground="Maroon" Visibility="Visible">
-                                            <TextBlock>The Twitch PubSub Client is stopped!</TextBlock>
-                                        </Label>
-                                        <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" Content="Start PubSub Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                        <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" Content="Stop PubSub Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                        <WrapPanel>
+                                            <WrapPanel.ToolTip>
+                                                <TextBlock>The Twitch PubSub client establishes a constant connection with the server. For this reason, this service should be started and stopped only when it is needed.</TextBlock>
+                                            </WrapPanel.ToolTip>
+                                            <Label x:Name="Label_TwitchPubSub_Start" Foreground="Green" Visibility="Collapsed">
+                                                <TextBlock>The Twitch PubSub Client is started!</TextBlock>
+                                            </Label>
+                                            <Label x:Name="Label_TwitchPubSub_Stop" Foreground="Maroon" Visibility="Visible">
+                                                <TextBlock>The Twitch PubSub Client is stopped!</TextBlock>
+                                            </Label>
+                                            <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" Content="Start PubSub Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                            <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" Content="Stop PubSub Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                         </WrapPanel>
                                         <GroupBox Width="Auto" Header="Services">
                                             <WrapPanel Orientation="Vertical">
                                                 <Label>
                                                     <TextBlock>Selected Services will only be active when selected and then bot is started.</TextBlock>
                                                 </Label>
-                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchPubSubChannelPoints}">
-                                                <TextBlock>Listen To Channel Point Events</TextBlock>
-                                            </CheckBox></WrapPanel>
+                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchPubSubChannelPoints}">
+                                                    <TextBlock>Listen To Channel Point Events</TextBlock>
+                                                </CheckBox>
+                                            </WrapPanel>
                                         </GroupBox>
                                     </StackPanel>
                                 </GroupBox>
@@ -535,7 +536,8 @@
                                                 </CheckBox>
                                                 <CheckBox IsChecked="{Binding ManageClearButtonEnabled}">
                                                     <CheckBox.ToolTip>
-                                                        <TextBlock>This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</TextBlock></CheckBox.ToolTip>
+                                                        <TextBlock>This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</TextBlock>
+                                                    </CheckBox.ToolTip>
                                                     <TextBlock>Enable 'Clear Data' buttons.</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
@@ -848,7 +850,7 @@
 
                                         <StackPanel Grid.Row="0">
                                             <TextBlock TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                                        <Button Width="250" Height="20" Content="Shout these Users if in Chat" Margin="10,10,10,10" Click="ShoutUsers_Click"/>
+                                            <Button Width="250" Height="20" Content="Shout these Users if in Chat" Margin="10,10,10,10" Click="ShoutUsers_Click"/>
                                         </StackPanel>
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}"  ContextMenuOpening="DG_Edit_ContextMenuOpening" />
@@ -1067,7 +1069,7 @@
                             </TabControl>
                         </TabItem>
                         <TabItem Header="Overlays" Name="TabItem_Overlays">
-                            
+
                         </TabItem>
                         <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
                             <TabControl>

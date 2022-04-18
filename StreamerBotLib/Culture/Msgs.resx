@@ -381,6 +381,9 @@
     <value>Thanks #user for gifting a #subplan subscription to #receiveuser!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgintro" xml:space="preserve">
+    <value>#query</value>
+  </data>
   <data name="Msgjoin" xml:space="preserve">
     <value>The message isn't used in response.</value>
   </data>
@@ -518,6 +521,9 @@
   <data name="Paramfollowage" xml:space="preserve">
     <value>-t:Followers -f:FollowedDate -param:true -use:!followage or !followage &lt;user&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramintro" xml:space="preserve">
+    <value>-t:CustomWelcome -param:true -f:Message -use:!intro username</value>
   </data>
   <data name="Paramjoin" xml:space="preserve">
     <value>-use:!join</value>

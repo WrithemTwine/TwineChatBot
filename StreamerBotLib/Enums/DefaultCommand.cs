@@ -20,6 +20,7 @@
         watchtime,
         uptime,
         usage,
-        followage
+        followage,
+        intro
     }
 }

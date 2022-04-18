@@ -22,7 +22,7 @@ namespace StreamerBotLib.Data
         public static readonly string DataFileXML = "ChatDataStore.xml";
 
 #if DEBUG
-        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows", DataFileXML);
+        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows7.0", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
