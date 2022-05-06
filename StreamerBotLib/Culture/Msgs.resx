@@ -447,7 +447,7 @@
     <value>Thanks #user for returning to the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
-  <data name="Msgsetcategroy" xml:space="preserve">
+  <data name="Msgsetcategory" xml:space="preserve">
     <value>The stream category is now updated.</value>
   </data>
   <data name="Msgsettitle" xml:space="preserve">

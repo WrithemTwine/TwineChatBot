@@ -963,9 +963,9 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to The stream category is now updated..
         /// </summary>
-        internal static string Msgsetcategroy {
+        internal static string Msgsetcategory {
             get {
-                return ResourceManager.GetString("Msgsetcategroy", resourceCulture);
+                return ResourceManager.GetString("Msgsetcategory", resourceCulture);
             }
         }
         
