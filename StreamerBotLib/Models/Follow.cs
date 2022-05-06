@@ -23,6 +23,11 @@ namespace StreamerBotLib.Models
         {
             return Equals(obj as Follow);
         }
+
+        public override int GetHashCode()
+        {
+            return (FollowedAt.ToString() + FromUserId + FromUserName + ToUserId + ToUserName).GetHashCode();
+        }
     }
 
 

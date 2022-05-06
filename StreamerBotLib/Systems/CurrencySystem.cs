@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Static;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Static;
 
 using System;
 using System.Reflection;
@@ -29,9 +30,9 @@ namespace StreamerBotLib.Systems
                         {
                             lock (CurrUsers)
                             {
-                                foreach (string U in CurrUsers)
+                                foreach (LiveUser U in CurrUsers)
                                 {
-                                    DataManage.UpdateCurrency(U, DateTime.Now.ToLocalTime());
+                                    DataManage.UpdateCurrency(U.UserName, DateTime.Now.ToLocalTime());
                                 }
                             }
                             // randomly extend the time delay up to 2times as long
@@ -61,9 +62,9 @@ namespace StreamerBotLib.Systems
                         {
                             lock (CurrUsers)
                             {
-                                foreach (string U in CurrUsers)
+                                foreach (LiveUser U in CurrUsers)
                                 {
-                                    DataManage.UpdateWatchTime(U, DateTime.Now.ToLocalTime());
+                                    DataManage.UpdateWatchTime(U.UserName, DateTime.Now.ToLocalTime());
                                 }
                             }
                             // randomly extend the time delay up to 2times as long

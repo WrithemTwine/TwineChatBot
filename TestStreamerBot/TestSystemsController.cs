@@ -1,3 +1,4 @@
+using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -101,7 +102,7 @@ namespace TestStreamerBot
 
             systemsController.UserJoined(new() { UserName }, StreamerBotLib.Enums.Bots.TwitchChatBot);
             Assert.True(SystemsController.DataManage.CheckUser(UserName));
-            SystemsController.UserLeft(UserName);
+            SystemsController.UserLeft(UserName, Bots.TwitchChatBot);
         }
     }
 }

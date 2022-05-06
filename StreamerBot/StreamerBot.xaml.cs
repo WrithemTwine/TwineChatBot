@@ -33,6 +33,9 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
+        // TODO: add button to hide the 'clear data' buttons in the GUI, to prevent accidental deletions
+
+
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -227,12 +230,13 @@ namespace StreamerBot
             Controller.HandleChatCommandReceived(
                 new()
                 {
-                    CommandText = $"!{DefaultCommand.soactive}",
+                    CommandText = $"{DefaultCommand.soactive}",
+                    CommandArguments = new(){ "" },
                     UserType = ViewerTypes.Broadcaster,
                     IsBroadcaster = true,
                     DisplayName = OptionFlags.TwitchChannelName,
                     Channel = OptionFlags.TwitchChannelName,
-                    Message = $"!{DefaultCommand.soactive}"
+                    Message = $"{DefaultCommand.soactive}"
                 },
                 Bots.TwitchChatBot);
         }
@@ -563,11 +567,21 @@ namespace StreamerBot
             OptionFlags.SetSettings();
 
             CheckDebug();
+            SetVisibility();
         }
 
         private void CheckDebug()
         {
             StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void SetVisibility()
+        {
+            Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+            Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+            Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+
+            TabItem_Overlays.Visibility = OptionFlags.MediaOverlayEnabled ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
@@ -658,6 +672,8 @@ namespace StreamerBot
 
             MultiBotRadio();
             CheckDebug();
+            SetVisibility();
+
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -740,7 +756,12 @@ namespace StreamerBot
                 }
             }
 
-            if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
+            // be sure this list is in XAML object order
+            if (CBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
+            {
+                SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+            }
+            else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
                 SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
             }
@@ -990,15 +1011,29 @@ namespace StreamerBot
             // TODO: Setup MultiLiveBot Context Menu Add/Edit records
             if (sender.GetType() == typeof(DataGrid))
             {
-                if (((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs")
+                bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";
+                bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
+
+                foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
-                    ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = false;
-                    ((MenuItem)Resources["DataGridContextMenu_DeleteItems"]).IsEnabled = false;
-                }
-                else
-                {
-                    ((MenuItem)Resources["DataGridContextMenu_AddItem"]).IsEnabled = true;
-                    ((MenuItem)Resources["DataGridContextMenu_DeleteItems"]).IsEnabled = true;
+                    if (M.GetType() == typeof(MenuItem))
+                    {
+                        if (((MenuItem)M).Name is "DataGridContextMenu_AddItem" or "DataGridContextMenu_DeleteItems")
+                        {
+                            ((MenuItem)M).IsEnabled = !FoundAddEdit;
+                        }
+                        else if (((MenuItem)M).Name == "DataGridContextMenu_AutoShout")
+                        {
+                            ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+                        }
+                    }
+                    else if (M.GetType() == typeof(Separator))
+                    {
+                        if (((Separator)M).Name == "DataGridContextMenu_Separator")
+                        {
+                            ((Separator)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+                        }
+                    }
                 }
             }
         }
@@ -1051,6 +1086,12 @@ namespace StreamerBot
             SystemsController.DeleteRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)));
         }
 
+        private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+
+            BotController.AddNewAutoShoutUser(((DataRowView)item.SelectedValue).Row["UserName"].ToString());
+        }
         #endregion
 
         #region Debug Empty Stream
@@ -1306,6 +1347,7 @@ namespace StreamerBot
         {
             Controller.TwitchStartUpdateAllFollowers();
         }
+
 
 
         #endregion

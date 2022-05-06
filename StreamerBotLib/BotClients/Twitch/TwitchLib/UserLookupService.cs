@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
+using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
+using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
@@ -63,6 +65,35 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 : forDuration > 0 ? forDuration : null;
 
             return await _api.Helix.Moderation.BanUserAsync(TwitchBotsBase.TwitchChannelId, TwitchBotsBase.TwitchBotUserId, userRequest);
+        }
+
+        public async Task ModifyChannelInformation(string UserId, string GameId = null, string BroadcasterLanguage = null, string Title = null, int Delay = -1)
+        {
+            ModifyChannelInformationRequest request = new();
+
+            if (GameId != null)
+            {
+                request.GameId = GameId;
+            }
+            if (BroadcasterLanguage != null)
+            {
+                request.BroadcasterLanguage = BroadcasterLanguage;
+            }
+            if (Title != null)
+            {
+                request.Title = Title;
+            }
+            if (Delay != -1)
+            {
+                request.Delay = Delay;
+            }
+
+            await _api.Helix.Channels.ModifyChannelInformationAsync(UserId, request);
+        }
+
+        public async Task<GetGamesResponse> GetGameId(List<string> GameId = null, List<string> GameName = null)
+        {
+            return await _api.Helix.Games.GetGamesAsync(GameId, GameName);
         }
     }
 }

@@ -3,21 +3,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:StreamerBotLib.Models"
     x:Class="StreamerBotLib.GUI.Windows.EditData"
         mc:Ignorable="d"
-        Title="Edit DataGrid" Height="250" Width="450" MinHeight="250" MaxHeight="800" MaxWidth="550" SnapsToDevicePixels="True" Closing="Window_Closing" SizeToContent="WidthAndHeight">
-    
-    <DockPanel LastChildFill="True">
+        Title="Edit DataGrid" Height="250" Width="450" MinHeight="250" MaxHeight="800" MaxWidth="550" SnapsToDevicePixels="True" Closing="Window_Closing" SizeToContent="WidthAndHeight" UseLayoutRounding="True" Topmost="True">
+
+    <DockPanel LastChildFill="True" Margin="1,0,-1,0">
         <StackPanel DockPanel.Dock="Top">
             <TextBlock TextWrapping="Wrap">
                 This feature is currently in testing. Please report any complications.<LineBreak />
+                Ensure dates are formatted properly, the way presented.<LineBreak />
+                A red box means the date isn't formatted properly.
             </TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,8">
             <Button Content="Apply" Margin="20,0" Click="ApplyButton_Click" Padding="10,2" />
             <Button Content="Cancel" Click="CancelButton_Click" Padding="10,2" />
         </StackPanel>
-
         <ListBox x:Name="ListBox_DataList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,5,0,10" />
     </DockPanel>
 </Window>

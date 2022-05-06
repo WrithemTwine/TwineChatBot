@@ -40,7 +40,7 @@ namespace StreamerBotLib.Systems
         protected const int SecondsDelay = 2000;
         protected static bool StreamUpdateClockStarted;
 
-        protected static List<string> CurrUsers { get; private set; } = new();
+        protected static List<LiveUser> CurrUsers { get; private set; } = new();
         protected static List<string> UniqueUserJoined { get; private set; } = new();
         protected static List<string> UniqueUserChat { get; private set; } = new();
         protected static List<string> ModUsers { get; private set; } = new();
@@ -153,6 +153,11 @@ namespace StreamerBotLib.Systems
         public static void DeleteRows(IEnumerable<DataRow> dataRows)
         {
             DataManage.DeleteDataRows(dataRows);
+        }
+
+        public static void AddNewAutoShoutUser(string UserName)
+        {
+            DataManage.AddNewAutoShoutUser(UserName);
         }
 
         public static bool AddClip(Clip c)

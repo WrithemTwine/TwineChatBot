@@ -68,6 +68,8 @@ namespace StreamerBotLib.Data
 
         public string GetKey(string Table)
         {
+            // TODO: better error check this method, espeically for null key fields or multiple key fields
+
             string key = "";
 
             if (Table != null && Table != "")
@@ -82,7 +84,7 @@ namespace StreamerBotLib.Data
                         key = d.ColumnName;
                     }
                 }
-                else
+                else if(k?.Length == 1)
                 {
                     key = k?[0].ColumnName;
                 }
@@ -121,6 +123,11 @@ namespace StreamerBotLib.Data
         #endregion
 
         #region Update Data
+        
+        /// <summary>
+        /// When user edits rows, this notification initiates the save process.
+        /// </summary>
+        /// <param name="RowChanged">True or False based on whether data changed.</param>
         public void PostUpdatedDataRow(bool RowChanged)
         {
             if (RowChanged)

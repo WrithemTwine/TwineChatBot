@@ -197,6 +197,8 @@ namespace StreamerBotLib.BotIOController
             // when management resumes, code upstream enables the startbot process 
         }
 
+        #region Send Data Updates to Database
+
         public static void ClearWatchTime()
         {
             SystemsController.ClearWatchTime();
@@ -232,35 +234,74 @@ namespace StreamerBotLib.BotIOController
             SystemsController.SetDiscordWebhooksEnabled(Enabled);
         }
 
+        public static void AddNewAutoShoutUser(string UserName)
+        {
+            SystemsController.AddNewAutoShoutUser(UserName);
+        }
+
+        #endregion
+
+        #region Query Bots
+
         public static string GetUserCategory(string ChannelName, Bots bots)
         {
-            return bots switch
+            if (bots == Bots.TwitchChatBot)
             {
-                Bots.TwitchUserBot or Bots.TwitchChatBot => BotsTwitch.GetUserCategory(UserName: ChannelName),
-                Bots.Default => throw new NotImplementedException(),
-                Bots.TwitchLiveBot => throw new NotImplementedException(),
-                Bots.TwitchFollowBot => throw new NotImplementedException(),
-                Bots.TwitchClipBot => throw new NotImplementedException(),
-                Bots.TwitchMultiBot => throw new NotImplementedException(),
-                Bots.TwitchPubSub => throw new NotImplementedException(),
-                _ => ""
-            };
+                return BotsTwitch.GetUserCategory(UserName: ChannelName);
+            }
+            else
+            {
+                return "";
+            }
+            //return bots switch
+            //{
+            //    Bots.TwitchUserBot or Bots.TwitchChatBot => c,
+            //    Bots.Default => throw new NotImplementedException(),
+            //    Bots.TwitchLiveBot => throw new NotImplementedException(),
+            //    Bots.TwitchFollowBot => throw new NotImplementedException(),
+            //    Bots.TwitchClipBot => throw new NotImplementedException(),
+            //    Bots.TwitchMultiBot => throw new NotImplementedException(),
+            //    Bots.TwitchPubSub => throw new NotImplementedException(),
+            //    _ => ""
+            //};
         }
 
         public static bool VerifyUserExist(string ChannelName, Bots bots)
         {
-            return bots switch
+            if(bots == Bots.TwitchChatBot)
             {
-                Bots.TwitchChatBot or Bots.TwitchUserBot => BotsTwitch.VerifyUserExist(ChannelName),
-                Bots.Default => throw new NotImplementedException(),
-                Bots.TwitchLiveBot => throw new NotImplementedException(),
-                Bots.TwitchFollowBot => throw new NotImplementedException(),
-                Bots.TwitchClipBot => throw new NotImplementedException(),
-                Bots.TwitchMultiBot => throw new NotImplementedException(),
-                Bots.TwitchPubSub => throw new NotImplementedException(),
-                _ => throw new NotImplementedException()
-            };
+                return BotsTwitch.VerifyUserExist(ChannelName);
+            }
+            else
+            {
+                return false;
+            }
+            //return bots switch
+            //{
+            //    Bots.TwitchChatBot or Bots.TwitchUserBot => ,
+            //    Bots.Default => throw new NotImplementedException(),
+            //    Bots.TwitchLiveBot => throw new NotImplementedException(),
+            //    Bots.TwitchFollowBot => throw new NotImplementedException(),
+            //    Bots.TwitchClipBot => throw new NotImplementedException(),
+            //    Bots.TwitchMultiBot => throw new NotImplementedException(),
+            //    Bots.TwitchPubSub => throw new NotImplementedException(),
+            //    _ => throw new NotImplementedException()
+            //};
         }
+
+        public static bool ModifyChannelInformation(Bots bots, string Title = null, string CategoryName = null, string CategoryId = null)
+        {
+            bool result = false;
+
+            if (bots == Bots.TwitchChatBot)
+            {
+                result = BotsTwitch.ModifyChannelInformation(Title, CategoryName, CategoryId);
+            }
+
+            return result;
+        }
+
+        #endregion
 
         #region Twitch Bot Events
 
@@ -460,7 +501,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchOnUserLeft(OnUserLeftArgs e)
         {
-            HandleUserLeft(e.Username);
+            HandleUserLeft(e.Username, Bots.TwitchChatBot);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -472,7 +513,7 @@ namespace StreamerBotLib.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public void TwitchOnUserBanned(OnUserBannedArgs e = null)
         {
-            HandleUserBanned(e.UserBan.Username);
+            HandleUserBanned(e.UserBan.Username, Bots.TwitchChatBot);
         }
 
         public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
@@ -785,9 +826,9 @@ namespace StreamerBotLib.BotIOController
             Systems.UserJoined(Users, Source);
         }
 
-        public void HandleUserLeft(string Users)
+        public void HandleUserLeft(string Users, Bots Source)
         {
-            SystemsController.UserLeft(Users);
+            SystemsController.UserLeft(Users, Source);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -796,12 +837,12 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.UserTimedOut);
         }
 
-        public void HandleUserBanned(string UserName)
+        public void HandleUserBanned(string UserName, Bots Source)
         {
             try
             {
                 Systems.UpdatedStat(StreamStatType.UserBanned);
-                HandleUserLeft(UserName);
+                HandleUserLeft(UserName, Source);
             }
             catch (Exception ex)
             {

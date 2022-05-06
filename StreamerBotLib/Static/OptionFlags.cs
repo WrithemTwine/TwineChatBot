@@ -62,6 +62,7 @@ namespace StreamerBotLib.Static
         public static bool ManageOutRaidData { get; set; }
         public static bool ManageGiveawayUsers { get; set; }
         public static bool ManageDataArchiveMsg { get; set; }
+        public static bool ManageClearButtonEnabled { get; set; }
 
         public static bool TwitchChatBotConnectOnline { get; set; }
         public static bool TwitchChatBotDisconnectOffline { get; set; }
@@ -100,6 +101,9 @@ namespace StreamerBotLib.Static
         public static bool ModerateUsersAction { get; set; }
         public static bool ModerateUserLearnMsgs { get; set; }
 
+        public static bool MediaOverlayEnabled { get; set; }
+        public static bool MediaOverlayChannelPoints { get; set; }
+
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
@@ -112,67 +116,9 @@ namespace StreamerBotLib.Static
                 LogBotStatus = Settings.Default.LogBotStatus;
                 LogExceptions = Settings.Default.LogExceptions;
 
-                TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
-                TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
-                TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
-                TwitchFollowerAutoRefresh = Settings.Default.TwitchFollowerAutoRefresh;
-                TwitchFollowerRefreshHrs = Settings.Default.TwitchFollowerRefreshHrs;
-                TwitchFollowerEnableMsgLimit = Settings.Default.TwitchFollowerEnableMsgLimit;
-                TwitchFollowerMsgLimit = Settings.Default.TwitchFollowerMsgLimit;
-                TwitchFollowerAutoBanBots = Settings.Default.TwitchFollowerAutoBanBots;
-                TwitchFollowerAutoBanCount = Settings.Default.TwitchFollowerAutoBanCount;
-
-                FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
-                FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
-
+                #region Twitch
+ 
                 TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
-
-                MsgAddMe = Settings.Default.MsgInsertMe;
-                MsgNoMe = Settings.Default.MsgNoMe;
-                MsgPerComMe = Settings.Default.MsgPerComMe;
-
-                MsgWelcomeStreamer = Settings.Default.MsgWelcomeStreamer;
-                WelcomeCustomMsg = Settings.Default.WelcomeCustomMsg;
-
-                AutoShout = Settings.Default.MsgAutoShout;
-
-                TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
-
-                RepeatTimer = Settings.Default.RepeatTimerCommands;
-                RepeatTimerDilute = Settings.Default.RepeatTimerComSlowdown;
-                RepeatWhenLive = Settings.Default.RepeatWhenLive;
-                RepeatLiveReset = Settings.Default.RepeatLiveReset;
-                RepeatLiveResetShow = Settings.Default.RepeatLiveResetShow;
-
-                UserPartyStart = Settings.Default.UserPartyStart;
-                UserPartyStop = Settings.Default.UserPartyStop;
-
-                PostMultiLive = Settings.Default.PostMultiLive;
-                LiveMsg = Settings.Default.MsgLive;
-
-                ManageUsers = Settings.Default.ManageUsers;
-                ManageFollowers = Settings.Default.ManageFollowers;
-                ManageStreamStats = Settings.Default.ManageStreamStats;
-                ManageRaidData = Settings.Default.ManageRaidData;
-                ManageOutRaidData = Settings.Default.ManageOutRaidData;
-                ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
-                ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
-
-                TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
-                TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
-
-                TwitchClipPostChat = Settings.Default.TwitchClipPostChat;
-                TwitchClipPostDiscord = Settings.Default.TwitchClipPostDiscord;
-
-                TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
-                TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
-
-                GiveawayCount = Settings.Default.GiveawayCount;
-                GiveawayBegMsg = Settings.Default.GiveawayBegMsg;
-                GiveawayEndMsg = Settings.Default.GiveawayEndMsg;
-                GiveawayWinMsg = Settings.Default.GiveawayWinMsg;
-                GiveawayMultiUser = Settings.Default.GiveawayMultiUser;
-                GiveawayMultiEntries = Settings.Default.GiveawayMaxEntries;
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
 
@@ -187,9 +133,100 @@ namespace StreamerBotLib.Static
 
                 TwitchStreamerUseToken = Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
 
+                TwitchRaidShoutOut = Settings.Default.TwitchRaidShoutOut;
+
+                TwitchChatBotConnectOnline = Settings.Default.TwitchChatBotConnectOnline;
+                TwitchChatBotDisconnectOffline = Settings.Default.TwitchChatBotDisconnectOffline;
+
+                TwitchClipPostChat = Settings.Default.TwitchClipPostChat;
+                TwitchClipPostDiscord = Settings.Default.TwitchClipPostDiscord;
+
+                TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
+                TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
+
+                #region Followers - Twitch
+
+                TwitchAddFollowersStart = Settings.Default.TwitchAddFollowersStart;
+                TwitchPruneNonFollowers = Settings.Default.TwitchPruneNonFollowers;
+                TwitchAddFollowerNotification = Settings.Default.TwitchAddFollowerNotification;
+                TwitchFollowerAutoRefresh = Settings.Default.TwitchFollowerAutoRefresh;
+                TwitchFollowerRefreshHrs = Settings.Default.TwitchFollowerRefreshHrs;
+                TwitchFollowerEnableMsgLimit = Settings.Default.TwitchFollowerEnableMsgLimit;
+                TwitchFollowerMsgLimit = Settings.Default.TwitchFollowerMsgLimit;
+                TwitchFollowerAutoBanBots = Settings.Default.TwitchFollowerAutoBanBots;
+                TwitchFollowerAutoBanCount = Settings.Default.TwitchFollowerAutoBanCount;
+
+                #endregion
+
+                #endregion
+
+                FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
+                FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
+
+                MsgAddMe = Settings.Default.MsgInsertMe;
+                MsgNoMe = Settings.Default.MsgNoMe;
+                MsgPerComMe = Settings.Default.MsgPerComMe;
+
+                MsgWelcomeStreamer = Settings.Default.MsgWelcomeStreamer;
+                WelcomeCustomMsg = Settings.Default.WelcomeCustomMsg;
+
+                AutoShout = Settings.Default.MsgAutoShout;
+
+                #region Repeat Commands
+
+                RepeatTimer = Settings.Default.RepeatTimerCommands;
+                RepeatTimerDilute = Settings.Default.RepeatTimerComSlowdown;
+                RepeatWhenLive = Settings.Default.RepeatWhenLive;
+                RepeatLiveReset = Settings.Default.RepeatLiveReset;
+                RepeatLiveResetShow = Settings.Default.RepeatLiveResetShow;
+
+                #endregion
+
+                UserPartyStart = Settings.Default.UserPartyStart;
+                UserPartyStop = Settings.Default.UserPartyStop;
+
+                PostMultiLive = Settings.Default.PostMultiLive;
+                LiveMsg = Settings.Default.MsgLive;
+
+                #region Data Manage
+
+                ManageUsers = Settings.Default.ManageUsers;
+                ManageFollowers = Settings.Default.ManageFollowers;
+                ManageStreamStats = Settings.Default.ManageStreamStats;
+                ManageRaidData = Settings.Default.ManageRaidData;
+                ManageOutRaidData = Settings.Default.ManageOutRaidData;
+                ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
+                ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
+                ManageClearButtonEnabled = Settings.Default.ManageClearButtonEnabled;
+
+                #endregion
+
+                #region Giveaway
+
+                GiveawayCount = Settings.Default.GiveawayCount;
+                GiveawayBegMsg = Settings.Default.GiveawayBegMsg;
+                GiveawayEndMsg = Settings.Default.GiveawayEndMsg;
+                GiveawayWinMsg = Settings.Default.GiveawayWinMsg;
+                GiveawayMultiUser = Settings.Default.GiveawayMultiUser;
+                GiveawayMultiEntries = Settings.Default.GiveawayMaxEntries;
+
+                #endregion
+
+                #region Moderation
+
                 ModerateUsersWarn = Settings.Default.ModerateUsersWarn;
                 ModerateUsersAction = Settings.Default.ModerateUsersAction;
                 ModerateUserLearnMsgs = Settings.Default.ModerateUserLearnMsgs;
+
+                #endregion
+
+                #region Media Overlay 
+
+                MediaOverlayEnabled = Settings.Default.MediaOverlayEnabled;
+                MediaOverlayChannelPoints = Settings.Default.MediaOverlayChannelPoints;
+
+                #endregion
+
             }
         }
 

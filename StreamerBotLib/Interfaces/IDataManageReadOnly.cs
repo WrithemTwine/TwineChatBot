@@ -30,5 +30,11 @@ namespace StreamerBotLib.Interfaces
         List<string> GetTableFields(DataTable dataTable);
         List<string> GetTableFields(string TableName);
         List<string> GetTableNames();
+        List<Tuple<string, string>> GetGameCategories();
+        List<string> GetCurrencyNames();
+        bool CheckFollower(string User);
+        bool CheckUser(string User);
+        bool CheckFollower(string User, DateTime ToDateTime);
+        bool CheckUser(string User, DateTime ToDateTime);
     }
 }

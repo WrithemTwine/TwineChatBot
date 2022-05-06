@@ -95,7 +95,7 @@ namespace StreamerBotLib.Systems
                             {
                                 lock (item)
                                 {
-                                    TimerCommand Listcmd = RepeatList.Find((f) => f.Command == item.Command);
+                                    TimerCommand Listcmd = RepeatList.Find((f) => f.Equals(item));
                                     if (Listcmd.RepeatTime == 0)
                                     {
                                         RepeatList.Remove(Listcmd);
@@ -173,6 +173,7 @@ namespace StreamerBotLib.Systems
                         InCategory = cmd.CategoryList.Contains(Category) || cmd.CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry));
                     }
                 }
+                cmd.ModifyTime(0, CheckDilute());
             }
             catch (ThreadInterruptedException ex)
             {
@@ -279,11 +280,11 @@ namespace StreamerBotLib.Systems
         /// Call to check all users in the stream, and shout them.
         /// </summary>
         /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
-        public void AutoShoutUsers(Bots Source)
+        public void AutoShoutUsers()
         {
             // TODO: if adding non-Twitch platforms, need to adjust to call the correct platform-to get the channel category
 
-            List<string> CurrActiveUsers;
+            List<LiveUser> CurrActiveUsers;
             lock (CurrUsers)
             {
                 CurrActiveUsers = new(CurrUsers);
@@ -291,9 +292,9 @@ namespace StreamerBotLib.Systems
 
             ThreadManager.CreateThreadStart(() =>
             {
-                foreach (string U in CurrActiveUsers)
+                foreach (LiveUser U in CurrActiveUsers)
                 {
-                    CheckShout(U, out _, Source);
+                    CheckShout(U.UserName, out _, U.Source);
                 }
             });
         }
@@ -334,6 +335,51 @@ namespace StreamerBotLib.Systems
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
                 result = DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
+            {
+                if (arglist.Count > 0)
+                {
+                    bool success = BotController.ModifyChannelInformation(Source, Title: string.Join(' ', arglist));
+                    result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
+                }
+                else
+                {
+                    result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
+            {
+                if (arglist.Count > 0)
+                {
+                    if (int.TryParse(arglist[0], out int GameId))
+                    {
+                        BotController.ModifyChannelInformation(Source, CategoryId: GameId.ToString());
+                        result = cmdrow.Message;
+                    }
+                    else
+                    {
+                        bool success = false;
+                        string CategoryName = string.Join(' ', arglist);
+
+                        Tuple<string, string> found = DataManage.GetGameCategories().Find((x) => x.Item2 == CategoryName);
+
+                        if (found != null)
+                        {
+                            success = BotController.ModifyChannelInformation(Source, CategoryId: found.Item1);
+                        }
+                        else
+                        {
+                            success = BotController.ModifyChannelInformation(Source, CategoryName: CategoryName);
+                        }
+
+                        result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
+                    }
+                }
+                else
+                {
+                    result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
+                }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.editcommand))
             {
@@ -389,9 +435,9 @@ namespace StreamerBotLib.Systems
                 NotifyPropertyChanged("UserPartyStart");
                 NotifyPropertyChanged("UserPartyStop");
             }
-            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
             {
-                AutoShoutUsers(Source);
+                AutoShoutUsers();
             }
             else
             {

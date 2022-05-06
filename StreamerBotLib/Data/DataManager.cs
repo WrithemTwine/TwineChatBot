@@ -22,7 +22,7 @@ namespace StreamerBotLib.Data
         public static readonly string DataFileXML = "ChatDataStore.xml";
 
 #if DEBUG
-        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows", DataFileXML);
+        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows7.0", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
@@ -289,7 +289,7 @@ switches:
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
         {
             CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{Cmd}'");
-            lock (row)
+            lock (_DataSource)
             {
                 return (row == null) ? null : new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>());
             }
@@ -362,7 +362,7 @@ switches:
         public StreamStat GetStreamData(DateTime dateTime)
         {
             StreamStatsRow streamStatsRow = GetAllStreamData(dateTime);
-            lock (streamStatsRow)
+            lock (_DataSource)
             {
                 StreamStat streamStat = new();
 
@@ -501,7 +501,7 @@ switches:
         {
             if (User != null)
             {
-                lock (User)
+                lock (_DataSource)
                 {
                     if (User.LastDateSeen <= CurrStreamStart)
                     {
@@ -532,26 +532,6 @@ switches:
                 UpdateWatchTime(ref user, CurrTime);
             }
         }
-
-        //public void UpdateWatchTime(DateTime dateTime)
-        //{
-        //    // LastDateSeen ==> watchtime clock time
-        //    // CurrLoginDate ==> currency clock time
-
-        //    lock (_DataSource)
-        //    {
-        //        foreach (DataSource.UsersRow d in (DataSource.UsersRow[])_DataSource.Users.Select())
-        //        {
-        //            if (d.LastDateSeen >= CurrStreamStart)
-        //            {
-        //                UpdateWatchTime(d, dateTime);
-        //            }
-        //        }
-        //    }
-
-        //    SaveData();
-        //    OnPropertyChanged(nameof(Users));
-        //}
 
         /// <summary>
         /// Check to see if the <paramref name="User"/> has been in the channel prior to DateTime.MaxValue.
@@ -727,6 +707,14 @@ switches:
             SetDataTableFieldRows(_DataSource.Users, _DataSource.Users.WatchTimeColumn, new TimeSpan(0));
         }
 
+        public void AddNewAutoShoutUser(string UserName)
+        {
+            if(GetRow(_DataSource.ShoutOuts,$"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
+            {
+                _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
+            }
+        }
+
         #endregion Users and Followers
 
         #region Giveaways
@@ -761,7 +749,7 @@ switches:
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
         public void UpdateCurrency(ref UsersRow User, DateTime CurrTime)
         {
-            lock (User)
+            lock (_DataSource)
             {
                 if (User != null)
                 {
@@ -928,18 +916,19 @@ switches:
         /// <returns>True if category OR game ID are found; False if no category nor game ID is found.</returns>
         public bool AddCategory(string CategoryId, string newCategory)
         {
-            CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{newCategory.Replace("'", "''")}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
+            CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
 
             if (categoryList == null)
             {
                 lock (_DataSource)
                 {
                     _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
+                    NotifySaveData();
                 }
             }
             else
             {
-                lock (categoryList)
+                lock (_DataSource)
                 {
                     if (categoryList.CategoryId == null)
                     {
@@ -954,10 +943,10 @@ switches:
                     {
                         categoryList.StreamCount++;
                     }
+                    NotifySaveData();
                 }
             }
 
-            NotifySaveData();
             return categoryList != null;
         }
 
@@ -1074,7 +1063,7 @@ switches:
 
         public void AddLearnMsgsRow(string Message, MsgTypes MsgType)
         {
-            bool found = (from LearnMsgsRow learnMsgsRow in GetRows(_DataSource.LearnMsgs, $"{_DataSource.LearnMsgs.TeachingMsgColumn.ColumnName}='{Message}'")
+            bool found = (from LearnMsgsRow learnMsgsRow in GetRows(_DataSource.LearnMsgs, $"{_DataSource.LearnMsgs.TeachingMsgColumn.ColumnName}='{FormatData.AddEscapeFormat(Message)}'")
                           select new { }).Any();
 
             if (!found)

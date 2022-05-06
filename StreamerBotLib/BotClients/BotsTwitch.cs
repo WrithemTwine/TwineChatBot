@@ -52,6 +52,10 @@ namespace StreamerBotLib.BotClients
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
+
+            DataManager = SystemsController.DataManage;
+
+            ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -253,6 +257,22 @@ namespace StreamerBotLib.BotClients
             TwitchBotUserSvc.BanUser(UserName, Reason, Duration);
         }
 
+        public static bool ModifyChannelInformation(string Title = null, string CategoryName = null, string CategoryId = null)
+        {
+            bool result = false;
+
+            if (Title != null)
+            {
+                result = TwitchBotUserSvc.SetChannelTitle(Title);
+            }
+            if (CategoryName != null || CategoryId != null)
+            {
+                result = TwitchBotUserSvc.SetChannelCategory(CategoryName, CategoryId);
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Follower Bot
@@ -266,22 +286,19 @@ namespace StreamerBotLib.BotClients
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            bool found = false;
+            List<Follow> newFollows = new();
 
-            if (TwitchFollower.FollowerService.BulkAddFollows != null)
+            foreach(Follow F in e.NewFollowers)
             {
-                found = TwitchFollower.FollowerService.BulkAddFollows.Intersect(e.NewFollowers).Any();
-
-                if (found)
+                if (!DataManager.CheckFollower(F.FromUserName))
                 {
-                    e.NewFollowers = new(TwitchFollower.FollowerService.BulkAddFollows.Intersect(e.NewFollowers));
+                    newFollows.Add(F);
                 }
-
-                TwitchFollower.FollowerService.BulkAddFollows = null;
             }
 
-            if (found)
+            if (newFollows.Count > 0)
             {
+                e.NewFollowers = newFollows;
                 InvokeBotEvent(this, BotEvents.TwitchPostNewFollowers, e);
             }
         }

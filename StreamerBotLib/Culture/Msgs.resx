@@ -329,7 +329,7 @@
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgbot" xml:space="preserve">
-    <value>TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
+    <value>Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
   </data>
   <data name="MsgBoxDataLoadedMsg" xml:space="preserve">
     <value>$"Fatal error, both main data and backup data files failed to properly load. All further data saves have been suspended until the Bot restarts. Please close and review the data files for improper XML formatting, retore from backups - ensure using the '{StreamerBotLib.Data.DataManager.DataFileXML}' filename. Without restoration, the datafile will need to be restarted from default."</value>
@@ -381,6 +381,9 @@
     <value>Thanks #user for gifting a #subplan subscription to #receiveuser!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgintro" xml:space="preserve">
+    <value>#query</value>
+  </data>
   <data name="Msgjoin" xml:space="preserve">
     <value>The message isn't used in response.</value>
   </data>
@@ -402,8 +405,14 @@
     <value>No Category</value>
     <comment>When user has no category</comment>
   </data>
+  <data name="MsgNoSuccess" xml:space="preserve">
+    <value>The command did not perform successfully.</value>
+  </data>
   <data name="MsgNotFollower" xml:space="preserve">
     <value>not a follower.</value>
+  </data>
+  <data name="MsgNoTitleCategory" xml:space="preserve">
+    <value>Please provide a title or category to update.</value>
   </data>
   <data name="MsgNoUsage" xml:space="preserve">
     <value>No usage available.</value>
@@ -437,6 +446,12 @@
   <data name="MsgReturnUserJoined" xml:space="preserve">
     <value>Thanks #user for returning to the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="Msgsetcategroy" xml:space="preserve">
+    <value>The stream category is now updated.</value>
+  </data>
+  <data name="Msgsettitle" xml:space="preserve">
+    <value>The stream title is now updated.</value>
   </data>
   <data name="Msgso" xml:space="preserve">
     <value>Go check out #user at #url and consider following them! They were last streaming: #category</value>
@@ -519,6 +534,9 @@
     <value>-t:Followers -f:FollowedDate -param:true -use:!followage or !followage &lt;user&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramintro" xml:space="preserve">
+    <value>-t:CustomWelcome -param:true -f:Message -use:!intro username</value>
+  </data>
   <data name="Paramjoin" xml:space="preserve">
     <value>-use:!join</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -550,6 +568,12 @@
   <data name="Paramremovecommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!removecommand command. Does not remove default commands.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramsetcategory" xml:space="preserve">
+    <value>-use:!setcategory -p:Mod -param:true</value>
+  </data>
+  <data name="Paramsettitle" xml:space="preserve">
+    <value>-use:!settitle -p:Mod -param:true</value>
   </data>
   <data name="Paramso" xml:space="preserve">
     <value>-p:Mod -param:true -use:!so username - only mods can use !so.</value>
@@ -636,6 +660,14 @@
   </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>
+  </data>
+  <data name="setcategory" xml:space="preserve">
+    <value>setcategory</value>
+    <comment>default command, can be translated</comment>
+  </data>
+  <data name="settitle" xml:space="preserve">
+    <value>settitle</value>
+    <comment>default command, can be translated</comment>
   </data>
   <data name="so" xml:space="preserve">
     <value>so</value>

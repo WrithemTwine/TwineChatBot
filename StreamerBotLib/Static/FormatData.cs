@@ -112,5 +112,11 @@ namespace StreamerBotLib.Static
         {
             return FormatTimes(DateTime.Now.ToLocalTime() - pastdate.ToLocalTime());
         }
+
+        public static string AddEscapeFormat(string SrcText)
+        {
+            return SrcText.Replace("'", "''");
+        }
+
     }
 }

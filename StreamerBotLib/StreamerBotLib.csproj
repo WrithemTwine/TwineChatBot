@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>0.1.12.5</AssemblyVersion>
-    <FileVersion>0.1.12.5</FileVersion>
-    <Version>0.1.12.5</Version>
+    <AssemblyVersion>0.1.12.6</AssemblyVersion>
+    <FileVersion>0.1.12.6</FileVersion>
+    <Version>0.1.12.6</Version>
     <PackageId>TwineStreamerBotLib</PackageId>
     <AssemblyName>TwineStreamerBotLib</AssemblyName>
     <Authors>TwineStreamerBotLib</Authors>
@@ -13,6 +13,7 @@
     <Product>TwineStreamerBotLib</Product>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
