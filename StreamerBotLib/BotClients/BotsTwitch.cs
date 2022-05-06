@@ -54,6 +54,8 @@ namespace StreamerBotLib.BotClients
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
             DataManager = SystemsController.DataManage;
+
+            ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -253,6 +255,22 @@ namespace StreamerBotLib.BotClients
         public void BanUserRequest(string UserName, BanReasons Reason, int Duration = 0)
         {
             TwitchBotUserSvc.BanUser(UserName, Reason, Duration);
+        }
+
+        public static bool ModifyChannelInformation(string Title = null, string CategoryName = null, string CategoryId = null)
+        {
+            bool result = false;
+
+            if (Title != null)
+            {
+                result = TwitchBotUserSvc.SetChannelTitle(Title);
+            }
+            if (CategoryName != null || CategoryId != null)
+            {
+                result = TwitchBotUserSvc.SetChannelCategory(CategoryName, CategoryId);
+            }
+
+            return result;
         }
 
         #endregion

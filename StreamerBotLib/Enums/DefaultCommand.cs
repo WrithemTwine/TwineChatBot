@@ -21,6 +21,7 @@
         uptime,
         usage,
         followage,
-        intro
+        intro,
+        settitle, setcategory
     }
 }

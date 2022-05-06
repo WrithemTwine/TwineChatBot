@@ -12,6 +12,7 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
+using TwitchLib.Api.Helix.Models.Schedule;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -121,6 +122,13 @@ namespace StreamerBotLib.BotClients.Twitch
             return result;
         }
 
+        public string GetGameId(string GameName)
+        {
+            return userLookupService.GetGameId(GameName: new() { GameName }).Result.Games[0].Id;
+        }
+
+
+
         #endregion
 
         #region StreamerChannel Client Id and Request UserId must be the same
@@ -159,6 +167,48 @@ namespace StreamerBotLib.BotClients.Twitch
             }
 
             return CustomRewardsList;
+        }
+
+        public bool SetChannelTitle(string Title)
+        {
+            bool result;
+
+            ChooseConnectUserService(true);
+            try
+            {
+                _ = userLookupService?.ModifyChannelInformation(TwitchChannelId, Title: Title);
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                result = false;
+            }
+
+            return result;
+        }
+
+        public bool SetChannelCategory(string CategoryName = null, string CategoryId = null)
+        {
+            bool result;
+
+            ChooseConnectUserService(true);
+
+            if (CategoryId == null)
+            {
+                CategoryId = GetGameId(CategoryName);
+            }
+            try
+            {
+                _ = userLookupService?.ModifyChannelInformation(TwitchChannelId, GameId: CategoryId);
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                result = false;
+            }
+            return result;
         }
 
         #endregion

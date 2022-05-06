@@ -923,6 +923,7 @@ switches:
                 lock (_DataSource)
                 {
                     _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
+                    NotifySaveData();
                 }
             }
             else
@@ -942,10 +943,10 @@ switches:
                     {
                         categoryList.StreamCount++;
                     }
+                    NotifySaveData();
                 }
             }
 
-            NotifySaveData();
             return categoryList != null;
         }
 

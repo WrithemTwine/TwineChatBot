@@ -88,7 +88,7 @@
                     <StackPanel>
                         <Label>
                             <Label.ToolTip>
-                                <TextBlock>Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow. Click here to refresh now.</TextBlock>
+                                <TextBlock>Click here to refresh now. Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow.</TextBlock>
                             </Label.ToolTip>
                             <Label.Content>Curr Follows:</Label.Content>
                         </Label>
@@ -544,35 +544,48 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Automatic Commands by Timer">
                                             <StackPanel Margin="5">
-                                                <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" >
-                                                    <TextBlock><Run Text="Enable Repeat commands only when live."/></TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}">
+                                                <CheckBox x:Name="CheckBox_RepeatCommands_Enable" IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
                                                     <CheckBox.ToolTip>
                                                         <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</TextBlock>
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable repeating commands.</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}">
-                                                    <CheckBox.ToolTip>
-                                                        <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</TextBlock>
-                                                    </CheckBox.ToolTip>
-                                                    <TextBlock>Enable smart slow-down repeating commands</TextBlock>
-                                                </CheckBox>
-                                                <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200" HorizontalAlignment="Center" />
-                                                <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}">
-                                                    <CheckBox.ToolTip>
-                                                        <TextBlock Width="200">The repeating commands continually run while the chat bot is active. The repeat timers will fire at their designated time as indicated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</TextBlock>
-                                                    </CheckBox.ToolTip>
-                                                    <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}">
-                                                    <CheckBox.ToolTip>
-                                                        <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</TextBlock>
-                                                    </CheckBox.ToolTip>
-                                                    <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
-                                                </CheckBox>
-                                                <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
+                                                <StackPanel x:Name="StackPanel_RepeatCommands_RepeatOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility" Margin="0,0,0,0">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="44" />
+                                                            <RowDefinition Height="43" />
+                                                            <RowDefinition Height="8" />
+                                                            <RowDefinition Height="47" />
+                                                            <RowDefinition />
+
+                                                        </Grid.RowDefinitions>
+                                                        <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Grid.Row="0" Margin="5,5,5,5">
+                                                            <TextBlock><Run Text="Perform Repeat commands only when live."/></TextBlock>
+                                                        </CheckBox>
+
+                                                        <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Grid.Row="1" Margin="5,5,5,5">
+                                                            <CheckBox.ToolTip>
+                                                                <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</TextBlock>
+                                                            </CheckBox.ToolTip>
+                                                            <TextBlock>Enable smart slow-down repeating commands</TextBlock>
+                                                        </CheckBox>
+                                                        <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200"  Grid.Row="2" Margin="-1,0,-1,0"/>
+                                                        <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}" Grid.Row="3" Margin="5,5,5,5">
+                                                            <CheckBox.ToolTip>
+                                                                <TextBlock Width="200">The repeating commands continually run while the chat bot is active. The repeat timers will fire at their designated time as indicated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</TextBlock>
+                                                            </CheckBox.ToolTip>
+                                                            <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
+                                                        </CheckBox>
+                                                        <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}" Grid.Row="4" Margin="5,5,5,5">
+                                                            <CheckBox.ToolTip>
+                                                                <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</TextBlock>
+                                                            </CheckBox.ToolTip>
+                                                            <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
+                                                        </CheckBox>
+                                                        <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
+                                                    </Grid>
+                                                </StackPanel>
                                             </StackPanel>
                                         </GroupBox>
                                         <GroupBox Header="Any - Welcome Viewers">

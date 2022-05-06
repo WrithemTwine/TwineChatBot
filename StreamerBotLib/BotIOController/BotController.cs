@@ -289,6 +289,18 @@ namespace StreamerBotLib.BotIOController
             //};
         }
 
+        public static bool ModifyChannelInformation(Bots bots, string Title = null, string CategoryName = null, string CategoryId = null)
+        {
+            bool result = false;
+
+            if (bots == Bots.TwitchChatBot)
+            {
+                result = BotsTwitch.ModifyChannelInformation(Title, CategoryName, CategoryId);
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Twitch Bot Events

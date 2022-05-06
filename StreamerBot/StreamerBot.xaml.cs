@@ -756,7 +756,12 @@ namespace StreamerBot
                 }
             }
 
-            if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
+            // be sure this list is in XAML object order
+            if (CBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
+            {
+                SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+            }
+            else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
                 SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
             }

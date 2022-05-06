@@ -53,7 +53,7 @@ namespace StreamerBotLib.Models
             RepeatTime = NewRepeatTime;
         }
 
-        private Random random = new();
+        private readonly Random random = new();
 
         public void SetNow() => NextRun = DateTime.Now.AddSeconds(random.Next(60,1250)).ToLocalTime();
 
@@ -61,12 +61,12 @@ namespace StreamerBotLib.Models
 
         public bool CheckFireTime() => DateTime.Now.ToLocalTime() > NextRun;
 
-        public int CompareTo(TimerCommand obj) => Command.CompareTo(obj.Command);
+        public int CompareTo(TimerCommand obj) => this.Command.CompareTo(obj.Command);
 
-        public bool Equals(TimerCommand other) => Command == other.Command;
+        public bool Equals(TimerCommand other) => this.Command == other.Command;
 
         public override bool Equals(object obj) => Equals(obj as TimerCommand);
 
-        public override int GetHashCode() => (Command + RepeatTime.ToString()).GetHashCode();
+        public override int GetHashCode() => (this.Command + RepeatTime.ToString()).GetHashCode();
     }
 }

@@ -637,7 +637,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TwineChatBot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed..
+        ///   Looks up a localized string similar to Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed..
         /// </summary>
         internal static string Msgbot {
             get {
@@ -844,11 +844,29 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The command did not perform successfully..
+        /// </summary>
+        internal static string MsgNoSuccess {
+            get {
+                return ResourceManager.GetString("MsgNoSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to not a follower..
         /// </summary>
         internal static string MsgNotFollower {
             get {
                 return ResourceManager.GetString("MsgNotFollower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please provide a title or category to update..
+        /// </summary>
+        internal static string MsgNoTitleCategory {
+            get {
+                return ResourceManager.GetString("MsgNoTitleCategory", resourceCulture);
             }
         }
         
@@ -939,6 +957,24 @@ namespace StreamerBotLib.Culture {
         internal static string MsgReturnUserJoined {
             get {
                 return ResourceManager.GetString("MsgReturnUserJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream category is now updated..
+        /// </summary>
+        internal static string Msgsetcategroy {
+            get {
+                return ResourceManager.GetString("Msgsetcategroy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream title is now updated..
+        /// </summary>
+        internal static string Msgsettitle {
+            get {
+                return ResourceManager.GetString("Msgsettitle", resourceCulture);
             }
         }
         
@@ -1222,6 +1258,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -use:!setcategory -p:Mod -param:true.
+        /// </summary>
+        internal static string Paramsetcategory {
+            get {
+                return ResourceManager.GetString("Paramsetcategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!settitle -p:Mod -param:true.
+        /// </summary>
+        internal static string Paramsettitle {
+            get {
+                return ResourceManager.GetString("Paramsettitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -p:Mod -param:true -use:!so username - only mods can use !so..
         /// </summary>
         internal static string Paramso {
@@ -1425,6 +1479,24 @@ namespace StreamerBotLib.Culture {
         internal static string Respond {
             get {
                 return ResourceManager.GetString("Respond", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to setcategory.
+        /// </summary>
+        internal static string setcategory {
+            get {
+                return ResourceManager.GetString("setcategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to settitle.
+        /// </summary>
+        internal static string settitle {
+            get {
+                return ResourceManager.GetString("settitle", resourceCulture);
             }
         }
         
