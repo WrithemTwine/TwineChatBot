@@ -46,6 +46,8 @@ namespace StreamerBotLib.BotIOController
 
         private BotsTwitch TwitchBots { get; set; }
 
+        internal static BotOverlayServer OverlayServerBot { get; set; }
+
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute

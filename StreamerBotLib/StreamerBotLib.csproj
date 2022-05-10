@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
+    <ProjectReference Include="..\TwineStreamerBot.MediaOverlayServer\TwineStreamerBot.MediaOverlayServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

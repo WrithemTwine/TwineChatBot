@@ -1,4 +1,6 @@
-﻿using StreamerBotLib.BotClients;
+﻿#define MultiLiveNo
+
+using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
@@ -94,7 +96,7 @@ namespace StreamerBot
             ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
 
-#if !DEBUG
+#if !MultiLive
             TabItem_Data_MultiLive.Visibility = Visibility.Collapsed;
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
@@ -439,7 +441,6 @@ namespace StreamerBot
 
         #endregion
 
-
         #endregion
 
         #region PopOut Chat Window
@@ -498,8 +499,10 @@ namespace StreamerBot
                     }
                     else
                     {
+#if MultiLive
                         SetMultiLiveButtons();
-                        MultiBotRadio(true);
+                        MultiBotRadio(true); 
+#endif
                     }
                 }
                 BeginUpdateCategory();
@@ -517,8 +520,9 @@ namespace StreamerBot
             WatchProcessOps = false;
             OptionFlags.IsStreamOnline = false;
             OptionFlags.ActiveToken = false;
-            //CP.Close();
+
             Controller.ExitBots();
+
             OptionFlags.SetSettings();
         }
 
@@ -580,8 +584,6 @@ namespace StreamerBot
             Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
             Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
             Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-
-            TabItem_Overlays.Visibility = OptionFlags.MediaOverlayEnabled ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
@@ -760,6 +762,10 @@ namespace StreamerBot
             if (CBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+            }
+            else if (CBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
+            {
+                SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
             }
             else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
@@ -1353,7 +1359,6 @@ namespace StreamerBot
         #endregion
 
         #endregion
-
 
     }
 }

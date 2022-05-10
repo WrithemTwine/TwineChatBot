@@ -612,13 +612,18 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Media Overlay">
                                             <StackPanel>
-                                                <CheckBox IsChecked="{Binding MediaOverlayEnabled}" >
+                                                <Label>
+                                                    <TextBlock>Clicking Enable will start a new Process for the Media Overlay Server</TextBlock>
+                                                </Label>
+                                                <CheckBox x:Name="CheckBox_MediaOverlay_Enable" IsChecked="{Binding MediaOverlayEnabled}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
                                                     <TextBlock>Enable Media Overlay</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox IsChecked="{Binding MediaOverlayChannelPoints}" >
-                                                    <CheckBox.ToolTip>The PubService bot must have 'Monitor Channel Points' service and bot started to enable this feature.</CheckBox.ToolTip>
-                                                    <TextBlock>Enable Monitor Channel Points</TextBlock>
-                                                </CheckBox>
+                                                <StackPanel x:Name="StackPanel_MediaOverlay_MediaOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility" Margin="0,0,0,0">
+                                                    <CheckBox IsChecked="{Binding MediaOverlayChannelPoints}" >
+                                                        <CheckBox.ToolTip>The PubService bot must have 'Monitor Channel Points' service and bot started to enable this feature.</CheckBox.ToolTip>
+                                                        <TextBlock>Enable Monitor Channel Points</TextBlock>
+                                                    </CheckBox>
+                                                </StackPanel>
                                             </StackPanel>
                                         </GroupBox>
                                         <GroupBox Header="Any - Moderate Follows">
@@ -1080,9 +1085,6 @@
                                     </Grid>
                                 </TabItem>
                             </TabControl>
-                        </TabItem>
-                        <TabItem Header="Overlays" Name="TabItem_Overlays">
-
                         </TabItem>
                         <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
                             <TabControl>
