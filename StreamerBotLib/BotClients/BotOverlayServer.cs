@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -12,16 +13,15 @@ namespace StreamerBotLib.BotClients
         private string MediaOverlayProcName = TwineStreamerBot.MediaOverlayServer.App.ResourceAssembly.FullName;
         private Process MediaOverlayProcess;
 
+        private StreamWriter WriteToPipe;
         private NamedPipeServerStream PipeServer;
-        private BinaryFormatter SerializedMsg { get; } = new BinaryFormatter();
-
-        internal BotOverlayServer()
-        {
-        }
+        //private BinaryFormatter SerializedMsg { get; } = new BinaryFormatter();
 
         internal void StartMediaOverlayServer()
         {    
             PipeServer = new(PublicConstants.PipeName, PipeDirection.Out, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
+
+            WriteToPipe = new(PipeServer);
 
             MediaOverlayProcess = new Process();
             MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
@@ -31,14 +31,18 @@ namespace StreamerBotLib.BotClients
 
         internal void Send(OverlayTypes overlayTypes, string ActionValue, bool DataLoad)
         {
-            OverlayActionType msg = new() { ActionValue = ActionValue, DataLoad = DataLoad, OverlayType = overlayTypes };
-            msg.HashCode = msg.GetHashCode();
+            if (PipeServer.IsConnected)
+            {
+                OverlayActionType msg = new() { ActionValue = ActionValue, DataLoad = DataLoad, OverlayType = overlayTypes };
+                //            msg.HashCode = msg.GetHashCode();
 
-            // serialize and send object over the named pipe
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-            SerializedMsg.Serialize(PipeServer, msg);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
+                //            // serialize and send object over the named pipe
+                //#pragma warning disable SYSLIB0011 // Type or member is obsolete
+                //            SerializedMsg.Serialize(PipeServer, msg);
+                //#pragma warning restore SYSLIB0011 // Type or member is obsolete
 
+                WriteToPipe.WriteLine(msg);
+            }
         }
 
         internal void ExitMediaOverlayProc()

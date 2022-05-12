@@ -518,10 +518,10 @@ namespace StreamerBotLib.BotIOController
             HandleUserBanned(e.UserBan.Username, Bots.TwitchChatBot);
         }
 
-        public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
-        {
-            HandleAddChat(e.RitualNewChatter.DisplayName, Bots.TwitchChatBot);
-        }
+        //public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
+        //{
+        //    HandleAddChat(e.RitualNewChatter.DisplayName, Bots.TwitchChatBot);
+        //}
 
         public void TwitchMessageReceived(OnMessageReceivedArgs e)
         {

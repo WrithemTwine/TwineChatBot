@@ -68,9 +68,9 @@ namespace StreamerBotLib.Systems
         {
             while (OptionFlags.ActiveToken && ChatBotStarted)
             {
-                while (ProcMsgQueue.Count > 0)
+                lock (ProcMsgQueue)
                 {
-                    lock (ProcMsgQueue)
+                    while (ProcMsgQueue.Count > 0)
                     {
                         ProcMsgQueue.Dequeue().Start();
                     }
@@ -115,8 +115,13 @@ namespace StreamerBotLib.Systems
             StatisticsSystem.ClearUserList(DateTime.Now.ToLocalTime());
 
             ChatBotStarted = true;
-            ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
-            ProcessMsgs.Start();
+
+            // prevent starting another thread
+            if (ProcessMsgs == null || !ProcessMsgs.IsAlive)
+            {
+                ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
+                ProcessMsgs.Start();
+            }
 
             Command.StartElapsedTimerThread();
             Moderation.ManageLearnedMsgList();

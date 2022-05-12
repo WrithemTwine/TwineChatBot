@@ -610,7 +610,7 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Any - Media Overlay">
+                                        <GroupBox Header="Any - Media Overlay" Visibility="Collapsed">
                                             <StackPanel>
                                                 <Label>
                                                     <TextBlock>Clicking Enable will start a new Process for the Media Overlay Server</TextBlock>

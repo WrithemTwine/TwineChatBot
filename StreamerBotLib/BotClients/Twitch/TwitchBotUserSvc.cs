@@ -71,8 +71,9 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         public void SetIds()
-        {
-            if (TwitchChannelId == null && TwitchBotUserId == null)
+        {            
+            // fix, add updates to this when user specifies and starts bots
+            if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
             {
                 TwitchBotUserId = GetUserId(TwitchBotUserName);
                 TwitchChannelId = GetUserId(TwitchChannelName);
