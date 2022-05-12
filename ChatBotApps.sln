@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiUserLiveBot", "MultiUserLiveBot\MultiUserLiveBot.csproj", "{BC756E65-DBF5-4AFB-9100-9528BE698765}"
 EndProject
@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib", "StreamerB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertDataSourceFile", "ConvertDataSourceFile\ConvertDataSourceFile.csproj", "{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamerBotLib.MachineLearning", "StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj", "{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib.MachineLearning", "StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj", "{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib.MediaOverlay", "StreamerBotLib.MediaOverlay\StreamerBotLib.MediaOverlay.csproj", "{F4BA6F5D-6B99-4668-A4B4-0F6462C7363C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwineStreamerBot.MediaOverlayServer", "TwineStreamerBot.MediaOverlayServer\TwineStreamerBot.MediaOverlayServer.csproj", "{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +47,10 @@ Global
 		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F4BA6F5D-6B99-4668-A4B4-0F6462C7363C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4BA6F5D-6B99-4668-A4B4-0F6462C7363C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4BA6F5D-6B99-4668-A4B4-0F6462C7363C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4BA6F5D-6B99-4668-A4B4-0F6462C7363C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

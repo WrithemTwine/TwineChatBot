@@ -55,7 +55,7 @@ namespace StreamerBotLib.BotClients
 
             DataManager = SystemsController.DataManage;
 
-            ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
+            //ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
@@ -78,7 +78,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
-                TwitchBotChatClient.TwitchChat.OnRitualNewChatter += Client_OnRitualNewChatter;
+                //TwitchBotChatClient.TwitchChat.OnRitualNewChatter += Client_OnRitualNewChatter;
                 TwitchBotChatClient.TwitchChat.OnUserBanned += Client_OnUserBanned;
                 TwitchBotChatClient.TwitchChat.OnUserJoined += Client_OnUserJoined;
                 TwitchBotChatClient.TwitchChat.OnUserLeft += Client_OnUserLeft;
@@ -116,6 +116,8 @@ namespace StreamerBotLib.BotClients
                 TwitchBotPubSub.TwitchPubSub.OnChannelPointsRewardRedeemed += TwitchPubSub_OnChannelPointsRewardRedeemed;
                 TwitchBotPubSub.HandlersAdded = true;
             }
+
+            ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
 
         #region Twitch Bot Chat Client
@@ -211,10 +213,10 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, e);
         }
 
-        private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchRitualNewChatter, e);
-        }
+        //private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
+        //{
+        //    InvokeBotEvent(this, BotEvents.TwitchRitualNewChatter, e);
+        //}
 
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {

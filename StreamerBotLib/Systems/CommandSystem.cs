@@ -42,9 +42,13 @@ namespace StreamerBotLib.Systems
 
         public void StartElapsedTimerThread()
         {
-            ChatBotStarted = true;
-            ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
-            ElapsedThread.Start();
+            // don't start another thread if the current is still active
+            if (ElapsedThread == null || !ElapsedThread.IsAlive)
+            {
+                ChatBotStarted = true;
+                ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
+                ElapsedThread.Start();
+            }
         }
 
         public void StopElapsedTimerThread()

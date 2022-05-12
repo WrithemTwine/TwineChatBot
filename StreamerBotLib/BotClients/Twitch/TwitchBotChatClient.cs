@@ -40,8 +40,10 @@ namespace StreamerBotLib.BotClients.Twitch
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
 
-        //private bool IsInitialized = false;
-        //private string ConnectedChannelName = "";
+#if !TwitchLib_ConnectProblem
+        private bool IsInitialized = false;
+        private string ConnectedChannelName = "";
+#endif
 
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …
@@ -105,7 +107,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 WhisperQueueCapacity = 200,
                 WhispersAllowedInPeriod = 200,
-                WhisperThrottlingPeriod = TimeSpan.FromSeconds(30)
+                WhisperThrottlingPeriod = TimeSpan.FromSeconds(30),
+                ReconnectionPolicy = new(30)
             };
 
             TwitchChat = new TwitchClient(new WebSocketClient(options), ClientProtocol.WebSocket, LogData);
@@ -327,11 +330,11 @@ namespace StreamerBotLib.BotClients.Twitch
 #endif
 
         /// <summary>
-            /// Attempt to send the whisper to a user.
-            /// </summary>
-            /// <param name="user">The user to send the whisper.</param>
-            /// <param name="s">The message to send.</param>
-            /// <returns>True when succesulf whisper sent.</returns>
+        /// Attempt to send the whisper to a user.
+        /// </summary>
+        /// <param name="user">The user to send the whisper.</param>
+        /// <param name="s">The message to send.</param>
+        /// <returns>True when succesulf whisper sent.</returns>
         public override bool SendWhisper(string user, string s)
         {
             throw new();
@@ -380,7 +383,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 try
                 {
                     SendData(ToSend);
-                } 
+                }
                 catch (Exception ex)
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
@@ -418,7 +421,7 @@ namespace StreamerBotLib.BotClients.Twitch
             // the TwitchClient reports disconnected but user didn't click the 'stop bot' button
             // the client should be started but is now disconnected
             // check is required so the bot doesn't keep restarting when the user actually clicked stop
-            if (IsStarted && !TwitchChat.IsConnected)
+            if (IsStarted)// && !TwitchChat.IsConnected)
             {
                 Connect();    // restart the bot
             }

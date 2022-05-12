@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net;
 
-namespace StreamerBotLib.MediaOverlay
+namespace TwineStreamerBot.MediaOverlayServer
 {
     public class TwineBotWebServer
     {
@@ -21,6 +21,7 @@ namespace StreamerBotLib.MediaOverlay
         }
 
 
+        // ports: 1 - 65535
 
         private bool IsFree(int port)
         {
