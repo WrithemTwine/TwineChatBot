@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.IO.Pipes;
+using System.Reflection;
 using System.Threading;
 
-using System.IO.Pipes;
-using System.Runtime.Serialization.Formatters.Binary;
+using TwineStreamerBot.MediaOverlayServer.Enums;
+using TwineStreamerBot.MediaOverlayServer.Static;
 
 namespace TwineStreamerBot.MediaOverlayServer
 {
@@ -20,7 +20,7 @@ namespace TwineStreamerBot.MediaOverlayServer
 
         internal OverlaySvcClientPipe()
         {
-            OverlayPipe = new(".", PublicConstants.PipeName, PipeDirection.In,PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
+            OverlayPipe = new(".", PublicConstants.PipeName, PipeDirection.In, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
         }
 
         internal async void StartPipeWatch()
@@ -49,7 +49,20 @@ namespace TwineStreamerBot.MediaOverlayServer
 
                 while (!ReadFromPipe.EndOfStream)
                 {
-                    string? curr = ReadFromPipe.ReadLine();
+                    try
+                    {
+                        OverlayActionType curr = OverlayActionType.FromString(ReadFromPipe.ReadLine());
+
+                        if (curr.OverlayType != OverlayTypes.None)
+                        {
+                            foundReceivedOverlayEvent(curr);
+                        }
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        LogWriter.LogException(ex, Method: MethodBase.GetCurrentMethod().Name);
+
+                    }
                 }
             }
 

@@ -2,8 +2,10 @@
 using StreamerBotLib.Static;
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Linq;
 
 namespace StreamerBotLib.Systems
 {
@@ -30,10 +32,8 @@ namespace StreamerBotLib.Systems
                         {
                             lock (CurrUsers)
                             {
-                                foreach (LiveUser U in CurrUsers)
-                                {
-                                    DataManage.UpdateCurrency(U.UserName, DateTime.Now.ToLocalTime());
-                                }
+                                DataManage.UpdateCurrency(new(from LiveUser U in CurrUsers
+                                                              select U.UserName), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
                             Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
@@ -47,7 +47,7 @@ namespace StreamerBotLib.Systems
                 }
             }
         }
-        
+
         public void MonitorWatchTime()
         {
             if (!WatchStarted)
@@ -62,10 +62,8 @@ namespace StreamerBotLib.Systems
                         {
                             lock (CurrUsers)
                             {
-                                foreach (LiveUser U in CurrUsers)
-                                {
-                                    DataManage.UpdateWatchTime(U.UserName, DateTime.Now.ToLocalTime());
-                                }
+                                DataManage.UpdateWatchTime(new(from LiveUser U in CurrUsers
+                                                               select U.UserName), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
                             Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));

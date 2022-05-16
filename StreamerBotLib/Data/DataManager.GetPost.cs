@@ -1,8 +1,15 @@
-﻿using StreamerBotLib.Interfaces;
+﻿#if DEBUG
+#define noLogDataManager_Actions
+#endif
+
+using StreamerBotLib.GUI;
+using StreamerBotLib.Interfaces;
+using StreamerBotLib.Static;
 
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 
 namespace StreamerBotLib.Data
 {
@@ -20,7 +27,11 @@ namespace StreamerBotLib.Data
         /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
         public bool CheckTable(string table)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if table {table} is in the database.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 return _DataSource.Tables.Contains(table);
             }
@@ -34,7 +45,11 @@ namespace StreamerBotLib.Data
         /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
         public bool CheckField(string table, string field)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if field {field} is in table {table}.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 return _DataSource.Tables[table].Columns.Contains(field);
             }
@@ -45,6 +60,10 @@ namespace StreamerBotLib.Data
         #region Get Data
         public List<string> GetTableNames()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the names of all database tables.");
+#endif
+
             List<string> names = new(from DataTable table in _DataSource.Tables
                                      select table.TableName);
             return names;
@@ -53,6 +72,10 @@ namespace StreamerBotLib.Data
 
         public List<string> GetTableFields(string TableName)
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the fields for table {TableName}.");
+#endif
+
             List<string> fields = new(from DataColumn dataColumn in _DataSource.Tables[TableName].Columns
                                       select dataColumn.ColumnName);
             return fields;
@@ -61,6 +84,10 @@ namespace StreamerBotLib.Data
 
         public List<string> GetTableFields(DataTable dataTable)
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the fields for table {dataTable.TableName}.");
+#endif
+
             return new(from DataColumn dataColumn in dataTable.Columns
                                       select dataColumn.ColumnName);
         }
@@ -68,6 +95,10 @@ namespace StreamerBotLib.Data
 
         public string GetKey(string Table)
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check table {Table} and get the keys.");
+#endif
+
             // TODO: better error check this method, espeically for null key fields or multiple key fields
 
             string key = "";
@@ -95,7 +126,11 @@ namespace StreamerBotLib.Data
 
         public DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get single row data for {dataTable.TableName} with specified filter {Filter ?? "null"} and sort {Sort}.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 return dataTable.Select(Filter, Sort).FirstOrDefault();
             }
@@ -104,7 +139,11 @@ namespace StreamerBotLib.Data
 
         public DataRow[] GetRows(DataTable dataTable, string Filter = null, string Sort = null)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get multiple row data for {dataTable.TableName} with specified filter {Filter ?? "null"} and sort {Sort}.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 return dataTable.Select(Filter, Sort);
             }
@@ -113,7 +152,11 @@ namespace StreamerBotLib.Data
 
         public List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get column data for table {dataTable.TableName} and the column {dataColumn.ColumnName}.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 return new(from DataRow row in dataTable.Select()
                            select row[dataColumn]);
@@ -130,6 +173,10 @@ namespace StreamerBotLib.Data
         /// <param name="RowChanged">True or False based on whether data changed.</param>
         public void PostUpdatedDataRow(bool RowChanged)
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Notify if the row changed, {RowChanged}.");
+#endif
+
             if (RowChanged)
             {
                 NotifySaveData();
@@ -138,7 +185,11 @@ namespace StreamerBotLib.Data
 
         public void SetDataTableFieldRows(DataTable dataTable, DataColumn dataColumn, object value, string Filter = null)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Set data for table {dataTable.TableName} and column {dataColumn.ColumnName} to value {value}, and with the filter {Filter ?? "null"}.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 foreach(DataRow row in dataTable.Select(Filter))
                 {
@@ -158,7 +209,11 @@ namespace StreamerBotLib.Data
         /// <param name="dataRows">Enumerable list of DataRows to perform a delete on each item.</param>
         public void DeleteDataRows(IEnumerable<DataRow> dataRows)
         {
-            lock (_DataSource)
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Delete all provided data rows.");
+#endif
+
+            lock (GUIDataManagerLock.Lock)
             {
                 foreach (DataRow D in dataRows)
                 {
@@ -170,8 +225,12 @@ namespace StreamerBotLib.Data
 
         public bool DeleteDataRow(DataTable table, string Filter)
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Delete data row for table {table.TableName} and the filter {Filter}.");
+#endif
+
             bool result = false;
-            lock (_DataSource)
+            lock(GUIDataManagerLock.Lock)
             {
                 DataRow temp = table.Select(Filter).FirstOrDefault();
                 

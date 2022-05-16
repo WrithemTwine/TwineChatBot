@@ -1,4 +1,9 @@
-﻿using StreamerBotLib.Enums;
+﻿#if DEBUG
+#define noLogDataManager_Actions
+#endif
+
+using StreamerBotLib.Enums;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -11,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Xml;
 
 using static StreamerBotLib.Data.DataSource;
@@ -40,9 +46,13 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void LoadData()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Loading the database.");
+#endif
+
             void LoadFile(string filename)
             {
-                lock (_DataSource)
+                lock(GUIDataManagerLock.Lock)
                 {
                     if (!File.Exists(filename))
                     {
@@ -96,6 +106,10 @@ namespace StreamerBotLib.Data
 
         public void NotifySaveData()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Notify the database is saved.");
+#endif
+
             OnSaveData?.Invoke(this, new());
         }
 
@@ -104,6 +118,10 @@ namespace StreamerBotLib.Data
         /// </summary>
         public void SaveData(object sender, EventArgs e)
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Saving the database, managed as multiple threads collected and saving only occurs every few seconds.");
+#endif
+
             if (OptionFlags.DataLoaded)
             {
                 int CurrMins = DateTime.Now.Minute;
@@ -128,45 +146,39 @@ namespace StreamerBotLib.Data
 
                     if (_DataSource.HasChanges())
                     {
-                        lock (_DataSource)
+                        lock (GUIDataManagerLock.Lock)
                         {
-                            lock (GUI.GUIDataManagerViews.DataLock)
-                            {
-                                _DataSource.AcceptChanges();
-                            }
+                            _DataSource.AcceptChanges();
                         }
 
                         lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                         {
                             SaveTasks.Enqueue(new(() =>
                             {
-                                lock (_DataSource)
+                                lock (GUIDataManagerLock.Lock)
                                 {
-                                    lock (GUI.GUIDataManagerViews.DataLock)
+                                    try
                                     {
-                                        try
+                                        MemoryStream SaveData = new();  // new memory stream
+
+                                        _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
+
+                                        DataSource testinput = new();   // start a new database
+                                        SaveData.Position = 0;          // reset the reader
+                                        testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
+
+                                        _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+
+                                        // determine if current time is within a certain time frame, and perform the save
+                                        if (IsBackup && OptionFlags.IsStreamOnline)
                                         {
-                                            MemoryStream SaveData = new();  // new memory stream
-
-                                            _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
-
-                                            DataSource testinput = new();   // start a new database
-                                            SaveData.Position = 0;          // reset the reader
-                                            testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-
-                                            _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
-
-                                            // determine if current time is within a certain time frame, and perform the save
-                                            if (IsBackup && OptionFlags.IsStreamOnline)
-                                            {
-                                                // write backup file
-                                                _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                            }
+                                            // write backup file
+                                            _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
                                         }
-                                        catch (Exception ex)
-                                        {
-                                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                     }
                                 }
                             }));
@@ -178,6 +190,10 @@ namespace StreamerBotLib.Data
 
         private void PerformSaveOp()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
+#endif
+
             if (OptionFlags.ActiveToken) // don't sleep if exiting app
             {
                 Thread.Sleep(SaveThreadWait);
@@ -198,6 +214,10 @@ namespace StreamerBotLib.Data
 
         public void Initialize()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Initializing the database.");
+#endif
+
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
             SetLearnedMessages();
@@ -210,8 +230,12 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void SetDefaultCommandsTable()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Setting up and checking default commands, adding missing commands.");
+#endif
+
             // TODO: move !intro to default commands <- for the custom welcome message
-            lock (_DataSource)
+            lock (GUIDataManagerLock.Lock)
             {
                 if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
                 {
@@ -268,6 +292,10 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void SetDefaultChannelEventsTable()
         {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Setting default channel events, adding any missing events.");
+#endif
+
             bool CheckName(string criteria)
             {
                 ChannelEventsRow channelEventsRow = (ChannelEventsRow)GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{criteria}'");
@@ -335,7 +363,7 @@ namespace StreamerBotLib.Data
                     new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 }
             };
-            lock (_DataSource)
+            lock(GUIDataManagerLock.Lock)
             {
                 foreach (var (command, values) in from ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions))// consider only the values in the dictionary, check if data is already defined in the data table
                                                   where dictionary.ContainsKey(command) && CheckName(command.ToString())// extract the default data from the dictionary and add to the data table

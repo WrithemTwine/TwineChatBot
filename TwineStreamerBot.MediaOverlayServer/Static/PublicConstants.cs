@@ -1,4 +1,4 @@
-﻿namespace TwineStreamerBot.MediaOverlayServer
+﻿namespace TwineStreamerBot.MediaOverlayServer.Static
 {
     public static class PublicConstants
     {
