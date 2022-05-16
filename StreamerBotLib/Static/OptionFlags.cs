@@ -9,6 +9,8 @@ namespace StreamerBotLib.Static
 {
     public static class OptionFlags
     {
+        // TODO: add option to allow user to specify to save data file in {user}/AppData/local
+
         public static bool LogBotStatus { get; set; }
         public static bool LogExceptions { get; set; }
 

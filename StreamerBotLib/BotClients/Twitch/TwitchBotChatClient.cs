@@ -426,7 +426,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 Connect();    // restart the bot
             }
 #else
-            if (IsStarted && !TwitchChat.IsConnected)
+            if (IsStarted) // && !TwitchChat.IsConnected)
             {
                 IsStarted = false;
                 StartBot();

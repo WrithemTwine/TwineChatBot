@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 
+using TwineStreamerBot.MediaOverlayServer.Static;
+
 namespace TwineStreamerBot.MediaOverlayServer
 {
     /// <summary>

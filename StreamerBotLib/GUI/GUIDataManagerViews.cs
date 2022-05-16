@@ -18,11 +18,6 @@ namespace StreamerBotLib.GUI
     {
         #region DataManager TableViews
 
-        /// <summary>
-        /// Used to coordinate data between here and DataManager
-        /// </summary>
-        public static string DataLock { get; private set; } = "GUI Thread Lock";
-
         // datatable views to display the data in the GUI
 
         public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
@@ -138,7 +133,7 @@ namespace StreamerBotLib.GUI
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            lock (DataLock)
+            lock (GUIDataManagerLock.Lock)
             {
                 NotifyPropertyChanged(nameof(sender));
 
@@ -157,7 +152,7 @@ namespace StreamerBotLib.GUI
 
         private void SetCommandCollection()
         {
-            lock (DataLock)
+            lock (GUIDataManagerLock.Lock)
             {
                 foreach (DataSource.CommandsRow c in from DataSource.CommandsRow c in Commands.Table.Select()
                                                      where !CommandCollection.Contains(c.CmdName)

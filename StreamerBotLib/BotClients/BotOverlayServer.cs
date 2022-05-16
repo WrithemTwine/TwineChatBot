@@ -5,6 +5,8 @@ using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using TwineStreamerBot.MediaOverlayServer;
+using TwineStreamerBot.MediaOverlayServer.Enums;
+using TwineStreamerBot.MediaOverlayServer.Static;
 
 namespace StreamerBotLib.BotClients
 {
@@ -29,11 +31,11 @@ namespace StreamerBotLib.BotClients
             MediaOverlayProcess.Start();
         }
 
-        internal void Send(OverlayTypes overlayTypes, string ActionValue, bool DataLoad)
+        internal void Send(OverlayTypes overlayTypes, string ActionValue, string Msg)
         {
             if (PipeServer.IsConnected)
             {
-                OverlayActionType msg = new() { ActionValue = ActionValue, DataLoad = DataLoad, OverlayType = overlayTypes };
+                OverlayActionType msg = new() { ActionValue = ActionValue, Message = Msg, OverlayType = overlayTypes };
                 //            msg.HashCode = msg.GetHashCode();
 
                 //            // serialize and send object over the named pipe
