@@ -1537,7 +1537,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TwineChatBot by WrithemTwine, #url, version {0}.{1}.{2}.{3} is now connected!.
+        ///   Looks up a localized string similar to Twine Chat Bot by WrithemTwine, #url, version {0}.{1}.{2}.{3} is now connected!.
         /// </summary>
         internal static string TwineBotInfo {
             get {

@@ -315,6 +315,10 @@ namespace StreamerBotLib.Systems
             response = "";
             if (DataManage.CheckShoutName(UserName) || !AutoShout)
             {
+                if(AutoShout && OptionFlags.MsgSendSOToChat)
+                {
+                    ProcessedCommand?.Invoke(this, new() { RepeatMsg = 0, Msg = $"!{LocalizedMsgSystem.GetVar(DefaultCommand.so)} {UserName}" });
+                }
                 response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi, Source);
 
                 // handle when returned without #category in the message

@@ -63,10 +63,12 @@ namespace StreamerBotLib.Data
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the names of all database tables.");
 #endif
-
-            List<string> names = new(from DataTable table in _DataSource.Tables
-                                     select table.TableName);
-            return names;
+            lock (GUIDataManagerLock.Lock)
+            {
+                List<string> names = new(from DataTable table in _DataSource.Tables
+                                         select table.TableName);
+                return names;
+            }
         }
 
 
@@ -75,10 +77,12 @@ namespace StreamerBotLib.Data
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the fields for table {TableName}.");
 #endif
-
-            List<string> fields = new(from DataColumn dataColumn in _DataSource.Tables[TableName].Columns
-                                      select dataColumn.ColumnName);
-            return fields;
+            lock (GUIDataManagerLock.Lock)
+            {
+                List<string> fields = new(from DataColumn dataColumn in _DataSource.Tables[TableName].Columns
+                                          select dataColumn.ColumnName);
+                return fields;
+            }
         }
 
 
@@ -87,9 +91,11 @@ namespace StreamerBotLib.Data
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the fields for table {dataTable.TableName}.");
 #endif
-
-            return new(from DataColumn dataColumn in dataTable.Columns
-                                      select dataColumn.ColumnName);
+            lock (GUIDataManagerLock.Lock)
+            {
+                return new(from DataColumn dataColumn in dataTable.Columns
+                           select dataColumn.ColumnName);
+            }
         }
 
 
@@ -100,27 +106,29 @@ namespace StreamerBotLib.Data
 #endif
 
             // TODO: better error check this method, espeically for null key fields or multiple key fields
-
-            string key = "";
-
-            if (Table != null && Table != "")
+            lock (GUIDataManagerLock.Lock)
             {
-                DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
-                if (k?.Length > 1)
+                string key = "";
+
+                if (Table != null && Table != "")
                 {
-                    foreach (var d in from DataColumn d in k
-                                      where d.ColumnName != "Id"
-                                      select d)
+                    DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
+                    if (k?.Length > 1)
                     {
-                        key = d.ColumnName;
+                        foreach (var d in from DataColumn d in k
+                                          where d.ColumnName != "Id"
+                                          select d)
+                        {
+                            key = d.ColumnName;
+                        }
+                    }
+                    else if (k?.Length == 1)
+                    {
+                        key = k?[0].ColumnName;
                     }
                 }
-                else if(k?.Length == 1)
-                {
-                    key = k?[0].ColumnName;
-                }
+                return key;
             }
-            return key;
         }
 
 
@@ -166,7 +174,7 @@ namespace StreamerBotLib.Data
         #endregion
 
         #region Update Data
-        
+
         /// <summary>
         /// When user edits rows, this notification initiates the save process.
         /// </summary>
@@ -176,10 +184,12 @@ namespace StreamerBotLib.Data
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Notify if the row changed, {RowChanged}.");
 #endif
-
-            if (RowChanged)
+            lock (GUIDataManagerLock.Lock)
             {
-                NotifySaveData();
+                if (RowChanged)
+                {
+                    NotifySaveData();
+                }
             }
         }
 
@@ -191,12 +201,12 @@ namespace StreamerBotLib.Data
 
             lock (GUIDataManagerLock.Lock)
             {
-                foreach(DataRow row in dataTable.Select(Filter))
+                foreach (DataRow row in dataTable.Select(Filter))
                 {
                     row[dataColumn] = value;
                 }
+                NotifySaveData();
             }
-            NotifySaveData();
         }
 
         #endregion
@@ -219,8 +229,8 @@ namespace StreamerBotLib.Data
                 {
                     D.Delete();
                 }
+                NotifySaveData();
             }
-            NotifySaveData();
         }
 
         public bool DeleteDataRow(DataTable table, string Filter)
@@ -229,20 +239,20 @@ namespace StreamerBotLib.Data
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Delete data row for table {table.TableName} and the filter {Filter}.");
 #endif
 
-            bool result = false;
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
+                bool result = false;
                 DataRow temp = table.Select(Filter).FirstOrDefault();
-                
-                if(temp!=null)
+
+                if (temp != null)
                 {
                     result = true;
                     temp.Delete();
                     NotifySaveData();
                 }
-            }
 
-            return result;
+                return result;
+            }
         }
 
         #endregion
