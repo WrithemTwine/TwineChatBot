@@ -27,7 +27,7 @@ namespace StreamerBotLib.Systems
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
         public static ObservableCollection<string> GiveawayCollection { get; set; } = new();
-
+        public static ObservableCollection<string> CurrUserJoin { get; private set; } = new();
 
         public static string Category { get; set; }
 
@@ -192,6 +192,17 @@ namespace StreamerBotLib.Systems
                 {
                     return CurrStream.TotalChats;
                 }
+            }
+        }
+
+
+        public static void UpdateGUICurrUsers()
+        {
+            CurrUserJoin.Clear();
+            CurrUsers.Sort();
+            foreach (LiveUser liveUser in CurrUsers)
+            {
+                CurrUserJoin.Add(liveUser.UserName);
             }
         }
 

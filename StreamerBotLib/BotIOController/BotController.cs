@@ -830,7 +830,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleUserLeft(string Users, Bots Source)
         {
-            SystemsController.UserLeft(Users, Source);
+            Systems.UserLeft(Users, Source);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]

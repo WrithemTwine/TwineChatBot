@@ -40,6 +40,7 @@ namespace StreamerBotLib.Static
         public static bool WelcomeCustomMsg { get; set; }
 
         public static bool AutoShout { get; set; }
+        public static bool MsgSendSOToChat { get; set; }
         public static bool TwitchRaidShoutOut { get; set; }
 
         public static bool RepeatTimer { get; set; }
@@ -173,6 +174,7 @@ namespace StreamerBotLib.Static
                 WelcomeCustomMsg = Settings.Default.WelcomeCustomMsg;
 
                 AutoShout = Settings.Default.MsgAutoShout;
+                MsgSendSOToChat = Settings.Default.MsgSendSOToChat;
 
                 #region Repeat Commands
 

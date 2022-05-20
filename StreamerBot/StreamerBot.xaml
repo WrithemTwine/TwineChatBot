@@ -715,6 +715,9 @@
                                                 <CheckBox IsChecked="{Binding TwitchRaidShoutOut}">
                                                     <TextBlock>Enable auto shoutout for incoming channel raid streamers</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgSendSOToChat}">
+                                                    <TextBlock>Send !so command to chat-other bots can use for messages.</TextBlock>
+                                                </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
                                         <GroupBox Header="Twitch - Stream Clips">
@@ -1283,6 +1286,10 @@
                             </ListView>
                         </Grid>
                     </DockPanel>
+                    <DockPanel>
+                        <Label Content="Current User List" DockPanel.Dock="Top" />
+                        <ListView DataContext="{DynamicResource DataViews}" ItemsSource="{Binding CurrUserList}" Width="200" DockPanel.Dock="Top" ScrollViewer.CanContentScroll="True" />
+                    </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
                             <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" Opacity="1" IsEnabled="False" />
@@ -1292,7 +1299,7 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,4,15,4">
-                            <TextBox x:Name="TextBox_BotChat" Width="360" />
+                            <TextBox x:Name="TextBox_BotChat" Width="150" />
                             <Button Content="Send" Margin="10,0,0,0" Padding="8,2" Click="BotChat_SendButton_Click" />
                         </StackPanel>
                         <FlowDocumentScrollViewer DockPanel.Dock="Top" BorderThickness="1,1,1,1" x:Name="FlowDoc_ChatBox" ScrollViewer.CanContentScroll="True" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Document="{Binding ChatData, Mode=OneWay, NotifyOnSourceUpdated=True}" Foreground="#FFC5C3C3" />
