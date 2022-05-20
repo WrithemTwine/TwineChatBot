@@ -102,7 +102,7 @@ namespace TestStreamerBot
 
             systemsController.UserJoined(new() { UserName }, StreamerBotLib.Enums.Bots.TwitchChatBot);
             Assert.True(SystemsController.DataManage.CheckUser(UserName));
-            SystemsController.UserLeft(UserName, Bots.TwitchChatBot);
+            systemsController.UserLeft(UserName, Bots.TwitchChatBot);
         }
     }
 }

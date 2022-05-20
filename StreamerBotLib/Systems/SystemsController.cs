@@ -380,11 +380,24 @@ namespace StreamerBotLib.Systems
                     UserWelcomeMessage(user, Source);
                 }
             }
+            UpdateUserJoinedList();
         }
 
-        public static void UserLeft(string UserName, Bots Source)
+        private void UpdateUserJoinedList()
+        {
+            ThreadManager.CreateThreadStart(() =>
+            {
+                AppDispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    SystemsBase.UpdateGUICurrUsers();
+                }));
+            });
+        }
+
+        public void UserLeft(string UserName, Bots Source)
         {
             StatisticsSystem.UserLeft(UserName, DateTime.Now.ToLocalTime(), Source);
+            UpdateUserJoinedList();
         }
 
         #endregion
