@@ -4,10 +4,10 @@ using System.IO.Pipes;
 using System.Reflection;
 using System.Threading;
 
-using TwineStreamerBot.MediaOverlayServer.Enums;
-using TwineStreamerBot.MediaOverlayServer.Static;
+using MediaOverlayServer.Enums;
+using MediaOverlayServer.Static;
 
-namespace TwineStreamerBot.MediaOverlayServer
+namespace MediaOverlayServer
 {
     internal class OverlaySvcClientPipe
     {

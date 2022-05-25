@@ -11,9 +11,9 @@
     <Authors>TwineStreamerBotLib</Authors>
     <Company>TwineStreamerBotLib</Company>
     <Product>TwineStreamerBotLib</Product>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>TwineChatBot_Certificate.pfx</AssemblyOriginatorKeyFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
-    <ProjectReference Include="..\TwineStreamerBot.MediaOverlayServer\TwineStreamerBot.MediaOverlayServer.csproj" />
+    <ProjectReference Include="..\MediaOverlayServer\MediaOverlayServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 
-using TwineStreamerBot.MediaOverlayServer.Static;
+using MediaOverlayServer.Static;
 
-namespace TwineStreamerBot.MediaOverlayServer
+namespace MediaOverlayServer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

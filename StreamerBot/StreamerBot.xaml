@@ -16,6 +16,7 @@
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <GUI:GUIAppStats x:Name="AppStats" x:Key="AppStats" />
+            <GUI:GUIAppServices x:Name="AppServices" x:Key="AppServices" />
             <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
@@ -98,15 +99,16 @@
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
-                <StackPanel>
-                    <Label ToolTip="Built-in Commands">Built-in Coms:</Label>
-                    <Label Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
-                </StackPanel>
-            </StatusBarItem>
-            <StatusBarItem>
-                <StackPanel>
-                    <Label ToolTip="User-Defined Commands">User-Def Coms:</Label>
-                    <Label Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Label Content="Installed Commands" Padding="0" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label ToolTip="Built-in Commands" Padding="3,0">Built-in:</Label>
+                        <Label Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}"  Padding="3,0" />
+                        <Label ToolTip="User-Defined Commands" Padding="3,0">User-Def:</Label>
+                        <Label Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" Padding="3,0" />
+                    </StackPanel>
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
@@ -216,7 +218,6 @@
                                         </StackPanel>
                                     </WrapPanel>
                                 </GroupBox>
-
                                 <GroupBox Header="Clip Service">
                                     <WrapPanel>
                                         <Label x:Name="Label_TwitchClip_Start" Foreground="Green" Visibility="Collapsed">
@@ -235,7 +236,6 @@
                                         </Label>
                                     </WrapPanel>
                                 </GroupBox>
-
                                 <GroupBox Header="Pub Sub" Visibility="Visible">
                                     <StackPanel Orientation="Vertical">
                                         <WrapPanel>
@@ -262,6 +262,24 @@
                                             </WrapPanel>
                                         </GroupBox>
                                     </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="Media Overlay Service">
+                                    <WrapPanel>
+                                        <Label x:Name="Label_OverlayService_Start" Foreground="Green" Visibility="Collapsed">
+                                            <TextBlock>The Media Overlay Service is started!</TextBlock>
+                                        </Label>
+                                        <Label x:Name="Label_OverlayService_Stop" Foreground="Maroon" Visibility="Visible">
+                                            <TextBlock>The Media Overlay Service is stopped!</TextBlock>
+                                        </Label>
+                                        <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
+                                            <TextBlock>Auto-start when application starts</TextBlock>
+                                        </CheckBox>
+                                        <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStart" Content="Start Overlay Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
+                                        <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStop" Content="Stop Overlay Service Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                        <Label x:Name="Label_OverlayServer_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
+                                            <TextBlock>The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                        </Label>
+                                    </WrapPanel>
                                 </GroupBox>
                             </WrapPanel>
                         </StackPanel>
@@ -610,7 +628,7 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Any - Media Overlay" Visibility="Collapsed">
+                                        <GroupBox Header="Any - Media Overlay" Visibility="Visible">
                                             <StackPanel>
                                                 <Label>
                                                     <TextBlock>Clicking Enable will start a new Process for the Media Overlay Server</TextBlock>
@@ -1088,6 +1106,23 @@
                                     </Grid>
                                 </TabItem>
                             </TabControl>
+                        </TabItem>
+                        <TabItem x:Name="TabItem_Overlays" Header="Overlays" >
+                            <DockPanel>
+                                <Expander DockPanel.Dock="Top" Header="Media Overlay Services!" DataContext="{Binding Source={x:Static s:Settings.Default}}" IsExpanded="{Binding MediaOverlayHelpExpand}">
+                                        <TextBlock>
+                                    Specify the duration in seconds,<LineBreak />
+                                    Specify type: Channel Events (new Follows, Subs, etc), Commands (!sunrise, to show a sunrise picture/video, etc), Channel Points redeemed;<LineBreak />
+                                    Specify the actual Action: Channel Events-Follow, Subscription, Gift Subscription, etc;<LineBreak />
+                                    Specify Message: to add any text to the overlay; and <LineBreak />
+                                    Specify MediaFile: the picture or video to display for the alert.</TextBlock></Expander>
+                                <GroupBox DockPanel.Dock="Top" Margin="4" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
+                                    <StackPanel Orientation="Horizontal">
+                                    <CheckBox Content="Pause Alert Queue" Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                                    <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" /></StackPanel>
+                                </GroupBox>
+                                <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding OverlayService, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                            </DockPanel>
                         </TabItem>
                         <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
                             <TabControl>

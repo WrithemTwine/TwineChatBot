@@ -43,6 +43,7 @@ namespace StreamerBot
 
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
+        private readonly GUIAppServices guiAppServices;
         private readonly DateTime StartBotDate;
         private DateTime TwitchFollowRefresh;
         private int TwitchFollowerCurrRefreshHrs = 0;
@@ -78,6 +79,7 @@ namespace StreamerBot
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
+            guiAppServices = Resources["AppServices"] as GUIAppServices;
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
@@ -86,6 +88,10 @@ namespace StreamerBot
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
+
+            guiAppServices.OnBotStarted += GUI_OnBotStarted;
+            guiAppServices.OnBotStopped += GUI_OnBotStopped;
+
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
@@ -125,6 +131,7 @@ namespace StreamerBot
                         Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
                         Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
                         Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart,
+                        Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
                         Bots.Default => throw new NotImplementedException(),
                         Bots.TwitchUserBot => throw new NotImplementedException(),
                         _ => throw new NotImplementedException()
@@ -147,6 +154,7 @@ namespace StreamerBot
                       Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
                       Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
                       Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
+                      Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
                       Bots.Default => throw new NotImplementedException(),
                       Bots.TwitchUserBot => throw new NotImplementedException(),
                       _ => throw new NotImplementedException()
@@ -628,24 +636,27 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
+            List<RadioButton> radioButtons = new () { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Twitch_PubSubBotStart, Radio_Services_OverlayBotStart };
+
+            void SetButtons(bool value)
+            {
+                foreach(RadioButton rb in radioButtons)
+                {
+                    rb.IsEnabled = value;
+                }
+            }
+
             if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
             {
-                Radio_Twitch_StartBot.IsEnabled = true;
-                Radio_Twitch_FollowBotStart.IsEnabled = true;
-                Radio_Twitch_LiveBotStart.IsEnabled = true;
-                Radio_Twitch_ClipBotStart.IsEnabled = true;
-                Radio_Twitch_PubSubBotStart.IsEnabled = true;
+                SetButtons(true);
             }
             else
             {
-                Radio_Twitch_StartBot.IsEnabled = false;
-                Radio_Twitch_FollowBotStart.IsEnabled = false;
-                Radio_Twitch_LiveBotStart.IsEnabled = false;
-                Radio_Twitch_ClipBotStart.IsEnabled = false;
-                Radio_Twitch_PubSubBotStart.IsEnabled = false;
+                SetButtons(false);
             }
 
             // Twitch
+
 
             if(TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
             {
@@ -766,6 +777,11 @@ namespace StreamerBot
             else if (CBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
             {
                 SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
+
+                if (TabItem_Overlays != null)
+                {
+                    TabItem_Overlays.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+                }
             }
             else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
@@ -813,6 +829,18 @@ namespace StreamerBot
             AppDispatcher.BeginInvoke(new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); }));
         }
 
+        #endregion
+
+        #region Overlay Service
+        private void Button_Overlay_PauseAlerts_Click(object sender, RoutedEventArgs e)
+        {
+            ((sender as CheckBox).DataContext as BotOverlayServer).SetPauseAlert((sender as CheckBox).IsChecked == true);
+        }
+
+        private void Button_Overlay_ClearAlerts_Click(object sender, RoutedEventArgs e)
+        {
+            ((sender as Button).DataContext as BotOverlayServer).SetClearAlerts();
+        }
         #endregion
 
         #endregion
