@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using TwineStreamerBot.MediaOverlayServer.Enums;
+using MediaOverlayServer.Enums;
 
-namespace TwineStreamerBot.MediaOverlayServer
+namespace MediaOverlayServer
 {
     /// <summary>
     /// Defines message payload to either load data or specify active data via the named pipe from the main bot process.
@@ -28,19 +28,21 @@ namespace TwineStreamerBot.MediaOverlayServer
         /// </summary>
         public string Message { get; set; } = string.Empty;
 
+        public int Duration { get; set; } = 0;
+
         public string MediaPath { get; set; } = string.Empty;
 
         public int HashCode
         {
             get
             {
-                return string.GetHashCode(OverlayType.ToString() + ActionValue + Message.ToString());
+                return string.GetHashCode(OverlayType.ToString() + ActionValue + Message.ToString() + Duration.ToString() + MediaPath);
             }
         }
 
         public override string ToString()
         {
-            return $"{OverlayType}_{Message}_{ActionValue}";
+            return $"{OverlayType}_{Duration}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{MediaPath}";
         }
 
         public static OverlayActionType FromString(string? OverlayTypestring)
@@ -51,15 +53,17 @@ namespace TwineStreamerBot.MediaOverlayServer
             }
             else
             {
-                List<string> strings = new(OverlayTypestring.Split('_'));
+                Queue<string> strings = new(OverlayTypestring.Split('_'));
 
-                if (strings.Count > 2)
+                if (strings.Count > 3)
                 {
-                    OverlayTypes type = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), strings[0]);
-                    string Msg = strings[1];
-                    string action = string.Join(' ', strings.Skip(2));
+                    OverlayTypes type = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), strings.Dequeue());
+                    int Duration = int.Parse(strings.Dequeue());
+                    string Msg = strings.Dequeue();
+                    string action = strings.Dequeue();
+                    string MediaPath = string.Join(' ', strings); // filenames might have '_' per user requirements
 
-                    return new() { ActionValue = action, Message = Msg, OverlayType = type };
+                    return new() { ActionValue = action, Message = Msg, OverlayType = type, Duration = Duration, MediaPath = MediaPath };
                 }
                 else
                 {

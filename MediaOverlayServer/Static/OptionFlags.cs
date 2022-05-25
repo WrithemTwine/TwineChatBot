@@ -1,6 +1,6 @@
-﻿using TwineStreamerBot.MediaOverlayServer.Properties;
+﻿using MediaOverlayServer.Properties;
 
-namespace TwineStreamerBot.MediaOverlayServer.Static
+namespace MediaOverlayServer.Static
 {
     /// <summary>
     /// Connects Application Settings and key flags to a single object for reference across classes

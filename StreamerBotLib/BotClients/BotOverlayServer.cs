@@ -1,41 +1,78 @@
-﻿using System;
+﻿using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
+using StreamerBotLib.Static;
+
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 
-using TwineStreamerBot.MediaOverlayServer;
-using TwineStreamerBot.MediaOverlayServer.Enums;
-using TwineStreamerBot.MediaOverlayServer.Static;
+using MediaOverlayServer;
+using MediaOverlayServer.Enums;
+using MediaOverlayServer.Static;
 
 namespace StreamerBotLib.BotClients
 {
-    internal class BotOverlayServer : IDisposable
+    public class BotOverlayServer : IOModule, IDisposable, IBotTypes
     {
-        private string MediaOverlayProcName = TwineStreamerBot.MediaOverlayServer.App.ResourceAssembly.FullName;
+        private string MediaOverlayProcName = PublicConstants.AssemblyName;
         private Process MediaOverlayProcess;
+        private bool PauseAlerts = false;
+        private bool AlertsThreadStarted = false;
+        private bool ClosedByProcess = false;
 
         private StreamWriter WriteToPipe;
         private NamedPipeServerStream PipeServer;
+
+        private Queue<Thread> SendAlerts { get; set; } = new();
+
+        public event EventHandler<BotEventArgs> BotEvent;
+
         //private BinaryFormatter SerializedMsg { get; } = new BinaryFormatter();
 
-        internal void StartMediaOverlayServer()
-        {    
+        public BotOverlayServer()
+        {
+            BotClientName = Enums.Bots.MediaOverlayServer;
+
             PipeServer = new(PublicConstants.PipeName, PipeDirection.Out, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
-
             WriteToPipe = new(PipeServer);
-
-            MediaOverlayProcess = new Process();
-            MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
-
-            MediaOverlayProcess.Start();
         }
 
-        internal void Send(OverlayTypes overlayTypes, string ActionValue, string Msg)
+        public override bool StartBot()
+        {
+            StartMediaOverlayServer();
+            return IsStarted;
+        }
+
+        internal void StartMediaOverlayServer(bool StartProcess = true)
+        {
+            if (StartProcess)
+            {
+                MediaOverlayProcess = new Process();
+                MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
+                MediaOverlayProcess.Start();
+            }
+
+            IsStarted = true;
+            IsStopped = false;
+            SetPauseAlert(false);
+
+            if (!AlertsThreadStarted)
+            {
+                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High);
+            }
+
+            InvokeBotStarted();
+        }
+
+        internal void SendToServer(OverlayActionType Message)
         {
             if (PipeServer.IsConnected)
             {
-                OverlayActionType msg = new() { ActionValue = ActionValue, Message = Msg, OverlayType = overlayTypes };
+                //OverlayActionType msg = new() { ActionValue = ActionValue, Message = Msg, OverlayType = overlayTypes };
                 //            msg.HashCode = msg.GetHashCode();
 
                 //            // serialize and send object over the named pipe
@@ -43,13 +80,89 @@ namespace StreamerBotLib.BotClients
                 //            SerializedMsg.Serialize(PipeServer, msg);
                 //#pragma warning restore SYSLIB0011 // Type or member is obsolete
 
-                WriteToPipe.WriteLine(msg);
+                WriteToPipe.WriteLine(Message);
             }
         }
 
-        internal void ExitMediaOverlayProc()
+        public void Send(OverlayTypes overlayTypes, string ActionValue, string Msg, int Duration, string MediaPath)
         {
-            _ = MediaOverlayProcess.CloseMainWindow();
+            lock (SendAlerts)
+            {
+                SendAlerts.Enqueue(
+                   ThreadManager.CreateThread(
+                       () => SendAlert(
+                           new() { OverlayType = overlayTypes, Duration = Duration, ActionValue = ActionValue, Message = Msg, MediaPath = MediaPath }
+                           )
+                       )
+                    );
+            }
+        }
+
+        private void ProcessAlerts()
+        {
+            AlertsThreadStarted = true; // flag, this loop has started
+            while (IsStarted)
+            {
+                lock (SendAlerts)
+                {
+                    if (SendAlerts.Count > 0)
+                    {
+                        SendAlerts.Dequeue().Start(); // sleep inside thread action
+                    }
+                }
+
+                // sleep for 1 sec before checking for next alert
+                Thread.Sleep(1000);
+
+                CheckProcess();
+
+                while (PauseAlerts)
+                {
+                    Thread.Sleep(5000);
+                    CheckProcess();
+                }
+            }
+            AlertsThreadStarted = false;
+        }
+
+        private void CheckProcess()
+        {
+            Process[] processes = Process.GetProcessesByName(MediaOverlayProcName[..^4]);
+            if (processes.Length == 0)
+            {
+                // if user closes process, detect and report service stopped
+                ClosedByProcess = true;
+                StopBot();
+                ClosedByProcess = false;
+            }
+            else if (!IsStarted && IsStopped)
+            {
+                MediaOverlayProcess = processes[0];
+                StartMediaOverlayServer(false);
+            }
+        }
+
+        /// <summary>
+        /// The thread action to send the data to the server
+        /// </summary>
+        /// <param name="overlayActionType">Contains the data for the alert.</param>
+        private void SendAlert(OverlayActionType overlayActionType)
+        {
+            SendToServer(overlayActionType);
+            Thread.Sleep(overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
+        }
+
+        public void SetPauseAlert(bool Alert)
+        {
+            PauseAlerts = Alert;
+        }
+
+        public void SetClearAlerts()
+        {
+            lock (SendAlerts)
+            {
+                SendAlerts.Clear();
+            }
         }
 
         public void Dispose()
@@ -57,5 +170,52 @@ namespace StreamerBotLib.BotClients
             MediaOverlayProcess.Dispose();
         }
 
+        public void StopBots()
+        {
+            StopBot();
+        }
+
+        public override bool StopBot()
+        {
+            IsStarted = false;
+            IsStopped = true;
+
+            if (!ClosedByProcess)
+            {
+                MediaOverlayProcess.CloseMainWindow();
+                Dispose();
+            }
+            if (!OptionFlags.ActiveToken)
+            {
+                SetPauseAlert(false);
+            }
+            else
+            {
+                SetPauseAlert(true);
+            }
+            InvokeBotStopped();
+            return IsStopped;
+        }
+
+        #region unused interface
+        public override bool Send(string s)
+        {
+            return false;
+        }
+
+        public void GetAllFollowers()
+        {
+        }
+
+        public void SetIds()
+        {
+        }
+
+        void IBotTypes.Send(string s)
+        {
+
+        }
+
+        #endregion
     }
 }

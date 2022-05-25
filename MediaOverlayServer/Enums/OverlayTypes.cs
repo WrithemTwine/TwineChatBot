@@ -1,4 +1,4 @@
-﻿namespace TwineStreamerBot.MediaOverlayServer.Enums
+﻿namespace MediaOverlayServer.Enums
 {
     public enum OverlayTypes { None, ChannelPoints, ChannelEvents, Commands }
 }

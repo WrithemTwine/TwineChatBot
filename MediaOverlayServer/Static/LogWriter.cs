@@ -3,9 +3,9 @@ using System;
 using System.Globalization;
 using System.IO;
 
-using TwineStreamerBot.MediaOverlayServer.Enums;
+using MediaOverlayServer.Enums;
 
-namespace TwineStreamerBot.MediaOverlayServer.Static
+namespace MediaOverlayServer.Static
 {
     public static class LogWriter
     {

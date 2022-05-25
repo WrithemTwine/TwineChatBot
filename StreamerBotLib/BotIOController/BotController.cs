@@ -45,8 +45,7 @@ namespace StreamerBotLib.BotIOController
         private bool GiveawayStarted = false;
 
         private BotsTwitch TwitchBots { get; set; }
-
-        internal static BotOverlayServer OverlayServerBot { get; set; }
+        internal static BotOverlayServer OverlayServerBot { get; set; } = new();
 
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
@@ -69,6 +68,7 @@ namespace StreamerBotLib.BotIOController
             OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
             BotsList.Add(TwitchBots);
+            BotsList.Add(OverlayServerBot);
         }
 
         /// <summary>
@@ -930,6 +930,15 @@ namespace StreamerBotLib.BotIOController
                 LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.UserName} for {e.BanReason} for {e.Duration} seconds.");
                 //TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
             }
+        }
+
+        #endregion
+
+        #region MediaOverlay Server
+        
+        public void Send(MediaOverlayServer.Enums.OverlayTypes overlayTypes, string ActionValue, string Msg, int Duration, string MediaPath)
+        {
+            OverlayServerBot.Send(overlayTypes, ActionValue, Msg, Duration, MediaPath);
         }
 
         #endregion

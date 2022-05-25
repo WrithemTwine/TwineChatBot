@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net;
 
-namespace TwineStreamerBot.MediaOverlayServer
+namespace MediaOverlayServer
 {
     public class TwineBotWebServer
     {

@@ -994,5 +994,29 @@ namespace StreamerBotLib.Properties {
                 this["MsgSendSOToChat"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayHelpExpand {
+            get {
+                return ((bool)(this["MediaOverlayHelpExpand"]));
+            }
+            set {
+                this["MediaOverlayHelpExpand"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MediaOverlayMRUPathSelect {
+            get {
+                return ((string)(this["MediaOverlayMRUPathSelect"]));
+            }
+            set {
+                this["MediaOverlayMRUPathSelect"] = value;
+            }
+        }
     }
 }
