@@ -24,9 +24,15 @@ namespace StreamerBotLib.Data
     public partial class DataManager
     {
         #region DataSource
+        /// <summary>
+        /// Specifies the database xml save file name
+        /// </summary>
         public static readonly string DataFileXML = "ChatDataStore.xml";
 
 #if DEBUG
+        /// <summary>
+        /// Specifies the debug location of the database xml file name - user specific
+        /// </summary>
         public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows7.0", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
@@ -1385,6 +1391,13 @@ switches:
 
             return new(action, banReason, Timeout);
         }
+
+
+
+        #endregion
+
+        #region Media Overlay Service
+
 
 
 

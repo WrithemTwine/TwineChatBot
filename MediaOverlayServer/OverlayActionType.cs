@@ -23,28 +23,52 @@ namespace MediaOverlayServer
         public string ActionValue { get; set; } = string.Empty;
 
         /// <summary>
+        /// The applicable User Name
+        /// </summary>
+        public string UserName { get; set; } = string.Empty;
+
+        /// <summary>
         /// Specifies if this is part of loading data into the server. 
         /// Specific info would require connecting to sources
         /// </summary>
         public string Message { get; set; } = string.Empty;
 
+        /// <summary>
+        /// The user provided length of the notification.
+        /// </summary>
         public int Duration { get; set; } = 0;
 
+        /// <summary>
+        /// The path to the media for the event.
+        /// </summary>
         public string MediaPath { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Object HashCode.
+        /// </summary>
         public int HashCode
         {
             get
             {
-                return string.GetHashCode(OverlayType.ToString() + ActionValue + Message.ToString() + Duration.ToString() + MediaPath);
+                return string.GetHashCode($"{OverlayType}_{Duration}_{UserName}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{MediaPath}");
             }
         }
 
+        /// <summary>
+        /// Provides specific procedure to combine the elements of this class.
+        /// </summary>
+        /// <returns>A class specific string of the object contents.</returns>
         public override string ToString()
         {
-            return $"{OverlayType}_{Duration}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{MediaPath}";
+            return $"{OverlayType}_{Duration}_{UserName}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{MediaPath}";
         }
 
+        /// <summary>
+        /// Converts a <code>ToString()</code> generated string back to a class object, usefully for stream transmissions.
+        /// </summary>
+        /// <param name="OverlayTypestring">The string to decode.</param>
+        /// <returns>A new class object with properties assigned the values from the input string.</returns>
+        /// <exception cref="ArgumentException"></exception>
         public static OverlayActionType FromString(string? OverlayTypestring)
         {
             if (OverlayTypestring == null)
@@ -55,15 +79,16 @@ namespace MediaOverlayServer
             {
                 Queue<string> strings = new(OverlayTypestring.Split('_'));
 
-                if (strings.Count > 3)
+                if (strings.Count > 6)
                 {
                     OverlayTypes type = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), strings.Dequeue());
                     int Duration = int.Parse(strings.Dequeue());
+                    string User = strings.Dequeue();
                     string Msg = strings.Dequeue();
                     string action = strings.Dequeue();
-                    string MediaPath = string.Join(' ', strings); // filenames might have '_' per user requirements
+                    string MediaPath = strings.Dequeue();
 
-                    return new() { ActionValue = action, Message = Msg, OverlayType = type, Duration = Duration, MediaPath = MediaPath };
+                    return new() { ActionValue = action, Message = Msg, UserName=User, OverlayType = type, Duration = Duration, MediaPath = MediaPath };
                 }
                 else
                 {

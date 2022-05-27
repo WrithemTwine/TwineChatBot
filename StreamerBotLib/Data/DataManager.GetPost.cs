@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System;
 
 namespace StreamerBotLib.Data
 {
@@ -169,6 +170,22 @@ namespace StreamerBotLib.Data
                 return new(from DataRow row in dataTable.Select()
                            select row[dataColumn]);
             }
+        }
+
+        /// <summary>
+        /// Gets a single column and all rows for the provided table and column.
+        /// </summary>
+        /// <param name="dataTable">The string name of the table.</param>
+        /// <param name="dataColumn">The string name of the column of the table.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Occurs if either the table, column, or both names are invalid and not found in the database.</exception>
+        public List<object> GetRowsDataColumn(string dataTable, string dataColumn)
+        {
+            if (!CheckTable(dataTable) || !CheckField(dataTable, dataColumn))
+            {
+                throw new ArgumentException($"The data table {dataTable} or data table column {dataColumn} or both were not found in the database.");
+            }
+            return GetRowsDataColumn(_DataSource.Tables[dataTable], _DataSource.Tables[dataTable].Columns[dataColumn]);
         }
 
         #endregion

@@ -29,7 +29,20 @@ namespace StreamerBotLib.BotClients
 
         private Queue<Thread> SendAlerts { get; set; } = new();
 
+        public int MediaItems
+        {
+            get
+            {
+                lock (SendAlerts)
+                {
+                    return SendAlerts.Count;
+                }
+            }
+        }
+
         public event EventHandler<BotEventArgs> BotEvent;
+
+        public event EventHandler<EventArgs> ActionQueueChanged;
 
         //private BinaryFormatter SerializedMsg { get; } = new BinaryFormatter();
 
@@ -39,6 +52,11 @@ namespace StreamerBotLib.BotClients
 
             PipeServer = new(PublicConstants.PipeName, PipeDirection.Out, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
             WriteToPipe = new(PipeServer);
+        }
+
+        private void NotifyActionQueueChanged()
+        {
+            ActionQueueChanged?.Invoke(this, new());
         }
 
         public override bool StartBot()
@@ -84,17 +102,28 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        public void Send(OverlayTypes overlayTypes, string ActionValue, string Msg, int Duration, string MediaPath)
+        public void NewOverlayEventHandler(object sender, NewOverlayEventArgs e)
+        {
+            Send(e.OverlayActionType);
+        }
+
+        private void Send(OverlayActionType overlayActionType)
+        {
+            Send(overlayActionType.OverlayType, overlayActionType.ActionValue, overlayActionType.UserName, overlayActionType.Message, overlayActionType.Duration, overlayActionType.MediaPath);
+        }
+
+        private void Send(OverlayTypes overlayTypes, string ActionValue, string User, string Msg, int Duration, string MediaPath)
         {
             lock (SendAlerts)
             {
                 SendAlerts.Enqueue(
                    ThreadManager.CreateThread(
                        () => SendAlert(
-                           new() { OverlayType = overlayTypes, Duration = Duration, ActionValue = ActionValue, Message = Msg, MediaPath = MediaPath }
+                           new() { OverlayType = overlayTypes, Duration = Duration, UserName = User, ActionValue = ActionValue, Message = Msg, MediaPath = MediaPath }
                            )
                        )
                     );
+                NotifyActionQueueChanged();
             }
         }
 
@@ -108,6 +137,7 @@ namespace StreamerBotLib.BotClients
                     if (SendAlerts.Count > 0)
                     {
                         SendAlerts.Dequeue().Start(); // sleep inside thread action
+                        NotifyActionQueueChanged();
                     }
                 }
 
@@ -180,7 +210,7 @@ namespace StreamerBotLib.BotClients
             IsStarted = false;
             IsStopped = true;
 
-            if (!ClosedByProcess)
+            if (!ClosedByProcess && MediaOverlayProcess != null)
             {
                 MediaOverlayProcess.CloseMainWindow();
                 Dispose();
