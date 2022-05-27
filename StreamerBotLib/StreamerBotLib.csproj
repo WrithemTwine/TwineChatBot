@@ -12,7 +12,7 @@
     <Company>TwineStreamerBotLib</Company>
     <Product>TwineStreamerBotLib</Product>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 

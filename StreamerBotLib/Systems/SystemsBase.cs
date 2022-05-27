@@ -35,8 +35,14 @@ namespace StreamerBotLib.Systems
         /// The streamer channel monitored.
         /// </summary>
         public static string ChannelName { get; set; }
+        /// <summary>
+        /// The account user name of the bot account.
+        /// </summary>
         public static string BotUserName { get; set; }
 
+        /// <summary>
+        /// Time delays to use in threads
+        /// </summary>
         protected const int SecondsDelay = 2000;
         protected static bool StreamUpdateClockStarted;
 
@@ -55,8 +61,6 @@ namespace StreamerBotLib.Systems
         /// <returns>The DateTime of the stream start time.</returns>
         public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
         private delegate void ProcMessage(string UserName, string Message);
-
-        public SystemsBase() { }
 
         public static void ManageDatabase()
         {

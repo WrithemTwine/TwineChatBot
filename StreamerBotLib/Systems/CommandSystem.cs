@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Threading;
 
 using static StreamerBotLib.Data.DataSource;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StreamerBotLib.Systems
 {
@@ -29,6 +30,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
+        public event EventHandler<CheckOverlayEventArgs> CheckOverlayEvent;
 
         public void NotifyPropertyChanged(string ParamName = "")
         {
@@ -38,6 +40,11 @@ namespace StreamerBotLib.Systems
         public CommandSystem()
         {
             //StartElapsedTimerThread();
+        }
+
+        private void OnCheckOverlayEvent(CheckOverlayEventArgs e)
+        {
+            CheckOverlayEvent?.Invoke(this, e);
         }
 
         public void StartElapsedTimerThread()
@@ -273,6 +280,12 @@ namespace StreamerBotLib.Systems
             {
                 // parse commands, either built-in or custom
                 result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, source);
+                
+                
+                if (cmdMessage.CommandText != DefaultCommand.so.ToString())
+                { // ignore !so command because it's accounted for in CheckShout(...), counting for whether it's AutoShout or normal command call
+                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = cmdMessage.CommandText, UserName = cmdMessage.DisplayName, UserMsg = result });
+                }
             }
 
             result = $"{(cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
@@ -325,6 +338,7 @@ namespace StreamerBotLib.Systems
                 if (response != "")
                 {
                     ProcessedCommand?.Invoke(this, new() { Msg = response, RepeatMsg = multi });
+                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = UserName, UserMsg = response });
                 }
             }
         }

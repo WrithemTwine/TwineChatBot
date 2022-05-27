@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Enums;
+﻿
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
@@ -35,6 +36,12 @@ namespace StreamerBotLib.GUI.Windows
         private ComboBox TableElement;
         private ComboBox KeyFieldElement;
         private ComboBox DataFieldElement;
+
+        private ComboBox OverlayTypeElement;
+        private ComboBox OverlayActionTypeElement;
+        private const string OverlayTypeName = "ComboBox_OverlayType";
+
+        private Dictionary<string, List<string>> MediaOverlayEventActions { get; set; } = new();
 
         public event EventHandler<UpdatedDataRowArgs> UpdatedDataRow;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -159,14 +166,20 @@ namespace StreamerBotLib.GUI.Windows
         private string FileCopy(string FileName, string OverlayType)
         {
             string resultfile;
-            if (!File.Exists(Path.Combine(OverlayType, Path.GetFileName(FileName))) && (Path.Combine(OverlayType, Path.GetFileName(FileName)) != FileName))
+            string CopyFile = Path.Combine(OverlayType, Path.GetFileName(FileName)).Replace("_"," "); // replace '_' to prevent issues with converting class object to string to class object
+
+            if (!File.Exists(CopyFile) && File.Exists(FileName))
             {
-                string CopyFile = Path.Combine(OverlayType, Path.GetFileName(FileName));
+                Directory.CreateDirectory(Path.GetDirectoryName(CopyFile));
                 File.Copy(FileName, CopyFile, false);
                 resultfile = CopyFile;
-            } else
+            } else if (!File.Exists(FileName))
             {
                 resultfile = FileName;
+            }
+            else
+            {
+                resultfile = CopyFile;
             }
             return resultfile;
         }
@@ -272,6 +285,12 @@ namespace StreamerBotLib.GUI.Windows
                         VerticalAlignment = VerticalAlignment.Center,
                         Width = ValueWidth
                     };
+
+                    if (dataColumn.ColumnName == "OverlayType")
+                    {
+                        OverlayTypeElement = (ComboBox)dataout;
+                        ((ComboBox)dataout).SelectionChanged += OverlayTypeElement_SelectionChanged;
+                    }
                     break;
                 case PopupEditTableDataType.combotable:
                     List<string> combocollection = new();
@@ -393,13 +412,44 @@ namespace StreamerBotLib.GUI.Windows
                         }
                     }
                     break;
-                case PopupEditTableDataType.filebrowse:
-                    dataout = new TextBox()
+                case PopupEditTableDataType.combooverlayaction:
+                    dataout = new ComboBox()
                     {
-                        Text = datavalue.ToString(),
-                        ToolTip = "Paste full path to file, double-click to browse to file."
+                        SelectedValue = datavalue.ToString(),
+                        Width = ValueWidth,
+                        VerticalAlignment = VerticalAlignment.Center
                     };
-                    ((TextBox)dataout).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
+                    if (dataColumn.ColumnName == "OverlayAction")
+                    {
+                        OverlayActionTypeElement = (ComboBox)dataout;
+                    }
+
+                    if (OverlayTypeElement != null && OverlayTypeElement.SelectedValue != null)
+                    {
+                        ((ComboBox)dataout).ItemsSource = MediaOverlayEventActions[OverlayTypeElement.SelectedValue.ToString()];
+                    }
+
+                    break;
+                case PopupEditTableDataType.filebrowse:
+
+                    if (OverlayTypeElement.SelectedValue as string == MediaOverlayServer.Enums.OverlayTypes.Clip.ToString())
+                    {
+                        dataout = new TextBox()
+                        {
+                            Text = "The Clip link will be sent to the Overlay Action.",
+                            ToolTip = "The URL Twitch sends for the new clip, this will go to the Overlay event and referenced in the alert."
+                        };
+                    }
+                    else
+                    {
+                        dataout = new TextBox()
+                        {
+                            Text = datavalue.ToString(),
+                            ToolTip = "Paste full path to file, double-click to browse to file."
+                        };
+                        ((TextBox)dataout).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
+                    }
+
                     break;
                 case PopupEditTableDataType.text:
                 default:
@@ -428,6 +478,26 @@ namespace StreamerBotLib.GUI.Windows
             }
 
             return dataout;
+        }
+
+        private void OverlayTypeElement_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox OverlayTypes = (ComboBox)sender;
+
+            if (OverlayTypes != null && OverlayTypes.SelectedValue.ToString() != "")
+            {
+                OverlayActionTypeElement.ItemsSource = MediaOverlayEventActions[OverlayTypes.SelectedValue.ToString()];
+            }
+        }
+
+        public void SetOverlayActions(Dictionary<string,List<string>> keyValuePairs)
+        {
+            MediaOverlayEventActions.Clear();
+
+            foreach(var K in keyValuePairs)
+            {
+                MediaOverlayEventActions.Add(K.Key, K.Value);
+            }
         }
 
         private void FileBrowser_TextBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -536,6 +606,8 @@ namespace StreamerBotLib.GUI.Windows
                     return PopupEditTableDataType.datestring;
                 case "MediaFile":
                     return PopupEditTableDataType.filebrowse;
+                case "OverlayAction":
+                    return PopupEditTableDataType.combooverlayaction;
                 default:
                     return PopupEditTableDataType.text;
             }

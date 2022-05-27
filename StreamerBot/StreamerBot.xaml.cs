@@ -832,6 +832,12 @@ namespace StreamerBot
         #endregion
 
         #region Overlay Service
+
+        private void TabItem_Overlays_GotFocus(object sender, RoutedEventArgs e)
+        {
+            BeginGiveawayChannelPtsUpdate();
+        }
+
         private void Button_Overlay_PauseAlerts_Click(object sender, RoutedEventArgs e)
         {
             ((sender as CheckBox).DataContext as BotOverlayServer).SetPauseAlert((sender as CheckBox).IsChecked == true);
@@ -841,6 +847,12 @@ namespace StreamerBot
         {
             ((sender as Button).DataContext as BotOverlayServer).SetClearAlerts();
         }
+
+        private void UpdateOverlayChannelPointList(List<string> channelPointNames)
+        {
+            Controller.Systems.SetChannelRewardList(channelPointNames);
+        }
+
         #endregion
 
         #endregion
@@ -1088,6 +1100,11 @@ namespace StreamerBot
 
         private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
         {
+            if(sourceDataGrid.Name == "DataGrid_OverlayService_Actions")
+            {
+                PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
+            }
+
             if (AddNew)
             {
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
@@ -1198,9 +1215,15 @@ namespace StreamerBot
         {
             Dispatcher.Invoke(() =>
             {
-                ComboBox_Giveaway_ChanPts.ItemsSource = e.ChannelPointNames;
-                Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
+                UpdateGiveawayList(e.ChannelPointNames);
+                UpdateOverlayChannelPointList(e.ChannelPointNames);
             });
+        }
+
+        private void UpdateGiveawayList(List<string> ChannelPointNames)
+        {
+            ComboBox_Giveaway_ChanPts.ItemsSource = ChannelPointNames;
+            Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
         }
 
         private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)

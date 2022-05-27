@@ -1,4 +1,4 @@
 ﻿namespace MediaOverlayServer.Enums
 {
-    public enum OverlayTypes { None, ChannelPoints, ChannelEvents, Commands }
+    public enum OverlayTypes { None, ChannelPoints, ChannelEvents, Commands, Giveaway, Clip }
 }
