@@ -28,6 +28,11 @@ namespace MediaOverlayServer
         public string UserName { get; set; } = string.Empty;
 
         /// <summary>
+        /// Data flag as bot user's preference to use the message generated from what is sent to chat, in place of standard messaging defined with Overlay
+        /// </summary>
+        public bool UseChatMsg { get; set; } = false;
+
+        /// <summary>
         /// Specifies if this is part of loading data into the server. 
         /// Specific info would require connecting to sources
         /// </summary>

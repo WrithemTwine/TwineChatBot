@@ -33,7 +33,7 @@ namespace StreamerBotLib.Systems
 
         private Thread HoldNewFollowsForBulkAdd;
 
-        private static Tuple<string, string> CurrCategory { get; set; } = new("","");
+        private static Tuple<string, string> CurrCategory { get; set; } = new("", "");
 
         private StatisticsSystem Stats { get; set; }
         private CommandSystem Command { get; set; }
@@ -213,7 +213,7 @@ namespace StreamerBotLib.Systems
         {
             if (OptionFlags.TwitchFollowerAutoBanBots && FollowList.Count() >= OptionFlags.TwitchFollowerAutoBanCount)
             {
-                foreach(Follow F in FollowList)
+                foreach (Follow F in FollowList)
                 {
                     // TODO: FIX - because users will be banned just for bot retrieving data
                     //RequestBanUser(Bots.TwitchChatBot, F.FromUserName, BanReasons.FollowBot);
@@ -328,7 +328,7 @@ namespace StreamerBotLib.Systems
         {
             bool streamstart = Stats.StreamOnline(CurrTime);
 
-            if(OptionFlags.ManageStreamStats)
+            if (OptionFlags.ManageStreamStats)
             {
                 BeginPostingStreamUpdates();
             }
@@ -571,7 +571,7 @@ namespace StreamerBotLib.Systems
                             UpdatedStat(StreamStatType.AutoEvents);
                         }
 
-                        CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits, MsgReceived.DisplayName); 
+                        CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits, MsgReceived.DisplayName);
                     }));
                 }
             }
@@ -590,7 +590,8 @@ namespace StreamerBotLib.Systems
 
         public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)
         {
-            lock (ProcMsgQueue) {
+            lock (ProcMsgQueue)
+            {
                 ProcMsgQueue.Enqueue(new(() =>
                 {
                     string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled, out short Multi);
@@ -636,7 +637,7 @@ namespace StreamerBotLib.Systems
                 {
                     ProcMsgQueue.Enqueue(new Task(() =>
                     {
-                       Command.EvalCommand(cmdMessage, Source);
+                        Command.EvalCommand(cmdMessage, Source);
                     }));
                 }
             }
@@ -746,7 +747,7 @@ namespace StreamerBotLib.Systems
                                 }
                                 )));
 
-                    foreach(string W in WinnerList)
+                    foreach (string W in WinnerList)
                     {
                         CheckForOverlayEvent(OverlayTypes.Giveaway, OverlayTypes.Giveaway, W);
                     }
@@ -804,6 +805,11 @@ namespace StreamerBotLib.Systems
             Overlay.NewOverlayEvent += eventHandler;
         }
 
+        public void SetChannelClipsHandler()
+        {
+
+        }
+
         public Dictionary<string, List<string>> GetOverlayActions()
         {
             return Overlay.GetOverlayActions();
@@ -814,17 +820,17 @@ namespace StreamerBotLib.Systems
             Overlay.SetChannelRewardList(RewardList);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, string UserName="", string UserMsg="", string ProvidedURL = "")
+        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
-            CheckForOverlayEvent(overlayType, enumvalue.ToString(), UserName ,UserMsg, ProvidedURL);
+            CheckForOverlayEvent(overlayType, enumvalue.ToString(), UserName, UserMsg, ProvidedURL, UrlDuration);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = "", string UserMsg="", string ProvidedURL = "")
+        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
-            Overlay.CheckForOverlayEvent(overlayType, Action, UserName, UserMsg, ProvidedURL);
+            Overlay.CheckForOverlayEvent(overlayType, Action, UserName, UserMsg, ProvidedURL, UrlDuration);
         }
 
         #endregion
 
-        }
+    }
 }

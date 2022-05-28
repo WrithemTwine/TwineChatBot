@@ -7076,6 +7076,8 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnUserName;
             
+            private global::System.Data.DataColumn columnUseChatMsg;
+            
             private global::System.Data.DataColumn columnMessage;
             
             private global::System.Data.DataColumn columnMediaFile;
@@ -7163,6 +7165,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UseChatMsgColumn {
+                get {
+                    return this.columnUseChatMsg;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn MessageColumn {
                 get {
                     return this.columnMessage;
@@ -7214,7 +7224,7 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public OverlayServicesRow AddOverlayServicesRow(bool IsEnabled, int Duration, string OverlayType, string OverlayAction, string UserName, string Message, string MediaFile) {
+            public OverlayServicesRow AddOverlayServicesRow(bool IsEnabled, int Duration, string OverlayType, string OverlayAction, string UserName, bool UseChatMsg, string Message, string MediaFile) {
                 OverlayServicesRow rowOverlayServicesRow = ((OverlayServicesRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -7223,11 +7233,21 @@ namespace StreamerBotLib.Data {
                         OverlayType,
                         OverlayAction,
                         UserName,
+                        UseChatMsg,
                         Message,
                         MediaFile};
                 rowOverlayServicesRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowOverlayServicesRow);
                 return rowOverlayServicesRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public OverlayServicesRow FindByOverlayTypeOverlayActionUserName(string OverlayType, string OverlayAction, string UserName) {
+                return ((OverlayServicesRow)(this.Rows.Find(new object[] {
+                            OverlayType,
+                            OverlayAction,
+                            UserName})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7253,6 +7273,7 @@ namespace StreamerBotLib.Data {
                 this.columnOverlayType = base.Columns["OverlayType"];
                 this.columnOverlayAction = base.Columns["OverlayAction"];
                 this.columnUserName = base.Columns["UserName"];
+                this.columnUseChatMsg = base.Columns["UseChatMsg"];
                 this.columnMessage = base.Columns["Message"];
                 this.columnMediaFile = base.Columns["MediaFile"];
             }
@@ -7272,12 +7293,18 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnOverlayAction);
                 this.columnUserName = new global::System.Data.DataColumn("UserName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUserName);
+                this.columnUseChatMsg = new global::System.Data.DataColumn("UseChatMsg", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUseChatMsg);
                 this.columnMessage = new global::System.Data.DataColumn("Message", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMessage);
                 this.columnMediaFile = new global::System.Data.DataColumn("MediaFile", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMediaFile);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnOverlayType,
+                                this.columnOverlayAction,
+                                this.columnUserName}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AutoIncrementSeed = 1;
                 this.columnId.ReadOnly = true;
@@ -7285,8 +7312,12 @@ namespace StreamerBotLib.Data {
                 this.columnIsEnabled.DefaultValue = ((bool)(true));
                 this.columnDuration.Caption = "Duration (seconds)";
                 this.columnDuration.DefaultValue = ((int)(5));
+                this.columnOverlayType.AllowDBNull = false;
                 this.columnOverlayType.Caption = "OverlayType of Event";
+                this.columnOverlayAction.AllowDBNull = false;
                 this.columnOverlayAction.Caption = "OverlayAction the Event Name";
+                this.columnUserName.AllowDBNull = false;
+                this.columnUseChatMsg.DefaultValue = ((bool)(false));
                 this.columnMessage.Caption = "Message to send into Event";
                 this.columnMediaFile.DefaultValue = ((string)("Double-click for file browser, or paste full reference link."));
             }
@@ -10658,12 +10689,7 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string OverlayType {
                 get {
-                    try {
-                        return ((string)(this[this.tableOverlayServices.OverlayTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'OverlayType\' in table \'OverlayServices\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableOverlayServices.OverlayTypeColumn]));
                 }
                 set {
                     this[this.tableOverlayServices.OverlayTypeColumn] = value;
@@ -10674,12 +10700,7 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string OverlayAction {
                 get {
-                    try {
-                        return ((string)(this[this.tableOverlayServices.OverlayActionColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'OverlayAction\' in table \'OverlayServices\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableOverlayServices.OverlayActionColumn]));
                 }
                 set {
                     this[this.tableOverlayServices.OverlayActionColumn] = value;
@@ -10690,15 +10711,26 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string UserName {
                 get {
-                    try {
-                        return ((string)(this[this.tableOverlayServices.UserNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'UserName\' in table \'OverlayServices\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableOverlayServices.UserNameColumn]));
                 }
                 set {
                     this[this.tableOverlayServices.UserNameColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool UseChatMsg {
+                get {
+                    try {
+                        return ((bool)(this[this.tableOverlayServices.UseChatMsgColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'UseChatMsg\' in table \'OverlayServices\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableOverlayServices.UseChatMsgColumn] = value;
                 }
             }
             
@@ -10772,38 +10804,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsOverlayTypeNull() {
-                return this.IsNull(this.tableOverlayServices.OverlayTypeColumn);
+            public bool IsUseChatMsgNull() {
+                return this.IsNull(this.tableOverlayServices.UseChatMsgColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetOverlayTypeNull() {
-                this[this.tableOverlayServices.OverlayTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsOverlayActionNull() {
-                return this.IsNull(this.tableOverlayServices.OverlayActionColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetOverlayActionNull() {
-                this[this.tableOverlayServices.OverlayActionColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsUserNameNull() {
-                return this.IsNull(this.tableOverlayServices.UserNameColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetUserNameNull() {
-                this[this.tableOverlayServices.UserNameColumn] = global::System.Convert.DBNull;
+            public void SetUseChatMsgNull() {
+                this[this.tableOverlayServices.UseChatMsgColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

@@ -31,7 +31,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             RefreshSettings();
             ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
-            ClipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Round(TwitchFrequencyClipTime, 0));
+            ClipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Ceiling(TwitchFrequencyClipTime));
             ClipMonitorService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
         }
 
@@ -92,9 +92,9 @@ namespace StreamerBotLib.BotClients.Twitch
             return base.ExitBot();
         }
 
-        public async Task<List<Clip>> GetAllClipsAsync()
+        public async Task<List<Clip>> GetAllClipsAsync(string ChannelName = null)
         {
-            return await ClipMonitorService.GetAllClipsAsync(TwitchChannelName);
+            return await ClipMonitorService.GetAllClipsAsync(ChannelName ?? TwitchChannelName);
         }
 
     }

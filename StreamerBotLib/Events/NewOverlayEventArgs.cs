@@ -12,6 +12,6 @@ namespace StreamerBotLib.Events
         /// <summary>
         /// Contains the information about the new Overlay Event to show.
         /// </summary>
-        public OverlayActionType OverlayActionType { get; set; }
+        public OverlayActionType OverlayAction { get; set; }
     }
 }

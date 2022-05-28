@@ -1,13 +1,13 @@
-﻿using MediaOverlayServer.Enums;
+﻿using MediaOverlayServer;
+using MediaOverlayServer.Enums;
 
 using StreamerBotLib.Events;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace StreamerBotLib.Systems
 {
@@ -17,6 +17,7 @@ namespace StreamerBotLib.Systems
         /// A stream action caused an Overlay Event to occur, and should be displayed via the Media Overlay Server.
         /// </summary>
         public event EventHandler<NewOverlayEventArgs> NewOverlayEvent;
+        public event EventHandler<GetChannelClipsEventArgs> GetChannelClipsEvent;
 
         /// <summary>
         /// List of Table/Column pairs for building the overlay action selections
@@ -26,8 +27,8 @@ namespace StreamerBotLib.Systems
             {"Commands", "CmdName"},
             {"ChannelEvents", "Name" }
         };
-
         private List<string> ChannelPointRewards = new();
+
 
         public void SetChannelRewardList(List<string> RewardList)
         {
@@ -51,10 +52,104 @@ namespace StreamerBotLib.Systems
             return OverlayActionPairs;
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = "", string UserMsg="", string ProvidedURL = "")
+        private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data)
         {
-
+            if (ProvidedURL != null && UrlDuration != 0)
+            {
+                data.MediaPath = ProvidedURL;
+                data.Duration = Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
+            }
         }
 
+        private void OnNewOverlayEvent(NewOverlayEventArgs e)
+        {
+            NewOverlayEvent?.Invoke(this, e);
+        }
+
+        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        {
+            List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType.ToString(), Action, UserName);
+            OverlayActionType FoundAction = null;
+
+            if (UserName != null && overlayActionTypes.Count > 0)
+            {
+                FoundAction = overlayActionTypes.Find(x => x.UserName == UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
+            }
+
+            void CheckDiffMsg(ref OverlayActionType data)
+            {
+                if (data.UseChatMsg)
+                {
+                    data.Message = UserMsg;
+                }
+            }
+
+            if (FoundAction != null)
+            {
+                CheckDiffMsg(ref FoundAction);
+                if (overlayType == OverlayTypes.Commands && Action == Enums.DefaultCommand.so.ToString())
+                {
+                    if (OptionFlags.MediaOverlayShoutoutClips)
+                    {
+                        ThreadManager.CreateThreadStart(() =>
+                        {
+                            ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
+                            OnGetChannelClipsEvent(new() { ChannelName = UserName, CallBackResult = UserShout.FoundChannelClips });
+
+                            while (!UserShout.Finish) // keep thread open until Clips bot gives a response
+                            {
+                                Thread.Sleep(1000);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        OnNewOverlayEvent(new() { OverlayAction = FoundAction });
+                    }
+                }
+                else
+                {
+                    CheckURL(ProvidedURL, UrlDuration, ref FoundAction);
+                    OnNewOverlayEvent(new() { OverlayAction = FoundAction });
+                }
+            }
+        }
+
+
+        private void OnGetChannelClipsEvent(GetChannelClipsEventArgs e)
+        {
+            GetChannelClipsEvent?.Invoke(this, e);
+        }
+
+        public class ShoutOutOverlayAction
+        {       
+            private OverlayActionType ShoutOut;
+            private Action<NewOverlayEventArgs> PerformShoutOut;
+
+            public bool Finish = false;
+
+            public ShoutOutOverlayAction(OverlayActionType ShoutOutoverlayAction, Action<NewOverlayEventArgs> ActionPostShoutOut)
+            {
+                ShoutOut = ShoutOutoverlayAction;
+                PerformShoutOut = ActionPostShoutOut;
+            }
+
+            public void FoundChannelClips(List<Clip> clips)
+            {
+                if(clips.Count > 0)
+                {
+                    Random random = new Random();
+                    int found = random.Next(clips.Count);
+                    Clip resultClip = clips[found];
+
+                    CheckURL(resultClip.Url, (int)Math.Ceiling(resultClip.Duration), ref ShoutOut);
+                }
+
+                PerformShoutOut(new() { OverlayAction = ShoutOut });
+
+                Finish = true;
+            }
+
+        }
     }
 }

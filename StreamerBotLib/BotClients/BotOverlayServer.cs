@@ -86,25 +86,26 @@ namespace StreamerBotLib.BotClients
             InvokeBotStarted();
         }
 
-        internal void SendToServer(OverlayActionType Message)
+        private void CheckProcess()
         {
-            if (PipeServer.IsConnected)
+            Process[] processes = Process.GetProcessesByName(MediaOverlayProcName[..^4]);
+            if (processes.Length == 0)
             {
-                //OverlayActionType msg = new() { ActionValue = ActionValue, Message = Msg, OverlayType = overlayTypes };
-                //            msg.HashCode = msg.GetHashCode();
-
-                //            // serialize and send object over the named pipe
-                //#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                //            SerializedMsg.Serialize(PipeServer, msg);
-                //#pragma warning restore SYSLIB0011 // Type or member is obsolete
-
-                WriteToPipe.WriteLine(Message);
+                // if user closes process, detect and report service stopped
+                ClosedByProcess = true;
+                StopBot();
+                ClosedByProcess = false;
+            }
+            else if (!IsStarted && IsStopped)
+            {
+                MediaOverlayProcess = processes[0];
+                StartMediaOverlayServer(false);
             }
         }
 
         public void NewOverlayEventHandler(object sender, NewOverlayEventArgs e)
         {
-            Send(e.OverlayActionType);
+            Send(e.OverlayAction);
         }
 
         private void Send(OverlayActionType overlayActionType)
@@ -155,23 +156,6 @@ namespace StreamerBotLib.BotClients
             AlertsThreadStarted = false;
         }
 
-        private void CheckProcess()
-        {
-            Process[] processes = Process.GetProcessesByName(MediaOverlayProcName[..^4]);
-            if (processes.Length == 0)
-            {
-                // if user closes process, detect and report service stopped
-                ClosedByProcess = true;
-                StopBot();
-                ClosedByProcess = false;
-            }
-            else if (!IsStarted && IsStopped)
-            {
-                MediaOverlayProcess = processes[0];
-                StartMediaOverlayServer(false);
-            }
-        }
-
         /// <summary>
         /// The thread action to send the data to the server
         /// </summary>
@@ -180,6 +164,22 @@ namespace StreamerBotLib.BotClients
         {
             SendToServer(overlayActionType);
             Thread.Sleep(overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
+        }
+  
+        internal void SendToServer(OverlayActionType Message)
+        {
+            if (PipeServer.IsConnected)
+            {
+                //OverlayActionType msg = new() { ActionValue = ActionValue, Message = Msg, OverlayType = overlayTypes };
+                //            msg.HashCode = msg.GetHashCode();
+
+                //            // serialize and send object over the named pipe
+                //#pragma warning disable SYSLIB0011 // Type or member is obsolete
+                //            SerializedMsg.Serialize(PipeServer, msg);
+                //#pragma warning restore SYSLIB0011 // Type or member is obsolete
+
+                WriteToPipe.WriteLine(Message);
+            }
         }
 
         public void SetPauseAlert(bool Alert)
