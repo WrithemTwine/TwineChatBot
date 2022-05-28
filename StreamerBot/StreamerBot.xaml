@@ -641,6 +641,10 @@
                                                         <CheckBox.ToolTip>The PubService bot must have 'Monitor Channel Points' service and bot started to enable this feature.</CheckBox.ToolTip>
                                                         <TextBlock>Enable Monitor Channel Points</TextBlock>
                                                     </CheckBox>
+                                                    <CheckBox IsChecked="{Binding MediaOverlayShoutoutClips}">
+                                                        <CheckBox.ToolTip>For an Overlay Service Shout-Out event, use a random clip from their channel as part of the overlay notification.</CheckBox.ToolTip>
+                                                        <TextBlock>Enable for shout-outs using a random clip from user's channel</TextBlock>
+                                                    </CheckBox>
                                                 </StackPanel>
                                             </StackPanel>
                                         </GroupBox>

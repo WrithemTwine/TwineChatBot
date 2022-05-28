@@ -317,6 +317,10 @@ namespace StreamerBotLib.Static
         public static string MediaOverlayMRUPathSelect { get; set; }
 
         /// <summary>
+        /// Enables whether shouting out a user shows a random clip from their channel
+        /// </summary>
+        public static bool MediaOverlayShoutoutClips { get; set; }
+        /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
         public static void SetSettings()
@@ -438,7 +442,7 @@ namespace StreamerBotLib.Static
                 MediaOverlayEnabled = Settings.Default.MediaOverlayEnabled;
                 MediaOverlayChannelPoints = Settings.Default.MediaOverlayChannelPoints;
                 MediaOverlayMRUPathSelect = Settings.Default.MediaOverlayMRUPathSelect;
-
+                MediaOverlayShoutoutClips = Settings.Default.MediaOverlayShoutoutClips;
                 #endregion
 
             }

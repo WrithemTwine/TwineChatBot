@@ -241,9 +241,10 @@
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" minOccurs="0" />
               <xs:element name="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_UserColumnName="IsEnabled" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" type="xs:boolean" default="true" minOccurs="0" />
               <xs:element name="Duration" msdata:Caption="Duration (seconds)" msprop:Generator_ColumnPropNameInTable="DurationColumn" msprop:Generator_ColumnPropNameInRow="Duration" msprop:Generator_UserColumnName="Duration" msprop:Generator_ColumnVarNameInTable="columnDuration" type="xs:int" default="5" minOccurs="0" />
-              <xs:element name="OverlayType" msdata:Caption="OverlayType of Event" msprop:Generator_ColumnPropNameInTable="OverlayTypeColumn" msprop:Generator_ColumnPropNameInRow="OverlayType" msprop:Generator_UserColumnName="OverlayType" msprop:Generator_ColumnVarNameInTable="columnOverlayType" type="xs:string" minOccurs="0" />
-              <xs:element name="OverlayAction" msdata:Caption="OverlayAction the Event Name" msprop:Generator_ColumnPropNameInTable="OverlayActionColumn" msprop:Generator_ColumnPropNameInRow="OverlayAction" msprop:Generator_UserColumnName="OverlayAction" msprop:Generator_ColumnVarNameInTable="columnOverlayAction" type="xs:string" minOccurs="0" />
-              <xs:element name="UserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_UserColumnName="UserName" type="xs:string" minOccurs="0" />
+              <xs:element name="OverlayType" msdata:Caption="OverlayType of Event" msprop:Generator_ColumnPropNameInTable="OverlayTypeColumn" msprop:Generator_ColumnPropNameInRow="OverlayType" msprop:Generator_UserColumnName="OverlayType" msprop:Generator_ColumnVarNameInTable="columnOverlayType" type="xs:string" />
+              <xs:element name="OverlayAction" msdata:Caption="OverlayAction the Event Name" msprop:Generator_ColumnPropNameInTable="OverlayActionColumn" msprop:Generator_ColumnPropNameInRow="OverlayAction" msprop:Generator_UserColumnName="OverlayAction" msprop:Generator_ColumnVarNameInTable="columnOverlayAction" type="xs:string" />
+              <xs:element name="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_UserColumnName="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" type="xs:string" />
+              <xs:element name="UseChatMsg" msprop:Generator_UserColumnName="UseChatMsg" msprop:Generator_ColumnPropNameInTable="UseChatMsgColumn" msprop:Generator_ColumnPropNameInRow="UseChatMsg" msprop:Generator_ColumnVarNameInTable="columnUseChatMsg" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="Message" msdata:Caption="Message to send into Event" msprop:Generator_ColumnPropNameInTable="MessageColumn" msprop:Generator_ColumnPropNameInRow="Message" msprop:Generator_UserColumnName="Message" msprop:Generator_ColumnVarNameInTable="columnMessage" type="xs:string" minOccurs="0" />
               <xs:element name="MediaFile" msprop:Generator_ColumnPropNameInTable="MediaFileColumn" msprop:Generator_ColumnPropNameInRow="MediaFile" msprop:Generator_UserColumnName="MediaFile" msprop:Generator_ColumnVarNameInTable="columnMediaFile" type="xs:string" default="Double-click for file browser, or paste full reference link." minOccurs="0" />
             </xs:sequence>
@@ -354,6 +355,12 @@
     <xs:unique name="OverlayServices_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:OverlayServices" />
       <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="OverlayServices_Constraint2" msdata:ConstraintName="Constraint2" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:OverlayServices" />
+      <xs:field xpath="mstns:OverlayType" />
+      <xs:field xpath="mstns:OverlayAction" />
+      <xs:field xpath="mstns:UserName" />
     </xs:unique>
     <xs:keyref name="Users_Followers" refer="Users_Constraint2" msprop:rel_Generator_UserParentTable="Users" msprop:rel_Generator_UserChildTable="Followers" msprop:rel_Generator_RelationVarName="relationUsers_Followers" msprop:rel_Generator_ChildPropName="GetFollowersRows" msprop:rel_Generator_UserRelationName="Users_Followers" msprop:rel_Generator_ParentPropName="UsersRow" msdata:UpdateRule="None">
       <xs:selector xpath=".//mstns:Followers" />

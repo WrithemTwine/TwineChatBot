@@ -392,6 +392,16 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
         }
 
+        /// <summary>
+        /// Get the clips for a specific user channel.
+        /// </summary>
+        /// <param name="ChannelName">Channel to get the clips.</param>
+        /// <param name="ReturnData">The callback method when the clips are found.</param>
+        public void GetChannelClips(string ChannelName, Action<List<Clip>> ReturnData)
+        {
+            ThreadManager.CreateThreadStart(() => ProcessChannelClips(ChannelName, ReturnData));
+        }
+
         #endregion
 
         #region PubSub
@@ -457,6 +467,19 @@ namespace StreamerBotLib.BotClients
 
             InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
             StartClips = false;
+        }
+
+        private async void ProcessChannelClips(string ChannelName, Action<List<Clip>> ActionCallback)
+        {
+            List<Clip> result = new();
+            TwitchBotClipSvc ChannelClips = new();
+            if (ChannelClips.StartBot())
+            {
+                result = await ChannelClips.GetAllClipsAsync(ChannelName);
+                ChannelClips.StopBot();
+            }
+
+            ActionCallback?.Invoke(result);
         }
 
         #endregion

@@ -1018,5 +1018,17 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayMRUPathSelect"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayShoutoutClips {
+            get {
+                return ((bool)(this["MediaOverlayShoutoutClips"]));
+            }
+            set {
+                this["MediaOverlayShoutoutClips"] = value;
+            }
+        }
     }
 }
