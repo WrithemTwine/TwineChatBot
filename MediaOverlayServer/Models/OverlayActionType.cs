@@ -4,7 +4,7 @@ using System.Linq;
 
 using MediaOverlayServer.Enums;
 
-namespace MediaOverlayServer
+namespace MediaOverlayServer.Models
 {
     /// <summary>
     /// Defines message payload to either load data or specify active data via the named pipe from the main bot process.
@@ -93,7 +93,7 @@ namespace MediaOverlayServer
                     string action = strings.Dequeue();
                     string MediaPath = strings.Dequeue();
 
-                    return new() { ActionValue = action, Message = Msg, UserName=User, OverlayType = type, Duration = Duration, MediaPath = MediaPath };
+                    return new() { ActionValue = action, Message = Msg, UserName = User, OverlayType = type, Duration = Duration, MediaPath = MediaPath };
                 }
                 else
                 {

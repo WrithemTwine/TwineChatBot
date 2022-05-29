@@ -4,9 +4,78 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediaOverlayServer"
+        xmlns:Data="clr-namespace:MediaOverlayServer.GUI"
+        xmlns:Prop="clr-namespace:MediaOverlayServer.Properties"
         mc:Ignorable="d"
-        Title="Media Overlay" Height="450" Width="800" UseLayoutRounding="True" SnapsToDevicePixels="True" Closing="Window_Closing">
+        Title="Media Overlay" Height="450" Width="600" UseLayoutRounding="True" SnapsToDevicePixels="True" Closing="Window_Closing">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
+            <DataTemplate x:Key="OverlayTypeStatTemplate">
+                <StatusBarItem BorderThickness="1,1,1,1" BorderBrush="Black" Padding="0">
+                    <StackPanel Orientation="Horizontal" Margin="0">
+                        <Label Content="{Binding OverlayType}" />
+                        <Label Content="{Binding OverlayCount}" />
+                    </StackPanel>
+                </StatusBarItem>
+            </DataTemplate>
+            <Style TargetType="{x:Type GroupBox}">
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Width" Value="230" />
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="BorderBrush" Value="#FF212D34" />
+            </Style>
+            <Style TargetType="{x:Type CheckBox}">
+                <Setter Property="Margin" Value="5" />
+                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="Padding" Value="5,0" />
+            </Style>
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="Margin" Value="10,5,0,5" />
+                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
     <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayStats}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource OverlayTypeStatTemplate}}" />
+        <TabControl Margin="3">
+            <TabItem Header="Options" DataContext="{x:Static Prop:Settings.Default}">
+                <WrapPanel>
+                    <GroupBox Header="Overlay Settings">
+                        <CheckBox IsChecked="{Binding UseSameOverlayPage}">
+                            <TextBlock>Enable the same Overlay page for every alert.</TextBlock></CheckBox>
+                    </GroupBox>
+                    <GroupBox Header="Server Settings">
+                        <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                            <Label Content="Server Port Number: "/>
+                            <TextBox Height="18" Width="80" Text="{Binding MediaOverlayPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                            <TextBlock>
+                                Ports consist of 1-65535, the lower ports often have assigned services. <LineBreak />
+                                Initial loading will choose a random port.<LineBreak />
+                                This will affect the access URLs for the Overlay notices.
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Overlay Media Server">
+                        <StackPanel>
+                            <CheckBox IsChecked="{Binding AutoStart}" Content="Enable Auto-Starting Server" />
+                            <RadioButton x:Name="RadioButton_OverlayServer_Start" Content="Start Server" Checked="RadioButton_OverlayServer_Start_Checked" />
+                            <RadioButton x:Name="RadioButton_OverlayServer_Stop" Content="Stop Server" Checked="RadioButton_OverlayServer_Stop_Checked" IsChecked="True" />
+                        </StackPanel>
+                    </GroupBox>
+                </WrapPanel>
+            </TabItem>
+            <TabItem Header="Overlays" >
 
+            </TabItem>
+            <TabItem Header="Links" >
+
+            </TabItem>
+        </TabControl>
     </DockPanel>
 </Window>

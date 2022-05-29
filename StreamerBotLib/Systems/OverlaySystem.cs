@@ -1,5 +1,5 @@
-﻿using MediaOverlayServer;
-using MediaOverlayServer.Enums;
+﻿using MediaOverlayServer.Enums;
+using MediaOverlayServer.Models;
 
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
