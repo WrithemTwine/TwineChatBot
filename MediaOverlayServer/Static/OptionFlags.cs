@@ -13,6 +13,7 @@ namespace MediaOverlayServer.Static
 
         public static bool LogExceptions { get; set; }
 
+        public static bool UseSameOverlayPage { get; set; }
 
         internal static void SetSettings()
         {
@@ -20,6 +21,7 @@ namespace MediaOverlayServer.Static
 
             MediaOverlayPort = Settings.Default.MediaOverlayPort;
             LogExceptions = Settings.Default.LogExceptions;
+            UseSameOverlayPage = Settings.Default.UseSameOverlayPage;
         }
     }
 }

@@ -9,10 +9,9 @@ using System.IO;
 using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-
-using MediaOverlayServer;
 using MediaOverlayServer.Enums;
 using MediaOverlayServer.Static;
+using MediaOverlayServer.Models;
 
 namespace StreamerBotLib.BotClients
 {

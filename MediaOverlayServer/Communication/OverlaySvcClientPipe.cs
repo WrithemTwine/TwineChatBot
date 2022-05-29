@@ -5,9 +5,10 @@ using System.Reflection;
 using System.Threading;
 
 using MediaOverlayServer.Enums;
+using MediaOverlayServer.Models;
 using MediaOverlayServer.Static;
 
-namespace MediaOverlayServer
+namespace MediaOverlayServer.Communication
 {
     internal class OverlaySvcClientPipe
     {
