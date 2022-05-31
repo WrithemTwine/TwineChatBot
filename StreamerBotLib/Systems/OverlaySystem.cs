@@ -56,7 +56,7 @@ namespace StreamerBotLib.Systems
         {
             if (ProvidedURL != null && UrlDuration != 0)
             {
-                data.MediaPath = ProvidedURL;
+                data.MediaFile = ProvidedURL;
                 data.Duration = Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
             }
         }

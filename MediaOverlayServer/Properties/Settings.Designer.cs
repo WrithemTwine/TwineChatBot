@@ -50,12 +50,12 @@ namespace MediaOverlayServer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseSameOverlayPage {
+        public bool UseSameOverlayStyle {
             get {
-                return ((bool)(this["UseSameOverlayPage"]));
+                return ((bool)(this["UseSameOverlayStyle"]));
             }
             set {
-                this["UseSameOverlayPage"] = value;
+                this["UseSameOverlayStyle"] = value;
             }
         }
         
@@ -80,6 +80,18 @@ namespace MediaOverlayServer.Properties {
             }
             set {
                 this["AutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CSSExpandHelp {
+            get {
+                return ((bool)(this["CSSExpandHelp"]));
+            }
+            set {
+                this["CSSExpandHelp"] = value;
             }
         }
     }

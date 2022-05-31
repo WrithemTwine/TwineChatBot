@@ -72,6 +72,8 @@ namespace StreamerBotLib.Systems
             Command.ProcessedCommand += Command_ProcessedCommand;
             Stats.BeginCurrencyClock += Stats_BeginCurrencyClock;
             Stats.BeginWatchTime += Stats_BeginWatchTime;
+
+            Command.CheckOverlayEvent += CheckForOverlayEvent;
         }
 
         private void ActionProcessCmds()
@@ -807,7 +809,7 @@ namespace StreamerBotLib.Systems
 
         public void SetChannelClipsHandler()
         {
-
+            // TODO: add handler for clips
         }
 
         public Dictionary<string, List<string>> GetOverlayActions()
@@ -818,6 +820,11 @@ namespace StreamerBotLib.Systems
         public void SetChannelRewardList(List<string> RewardList)
         {
             Overlay.SetChannelRewardList(RewardList);
+        }
+
+        public void CheckForOverlayEvent(object? sender, CheckOverlayEventArgs e)
+        {
+            CheckForOverlayEvent(e.OverlayType, e.Action, e.UserName, e.UserMsg, e.ProvidedURL);
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)

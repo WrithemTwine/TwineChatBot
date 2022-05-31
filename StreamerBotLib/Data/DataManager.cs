@@ -632,7 +632,10 @@ switches:
             if (user != null)
             {
                 UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
-                UpdateCurrency(ref user, LastSeen); // will update the "CurrLoginDate"
+                if (OptionFlags.TwitchCurrencyStart && (OptionFlags.TwitchCurrencyOnline && OptionFlags.IsStreamOnline)) 
+                { 
+                    UpdateCurrency(ref user, LastSeen); 
+                } // will update the "CurrLoginDate"
             }
         }
 
@@ -1403,8 +1406,7 @@ switches:
         public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
         {
             List<OverlayActionType> result = new();
-            result.AddRange(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=True AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND {_DataSource.OverlayServices.OverlayActionColumn.ColumnName}='{overlayAction}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName} IS NULL OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')")
-                            select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaPath = overlayServicesRow.MediaFile, Message = overlayServicesRow.Message, OverlayType = (MediaOverlayServer.Enums.OverlayTypes)Enum.Parse(typeof(MediaOverlayServer.Enums.OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
+            result.AddRange(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND {_DataSource.OverlayServices.OverlayActionColumn.ColumnName}='{overlayAction}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')")                            select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaFile = overlayServicesRow.MediaFile, ImageFile=overlayServicesRow.ImageFile, Message = overlayServicesRow.Message, OverlayType = (MediaOverlayServer.Enums.OverlayTypes)Enum.Parse(typeof(MediaOverlayServer.Enums.OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
             return result;
         }
 

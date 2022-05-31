@@ -44,9 +44,14 @@ namespace MediaOverlayServer.Models
         public int Duration { get; set; } = 0;
 
         /// <summary>
-        /// The path to the media for the event.
+        /// The path to an image used in the event.
         /// </summary>
-        public string MediaPath { get; set; } = string.Empty;
+        public string ImageFile { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The path to the audio/video media for the event.
+        /// </summary>
+        public string MediaFile { get; set; } = string.Empty;
 
         /// <summary>
         /// Object HashCode.
@@ -55,7 +60,7 @@ namespace MediaOverlayServer.Models
         {
             get
             {
-                return string.GetHashCode($"{OverlayType}_{Duration}_{UserName}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{MediaPath}");
+                return string.GetHashCode($"{OverlayType}_{Duration}_{UserName}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{ImageFile}_{MediaFile}");
             }
         }
 
@@ -65,7 +70,7 @@ namespace MediaOverlayServer.Models
         /// <returns>A class specific string of the object contents.</returns>
         public override string ToString()
         {
-            return $"{OverlayType}_{Duration}_{UserName}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{MediaPath}";
+            return $"{OverlayType}_{Duration}_{UserName}_{Message.Replace("_", " ")}_{ActionValue.Replace("_", " ")}_{ImageFile}_{MediaFile}";
         }
 
         /// <summary>
@@ -91,9 +96,10 @@ namespace MediaOverlayServer.Models
                     string User = strings.Dequeue();
                     string Msg = strings.Dequeue();
                     string action = strings.Dequeue();
-                    string MediaPath = strings.Dequeue();
+                    string ImageFile = strings.Dequeue();
+                    string MediaFile = strings.Dequeue();
 
-                    return new() { ActionValue = action, Message = Msg, UserName = User, OverlayType = type, Duration = Duration, MediaPath = MediaPath };
+                    return new() { ActionValue = action, Message = Msg, UserName = User, OverlayType = type, Duration = Duration, ImageFile = ImageFile, MediaFile = MediaFile };
                 }
                 else
                 {

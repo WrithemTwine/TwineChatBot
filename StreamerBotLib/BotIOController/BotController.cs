@@ -737,12 +737,16 @@ namespace StreamerBotLib.BotIOController
         public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled, out short Multi);
-                string ParsedMsg = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
                 new( MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.subplan, Subscription ),
                 new( MsgVars.subplanname, SubscriptionName )
-                }));
+                });
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
+
             if (Enabled)
             {
                 Send(ParsedMsg, Multi);
@@ -751,7 +755,7 @@ namespace StreamerBotLib.BotIOController
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: ParsedMsg);
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
@@ -772,11 +776,12 @@ namespace StreamerBotLib.BotIOController
                 }
 
                 string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-                     if (Enabled)
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true) ;
+            if (Enabled)
             {
        Send(ParsedMsg, Multi);
            }
-             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: ParsedMsg);
+             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
@@ -785,19 +790,22 @@ namespace StreamerBotLib.BotIOController
         public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled, out short Multi);
-                 string ParsedMsg = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                     new(MsgVars.user,DisplayName),
                     new(MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth)),
                     new(MsgVars.receiveuser, RecipientUserName ),
                     new(MsgVars.subplan, Subscription ),
                     new(MsgVars.subplanname, SubscriptionName)
-                }));
+                });
+
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
            if (Enabled)
             {
                 Send(ParsedMsg, Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: ParsedMsg);
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
@@ -810,7 +818,8 @@ namespace StreamerBotLib.BotIOController
                 });
 
                 string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-              if (Enabled)
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
+            if (Enabled)
             {
               Send(ParsedMsg, Multi);
             }
@@ -818,26 +827,28 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
             Systems.UpdatedStat(StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: ParsedMsg);
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled, out short Multi);
-                string ParsedMsg = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                            {
                     new(MsgVars.user, HostedByChannel ),
                     new(MsgVars.autohost, LocalizedMsgSystem.DetermineHost(IsAutoHosted) ),
                     new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers
                      ))
-                                }));
+                                            });
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
                if (Enabled)
             {
              Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: ParsedMsg);
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<string> Users, Bots Source)
