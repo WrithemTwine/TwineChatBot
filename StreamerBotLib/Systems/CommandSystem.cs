@@ -89,7 +89,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && ChatBotStarted)
+                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimer)
                 {
                     DiluteTime = CheckDilute();
 
@@ -140,7 +140,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted)
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimer)
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -160,7 +160,7 @@ namespace StreamerBotLib.Systems
 
                     if (cmd.CheckFireTime())
                     {
-                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
+                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, out string HTMLResponse, Bots.Default, true), RepeatMsg = multi });
                         lock (cmd)
                         {
                             cmd.UpdateTime(CheckDilute());
@@ -279,12 +279,12 @@ namespace StreamerBotLib.Systems
             else
             {
                 // parse commands, either built-in or custom
-                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, source);
+                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, out string HTMLResponse, source);
                 
                 
                 if (cmdMessage.CommandText != DefaultCommand.so.ToString())
                 { // ignore !so command because it's accounted for in CheckShout(...), counting for whether it's AutoShout or normal command call
-                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = cmdMessage.CommandText, UserName = cmdMessage.DisplayName, UserMsg = result });
+                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = cmdMessage.CommandText, UserName = cmdMessage.DisplayName, UserMsg = HTMLResponse });
                 }
             }
 
@@ -332,13 +332,13 @@ namespace StreamerBotLib.Systems
                 {
                     ProcessedCommand?.Invoke(this, new() { RepeatMsg = 0, Msg = $"!{LocalizedMsgSystem.GetVar(DefaultCommand.so)} {UserName}" });
                 }
-                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi, Source);
+                response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), UserName, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi, out string HTMLResponse, Source);
 
                 // handle when returned without #category in the message
                 if (response != "")
                 {
                     ProcessedCommand?.Invoke(this, new() { Msg = response, RepeatMsg = multi });
-                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = UserName, UserMsg = response });
+                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = UserName, UserMsg = HTMLResponse });
                 }
             }
         }
@@ -348,9 +348,10 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckWelcomeUser(User);
         }
 
-        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
+        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, out string HTMLResponse, Bots Source, bool ElapsedTimer = false)
         {
             string result = "";
+            string tempHTMLResponse = "";
             Dictionary<string, string> datavalues = null;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
             {
@@ -496,6 +497,7 @@ namespace StreamerBotLib.Systems
                             new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                             result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                            tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
                             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
@@ -506,11 +508,13 @@ namespace StreamerBotLib.Systems
                     else
                     {
                         result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                        tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                     }
                 }
             }
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
             multi = cmdrow.SendMsgCount;
+            HTMLResponse = tempHTMLResponse;
             return result;
         }
 

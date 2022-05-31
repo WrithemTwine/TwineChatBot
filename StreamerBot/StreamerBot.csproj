@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>TwineStreamerBot</AssemblyName>
     <Description>A chat, clip, live, follow bot for Twitch using the C# TwitchLib library. https://twitch.tv/WrithemTwine</Description>

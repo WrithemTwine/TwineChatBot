@@ -64,8 +64,13 @@ namespace StreamerBotLib.Static
         /// <param name="message">The message to replace, may contain usage variables.</param>
         /// <param name="dictionary">The dictionary containing the parse keys.</param>
         /// <returns>The message replaced with the dictionary key,value pairs.</returns>
-        public static string ParseReplace(string message, Dictionary<string, string> dictionary)
+        public static string ParseReplace(string message, Dictionary<string, string> dictionary, bool HTMLMarkup = false)
         {
+            string Markup(string variable, string value)
+            {
+                return $"<span class=\"{variable[1..]}\">{value}</span>";
+            }
+
             if (message != null)
             {
                 foreach (string k in dictionary.Keys)
@@ -73,9 +78,14 @@ namespace StreamerBotLib.Static
                     if (message.Contains(k))
                     {
                         message = message.Replace(k,
+                            (HTMLMarkup ? 
+                            
+                            Markup(k, (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
+                            dictionary[k]) :
+
                             (k == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix username with @
                             (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
-                            dictionary[k]);
+                            dictionary[k]));
                     }
                 }
             }

@@ -1,5 +1,7 @@
 ﻿using MediaOverlayServer.Enums;
+using MediaOverlayServer.Interfaces;
 using MediaOverlayServer.Models;
+using MediaOverlayServer.Server;
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +18,10 @@ namespace MediaOverlayServer.GUI
         /// </summary>
         public List<OverlayStat> OverlayStats { get; private set; }
 
+        public static List<OverlayPage> OverlayLinks => PrefixGenerator.GetLinks();
+
+        public List<OverlayStyle> OverlayEditStyles { get; private set; } = new();
+
         public GUIData()
         {
             OverlayStats = new List<OverlayStat>() 
@@ -25,6 +31,10 @@ namespace MediaOverlayServer.GUI
                 new() { OverlayCount=10, OverlayType=OverlayTypes.ChannelEvents.ToString() }
 #endif
             };
+
+#if DEBUG
+            OverlayEditStyles.Add(new OverlayStyle(OverlayTypes.None.ToString()));
+#endif
 
             foreach(string T in System.Enum.GetNames(typeof(OverlayTypes)))
             {
@@ -50,6 +60,30 @@ namespace MediaOverlayServer.GUI
             {
                 OverlayStats[OverlayStats.IndexOf(overlayStatData)].OverlayCount = overlayStatData.OverlayCount;
                 OnPropertyChanged(nameof(OverlayStats));
+            }
+        }
+
+        public void UpdateLinks()
+        {
+            OnPropertyChanged(nameof(OverlayLinks));
+        }
+
+        public void ClearEditPages()
+        {
+            OverlayEditStyles.Clear();
+        }
+
+        public void AddEditPage(string overlayType)
+        {
+            OverlayEditStyles.Add(new OverlayStyle(overlayType));
+            OnPropertyChanged(nameof(OverlayEditStyles));
+        }
+
+        public void SaveEditPage()
+        {
+            foreach(OverlayStyle overlayEditStyle in OverlayEditStyles)
+            {
+                overlayEditStyle.SaveFile();
             }
         }
 

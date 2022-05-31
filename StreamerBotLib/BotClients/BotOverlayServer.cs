@@ -66,23 +66,28 @@ namespace StreamerBotLib.BotClients
 
         internal void StartMediaOverlayServer(bool StartProcess = true)
         {
-            if (StartProcess)
+            ThreadManager.CreateThreadStart(() =>
             {
-                MediaOverlayProcess = new Process();
-                MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
-                MediaOverlayProcess.Start();
-            }
+                if (StartProcess)
+                {
+                    MediaOverlayProcess = new Process();
+                    MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
+                    MediaOverlayProcess.Start();
+                }
 
-            IsStarted = true;
-            IsStopped = false;
-            SetPauseAlert(false);
+                PipeServer.BeginWaitForConnection(null,null);
 
-            if (!AlertsThreadStarted)
-            {
-                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High);
-            }
+                IsStarted = true;
+                IsStopped = false;
+                SetPauseAlert(false);
 
-            InvokeBotStarted();
+                if (!AlertsThreadStarted)
+                {
+                    ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High);
+                }
+
+                InvokeBotStarted();
+            });
         }
 
         private void CheckProcess()
@@ -109,7 +114,7 @@ namespace StreamerBotLib.BotClients
 
         private void Send(OverlayActionType overlayActionType)
         {
-            Send(overlayActionType.OverlayType, overlayActionType.ActionValue, overlayActionType.UserName, overlayActionType.Message, overlayActionType.Duration, overlayActionType.MediaPath);
+            Send(overlayActionType.OverlayType, overlayActionType.ActionValue, overlayActionType.UserName, overlayActionType.Message, overlayActionType.Duration, overlayActionType.MediaFile);
         }
 
         private void Send(OverlayTypes overlayTypes, string ActionValue, string User, string Msg, int Duration, string MediaPath)
@@ -119,7 +124,7 @@ namespace StreamerBotLib.BotClients
                 SendAlerts.Enqueue(
                    ThreadManager.CreateThread(
                        () => SendAlert(
-                           new() { OverlayType = overlayTypes, Duration = Duration, UserName = User, ActionValue = ActionValue, Message = Msg, MediaPath = MediaPath }
+                           new() { OverlayType = overlayTypes, Duration = Duration, UserName = User, ActionValue = ActionValue, Message = Msg, MediaFile = MediaPath }
                            )
                        )
                     );

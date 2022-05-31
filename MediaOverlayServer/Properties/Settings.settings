@@ -8,7 +8,7 @@
     <Setting Name="LogExceptions" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="UseSameOverlayPage" Type="System.Boolean" Scope="User">
+    <Setting Name="UseSameOverlayStyle" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="SettingsUpgrade" Type="System.Boolean" Scope="User">
@@ -16,6 +16,9 @@
     </Setting>
     <Setting Name="AutoStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CSSExpandHelp" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

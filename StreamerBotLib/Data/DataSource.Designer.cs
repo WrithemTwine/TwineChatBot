@@ -62,9 +62,9 @@ namespace StreamerBotLib.Data {
         
         private OverlayServicesDataTable tableOverlayServices;
         
-        private global::System.Data.DataRelation relationFK_Users_Currency;
-        
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
+        
+        private global::System.Data.DataRelation relationFK_Users_Currency;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -632,8 +632,8 @@ namespace StreamerBotLib.Data {
                     this.tableOverlayServices.InitVars();
                 }
             }
-            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
         }
         
@@ -684,16 +684,16 @@ namespace StreamerBotLib.Data {
             this.tableOverlayServices = new OverlayServicesDataTable();
             base.Tables.Add(this.tableOverlayServices);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -705,14 +705,14 @@ namespace StreamerBotLib.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn}, false);
-            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -7080,6 +7080,8 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnMessage;
             
+            private global::System.Data.DataColumn columnImageFile;
+            
             private global::System.Data.DataColumn columnMediaFile;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7181,6 +7183,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ImageFileColumn {
+                get {
+                    return this.columnImageFile;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn MediaFileColumn {
                 get {
                     return this.columnMediaFile;
@@ -7224,7 +7234,7 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public OverlayServicesRow AddOverlayServicesRow(bool IsEnabled, int Duration, string OverlayType, string OverlayAction, string UserName, bool UseChatMsg, string Message, string MediaFile) {
+            public OverlayServicesRow AddOverlayServicesRow(bool IsEnabled, int Duration, string OverlayType, string OverlayAction, string UserName, bool UseChatMsg, string Message, string ImageFile, string MediaFile) {
                 OverlayServicesRow rowOverlayServicesRow = ((OverlayServicesRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -7235,6 +7245,7 @@ namespace StreamerBotLib.Data {
                         UserName,
                         UseChatMsg,
                         Message,
+                        ImageFile,
                         MediaFile};
                 rowOverlayServicesRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowOverlayServicesRow);
@@ -7275,6 +7286,7 @@ namespace StreamerBotLib.Data {
                 this.columnUserName = base.Columns["UserName"];
                 this.columnUseChatMsg = base.Columns["UseChatMsg"];
                 this.columnMessage = base.Columns["Message"];
+                this.columnImageFile = base.Columns["ImageFile"];
                 this.columnMediaFile = base.Columns["MediaFile"];
             }
             
@@ -7297,6 +7309,8 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnUseChatMsg);
                 this.columnMessage = new global::System.Data.DataColumn("Message", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMessage);
+                this.columnImageFile = new global::System.Data.DataColumn("ImageFile", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnImageFile);
                 this.columnMediaFile = new global::System.Data.DataColumn("MediaFile", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMediaFile);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
@@ -7516,23 +7530,23 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public CurrencyTypeRow CurrencyTypeRow {
                 get {
                     return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
                 }
             }
             
@@ -10752,6 +10766,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ImageFile {
+                get {
+                    try {
+                        return ((string)(this[this.tableOverlayServices.ImageFileColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ImageFile\' in table \'OverlayServices\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableOverlayServices.ImageFileColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string MediaFile {
                 get {
                     try {
@@ -10824,6 +10854,18 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetMessageNull() {
                 this[this.tableOverlayServices.MessageColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsImageFileNull() {
+                return this.IsNull(this.tableOverlayServices.ImageFileColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetImageFileNull() {
+                this[this.tableOverlayServices.ImageFileColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

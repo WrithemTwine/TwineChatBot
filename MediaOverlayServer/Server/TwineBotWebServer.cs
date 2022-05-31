@@ -1,4 +1,8 @@
 ﻿
+using MediaOverlayServer.Communication;
+using MediaOverlayServer.Enums;
+using MediaOverlayServer.Interfaces;
+using MediaOverlayServer.Models;
 using MediaOverlayServer.Properties;
 using MediaOverlayServer.Static;
 
@@ -7,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Threading;
 
 namespace MediaOverlayServer.Server
@@ -15,29 +20,32 @@ namespace MediaOverlayServer.Server
     {
         private HttpListener HTTPListenServer { get; set; } = new();
 
-        private Queue<string> OverlayPages { get; set; } = new();
+        private List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
 
         public TwineBotWebServer()
         {
             if (OptionFlags.MediaOverlayPort == 0)
             {
                 Random random = new();
-                int port = random.Next(1024, 65536);
-
-                while (!IsFree(port))
-                {
-                    port++;
-                }
+                int port = ValidatePort(random.Next(1024, 65536));
 
                 Settings.Default.MediaOverlayPort = port;
                 OptionFlags.SetSettings();
             }
         }
 
+        public static int ValidatePort(int port)
+        {
+            while (!IsFree(port))
+            {
+                port++;
+            }
 
+            return port;
+        }
 
         // ports: 1 - 65535
-        private bool IsFree(int port)
+        private static bool IsFree(int port)
         {
             IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
             IPEndPoint[] listeners = properties.GetActiveTcpListeners();
@@ -47,44 +55,86 @@ namespace MediaOverlayServer.Server
 
         public void StartServer()
         {
-
-
+            HTTPListenServer.Prefixes.Clear();
+            foreach (string P in PrefixGenerator.GetPrefixes())
+            {
+                HTTPListenServer.Prefixes.Add(P);
+            }
             HTTPListenServer.Start();
 
             new Thread(new ThreadStart(ServerSendAlerts)).Start();
         }
 
-        private void ServerSendAlerts()
+        public void SendAlert(IOverlayPageReadOnly overlayPage)
         {
-            while (HTTPListenServer.IsListening)
+            if (HTTPListenServer.IsListening)
             {
-                HttpListenerContext context = HTTPListenServer.GetContext();
-                HttpListenerRequest request = context.Request;
-                // Obtain a response object.
-                HttpListenerResponse response = context.Response;
-                // Construct a response.
-                
-                string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
-
                 lock (OverlayPages)
                 {
-                    if(OverlayPages.Count > 0)
-                    {
-                        string test = OverlayPages.Peek();
-                    }
+                    OverlayPages.Insert(0, overlayPage);
                 }
-                
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                // Get a response stream and write the response to it.
-                response.ContentLength64 = buffer.Length;
-                System.IO.Stream output = response.OutputStream;
-                output.Write(buffer, 0, buffer.Length);
-                // You must close the output stream.
-                output.Close();
             }
         }
 
-        internal void StopServer()
+        private void ServerSendAlerts()
+        {
+            try
+            {
+                while (HTTPListenServer.IsListening && OptionFlags.ActiveToken)
+                {
+                    HttpListenerContext context = HTTPListenServer.GetContext();
+                    HttpListenerRequest request = context.Request;
+
+                    string RequestType = OverlayTypes.None.ToString();
+                    if (!OptionFlags.UseSameOverlayStyle)
+                    {
+                        RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
+                    }
+
+                    // Obtain a response object.
+                    HttpListenerResponse response = context.Response;
+                    // Construct a response.
+
+                    string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+
+                    lock (OverlayPages)
+                    {
+                        if (OverlayPages.Count > 0)
+                        {
+                            IOverlayPageReadOnly? found = null;
+
+                            foreach (var page in OverlayPages)
+                            {
+                                if (page.OverlayType == RequestType)
+                                {
+                                    found = page;
+                                }
+                            }
+
+                            if (found != null)
+                            {
+                                OverlayPages.Remove(found);
+                                responseString = found.OverlayHyperText;
+                            }
+                        }
+                    }
+
+                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                    // Get a response stream and write the response to it.
+                    response.ContentLength64 = buffer.Length;
+                    System.IO.Stream output = response.OutputStream;
+                    output.Write(buffer, 0, buffer.Length);
+                    // You must close the output stream.
+                    output.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        public void StopServer()
         {
             if (HTTPListenServer.IsListening)
             {

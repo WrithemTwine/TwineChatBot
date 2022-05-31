@@ -1,4 +1,5 @@
 ﻿using MediaOverlayServer.Communication;
+using MediaOverlayServer.Models;
 using MediaOverlayServer.Server;
 
 namespace MediaOverlayServer.Control
@@ -12,6 +13,13 @@ namespace MediaOverlayServer.Control
         {
             _clientPipe = new();
             _httpServer = new();
+
+            _clientPipe.ReceivedOverlayEvent += _clientPipe_ReceivedOverlayEvent;
+        }
+
+        private void _clientPipe_ReceivedOverlayEvent(object? sender, OverlayActionType e)
+        {
+            _httpServer.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
         }
 
         internal void StartServer()

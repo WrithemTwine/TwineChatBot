@@ -594,7 +594,7 @@ namespace StreamerBotLib.GUI.Windows
         {
             switch (ColumnName)
             {
-                case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata":
+                case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata" or "UseChatMsg":
                     return PopupEditTableDataType.databool;
                 case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes" or "BanReason" or "OverlayType":
                     return PopupEditTableDataType.comboenum;
