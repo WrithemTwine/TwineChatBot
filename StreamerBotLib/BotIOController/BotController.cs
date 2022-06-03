@@ -61,6 +61,7 @@ namespace StreamerBotLib.BotIOController
             Systems.PostChannelMessage += Systems_PostChannelMessage;
             Systems.BanUserRequest += Systems_BanUserRequest;
 
+
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
             SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
@@ -69,6 +70,7 @@ namespace StreamerBotLib.BotIOController
 
             OverlayServerBot = new();
             SetNewOverlayEventHandler();
+            SetGetChannelClipsHandler();
 
             BotsList.Add(TwitchBots);
             BotsList.Add(OverlayServerBot);
@@ -399,12 +401,12 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
         {
-            ConvertClips(clips.ClipList);
+            HandleBotEventPostNewClip(ConvertClips(clips.ClipList));
         }
 
-        private void ConvertClips(List<Clip> clips)
+        public static List<Models.Clip> ConvertClips(List<Clip> clips)
         {
-            HandleBotEventPostNewClip(clips.ConvertAll((SrcClip) =>
+            return clips.ConvertAll((SrcClip) =>
             {
                 return new Models.Clip()
                 {
@@ -416,7 +418,7 @@ namespace StreamerBotLib.BotIOController
                     Title = SrcClip.Title,
                     Url = SrcClip.Url
                 };
-            }));
+            });
         }
 
         public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
@@ -972,6 +974,16 @@ namespace StreamerBotLib.BotIOController
         private void SetNewOverlayEventHandler()
         {
             Systems.SetNewOverlayEventHandler(OverlayServerBot.NewOverlayEventHandler);
+        }
+
+        private void SetGetChannelClipsHandler()
+        {
+            Systems.SetChannelClipsHandler(GetAllChannelClips);
+        }
+
+        private void GetAllChannelClips(object sender, GetChannelClipsEventArgs e)
+        {
+            TwitchBots.GetChannelClips(e.ChannelName,e.CallBackResult);
         }
 
         #endregion

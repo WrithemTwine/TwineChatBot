@@ -11,6 +11,7 @@ namespace MediaOverlayServer.Static
     {
         private const string StatusLog = "StatusLog.txt";
         private const string ExceptionLog = "ExceptionLog.txt";
+        private const string DataActLog = "DataActionLog.txt";
 
         public static void WriteLog(LogType ChooseLog, string line)
         {
@@ -31,6 +32,16 @@ namespace MediaOverlayServer.Static
                     WriteLog(LogType.LogExceptions, DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture) + " " + Method);
                     WriteLog(LogType.LogExceptions, ex.Message + "\nStack Trace: " + ex.StackTrace);
                 }
+            }
+        }
+
+        public static void DataActionLog(string Method, string line)
+        {
+            lock (DataActLog)
+            {
+                StreamWriter s = new(DataActLog, true);
+                s.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {line}");
+                s.Close();
             }
         }
     }

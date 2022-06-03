@@ -48,6 +48,10 @@ namespace TestStreamerBot
                 OptionFlags.ManageUsers = true;
                 OptionFlags.TwitchPruneNonFollowers = true;
 
+                OptionFlags.MediaOverlayEnabled = true;
+                OptionFlags.MediaOverlayChannelPoints = true;
+                OptionFlags.MediaOverlayShoutoutClips= true;
+
                 Initialized = true;
 
                 botController = new();

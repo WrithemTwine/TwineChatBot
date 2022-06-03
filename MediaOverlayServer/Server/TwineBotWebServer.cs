@@ -2,12 +2,12 @@
 using MediaOverlayServer.Communication;
 using MediaOverlayServer.Enums;
 using MediaOverlayServer.Interfaces;
-using MediaOverlayServer.Models;
 using MediaOverlayServer.Properties;
 using MediaOverlayServer.Static;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -84,45 +84,62 @@ namespace MediaOverlayServer.Server
                 {
                     HttpListenerContext context = HTTPListenServer.GetContext();
                     HttpListenerRequest request = context.Request;
-
-                    string RequestType = OverlayTypes.None.ToString();
-                    if (!OptionFlags.UseSameOverlayStyle)
-                    {
-                        RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
-                    }
-
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
                     // Construct a response.
 
-                    string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+                    byte[] buffer;
 
-                    lock (OverlayPages)
+                    if (request.RawUrl.Contains("index.html"))
                     {
-                        if (OverlayPages.Count > 0)
+                        string RequestType = OverlayTypes.None.ToString();
+                        if (!OptionFlags.UseSameOverlayStyle)
                         {
-                            IOverlayPageReadOnly? found = null;
+                            RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
+                        }
 
-                            foreach (var page in OverlayPages)
+
+                        string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+
+                        lock (OverlayPages)
+                        {
+                            if (OverlayPages.Count > 0)
                             {
-                                if (page.OverlayType == RequestType)
+                                IOverlayPageReadOnly? found = null;
+
+                                foreach (var page in OverlayPages)
                                 {
-                                    found = page;
+                                    if (page.OverlayType == RequestType || OptionFlags.UseSameOverlayStyle)
+                                    {
+                                        found = page;
+                                    }
+                                }
+
+                                if (found != null)
+                                {
+                                    OverlayPages.Remove(found);
+                                    responseString = found.OverlayHyperText;
                                 }
                             }
+                        }
+                        buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                    } else
+                    {
+                        if (File.Exists(request.RawUrl[1..]))
+                        {
+                            // BinaryReader br = new(new StreamReader(request.RawUrl).BaseStream);
+                            buffer = File.ReadAllBytes(request.RawUrl[1..]);
 
-                            if (found != null)
-                            {
-                                OverlayPages.Remove(found);
-                                responseString = found.OverlayHyperText;
-                            }
+                        } else
+                        {
+                            buffer = System.Text.Encoding.UTF8.GetBytes("");
                         }
                     }
 
-                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                     // Get a response stream and write the response to it.
                     response.ContentLength64 = buffer.Length;
-                    System.IO.Stream output = response.OutputStream;
+
+                    Stream output = response.OutputStream;
                     output.Write(buffer, 0, buffer.Length);
                     // You must close the output stream.
                     output.Close();

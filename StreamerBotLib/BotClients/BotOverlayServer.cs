@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Events;
+﻿
+using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 
@@ -12,6 +13,9 @@ using System.Threading;
 using MediaOverlayServer.Enums;
 using MediaOverlayServer.Static;
 using MediaOverlayServer.Models;
+using System.Security.AccessControl;
+using System.Security.Principal;
+using System.Reflection;
 
 namespace StreamerBotLib.BotClients
 {
@@ -21,7 +25,7 @@ namespace StreamerBotLib.BotClients
         private Process MediaOverlayProcess;
         private bool PauseAlerts = false;
         private bool AlertsThreadStarted = false;
-        private bool ClosedByProcess = false;
+        private bool CheckedProcess = false;
 
         private StreamWriter WriteToPipe;
         private NamedPipeServerStream PipeServer;
@@ -49,62 +53,77 @@ namespace StreamerBotLib.BotClients
         {
             BotClientName = Enums.Bots.MediaOverlayServer;
 
-            PipeServer = new(PublicConstants.PipeName, PipeDirection.Out, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
+            PipeServer = new(PublicConstants.PipeName, PipeDirection.Out, 254, PipeTransmissionMode.Message, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
+
             WriteToPipe = new(PipeServer);
+
+            IsStarted = false;
+            IsStopped = true;
+
+            ThreadManager.CreateThreadStart(() => CheckProcess());
         }
 
         private void NotifyActionQueueChanged()
         {
+#if VerboseLogging
+            StreamerBotLib.Static.LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "The action queue has changed.");
+#endif
+
             ActionQueueChanged?.Invoke(this, new());
         }
 
         public override bool StartBot()
         {
-            StartMediaOverlayServer();
+            IsStopped = false;
+
+            while (!CheckedProcess) { Thread.Sleep(500); } // spin until one check of the processes
             return IsStarted;
-        }
-
-        internal void StartMediaOverlayServer(bool StartProcess = true)
-        {
-            ThreadManager.CreateThreadStart(() =>
-            {
-                if (StartProcess)
-                {
-                    MediaOverlayProcess = new Process();
-                    MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
-                    MediaOverlayProcess.Start();
-                }
-
-                PipeServer.BeginWaitForConnection(null,null);
-
-                IsStarted = true;
-                IsStopped = false;
-                SetPauseAlert(false);
-
-                if (!AlertsThreadStarted)
-                {
-                    ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High);
-                }
-
-                InvokeBotStarted();
-            });
         }
 
         private void CheckProcess()
         {
-            Process[] processes = Process.GetProcessesByName(MediaOverlayProcName[..^4]);
-            if (processes.Length == 0)
+            while (OptionFlags.ActiveToken)
             {
-                // if user closes process, detect and report service stopped
-                ClosedByProcess = true;
-                StopBot();
-                ClosedByProcess = false;
+                if (!IsStopped && !IsStarted)
+                {
+                    Process[] processes = Process.GetProcessesByName(MediaOverlayProcName[..^4]);
+                    if (processes.Length == 0)
+                    { // process not found
+                        MediaOverlayProcess = new Process();
+                        MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
+                        MediaOverlayProcess.Start();
+
+                        IsStarted = true;
+                        SetPauseAlert(false);
+                        if (!AlertsThreadStarted)
+                        {
+                            ThreadManager.CreateThread(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High).Start();
+                        }
+
+                    }
+                    else
+                    {
+                        MediaOverlayProcess = processes[0];
+                        IsStarted = true;
+                    }
+
+                    ThreadManager.CreateThreadStart(() => InvokeBotStarted());
+
+                    if (!PipeServer.IsConnected)
+                    {
+                        PipeServer.BeginWaitForConnection(PipeConnected, null);
+                    }
+                    CheckedProcess = true;
+                }
+
+                Thread.Sleep(2000);
             }
-            else if (!IsStarted && IsStopped)
-            {
-                MediaOverlayProcess = processes[0];
-                StartMediaOverlayServer(false);
-            }
+        }
+
+        private void PipeConnected(IAsyncResult ar)
+        {
+            PipeServer.EndWaitForConnection(ar);
+            WriteToPipe.AutoFlush = true;
         }
 
         public void NewOverlayEventHandler(object sender, NewOverlayEventArgs e)
@@ -149,12 +168,9 @@ namespace StreamerBotLib.BotClients
                 // sleep for 1 sec before checking for next alert
                 Thread.Sleep(1000);
 
-                CheckProcess();
-
                 while (PauseAlerts)
                 {
                     Thread.Sleep(5000);
-                    CheckProcess();
                 }
             }
             AlertsThreadStarted = false;
@@ -174,14 +190,6 @@ namespace StreamerBotLib.BotClients
         {
             if (PipeServer.IsConnected)
             {
-                //OverlayActionType msg = new() { ActionValue = ActionValue, Message = Msg, OverlayType = overlayTypes };
-                //            msg.HashCode = msg.GetHashCode();
-
-                //            // serialize and send object over the named pipe
-                //#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                //            SerializedMsg.Serialize(PipeServer, msg);
-                //#pragma warning restore SYSLIB0011 // Type or member is obsolete
-
                 WriteToPipe.WriteLine(Message);
             }
         }
@@ -211,11 +219,11 @@ namespace StreamerBotLib.BotClients
 
         public override bool StopBot()
         {
-            IsStarted = false;
             IsStopped = true;
 
-            if (!ClosedByProcess && MediaOverlayProcess != null)
+            if (MediaOverlayProcess != null && IsStarted)
             {
+                IsStarted = false;
                 MediaOverlayProcess.CloseMainWindow();
                 Dispose();
             }
@@ -228,10 +236,15 @@ namespace StreamerBotLib.BotClients
                 SetPauseAlert(true);
             }
             InvokeBotStopped();
+            if (PipeServer.IsConnected)
+            {
+                PipeServer.Disconnect();
+            }
+            
             return IsStopped;
         }
 
-        #region unused interface
+#region unused interface
         public override bool Send(string s)
         {
             return false;
@@ -250,6 +263,6 @@ namespace StreamerBotLib.BotClients
 
         }
 
-        #endregion
+#endregion
     }
 }

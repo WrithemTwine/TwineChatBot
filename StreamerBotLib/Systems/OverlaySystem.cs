@@ -49,6 +49,11 @@ namespace StreamerBotLib.Systems
             OverlayActionPairs.Add(OverlayTypes.Giveaway.ToString(), new() { OverlayTypes.Giveaway.ToString() });
             OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
 
+            foreach(string K in OverlayActionPairs.Keys)
+            {
+                OverlayActionPairs[K].Sort();
+            }
+
             return OverlayActionPairs;
         }
 

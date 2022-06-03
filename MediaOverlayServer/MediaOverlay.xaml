@@ -23,11 +23,11 @@
                 <ListViewItem>
                     <StackPanel Orientation="Horizontal">
                         <Label Width="90" Content="{Binding OverlayType}" />
-                        <TextBox Width="200" Text="{Binding OverlayHyperText}" IsReadOnly="True" IsReadOnlyCaretVisible="False" PreviewMouseLeftButtonUp="TextBox_PreviewMouseLeftButtonUp" />
+                        <TextBox Width="400" Text="{Binding OverlayHyperText}" IsReadOnly="True" IsReadOnlyCaretVisible="False" PreviewMouseLeftButtonUp="TextBox_PreviewMouseLeftButtonUp" VerticalContentAlignment="Center" Padding="2,0" />
                     </StackPanel>
                 </ListViewItem>
             </DataTemplate>
-             <DataTemplate x:Key="OverlayStyleTemplate">
+            <DataTemplate x:Key="OverlayStyleTemplate">
                 <DockPanel>
                     <ScrollViewer>
                     <TextBox AcceptsReturn="True" Text="{Binding OverlayStyleText}" LostFocus="TextBox_LostFocus" /></ScrollViewer>
@@ -96,7 +96,7 @@
             </TabItem>
             <TabItem Header="Overlay Styles" >
                 <DockPanel Margin="3">
-                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding CSSExpandHelp}" DockPanel.Dock="Top">
+                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding CSSExpandHelp}" DockPanel.Dock="Top" Expanded="Expander_Click_SaveSettings">
                         <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <FlowDocument>
                                 <Section>
