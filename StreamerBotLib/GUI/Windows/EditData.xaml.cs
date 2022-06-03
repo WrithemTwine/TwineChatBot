@@ -166,7 +166,7 @@ namespace StreamerBotLib.GUI.Windows
         private string FileCopy(string FileName, string OverlayType)
         {
             string resultfile;
-            string CopyFile = Path.Combine(OverlayType, Path.GetFileName(FileName)).Replace("_"," "); // replace '_' to prevent issues with converting class object to string to class object
+            string CopyFile = Path.Combine(OverlayType, Path.GetFileName(FileName)).Replace("_"," ").Replace(" ",""); // replace '_' to prevent issues with converting class object to string to class object
 
             if (!File.Exists(CopyFile) && File.Exists(FileName))
             {

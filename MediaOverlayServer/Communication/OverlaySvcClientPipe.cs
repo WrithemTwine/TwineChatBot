@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
@@ -21,10 +22,12 @@ namespace MediaOverlayServer.Communication
 
         internal OverlaySvcClientPipe()
         {
-            OverlayPipe = new(".", PublicConstants.PipeName, PipeDirection.In, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
+            OverlayPipe = new(".", PublicConstants.PipeName, PipeDirection.In, PipeOptions.Asynchronous);
+
+            StartPipeWatchAsync();
         }
 
-        internal async void StartPipeWatch()
+        internal async void StartPipeWatchAsync()
         {
             await OverlayPipe.ConnectAsync();
             ReadFromPipe = new(OverlayPipe);
@@ -32,43 +35,43 @@ namespace MediaOverlayServer.Communication
             new Thread(new ThreadStart(() => WatchPipe())).Start();
         }
 
-        internal void WatchPipe()
+        internal async void WatchPipe()
         {
-            //BinaryFormatter SerializedMsg = new BinaryFormatter();
-
-            while (OptionFlags.ActiveToken && OverlayPipe.IsConnected)
+            while (OptionFlags.ActiveToken)
             {
-                //                // reading from a named system pipe
-                //#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                //                OverlayActionType received = (OverlayActionType)SerializedMsg.Deserialize(OverlayPipe);
-                //#pragma warning restore SYSLIB0011 // Type or member is obsolete
-
-                //                if(received.HashCode == received.GetHashCode())
-                //                {
-                //                    foundReceivedOverlayEvent(received);
-                //                }
-
-                while (!ReadFromPipe.EndOfStream)
+                if (OverlayPipe.IsConnected)
                 {
-                    try
+                    if (ReadFromPipe.Peek() != -1)
                     {
-                        OverlayActionType curr = OverlayActionType.FromString(ReadFromPipe.ReadLine());
-
-                        if (curr.OverlayType != OverlayTypes.None)
+                        while (!ReadFromPipe.EndOfStream)
                         {
-                            foundReceivedOverlayEvent(curr);
+                            try
+                            {
+                                OverlayActionType curr = OverlayActionType.FromString(ReadFromPipe.ReadLine());
+
+                                if (curr.OverlayType != OverlayTypes.None)
+                                {
+                                    foundReceivedOverlayEvent(curr);
+                                }
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                LogWriter.LogException(ex, Method: MethodBase.GetCurrentMethod().Name);
+
+                            }
                         }
                     }
-                    catch (ArgumentException ex)
-                    {
-                        LogWriter.LogException(ex, Method: MethodBase.GetCurrentMethod().Name);
-
-                    }
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    await OverlayPipe.ConnectAsync();
                 }
             }
 
             PipeReceivedStoppedEvent?.Invoke(this, true);
             ReadFromPipe.Close();
+            OverlayPipe.Close();
         }
 
         internal void foundReceivedOverlayEvent(OverlayActionType overlayAction)

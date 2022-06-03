@@ -65,6 +65,11 @@ namespace MediaOverlayServer
             }
         }
 
+        private void Expander_Click_SaveSettings(object sender, RoutedEventArgs e)
+        {
+            OptionFlags.SetSettings();
+        }
+
         /// <summary>
         /// Disable user access to certain GUI elements depending on whether the HTTP Server is started.
         /// </summary>
@@ -102,10 +107,7 @@ namespace MediaOverlayServer
             }
             else
             {
-                foreach (string O in Enum.GetNames(typeof(OverlayTypes)))
-                {
-                    GUIData.AddEditPage(O);
-                }
+                GUIData.AddEditPage( Enum.GetNames(typeof(OverlayTypes)) );
             }
         }
 

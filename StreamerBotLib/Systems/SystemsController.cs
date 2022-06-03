@@ -238,14 +238,15 @@ namespace StreamerBotLib.Systems
                             }
                             else
                             {
-                                SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) })));
+                                string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
+                                SendMessage(message);
+  
+                                CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow, f.FromUserName, UserMsg: message);
                             }
                         }
 
                         UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
                     }
-
-                    CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow, f.FromUserName);
                 }
 
                 if (UserList.Count > 0)
@@ -255,11 +256,13 @@ namespace StreamerBotLib.Systems
 
                     while (i * Pick < UserList.Count)
                     {
-                        SendMessage(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) })));
+                        string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) }));
+                        SendMessage(message);
+                        CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow, UserMsg: message);
+
                         i++;
                     }
                 }
-
             }
         }
 
@@ -334,6 +337,8 @@ namespace StreamerBotLib.Systems
             {
                 BeginPostingStreamUpdates();
             }
+
+            Command.StartElapsedTimerThread();
 
             CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Live);
 
@@ -807,9 +812,9 @@ namespace StreamerBotLib.Systems
             Overlay.NewOverlayEvent += eventHandler;
         }
 
-        public void SetChannelClipsHandler()
+        public void SetChannelClipsHandler(EventHandler<GetChannelClipsEventArgs> eventHandler)
         {
-            // TODO: add handler for clips
+            Overlay.GetChannelClipsEvent += eventHandler;
         }
 
         public Dictionary<string, List<string>> GetOverlayActions()

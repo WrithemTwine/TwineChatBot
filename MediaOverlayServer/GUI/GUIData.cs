@@ -1,5 +1,4 @@
 ﻿using MediaOverlayServer.Enums;
-using MediaOverlayServer.Interfaces;
 using MediaOverlayServer.Models;
 using MediaOverlayServer.Server;
 
@@ -77,6 +76,12 @@ namespace MediaOverlayServer.GUI
         {
             OverlayEditStyles.Add(new OverlayStyle(overlayType));
             OnPropertyChanged(nameof(OverlayEditStyles));
+        }
+
+        public void AddEditPage(string[] overlayTypes)
+        {
+            OverlayEditStyles.AddRange(new List<string>(overlayTypes).ConvertAll((t) => new OverlayStyle(t)));
+
         }
 
         public void SaveEditPage()

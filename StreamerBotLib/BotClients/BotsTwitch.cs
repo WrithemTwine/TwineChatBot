@@ -397,7 +397,7 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         /// <param name="ChannelName">Channel to get the clips.</param>
         /// <param name="ReturnData">The callback method when the clips are found.</param>
-        public void GetChannelClips(string ChannelName, Action<List<Clip>> ReturnData)
+        public void GetChannelClips(string ChannelName, Action<List<Models.Clip>> ReturnData)
         {
             ThreadManager.CreateThreadStart(() => ProcessChannelClips(ChannelName, ReturnData));
         }
@@ -469,7 +469,7 @@ namespace StreamerBotLib.BotClients
             StartClips = false;
         }
 
-        private async void ProcessChannelClips(string ChannelName, Action<List<Clip>> ActionCallback)
+        private async void ProcessChannelClips(string ChannelName, Action<List<Models.Clip>> ActionCallback)
         {
             List<Clip> result = new();
             TwitchBotClipSvc ChannelClips = new();
@@ -479,7 +479,7 @@ namespace StreamerBotLib.BotClients
                 ChannelClips.StopBot();
             }
 
-            ActionCallback?.Invoke(result);
+            ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
         }
 
         #endregion

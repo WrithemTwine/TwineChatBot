@@ -69,7 +69,7 @@ namespace StreamerBotLib.Static
                         Changed = true;
                     }
 
-                    foreach(ThreadData R in ToRemove)
+                    foreach (ThreadData R in ToRemove)
                     {
                         CurrThreads.Remove(R);
                         PriorityList.Remove(R.ThreadPriority);
@@ -135,7 +135,7 @@ namespace StreamerBotLib.Static
 
             int idx = floor;
 
-            while(!PriorityList.Contains(idx) && idx < floor+PriorityGap)
+            while (!PriorityList.Contains(idx) && idx < floor + PriorityGap)
             {
                 idx++;
             }
@@ -177,21 +177,24 @@ namespace StreamerBotLib.Static
 
         private static void Exit()
         {
-            foreach (ThreadData t in CurrThreads)
+            lock (CurrThreads)
             {
-                if ((t.ThreadItem.ThreadState & (ThreadState.Stopped | ThreadState.Unstarted)) == 0)
+                foreach (ThreadData t in CurrThreads)
                 {
-                    if (t.CloseState == ThreadWaitStates.Wait)
+                    if ((t.ThreadItem.ThreadState & (ThreadState.Stopped | ThreadState.Unstarted)) == 0)
                     {
-                        t.ThreadItem.Join();
-                    }
-                    else if (t.CloseState == ThreadWaitStates.Close)
-                    {
-                        // t.ThreadItem.Interrupt();
+                        if (t.CloseState == ThreadWaitStates.Wait)
+                        {
+                            t.ThreadItem.Join();
+                        }
+                        else if (t.CloseState == ThreadWaitStates.Close)
+                        {
+                            // t.ThreadItem.Interrupt();
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 }

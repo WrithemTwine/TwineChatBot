@@ -1,4 +1,5 @@
-﻿using MediaOverlayServer.Communication;
+﻿
+using MediaOverlayServer.Communication;
 using MediaOverlayServer.Models;
 using MediaOverlayServer.Server;
 
