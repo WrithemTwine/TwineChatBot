@@ -134,6 +134,7 @@ namespace StreamerBotLib.GUI.Windows
                     try
                     {
                         SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]);
+                        SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]);
                     }
                     catch (Exception ex)
                     {
@@ -604,7 +605,7 @@ namespace StreamerBotLib.GUI.Windows
                     return PopupEditTableDataType.combotable;
                 case "FollowedDate" or "FirstDateSeen" or "CurrLoginDate" or "LastDateSeen" or "CreatedAt" or "DateTime" or "StreamStart" or "StreamEnd":
                     return PopupEditTableDataType.datestring;
-                case "MediaFile":
+                case "MediaFile" or "ImageFile":
                     return PopupEditTableDataType.filebrowse;
                 case "OverlayAction":
                     return PopupEditTableDataType.combooverlayaction;

@@ -19,6 +19,8 @@ namespace MediaOverlayServer
     /// </summary>
     public partial class MainWindow : Window
     {
+        public event EventHandler<EventArgs> UserHideWindow;
+
         private OverlayController Controller { get; }
         private GUIData GUIData { get; }
 
@@ -38,7 +40,21 @@ namespace MediaOverlayServer
 
             GUIData = (GUIData)Resources["GUIAppData"];
         }
- 
+
+        #region Connect to Main App
+        public EventHandler<OverlayActionType> GetOverlayActionReceivedHandler()
+        {
+            return Controller.ReceivedOverlayEvent;
+        }
+
+        public void CloseApp(bool Token = false)
+        {
+            OptionFlags.ActiveToken = Token;
+            Close();
+        }
+
+        #endregion
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if(OptionFlags.MediaOverlayPort!=0 && OptionFlags.AutoStart)
@@ -51,8 +67,16 @@ namespace MediaOverlayServer
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            OptionFlags.ActiveToken = false;
-            Controller.StopServer();
+            if (OptionFlags.ActiveToken)
+            {
+                e.Cancel = true;
+                Hide();
+                UserHideWindow?.Invoke(this, new());
+            }
+            else
+            {
+                Controller.StopServer();
+            }
         }
 
         private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
