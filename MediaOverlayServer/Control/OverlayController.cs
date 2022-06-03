@@ -1,4 +1,9 @@
-﻿
+﻿#if UsePipes
+#define UtilizePipeIPC // use the NamedPipe Server/Client mechanism
+#else
+#define UseGUIDLL
+#endif
+
 using MediaOverlayServer.Communication;
 using MediaOverlayServer.Models;
 using MediaOverlayServer.Server;
@@ -7,8 +12,11 @@ namespace MediaOverlayServer.Control
 {
     internal class OverlayController
     {
-        internal OverlaySvcClientPipe _clientPipe;
         internal TwineBotWebServer _httpServer;
+
+
+#if UtilizePipeIPC
+        internal OverlaySvcClientPipe _clientPipe;
 
         internal OverlayController()
         {
@@ -22,6 +30,17 @@ namespace MediaOverlayServer.Control
         {
             _httpServer.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
         }
+#elif UseGUIDLL
+        internal OverlayController()
+        {
+            _httpServer = new();
+        }
+
+        public void ReceivedOverlayEvent(object? sender, OverlayActionType e)
+        {
+            _httpServer.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
+        }
+#endif
 
         internal void StartServer()
         {
