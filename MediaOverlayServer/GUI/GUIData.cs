@@ -25,13 +25,13 @@ namespace MediaOverlayServer.GUI
         {
             OverlayStats = new List<OverlayStat>() 
             {
-#if DEBUG
+#if DEBUG_
                 new() { OverlayType = OverlayTypes.ChannelPoints.ToString(), OverlayCount = 5 }, 
                 new() { OverlayCount=10, OverlayType=OverlayTypes.ChannelEvents.ToString() }
 #endif
             };
 
-#if DEBUG
+#if DEBUG_
             OverlayEditStyles.Add(new OverlayStyle(OverlayTypes.None.ToString()));
 #endif
 

@@ -433,23 +433,24 @@ namespace StreamerBotLib.GUI.Windows
                     break;
                 case PopupEditTableDataType.filebrowse:
 
-                    if (OverlayTypeElement.SelectedValue as string == MediaOverlayServer.Enums.OverlayTypes.Clip.ToString())
+                    //if (OverlayTypeElement.SelectedValue as string == MediaOverlayServer.Enums.OverlayTypes.Clip.ToString())
+                    //{
+                    //    dataout = new TextBox()
+                    //    {
+                    //        Text = "The Clip link will be sent to the Overlay Action.",
+                    //        ToolTip = "The URL Twitch sends for the new clip, this will go to the Overlay event and referenced in the alert."
+                    //    };
+                    //}
+                    //else
+                    //{
+                    dataout = new TextBox()
                     {
-                        dataout = new TextBox()
-                        {
-                            Text = "The Clip link will be sent to the Overlay Action.",
-                            ToolTip = "The URL Twitch sends for the new clip, this will go to the Overlay event and referenced in the alert."
-                        };
-                    }
-                    else
-                    {
-                        dataout = new TextBox()
-                        {
-                            Text = datavalue.ToString(),
-                            ToolTip = "Paste full path to file, double-click to browse to file."
-                        };
-                        ((TextBox)dataout).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
-                    }
+                        Text = datavalue.ToString(),
+                        ToolTip = "Paste full path to file, double-click to browse to file.",
+                        MinWidth = 200
+                    };
+                    ((TextBox)dataout).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
+                    //}
 
                     break;
                 case PopupEditTableDataType.text:

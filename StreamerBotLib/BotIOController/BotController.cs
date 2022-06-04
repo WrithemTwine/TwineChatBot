@@ -70,7 +70,7 @@ namespace StreamerBotLib.BotIOController
 
             OverlayServerBot = new();
             SetNewOverlayEventHandler();
-            SetGetChannelClipsHandler();
+            //SetGetChannelClipsHandler();
 
             BotsList.Add(TwitchBots);
             BotsList.Add(OverlayServerBot);
@@ -914,6 +914,8 @@ namespace StreamerBotLib.BotIOController
             {
                 HandleGiveawayPostName(DisplayName);
             }
+
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
         }
 
         #region Giveaway
@@ -976,15 +978,15 @@ namespace StreamerBotLib.BotIOController
             Systems.SetNewOverlayEventHandler(OverlayServerBot.NewOverlayEventHandler);
         }
 
-        private void SetGetChannelClipsHandler()
-        {
-            Systems.SetChannelClipsHandler(GetAllChannelClips);
-        }
+        //private void SetGetChannelClipsHandler()
+        //{
+        //    Systems.SetChannelClipsHandler(GetAllChannelClips);
+        //}
 
-        private void GetAllChannelClips(object sender, GetChannelClipsEventArgs e)
-        {
-            TwitchBots.GetChannelClips(e.ChannelName,e.CallBackResult);
-        }
+        //private void GetAllChannelClips(object sender, GetChannelClipsEventArgs e)
+        //{
+        //    TwitchBots.GetChannelClips(e.ChannelName,e.CallBackResult);
+        //}
 
         #endregion
 

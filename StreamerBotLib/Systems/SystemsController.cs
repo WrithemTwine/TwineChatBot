@@ -798,7 +798,7 @@ namespace StreamerBotLib.Systems
 
                     UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
 
-                    CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
+                    //CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
                 }
             }
         }
@@ -812,10 +812,10 @@ namespace StreamerBotLib.Systems
             Overlay.NewOverlayEvent += eventHandler;
         }
 
-        public void SetChannelClipsHandler(EventHandler<GetChannelClipsEventArgs> eventHandler)
-        {
-            Overlay.GetChannelClipsEvent += eventHandler;
-        }
+        //public void SetChannelClipsHandler(EventHandler<GetChannelClipsEventArgs> eventHandler)
+        //{
+        //    Overlay.GetChannelClipsEvent += eventHandler;
+        //}
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {

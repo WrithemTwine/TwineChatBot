@@ -1030,5 +1030,29 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayShoutoutClips"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppCurrWorkingPopup {
+            get {
+                return ((bool)(this["AppCurrWorkingPopup"]));
+            }
+            set {
+                this["AppCurrWorkingPopup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppCurrWorkingAppData {
+            get {
+                return ((bool)(this["AppCurrWorkingAppData"]));
+            }
+            set {
+                this["AppCurrWorkingAppData"] = value;
+            }
+        }
     }
 }

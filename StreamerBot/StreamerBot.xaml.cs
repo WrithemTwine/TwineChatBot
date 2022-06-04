@@ -18,11 +18,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -68,6 +70,12 @@ namespace StreamerBot
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
             }
+
+            if (Settings.Default.AppCurrWorkingAppData)
+            {
+                Directory.SetCurrentDirectory(GetAppDataCWD());
+            }
+
             WatchProcessOps = true;
             IsMultiProcActive = null;
             OptionFlags.SetSettings();
@@ -80,6 +88,8 @@ namespace StreamerBot
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
+
+            guiAppServices.AppDataDirectory = GetAppDataCWD();
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
@@ -107,6 +117,11 @@ namespace StreamerBot
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
 #endif
+        }
+
+        private static string GetAppDataCWD()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
         }
 
         #region Bot_Ops
@@ -517,7 +532,6 @@ namespace StreamerBot
             }
 
             CheckMessageBoxes();
-
             CheckBox_ManageData_Click(sender, new());
 
             // TODO: research auto-refreshing token
@@ -544,11 +558,6 @@ namespace StreamerBot
 
         private void CheckMessageBoxes()
         {
-
-//#if DEBUG
-//            OptionFlags.ManageDataArchiveMsg = true;
-//#endif
-
             if (OptionFlags.ManageDataArchiveMsg)
             {
                 MessageBox.Show(LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveMsg), LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveTitle));
@@ -556,6 +565,23 @@ namespace StreamerBot
                 Settings.Default.ManageDataArchiveMsg = false;
                 OptionFlags.SetSettings();
             }
+
+
+            if (Settings.Default.AppCurrWorkingPopup)
+            {
+                Settings.Default.AppCurrWorkingPopup = false;
+                string SaveCWDPath = GetAppDataCWD();
+
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at: {SaveCWDPath}, or at the application's current location: {Directory.GetCurrentDirectory()}. Please select 'Yes' to enable the APPData save location and restart the app. Please see the 'Data/Options/Any - Data Management' to change this option. This dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+
+                if(boxResult == MessageBoxResult.Yes)
+                {
+                    Settings.Default.AppCurrWorkingAppData = true;
+                }
+            }
+//#if DEBUG
+//            OptionFlags.ManageDataArchiveMsg = true;
+//#endif
 
             if (!OptionFlags.DataLoaded)
             {
@@ -1143,6 +1169,9 @@ namespace StreamerBot
 
             BotController.AddNewAutoShoutUser(((DataRowView)item.SelectedValue).Row["UserName"].ToString());
         }
+
+        // TODO: add enable & disable rows events, regarding right-click menu
+
         #endregion
 
         #region Debug Empty Stream

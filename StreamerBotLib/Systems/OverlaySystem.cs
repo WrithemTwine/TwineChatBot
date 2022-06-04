@@ -9,6 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
+/*
+ * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
+ * https://dev.twitch.tv/docs/embed
+ * 
+ * For this reason, currently disabling the Clips features - either showing the clip someone made of the current channel and shoutout random clip for a user.
+ * Only hid the features by comment as they might be used in the future.
+*/
+
+
+
 namespace StreamerBotLib.Systems
 {
     internal class OverlaySystem : SystemsBase
@@ -47,7 +57,7 @@ namespace StreamerBotLib.Systems
             // if there are no channel point rewards, the streamers credentials may need to be loaded or there aren't any channel points
             OverlayActionPairs.Add(OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : new() { "None or Not Loaded!" });
             OverlayActionPairs.Add(OverlayTypes.Giveaway.ToString(), new() { OverlayTypes.Giveaway.ToString() });
-            OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
+            //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
 
             foreach(string K in OverlayActionPairs.Keys)
             {
