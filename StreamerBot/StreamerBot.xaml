@@ -9,7 +9,7 @@
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
         xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
         mc:Ignorable="d"
-        Title="Streamer Bot Manager" Height="770" Width="1020"
+        Title="Streamer Bot Manager" Height="750" Width="850"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
     <Window.Resources>
         <ResourceDictionary>
@@ -25,8 +25,11 @@
                 <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
                 <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
                 <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
-                <Separator x:Name="DataGridContextMenu_Separator" />
+                <Separator x:Name="DataGridContextMenu_Separator1" />
                 <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
+                <Separator x:Name="DataGridContextMenu_Separator2" />
+                <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" />
+                <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" />
             </ContextMenu>
 
             <Style TargetType="{x:Type DockPanel}">
@@ -628,7 +631,7 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Any - Media Overlay" Visibility="Visible">
+                                        <GroupBox Header="Any - Media Overlay">
                                             <StackPanel>
                                                 <Label>
                                                     <TextBlock>Clicking Enable will start a new Process for the Media Overlay Server</TextBlock>
@@ -641,8 +644,8 @@
                                                         <CheckBox.ToolTip>The PubService bot must have 'Monitor Channel Points' service and bot started to enable this feature.</CheckBox.ToolTip>
                                                         <TextBlock>Enable Monitor Channel Points</TextBlock>
                                                     </CheckBox>
-                                                    <CheckBox IsChecked="{Binding MediaOverlayShoutoutClips}">
-                                                        <CheckBox.ToolTip>For an Overlay Service Shout-Out event, use a random clip from their channel as part of the overlay notification.</CheckBox.ToolTip>
+                                                    <CheckBox IsChecked="{Binding MediaOverlayShoutoutClips}" Visibility="Collapsed">
+                                                        <CheckBox.ToolTip>For an Overlay Service Shout-Out event, use a random clip from their channel as part of the overlay notification. Twitch currently requires SSL certs for embed videos and a domain name. Disabled for unavailable features.</CheckBox.ToolTip>
                                                         <TextBlock>Enable for shout-outs using a random clip from user's channel</TextBlock>
                                                     </CheckBox>
                                                 </StackPanel>
@@ -772,6 +775,9 @@
                                                 <Label>
                                                     <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>
                                                 </Label>
+                                                <CheckBox x:Name="CheckBox_AppData" IsChecked="{Binding AppCurrWorkingAppData}">
+                                                    <TextBlock TextWrapping="Wrap">Enable saving the data to the AppData location,<TextBlock DataContext="{Binding Mode=OneWay, Source={StaticResource AppServices}}" Text="{Binding AppDataDirectory}" TextWrapping="Wrap" ToolTip="{Binding AppDataDirectory}" /> <LineBreak /> You will need to close the app, move the save files, and re-open the app.</TextBlock>
+                                                </CheckBox>
                                                 <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}">
                                                     <TextBlock TextWrapping="Wrap">Manage channel viewers, including their watchtime.*</TextBlock>
                                                 </CheckBox>

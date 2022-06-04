@@ -11,6 +11,9 @@ namespace StreamerBotLib.GUI
 {
     public class GUIAppServices : GUIBotBase, INotifyPropertyChanged
     {
+        private string _ADataDir = "";
+        public string AppDataDirectory { get { return _ADataDir; } set { _ADataDir = value; NotifyPropertyChanged(nameof(AppDataDirectory)); } }
+
         public BotOverlayServer MediaOverlayServer { get; private set; }
 
         public int MediaItems { get
@@ -25,6 +28,8 @@ namespace StreamerBotLib.GUI
             MediaOverlayServer.OnBotStarted += Service_Started;
             MediaOverlayServer.OnBotStopped += Service_Stopped;
             MediaOverlayServer.ActionQueueChanged += MediaOverlayServer_ActionQueueChanged;
+
+            AppDataDirectory = "";
         }
 
         private void MediaOverlayServer_ActionQueueChanged(object sender, EventArgs e)
