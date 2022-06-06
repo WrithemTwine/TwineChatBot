@@ -425,6 +425,17 @@ switches:
             SetDataTableFieldRows(_DataSource.Discord, _DataSource.Discord.IsEnabledColumn, Enabled);
         }
 
+        public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
+        {
+            foreach(DataRow dr in dataRows)
+            {
+                if (CheckField(dr.Table.TableName, "IsEnabled"))
+                {
+                    SetDataRowFieldRow(dr, "IsEnabled", IsEnabled);
+                }
+            }
+        }
+
         public List<string> GetCurrencyNames()
         {
 #if LogDataManager_Actions

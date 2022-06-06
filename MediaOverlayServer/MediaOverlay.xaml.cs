@@ -10,7 +10,7 @@ using MediaOverlayServer.Static;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
+using System.Windows.Data;
 
 namespace MediaOverlayServer
 {
@@ -19,12 +19,12 @@ namespace MediaOverlayServer
     /// </summary>
     public partial class MainWindow : Window
     {
-        public event EventHandler<EventArgs> UserHideWindow;
+        public event EventHandler<EventArgs>? UserHideWindow;
 
         private OverlayController Controller { get; }
         private GUIData GUIData { get; }
 
-        public MainWindow()
+        public MainWindow(EventHandler<EventArgs>? HideWindow = null)
         {
             if (Settings.Default.SettingsUpgrade)
             {
@@ -38,7 +38,11 @@ namespace MediaOverlayServer
 
             InitializeComponent();
 
+            TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
+
             GUIData = (GUIData)Resources["GUIAppData"];
+
+            UserHideWindow += HideWindow;
         }
 
         #region Connect to Main App
@@ -131,7 +135,44 @@ namespace MediaOverlayServer
             }
             else
             {
-                GUIData.AddEditPage( Enum.GetNames(typeof(OverlayTypes)) );
+                GUIData.AddEditPage(Enum.GetNames(typeof(OverlayTypes)));
+            }
+
+            TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
+
+            if(TabControl_OverlayStyles.Items.Count> 0)
+            {
+                foreach(var item in TabControl_OverlayStyles.Items)
+                {
+                    (item as TabItem).Template = null;
+                }
+            }
+            TabControl_OverlayStyles.Items.Clear();
+
+            foreach (OverlayStyle O in GUIData.OverlayEditStyles)
+            {
+                if (O.OverlayType != OverlayTypes.None.ToString() || OptionFlags.UseSameOverlayStyle)
+                {
+                    TextBox textBox = new();
+
+                    Binding tabContentBinding = new(nameof(O.OverlayStyleText));
+                    tabContentBinding.Source = O;
+
+                    textBox.SetBinding(TextBox.TextProperty, tabContentBinding);
+
+                    ScrollViewer sv = new() { Content = textBox };
+                    DockPanel doc = new();
+                    doc.Children.Add(sv);
+
+                    TabItem newTab = new() { Header = O.OverlayType, Content = doc };
+
+                    TabControl_OverlayStyles.Items.Add(newTab);
+                }
+            }
+
+            if (TabControl_OverlayStyles.Items.Count > 0)
+            {
+                TabControl_OverlayStyles.SelectedIndex = 0;
             }
         }
 

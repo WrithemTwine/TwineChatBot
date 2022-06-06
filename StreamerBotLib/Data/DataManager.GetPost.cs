@@ -226,6 +226,14 @@ namespace StreamerBotLib.Data
             }
         }
 
+        public void SetDataRowFieldRow(DataRow dataRow, string dataColumn, object value)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                dataRow[dataColumn] = value;
+            }
+        }
+
         #endregion
 
         #region Delete Data

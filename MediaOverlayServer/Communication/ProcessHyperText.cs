@@ -42,11 +42,7 @@ namespace MediaOverlayServer.Communication
 
             string Img = "";
 
-            if (overlayActionType.ImageFile == "")
-            {
-                Img = string.Empty;
-            }
-            else
+            if (overlayActionType.ImageFile != "")
             {
                 Size sz = Image.FromFile(overlayActionType.ImageFile, false).Size;
 

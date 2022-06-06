@@ -256,7 +256,7 @@ namespace StreamerBot
                 new()
                 {
                     CommandText = $"{DefaultCommand.soactive}",
-                    CommandArguments = new(){ "" },
+                    CommandArguments = new() { "" },
                     UserType = ViewerTypes.Broadcaster,
                     IsBroadcaster = true,
                     DisplayName = OptionFlags.TwitchChannelName,
@@ -275,7 +275,7 @@ namespace StreamerBot
         /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
         private void UpdateData(Button targetclick, Action<string> InvokeMethod)
         {
-            if(!OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
+            if (!OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
             {
                 targetclick.IsEnabled = false;
 
@@ -572,16 +572,14 @@ namespace StreamerBot
                 Settings.Default.AppCurrWorkingPopup = false;
                 string SaveCWDPath = GetAppDataCWD();
 
-                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at: {SaveCWDPath}, or at the application's current location: {Directory.GetCurrentDirectory()}. Please select 'Yes' to enable the APPData save location and restart the app. Please see the 'Data/Options/Any - Data Management' to change this option. This dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application's current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
 
-                if(boxResult == MessageBoxResult.Yes)
+                if (boxResult == MessageBoxResult.Yes)
                 {
                     Settings.Default.AppCurrWorkingAppData = true;
                 }
             }
-//#if DEBUG
-//            OptionFlags.ManageDataArchiveMsg = true;
-//#endif
+
 
             if (!OptionFlags.DataLoaded)
             {
@@ -662,11 +660,13 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
-            List<RadioButton> radioButtons = new () { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Twitch_PubSubBotStart, Radio_Services_OverlayBotStart };
+            OptionFlags.SetSettings();
+
+            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
 
             void SetButtons(bool value)
             {
-                foreach(RadioButton rb in radioButtons)
+                foreach (RadioButton rb in radioButtons)
                 {
                     rb.IsEnabled = value;
                 }
@@ -681,10 +681,11 @@ namespace StreamerBot
                 SetButtons(false);
             }
 
+            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken : OptionFlags.TwitchBotAccessToken != "";
+
             // Twitch
 
-
-            if(TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
+            if (TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
             {
                 GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
                 TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
@@ -827,9 +828,9 @@ namespace StreamerBot
         {
             TextBox src = (TextBox)sender;
 
-            if(int.TryParse(src.Text, out int result))
+            if (int.TryParse(src.Text, out int result))
             {
-                if(result is <1 or > 100)
+                if (result is < 1 or > 100)
                 {
                     src.Text = (result < 1 ? 1 : result > 100 ? 100 : result).ToString();
                 }
@@ -889,10 +890,10 @@ namespace StreamerBot
         {
             if ((sender as RadioButton).IsEnabled)
             {
-                  Dispatcher.BeginInvoke(new BotOperation(() =>
-                  {
-                      ((sender as RadioButton).DataContext as IOModule)?.StartBot();
-                  }), null);
+                Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    ((sender as RadioButton).DataContext as IOModule)?.StartBot();
+                }), null);
             }
         }
 
@@ -1040,7 +1041,7 @@ namespace StreamerBot
                     }
                     break;
                 case "DG_Webhooks":
-                    foreach(DataGridColumn dc in dg.Columns)
+                    foreach (DataGridColumn dc in dg.Columns)
                     {
                         SetWidth(dc);
                     }
@@ -1085,6 +1086,7 @@ namespace StreamerBot
             {
                 bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
+                bool FoundIsEnabled = SystemsController.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName , "IsEnabled");
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
@@ -1097,6 +1099,10 @@ namespace StreamerBot
                         else if (((MenuItem)M).Name == "DataGridContextMenu_AutoShout")
                         {
                             ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+                        } 
+                        else if ( ((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
+                        {
+                            ((MenuItem)M).IsEnabled = FoundIsEnabled;
                         }
                     }
                     else if (M.GetType() == typeof(Separator))
@@ -1119,14 +1125,14 @@ namespace StreamerBot
 
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             Popup_DataEdit(item);
         }
 
         private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
         {
-            if(sourceDataGrid.Name == "DataGrid_OverlayService_Actions")
+            if (sourceDataGrid.Name == "DataGrid_OverlayService_Actions")
             {
                 PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
             }
@@ -1151,26 +1157,38 @@ namespace StreamerBot
 
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             Popup_DataEdit(item, false);
         }
 
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             SystemsController.DeleteRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)));
         }
 
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             BotController.AddNewAutoShoutUser(((DataRowView)item.SelectedValue).Row["UserName"].ToString());
         }
 
-        // TODO: add enable & disable rows events, regarding right-click menu
+        private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
+            SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), true);
+        }
+
+        private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
+            SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
+        }
 
         #endregion
 
@@ -1268,11 +1286,11 @@ namespace StreamerBot
             }
 
             string ItemName = "";
-            
+
             switch (givetype)
             {
                 case GiveawayTypes.Command:
-                   ItemName = (string) ComboBox_Giveaway_Coms.SelectedValue;
+                    ItemName = (string)ComboBox_Giveaway_Coms.SelectedValue;
                     break;
                 case GiveawayTypes.CustomRewards:
                     ItemName = (string)ComboBox_Giveaway_ChanPts.SelectedValue;
@@ -1383,7 +1401,7 @@ namespace StreamerBot
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }
 
-                    if( OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
+                    if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
                     {
                         Controller.TwitchStartUpdateAllFollowers();
                         TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
@@ -1439,6 +1457,7 @@ namespace StreamerBot
         #endregion
 
         #endregion
+
 
     }
 }

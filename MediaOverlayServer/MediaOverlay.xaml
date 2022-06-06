@@ -34,7 +34,13 @@
                 </DockPanel>
             </DataTemplate>
             <DataTemplate x:Key="OverlayTypeTemplate">
-                <TabItem Header="{Binding OverlayType}"/>
+                <TabItem Header="{Binding OverlayType}">
+                    <DockPanel>
+                        <ScrollViewer>
+                            <TextBox AcceptsReturn="True" Text="{Binding OverlayStyleText}" LostFocus="TextBox_LostFocus" />
+                        </ScrollViewer>
+                    </DockPanel>
+                </TabItem>
             </DataTemplate>
             <Style TargetType="{x:Type GroupBox}">
                 <Setter Property="Margin" Value="5" />
@@ -89,14 +95,14 @@
             </TabItem>
             <TabItem Header="Links" >
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts.</TextBlock>
+                    <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server.</TextBlock>
                     <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayLinks, Mode=OneWay}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}">
                     </ListView>
                 </DockPanel>
             </TabItem>
             <TabItem Header="Overlay Styles" >
                 <DockPanel Margin="3">
-                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding CSSExpandHelp}" DockPanel.Dock="Top" Expanded="Expander_Click_SaveSettings">
+                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding CSSExpandHelp}" DockPanel.Dock="Top" Expanded="Expander_Click_SaveSettings" Collapsed="Expander_Click_SaveSettings">
                         <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <FlowDocument>
                                 <Section>
@@ -113,7 +119,7 @@
                         </FlowDocumentScrollViewer>
                     </Expander>
                     
-                    <TabControl TabStripPlacement="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayEditStyles}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource OverlayTypeTemplate}}" ContentTemplate="{StaticResource OverlayStyleTemplate}" />
+                    <TabControl x:Name="TabControl_OverlayStyles" />
                 </DockPanel>
 
             </TabItem>

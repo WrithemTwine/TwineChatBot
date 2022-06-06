@@ -134,15 +134,19 @@ namespace StreamerBotLib.BotClients.Twitch
             if (OptionFlags.TwitchStreamerUseToken)
             {
                 Token = OptionFlags.TwitchStreamOauthToken;
-            } else
+            }
+            else
             {
                 Token = OptionFlags.TwitchBotAccessToken;
             }
 
-            // send the topics to listen
-            TwitchPubSub.SendTopics(Token);
+            if (Token != null)
+            {
+                // send the topics to listen
+                TwitchPubSub.SendTopics(Token);
 
-            InvokeBotStarted();
+                InvokeBotStarted();
+            }
         }
 
     }

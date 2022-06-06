@@ -239,9 +239,8 @@ namespace StreamerBotLib.BotClients
 
             if(OverlayWindow == null)
             {
-                OverlayWindow = new();
+                OverlayWindow = new(OverlayWindow_UserHideWindow);
                 SendOverlayToServer += OverlayWindow.GetOverlayActionReceivedHandler();
-                OverlayWindow.UserHideWindow += OverlayWindow_UserHideWindow;
             }
 
             if (!AlertsThreadStarted)
