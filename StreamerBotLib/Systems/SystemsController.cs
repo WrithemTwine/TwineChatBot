@@ -240,7 +240,7 @@ namespace StreamerBotLib.Systems
                             {
                                 string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
                                 SendMessage(message);
-  
+
                                 CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow, f.FromUserName, UserMsg: message);
                             }
                         }
@@ -323,6 +323,16 @@ namespace StreamerBotLib.Systems
         public static void AddNewAutoShoutUser(string UserName)
         {
             SystemsBase.AddNewAutoShoutUser(UserName);
+        }
+
+        public static void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
+        {
+            SystemsBase.UpdatedIsEnabledRows(dataRows, IsEnabled);
+        }
+
+        public static bool CheckField(string dataTable, string FieldName)
+        {
+            return SystemsBase.CheckField(dataTable, FieldName);
         }
 
         #endregion

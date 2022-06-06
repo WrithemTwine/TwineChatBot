@@ -1,4 +1,11 @@
-﻿
+﻿#if UsePipes
+#define UtilizePipeIPC // use the NamedPipe Server/Client mechanism
+#else
+#define UseGUIDLL
+#endif
+
+
+#if UtilizePipeIPC
 using System;
 using System.IO;
 using System.IO.Pipes;
@@ -80,3 +87,5 @@ namespace MediaOverlayServer.Communication
         }
     }
 }
+#endif
+

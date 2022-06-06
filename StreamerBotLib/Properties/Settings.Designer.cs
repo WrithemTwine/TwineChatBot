@@ -1054,5 +1054,17 @@ namespace StreamerBotLib.Properties {
                 this["AppCurrWorkingAppData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchPubSubOnlineMode {
+            get {
+                return ((bool)(this["TwitchPubSubOnlineMode"]));
+            }
+            set {
+                this["TwitchPubSubOnlineMode"] = value;
+            }
+        }
     }
 }

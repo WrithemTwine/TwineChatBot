@@ -333,6 +333,11 @@ namespace StreamerBotLib.BotClients
                     ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
                 }
 
+                if (OptionFlags.TwitchPubSubOnlineMode)
+                {
+                    TwitchBotPubSub.StartBot();
+                }
+
                 InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
                 if (!OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStarted)
                 {
@@ -351,6 +356,11 @@ namespace StreamerBotLib.BotClients
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
             {
                 TwitchBotChatClient.StopBot();
+            }
+
+            if (OptionFlags.TwitchPubSubOnlineMode)
+            {
+                TwitchBotPubSub.StopBot();
             }
 
             if (OptionFlags.IsStreamOnline)

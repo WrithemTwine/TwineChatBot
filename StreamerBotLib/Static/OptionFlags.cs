@@ -12,8 +12,6 @@ namespace StreamerBotLib.Static
     /// </summary>
     public static class OptionFlags
     {
-        // TODO: add option to allow user to specify to save data file in {user}/AppData/local
-
         /// <summary>
         /// Specifies whether to record bot status messages in the log file.
         /// </summary>
@@ -250,6 +248,10 @@ namespace StreamerBotLib.Static
         /// Specifies Twitch Pub Sub scope, to include Channel Points.
         /// </summary>
         public static bool TwitchPubSubChannelPoints { get; set; }
+        /// <summary>
+        /// Enables the PubSub to start when the stream is online and stop when the stream is offline.
+        /// </summary>
+        public static bool TwitchPubSubOnlineMode { get; set; }
 
         /// <summary>
         /// Specifies the Twitch Channel Name to monitor.
@@ -337,6 +339,7 @@ namespace StreamerBotLib.Static
                 TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
+                TwitchPubSubOnlineMode = Settings.Default.TwitchPubSubOnlineMode;
 
                 TwitchChannelName = Settings.Default.TwitchChannelName;
                 TwitchBotUserName = Settings.Default.TwitchBotUserName;

@@ -164,6 +164,16 @@ namespace StreamerBotLib.Systems
             DataManage.AddNewAutoShoutUser(UserName);
         }
 
+        internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
+        {
+            DataManage.SetIsEnabled(dataRows, IsEnabled);
+        }
+
+        internal static bool CheckField(string dataTable, string fieldName)
+        {
+            return DataManage.CheckField(dataTable, fieldName);
+        }
+        
         public static bool AddClip(Clip c)
         {
             return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
@@ -233,6 +243,7 @@ namespace StreamerBotLib.Systems
         {
             AddChatString(Settings.Default.TwitchBotUserName, e.Msg);
         }
+
 
     }
 }

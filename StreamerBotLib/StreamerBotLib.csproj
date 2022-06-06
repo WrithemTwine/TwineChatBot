@@ -6,7 +6,7 @@
     <Version>0.2.0.0</Version>
     <PackageId>TwineStreamerBotLib</PackageId>
     <AssemblyName>TwineStreamerBotLib</AssemblyName>
-    <Authors>TwineStreamerBotLib</Authors>
+    <Authors>WrithemTwine</Authors>
     <Company>TwineStreamerBotLib</Company>
     <Product>TwineStreamerBotLib</Product>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>

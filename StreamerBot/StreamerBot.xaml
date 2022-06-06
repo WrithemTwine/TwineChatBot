@@ -9,7 +9,7 @@
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
         xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
         mc:Ignorable="d"
-        Title="Streamer Bot Manager" Height="750" Width="850"
+        Title="Streamer Bot Manager" Height="750" Width="1044"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
     <Window.Resources>
         <ResourceDictionary>
@@ -28,8 +28,8 @@
                 <Separator x:Name="DataGridContextMenu_Separator1" />
                 <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
                 <Separator x:Name="DataGridContextMenu_Separator2" />
-                <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" />
-                <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" />
+                <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
+                <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
             </ContextMenu>
 
             <Style TargetType="{x:Type DockPanel}">
@@ -251,6 +251,9 @@
                                             <Label x:Name="Label_TwitchPubSub_Stop" Foreground="Maroon" Visibility="Visible">
                                                 <TextBlock>The Twitch PubSub Client is stopped!</TextBlock>
                                             </Label>
+                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchPubSubOnlineMode}" >
+                                                <TextBlock>Enable PubSub to start when Stream is Live and stop when Stream is not Live.</TextBlock>
+                                            </CheckBox>
                                             <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" Content="Start PubSub Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
                                             <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" Content="Stop PubSub Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
                                         </WrapPanel>
