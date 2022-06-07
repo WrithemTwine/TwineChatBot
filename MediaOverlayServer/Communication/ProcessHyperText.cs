@@ -42,7 +42,7 @@ namespace MediaOverlayServer.Communication
 
             string Img = "";
 
-            if (overlayActionType.ImageFile != "")
+            if (overlayActionType.ImageFile != "" && File.Exists(overlayActionType.ImageFile))
             {
                 Size sz = Image.FromFile(overlayActionType.ImageFile, false).Size;
 
@@ -64,11 +64,11 @@ namespace MediaOverlayServer.Communication
             {
                 Media = new XElement("iframe", new XAttribute("id", "myalert"), new XElement("src", overlayActionType.MediaFile)).ToString();
             } 
-            else if (audio.ContainsKey(ext))
+            else if (audio.ContainsKey(ext) && File.Exists(overlayActionType.MediaFile))
             {
                 Media = BuildMediaElement("audio", ext, audio);
             }
-            else if (video.ContainsKey(ext))
+            else if (video.ContainsKey(ext) && File.Exists(overlayActionType.MediaFile))
             {
                 Media = BuildMediaElement("video", ext, video);
             }

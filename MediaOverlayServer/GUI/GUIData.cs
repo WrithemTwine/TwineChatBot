@@ -48,7 +48,7 @@ namespace MediaOverlayServer.GUI
             OnPropertyChanged(nameof(OverlayStats));
         }
 
-        public void UpdateStat(string OverType, int newCount)
+        public void UpdateStat(string OverType, int newCount = 0)
         {
             UpdateStat(new() { OverlayCount = newCount, OverlayType = OverType });
         }
@@ -57,7 +57,10 @@ namespace MediaOverlayServer.GUI
         {
             if (OverlayStats.Contains(overlayStatData))
             {
-                OverlayStats[OverlayStats.IndexOf(overlayStatData)].OverlayCount = overlayStatData.OverlayCount;
+                int idx = OverlayStats.IndexOf(overlayStatData);
+
+                OverlayStats[idx].OverlayCount = overlayStatData.OverlayCount == 0 ? OverlayStats[idx].OverlayCount + 1 : overlayStatData.OverlayCount;
+
                 OnPropertyChanged(nameof(OverlayStats));
             }
         }

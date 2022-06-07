@@ -1346,7 +1346,10 @@
                     </DockPanel>
                     <DockPanel>
                         <Label Content="Current User List" DockPanel.Dock="Top" />
-                        <ListView DataContext="{DynamicResource DataViews}" ItemsSource="{Binding CurrUserList}" Width="200" DockPanel.Dock="Top" ScrollViewer.CanContentScroll="True" />
+                        <ListView DataContext="{DynamicResource DataViews}" ItemsSource="{Binding CurrUserList}" Width="200" DockPanel.Dock="Top" ScrollViewer.CanContentScroll="True">
+                            <ListView.ToolTip>
+                                <TextBlock TextWrapping="Wrap" Width="80">Currently, the API doesn't support identifying joining users with their viewer type (broadcaster, moderator etc).</TextBlock>
+                            </ListView.ToolTip></ListView>
                     </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">

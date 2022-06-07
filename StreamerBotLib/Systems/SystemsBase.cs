@@ -209,7 +209,6 @@ namespace StreamerBotLib.Systems
             }
         }
 
-
         public static void UpdateGUICurrUsers()
         {
             CurrUserJoin.Clear();

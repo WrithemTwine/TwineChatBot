@@ -419,13 +419,20 @@ namespace StreamerBotLib.Systems
 
         private void UpdateUserJoinedList()
         {
-            ThreadManager.CreateThreadStart(() =>
+            try
             {
-                AppDispatcher.BeginInvoke(new BotOperation(() =>
+                ThreadManager.CreateThreadStart(() =>
                 {
-                    SystemsBase.UpdateGUICurrUsers();
-                }));
-            });
+                    AppDispatcher.BeginInvoke(new BotOperation(() =>
+                    {
+                        SystemsBase.UpdateGUICurrUsers();
+                    }));
+                });
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         public void UserLeft(string UserName, Bots Source)

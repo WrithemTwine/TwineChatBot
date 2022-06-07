@@ -133,8 +133,8 @@ namespace StreamerBotLib.GUI.Windows
                 {
                     try
                     {
-                        SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]);
-                        SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]);
+                        SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]) ?? (string) SaveDataRow.Table.Columns["MediaFile"].DefaultValue;
+                        SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["ImageFile"].DefaultValue;
                     }
                     catch (Exception ex)
                     {
@@ -167,18 +167,23 @@ namespace StreamerBotLib.GUI.Windows
         private string FileCopy(string FileName, string OverlayType)
         {
             string resultfile;
-            string CopyFile = Path.Combine(OverlayType, Path.GetFileName(FileName)).Replace("_"," ").Replace(" ",""); // replace '_' to prevent issues with converting class object to string to class object
+            string CopyFile = Path.Combine(OverlayType, Path.GetFileName(FileName)).Replace("_", " ").Replace(" ", ""); // replace '_' to prevent issues with converting class object to string to class object
 
-            if (!File.Exists(CopyFile) && File.Exists(FileName))
+            if (FileName == "")
+            {
+                resultfile = null;
+            }
+            else if (!File.Exists(CopyFile) && File.Exists(FileName))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(CopyFile));
                 File.Copy(FileName, CopyFile, false);
                 resultfile = CopyFile;
-            } else if (!File.Exists(FileName))
+            }
+            else if (!File.Exists(FileName))
             {
                 resultfile = FileName;
             }
-            else
+            else 
             {
                 resultfile = CopyFile;
             }

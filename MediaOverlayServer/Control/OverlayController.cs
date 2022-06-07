@@ -36,9 +36,9 @@ namespace MediaOverlayServer.Control
             _httpServer = new();
         }
 
-        public void ReceivedOverlayEvent(object? sender, OverlayActionType e)
+        internal void SendAlert(OverlayPage overlayPage)
         {
-            _httpServer.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
+            _httpServer.SendAlert(overlayPage);
         }
 #endif
 
