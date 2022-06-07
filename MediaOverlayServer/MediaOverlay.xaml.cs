@@ -1,4 +1,5 @@
 ﻿
+using MediaOverlayServer.Communication;
 using MediaOverlayServer.Control;
 using MediaOverlayServer.Enums;
 using MediaOverlayServer.GUI;
@@ -48,7 +49,14 @@ namespace MediaOverlayServer
         #region Connect to Main App
         public EventHandler<OverlayActionType> GetOverlayActionReceivedHandler()
         {
-            return Controller.ReceivedOverlayEvent;
+            return ReceivedOverlayEvent;
+        }
+
+        public void ReceivedOverlayEvent(object? sender, OverlayActionType e)
+        {
+            Controller.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
+
+            GUIData.UpdateStat(e.OverlayType.ToString() );
         }
 
         public void CloseApp(bool Token = false)
