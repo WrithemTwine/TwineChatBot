@@ -266,11 +266,11 @@ namespace StreamerBotLib.BotClients
 
             if (!OptionFlags.ActiveToken)
             {
-                OverlayWindow.CloseApp();
+                OverlayWindow?.CloseApp();
             } 
             else
             {
-                OverlayWindow.Hide();
+                OverlayWindow?.Hide();
             }
 
             InvokeBotStopped();

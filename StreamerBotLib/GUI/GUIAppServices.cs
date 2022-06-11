@@ -1,26 +1,29 @@
 ﻿using StreamerBotLib.BotClients;
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.GUI
 {
     public class GUIAppServices : GUIBotBase, INotifyPropertyChanged
     {
         private string _ADataDir = "";
-        public string AppDataDirectory { get { return _ADataDir; } set { _ADataDir = value; NotifyPropertyChanged(nameof(AppDataDirectory)); } }
+        public string AppDataDirectory
+        {
+            get { return _ADataDir; }
+            set { _ADataDir = value; NotifyPropertyChanged(nameof(AppDataDirectory)); }
+        }
 
-        public BotOverlayServer MediaOverlayServer { get; private set; }
+        public BotOverlayServer MediaOverlayServer { get; private set; } = BotIOController.BotController.OverlayServerBot;
 
-        public int MediaItems { get
+        public int MediaItems
+        {
+            get
             {
                 int x = MediaOverlayServer.MediaItems;
                 return x;
-            } }
+            }
+        }
 
         public GUIAppServices()
         {

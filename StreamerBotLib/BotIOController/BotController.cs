@@ -45,7 +45,7 @@ namespace StreamerBotLib.BotIOController
         private bool GiveawayStarted = false;
 
         private BotsTwitch TwitchBots { get; set; }
-        internal static BotOverlayServer OverlayServerBot { get; set; }
+        public static BotOverlayServer OverlayServerBot { get; set; } = new();
 
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
@@ -68,7 +68,7 @@ namespace StreamerBotLib.BotIOController
             SystemsBase.ChannelName = TwitchBotsBase.TwitchChannelName;
             OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
-            OverlayServerBot = new();
+            //OverlayServerBot = new();
             SetNewOverlayEventHandler();
             //SetGetChannelClipsHandler();
 
@@ -423,7 +423,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
         {
-            ConvertClips(clips.Clips);
+            HandleBotEventPostNewClip(ConvertClips(clips.Clips));
         }
 
         public void TwitchStreamOnline(OnStreamOnlineArgs e)

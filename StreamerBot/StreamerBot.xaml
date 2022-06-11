@@ -9,7 +9,7 @@
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
         xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
         mc:Ignorable="d"
-        Title="Streamer Bot Manager" Height="750" Width="1044"
+        Title="Streamer Bot Manager" Height="750" Width="1200"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True">
     <Window.Resources>
         <ResourceDictionary>

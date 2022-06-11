@@ -38,7 +38,7 @@ namespace StreamerBot
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
         // TODO: add button to hide the 'clear data' buttons in the GUI, to prevent accidental deletions
-
+        // TODO: media overlay doesn't auto-start
 
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
@@ -146,7 +146,7 @@ namespace StreamerBot
                         Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
                         Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
                         Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart,
-                        Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
+                     Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
                         Bots.Default => throw new NotImplementedException(),
                         Bots.TwitchUserBot => throw new NotImplementedException(),
                         _ => throw new NotImplementedException()
@@ -169,7 +169,7 @@ namespace StreamerBot
                       Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
                       Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
                       Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
-                      Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
+                 Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
                       Bots.Default => throw new NotImplementedException(),
                       Bots.TwitchUserBot => throw new NotImplementedException(),
                       _ => throw new NotImplementedException()
@@ -507,7 +507,8 @@ namespace StreamerBot
                     new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                     new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                     new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
-                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
+                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
+                   new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart)
                 };
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
@@ -662,7 +663,7 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
+            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart,  Radio_Services_OverlayBotStart };
 
             void SetButtons(bool value)
             {

@@ -47,7 +47,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
-        <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayStats, FallbackValue=0, IsAsync=True}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource OverlayTypeStatTemplate}}" />
+        <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayStats, FallbackValue=0}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource OverlayTypeStatTemplate}}" />
         <TabControl Margin="3">
             <TabItem Header="Options" DataContext="{x:Static Prop:Settings.Default}">
                 <WrapPanel>
