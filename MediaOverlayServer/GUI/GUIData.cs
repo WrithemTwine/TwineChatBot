@@ -59,7 +59,7 @@ namespace MediaOverlayServer.GUI
             {
                 int idx = OverlayStats.IndexOf(overlayStatData);
 
-                OverlayStats[idx].OverlayCount = overlayStatData.OverlayCount == 0 ? OverlayStats[idx].OverlayCount + 1 : overlayStatData.OverlayCount;
+                OverlayStats[idx].OverlayCount = overlayStatData.OverlayCount == 0 ? OverlayStats[idx].OverlayCount++ : overlayStatData.OverlayCount;
 
                 OnPropertyChanged(nameof(OverlayStats));
             }

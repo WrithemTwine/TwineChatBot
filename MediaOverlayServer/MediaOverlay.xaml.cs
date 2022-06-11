@@ -55,8 +55,7 @@ namespace MediaOverlayServer
         public void ReceivedOverlayEvent(object? sender, OverlayActionType e)
         {
             Controller.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
-
-            GUIData.UpdateStat(e.OverlayType.ToString() );
+            GUIData.UpdateStat(e.OverlayType.ToString());
         }
 
         public void CloseApp(bool Token = false)
