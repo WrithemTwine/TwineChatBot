@@ -101,24 +101,27 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Stopped = true;
 
-            lock (this)
+            ThreadManager.CreateThreadStart(() =>
             {
-                try
+                lock (this)
                 {
-                    if (IsStarted)
+                    try
                     {
-                        IsStarted = false;
-                        IsStopped = true;
-                        TwitchPubSub.Disconnect();
-                        RefreshSettings();
-                        InvokeBotStopped();
+                        if (IsStarted)
+                        {
+                            IsStarted = false;
+                            IsStopped = true;
+                            TwitchPubSub.Disconnect();
+                            RefreshSettings();
+                            InvokeBotStopped();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
                 }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-            }
+            });
 
             return Stopped;
         }

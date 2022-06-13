@@ -160,12 +160,19 @@ namespace MediaOverlayServer
             {
                 if (O.OverlayType != OverlayTypes.None.ToString() || OptionFlags.UseSameOverlayStyle)
                 {
-                    TextBox textBox = new();
+                    TextBox textBox = new()
+                    {
+                        DataContext = O,
+                        AcceptsReturn = true
+                    };
 
-                    Binding tabContentBinding = new(nameof(O.OverlayStyleText));
-                    tabContentBinding.Source = O;
+                    Binding tabContentBinding = new(nameof(O.OverlayStyleText))
+                    {
+                        Source = O
+                    };
 
                     textBox.SetBinding(TextBox.TextProperty, tabContentBinding);
+                    textBox.LostFocus += TextBox_LostFocus;
 
                     ScrollViewer sv = new() { Content = textBox };
                     DockPanel doc = new();
@@ -203,7 +210,7 @@ namespace MediaOverlayServer
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            ((OverlayStyle)(sender as TextBox).DataContext).SaveFile();
+            ((OverlayStyle)((sender as TextBox).DataContext)).SaveFile();
         }
     }
 }

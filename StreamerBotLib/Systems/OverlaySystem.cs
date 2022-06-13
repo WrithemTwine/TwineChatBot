@@ -17,8 +17,6 @@ using System.Threading;
  * Only hid the features by comment as they might be used in the future.
 */
 
-
-
 namespace StreamerBotLib.Systems
 {
     internal class OverlaySystem : SystemsBase
@@ -139,7 +137,7 @@ namespace StreamerBotLib.Systems
         public class ShoutOutOverlayAction
         {       
             private OverlayActionType ShoutOut;
-            private Action<NewOverlayEventArgs> PerformShoutOut;
+            private readonly Action<NewOverlayEventArgs> PerformShoutOut;
 
             public bool Finish = false;
 
