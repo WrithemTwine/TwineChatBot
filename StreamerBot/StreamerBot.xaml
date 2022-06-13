@@ -1228,8 +1228,8 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" />
-                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor">
+                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Collapsed" />
+                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Collapsed">
                             <Grid x:Name="TabItem_MultiUserLiveMonitor" IsEnabled="False">
                                 <Grid.Resources>
                                     <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
