@@ -994,5 +994,77 @@ namespace StreamerBotLib.Properties {
                 this["MsgSendSOToChat"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayHelpExpand {
+            get {
+                return ((bool)(this["MediaOverlayHelpExpand"]));
+            }
+            set {
+                this["MediaOverlayHelpExpand"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MediaOverlayMRUPathSelect {
+            get {
+                return ((string)(this["MediaOverlayMRUPathSelect"]));
+            }
+            set {
+                this["MediaOverlayMRUPathSelect"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayShoutoutClips {
+            get {
+                return ((bool)(this["MediaOverlayShoutoutClips"]));
+            }
+            set {
+                this["MediaOverlayShoutoutClips"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppCurrWorkingPopup {
+            get {
+                return ((bool)(this["AppCurrWorkingPopup"]));
+            }
+            set {
+                this["AppCurrWorkingPopup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppCurrWorkingAppData {
+            get {
+                return ((bool)(this["AppCurrWorkingAppData"]));
+            }
+            set {
+                this["AppCurrWorkingAppData"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchPubSubOnlineMode {
+            get {
+                return ((bool)(this["TwitchPubSubOnlineMode"]));
+            }
+            set {
+                this["TwitchPubSubOnlineMode"] = value;
+            }
+        }
     }
 }

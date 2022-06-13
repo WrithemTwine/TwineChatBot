@@ -49,6 +49,7 @@ namespace StreamerBotLib.GUI
         public DataView LearnMsgs { get; private set; }
         public DataView BanRules { get; private set; }
         public DataView BanReasons { get; private set; }
+        public DataView OverlayService { get; private set; }
 
         #endregion
 
@@ -109,6 +110,7 @@ namespace StreamerBotLib.GUI
             LearnMsgs = dataManager._DataSource.LearnMsgs.DefaultView;
             BanRules = dataManager._DataSource.BanRules.DefaultView;
             BanReasons = dataManager._DataSource.BanReasons.DefaultView;
+            OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
@@ -129,6 +131,7 @@ namespace StreamerBotLib.GUI
             LearnMsgs.ListChanged += DataView_ListChanged;
             BanRules.ListChanged += DataView_ListChanged;
             BanReasons.ListChanged += DataView_ListChanged;
+            OverlayService.ListChanged += DataView_ListChanged;
 
             SetCommandCollection();
         }

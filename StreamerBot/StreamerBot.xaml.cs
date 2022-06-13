@@ -18,11 +18,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -36,13 +38,14 @@ namespace StreamerBot
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
         // TODO: add button to hide the 'clear data' buttons in the GUI, to prevent accidental deletions
-
+        // TODO: media overlay doesn't auto-start
 
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
+        private readonly GUIAppServices guiAppServices;
         private readonly DateTime StartBotDate;
         private DateTime TwitchFollowRefresh;
         private int TwitchFollowerCurrRefreshHrs = 0;
@@ -67,6 +70,12 @@ namespace StreamerBot
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
             }
+
+            if (Settings.Default.AppCurrWorkingAppData)
+            {
+                Directory.SetCurrentDirectory(GetAppDataCWD());
+            }
+
             WatchProcessOps = true;
             IsMultiProcActive = null;
             OptionFlags.SetSettings();
@@ -78,6 +87,9 @@ namespace StreamerBot
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
+            guiAppServices = Resources["AppServices"] as GUIAppServices;
+
+            guiAppServices.AppDataDirectory = GetAppDataCWD();
 
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
@@ -86,6 +98,10 @@ namespace StreamerBot
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
+
+            guiAppServices.OnBotStarted += GUI_OnBotStarted;
+            guiAppServices.OnBotStopped += GUI_OnBotStopped;
+
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
@@ -101,6 +117,11 @@ namespace StreamerBot
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
 #endif
+        }
+
+        private static string GetAppDataCWD()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
         }
 
         #region Bot_Ops
@@ -125,6 +146,7 @@ namespace StreamerBot
                         Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
                         Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
                         Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart,
+                     Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
                         Bots.Default => throw new NotImplementedException(),
                         Bots.TwitchUserBot => throw new NotImplementedException(),
                         _ => throw new NotImplementedException()
@@ -147,6 +169,7 @@ namespace StreamerBot
                       Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
                       Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
                       Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
+                 Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
                       Bots.Default => throw new NotImplementedException(),
                       Bots.TwitchUserBot => throw new NotImplementedException(),
                       _ => throw new NotImplementedException()
@@ -233,7 +256,7 @@ namespace StreamerBot
                 new()
                 {
                     CommandText = $"{DefaultCommand.soactive}",
-                    CommandArguments = new(){ "" },
+                    CommandArguments = new() { "" },
                     UserType = ViewerTypes.Broadcaster,
                     IsBroadcaster = true,
                     DisplayName = OptionFlags.TwitchChannelName,
@@ -252,7 +275,7 @@ namespace StreamerBot
         /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
         private void UpdateData(Button targetclick, Action<string> InvokeMethod)
         {
-            if(!OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
+            if (!OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
             {
                 targetclick.IsEnabled = false;
 
@@ -484,7 +507,8 @@ namespace StreamerBot
                     new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                     new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                     new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
-                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart)
+                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
+                   new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart)
                 };
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
@@ -509,7 +533,6 @@ namespace StreamerBot
             }
 
             CheckMessageBoxes();
-
             CheckBox_ManageData_Click(sender, new());
 
             // TODO: research auto-refreshing token
@@ -536,11 +559,6 @@ namespace StreamerBot
 
         private void CheckMessageBoxes()
         {
-
-//#if DEBUG
-//            OptionFlags.ManageDataArchiveMsg = true;
-//#endif
-
             if (OptionFlags.ManageDataArchiveMsg)
             {
                 MessageBox.Show(LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveMsg), LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveTitle));
@@ -548,6 +566,21 @@ namespace StreamerBot
                 Settings.Default.ManageDataArchiveMsg = false;
                 OptionFlags.SetSettings();
             }
+
+
+            if (Settings.Default.AppCurrWorkingPopup)
+            {
+                Settings.Default.AppCurrWorkingPopup = false;
+                string SaveCWDPath = GetAppDataCWD();
+
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application's current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+
+                if (boxResult == MessageBoxResult.Yes)
+                {
+                    Settings.Default.AppCurrWorkingAppData = true;
+                }
+            }
+
 
             if (!OptionFlags.DataLoaded)
             {
@@ -628,26 +661,32 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
+            OptionFlags.SetSettings();
+
+            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart,  Radio_Services_OverlayBotStart };
+
+            void SetButtons(bool value)
+            {
+                foreach (RadioButton rb in radioButtons)
+                {
+                    rb.IsEnabled = value;
+                }
+            }
+
             if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
             {
-                Radio_Twitch_StartBot.IsEnabled = true;
-                Radio_Twitch_FollowBotStart.IsEnabled = true;
-                Radio_Twitch_LiveBotStart.IsEnabled = true;
-                Radio_Twitch_ClipBotStart.IsEnabled = true;
-                Radio_Twitch_PubSubBotStart.IsEnabled = true;
+                SetButtons(true);
             }
             else
             {
-                Radio_Twitch_StartBot.IsEnabled = false;
-                Radio_Twitch_FollowBotStart.IsEnabled = false;
-                Radio_Twitch_LiveBotStart.IsEnabled = false;
-                Radio_Twitch_ClipBotStart.IsEnabled = false;
-                Radio_Twitch_PubSubBotStart.IsEnabled = false;
+                SetButtons(false);
             }
+
+            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken : OptionFlags.TwitchBotAccessToken != "";
 
             // Twitch
 
-            if(TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
+            if (TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
             {
                 GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
                 TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
@@ -708,21 +747,21 @@ namespace StreamerBot
 
         private bool SliderMouseCaptured;
 
-        private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            Slider curr = (Slider)sender;
-            curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
-        }
+        //private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        //{
+        //    Slider curr = (Slider)sender;
+        //    curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
+        //}
 
-        private void Slider_MouseEnter(object sender, MouseEventArgs e)
-        {
-            SliderMouseCaptured = true;
-        }
+        //private void Slider_MouseEnter(object sender, MouseEventArgs e)
+        //{
+        //    SliderMouseCaptured = true;
+        //}
 
-        private void Slider_MouseLeave(object sender, MouseEventArgs e)
-        {
-            SliderMouseCaptured = false;
-        }
+        //private void Slider_MouseLeave(object sender, MouseEventArgs e)
+        //{
+        //    SliderMouseCaptured = false;
+        //}
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -766,6 +805,11 @@ namespace StreamerBot
             else if (CBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
             {
                 SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
+
+                if (TabItem_Overlays != null)
+                {
+                    TabItem_Overlays.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+                }
             }
             else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
@@ -785,13 +829,23 @@ namespace StreamerBot
         {
             TextBox src = (TextBox)sender;
 
-            if(int.TryParse(src.Text, out int result))
+            if (int.TryParse(src.Text, out int result))
             {
-                if(result is <1 or > 100)
+                if (result is < 1 or > 100)
                 {
                     src.Text = (result < 1 ? 1 : result > 100 ? 100 : result).ToString();
                 }
             }
+        }
+
+        private void TextBlock_MouseEnter_Visible(object sender, MouseEventArgs e)
+        {
+            TextBlock_AppDataDir.Visibility = Visibility.Visible;
+        }
+
+        private void TextBlock_MouseEnter_Hidden(object sender, MouseEventArgs e)
+        {
+            TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
         #region Moderate Followers
@@ -815,6 +869,30 @@ namespace StreamerBot
 
         #endregion
 
+        #region Overlay Service
+
+        private void TabItem_Overlays_GotFocus(object sender, RoutedEventArgs e)
+        {
+            BeginGiveawayChannelPtsUpdate();
+        }
+
+        private void Button_Overlay_PauseAlerts_Click(object sender, RoutedEventArgs e)
+        {
+            ((sender as CheckBox).DataContext as BotOverlayServer).SetPauseAlert((sender as CheckBox).IsChecked == true);
+        }
+
+        private void Button_Overlay_ClearAlerts_Click(object sender, RoutedEventArgs e)
+        {
+            ((sender as Button).DataContext as BotOverlayServer).SetClearAlerts();
+        }
+
+        private void UpdateOverlayChannelPointList(List<string> channelPointNames)
+        {
+            Controller.Systems.SetChannelRewardList(channelPointNames);
+        }
+
+        #endregion
+
         #endregion
 
         #region Data side
@@ -823,10 +901,10 @@ namespace StreamerBot
         {
             if ((sender as RadioButton).IsEnabled)
             {
-                  Dispatcher.BeginInvoke(new BotOperation(() =>
-                  {
-                      ((sender as RadioButton).DataContext as IOModule)?.StartBot();
-                  }), null);
+                Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    ((sender as RadioButton).DataContext as IOModule)?.StartBot();
+                }), null);
             }
         }
 
@@ -895,8 +973,10 @@ namespace StreamerBot
                 dgc.IsReadOnly = true;
             }
 
-            void SetWidth(DataGridColumn dgc, int Width = DGColWidth)
+            void SetWidth(DataGridColumn dgc, int Width = -1)
             {
+                Width = Width < 0 ? DGColWidth : Width;
+
                 // TODO: Research and update setting column width based on actual value, currently doesn't appear available when "autogeneratedcolumns" occurs
 
                 // change the column width only if the specified value is less than current width
@@ -974,7 +1054,7 @@ namespace StreamerBot
                     }
                     break;
                 case "DG_Webhooks":
-                    foreach(DataGridColumn dc in dg.Columns)
+                    foreach (DataGridColumn dc in dg.Columns)
                     {
                         SetWidth(dc);
                     }
@@ -1019,6 +1099,7 @@ namespace StreamerBot
             {
                 bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
+                bool FoundIsEnabled = SystemsController.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName , "IsEnabled");
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
@@ -1031,6 +1112,10 @@ namespace StreamerBot
                         else if (((MenuItem)M).Name == "DataGridContextMenu_AutoShout")
                         {
                             ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+                        } 
+                        else if ( ((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
+                        {
+                            ((MenuItem)M).IsEnabled = FoundIsEnabled;
                         }
                     }
                     else if (M.GetType() == typeof(Separator))
@@ -1053,13 +1138,18 @@ namespace StreamerBot
 
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             Popup_DataEdit(item);
         }
 
         private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
         {
+            if (sourceDataGrid.Name == "DataGrid_OverlayService_Actions")
+            {
+                PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
+            }
+
             if (AddNew)
             {
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
@@ -1080,24 +1170,39 @@ namespace StreamerBot
 
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             Popup_DataEdit(item, false);
         }
 
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             SystemsController.DeleteRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)));
         }
 
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as System.Windows.Controls.Primitives.Popup).PlacementTarget as DataGrid;
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             BotController.AddNewAutoShoutUser(((DataRowView)item.SelectedValue).Row["UserName"].ToString());
         }
+
+        private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
+            SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), true);
+        }
+
+        private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
+            SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
+        }
+
         #endregion
 
         #region Debug Empty Stream
@@ -1170,9 +1275,15 @@ namespace StreamerBot
         {
             Dispatcher.Invoke(() =>
             {
-                ComboBox_Giveaway_ChanPts.ItemsSource = e.ChannelPointNames;
-                Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
+                UpdateGiveawayList(e.ChannelPointNames);
+                UpdateOverlayChannelPointList(e.ChannelPointNames);
             });
+        }
+
+        private void UpdateGiveawayList(List<string> ChannelPointNames)
+        {
+            ComboBox_Giveaway_ChanPts.ItemsSource = ChannelPointNames;
+            Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
         }
 
         private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)
@@ -1188,11 +1299,11 @@ namespace StreamerBot
             }
 
             string ItemName = "";
-            
+
             switch (givetype)
             {
                 case GiveawayTypes.Command:
-                   ItemName = (string) ComboBox_Giveaway_Coms.SelectedValue;
+                    ItemName = (string)ComboBox_Giveaway_Coms.SelectedValue;
                     break;
                 case GiveawayTypes.CustomRewards:
                     ItemName = (string)ComboBox_Giveaway_ChanPts.SelectedValue;
@@ -1303,7 +1414,7 @@ namespace StreamerBot
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }
 
-                    if( OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
+                    if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
                     {
                         Controller.TwitchStartUpdateAllFollowers();
                         TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
@@ -1356,9 +1467,9 @@ namespace StreamerBot
 
 
 
-        #endregion
 
         #endregion
 
+        #endregion
     }
 }

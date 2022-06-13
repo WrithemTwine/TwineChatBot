@@ -9,6 +9,7 @@
         TwitchClipBot,
         TwitchMultiBot,
         TwitchUserBot,
-        TwitchPubSub
+        TwitchPubSub,
+        MediaOverlayServer
     }
 }

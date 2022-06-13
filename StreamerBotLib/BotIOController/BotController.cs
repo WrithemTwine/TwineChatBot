@@ -45,8 +45,7 @@ namespace StreamerBotLib.BotIOController
         private bool GiveawayStarted = false;
 
         private BotsTwitch TwitchBots { get; set; }
-
-        internal static BotOverlayServer OverlayServerBot { get; set; }
+        public static BotOverlayServer OverlayServerBot { get; set; } = new();
 
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
@@ -62,13 +61,19 @@ namespace StreamerBotLib.BotIOController
             Systems.PostChannelMessage += Systems_PostChannelMessage;
             Systems.BanUserRequest += Systems_BanUserRequest;
 
+
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
             SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
             SystemsBase.ChannelName = TwitchBotsBase.TwitchChannelName;
             OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
 
+            //OverlayServerBot = new();
+            SetNewOverlayEventHandler();
+            //SetGetChannelClipsHandler();
+
             BotsList.Add(TwitchBots);
+            BotsList.Add(OverlayServerBot);
         }
 
         /// <summary>
@@ -396,12 +401,12 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
         {
-            ConvertClips(clips.ClipList);
+            HandleBotEventPostNewClip(ConvertClips(clips.ClipList));
         }
 
-        private void ConvertClips(List<Clip> clips)
+        public static List<Models.Clip> ConvertClips(List<Clip> clips)
         {
-            HandleBotEventPostNewClip(clips.ConvertAll((SrcClip) =>
+            return clips.ConvertAll((SrcClip) =>
             {
                 return new Models.Clip()
                 {
@@ -413,12 +418,12 @@ namespace StreamerBotLib.BotIOController
                     Title = SrcClip.Title,
                     Url = SrcClip.Url
                 };
-            }));
+            });
         }
 
         public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
         {
-            ConvertClips(clips.Clips);
+            HandleBotEventPostNewClip(ConvertClips(clips.Clips));
         }
 
         public void TwitchStreamOnline(OnStreamOnlineArgs e)
@@ -734,24 +739,30 @@ namespace StreamerBotLib.BotIOController
         public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled, out short Multi);
-            if (Enabled)
-            {
-                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
                 new( MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.subplan, Subscription ),
                 new( MsgVars.subplanname, SubscriptionName )
-                })), Multi);
+                });
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
+
+            if (Enabled)
+            {
+                Send(ParsedMsg, Multi);
+
             }
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
+
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled, out short Multi);
-            if (Enabled)
-            {
                 Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
                 new( MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
@@ -766,61 +777,80 @@ namespace StreamerBotLib.BotIOController
                     VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, StreakMonths) });
                 }
 
-                Send(VariableParser.ParseReplace(msg, dictionary), Multi);
-            }
+                string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true) ;
+            if (Enabled)
+            {
+       Send(ParsedMsg, Multi);
+           }
+             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
+
         }
 
         public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled, out short Multi);
-            if (Enabled)
-            {
-                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                     new(MsgVars.user,DisplayName),
                     new(MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth)),
                     new(MsgVars.receiveuser, RecipientUserName ),
                     new(MsgVars.subplan, Subscription ),
                     new(MsgVars.subplanname, SubscriptionName)
-                })), Multi);
+                });
+
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
+           if (Enabled)
+            {
+                Send(ParsedMsg, Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled, out short Multi);
-            if (Enabled)
-            {
                 Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                     new(MsgVars.user, DisplayName),
                     new(MsgVars.count, FormatData.Plurality(SubCount, MsgVars.Pluralsub, Subscription)),
                     new(MsgVars.subplan, Subscription)
                 });
 
-                Send(VariableParser.ParseReplace(msg, dictionary), Multi);
+                string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
+            if (Enabled)
+            {
+              Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
             Systems.UpdatedStat(StreamStatType.AutoEvents);
+
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled, out short Multi);
-            if (Enabled)
-            {
-                Send(VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                            {
                     new(MsgVars.user, HostedByChannel ),
                     new(MsgVars.autohost, LocalizedMsgSystem.DetermineHost(IsAutoHosted) ),
                     new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers
                      ))
-                })), Multi);
+                                            });
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
+               if (Enabled)
+            {
+             Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
+            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<string> Users, Bots Source)
@@ -845,6 +875,8 @@ namespace StreamerBotLib.BotIOController
             {
                 Systems.UpdatedStat(StreamStatType.UserBanned);
                 HandleUserLeft(UserName, Source);
+
+                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
             }
             catch (Exception ex)
             {
@@ -881,6 +913,11 @@ namespace StreamerBotLib.BotIOController
             if (GiveawayItemType == GiveawayTypes.CustomRewards && RewardTitle == GiveawayItemName)
             {
                 HandleGiveawayPostName(DisplayName);
+            }
+
+            if (OptionFlags.MediaOverlayChannelPoints)
+            {
+                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
             }
         }
 
@@ -931,6 +968,28 @@ namespace StreamerBotLib.BotIOController
                 //TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
             }
         }
+
+        #endregion
+
+        #region MediaOverlay Server
+
+        /// <summary>
+        /// Connect the Overlay System event notification to the Overlay Server bot to process any new Overlay actions detected.
+        /// </summary>
+        private void SetNewOverlayEventHandler()
+        {
+            Systems.SetNewOverlayEventHandler(OverlayServerBot.NewOverlayEventHandler);
+        }
+
+        //private void SetGetChannelClipsHandler()
+        //{
+        //    Systems.SetChannelClipsHandler(GetAllChannelClips);
+        //}
+
+        //private void GetAllChannelClips(object sender, GetChannelClipsEventArgs e)
+        //{
+        //    TwitchBots.GetChannelClips(e.ChannelName,e.CallBackResult);
+        //}
 
         #endregion
 

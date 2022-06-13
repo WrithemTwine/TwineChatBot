@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Threading;
 
 using static StreamerBotLib.Data.DataSource;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StreamerBotLib.Systems
 {
@@ -29,6 +30,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
+        public event EventHandler<CheckOverlayEventArgs> CheckOverlayEvent;
 
         public void NotifyPropertyChanged(string ParamName = "")
         {
@@ -38,6 +40,11 @@ namespace StreamerBotLib.Systems
         public CommandSystem()
         {
             //StartElapsedTimerThread();
+        }
+
+        private void OnCheckOverlayEvent(CheckOverlayEventArgs e)
+        {
+            CheckOverlayEvent?.Invoke(this, e);
         }
 
         public void StartElapsedTimerThread()
@@ -82,7 +89,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && ChatBotStarted)
+                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimer)
                 {
                     DiluteTime = CheckDilute();
 
@@ -133,7 +140,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted)
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimer)
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -337,6 +344,7 @@ namespace StreamerBotLib.Systems
         public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
         {
             string result = "";
+            string tempHTMLResponse = "";
             Dictionary<string, string> datavalues = null;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
             {
@@ -482,9 +490,12 @@ namespace StreamerBotLib.Systems
                             new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                             result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                            tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
                             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+
+                            OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = DisplayName, UserMsg = tempHTMLResponse });
                         });
 
                         result = "";
@@ -492,11 +503,18 @@ namespace StreamerBotLib.Systems
                     else
                     {
                         result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                        tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                     }
                 }
             }
             result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
             multi = cmdrow.SendMsgCount;
+
+            if (result != "")
+            {
+                OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = command, UserName = DisplayName, UserMsg = tempHTMLResponse });
+            }
+
             return result;
         }
 

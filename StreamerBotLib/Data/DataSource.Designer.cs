@@ -60,8 +60,6 @@ namespace StreamerBotLib.Data {
         
         private BanReasonsDataTable tableBanReasons;
         
-        private MediaDataTable tableMedia;
-        
         private OverlayServicesDataTable tableOverlayServices;
         
         private global::System.Data.DataRelation relationFK_Users_Currency;
@@ -151,9 +149,6 @@ namespace StreamerBotLib.Data {
                 }
                 if ((ds.Tables["BanReasons"] != null)) {
                     base.Tables.Add(new BanReasonsDataTable(ds.Tables["BanReasons"]));
-                }
-                if ((ds.Tables["Media"] != null)) {
-                    base.Tables.Add(new MediaDataTable(ds.Tables["Media"]));
                 }
                 if ((ds.Tables["OverlayServices"] != null)) {
                     base.Tables.Add(new OverlayServicesDataTable(ds.Tables["OverlayServices"]));
@@ -360,16 +355,6 @@ namespace StreamerBotLib.Data {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public MediaDataTable Media {
-            get {
-                return this.tableMedia;
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        [global::System.ComponentModel.Browsable(false)]
-        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
         public OverlayServicesDataTable OverlayServices {
             get {
                 return this.tableOverlayServices;
@@ -496,9 +481,6 @@ namespace StreamerBotLib.Data {
                 }
                 if ((ds.Tables["BanReasons"] != null)) {
                     base.Tables.Add(new BanReasonsDataTable(ds.Tables["BanReasons"]));
-                }
-                if ((ds.Tables["Media"] != null)) {
-                    base.Tables.Add(new MediaDataTable(ds.Tables["Media"]));
                 }
                 if ((ds.Tables["OverlayServices"] != null)) {
                     base.Tables.Add(new OverlayServicesDataTable(ds.Tables["OverlayServices"]));
@@ -644,12 +626,6 @@ namespace StreamerBotLib.Data {
                     this.tableBanReasons.InitVars();
                 }
             }
-            this.tableMedia = ((MediaDataTable)(base.Tables["Media"]));
-            if ((initTable == true)) {
-                if ((this.tableMedia != null)) {
-                    this.tableMedia.InitVars();
-                }
-            }
             this.tableOverlayServices = ((OverlayServicesDataTable)(base.Tables["OverlayServices"]));
             if ((initTable == true)) {
                 if ((this.tableOverlayServices != null)) {
@@ -705,8 +681,6 @@ namespace StreamerBotLib.Data {
             base.Tables.Add(this.tableLearnMsgs);
             this.tableBanReasons = new BanReasonsDataTable();
             base.Tables.Add(this.tableBanReasons);
-            this.tableMedia = new MediaDataTable();
-            base.Tables.Add(this.tableMedia);
             this.tableOverlayServices = new OverlayServicesDataTable();
             base.Tables.Add(this.tableOverlayServices);
             global::System.Data.ForeignKeyConstraint fkc;
@@ -855,12 +829,6 @@ namespace StreamerBotLib.Data {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        private bool ShouldSerializeMedia() {
-            return false;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         private bool ShouldSerializeOverlayServices() {
             return false;
         }
@@ -973,9 +941,6 @@ namespace StreamerBotLib.Data {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         public delegate void BanReasonsRowChangeEventHandler(object sender, BanReasonsRowChangeEvent e);
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public delegate void MediaRowChangeEventHandler(object sender, MediaRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         public delegate void OverlayServicesRowChangeEventHandler(object sender, OverlayServicesRowChangeEvent e);
@@ -7097,329 +7062,25 @@ namespace StreamerBotLib.Data {
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class MediaDataTable : global::System.Data.TypedTableBase<MediaRow> {
-            
-            private global::System.Data.DataColumn columnId;
-            
-            private global::System.Data.DataColumn columnIsEnabled;
-            
-            private global::System.Data.DataColumn columnChannelPoint;
-            
-            private global::System.Data.DataColumn columnDuration;
-            
-            private global::System.Data.DataColumn columnMediaFile;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MediaDataTable() {
-                this.TableName = "Media";
-                this.BeginInit();
-                this.InitClass();
-                this.EndInit();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal MediaDataTable(global::System.Data.DataTable table) {
-                this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
-                    this.CaseSensitive = table.CaseSensitive;
-                }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
-                    this.Locale = table.Locale;
-                }
-                if ((table.Namespace != table.DataSet.Namespace)) {
-                    this.Namespace = table.Namespace;
-                }
-                this.Prefix = table.Prefix;
-                this.MinimumCapacity = table.MinimumCapacity;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected MediaDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
-                this.InitVars();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn IdColumn {
-                get {
-                    return this.columnId;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn IsEnabledColumn {
-                get {
-                    return this.columnIsEnabled;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ChannelPointColumn {
-                get {
-                    return this.columnChannelPoint;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn DurationColumn {
-                get {
-                    return this.columnDuration;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn MediaFileColumn {
-                get {
-                    return this.columnMediaFile;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
-                    return this.Rows.Count;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MediaRow this[int index] {
-                get {
-                    return ((MediaRow)(this.Rows[index]));
-                }
-            }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public event MediaRowChangeEventHandler MediaRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public event MediaRowChangeEventHandler MediaRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public event MediaRowChangeEventHandler MediaRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public event MediaRowChangeEventHandler MediaRowDeleted;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void AddMediaRow(MediaRow row) {
-                this.Rows.Add(row);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MediaRow AddMediaRow(bool IsEnabled, string ChannelPoint, int Duration, string MediaFile) {
-                MediaRow rowMediaRow = ((MediaRow)(this.NewRow()));
-                object[] columnValuesArray = new object[] {
-                        null,
-                        IsEnabled,
-                        ChannelPoint,
-                        Duration,
-                        MediaFile};
-                rowMediaRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowMediaRow);
-                return rowMediaRow;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
-                MediaDataTable cln = ((MediaDataTable)(base.Clone()));
-                cln.InitVars();
-                return cln;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
-                return new MediaDataTable();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal void InitVars() {
-                this.columnId = base.Columns["Id"];
-                this.columnIsEnabled = base.Columns["IsEnabled"];
-                this.columnChannelPoint = base.Columns["ChannelPoint"];
-                this.columnDuration = base.Columns["Duration"];
-                this.columnMediaFile = base.Columns["MediaFile"];
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            private void InitClass() {
-                this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnId);
-                this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnIsEnabled);
-                this.columnChannelPoint = new global::System.Data.DataColumn("ChannelPoint", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnChannelPoint);
-                this.columnDuration = new global::System.Data.DataColumn("Duration", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnDuration);
-                this.columnMediaFile = new global::System.Data.DataColumn("MediaFile", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnMediaFile);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnId}, false));
-                this.columnId.AutoIncrement = true;
-                this.columnId.AllowDBNull = false;
-                this.columnId.ReadOnly = true;
-                this.columnId.Unique = true;
-                this.columnIsEnabled.DefaultValue = ((bool)(true));
-                this.columnDuration.Caption = "Duration in Seconds";
-                this.columnDuration.DefaultValue = ((int)(0));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MediaRow NewMediaRow() {
-                return ((MediaRow)(this.NewRow()));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new MediaRow(builder);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override global::System.Type GetRowType() {
-                return typeof(MediaRow);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowChanged(e);
-                if ((this.MediaRowChanged != null)) {
-                    this.MediaRowChanged(this, new MediaRowChangeEvent(((MediaRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowChanging(e);
-                if ((this.MediaRowChanging != null)) {
-                    this.MediaRowChanging(this, new MediaRowChangeEvent(((MediaRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowDeleted(e);
-                if ((this.MediaRowDeleted != null)) {
-                    this.MediaRowDeleted(this, new MediaRowChangeEvent(((MediaRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowDeleting(e);
-                if ((this.MediaRowDeleting != null)) {
-                    this.MediaRowDeleting(this, new MediaRowChangeEvent(((MediaRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void RemoveMediaRow(MediaRow row) {
-                this.Rows.Remove(row);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
-                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                DataSource ds = new DataSource();
-                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
-                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
-                any1.MinOccurs = new decimal(0);
-                any1.MaxOccurs = decimal.MaxValue;
-                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
-                sequence.Items.Add(any1);
-                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
-                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
-                any2.MinOccurs = new decimal(1);
-                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
-                sequence.Items.Add(any2);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
-                attribute1.Name = "namespace";
-                attribute1.FixedValue = ds.Namespace;
-                type.Attributes.Add(attribute1);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
-                attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "MediaDataTable";
-                type.Attributes.Add(attribute2);
-                type.Particle = sequence;
-                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
-                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
-                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
-                        global::System.Xml.Schema.XmlSchema schema = null;
-                        dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
-                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
-                            s2.SetLength(0);
-                            schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
-                                s1.Position = 0;
-                                s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
-                                    ;
-                                }
-                                if ((s1.Position == s1.Length)) {
-                                    return type;
-                                }
-                            }
-                        }
-                    }
-                    finally {
-                        if ((s1 != null)) {
-                            s1.Close();
-                        }
-                        if ((s2 != null)) {
-                            s2.Close();
-                        }
-                    }
-                }
-                xs.Add(dsSchema);
-                return type;
-            }
-        }
-        
-        /// <summary>
-        ///Represents the strongly named DataTable class.
-        ///</summary>
-        [global::System.Serializable()]
-        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
         public partial class OverlayServicesDataTable : global::System.Data.TypedTableBase<OverlayServicesRow> {
             
             private global::System.Data.DataColumn columnId;
             
             private global::System.Data.DataColumn columnIsEnabled;
             
+            private global::System.Data.DataColumn columnDuration;
+            
             private global::System.Data.DataColumn columnOverlayType;
             
             private global::System.Data.DataColumn columnOverlayAction;
             
+            private global::System.Data.DataColumn columnUserName;
+            
+            private global::System.Data.DataColumn columnUseChatMsg;
+            
             private global::System.Data.DataColumn columnMessage;
+            
+            private global::System.Data.DataColumn columnImageFile;
             
             private global::System.Data.DataColumn columnMediaFile;
             
@@ -7474,6 +7135,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn DurationColumn {
+                get {
+                    return this.columnDuration;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn OverlayTypeColumn {
                 get {
                     return this.columnOverlayType;
@@ -7490,9 +7159,33 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UserNameColumn {
+                get {
+                    return this.columnUserName;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UseChatMsgColumn {
+                get {
+                    return this.columnUseChatMsg;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn MessageColumn {
                 get {
                     return this.columnMessage;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ImageFileColumn {
+                get {
+                    return this.columnImageFile;
                 }
             }
             
@@ -7541,18 +7234,31 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public OverlayServicesRow AddOverlayServicesRow(string Id, string IsEnabled, string OverlayType, string OverlayAction, string Message, string MediaFile) {
+            public OverlayServicesRow AddOverlayServicesRow(bool IsEnabled, int Duration, string OverlayType, string OverlayAction, string UserName, bool UseChatMsg, string Message, string ImageFile, string MediaFile) {
                 OverlayServicesRow rowOverlayServicesRow = ((OverlayServicesRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        Id,
+                        null,
                         IsEnabled,
+                        Duration,
                         OverlayType,
                         OverlayAction,
+                        UserName,
+                        UseChatMsg,
                         Message,
+                        ImageFile,
                         MediaFile};
                 rowOverlayServicesRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowOverlayServicesRow);
                 return rowOverlayServicesRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public OverlayServicesRow FindByOverlayTypeOverlayActionUserName(string OverlayType, string OverlayAction, string UserName) {
+                return ((OverlayServicesRow)(this.Rows.Find(new object[] {
+                            OverlayType,
+                            OverlayAction,
+                            UserName})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7574,27 +7280,61 @@ namespace StreamerBotLib.Data {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnIsEnabled = base.Columns["IsEnabled"];
+                this.columnDuration = base.Columns["Duration"];
                 this.columnOverlayType = base.Columns["OverlayType"];
                 this.columnOverlayAction = base.Columns["OverlayAction"];
+                this.columnUserName = base.Columns["UserName"];
+                this.columnUseChatMsg = base.Columns["UseChatMsg"];
                 this.columnMessage = base.Columns["Message"];
+                this.columnImageFile = base.Columns["ImageFile"];
                 this.columnMediaFile = base.Columns["MediaFile"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             private void InitClass() {
-                this.columnId = new global::System.Data.DataColumn("Id", typeof(string), null, global::System.Data.MappingType.Element);
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
-                this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(string), null, global::System.Data.MappingType.Element);
+                this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIsEnabled);
+                this.columnDuration = new global::System.Data.DataColumn("Duration", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDuration);
                 this.columnOverlayType = new global::System.Data.DataColumn("OverlayType", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnOverlayType);
                 this.columnOverlayAction = new global::System.Data.DataColumn("OverlayAction", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnOverlayAction);
+                this.columnUserName = new global::System.Data.DataColumn("UserName", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserName);
+                this.columnUseChatMsg = new global::System.Data.DataColumn("UseChatMsg", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUseChatMsg);
                 this.columnMessage = new global::System.Data.DataColumn("Message", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMessage);
+                this.columnImageFile = new global::System.Data.DataColumn("ImageFile", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnImageFile);
                 this.columnMediaFile = new global::System.Data.DataColumn("MediaFile", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMediaFile);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnId}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnOverlayType,
+                                this.columnOverlayAction,
+                                this.columnUserName}, true));
+                this.columnId.AutoIncrement = true;
+                this.columnId.AutoIncrementSeed = 1;
+                this.columnId.ReadOnly = true;
+                this.columnId.Unique = true;
+                this.columnIsEnabled.DefaultValue = ((bool)(true));
+                this.columnDuration.Caption = "Duration (seconds)";
+                this.columnDuration.DefaultValue = ((int)(5));
+                this.columnOverlayType.AllowDBNull = false;
+                this.columnOverlayType.Caption = "OverlayType of Event";
+                this.columnOverlayAction.AllowDBNull = false;
+                this.columnOverlayAction.Caption = "OverlayAction the Event Name";
+                this.columnUserName.AllowDBNull = false;
+                this.columnUseChatMsg.DefaultValue = ((bool)(false));
+                this.columnMessage.Caption = "Message to send into Event";
+                this.columnImageFile.DefaultValue = ((string)("Double-click for file browser, or paste full reference link."));
+                this.columnMediaFile.DefaultValue = ((string)("Double-click for file browser, or paste full reference link."));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -10901,144 +10641,6 @@ namespace StreamerBotLib.Data {
         /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
-        public partial class MediaRow : global::System.Data.DataRow {
-            
-            private MediaDataTable tableMedia;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            internal MediaRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
-                this.tableMedia = ((MediaDataTable)(this.Table));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int Id {
-                get {
-                    return ((int)(this[this.tableMedia.IdColumn]));
-                }
-                set {
-                    this[this.tableMedia.IdColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsEnabled {
-                get {
-                    try {
-                        return ((bool)(this[this.tableMedia.IsEnabledColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'IsEnabled\' in table \'Media\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableMedia.IsEnabledColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string ChannelPoint {
-                get {
-                    try {
-                        return ((string)(this[this.tableMedia.ChannelPointColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelPoint\' in table \'Media\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableMedia.ChannelPointColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int Duration {
-                get {
-                    try {
-                        return ((int)(this[this.tableMedia.DurationColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Duration\' in table \'Media\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableMedia.DurationColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string MediaFile {
-                get {
-                    try {
-                        return ((string)(this[this.tableMedia.MediaFileColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'MediaFile\' in table \'Media\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableMedia.MediaFileColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsIsEnabledNull() {
-                return this.IsNull(this.tableMedia.IsEnabledColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetIsEnabledNull() {
-                this[this.tableMedia.IsEnabledColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsChannelPointNull() {
-                return this.IsNull(this.tableMedia.ChannelPointColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetChannelPointNull() {
-                this[this.tableMedia.ChannelPointColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsDurationNull() {
-                return this.IsNull(this.tableMedia.DurationColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetDurationNull() {
-                this[this.tableMedia.DurationColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsMediaFileNull() {
-                return this.IsNull(this.tableMedia.MediaFileColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetMediaFileNull() {
-                this[this.tableMedia.MediaFileColumn] = global::System.Convert.DBNull;
-            }
-        }
-        
-        /// <summary>
-        ///Represents strongly named DataRow class.
-        ///</summary>
         public partial class OverlayServicesRow : global::System.Data.DataRow {
             
             private OverlayServicesDataTable tableOverlayServices;
@@ -11052,10 +10654,10 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Id {
+            public int Id {
                 get {
                     try {
-                        return ((string)(this[this.tableOverlayServices.IdColumn]));
+                        return ((int)(this[this.tableOverlayServices.IdColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'OverlayServices\' is DBNull.", e);
@@ -11068,10 +10670,10 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string IsEnabled {
+            public bool IsEnabled {
                 get {
                     try {
-                        return ((string)(this[this.tableOverlayServices.IsEnabledColumn]));
+                        return ((bool)(this[this.tableOverlayServices.IsEnabledColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'IsEnabled\' in table \'OverlayServices\' is DBNull.", e);
@@ -11084,14 +10686,25 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string OverlayType {
+            public int Duration {
                 get {
                     try {
-                        return ((string)(this[this.tableOverlayServices.OverlayTypeColumn]));
+                        return ((int)(this[this.tableOverlayServices.DurationColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'OverlayType\' in table \'OverlayServices\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Duration\' in table \'OverlayServices\' is DBNull.", e);
                     }
+                }
+                set {
+                    this[this.tableOverlayServices.DurationColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string OverlayType {
+                get {
+                    return ((string)(this[this.tableOverlayServices.OverlayTypeColumn]));
                 }
                 set {
                     this[this.tableOverlayServices.OverlayTypeColumn] = value;
@@ -11102,15 +10715,37 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string OverlayAction {
                 get {
-                    try {
-                        return ((string)(this[this.tableOverlayServices.OverlayActionColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'OverlayAction\' in table \'OverlayServices\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableOverlayServices.OverlayActionColumn]));
                 }
                 set {
                     this[this.tableOverlayServices.OverlayActionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string UserName {
+                get {
+                    return ((string)(this[this.tableOverlayServices.UserNameColumn]));
+                }
+                set {
+                    this[this.tableOverlayServices.UserNameColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool UseChatMsg {
+                get {
+                    try {
+                        return ((bool)(this[this.tableOverlayServices.UseChatMsgColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'UseChatMsg\' in table \'OverlayServices\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableOverlayServices.UseChatMsgColumn] = value;
                 }
             }
             
@@ -11127,6 +10762,22 @@ namespace StreamerBotLib.Data {
                 }
                 set {
                     this[this.tableOverlayServices.MessageColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ImageFile {
+                get {
+                    try {
+                        return ((string)(this[this.tableOverlayServices.ImageFileColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ImageFile\' in table \'OverlayServices\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableOverlayServices.ImageFileColumn] = value;
                 }
             }
             
@@ -11172,26 +10823,26 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsOverlayTypeNull() {
-                return this.IsNull(this.tableOverlayServices.OverlayTypeColumn);
+            public bool IsDurationNull() {
+                return this.IsNull(this.tableOverlayServices.DurationColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetOverlayTypeNull() {
-                this[this.tableOverlayServices.OverlayTypeColumn] = global::System.Convert.DBNull;
+            public void SetDurationNull() {
+                this[this.tableOverlayServices.DurationColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsOverlayActionNull() {
-                return this.IsNull(this.tableOverlayServices.OverlayActionColumn);
+            public bool IsUseChatMsgNull() {
+                return this.IsNull(this.tableOverlayServices.UseChatMsgColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetOverlayActionNull() {
-                this[this.tableOverlayServices.OverlayActionColumn] = global::System.Convert.DBNull;
+            public void SetUseChatMsgNull() {
+                this[this.tableOverlayServices.UseChatMsgColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -11204,6 +10855,18 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetMessageNull() {
                 this[this.tableOverlayServices.MessageColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsImageFileNull() {
+                return this.IsNull(this.tableOverlayServices.ImageFileColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetImageFileNull() {
+                this[this.tableOverlayServices.ImageFileColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -11817,40 +11480,6 @@ namespace StreamerBotLib.Data {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public BanReasonsRow Row {
-                get {
-                    return this.eventRow;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
-                    return this.eventAction;
-                }
-            }
-        }
-        
-        /// <summary>
-        ///Row event argument class
-        ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-        public class MediaRowChangeEvent : global::System.EventArgs {
-            
-            private MediaRow eventRow;
-            
-            private global::System.Data.DataRowAction eventAction;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MediaRowChangeEvent(MediaRow row, global::System.Data.DataRowAction action) {
-                this.eventRow = row;
-                this.eventAction = action;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MediaRow Row {
                 get {
                     return this.eventRow;
                 }

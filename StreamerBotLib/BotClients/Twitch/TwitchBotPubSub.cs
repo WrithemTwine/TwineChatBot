@@ -101,24 +101,27 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Stopped = true;
 
-            lock (this)
+            ThreadManager.CreateThreadStart(() =>
             {
-                try
+                lock (this)
                 {
-                    if (IsStarted)
+                    try
                     {
-                        IsStarted = false;
-                        IsStopped = true;
-                        TwitchPubSub.Disconnect();
-                        RefreshSettings();
-                        InvokeBotStopped();
+                        if (IsStarted)
+                        {
+                            IsStarted = false;
+                            IsStopped = true;
+                            TwitchPubSub.Disconnect();
+                            RefreshSettings();
+                            InvokeBotStopped();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
                 }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-            }
+            });
 
             return Stopped;
         }
@@ -134,15 +137,19 @@ namespace StreamerBotLib.BotClients.Twitch
             if (OptionFlags.TwitchStreamerUseToken)
             {
                 Token = OptionFlags.TwitchStreamOauthToken;
-            } else
+            }
+            else
             {
                 Token = OptionFlags.TwitchBotAccessToken;
             }
 
-            // send the topics to listen
-            TwitchPubSub.SendTopics(Token);
+            if (Token != null)
+            {
+                // send the topics to listen
+                TwitchPubSub.SendTopics(Token);
 
-            InvokeBotStarted();
+                InvokeBotStarted();
+            }
         }
 
     }

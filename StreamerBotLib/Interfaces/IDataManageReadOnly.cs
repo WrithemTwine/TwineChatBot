@@ -36,5 +36,6 @@ namespace StreamerBotLib.Interfaces
         bool CheckUser(string User);
         bool CheckFollower(string User, DateTime ToDateTime);
         bool CheckUser(string User, DateTime ToDateTime);
+        List<object> GetRowsDataColumn(string dataTable, string dataColumn);
     }
 }

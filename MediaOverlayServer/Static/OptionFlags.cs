@@ -1,6 +1,6 @@
-﻿using TwineStreamerBot.MediaOverlayServer.Properties;
+﻿using MediaOverlayServer.Properties;
 
-namespace TwineStreamerBot.MediaOverlayServer.Static
+namespace MediaOverlayServer.Static
 {
     /// <summary>
     /// Connects Application Settings and key flags to a single object for reference across classes
@@ -13,6 +13,9 @@ namespace TwineStreamerBot.MediaOverlayServer.Static
 
         public static bool LogExceptions { get; set; }
 
+        public static bool UseSameOverlayStyle { get; set; }
+
+        public static bool AutoStart { get; set; }
 
         internal static void SetSettings()
         {
@@ -20,6 +23,8 @@ namespace TwineStreamerBot.MediaOverlayServer.Static
 
             MediaOverlayPort = Settings.Default.MediaOverlayPort;
             LogExceptions = Settings.Default.LogExceptions;
+            UseSameOverlayStyle = Settings.Default.UseSameOverlayStyle;
+            AutoStart = Settings.Default.AutoStart;
         }
     }
 }

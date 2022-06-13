@@ -2,13 +2,18 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <StartupObject>MediaOverlayServer.App</StartupObject>
+    <AssemblyName>MediaOverlayServer</AssemblyName>
+    <Version>0.2.0.0</Version>
+    <Company>TwineStreamerBot</Company>
+    <Authors>WrithemTwine</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Net.Http.Server" Version="1.1.4" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

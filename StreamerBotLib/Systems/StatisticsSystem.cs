@@ -10,7 +10,7 @@ namespace StreamerBotLib.Systems
     public class StatisticsSystem : SystemsBase
     {
         /// <summary>
-        /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock <- currency is (should be) earned when online.
+        /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock < - currency is (should be) earned when online.
         /// </summary>
         // private Thread StreamUpdateThread;
 
