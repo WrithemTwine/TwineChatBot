@@ -31,7 +31,7 @@ namespace MediaOverlayServer.Models
         {
             OverlayType = OptionFlags.UseSameOverlayStyle ? "All" : overlayType;
 
-            FileNameStyle = Path.Combine($"{(OptionFlags.UseSameOverlayStyle || OverlayType == "None" ? "" : OverlayType)}", $"{PublicConstants.OverlayStyle}");
+            FileNameStyle = Path.Combine(PublicConstants.BaseOverlayPath, $"{(OptionFlags.UseSameOverlayStyle || OverlayType == "None" ? "" : OverlayType)}", $"{PublicConstants.OverlayStyle}");
 
             if (File.Exists(FileNameStyle))
             {
@@ -46,7 +46,7 @@ namespace MediaOverlayServer.Models
             }
         }
 
-/// <summary>
+        /// <summary>
         /// Saves the file to subfolders based on OverlayType. If user selects "UseSameOverlayStyle" setting, saves in base folder.
         /// </summary>
         public void SaveFile()

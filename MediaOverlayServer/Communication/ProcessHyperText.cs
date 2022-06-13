@@ -5,9 +5,11 @@ using System.Drawing;
 using System.IO;
 using System.Xml.Linq;
 
-
 namespace MediaOverlayServer.Communication
 {
+    /// <summary>
+    /// Provides HTML strings to supply via the HTTP server, includes building an Overlay media page based on provided image, audio, and/or video.
+    /// </summary>
     internal static class ProcessHyperText
     {
         private static string RefreshToken(int Duration)
@@ -33,7 +35,7 @@ namespace MediaOverlayServer.Communication
 
         internal static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia=false)
         {
-            return $"<html><head>{(IsMedia?"":RefreshToken(Duration))}<style>{OverlayStyle}</style></head><body><div>{OverlayBody}</div></body></html>";
+            return $"<html><head>{(IsMedia?"":RefreshToken(Duration))}<style>{OverlayStyle}</style></head><body><div class=\"maindiv\">{OverlayBody}</div></body></html>";
         }
 
         internal static string ProcessOverlay(OverlayActionType overlayActionType)
@@ -45,8 +47,7 @@ namespace MediaOverlayServer.Communication
             if (overlayActionType.ImageFile != "" && File.Exists(overlayActionType.ImageFile))
             {
                 Size sz = Image.FromFile(overlayActionType.ImageFile, false).Size;
-
-                Img = new XElement("img", new XAttribute("src", overlayActionType.ImageFile), new XAttribute("width", sz.Width), new XAttribute("height", sz.Height)).ToString();
+                Img = new XElement("img", new XAttribute("class","image"), new XAttribute("src", overlayActionType.ImageFile), new XAttribute("width", sz.Width), new XAttribute("height", sz.Height)).ToString();
             }
 
             string Media = "";
@@ -83,15 +84,32 @@ namespace MediaOverlayServer.Communication
             get
             {
                 return @"
+        .maindiv {
+            /* style class for page div,  <body><div class=""maindiv"" />...</body>   */
+            text-align: center;
+        }
+
         .message {
+            /* style class for Overlay message   */
+
             color: black;
             text-align: center;
         }
 
+    /*  image styling element  */
+        .image {
+            height: 500px;
+        }
+
+    /*  For external video/media links, currently not really used since Twitch requires secure access for the embedded video player, possibly YouTube videos  */
         #myalert {
             width: 480px;
             height: 320px;
         }
+
+    /*  styles for message variables - these are from the primary chat message and parsed to add these classes based on the variable.  */
+    /*  e.g. ""Thanks #user for following!!"" -parses to-> ""Thanks <span=""user"">{user name}</span> for following!"" using the ""user"" class style. */
+
 
         .autohost {
             font-size: 24px;

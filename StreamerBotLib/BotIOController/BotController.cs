@@ -915,7 +915,10 @@ namespace StreamerBotLib.BotIOController
                 HandleGiveawayPostName(DisplayName);
             }
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
+            if (OptionFlags.MediaOverlayChannelPoints)
+            {
+                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
+            }
         }
 
         #region Giveaway

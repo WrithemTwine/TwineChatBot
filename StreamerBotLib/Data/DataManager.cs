@@ -141,16 +141,19 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check permission for {cmd}.");
 #endif
 
-            CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
-
-            if (row != null)
+            lock (GUIDataManagerLock.Lock)
             {
-                ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), row.Permission);
+                CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
 
-                return cmdpermission >= permission;
+                if (row != null)
+                {
+                    ViewerTypes cmdpermission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), row.Permission);
+
+                    return cmdpermission >= permission;
+                }
+                else
+                    throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidOpCommand));
             }
-            else
-                throw new InvalidOperationException(LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidOpCommand));
         }
 
         /// <summary>
@@ -164,8 +167,10 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if {UserName} is in the Shout list.");
 #endif
-
-            return GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") != null;
+            lock (GUIDataManagerLock.Lock)
+            {
+                return GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") != null;
+            }
         }
 
         public string AddCommand(string cmd, CommandParams Params)
@@ -190,22 +195,25 @@ switches:
 
             string result = "";
 
-            CommandsRow commandsRow = (CommandsRow)GetRow(_DataSource.Commands, cmd);
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
-                if (commandsRow != null)
+                CommandsRow commandsRow = (CommandsRow)GetRow(_DataSource.Commands, cmd);
+                lock (GUIDataManagerLock.Lock)
                 {
-                    Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
-
-                    foreach (string k in EditParamsDict.Keys)
+                    if (commandsRow != null)
                     {
-                        commandsRow[k] = EditParamsDict[k];
+                        Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
+
+                        foreach (string k in EditParamsDict.Keys)
+                        {
+                            commandsRow[k] = EditParamsDict[k];
+                        }
+                        result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
                     }
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
-                }
-                else
-                {
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+                    else
+                    {
+                        result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+                    }
                 }
             }
             NotifySaveData();
@@ -243,11 +251,14 @@ switches:
 
             string socials = "";
 
-            foreach (CommandsRow com in from CommandsRow com in GetRows(_DataSource.Commands, $"CmdName IN ({filter})")
-                                        where com.Message != DefaulSocialMsg && com.Message != string.Empty
-                                        select com)
+            lock (GUIDataManagerLock.Lock)
             {
-                socials += com.Message + " ";
+                foreach (CommandsRow com in from CommandsRow com in GetRows(_DataSource.Commands, $"CmdName IN ({filter})")
+                                            where com.Message != DefaulSocialMsg && com.Message != string.Empty
+                                            select com)
+                {
+                    socials += com.Message + " ";
+                }
             }
 
             return socials.Trim();
@@ -267,8 +278,10 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the command row for {cmd}.");
 #endif
-
-            return (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
+            }
         }
 
         public string GetCommands()
@@ -277,12 +290,12 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get a list of all commands.");
 #endif
 
-            CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True");
 
             string result = "";
 
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
+                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True");
                 for (int i = 0; i < commandsRows.Length; i++)
                 {
                     result += (i != 0 ? ", " : "") + "!" + commandsRows[i].CmdName;
@@ -301,22 +314,25 @@ switches:
             object output;
             //CommandParams query = CommandParams.Parse(row.Params);
 
-            DataRow result = GetRows(_DataSource.Tables[row.table], $"{row.key_field}='{ParamValue}'").FirstOrDefault();
+            lock (GUIDataManagerLock.Lock)
+            {
+                DataRow result = GetRows(_DataSource.Tables[row.table], $"{row.key_field}='{ParamValue}'").FirstOrDefault();
 
-            if (result == null)
-            {
-                output = LocalizedMsgSystem.GetVar(Msg.MsgDataNotFound);
-            }
-            else
-            {
-                if (result.GetType() == typeof(FollowersRow))
+                if (result == null)
                 {
-                    FollowersRow follower = (FollowersRow)result;
-                    output = follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
+                    output = LocalizedMsgSystem.GetVar(Msg.MsgDataNotFound);
                 }
                 else
                 {
-                    output = result[row.data_field];
+                    if (result.GetType() == typeof(FollowersRow))
+                    {
+                        FollowersRow follower = (FollowersRow)result;
+                        output = follower.IsFollower ? follower.FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
+                    }
+                    else
+                    {
+                        output = result[row.data_field];
+                    }
                 }
             }
 
@@ -328,9 +344,13 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the multi object query for command {row.CmdName}.");
 #endif
-
-            List<Tuple<object, object>> outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.table], Sort: Top < 0 ? null : row.key_field + " " + row.sort)
-                                                      select new Tuple<object, object>(d[row.key_field], d[row.data_field]));
+            
+            List<Tuple<object, object>> outlist = null;
+            lock (GUIDataManagerLock.Lock)
+            {
+               outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.table], Sort: Top < 0 ? null : row.key_field + " " + row.sort)
+                                                          select new Tuple<object, object>(d[row.key_field], d[row.data_field]));
+            }
 
             if (Top > 0)
             {
@@ -351,8 +371,10 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the timer commands.");
 #endif
-
-            return new(from CommandsRow row in (CommandsRow[])GetRows(_DataSource.Commands, "RepeatTimer>0 AND IsEnabled=True") select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
+            lock (GUIDataManagerLock.Lock)
+            {
+                return new(from CommandsRow row in (CommandsRow[])GetRows(_DataSource.Commands, "RepeatTimer>0 AND IsEnabled=True") select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
+            }
         }
 
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
@@ -361,9 +383,9 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get timer command {Cmd}.");
 #endif
 
-            CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{Cmd}'");
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
+                CommandsRow row = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{Cmd}'");
                 return (row == null) ? null : new(row.CmdName, row.RepeatTimer, row.Category?.Split(',') ?? Array.Empty<string>());
             }
         }
@@ -441,8 +463,10 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all of the currency names.");
 #endif
-
-            return GetRowsDataColumn(_DataSource.CurrencyType, _DataSource.CurrencyType.CurrencyNameColumn).ConvertAll((value) => value.ToString());
+            lock (GUIDataManagerLock.Lock)
+            {
+                return GetRowsDataColumn(_DataSource.CurrencyType, _DataSource.CurrencyType.CurrencyNameColumn).ConvertAll((value) => value.ToString());
+            }
         }
 
         #endregion
@@ -455,8 +479,10 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all stream data.");
 #endif
-
-            return (StreamStatsRow[])GetRows(_DataSource.StreamStats);
+            lock (GUIDataManagerLock.Lock)
+            {
+                return (StreamStatsRow[])GetRows(_DataSource.StreamStats);
+            }
         }
 
         private StreamStatsRow GetAllStreamData(DateTime dateTime)
@@ -479,9 +505,9 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the content stats for a particular stream dated {dateTime}.");
 #endif
 
-            StreamStatsRow streamStatsRow = GetAllStreamData(dateTime);
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
+                StreamStatsRow streamStatsRow = GetAllStreamData(dateTime);
                 StreamStat streamStat = new();
 
                 if (streamStatsRow != null)
@@ -639,14 +665,17 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update the user {User} has left, at {LastSeen}.");
 #endif
 
-            UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
-            if (user != null)
+            lock (GUIDataManagerLock.Lock)
             {
-                UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
-                if (OptionFlags.TwitchCurrencyStart && (OptionFlags.TwitchCurrencyOnline && OptionFlags.IsStreamOnline)) 
-                { 
-                    UpdateCurrency(ref user, LastSeen); 
-                } // will update the "CurrLoginDate"
+                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
+                if (user != null)
+                {
+                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                    if (OptionFlags.TwitchCurrencyStart && (OptionFlags.TwitchCurrencyOnline && OptionFlags.IsStreamOnline))
+                    {
+                        UpdateCurrency(ref user, LastSeen);
+                    } // will update the "CurrLoginDate"
+                }
             }
         }
 
@@ -924,10 +953,12 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding user {UserName} to the auto shout-out listing.");
 #endif
-
-            if (GetRow(_DataSource.ShoutOuts,$"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
+            lock (GUIDataManagerLock.Lock)
             {
-                _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
+                if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
+                {
+                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
+                }
             }
         }
 
@@ -974,9 +1005,11 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update currency for user {User}.");
 #endif
-
-            UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
-            UpdateCurrency(ref user, dateTime);
+            lock (GUIDataManagerLock.Lock)
+            {
+                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
+                UpdateCurrency(ref user, dateTime);
+            }
         }
 
         /// <summary>
@@ -1028,24 +1061,26 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add all currency rows for user {usersRow.UserName}.");
 #endif
-
-            CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
-            if (usersRow != null)
+            lock (GUIDataManagerLock.Lock)
             {
-                CurrencyRow[] currencyRows = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{usersRow.UserName}'");
-                foreach (CurrencyTypeRow typeRow in currencyTypeRows)
+                CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
+                if (usersRow != null)
                 {
-                    bool found = false;
-                    foreach (CurrencyRow CR in currencyRows)
+                    CurrencyRow[] currencyRows = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{usersRow.UserName}'");
+                    foreach (CurrencyTypeRow typeRow in currencyTypeRows)
                     {
-                        if (CR.CurrencyName == typeRow.CurrencyName)
+                        bool found = false;
+                        foreach (CurrencyRow CR in currencyRows)
                         {
-                            found = true;
+                            if (CR.CurrencyName == typeRow.CurrencyName)
+                            {
+                                found = true;
+                            }
                         }
-                    }
-                    if (!found)
-                    {
-                        _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
+                        if (!found)
+                        {
+                            _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
+                        }
                     }
                 }
             }
@@ -1078,20 +1113,22 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Clear users who are not followers.");
 #endif
-
             List<string> RemoveIds = new();
 
-            foreach (UsersRow U in GetRows(_DataSource.Users))
+            lock (GUIDataManagerLock.Lock)
             {
-                if (_DataSource.Followers.Select($"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'").FirstOrDefault() == null)
+                foreach (UsersRow U in GetRows(_DataSource.Users))
                 {
-                    RemoveIds.Add(U.Id.ToString());
+                    if (_DataSource.Followers.Select($"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'").FirstOrDefault() == null)
+                    {
+                        RemoveIds.Add(U.Id.ToString());
+                    }
                 }
-            }
 
-            foreach (string Id in RemoveIds)
-            {
-                ((UsersRow)_DataSource.Users.Select($"{_DataSource.Users.IdColumn.ColumnName}='{Id}'").FirstOrDefault()).Delete();
+                foreach (string Id in RemoveIds)
+                {
+                    ((UsersRow)_DataSource.Users.Select($"{_DataSource.Users.IdColumn.ColumnName}='{Id}'").FirstOrDefault()).Delete();
+                }
             }
             NotifySaveData();
         }
@@ -1196,19 +1233,16 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add and update the {newCategory} category.");
 #endif
 
-            CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
-
-            if (categoryList == null)
+            lock (GUIDataManagerLock.Lock)
             {
-                lock(GUIDataManagerLock.Lock)
+                CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
+
+                if (categoryList == null)
                 {
                     _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
                     NotifySaveData();
                 }
-            }
-            else
-            {
-                lock(GUIDataManagerLock.Lock)
+                else
                 {
                     if (categoryList.CategoryId == null)
                     {
@@ -1224,10 +1258,11 @@ switches:
                         categoryList.StreamCount++;
                     }
                     NotifySaveData();
-                }
-            }
 
-            return categoryList != null;
+                }
+
+                return categoryList != null;
+            }
         }
 
         /// <summary>
@@ -1239,11 +1274,13 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get a list of all categories.");
 #endif
-
-            return new(from CategoryListRow c in GetRows(_DataSource.CategoryList)
-                       orderby c.Category
-                       let item = new Tuple<string, string>(c.CategoryId, c.Category)
-                       select item);
+            lock (GUIDataManagerLock.Lock)
+            {
+                return new(from CategoryListRow c in GetRows(_DataSource.CategoryList)
+                           orderby c.Category
+                           let item = new Tuple<string, string>(c.CategoryId, c.Category)
+                           select item);
+            }
         }
 
         #endregion
@@ -1267,22 +1304,20 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new clip.");
 #endif
 
-            bool result;
-
-            if (!((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Any())
+            bool result = false;
+            lock (GUIDataManagerLock.Lock)
             {
-                lock(GUIDataManagerLock.Lock)
+                if (!((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Any())
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime(), Title, GameId, Language, (decimal)Duration, Url);
                     NotifySaveData();
                     result = true;
                 }
+                else
+                {
+                    result = false;
+                }
             }
-            else
-            {
-                result = false;
-            }
-
             return result;
         }
 
@@ -1358,14 +1393,17 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, get all the learned messages to update training model.");
 #endif
 
-            if (LearnMsgChanged)
+            lock (GUIDataManagerLock.Lock)
             {
-                LearnMsgChanged = false;
-                return new((LearnMsgsRow[])GetRows(_DataSource.LearnMsgs));
-            }
-            else
-            {
-                return null;
+                if (LearnMsgChanged)
+                {
+                    LearnMsgChanged = false;
+                    return new((LearnMsgsRow[])GetRows(_DataSource.LearnMsgs));
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -1374,17 +1412,17 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding a new learned message row.");
 #endif
-
-            bool found = (from LearnMsgsRow learnMsgsRow in GetRows(_DataSource.LearnMsgs, $"{_DataSource.LearnMsgs.TeachingMsgColumn.ColumnName}='{FormatData.AddEscapeFormat(Message)}'")
-                          select new { }).Any();
-
-            if (!found)
+            lock (GUIDataManagerLock.Lock)
             {
-                lock(GUIDataManagerLock.Lock)
+                bool found = (from LearnMsgsRow learnMsgsRow in GetRows(_DataSource.LearnMsgs, $"{_DataSource.LearnMsgs.TeachingMsgColumn.ColumnName}='{FormatData.AddEscapeFormat(Message)}'")
+                              select new { }).Any();
+
+                if (!found)
                 {
                     _DataSource.LearnMsgs.AddLearnMsgsRow(MsgType.ToString(), Message);
+
+                    NotifySaveData();
                 }
-                NotifySaveData();
             }
         }
 
@@ -1394,18 +1432,21 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, find the remedy to the found message determination.");
 #endif
 
-            BanReasons banReason;
+            lock (GUIDataManagerLock.Lock)
+            {
+                BanReasons banReason;
 
-            BanReasonsRow banrow = (BanReasonsRow)GetRow(_DataSource.BanReasons, $"{_DataSource.BanReasons.MsgTypeColumn.ColumnName}='{msgTypes}'");
+                BanReasonsRow banrow = (BanReasonsRow)GetRow(_DataSource.BanReasons, $"{_DataSource.BanReasons.MsgTypeColumn.ColumnName}='{msgTypes}'");
 
-            banReason = banrow != null ? (BanReasons)Enum.Parse(typeof(BanReasons), banrow.BanReason) : BanReasons.None;
+                banReason = banrow != null ? (BanReasons)Enum.Parse(typeof(BanReasons), banrow.BanReason) : BanReasons.None;
 
-            BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules, $"{_DataSource.BanRules.ViewerTypesColumn.ColumnName}='{viewerTypes}' and {_DataSource.BanRules.MsgTypeColumn.ColumnName}='{msgTypes}'");
+                BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules, $"{_DataSource.BanRules.ViewerTypesColumn.ColumnName}='{viewerTypes}' and {_DataSource.BanRules.MsgTypeColumn.ColumnName}='{msgTypes}'");
 
-            int Timeout = banRulesRow == null ? 0 : int.Parse(banRulesRow.TimeoutSeconds);
-            ModActions action = banRulesRow == null ? ModActions.Allow : (ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction);
+                int Timeout = banRulesRow == null ? 0 : int.Parse(banRulesRow.TimeoutSeconds);
+                ModActions action = banRulesRow == null ? ModActions.Allow : (ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction);
 
-            return new(action, banReason, Timeout);
+                return new(action, banReason, Timeout);
+            }
         }
 
 
@@ -1416,9 +1457,12 @@ switches:
 
         public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
         {
-            List<OverlayActionType> result = new();
-            result.AddRange(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND {_DataSource.OverlayServices.OverlayActionColumn.ColumnName}='{overlayAction}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')")                            select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaFile = overlayServicesRow.MediaFile, ImageFile=overlayServicesRow.ImageFile, Message = overlayServicesRow.Message, OverlayType = (MediaOverlayServer.Enums.OverlayTypes)Enum.Parse(typeof(MediaOverlayServer.Enums.OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
-            return result;
+            lock (GUIDataManagerLock.Lock)
+            {
+                List<OverlayActionType> result = new();
+                result.AddRange(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND {_DataSource.OverlayServices.OverlayActionColumn.ColumnName}='{overlayAction}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')") select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaFile = overlayServicesRow.MediaFile, ImageFile = overlayServicesRow.ImageFile, Message = overlayServicesRow.Message, OverlayType = (MediaOverlayServer.Enums.OverlayTypes)Enum.Parse(typeof(MediaOverlayServer.Enums.OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
+                return result;
+            }
         }
 
 

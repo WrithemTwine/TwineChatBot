@@ -358,7 +358,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.StopBot();
             }
 
-            if (OptionFlags.TwitchPubSubOnlineMode)
+            if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
             {
                 TwitchBotPubSub.StopBot();
             }
