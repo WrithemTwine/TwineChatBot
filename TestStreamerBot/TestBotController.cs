@@ -469,5 +469,13 @@ namespace TestStreamerBot
                 dataManager.AddClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
                 );
         }
+
+        [Fact]
+        public void TestOverlayData()
+        {
+            Initialize();
+
+
+        }
     }
 }

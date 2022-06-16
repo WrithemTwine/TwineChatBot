@@ -3,6 +3,7 @@ using MediaOverlayServer.Models;
 using MediaOverlayServer.Server;
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace MediaOverlayServer.GUI
@@ -15,7 +16,7 @@ namespace MediaOverlayServer.GUI
         /// <summary>
         /// Holds the Status Bar statistics per Overlay type how many times the server performed an action.
         /// </summary>
-        public List<OverlayStat> OverlayStats { get; private set; }
+        public ObservableCollection<OverlayStat> OverlayStats { get; private set; }
 
         public static List<OverlayPage> OverlayLinks => PrefixGenerator.GetLinks();
 
@@ -23,7 +24,7 @@ namespace MediaOverlayServer.GUI
 
         public GUIData()
         {
-            OverlayStats = new List<OverlayStat>() 
+            OverlayStats = new() 
             {
 #if DEBUG_
                 new() { OverlayType = OverlayTypes.ChannelPoints.ToString(), OverlayCount = 5 }, 
@@ -45,7 +46,6 @@ namespace MediaOverlayServer.GUI
                     } 
                 }
             }
-            OnPropertyChanged(nameof(OverlayStats));
         }
 
         public void UpdateStat(string OverType)
@@ -60,8 +60,6 @@ namespace MediaOverlayServer.GUI
                 int idx = OverlayStats.IndexOf(overlayStatData);
 
                 OverlayStats[idx].OverlayCount++;
-
-                OnPropertyChanged(nameof(OverlayStats));
             }
         }
 

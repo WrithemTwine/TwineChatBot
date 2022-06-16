@@ -161,7 +161,7 @@
                                                     <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                 </Label>
                                             </WrapPanel>
-                                            <GroupBox x:Name="GroupBox_Bots_Starts_MultiLive" Header="MultiLive Monitoring Bot" Width="Auto">
+                                            <GroupBox x:Name="GroupBox_Bots_Starts_MultiLive" Header="MultiLive Monitoring Bot" Width="Auto" Visibility="Collapsed">
                                                 <WrapPanel Orientation="Vertical">
                                                     <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
                                                         <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
