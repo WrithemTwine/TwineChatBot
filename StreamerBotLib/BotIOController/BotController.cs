@@ -953,6 +953,12 @@ namespace StreamerBotLib.BotIOController
             }
             Systems.PostGiveawayResult();
         }
+
+        public void ActivateRepeatTimers()
+        {
+            Systems.ActivateRepeatTimers();
+        }
+
         #endregion
 
         #endregion
