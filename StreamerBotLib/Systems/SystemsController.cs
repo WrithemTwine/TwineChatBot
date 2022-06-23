@@ -125,6 +125,11 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        public void ActivateRepeatTimers()
+        {
+            Command.StartElapsedTimerThread();
+        }
+
         public void NotifyBotStart()
         {
             StatisticsSystem.ClearUserList(DateTime.Now.ToLocalTime());

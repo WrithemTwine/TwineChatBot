@@ -35,7 +35,7 @@ namespace StreamerBotLib.Data
         /// <summary>
         /// Specifies the debug location of the database xml file name - user specific
         /// </summary>
-        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net5.0-windows7.0", DataFileXML);
+        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
@@ -273,14 +273,14 @@ switches:
             return GetCommand(command)?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
         }
 
-        public CommandsRow GetCommand(string cmd)
+        public CommandData GetCommand(string cmd)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the command row for {cmd}.");
 #endif
             lock (GUIDataManagerLock.Lock)
             {
-                return (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
+                return new((CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'"));
             }
         }
 
@@ -305,7 +305,7 @@ switches:
             return result;
         }
 
-        public object PerformQuery(CommandsRow row, string ParamValue)
+        public object PerformQuery(CommandData row, string ParamValue)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the query for command {row.CmdName}.");
@@ -316,7 +316,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                DataRow result = GetRows(_DataSource.Tables[row.table], $"{row.key_field}='{ParamValue}'").FirstOrDefault();
+                DataRow result = GetRows(_DataSource.Tables[row.Table], $"{row.Key_field}='{ParamValue}'").FirstOrDefault();
 
                 if (result == null)
                 {
@@ -331,7 +331,7 @@ switches:
                     }
                     else
                     {
-                        output = result[row.data_field];
+                        output = result[row.Data_field];
                     }
                 }
             }
@@ -339,7 +339,7 @@ switches:
             return output;
         }
 
-        public object[] PerformQuery(CommandsRow row, int Top = 0)
+        public object[] PerformQuery(CommandData row, int Top = 0)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the multi object query for command {row.CmdName}.");
@@ -348,8 +348,8 @@ switches:
             List<Tuple<object, object>> outlist = null;
             lock (GUIDataManagerLock.Lock)
             {
-               outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.table], Sort: Top < 0 ? null : row.key_field + " " + row.sort)
-                                                          select new Tuple<object, object>(d[row.key_field], d[row.data_field]));
+               outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
+                                                          select new Tuple<object, object>(d[row.Key_field], d[row.Data_field]));
             }
 
             if (Top > 0)

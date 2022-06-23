@@ -265,30 +265,28 @@ namespace StreamerBotLib.Systems
             cmdMessage.UserType = ParsePermission(cmdMessage);
             short multi = 0;
 
-            lock (GUI.GUIDataManagerLock.Lock)
+            CommandData cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
+
+            if (cmdrow == null)
             {
-                CommandsRow cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
-
-                if (cmdrow == null)
-                {
-                    result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound);
-                }
-                else if (!cmdrow.IsEnabled)
-                {
-                    result = "";
-                }
-                else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
-                {
-                    result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
-                }
-                else
-                {
-                    // parse commands, either built-in or custom
-                    result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, source);
-                }
-
-                result = $"{(cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
+                result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound);
             }
+            else if (!cmdrow.IsEnabled)
+            {
+                result = "";
+            }
+            else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
+            {
+                result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
+            }
+            else
+            {
+                // parse commands, either built-in or custom
+                result = ParseCommand(cmdMessage.CommandText, cmdMessage.DisplayName, cmdMessage.CommandArguments, cmdrow, out multi, source);
+            }
+
+            result = $"{(cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
+
             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
         }
 
@@ -346,190 +344,188 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckWelcomeUser(User);
         }
 
-        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandsRow cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
+        public string ParseCommand(string command, string DisplayName, List<string> arglist, CommandData cmdrow, out short multi, Bots Source, bool ElapsedTimer = false)
         {
-            lock (GUI.GUIDataManagerLock.Lock)
+
+            string result = "";
+            string tempHTMLResponse = "";
+            Dictionary<string, string> datavalues = null;
+            if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
             {
-                string result = "";
-                string tempHTMLResponse = "";
-                Dictionary<string, string> datavalues = null;
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
+                string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
+                arglist.RemoveAt(0);
+                result = DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
+            {
+                if (arglist.Count > 0)
                 {
-                    string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
-                    arglist.RemoveAt(0);
-                    result = DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
-                {
-                    if (arglist.Count > 0)
-                    {
-                        bool success = BotController.ModifyChannelInformation(Source, Title: string.Join(' ', arglist));
-                        result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
-                    }
-                    else
-                    {
-                        result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
-                    }
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
-                {
-                    if (arglist.Count > 0)
-                    {
-                        if (int.TryParse(arglist[0], out int GameId))
-                        {
-                            BotController.ModifyChannelInformation(Source, CategoryId: GameId.ToString());
-                            result = cmdrow.Message;
-                        }
-                        else
-                        {
-                            bool success = false;
-                            string CategoryName = string.Join(' ', arglist);
-
-                            Tuple<string, string> found = DataManage.GetGameCategories().Find((x) => x.Item2 == CategoryName);
-
-                            if (found != null)
-                            {
-                                success = BotController.ModifyChannelInformation(Source, CategoryId: found.Item1);
-                            }
-                            else
-                            {
-                                success = BotController.ModifyChannelInformation(Source, CategoryName: CategoryName);
-                            }
-
-                            result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
-                        }
-                    }
-                    else
-                    {
-                        result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
-                    }
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.editcommand))
-                {
-                    string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
-                    arglist.RemoveAt(0);
-                    result = DataManage.EditCommand(newcom[1..], arglist);
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removecommand))
-                {
-                    if (!LocalizedMsgSystem.CheckDefaultCommand(arglist[0]))
-                    {
-                        result = DataManage.RemoveCommand(arglist[0])
-                            ? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.removecommand)
-                            : LocalizedMsgSystem.GetVar("Msgcommandnotfound");
-                    }
-                    else
-                    {
-                        result = LocalizedMsgSystem.GetVar("Msgdefaultcommand");
-                    }
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
-                {
-                    result = cmdrow.Message + " " + DataManage.GetSocials();
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
-                {
-                    result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                    {
-                    new( MsgVars.user, ChannelName ),
-                    new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
-                    }));
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
-                {
-                    result = DataManage.GetCommands();
-                }
-                // capture all of the join queue commands
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)
-                    || command == LocalizedMsgSystem.GetVar(DefaultCommand.enqueue)
-                    || command == LocalizedMsgSystem.GetVar(DefaultCommand.leave)
-                    || command == LocalizedMsgSystem.GetVar(DefaultCommand.dequeue)
-                    || command == LocalizedMsgSystem.GetVar(DefaultCommand.queue)
-                    || command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
-                {
-                    result = OptionFlags.UserPartyStart
-                        ? PartyCommand(command, DisplayName, arglist.Count > 0 ? arglist[0] : "", cmdrow)
-                        : ElapsedTimer ? "" : LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart) || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
-                {
-                    result = cmdrow.Message;
-                    OptionFlags.SetParty(command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart));
-                    NotifyPropertyChanged("UserPartyStart");
-                    NotifyPropertyChanged("UserPartyStop");
-                }
-                else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
-                {
-                    AutoShoutUsers();
+                    bool success = BotController.ModifyChannelInformation(Source, Title: string.Join(' ', arglist));
+                    result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
                 }
                 else
                 {
-                    string paramvalue = cmdrow.AllowParam
-                        ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
-                            ? DisplayName
-                            : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
-                        : DisplayName;
-                    datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
+            {
+                if (arglist.Count > 0)
+                {
+                    if (int.TryParse(arglist[0], out int GameId))
                     {
+                        BotController.ModifyChannelInformation(Source, CategoryId: GameId.ToString());
+                        result = cmdrow.Message;
+                    }
+                    else
+                    {
+                        bool success = false;
+                        string CategoryName = string.Join(' ', arglist);
+
+                        Tuple<string, string> found = DataManage.GetGameCategories().Find((x) => x.Item2 == CategoryName);
+
+                        if (found != null)
+                        {
+                            success = BotController.ModifyChannelInformation(Source, CategoryId: found.Item1);
+                        }
+                        else
+                        {
+                            success = BotController.ModifyChannelInformation(Source, CategoryName: CategoryName);
+                        }
+
+                        result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
+                    }
+                }
+                else
+                {
+                    result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.editcommand))
+            {
+                string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
+                arglist.RemoveAt(0);
+                result = DataManage.EditCommand(newcom[1..], arglist);
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removecommand))
+            {
+                if (!LocalizedMsgSystem.CheckDefaultCommand(arglist[0]))
+                {
+                    result = DataManage.RemoveCommand(arglist[0])
+                        ? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.removecommand)
+                        : LocalizedMsgSystem.GetVar("Msgcommandnotfound");
+                }
+                else
+                {
+                    result = LocalizedMsgSystem.GetVar("Msgdefaultcommand");
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
+            {
+                result = cmdrow.Message + " " + DataManage.GetSocials();
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
+            {
+                result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                {
+                    new( MsgVars.user, ChannelName ),
+                    new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
+                }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
+            {
+                result = DataManage.GetCommands();
+            }
+            // capture all of the join queue commands
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.enqueue)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.leave)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.dequeue)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.queue)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
+            {
+                result = OptionFlags.UserPartyStart
+                    ? PartyCommand(command, DisplayName, arglist.Count > 0 ? arglist[0] : "", cmdrow)
+                    : ElapsedTimer ? "" : LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart) || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
+            {
+                result = cmdrow.Message;
+                OptionFlags.SetParty(command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart));
+                NotifyPropertyChanged("UserPartyStart");
+                NotifyPropertyChanged("UserPartyStop");
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
+            {
+                AutoShoutUsers();
+            }
+            else
+            {
+                string paramvalue = cmdrow.AllowParam
+                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                        ? DisplayName
+                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                    : DisplayName;
+                datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                {
                     new( MsgVars.user, paramvalue ),
                     new( MsgVars.url, paramvalue ),
                     new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
                     new( MsgVars.date, DateTime.Now.ToLocalTime().ToShortDateString() ),
                     new( MsgVars.com, paramvalue)
-                    });
+                });
 
-                    if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, Source))
+                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, Source))
+                {
+                    result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
+                }
+                else
+                {
+                    if (cmdrow.Lookupdata)
                     {
-                        result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
+                        LookupQuery(cmdrow, paramvalue, ref datavalues);
+                    }
+
+                    if (cmdrow.Message.Contains(MsgVars.category.ToString()))
+                    {
+                        ThreadManager.CreateThreadStart(() =>
+                        {
+                            lock (GUI.GUIDataManagerLock.Lock)
+                            {
+                                VariableParser.AddData(ref datavalues,
+                                new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+
+                                result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                                tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
+                                result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+
+                                ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+
+                                OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = DisplayName, UserMsg = tempHTMLResponse });
+                            }
+                        });
+
+                        result = "";
                     }
                     else
                     {
-                        if (cmdrow.lookupdata)
-                        {
-                            LookupQuery(cmdrow, paramvalue, ref datavalues);
-                        }
-
-                        if (cmdrow.Message.Contains(MsgVars.category.ToString()))
-                        {
-                            ThreadManager.CreateThreadStart(() =>
-                            {
-                                lock (GUI.GUIDataManagerLock.Lock)
-                                {
-                                    VariableParser.AddData(ref datavalues,
-                                    new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(paramvalue, Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
-
-                                    result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                                    tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
-                                    result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-
-                                    ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
-
-                                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = DisplayName, UserMsg = tempHTMLResponse });
-                                }
-                            });
-
-                            result = "";
-                        }
-                        else
-                        {
-                            result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                            tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
-                        }
+                        result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                        tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                     }
                 }
-                result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
-                multi = cmdrow.SendMsgCount;
-
-                if (result != "")
-                {
-                    OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = command, UserName = DisplayName, UserMsg = tempHTMLResponse });
-                }
-
-                return result;
             }
+            result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+            multi = cmdrow.SendMsgCount;
+
+            if (result != "")
+            {
+                OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = command, UserName = DisplayName, UserMsg = tempHTMLResponse });
+            }
+
+            return result;
         }
 
-        private static string PartyCommand(string command, string DisplayName, string argument, CommandsRow cmdrow)
+        private static string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
         {
             UserJoin newuser = new() { ChatUser = DisplayName };
             if (argument != "")
@@ -584,31 +580,26 @@ namespace StreamerBotLib.Systems
             return response;
         }
 
-        private static void LookupQuery(CommandsRow CommData, string paramvalue, ref Dictionary<string, string> datavalues)
+        private static void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
             //TODO: the commands with data lookup needs a lot of work!
 
-            lock (GUI.GUIDataManagerLock.Lock)
+            switch (CommData.Top)
             {
-
-
-
-                switch (CommData.top)
-                {
-                    case > 0:
-                    case -1:
+                case > 0:
+                case -1:
                     {
-                        if (CommData.action != CommandAction.Get.ToString())
+                        if (CommData.Action != CommandAction.Get.ToString())
                         {
-                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidComUsage), CommData.CmdName, CommData.action, CommandAction.Get.ToString()));
+                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidComUsage), CommData.CmdName, CommData.Action, CommandAction.Get.ToString()));
                         }
 
                         // convert multi-row output to a string
                         string queryoutput = "";
-                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(CommData, CommData.top)
-                                                                    let bundle = r as Tuple<object, object>
-                                                                    where bundle.Item1 == bundle.Item2
-                                                                    select bundle)
+                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(CommData, CommData.Top)
+                                                                 let bundle = r as Tuple<object, object>
+                                                                 where bundle.Item1 == bundle.Item2
+                                                                 select bundle)
                         {
                             queryoutput += bundle.Item1 + ", ";
                         }
@@ -618,7 +609,7 @@ namespace StreamerBotLib.Systems
                         break;
                     }
 
-                    default:
+                default:
                     {
                         object querydata = DataManage.PerformQuery(CommData, paramvalue);
 
@@ -646,8 +637,8 @@ namespace StreamerBotLib.Systems
                         }
                         break;
                     }
-                }
             }
         }
+
     }
 }

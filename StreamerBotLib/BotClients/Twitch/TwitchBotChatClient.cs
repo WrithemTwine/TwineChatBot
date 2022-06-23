@@ -129,7 +129,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            if (StatusLog.Length + e.DateTime.ToString().Length + e.Data.Length + 2 >= maxlength)
+            if (StatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
             {
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
@@ -139,7 +139,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (OptionFlags.LogBotStatus)
             {
-                LogWriter.WriteLog(LogType.LogBotStatus, e.DateTime.ToString() + ": " + e.Data);
+                LogWriter.WriteLog(LogType.LogBotStatus, e.DateTime.ToLocalTime().ToString() + ": " + e.Data);
             }
 
             NotifyPropertyChanged(nameof(StatusLog));
