@@ -301,7 +301,8 @@ namespace StreamerBotLib.Systems
             List<LiveUser> CurrActiveUsers;
             lock (CurrUsers)
             {
-                CurrActiveUsers = new(CurrUsers);
+                CurrActiveUsers = new();
+                CurrActiveUsers.UniqueAddRange(CurrUsers);
             }
 
             ThreadManager.CreateThreadStart(() =>

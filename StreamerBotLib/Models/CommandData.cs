@@ -1,4 +1,6 @@
-﻿using System;
+﻿using StreamerBotLib.Data;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,24 +30,24 @@ namespace StreamerBotLib.Models
 
         public CommandData(CommandsRow row)
         {
-            Usage = ColHelper(row.Usage);
-            IsEnabled = ColHelper(row.IsEnabled);
-            SendMsgCount = ColHelper(row.SendMsgCount);
-            Permission = ColHelper(row.Permission);
-            AddMe = ColHelper(row.AddMe);
-            Message = ColHelper(row.Message);
-            AllowParam = ColHelper(row.AllowParam);
-            Lookupdata = ColHelper(row.lookupdata);
-            Top = ColHelper(row.top);
-            Action = ColHelper(row.action);
-            CmdName = ColHelper(row.CmdName);
-            Table = ColHelper(row.table);
-            Key_field = ColHelper(row.key_field);
-            Data_field = ColHelper(row.data_field);
-            Sort = ColHelper(row.sort);
+            Usage = ColHelper<string>(row.Usage);
+            IsEnabled = ColHelper<bool>(row.IsEnabled);
+            SendMsgCount = ColHelper<short>(row.SendMsgCount);
+            Permission = ColHelper<string>(row.Permission);
+            AddMe = ColHelper<bool>(row.AddMe);
+            Message = ColHelper<string>(row.Message);
+            AllowParam = ColHelper<bool>(row.AllowParam);
+            Lookupdata = ColHelper<bool>(row.lookupdata);
+            Top = ColHelper<int>(row.top);
+            Action = ColHelper<string>(row.action);
+            CmdName = ColHelper<string>(row.CmdName);
+            Table = ColHelper<string>(row.table);
+            Key_field = ColHelper<string>(row.key_field);
+            Data_field = ColHelper<string>(row.data_field);
+            Sort = ColHelper<string>(row.sort);
         }
 
-        private static T ColHelper<T>(T Data)
+        private static T ColHelper<T>(object Data)
         {
             object returndata = null;
 

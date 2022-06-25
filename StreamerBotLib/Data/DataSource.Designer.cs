@@ -3033,12 +3033,16 @@ namespace StreamerBotLib.Data {
                 this.columnCmdName.Caption = "Command Name";
                 this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
+                this.columnPermission.DefaultValue = ((string)(""));
                 this.columnIsEnabled.DefaultValue = ((bool)(false));
+                this.columnMessage.DefaultValue = ((string)(""));
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
+                this.columnRepeatTimer.DefaultValue = ((int)(0));
                 this.columnSendMsgCount.Caption = "Repeat Message";
                 this.columnSendMsgCount.DefaultValue = ((short)(0));
                 this.columnCategory.Caption = "Specify an array of categories for context relevant timers-only implement timers " +
                     "per category.";
+                this.columnCategory.DefaultValue = ((string)(""));
                 this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
                 this.columnAllowParam.DefaultValue = ((bool)(false));
                 this.columnUsage.DefaultValue = ((string)(" "));
@@ -8261,11 +8265,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Permission {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.PermissionColumn]));
+                    if (this.IsPermissionNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Permission\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.PermissionColumn]));
                     }
                 }
                 set {
@@ -8293,11 +8297,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Message {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.MessageColumn]));
+                    if (this.IsMessageNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Message\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.MessageColumn]));
                     }
                 }
                 set {
@@ -8373,11 +8377,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Usage {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.UsageColumn]));
+                    if (this.IsUsageNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Usage\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.UsageColumn]));
                     }
                 }
                 set {
@@ -8405,11 +8409,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string table {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.tableColumn]));
+                    if (this.IstableNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'table\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.tableColumn]));
                     }
                 }
                 set {
@@ -8421,11 +8425,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string key_field {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.key_fieldColumn]));
+                    if (this.Iskey_fieldNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'key_field\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.key_fieldColumn]));
                     }
                 }
                 set {
@@ -8437,11 +8441,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string data_field {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.data_fieldColumn]));
+                    if (this.Isdata_fieldNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'data_field\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.data_fieldColumn]));
                     }
                 }
                 set {
@@ -8453,11 +8457,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string currency_field {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.currency_fieldColumn]));
+                    if (this.Iscurrency_fieldNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'currency_field\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.currency_fieldColumn]));
                     }
                 }
                 set {
@@ -8469,11 +8473,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string unit {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.unitColumn]));
+                    if (this.IsunitNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'unit\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.unitColumn]));
                     }
                 }
                 set {
@@ -8485,11 +8489,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string action {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.actionColumn]));
+                    if (this.IsactionNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'action\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.actionColumn]));
                     }
                 }
                 set {
@@ -8517,11 +8521,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string sort {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.sortColumn]));
+                    if (this.IssortNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'sort\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.sortColumn]));
                     }
                 }
                 set {

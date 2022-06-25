@@ -1193,7 +1193,10 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            BotController.AddNewAutoShoutUser(((DataRowView)item.SelectedValue).Row["UserName"].ToString());
+            foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
+            {
+                BotController.AddNewAutoShoutUser(dr["UserName"].ToString());
+            }
         }
 
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
