@@ -694,6 +694,7 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Moderation Messages">
                                             <StackPanel>
+                                                <Label>Currently not enabled-working on machine learning</Label>
                                                 <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
                                                     <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                                 </CheckBox>

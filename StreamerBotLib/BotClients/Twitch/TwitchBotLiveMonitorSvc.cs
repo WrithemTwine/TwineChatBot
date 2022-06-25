@@ -136,7 +136,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region MultiLive Bot
 
-        public static MultiUserLiveBot.Data.DataManager MultiLiveDataManager { get; private set; } = new();
+        public static MultiUserLiveBot.Data.MultiDataManager MultiLiveDataManager { get; private set; } = new();
 
         private const int maxlength = 8000;
 

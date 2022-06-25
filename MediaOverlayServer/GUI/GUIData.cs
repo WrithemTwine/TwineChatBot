@@ -16,7 +16,7 @@ namespace MediaOverlayServer.GUI
         /// <summary>
         /// Holds the Status Bar statistics per Overlay type how many times the server performed an action.
         /// </summary>
-        public ObservableCollection<OverlayStat> OverlayStats { get; private set; }
+        public List<OverlayStat> OverlayStats { get; private set; }
 
         public static List<OverlayPage> OverlayLinks => PrefixGenerator.GetLinks();
 
@@ -51,6 +51,7 @@ namespace MediaOverlayServer.GUI
         public void UpdateStat(string OverType)
         {
             UpdateStat(new OverlayStat() { OverlayType = OverType });
+            RefreshStats();
         }
 
         public void UpdateStat(OverlayStat overlayStatData)
@@ -61,6 +62,11 @@ namespace MediaOverlayServer.GUI
 
                 OverlayStats[idx].OverlayCount++;
             }
+        }
+
+        public void RefreshStats()
+        {
+            OnPropertyChanged(nameof(OverlayStats));
         }
 
         public void UpdateLinks()

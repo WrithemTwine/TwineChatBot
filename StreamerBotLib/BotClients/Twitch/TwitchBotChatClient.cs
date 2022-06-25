@@ -276,7 +276,6 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
-                    TwitchChat = null;
                     CreateClient();
                     Connected = Connect();
                     if (Connected)
@@ -313,6 +312,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     TwitchChat.Disconnect();
+                    TwitchChat = null;
                     RefreshSettings();
                     InvokeBotStopped();
                 }
@@ -426,7 +426,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 Connect();    // restart the bot
             }
 #else
-            if (IsStarted) // && !TwitchChat.IsConnected)
+            if (IsStarted && !IsStopped) // && !TwitchChat.IsConnected)
             {
                 IsStarted = false;
                 StartBot();
