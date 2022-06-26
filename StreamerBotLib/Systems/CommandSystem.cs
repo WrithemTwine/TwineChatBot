@@ -64,8 +64,6 @@ namespace StreamerBotLib.Systems
             ElapsedThread?.Join();
         }
 
-        private const int ChatCount = 20;
-        private const int ViewerCount = 15;
         private const int ThreadSleep = 5000;
         private DateTime chattime;
         private DateTime viewertime;
@@ -160,12 +158,23 @@ namespace StreamerBotLib.Systems
 
                     if (cmd.CheckFireTime())
                     {
+                        UpdateChatUserStats();
+
                         lock (GUI.GUIDataManagerLock.Lock) // lock it up because accessing a DataManage row
                         {
-                            OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
+                            if (OptionFlags.RepeatNoAdjustment 
+                                || OptionFlags.RepeatTimerDilute 
+                                || (OptionFlags.RepeatUseThresholds 
+                                    && ((OptionFlags.RepeatAboveUserCount && viewers >= OptionFlags.RepeatUserCount) || !OptionFlags.RepeatAboveUserCount) // if user threshold, check threshold, else, accept the check
+                                    && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
+                               )
+                            {
+                                OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, BotUserName, null, DataManage.GetCommand(cmd.Command), out short multi, Bots.Default, true), RepeatMsg = multi });
+                            }
                         }
                         lock (cmd)
                         {
+                            // invoke "CheckDilute()" to update user & chat stats
                             cmd.UpdateTime(CheckDilute());
                         }
                     }
@@ -197,33 +206,34 @@ namespace StreamerBotLib.Systems
 
         private double CheckDilute()
         {
-            double temp = 1.0;
+            double temp = 1.0; // return 1.0 if the user chooses not to dilute the timers
+
+            UpdateChatUserStats();
 
             if (OptionFlags.RepeatTimerDilute)
             {
-                DateTime now = DateTime.Now.ToLocalTime();
-
-                // 10+ viewers per 1/2 hr, or 20chats in 15 minutes; == 1.0 dilute
-
-                int newchats = chats, newviewers = viewers;
-
-                if ((now - chattime) >= new TimeSpan(0, 15, 0))
-                {
-                    chattime = now;
-                    newchats = GetCurrentChatCount - chats;
-                }
-
-                if ((now - viewertime) >= new TimeSpan(0, 30, 0))
-                {
-                    viewertime = now;
-                    newviewers = GetUserCount;
-                }
-
-                double factor = (newchats + newviewers) / (ChatCount + ViewerCount);
+                double factor = (chats + viewers) / ((OptionFlags.RepeatChatCount + OptionFlags.RepeatUserCount) == 0 ? 1 : OptionFlags.RepeatChatCount + OptionFlags.RepeatUserCount);
 
                 temp = 1.0 + (factor > 1.0 ? 0 : 1.0 - factor);
             }
             return temp;
+        }
+
+        private void UpdateChatUserStats()
+        {
+            DateTime now = DateTime.Now.ToLocalTime();
+
+            if ((now - chattime) >= new TimeSpan(0, OptionFlags.RepeatChatMinutes, 0))
+            {
+                chattime = now;
+                chats = GetCurrentChatCount - chats;
+            }
+
+            if ((now - viewertime) >= new TimeSpan(0, OptionFlags.RepeatUserMinutes, 0))
+            {
+                viewertime = now;
+                viewers = GetUserCount;
+            }
         }
 
         /// <summary>
@@ -314,7 +324,7 @@ namespace StreamerBotLib.Systems
             });
         }
 
-        /// <summary>
+/// <summary>
         /// See if the user is part of the user's auto-shout out list to determine if the message should be called, or shout-out from a raid or other similar event.
         /// </summary>
         /// <param name="UserName">The user to check</param>

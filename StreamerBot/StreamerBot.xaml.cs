@@ -781,18 +781,22 @@ namespace StreamerBot
 
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
         {
-            CheckBox CBSource = null;
+            ToggleButton TBSource = null;
             StackPanel SPSource = null;
-            if (sender.GetType() == typeof(CheckBox))
+            GroupBox GBSource = null;
+            if (sender.GetType() == typeof(CheckBox) || sender.GetType()==typeof(RadioButton))
             {
-                CBSource = (CheckBox)sender;
+                TBSource = (ToggleButton)sender;
             }
             else if (sender.GetType() == typeof(StackPanel))
             {
                 SPSource = (StackPanel)sender;
+            } else if (sender.GetType() == typeof(GroupBox))
+            {
+                GBSource = (GroupBox)sender;
             }
 
-            void SetVisibility(CheckBox box, StackPanel panel)
+            void SetVisibility(ToggleButton box, UIElement panel)
             {
                 if (panel != null)
                 {
@@ -805,11 +809,23 @@ namespace StreamerBot
             }
 
             // be sure this list is in XAML object order
-            if (CBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
+            if (TBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
             }
-            else if (CBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
+            else if (TBSource?.Name == RadioButton_RepeatTimer_NoAdjustment.Name || TBSource?.Name == RadioButton_RepeatTimer_SlowDownOption.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption.Name || GBSource?.Name == GroupBox_RepeatTimer_ThresholdOptions.Name)
+            {
+                if (TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name)
+                {
+                    SetVisibility(RadioButton_RepeatTimer_ThresholdOption, StackPanel_Repeat_ThresholdsOptions); 
+                }
+
+                if (RadioButton_RepeatTimer_NoAdjustment != null && RadioButton_RepeatTimer_SlowDownOption != null && GroupBox_RepeatTimer_ThresholdOptions != null)
+                { 
+                    SetVisibility(RadioButton_RepeatTimer_SlowDownOption.IsChecked == true ? RadioButton_RepeatTimer_SlowDownOption : RadioButton_RepeatTimer_ThresholdOption, GroupBox_RepeatTimer_ThresholdOptions); 
+                }
+            }
+            else if (TBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
             {
                 SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
 
@@ -818,15 +834,15 @@ namespace StreamerBot
                     TabItem_Overlays.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
-            else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
+            else if (TBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
                 SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
             }
-            else if (CBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
+            else if (TBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
             {
                 SetVisibility(CheckBox_TwitchFollower_LimitMsgs, StackPanel_TwitchFollower_LimitMsgs_Count);
             }
-            else if (CBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
+            else if (TBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
             {
                 SetVisibility(CheckBox_TwitchFollower_AutoRefresh, StackPanel_TwitchFollows_RefreshHrs);
             }

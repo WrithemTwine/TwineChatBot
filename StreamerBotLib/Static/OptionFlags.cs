@@ -124,6 +124,22 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool RepeatTimerDilute { get; set; }
         /// <summary>
+        /// Setting for not adjusting repeat timers or limiting messages.
+        /// </summary>
+        public static bool RepeatNoAdjustment { get; set; }
+        /// <summary>
+        /// Setting for repeat timers to send messages based on thresholds.
+        /// </summary>
+        public static bool RepeatUseThresholds { get; set; }
+        /// <summary>
+        /// Setting to use the users threadhold, whether to send repeat messages.
+        /// </summary>
+        public static bool RepeatAboveUserCount { get; set; }
+        /// <summary>
+        /// Setting to use the chat count threshold, whether to send repeat messages.
+        /// </summary>
+        public static bool RepeatAboveChatCount { get; set; }
+        /// <summary>
         /// Enables performing the repeat timer commands only when live, otherwise the messages would run all the time.
         /// </summary>
         public static bool RepeatWhenLive { get; set; }
@@ -135,6 +151,23 @@ namespace StreamerBotLib.Static
         /// Enables actually sending the message to chat once the times are reset once the given channel is live.
         /// </summary>
         public static bool RepeatLiveResetShow { get; set; }    // enable showing message when repeat timers reset for going live
+        /// <summary>
+        /// The about of minutes to check the number of users for the dilution calculation.
+        /// </summary>
+        public static int RepeatUserMinutes { get; set; }
+        /// <summary>
+        /// The amount of users in the time interval, under this threshold is in dilution calculation.
+        /// </summary>
+        public static int RepeatUserCount { get; set; }
+        /// <summary>
+        /// The time interval to check the number of chats for the time dultion calculation.
+        /// </summary>
+        public static int RepeatChatMinutes { get; set; }
+        /// <summary>
+        /// The amount of chat in time interval, under this threshold is in dilution calculation.
+        /// </summary>
+        public static int RepeatChatCount { get; set; }
+
 
         /// <summary>
         /// Indicates the user join list is active to accept users to the join list.
@@ -399,6 +432,14 @@ namespace StreamerBotLib.Static
                 RepeatWhenLive = Settings.Default.RepeatWhenLive;
                 RepeatLiveReset = Settings.Default.RepeatLiveReset;
                 RepeatLiveResetShow = Settings.Default.RepeatLiveResetShow;
+                RepeatUserCount = Settings.Default.RepeatUserCount;
+                RepeatUserMinutes = Settings.Default.RepeatUserMinutes;
+                RepeatChatCount = Settings.Default.RepeatChatCount;
+                RepeatChatMinutes = Settings.Default.RepeatChatMinutes;
+                RepeatAboveChatCount = Settings.Default.RepeatAboveChatCount;
+                RepeatAboveUserCount = Settings.Default.RepeatAboveUserCount;
+                RepeatUseThresholds = Settings.Default.RepeatUseThresholds;
+                RepeatNoAdjustment = Settings.Default.RepeatNoAdjustment;
 
                 #endregion
 

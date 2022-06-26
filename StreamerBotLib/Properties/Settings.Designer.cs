@@ -1066,5 +1066,101 @@ namespace StreamerBotLib.Properties {
                 this["TwitchPubSubOnlineMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int RepeatUserMinutes {
+            get {
+                return ((int)(this["RepeatUserMinutes"]));
+            }
+            set {
+                this["RepeatUserMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int RepeatUserCount {
+            get {
+                return ((int)(this["RepeatUserCount"]));
+            }
+            set {
+                this["RepeatUserCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int RepeatChatMinutes {
+            get {
+                return ((int)(this["RepeatChatMinutes"]));
+            }
+            set {
+                this["RepeatChatMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int RepeatChatCount {
+            get {
+                return ((int)(this["RepeatChatCount"]));
+            }
+            set {
+                this["RepeatChatCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatAboveUserCount {
+            get {
+                return ((bool)(this["RepeatAboveUserCount"]));
+            }
+            set {
+                this["RepeatAboveUserCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatAboveChatCount {
+            get {
+                return ((bool)(this["RepeatAboveChatCount"]));
+            }
+            set {
+                this["RepeatAboveChatCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatUseThresholds {
+            get {
+                return ((bool)(this["RepeatUseThresholds"]));
+            }
+            set {
+                this["RepeatUseThresholds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RepeatNoAdjustment {
+            get {
+                return ((bool)(this["RepeatNoAdjustment"]));
+            }
+            set {
+                this["RepeatNoAdjustment"] = value;
+            }
+        }
     }
 }
