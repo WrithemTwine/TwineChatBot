@@ -69,6 +69,8 @@
               <xs:element name="CurrLoginDate" msdata:Caption="Curr Login Date" msprop:Generator_ColumnPropNameInTable="CurrLoginDateColumn" msprop:Generator_ColumnPropNameInRow="CurrLoginDate" msprop:Generator_UserColumnName="CurrLoginDate" msprop:Generator_ColumnVarNameInTable="columnCurrLoginDate" type="xs:dateTime" minOccurs="0" />
               <xs:element name="LastDateSeen" msdata:Caption="Last Date Seen" msprop:Generator_ColumnPropNameInTable="LastDateSeenColumn" msprop:Generator_ColumnPropNameInRow="LastDateSeen" msprop:Generator_UserColumnName="LastDateSeen" msprop:Generator_ColumnVarNameInTable="columnLastDateSeen" type="xs:dateTime" minOccurs="0" />
               <xs:element name="WatchTime" msdata:Caption="Watch Time" msprop:Generator_ColumnPropNameInTable="WatchTimeColumn" msprop:Generator_ColumnPropNameInRow="WatchTime" msprop:Generator_UserColumnName="WatchTime" msprop:Generator_ColumnVarNameInTable="columnWatchTime" type="xs:duration" minOccurs="0" />
+              <xs:element name="UserId" msprop:Generator_ColumnPropNameInTable="UserIdColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="UserId" msprop:Generator_UserColumnName="UserId" msprop:Generator_ColumnVarNameInTable="columnUserId" type="xs:string" minOccurs="0" />
+              <xs:element name="Platform" msprop:Generator_ColumnPropNameInTable="PlatformColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="Platform" msprop:Generator_UserColumnName="Platform" msprop:Generator_ColumnVarNameInTable="columnPlatform" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -105,6 +107,8 @@
               <xs:element name="UserName" msdata:ReadOnly="true" msdata:Caption="User Name" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:nullValue="_empty" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_UserColumnName="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" type="xs:string" />
               <xs:element name="IsFollower" msdata:Caption="Is Follower" msprop:Generator_ColumnPropNameInTable="IsFollowerColumn" msprop:Generator_ColumnPropNameInRow="IsFollower" msprop:Generator_UserColumnName="IsFollower" msprop:Generator_ColumnVarNameInTable="columnIsFollower" type="xs:boolean" default="false" minOccurs="0" />
               <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_UserColumnName="FollowedDate" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
+              <xs:element name="UserId" msprop:Generator_ColumnPropNameInTable="UserIdColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="UserId" msprop:Generator_UserColumnName="UserId" msprop:Generator_ColumnVarNameInTable="columnUserId" type="xs:string" minOccurs="0" />
+              <xs:element name="Platform" msprop:Generator_ColumnPropNameInTable="PlatformColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="Platform" msprop:Generator_UserColumnName="Platform" msprop:Generator_ColumnVarNameInTable="columnPlatform" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

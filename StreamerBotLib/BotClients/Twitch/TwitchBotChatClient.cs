@@ -430,6 +430,10 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 IsStarted = false;
                 StartBot();
+            } 
+            else
+            {
+                InvokeBotStopped();
             }
 #endif
         }

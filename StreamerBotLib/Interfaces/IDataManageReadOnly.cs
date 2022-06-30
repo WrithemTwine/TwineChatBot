@@ -34,9 +34,10 @@ namespace StreamerBotLib.Interfaces
         List<Tuple<string, string>> GetGameCategories();
         List<string> GetCurrencyNames();
         bool CheckFollower(string User);
-        bool CheckUser(string User);
+        bool CheckUser(LiveUser User);
         bool CheckFollower(string User, DateTime ToDateTime);
-        bool CheckUser(string User, DateTime ToDateTime);
+        bool CheckUser(LiveUser User, DateTime ToDateTime);
         List<object> GetRowsDataColumn(string dataTable, string dataColumn);
+        string GetUserId(LiveUser User);
     }
 }

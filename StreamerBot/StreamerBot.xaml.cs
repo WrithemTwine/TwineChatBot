@@ -263,7 +263,7 @@ namespace StreamerBot
                     Channel = OptionFlags.TwitchChannelName,
                     Message = $"{DefaultCommand.soactive}"
                 },
-                Bots.TwitchChatBot);
+                Platform.Twitch);
         }
 
         #region Refresh data from bot
@@ -1017,7 +1017,7 @@ namespace StreamerBot
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }
@@ -1026,7 +1026,7 @@ namespace StreamerBot
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }
