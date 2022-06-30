@@ -48,7 +48,7 @@ namespace StreamerBotLib.Systems
                 {
                     if (OptionFlags.ManageUsers)
                     {
-                        DataManage.UserJoined(U.UserName, SpecifyTime.ToLocalTime());
+                        DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
                     }
                 }
             }
@@ -75,12 +75,12 @@ namespace StreamerBotLib.Systems
         /// <param name="User">User's DisplayName</param>
         /// <param name="CurrTime">The current time the user joined</param>
         /// <returns></returns>
-        public static bool UserJoined(string User, DateTime CurrTime, Bots Source)
+        public static bool UserJoined(LiveUser User, DateTime CurrTime)
         {
             bool result = false;
             lock (CurrUsers)
             {
-                result = CurrUsers.UniqueAdd(new(User, Source));
+                result = CurrUsers.UniqueAdd(User);
             }
 
             if (OptionFlags.IsStreamOnline)
@@ -95,13 +95,13 @@ namespace StreamerBotLib.Systems
             return result;
         }
 
-        public static bool UserChat(string User)
+        public static bool UserChat(LiveUser User)
         {
             bool result = false;
             if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
-                result = UniqueUserChat.UniqueAdd(User);
+                result = UniqueUserChat.UniqueAdd(User.UserName);
             }
             return result;
         }
@@ -130,12 +130,12 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void UserLeft(string User, DateTime CurrTime, Bots Source)
+        public static void UserLeft(LiveUser User, DateTime CurrTime)
         {
             lock (CurrUsers)
             {
                 PostDataUserLeft(User, CurrTime);
-                CurrUsers.Remove(new(User, Source));
+                CurrUsers.Remove(User);
             }
         }
 
@@ -145,13 +145,13 @@ namespace StreamerBotLib.Systems
             {
                 foreach (LiveUser U in CurrUsers)
                 {
-                    PostDataUserLeft(U.UserName, Stopped);
+                    PostDataUserLeft(U, Stopped);
                 }
                 CurrUsers.Clear();
             }
         }
 
-        private static void PostDataUserLeft(string User, DateTime CurrTime)
+        private static void PostDataUserLeft(LiveUser User, DateTime CurrTime)
         {
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
@@ -164,7 +164,7 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckFollower(User, CurrStream.StreamStart);
         }
 
-        public static bool IsReturningUser(string User)
+        public static bool IsReturningUser(LiveUser User)
         {
             return DataManage.CheckUser(User, CurrStream.StreamStart);
         }

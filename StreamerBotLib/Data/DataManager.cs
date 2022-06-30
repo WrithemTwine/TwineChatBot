@@ -280,7 +280,9 @@ switches:
 #endif
             lock (GUIDataManagerLock.Lock)
             {
-                return new((CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'"));
+                CommandsRow comrow = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
+
+                return comrow != null ? new(comrow) : null;
             }
         }
 
@@ -628,7 +630,17 @@ switches:
 
         private static DateTime CurrStreamStart { get; set; }
 
-        public void UserJoined(string User, DateTime NowSeen)
+        public string GetUserId(LiveUser User)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{User.Source}'");
+
+                return user?.UserId ?? string.Empty;
+            }
+        }
+
+        public void UserJoined(LiveUser User, DateTime NowSeen)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update for a user joined, user {User} at {NowSeen}.");
@@ -638,9 +650,9 @@ switches:
 
             lock(GUIDataManagerLock.Lock)
             {
-                UsersRow user = AddNewUser(User, NowSeen);
-                user.CurrLoginDate = Max(user.CurrLoginDate, NowSeen);
-                user.LastDateSeen = Max(user.LastDateSeen, NowSeen);
+                UsersRow userrow = AddNewUser(User, NowSeen);
+                userrow.CurrLoginDate = Max(userrow.CurrLoginDate, NowSeen);
+                userrow.LastDateSeen = Max(userrow.LastDateSeen, NowSeen);
                 NotifySaveData();
             }
         }
@@ -655,11 +667,13 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check for a custom user welcome message for user {User}.");
 #endif
-
-            return ((CustomWelcomeRow)GetRow(_DataSource.CustomWelcome, Filter: $"{_DataSource.CustomWelcome.UserNameColumn.ColumnName}='{User}'"))?.Message ?? "";
+            lock (GUIDataManagerLock.Lock)
+            {
+                return ((CustomWelcomeRow)GetRow(_DataSource.CustomWelcome, Filter: $"{_DataSource.CustomWelcome.UserNameColumn.ColumnName}='{User}'"))?.Message ?? "";
+            }
         }
 
-        public void UserLeft(string User, DateTime LastSeen)
+        public void UserLeft(LiveUser User, DateTime LastSeen)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update the user {User} has left, at {LastSeen}.");
@@ -667,7 +681,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
+                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{User.Source}'");
                 if (user != null)
                 {
                     UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
@@ -739,7 +753,7 @@ switches:
         /// </summary>
         /// <param name="User">The user to check in the database.</param>
         /// <returns><c>true</c> if the user has arrived prior to DateTime.MaxValue, <c>false</c> otherwise.</returns>
-        public bool CheckUser(string User)
+        public bool CheckUser(LiveUser User)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if user {User} has already been in the channel.");
@@ -754,7 +768,7 @@ switches:
         /// <param name="User">The user to verify.</param>
         /// <param name="ToDateTime">Specify the date to check if the user arrived to the channel prior to this date and time.</param>
         /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
-        public bool CheckUser(string User, DateTime ToDateTime)
+        public bool CheckUser(LiveUser User, DateTime ToDateTime)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if user {User} has arrived before {ToDateTime}.");
@@ -762,7 +776,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                UsersRow user = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'").FirstOrDefault();
+                UsersRow user = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}' AND ({_DataSource.Users.PlatformColumn.ColumnName}='{User.Source.ToString()}' OR {_DataSource.Users.PlatformColumn.ColumnName} is NULL)").FirstOrDefault();
 
                 return user != null && user.FirstDateSeen <= ToDateTime;
             }
@@ -810,7 +824,7 @@ switches:
         /// <param name="User">The Username of the new Follow</param>
         /// <param name="FollowedDate">The date of the Follow.</param>
         /// <returns>True if the follower is the first time. False if already followed.</returns>
-        public bool AddFollower(string User, DateTime FollowedDate)
+        public bool AddFollower(LiveUser User, DateTime FollowedDate)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add user {User} as a new follower at {FollowedDate}.");
@@ -821,7 +835,7 @@ switches:
                 bool newfollow;
 
                 UsersRow users = AddNewUser(User, FollowedDate);
-                FollowersRow followers = (FollowersRow)_DataSource.Followers.Select($"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'").FirstOrDefault();
+                FollowersRow followers = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserNameColumn.ColumnName}='{User.UserName}'");
 
                 if (followers != null)
                 {
@@ -829,11 +843,21 @@ switches:
                     newfollow = false;
                     followers.IsFollower = true;
                     followers.FollowedDate = FollowedDate;
+
+
+                    if (followers.UserId == null && User.UserId != string.Empty && User.UserId != null)
+                    {
+                        followers.UserId = User.UserId;
+                    }
+                    if (followers.Platform == string.Empty || followers.Platform == null)
+                    {
+                        followers.Platform = User.Source.ToString();
+                    }
                 }
                 else
                 {
                     newfollow = true;
-                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate);
+                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString());
                 }
                 NotifySaveData();
                 return newfollow;
@@ -846,7 +870,7 @@ switches:
         /// <param name="User">The user name.</param>
         /// <param name="FirstSeen">The first time the user is seen.</param>
         /// <returns>True if the user is added, else false if the user already existed.</returns>
-        private UsersRow AddNewUser(string User, DateTime FirstSeen)
+        private UsersRow AddNewUser(LiveUser User, DateTime FirstSeen)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new user {User}, first seen at {FirstSeen}.");
@@ -854,11 +878,11 @@ switches:
 
             UsersRow usersRow = null;
 
-            lock(GUIDataManagerLock.Lock)
+            if (!CheckUser(User))
             {
-                if (!CheckUser(User))
+                lock (GUIDataManagerLock.Lock)
                 {
-                    usersRow = _DataSource.Users.AddUsersRow(User, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero);
+                    usersRow = _DataSource.Users.AddUsersRow(User.UserName, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero, User.UserId, User.Source.ToString());
                     //AddCurrencyRows(ref usersRow);
                 }
             }
@@ -866,11 +890,20 @@ switches:
             // if the user is added to list before identified as follower, update first seen date to followed date
             lock(GUIDataManagerLock.Lock)
             {
-                usersRow = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'").First();
+                usersRow = (UsersRow)GetRow(_DataSource.Users,$"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}'");
 
                 if (FirstSeen <= usersRow.FirstDateSeen)
                 {
                     usersRow.FirstDateSeen = FirstSeen;
+                }
+
+                if(usersRow.UserId == null && User.UserId != null)
+                {
+                    usersRow.UserId = User.UserId;
+                }
+                if(usersRow.Platform == null)
+                {
+                    usersRow.Platform = User.Source.ToString();
                 }
             }
 
@@ -904,7 +937,7 @@ switches:
             {
                 foreach (Follow f in follows)
                 {
-                    _ = AddFollower(f.FromUserName, f.FollowedAt);
+                    _ = AddFollower(f.FromUser, f.FollowedAt);
                 }
             }
 
@@ -1094,15 +1127,17 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add currency for all users.");
 #endif
-
-            UsersRow[] UserRows = (UsersRow[])GetRows(_DataSource.Users);
-
-            for (int i = 0; i < UserRows.Length; i++)
+            lock (GUIDataManagerLock.Lock)
             {
-                UsersRow users = UserRows[i];
-                AddCurrencyRows(ref users);
+                UsersRow[] UserRows = (UsersRow[])GetRows(_DataSource.Users);
+
+                for (int i = 0; i < UserRows.Length; i++)
+                {
+                    UsersRow users = UserRows[i];
+                    AddCurrencyRows(ref users);
+                }
+                NotifySaveData();
             }
-            NotifySaveData();
         }
 
         /// <summary>

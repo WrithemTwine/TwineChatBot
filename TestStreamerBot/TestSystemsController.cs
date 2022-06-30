@@ -50,7 +50,7 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { "DarkStreamPhantom" }, StreamerBotLib.Enums.Bots.TwitchChatBot);
+            systemsController.UserJoined(new() { new("DarkStreamPhantom" , Platform.Twitch)});
             Assert.Empty(result);
         }
 
@@ -62,11 +62,11 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { "DarkStreamPhantom" }, StreamerBotLib.Enums.Bots.TwitchChatBot);
+            systemsController.UserJoined(new() { new( "DarkStreamPhantom", Platform.Twitch) });
 
             result = string.Empty;
             
-            systemsController.UserJoined(new() { "DarkStreamPhantom" }, StreamerBotLib.Enums.Bots.TwitchChatBot);
+            systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
             Assert.Empty(result);
         }
 
@@ -83,7 +83,7 @@ namespace TestStreamerBot
             string Category = "New World";
             DateTime RaidTime = DateTime.Now;
 
-            systemsController.PostIncomingRaid(RaidName, RaidTime, viewers, Category, StreamerBotLib.Enums.Bots.TwitchChatBot);
+            systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, Category);
             SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
             Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
@@ -100,9 +100,9 @@ namespace TestStreamerBot
             OptionFlags.ManageUsers = true;
             OptionFlags.IsStreamOnline = true;
 
-            systemsController.UserJoined(new() { UserName }, StreamerBotLib.Enums.Bots.TwitchChatBot);
-            Assert.True(SystemsController.DataManage.CheckUser(UserName));
-            systemsController.UserLeft(UserName, Bots.TwitchChatBot);
+            systemsController.UserJoined(new() { new(UserName, Platform.Twitch) });
+            Assert.True(SystemsController.DataManage.CheckUser(new(UserName, Platform.Twitch)));
+            systemsController.UserLeft(new(UserName, Platform.Twitch));
         }
     }
 }

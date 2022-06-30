@@ -231,7 +231,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUserName, f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUser,f.FollowedAt.ToLocalTime())))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -408,15 +408,15 @@ namespace StreamerBotLib.Systems
             Stats.GetType()?.InvokeMember("Add" + streamStat.ToString(), BindingFlags.InvokeMethod, null, Stats, new object[] { value });
         }
 
-        public void UserJoined(List<string> UserNames, Bots Source)
+        public void UserJoined(List<LiveUser> UserNames)
         {
             DateTime Curr = DateTime.Now.ToLocalTime();
 
-            foreach (string user in UserNames)
+            foreach (LiveUser user in UserNames)
             {
-                if (RegisterJoinedUser(user, Curr, Source, JoinedUserMsg: true))
+                if (RegisterJoinedUser(user, Curr, JoinedUserMsg: true))
                 {
-                    UserWelcomeMessage(user, Source);
+                    UserWelcomeMessage(user);
                 }
             }
             UpdateUserJoinedList();
@@ -440,9 +440,9 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void UserLeft(string UserName, Bots Source)
+        public void UserLeft(LiveUser User)
         {
-            StatisticsSystem.UserLeft(UserName, DateTime.Now.ToLocalTime(), Source);
+            StatisticsSystem.UserLeft(User, DateTime.Now.ToLocalTime());
             UpdateUserJoinedList();
         }
 
@@ -453,40 +453,40 @@ namespace StreamerBotLib.Systems
             return DataManage.GetWebhooks(webhooksKind);
         }
 
-        private bool RegisterJoinedUser(string UserName, DateTime UserTime, Bots Source, bool JoinedUserMsg = false, bool ChatUserMessage = false)
+        private bool RegisterJoinedUser(LiveUser User, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
             bool FoundUserJoined = false;
             bool FoundUserChat = false;
 
             if (JoinedUserMsg) // use a straight flag for user to join the channel
             {
-                FoundUserJoined = StatisticsSystem.UserJoined(UserName, UserTime, Source);
+                FoundUserJoined = StatisticsSystem.UserJoined(User, UserTime);
             }
 
             if (ChatUserMessage)
             {
                 // have to separate, else the user registered before actually registered
 
-                FoundUserChat = StatisticsSystem.UserChat(UserName);
+                FoundUserChat = StatisticsSystem.UserChat(User);
             }
             // use the OptionFlags.FirstUserJoinedMsg flag to determine the welcome message is through user joined
             return (OptionFlags.FirstUserJoinedMsg && FoundUserJoined) || (ChatUserMessage && FoundUserChat);
         }
 
-        private void UserWelcomeMessage(string UserName, Bots Source)
+        private void UserWelcomeMessage(LiveUser User)
         {
-            if ((UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName?.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
+            if ((User.UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.ChannelName.ToLower(CultureInfo.CurrentCulture) && (User.UserName.ToLower(CultureInfo.CurrentCulture) != SystemsBase.BotUserName?.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
             {
-                string msg = Command.CheckWelcomeUser(UserName);
+                string msg = Command.CheckWelcomeUser(User.UserName);
 
                 ChannelEventActions selected = ChannelEventActions.UserJoined;
 
                 if (OptionFlags.WelcomeCustomMsg)
                 {
                     selected =
-                        StatisticsSystem.IsFollower(UserName) ?
+                        StatisticsSystem.IsFollower(User.UserName) ?
                         ChannelEventActions.SupporterJoined :
-                            StatisticsSystem.IsReturningUser(UserName) ?
+                            StatisticsSystem.IsReturningUser(User) ?
                                 ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
                 }
 
@@ -502,14 +502,14 @@ namespace StreamerBotLib.Systems
                             VariableParser.BuildDictionary(
                                 new Tuple<MsgVars, string>[]
                                     {
-                                        new( MsgVars.user, UserName )
+                                        new( MsgVars.user, User.UserName )
                                     }
                             )
                         )
                     , Repeat: Multi);
                 }
 
-                CheckForOverlayEvent(OverlayTypes.ChannelEvents, selected, UserName);
+                CheckForOverlayEvent(OverlayTypes.ChannelEvents, selected, User.UserName);
             }
 
             if (OptionFlags.AutoShout)
@@ -518,13 +518,13 @@ namespace StreamerBotLib.Systems
                 {
                     ProcMsgQueue.Enqueue(new(() =>
                     {
-                        Command.CheckShout(UserName, out string response, Source);
+                        Command.CheckShout(User, out string response);
                     }));
                 }
             }
         }
 
-        public void MessageReceived(CmdMessage MsgReceived, Bots Source)
+        public void MessageReceived(CmdMessage MsgReceived, LiveUser User)
         {
             MsgReceived.UserType = CommandSystem.ParsePermission(MsgReceived);
 
@@ -548,11 +548,11 @@ namespace StreamerBotLib.Systems
                     // don't fix it yet
                     if (action.Item1 == ModActions.Ban)
                     {
-                        RequestBanUser(Source, MsgReceived.DisplayName, action.Item4);
+                        RequestBanUser(User, action.Item4);
                     }
                     else if (action.Item1 == ModActions.Timeout)
                     {
-                        RequestBanUser(Source, MsgReceived.DisplayName, action.Item4, action.Item2);
+                        RequestBanUser(User, action.Item4, action.Item2);
                     }
                 }
             }
@@ -605,19 +605,19 @@ namespace StreamerBotLib.Systems
                 }
             }
 
-            if (RegisterJoinedUser(MsgReceived.DisplayName, DateTime.Now.ToLocalTime(), Source, ChatUserMessage: OptionFlags.FirstUserChatMsg))
+            if (RegisterJoinedUser(User, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
             {
-                UserWelcomeMessage(MsgReceived.DisplayName, Source);
+                UserWelcomeMessage(User);
             }
 
         }
 
-        private void RequestBanUser(Bots Source, string UserName, BanReasons Reason, int Duration = 0)
+        private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
         {
-            BanUserRequest?.Invoke(this, new() { Source = Source, UserName = UserName, BanReason = Reason, Duration = Duration });
+            BanUserRequest?.Invoke(this, new() { User = User, BanReason = Reason, Duration = Duration });
         }
 
-        public void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Bots Source)
+        public void PostIncomingRaid(LiveUser User, DateTime RaidTime, string Viewers, string GameName)
         {
             lock (ProcMsgQueue)
             {
@@ -627,26 +627,26 @@ namespace StreamerBotLib.Systems
                     if (Enabled)
                     {
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
-                            new(MsgVars.user, UserName ),
+                            new(MsgVars.user, User.UserName ),
                             new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
                             });
 
                         SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
                     }
 
-                    CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid, UserName);
+                    CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid, User.UserName);
 
                     UpdatedStat(StreamStatType.Raids, StreamStatType.AutoEvents);
 
                     if (OptionFlags.TwitchRaidShoutOut)
                     {
-                        Command.CheckShout(UserName, out string response, Source, false);
+                        Command.CheckShout(User, out string response, false);
                     }
                 }));
             }
             if (OptionFlags.ManageRaidData)
             {
-                StatisticsSystem.PostIncomingRaid(UserName, RaidTime, Viewers, GameName);
+                StatisticsSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
             }
         }
 
@@ -658,7 +658,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void ProcessCommand(CmdMessage cmdMessage, Bots Source)
+        public void ProcessCommand(CmdMessage cmdMessage, Platform Source)
         {
             try
             {

@@ -250,9 +250,9 @@ namespace StreamerBotLib.BotIOController
 
         #region Query Bots
 
-        public static string GetUserCategory(string ChannelName, Bots bots)
+        public static string GetUserCategory(string ChannelName, string UserId, Platform bots)
         {
-            if (bots == Bots.TwitchChatBot)
+            if (bots == Platform.Twitch)
             {
                 return BotsTwitch.GetUserCategory(UserName: ChannelName);
             }
@@ -273,9 +273,9 @@ namespace StreamerBotLib.BotIOController
             //};
         }
 
-        public static bool VerifyUserExist(string ChannelName, Bots bots)
+        public static bool VerifyUserExist(string ChannelName, Platform bots)
         {
-            if(bots == Bots.TwitchChatBot)
+            if(bots == Platform.Twitch)
             {
                 return BotsTwitch.VerifyUserExist(ChannelName);
             }
@@ -296,11 +296,11 @@ namespace StreamerBotLib.BotIOController
             //};
         }
 
-        public static bool ModifyChannelInformation(Bots bots, string Title = null, string CategoryName = null, string CategoryId = null)
+        public static bool ModifyChannelInformation(Platform bots, string Title = null, string CategoryName = null, string CategoryId = null)
         {
             bool result = false;
 
-            if (bots == Bots.TwitchChatBot)
+            if (bots == Platform.Twitch)
             {
                 result = BotsTwitch.ModifyChannelInformation(Title, CategoryName, CategoryId);
             }
@@ -344,7 +344,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchPostNewFollowers(OnNewFollowersDetectedArgs Follower)
         {
-            HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers));
+            HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
         }
 
         /// <summary>
@@ -352,18 +352,19 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         /// <param name="follows">The Twitch follows list to convert.</param>
         /// <returns>The follower list converted to the generic "Models.Follow" list.</returns>
-        private static List<Models.Follow> ConvertFollowers(List<Follow> follows)
+        private static List<Models.Follow> ConvertFollowers(List<Follow> follows, Platform Source)
         {
             return follows.ConvertAll((f) =>
             {
-                return new Models.Follow()
-                {
-                    FollowedAt = f.FollowedAt.ToLocalTime(),
-                    FromUserId = f.FromUserId,
-                    FromUserName = f.FromUserName,
-                    ToUserId = f.ToUserId,
-                    ToUserName = f.ToUserName
-                };
+                return new Models.Follow(
+                
+                    f.FollowedAt.ToLocalTime(),
+                    f.FromUserId,
+                    f.FromUserName,
+                    f.ToUserId,
+                    f.ToUserName,
+                    new(f.FromUserName,Source)
+                );
             });
         }
 
@@ -390,7 +391,7 @@ namespace StreamerBotLib.BotIOController
 
         public static void TwitchBulkPostFollowers(OnNewFollowersDetectedArgs Follower)
         {
-            HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers));
+            HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -496,19 +497,19 @@ namespace StreamerBotLib.BotIOController
             HandleOnStreamOffline(HostedChannel: e.HostedChannel);
         }
 
-        public void TwitchExistingUsers(OnExistingUsersDetectedArgs e)
+        public void TwitchExistingUsers(StreamerOnExistingUserDetectedArgs e)
         {
-            HandleUserJoined(e.Users, Bots.TwitchChatBot);
+            HandleUserJoined(e.Users);
         }
 
-        public void TwitchOnUserJoined(OnUserJoinedArgs e)
+        public void TwitchOnUserJoined(StreamerOnUserJoinedArgs e)
         {
-            HandleUserJoined(new() { e.Username }, Bots.TwitchChatBot);
+            HandleUserJoined( new() { e.LiveUser });
         }
 
-        public void TwitchOnUserLeft(OnUserLeftArgs e)
+        public void TwitchOnUserLeft(StreamerOnUserLeftArgs e)
         {
-            HandleUserLeft(e.Username, Bots.TwitchChatBot);
+            HandleUserLeft(e.LiveUser);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -520,7 +521,7 @@ namespace StreamerBotLib.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public void TwitchOnUserBanned(OnUserBannedArgs e = null)
         {
-            HandleUserBanned(e.UserBan.Username, Bots.TwitchChatBot);
+            HandleUserBanned(e.UserBan.Username, Platform.Twitch);
         }
 
         //public void TwitchRitualNewChatter(OnRitualNewChatterArgs e)
@@ -548,12 +549,12 @@ namespace StreamerBotLib.BotIOController
                     Message = e.ChatMessage.Message,
                     Bits = e.ChatMessage.Bits
                 }
-                , Bots.TwitchChatBot);
+                , Platform.Twitch);
         }
 
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
         {
-            HandleIncomingRaidData(e.DisplayName, e.RaidTime, e.ViewerCount, e.Category, Bots.TwitchChatBot);
+            HandleIncomingRaidData(new(e.DisplayName, Platform.Twitch), e.RaidTime, e.ViewerCount, e.Category);
         }
 
         public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
@@ -575,7 +576,7 @@ namespace StreamerBotLib.BotIOController
                 IsTurbo = e.Command.ChatMessage.IsTurbo,
                 IsVip = e.Command.ChatMessage.IsVip,
                 Message = e.Command.ChatMessage.Message
-            }, Bots.TwitchChatBot); ;
+            }, Platform.Twitch);
         }
 
         public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)
@@ -853,14 +854,14 @@ namespace StreamerBotLib.BotIOController
             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
         }
 
-        public void HandleUserJoined(List<string> Users, Bots Source)
+        public void HandleUserJoined(List<Models.LiveUser> Users)
         {
-            Systems.UserJoined(Users, Source);
+            Systems.UserJoined(Users);
         }
 
-        public void HandleUserLeft(string Users, Bots Source)
+        public void HandleUserLeft(Models.LiveUser User)
         {
-            Systems.UserLeft(Users, Source);
+            Systems.UserLeft(User);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -869,12 +870,12 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.UserTimedOut);
         }
 
-        public void HandleUserBanned(string UserName, Bots Source)
+        public void HandleUserBanned(string UserName, Platform Source)
         {
             try
             {
                 Systems.UpdatedStat(StreamStatType.UserBanned);
-                HandleUserLeft(UserName, Source);
+                HandleUserLeft(new(UserName, Source));
 
                 Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
             }
@@ -884,22 +885,22 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        public void HandleAddChat(string UserName, Bots Source)
+        public void HandleAddChat(string UserName, Platform Source)
         {
-            Systems.UserJoined(new() { UserName }, Source);
+            Systems.UserJoined(new() { new(UserName,Source) });
         }
 
-        public void HandleMessageReceived(Models.CmdMessage MsgReceived, Bots Source)
+        public void HandleMessageReceived(Models.CmdMessage MsgReceived, Platform Source)
         {
-            Systems.MessageReceived(MsgReceived, Source);
+            Systems.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source));
         }
 
-        public void HandleIncomingRaidData(string UserName, DateTime RaidTime, string ViewerCount, string Category, Bots Source)
+        public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, string ViewerCount, string Category)
         {
-            Systems.PostIncomingRaid(UserName, RaidTime.ToLocalTime(), ViewerCount, Category, Source);
+            Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
         }
 
-        public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Bots Source)
+        public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Platform Source)
         {
             if (GiveawayItemType == GiveawayTypes.Command && commandmsg.CommandText == GiveawayItemName)
             {
@@ -967,10 +968,10 @@ namespace StreamerBotLib.BotIOController
 
         private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
         {
-            if(e.Source == Bots.TwitchChatBot)
+            if(e.User.Source == Platform.Twitch)
             {
                 // TODO: verify users are correctly determined to be banned before banning, added to log
-                LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.UserName} for {e.BanReason} for {e.Duration} seconds.");
+                LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.User.UserName} for {e.BanReason} for {e.Duration} seconds.");
                 //TwitchBots.BanUserRequest(e.UserName, e.BanReason, e.Duration);
             }
         }
