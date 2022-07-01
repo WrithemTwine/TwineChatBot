@@ -1,4 +1,8 @@
-﻿using StreamerBotLib.BotIOController;
+﻿#if DEBUG
+#define LogDataManager_Actions
+#endif
+
+using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
@@ -295,7 +299,7 @@ namespace StreamerBotLib.Systems
                 result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi);
             }
 
-            result = $"{(cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
+            result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
         }
@@ -306,7 +310,6 @@ namespace StreamerBotLib.Systems
         /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
         public void AutoShoutUsers()
         {
-            // TODO: if adding non-Twitch platforms, need to adjust to call the correct platform-to get the channel category
 
             List<LiveUser> CurrActiveUsers;
             lock (CurrUsers)
@@ -314,6 +317,17 @@ namespace StreamerBotLib.Systems
                 CurrActiveUsers = new();
                 CurrActiveUsers.UniqueAddRange(CurrUsers);
             }
+
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Received AutoShoutUsers command. Current active users.");
+
+            foreach (LiveUser u in CurrActiveUsers)
+            {
+                LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Contains {u.UserName}, {u.UserId}, {u.Source}");
+            }
+
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Now checking if the user is on the shout list.");
+#endif
 
             ThreadManager.CreateThreadStart(() =>
             {
@@ -338,14 +352,19 @@ namespace StreamerBotLib.Systems
             {
                 if (AutoShout && OptionFlags.MsgSendSOToChat)
                 {
-                    ProcessedCommand?.Invoke(this, new() { RepeatMsg = 0, Msg = $"!{LocalizedMsgSystem.GetVar(DefaultCommand.so)} {User.UserName}" });
+                    OnProcessCommand($"!{LocalizedMsgSystem.GetVar(DefaultCommand.so)} {User.UserName}");
                 }
                 response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), User, new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi);
 
                 // handle when returned without #category in the message
-                if (response != "" && response != "/me")                    
+                if (response != "" && response != "/me ")
                 {
-                    ProcessedCommand?.Invoke(this, new() { Msg = response, RepeatMsg = multi });
+                    OnProcessCommand( response, multi);
+
+#if LogDataManager_Actions
+                    LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Sent message with no #category symbol.");
+#endif
+
                 }
             }
         }
@@ -510,9 +529,15 @@ namespace StreamerBotLib.Systems
                                 tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                                 result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
 
-                                ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = cmdrow.SendMsgCount });
+                                OnProcessCommand(result, cmdrow.SendMsgCount);
+
+#if LogDataManager_Actions
+                                LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Found !so message with a category, {result}.");
+#endif
 
                                 OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = User.UserName, UserMsg = tempHTMLResponse });
+
+                                result = "";
                             }
                         });
 
@@ -522,18 +547,33 @@ namespace StreamerBotLib.Systems
                     {
                         result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                         tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
+
+
+#if LogDataManager_Actions
+                        if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so))
+                        {
+                            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Found !so message without a category, {result}");
+                        }
+#endif
+
                     }
                 }
             }
-            result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ")) ? "/me " : "") + result;
-            multi = cmdrow.SendMsgCount;
 
             if (result != "")
             {
                 OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = command, UserName = User.UserName, UserMsg = tempHTMLResponse });
             }
 
+            result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;
+            multi = cmdrow.SendMsgCount;
+
             return result;
+        }
+
+        private void OnProcessCommand(string Message, int repeatMsg = 0)
+        {
+            ProcessedCommand?.Invoke(this, new() { Msg = Message, RepeatMsg = repeatMsg });
         }
 
         private static string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
