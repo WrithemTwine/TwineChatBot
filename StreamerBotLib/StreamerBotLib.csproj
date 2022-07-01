@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.1.0</Version>
+    <Version>0.2.2.0</Version>
     <PackageId>TwineStreamerBotLib</PackageId>
     <AssemblyName>TwineStreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -19,7 +19,7 @@
     <PackageReference Include="TwitchLib.Api" Version="3.5.2" />
     <PackageReference Include="TwitchLib.Api.Core" Version="3.5.2" />
     <PackageReference Include="TwitchLib.Api.Helix" Version="3.5.2" />
-    <PackageReference Include="TwitchLib.Client" Version="3.2.6-preview-6109ec73405e067631aac6c8c837bc87dec6ad63" />
+    <PackageReference Include="TwitchLib.Client" Version="3.2.4" />
     <PackageReference Include="TwitchLib.PubSub" Version="3.2.5-preview-e27b78571148879a04eaea2cf45441a35b0e908f" />
   </ItemGroup>
 

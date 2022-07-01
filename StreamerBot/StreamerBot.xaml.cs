@@ -263,7 +263,7 @@ namespace StreamerBot
                     Channel = OptionFlags.TwitchChannelName,
                     Message = $"{DefaultCommand.soactive}"
                 },
-                Bots.TwitchChatBot);
+                Platform.Twitch);
         }
 
         #region Refresh data from bot
@@ -355,7 +355,9 @@ namespace StreamerBot
         private void SetMultiLiveActive(bool ProcessFound = false)
         {
             Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
+#if MultiLive
             SetMultiLiveButtons();
+#endif
         }
 
         private void SetMultiLiveButtons()
@@ -462,11 +464,11 @@ namespace StreamerBot
             BotController.UpdateTwitchMultiLiveChannels();
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region PopOut Chat Window
+#region PopOut Chat Window
         private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
         {
             //    CP.Show();
@@ -490,11 +492,11 @@ namespace StreamerBot
             }
         }
 
-        #endregion
+#endregion
 
-        #region Helpers
+#region Helpers
 
-        #region Window Open and Close
+#region Window Open and Close
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -549,7 +551,7 @@ namespace StreamerBot
             OptionFlags.SetSettings();
         }
 
-        #endregion
+#endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string propname)
@@ -605,6 +607,11 @@ namespace StreamerBot
 
             CheckDebug();
             SetVisibility();
+
+            if (sender is CheckBox && ((CheckBox)sender).Name == "CheckBox_RepeatCommands_Enable")
+            {
+                Controller.ActivateRepeatTimers();
+            }
         }
 
         private void CheckDebug()
@@ -774,18 +781,22 @@ namespace StreamerBot
 
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
         {
-            CheckBox CBSource = null;
+            ToggleButton TBSource = null;
             StackPanel SPSource = null;
-            if (sender.GetType() == typeof(CheckBox))
+            GroupBox GBSource = null;
+            if (sender.GetType() == typeof(CheckBox) || sender.GetType()==typeof(RadioButton))
             {
-                CBSource = (CheckBox)sender;
+                TBSource = (ToggleButton)sender;
             }
             else if (sender.GetType() == typeof(StackPanel))
             {
                 SPSource = (StackPanel)sender;
+            } else if (sender.GetType() == typeof(GroupBox))
+            {
+                GBSource = (GroupBox)sender;
             }
 
-            void SetVisibility(CheckBox box, StackPanel panel)
+            void SetVisibility(ToggleButton box, UIElement panel)
             {
                 if (panel != null)
                 {
@@ -798,11 +809,23 @@ namespace StreamerBot
             }
 
             // be sure this list is in XAML object order
-            if (CBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
+            if (TBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
             }
-            else if (CBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
+            else if (TBSource?.Name == RadioButton_RepeatTimer_NoAdjustment.Name || TBSource?.Name == RadioButton_RepeatTimer_SlowDownOption.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption.Name || GBSource?.Name == GroupBox_RepeatTimer_ThresholdOptions.Name)
+            {
+                if (TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name)
+                {
+                    SetVisibility(RadioButton_RepeatTimer_ThresholdOption, StackPanel_Repeat_ThresholdsOptions); 
+                }
+
+                if (RadioButton_RepeatTimer_NoAdjustment != null && RadioButton_RepeatTimer_SlowDownOption != null && GroupBox_RepeatTimer_ThresholdOptions != null)
+                { 
+                    SetVisibility(RadioButton_RepeatTimer_SlowDownOption.IsChecked == true ? RadioButton_RepeatTimer_SlowDownOption : RadioButton_RepeatTimer_ThresholdOption, GroupBox_RepeatTimer_ThresholdOptions); 
+                }
+            }
+            else if (TBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
             {
                 SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
 
@@ -811,15 +834,15 @@ namespace StreamerBot
                     TabItem_Overlays.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
-            else if (CBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
+            else if (TBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
                 SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
             }
-            else if (CBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
+            else if (TBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
             {
                 SetVisibility(CheckBox_TwitchFollower_LimitMsgs, StackPanel_TwitchFollower_LimitMsgs_Count);
             }
-            else if (CBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
+            else if (TBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
             {
                 SetVisibility(CheckBox_TwitchFollower_AutoRefresh, StackPanel_TwitchFollows_RefreshHrs);
             }
@@ -848,11 +871,11 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
-        #region Moderate Followers
+#region Moderate Followers
 
-        #endregion
+#endregion
 
-        #region GUIAppStats
+#region GUIAppStats
         private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
         {
             AppDispatcher.BeginInvoke(new BotOperation(() =>
@@ -867,9 +890,9 @@ namespace StreamerBot
             AppDispatcher.BeginInvoke(new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); }));
         }
 
-        #endregion
+#endregion
 
-        #region Overlay Service
+#region Overlay Service
 
         private void TabItem_Overlays_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -891,11 +914,11 @@ namespace StreamerBot
             Controller.Systems.SetChannelRewardList(channelPointNames);
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Data side
+#region Data side
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -958,7 +981,7 @@ namespace StreamerBot
             CheckFocus();
         }
 
-        #region DataGrid Columns and Editing
+#region DataGrid Columns and Editing
         private void DG_AutoGeneratedColumns(object sender, EventArgs e)
         {
             const int DGColWidth = 250;
@@ -994,7 +1017,7 @@ namespace StreamerBot
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }
@@ -1003,7 +1026,7 @@ namespace StreamerBot
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }
@@ -1186,7 +1209,10 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            BotController.AddNewAutoShoutUser(((DataRowView)item.SelectedValue).Row["UserName"].ToString());
+            foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
+            {
+                BotController.AddNewAutoShoutUser(dr["UserName"].ToString());
+            }
         }
 
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
@@ -1203,9 +1229,9 @@ namespace StreamerBot
             SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
         }
 
-        #endregion
+#endregion
 
-        #region Debug Empty Stream
+#region Debug Empty Stream
 
         private DateTime DebugStreamStarted = DateTime.MinValue;
 
@@ -1241,9 +1267,9 @@ namespace StreamerBot
 
         }
 
-        #endregion
+#endregion
 
-        #region Giveaway
+#region Giveaway
 
         private delegate void RefreshChannelPoints();
 
@@ -1369,11 +1395,11 @@ namespace StreamerBot
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region WatcherTools
+#region WatcherTools
 
         private bool WatchProcessOps;
 
@@ -1431,7 +1457,7 @@ namespace StreamerBot
             }
         }
 
-        #region Refresh Followers
+#region Refresh Followers
 
         private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
         {
@@ -1468,8 +1494,8 @@ namespace StreamerBot
 
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }

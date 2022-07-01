@@ -8,7 +8,7 @@ namespace StreamerBotLib.Models
     /// <summary>
     /// Data specifying details of a user joined to the live stream channel.
     /// </summary>
-    [DebuggerDisplay( "UserName,Source,UserType = {UserName},{ Source},{ UserType}" )]
+    [DebuggerDisplay( "UserId,UserName,Source = {UserId},{UserName},{ Source}" )]
     public class LiveUser : IEquatable<LiveUser>, IComparable<LiveUser>
     {
         /// <summary>
@@ -18,23 +18,22 @@ namespace StreamerBotLib.Models
         /// <summary>
         /// The source of the Bot with the registered user.
         /// </summary>
-        public Bots Source { get; set; }
+        public Platform Source { get; set; }
         /// <summary>
-        /// The type of the user, e.g. broadcaster, moderator, VIP, viewer etc
+        /// The User Id of the user name, per the Bot platform
         /// </summary>
-        public ViewerTypes UserType { get; set; }
-
+        public string UserId { get; set; }
+        
         /// <summary>
         /// Constructs the object.
         /// </summary>
         /// <param name="User">Name of the user.</param>
         /// <param name="botSource">The bot source of user.</param>
         /// <param name="userType">The type of the user.</param>
-        public LiveUser(string User, Bots botSource, ViewerTypes userType = ViewerTypes.Viewer)
+        public LiveUser(string User, Platform botSource)
         {
             UserName = User;
             Source = botSource;
-            UserType = userType;
         }
 
         /// <summary>
@@ -44,7 +43,7 @@ namespace StreamerBotLib.Models
         /// <returns>True if the objects contain identical values.</returns>
         public bool Equals(LiveUser other)
         {
-            return UserName == other.UserName && Source == other.Source && UserType == other.UserType;
+            return UserName == other.UserName && Source == other.Source;
         }
 
         /// <summary>

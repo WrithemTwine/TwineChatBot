@@ -7,12 +7,12 @@ using System.Xml;
 
 namespace MultiUserLiveBot.Data
 {
-    public class DataManager : INotifyPropertyChanged
+    public class MultiDataManager : INotifyPropertyChanged
     {
         private static readonly string DataFileXML = "MultiChatbotData.xml";
 
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\MultiUserLiveBot\bin\Debug\net5.0-windows", DataFileXML);
+        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\MultiUserLiveBot\bin\Debug\net6.0-windows", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
@@ -30,7 +30,7 @@ namespace MultiUserLiveBot.Data
         }
 
 
-        public DataManager()
+        public MultiDataManager()
         {
             _DataSource = new();
 
@@ -95,6 +95,7 @@ namespace MultiUserLiveBot.Data
 
             return x > 1;
         }
+
         /// <summary>
         /// Will post the channel and date event. Checks for not duplicating the event, i.e. same channel same date&time.
         /// </summary>

@@ -33,9 +33,6 @@ namespace StreamerBotLib.BotClients.Twitch
             RefreshSettings();
         }
 
-        // TODO: implement !setcategory including the API calls
-        // TODO: implement !settitle including the API calls
-
         /// <summary>
         /// Aware of whether to use the bot user client Id or streamer client Id, due to API calls requiring the client Id of the streaming channel to retrieve the data.
         /// </summary>
@@ -70,14 +67,24 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
-        public void SetIds()
-        {            
-            // fix, add updates to this when user specifies and starts bots
-            if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
+        public void SetIds(string StreamerChannelId=null, string BotChannelId=null)
+        {
+            if (StreamerChannelId != null)
+            {
+                TwitchChannelId = StreamerChannelId;
+            }
+
+            if (BotChannelId != null)
+            {
+                TwitchBotUserId = BotChannelId;
+            }
+
+          if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
             {
                 TwitchBotUserId = GetUserId(TwitchBotUserName);
                 TwitchChannelId = GetUserId(TwitchChannelName);
             }
+
         }
 
         #region ClientId can be different between Bot and Channel

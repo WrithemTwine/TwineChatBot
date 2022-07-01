@@ -9,7 +9,7 @@
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
         xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
         mc:Ignorable="d"
-        Title="Streamer Bot Manager" Height="750" Width="1200"
+        Title="Streamer Bot Manager" Height="750" Width="1400"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True">
     <Window.Resources>
         <ResourceDictionary>
@@ -308,7 +308,8 @@
                         </TabItem.Resources>
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Top">
-                                <TextBlock Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock></StackPanel>
+                                <TextBlock Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
+                            </StackPanel>
                             <WrapPanel FlowDirection="LeftToRight">
 
                                 <WrapPanel HorizontalAlignment="Left" ScrollViewer.CanContentScroll="True">
@@ -588,41 +589,93 @@
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable repeating commands.</TextBlock>
                                                 </CheckBox>
-                                                <StackPanel x:Name="StackPanel_RepeatCommands_RepeatOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility" Margin="0,0,0,0">
-                                                    <Grid>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="44" />
-                                                            <RowDefinition Height="43" />
-                                                            <RowDefinition Height="8" />
-                                                            <RowDefinition Height="47" />
-                                                            <RowDefinition />
+                                                <StackPanel x:Name="StackPanel_RepeatCommands_RepeatOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility">
+                                                    <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" >
+                                                        <TextBlock>Perform Repeat commands only when live.</TextBlock>
+                                                    </CheckBox>
 
-                                                        </Grid.RowDefinitions>
-                                                        <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Grid.Row="0" Margin="5,5,5,5">
-                                                            <TextBlock>Perform Repeat commands only when live.</TextBlock>
-                                                        </CheckBox>
-
-                                                        <CheckBox IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Grid.Row="1" Margin="5,5,5,5">
-                                                            <CheckBox.ToolTip>
-                                                                <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</TextBlock>
-                                                            </CheckBox.ToolTip>
-                                                            <TextBlock>Enable smart slow-down repeating commands</TextBlock>
-                                                        </CheckBox>
-                                                        <Line Fill="Black" StrokeThickness="1" Stroke="Black" X2="200"  Grid.Row="2" Margin="-1,0,-1,0"/>
-                                                        <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}" Grid.Row="3" Margin="5,5,5,5">
-                                                            <CheckBox.ToolTip>
-                                                                <TextBlock Width="200">The repeating commands continually run while the chat bot is active. The repeat timers will fire at their designated time as indicated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</TextBlock>
-                                                            </CheckBox.ToolTip>
-                                                            <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
-                                                        </CheckBox>
-                                                        <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}" Grid.Row="4" Margin="5,5,5,5">
-                                                            <CheckBox.ToolTip>
-                                                                <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</TextBlock>
-                                                            </CheckBox.ToolTip>
-                                                            <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
-                                                        </CheckBox>
-                                                        <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
-                                                    </Grid>
+                                                    <GroupBox Header="Choose Repeater adjustment" Width="auto">
+                                                        <StackPanel>
+                                                            <RadioButton Name="RadioButton_RepeatTimer_NoAdjustment" Margin="1,4" IsChecked="{Binding RepeatNoAdjustment, Mode=TwoWay}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
+                                                                <RadioButton.ToolTip>
+                                                                    <TextBlock>This option provides no restrictions to repeat timers, they run as is.</TextBlock>
+                                                                </RadioButton.ToolTip>
+                                                                <TextBlock>No adjustment to repeat timers.</TextBlock>
+                                                            </RadioButton>
+                                                            <RadioButton Name="RadioButton_RepeatTimer_SlowDownOption" Margin="1,4" IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
+                                                                <RadioButton.ToolTip>
+                                                                    <TextBlock>The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</TextBlock>
+                                                                </RadioButton.ToolTip>
+                                                                <TextBlock>Enable smart slow-down repeating commands</TextBlock>
+                                                            </RadioButton>
+                                                            <RadioButton x:Name="RadioButton_RepeatTimer_ThresholdOption" Margin="1,4" IsChecked="{Binding RepeatUseThresholds, Mode=TwoWay}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
+                                                                <RadioButton.ToolTip>
+                                                                    <TextBlock>
+                                                                        Select this option to prevent messages from sending if the stream doesn't meet the specified thresholds.
+                                                                    </TextBlock>
+                                                                </RadioButton.ToolTip>
+                                                                <StackPanel Margin="0">
+                                                                    <TextBlock>Use thresholds to only send messages when exceeding the criteria.</TextBlock>
+                                                                    <StackPanel Orientation="Vertical" Name="StackPanel_Repeat_ThresholdsOptions" Loaded="CheckBox_Checked_PanelVisibility">
+                                                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveChatCount, Mode=TwoWay}">
+                                                                            <CheckBox.ToolTip>Select to prevent messages when below chat count threshold.</CheckBox.ToolTip>
+                                                                            <TextBlock>Chat Count</TextBlock>
+                                                                        </CheckBox>
+                                                                        <Label Margin="0">Inclusive Or</Label>
+                                                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveUserCount, Mode=TwoWay}">
+                                                                            <CheckBox.ToolTip>Select to prevent messages when below user count threshold.</CheckBox.ToolTip>
+                                                                            <TextBlock>User Count</TextBlock>
+                                                                        </CheckBox>
+                                                                    </StackPanel>
+                                                                </StackPanel>
+                                                            </RadioButton>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <GroupBox x:Name="GroupBox_RepeatTimer_ThresholdOptions" Width="auto" Header="Adjustment Thresholds" Padding="0" Loaded="CheckBox_Checked_PanelVisibility" Visibility="Collapsed">
+                                                        <StackPanel>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="40" />
+                                                                    <ColumnDefinition Width="65" />
+                                                                    <ColumnDefinition Width="65" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="25" />
+                                                                    <RowDefinition Height="25" />
+                                                                    <RowDefinition Height="25" />
+                                                                </Grid.RowDefinitions>
+                                                                <Label Grid.Row="0" Grid.Column="1">
+                                                                    <TextBlock>Minutes</TextBlock>
+                                                                </Label>
+                                                                <Label Grid.Row="0" Grid.Column="2">
+                                                                    <TextBlock>Count</TextBlock>
+                                                                </Label>
+                                                                <Label Grid.Row="1" Grid.Column="0">
+                                                                    <TextBlock Padding="0">Chat</TextBlock>
+                                                                </Label>
+                                                                <Label Grid.Row="2" Grid.Column="0">
+                                                                    <TextBlock Padding="0">User</TextBlock>
+                                                                </Label>
+                                                                <TextBox Grid.Row="1" Grid.Column="1" Height="20" Width="50" Text="{Binding RepeatChatMinutes}"/>
+                                                                <TextBox Grid.Row="1" Grid.Column="2" Height="20" Width="50" Text="{Binding RepeatChatCount}" />
+                                                                <TextBox Grid.Row="2" Grid.Column="1" Height="20" Width="50"  Text="{Binding RepeatUserMinutes}" />
+                                                                <TextBox Grid.Row="2" Grid.Column="2" Height="20" Width="50" Text="{Binding RepeatUserCount}" />
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}" >
+                                                        <CheckBox.ToolTip>
+                                                            <TextBlock Width="200">The repeating commands continually run while the chat bot is active. The repeat timers will fire at their designated time as indicated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</TextBlock>
+                                                        </CheckBox.ToolTip>
+                                                        <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}" >
+                                                        <CheckBox.ToolTip>
+                                                            <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</TextBlock>
+                                                        </CheckBox.ToolTip>
+                                                        <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
+                                                    </CheckBox>
+                                                    <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when chatting is slow, and back away when stream has faster chatting.</TextBlock>
                                                 </StackPanel>
                                             </StackPanel>
                                         </GroupBox>
@@ -694,6 +747,7 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Moderation Messages">
                                             <StackPanel>
+                                                <Label>Currently not enabled-working on machine learning</Label>
                                                 <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
                                                     <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                                 </CheckBox>
@@ -879,15 +933,16 @@
                         <TabItem Header="User Data" x:Name="TabItem_Users">
                             <TabControl>
                                 <TabItem Header="User Follow">
+
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="25" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition MinWidth="600" Width="700*" />
+                                            <ColumnDefinition MinWidth="675" Width="800*" />
                                             <ColumnDefinition Width="5" />
-                                            <ColumnDefinition MinWidth="400" Width="400*" />
+                                            <ColumnDefinition MinWidth="200" Width="500*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="User List"/>
                                         <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="120" Click="Button_ClearNonFollowers_Click">
@@ -896,11 +951,13 @@
                                             </Button.ToolTip>
                                         </Button>
                                         <Button x:Name="Button_ClearWatchTime" Content="Reset All WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />
-                                        <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
+    
                                         <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
 
-                                        <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                    <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
+                                    <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
                                     </Grid>
+
                                 </TabItem>
                                 <TabItem Header="Auto-SO">
                                     <Grid>
@@ -916,7 +973,7 @@
 
                                         <StackPanel Grid.Row="0">
                                             <TextBlock TextWrapping="Wrap" Text="When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here."/>
-                                            <Button Width="250" Height="20" Content="Shout these Users if in Chat" Margin="10,10,10,10" Click="ShoutUsers_Click"/>
+                                            <Button Width="250" Height="20" Content="Shout these Users if in Chat" ToolTip="The 'soactive' command needs to be enabled." Margin="10,10,10,10" Click="ShoutUsers_Click"/>
                                         </StackPanel>
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}"  ContextMenuOpening="DG_Edit_ContextMenuOpening" />

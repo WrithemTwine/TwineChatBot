@@ -22,7 +22,7 @@ namespace MultiUserLiveBot.Clients
         /// <summary>
         /// The backend database object for the bot to store data.
         /// </summary>
-        public DataManager DataManage { get; set; } = new();
+        public MultiDataManager DataManage { get; set; } = new();
 
         /// <summary>
         /// Instantiate new bot object and retrieve the settings values into the bot properties.

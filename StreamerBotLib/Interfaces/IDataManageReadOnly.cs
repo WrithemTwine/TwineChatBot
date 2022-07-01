@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
+using StreamerBotLib.Models;
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace StreamerBotLib.Interfaces
         public string GetKey(string Table);
         public string GetSocials();
         public string GetUsage(string command);
-        public DataSource.CommandsRow GetCommand(string cmd);
+        public CommandData GetCommand(string cmd);
         public List<Tuple<string, int, string[]>> GetTimerCommands();
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd);
         public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
@@ -33,9 +34,10 @@ namespace StreamerBotLib.Interfaces
         List<Tuple<string, string>> GetGameCategories();
         List<string> GetCurrencyNames();
         bool CheckFollower(string User);
-        bool CheckUser(string User);
+        bool CheckUser(LiveUser User);
         bool CheckFollower(string User, DateTime ToDateTime);
-        bool CheckUser(string User, DateTime ToDateTime);
+        bool CheckUser(LiveUser User, DateTime ToDateTime);
         List<object> GetRowsDataColumn(string dataTable, string dataColumn);
+        string GetUserId(LiveUser User);
     }
 }

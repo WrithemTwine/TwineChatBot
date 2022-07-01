@@ -182,7 +182,7 @@ namespace MultiUserLiveBot
                 Radio_Twitch_StopBot.IsChecked = true;
                 Radio_Twitch_StopBot.IsEnabled = false;
 
-                DG_LiveStreamStats.ItemsSource = (DG_LiveStreamStats.DataContext as DataManager).LiveStream;
+                DG_LiveStreamStats.ItemsSource = (DG_LiveStreamStats.DataContext as MultiDataManager).LiveStream;
                 DG_LiveStreamStats.Visibility = Visibility.Visible;
 
                 Panel_BotActivity.Visibility = Visibility.Collapsed;

@@ -2283,6 +2283,10 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnWatchTime;
             
+            private global::System.Data.DataColumn columnUserId;
+            
+            private global::System.Data.DataColumn columnPlatform;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public UsersDataTable() {
@@ -2366,6 +2370,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UserIdColumn {
+                get {
+                    return this.columnUserId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn PlatformColumn {
+                get {
+                    return this.columnPlatform;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -2401,7 +2421,7 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public UsersRow AddUsersRow(string UserName, System.DateTime FirstDateSeen, System.DateTime CurrLoginDate, System.DateTime LastDateSeen, System.TimeSpan WatchTime) {
+            public UsersRow AddUsersRow(string UserName, System.DateTime FirstDateSeen, System.DateTime CurrLoginDate, System.DateTime LastDateSeen, System.TimeSpan WatchTime, string UserId, string Platform) {
                 UsersRow rowUsersRow = ((UsersRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -2409,7 +2429,9 @@ namespace StreamerBotLib.Data {
                         FirstDateSeen,
                         CurrLoginDate,
                         LastDateSeen,
-                        WatchTime};
+                        WatchTime,
+                        UserId,
+                        Platform};
                 rowUsersRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowUsersRow);
                 return rowUsersRow;
@@ -2445,6 +2467,8 @@ namespace StreamerBotLib.Data {
                 this.columnCurrLoginDate = base.Columns["CurrLoginDate"];
                 this.columnLastDateSeen = base.Columns["LastDateSeen"];
                 this.columnWatchTime = base.Columns["WatchTime"];
+                this.columnUserId = base.Columns["UserId"];
+                this.columnPlatform = base.Columns["Platform"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2462,6 +2486,10 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnLastDateSeen);
                 this.columnWatchTime = new global::System.Data.DataColumn("WatchTime", typeof(global::System.TimeSpan), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnWatchTime);
+                this.columnUserId = new global::System.Data.DataColumn("UserId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserId);
+                this.columnPlatform = new global::System.Data.DataColumn("Platform", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPlatform);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnUserName}, true));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -3033,12 +3061,16 @@ namespace StreamerBotLib.Data {
                 this.columnCmdName.Caption = "Command Name";
                 this.columnAddMe.DefaultValue = ((bool)(false));
                 this.columnPermission.Caption = "Lowest Level of Permission for Command";
+                this.columnPermission.DefaultValue = ((string)(""));
                 this.columnIsEnabled.DefaultValue = ((bool)(false));
+                this.columnMessage.DefaultValue = ((string)(""));
                 this.columnRepeatTimer.Caption = "Seconds between Repeat Events-works best with commands without input arguments";
+                this.columnRepeatTimer.DefaultValue = ((int)(0));
                 this.columnSendMsgCount.Caption = "Repeat Message";
                 this.columnSendMsgCount.DefaultValue = ((short)(0));
                 this.columnCategory.Caption = "Specify an array of categories for context relevant timers-only implement timers " +
                     "per category.";
+                this.columnCategory.DefaultValue = ((string)(""));
                 this.columnAllowParam.Caption = "AllowParam - permit a parameter, such as another user";
                 this.columnAllowParam.DefaultValue = ((bool)(false));
                 this.columnUsage.DefaultValue = ((string)(" "));
@@ -3194,6 +3226,10 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnFollowedDate;
             
+            private global::System.Data.DataColumn columnUserId;
+            
+            private global::System.Data.DataColumn columnPlatform;
+            
             private static System.DateTime columnFollowedDate_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3263,6 +3299,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UserIdColumn {
+                get {
+                    return this.columnUserId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn PlatformColumn {
+                get {
+                    return this.columnPlatform;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -3298,13 +3350,15 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public FollowersRow AddFollowersRow(UsersRow parentUsersRowByUsers_Followers, string UserName, bool IsFollower, System.DateTime FollowedDate) {
+            public FollowersRow AddFollowersRow(UsersRow parentUsersRowByUsers_Followers, string UserName, bool IsFollower, System.DateTime FollowedDate, string UserId, string Platform) {
                 FollowersRow rowFollowersRow = ((FollowersRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         UserName,
                         IsFollower,
-                        FollowedDate};
+                        FollowedDate,
+                        UserId,
+                        Platform};
                 if ((parentUsersRowByUsers_Followers != null)) {
                     columnValuesArray[0] = parentUsersRowByUsers_Followers[0];
                 }
@@ -3342,6 +3396,8 @@ namespace StreamerBotLib.Data {
                 this.columnUserName = base.Columns["UserName"];
                 this.columnIsFollower = base.Columns["IsFollower"];
                 this.columnFollowedDate = base.Columns["FollowedDate"];
+                this.columnUserId = base.Columns["UserId"];
+                this.columnPlatform = base.Columns["Platform"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3355,6 +3411,10 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnIsFollower);
                 this.columnFollowedDate = new global::System.Data.DataColumn("FollowedDate", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnFollowedDate);
+                this.columnUserId = new global::System.Data.DataColumn("UserId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserId);
+                this.columnPlatform = new global::System.Data.DataColumn("Platform", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPlatform);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -8136,6 +8196,38 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string UserId {
+                get {
+                    if (this.IsUserIdNull()) {
+                        return null;
+                    }
+                    else {
+                        return ((string)(this[this.tableUsers.UserIdColumn]));
+                    }
+                }
+                set {
+                    this[this.tableUsers.UserIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Platform {
+                get {
+                    if (this.IsPlatformNull()) {
+                        return null;
+                    }
+                    else {
+                        return ((string)(this[this.tableUsers.PlatformColumn]));
+                    }
+                }
+                set {
+                    this[this.tableUsers.PlatformColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsFirstDateSeenNull() {
                 return this.IsNull(this.tableUsers.FirstDateSeenColumn);
             }
@@ -8180,6 +8272,30 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetWatchTimeNull() {
                 this[this.tableUsers.WatchTimeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsUserIdNull() {
+                return this.IsNull(this.tableUsers.UserIdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetUserIdNull() {
+                this[this.tableUsers.UserIdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsPlatformNull() {
+                return this.IsNull(this.tableUsers.PlatformColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetPlatformNull() {
+                this[this.tableUsers.PlatformColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -8261,11 +8377,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Permission {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.PermissionColumn]));
+                    if (this.IsPermissionNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Permission\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.PermissionColumn]));
                     }
                 }
                 set {
@@ -8293,11 +8409,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Message {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.MessageColumn]));
+                    if (this.IsMessageNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Message\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.MessageColumn]));
                     }
                 }
                 set {
@@ -8373,11 +8489,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Usage {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.UsageColumn]));
+                    if (this.IsUsageNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Usage\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.UsageColumn]));
                     }
                 }
                 set {
@@ -8405,11 +8521,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string table {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.tableColumn]));
+                    if (this.IstableNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'table\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.tableColumn]));
                     }
                 }
                 set {
@@ -8421,11 +8537,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string key_field {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.key_fieldColumn]));
+                    if (this.Iskey_fieldNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'key_field\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.key_fieldColumn]));
                     }
                 }
                 set {
@@ -8437,11 +8553,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string data_field {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.data_fieldColumn]));
+                    if (this.Isdata_fieldNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'data_field\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.data_fieldColumn]));
                     }
                 }
                 set {
@@ -8453,11 +8569,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string currency_field {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.currency_fieldColumn]));
+                    if (this.Iscurrency_fieldNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'currency_field\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.currency_fieldColumn]));
                     }
                 }
                 set {
@@ -8469,11 +8585,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string unit {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.unitColumn]));
+                    if (this.IsunitNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'unit\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.unitColumn]));
                     }
                 }
                 set {
@@ -8485,11 +8601,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string action {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.actionColumn]));
+                    if (this.IsactionNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'action\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.actionColumn]));
                     }
                 }
                 set {
@@ -8517,11 +8633,11 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string sort {
                 get {
-                    try {
-                        return ((string)(this[this.tableCommands.sortColumn]));
+                    if (this.IssortNull()) {
+                        return string.Empty;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'sort\' in table \'Commands\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableCommands.sortColumn]));
                     }
                 }
                 set {
@@ -8816,6 +8932,38 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string UserId {
+                get {
+                    if (this.IsUserIdNull()) {
+                        return null;
+                    }
+                    else {
+                        return ((string)(this[this.tableFollowers.UserIdColumn]));
+                    }
+                }
+                set {
+                    this[this.tableFollowers.UserIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Platform {
+                get {
+                    if (this.IsPlatformNull()) {
+                        return null;
+                    }
+                    else {
+                        return ((string)(this[this.tableFollowers.PlatformColumn]));
+                    }
+                }
+                set {
+                    this[this.tableFollowers.PlatformColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public UsersRow UsersRow {
                 get {
                     return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["Users_Followers"])));
@@ -8847,6 +8995,30 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetFollowedDateNull() {
                 this[this.tableFollowers.FollowedDateColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsUserIdNull() {
+                return this.IsNull(this.tableFollowers.UserIdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetUserIdNull() {
+                this[this.tableFollowers.UserIdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsPlatformNull() {
+                return this.IsNull(this.tableFollowers.PlatformColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetPlatformNull() {
+                this[this.tableFollowers.PlatformColumn] = global::System.Convert.DBNull;
             }
         }
         
