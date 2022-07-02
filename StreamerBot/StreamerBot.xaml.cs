@@ -73,6 +73,7 @@ namespace StreamerBot
 
             if (Settings.Default.AppCurrWorkingAppData)
             {
+                Directory.CreateDirectory(GetAppDataCWD());
                 Directory.SetCurrentDirectory(GetAppDataCWD());
             }
 

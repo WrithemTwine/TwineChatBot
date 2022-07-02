@@ -73,6 +73,7 @@ namespace StreamerBotLib.Systems
         private DateTime viewertime;
         private int chats;
         private int viewers;
+        private string RepeatLock = "";
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
@@ -162,18 +163,22 @@ namespace StreamerBotLib.Systems
 
                     if (cmd.CheckFireTime())
                     {
-                        UpdateChatUserStats();
 
                         lock (GUI.GUIDataManagerLock.Lock) // lock it up because accessing a DataManage row
                         {
-                            if (OptionFlags.RepeatNoAdjustment // no limits, just perform repeat command
-                                || OptionFlags.RepeatTimerDilute // diluted command, performance time
-                                || (OptionFlags.RepeatUseThresholds 
-                                    && ((OptionFlags.RepeatAboveUserCount && viewers >= OptionFlags.RepeatUserCount) || !OptionFlags.RepeatAboveUserCount) // if user threshold, check threshold, else, accept the check
-                                    && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
-                               )
+                            lock (RepeatLock)
                             {
-                                OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName,Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                UpdateChatUserStats();
+
+                                if (OptionFlags.RepeatNoAdjustment // no limits, just perform repeat command
+                                    || OptionFlags.RepeatTimerDilute // diluted command, performance time
+                                    || (OptionFlags.RepeatUseThresholds
+                                        && ((OptionFlags.RepeatAboveUserCount && viewers >= OptionFlags.RepeatUserCount) || !OptionFlags.RepeatAboveUserCount) // if user threshold, check threshold, else, accept the check
+                                        && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
+                                   )
+                                {
+                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                }
                             }
                         }
                         lock (cmd)
@@ -225,18 +230,21 @@ namespace StreamerBotLib.Systems
 
         private void UpdateChatUserStats()
         {
-            DateTime now = DateTime.Now.ToLocalTime();
-
-            if ((now - chattime) >= new TimeSpan(0, OptionFlags.RepeatChatMinutes, 0))
+            lock (RepeatLock)
             {
-                chattime = now;
-                chats = GetCurrentChatCount - chats;
-            }
+                DateTime now = DateTime.Now.ToLocalTime();
 
-            if ((now - viewertime) >= new TimeSpan(0, OptionFlags.RepeatUserMinutes, 0))
-            {
-                viewertime = now;
-                viewers = GetUserCount;
+                if ((now - chattime) >= new TimeSpan(0, OptionFlags.RepeatChatMinutes, 0))
+                {
+                    chattime = now;
+                    chats = GetCurrentChatCount - chats;
+                }
+
+                if ((now - viewertime) >= new TimeSpan(0, OptionFlags.RepeatUserMinutes, 0))
+                {
+                    viewertime = now;
+                    viewers = GetUserCount;
+                }
             }
         }
 
@@ -525,19 +533,18 @@ namespace StreamerBotLib.Systems
                                 VariableParser.AddData(ref datavalues,
                                 new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Source)), bots: User.Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
-                                result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                                string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                                 tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
-                                result = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "") + result;
+                                resultcat = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !resultcat.StartsWith("/me ") ? "/me " : "") + resultcat;
 
-                                OnProcessCommand(result, cmdrow.SendMsgCount);
+                                OnProcessCommand(resultcat, cmdrow.SendMsgCount);
 
 #if LogDataManager_Actions
-                                LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Found !so message with a category, {result}.");
+                                LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Found !so message with a category, {resultcat}.");
 #endif
 
                                 OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = User.UserName, UserMsg = tempHTMLResponse });
 
-                                result = "";
                             }
                         });
 

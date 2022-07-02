@@ -940,9 +940,9 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition MinWidth="675" Width="800*" />
+                                            <ColumnDefinition MinWidth="675" Width="750*" />
                                             <ColumnDefinition Width="5" />
-                                            <ColumnDefinition MinWidth="200" Width="500*" />
+                                            <ColumnDefinition MinWidth="200" Width="550*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="User List"/>
                                         <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="120" Click="Button_ClearNonFollowers_Click">
