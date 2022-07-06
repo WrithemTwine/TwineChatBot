@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>TwineStreamerBot</AssemblyName>
     <Description>A chat, clip, live, follow bot for Twitch using the C# TwitchLib library. https://twitch.tv/WrithemTwine</Description>
@@ -12,12 +12,10 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
     <SignAssembly>false</SignAssembly>
-    <Version>0.1.12.8</Version>
-    <AssemblyVersion>0.1.12.8</AssemblyVersion>
-    <FileVersion>0.1.12.8</FileVersion>
+    <Version>0.2.2.0</Version>    
     <Copyright>2022</Copyright>
     <PackageReleaseNotes>Updated repeating command process</PackageReleaseNotes>
-    <Authors>TwineStreamerBot</Authors>
+    <Authors>WrithemTwine</Authors>
     <Company>TwineStreamerBot</Company>
     <ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>

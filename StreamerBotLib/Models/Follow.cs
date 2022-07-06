@@ -9,6 +9,25 @@ namespace StreamerBotLib.Models
         public string FromUserName { get; set; }
         public string ToUserId { get; set; }
         public string ToUserName { get; set; }
+        public LiveUser FromUser { get; set; }
+
+        public Follow()
+        {
+
+        }
+
+        public Follow(
+DateTime followedAt, string fromUserId, string fromUserName, string toUserId, string toUserName, LiveUser fromUser)
+        {
+            FollowedAt = followedAt;
+            FromUserId = fromUserId;
+            FromUserName = fromUserName;
+            ToUserId = toUserId;
+            ToUserName = toUserName;
+            FromUser = fromUser;
+
+            FromUser.UserId = fromUserId;
+        }
 
         public bool Equals(Follow other)
         {

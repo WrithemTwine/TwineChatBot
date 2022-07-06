@@ -48,6 +48,10 @@ namespace TestStreamerBot
                 OptionFlags.ManageUsers = true;
                 OptionFlags.TwitchPruneNonFollowers = true;
 
+                OptionFlags.MediaOverlayEnabled = true;
+                OptionFlags.MediaOverlayChannelPoints = true;
+                OptionFlags.MediaOverlayShoutoutClips= true;
+
                 Initialized = true;
 
                 botController = new();
@@ -75,6 +79,102 @@ namespace TestStreamerBot
         private void BotController_OutputSentToBots(object sender, PostChannelMessageEventArgs e)
         {
             result = e.Msg;
+        }
+
+        [Theory]
+        [InlineData("DarkStreamPhantom", Platform.Twitch)]
+        [InlineData("WrithemTwine", Platform.Twitch)]
+        [InlineData("SevenOf9", Platform.Twitch)]
+        [InlineData("xFreakDuchessx", Platform.Twitch)]
+        [InlineData("uegsi", Platform.Twitch)]
+        public void TestUserJoined(string UserName, Platform Source)
+        {
+            Initialize();
+            botController.HandleAddChat(UserName, Source);
+            botController.HandleUserJoined(new() { new(UserName, Source) });
+        }
+
+        [Fact]
+        public void TestUserTimeout()
+        {
+            Initialize();
+            // botController.HandleUserTimedOut();
+        }
+
+        [Theory]
+        [InlineData("BanMeUser1","Buy follows or else")]
+        [InlineData("BanMeUser2", "You must buy follows or else", true)]
+        [InlineData("BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
+        [InlineData("BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
+        public void TestUserBanned(string UserName, string Msg, bool Joined = false, bool JoinBan = false)
+        {
+            Initialize();
+
+            string Title = "Let's try this stream test!";
+            DateTime onlineTime = DateTime.Now.ToLocalTime();
+
+            OnGetChannelGameNameEventArgs random = GetRandomGameIdName();
+
+            string Id = random.GameId;
+            string Category = random.GameName;
+
+            // go online
+            botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
+
+            // wait a bit
+            Thread.Sleep(20000);
+
+            // add some good/friendly users, waiting for joining
+            foreach (string U in new List<string> { "DarkStreamPhantom", "Jijijava", "CuteChibiChu", "BlkbryOnline", "NewUser", "OutlawTorn14" })
+            {
+                botController.HandleUserJoined(new() { new(U, Platform.Twitch )});
+                Thread.Sleep(Random.Next(10000, 80000));
+                botController.HandleMessageReceived(new() { DisplayName=U, IsSubscriber = 0 == Random.Next(0, 1), Message="Hey stud!" }, Platform.Twitch);
+            }
+
+            // wait a little more
+            Thread.Sleep(18000);
+
+            // receive the hostile ban message
+            botController.HandleMessageReceived(new() { DisplayName = UserName, IsSubscriber = 0 == Random.Next(0, 1), Message = Msg }, Platform.Twitch);
+
+            // wait a moment to recognize the message
+            Thread.Sleep(5000);
+
+            // ban before or after they join, or don't join at all
+            if(!JoinBan)
+            {
+                botController.HandleUserBanned(UserName, Platform.Twitch);
+                Thread.Sleep(5000);
+            }
+
+            if (Joined)
+            {
+                botController.HandleUserJoined(new() { new( UserName, Platform.Twitch) });
+                Thread.Sleep(5000);
+            }
+
+            if (JoinBan)
+            {
+                botController.HandleUserBanned(UserName, Platform.Twitch);
+            }
+
+        }
+
+        [Fact]
+        public void TestUserLeft()
+        {
+            Initialize();
+            // botController.HandleUserLeft();
+        }
+
+        [Theory]
+        [InlineData("DarkStreamPhantom", false, 4)]
+        public void TestBeingHost(string ChannelHost, bool AutoHosted, int Viewers)
+        {
+            Initialize();
+
+            botController.HandleBeingHosted(ChannelHost, AutoHosted, Viewers);
         }
 
         [Theory]
@@ -114,18 +214,35 @@ namespace TestStreamerBot
 
             BotController.HandleBotEventStartBulkFollowers();
             botController.HandleBotEventNewFollowers(regularfollower);
-            Assert.True(dataManager.AddFollower(regularfollower[0].FromUserName, regularfollower[0].FollowedAt));
+            Assert.True(dataManager.AddFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
 
             BotController.HandleBotEventBulkPostFollowers(bulkfollows);
             BotController.HandleBotEventStopBulkFollowers();
 
             foreach (Follow f in bulkfollows)
             {
-                Assert.False(dataManager.AddFollower(f.FromUserName, f.FollowedAt));
+                Assert.False(dataManager.AddFollower(f.FromUser, f.FollowedAt));
             }
 
             Thread.Sleep(5000); // wait enough time for the regular followers to add into the database
-            Assert.False(dataManager.AddFollower(regularfollower[0].FromUserName, regularfollower[0].FollowedAt));
+            Assert.False(dataManager.AddFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
+        }
+
+        [Fact]
+        public void TestNewFollowers()
+        {
+            Initialize();
+
+            string datestring = DateTime.Now.ToString("MMddhhmmss");
+
+            List<Follow> follows = new();
+
+            for(int x=0; x < Random.Next(1,20); x++)
+            {
+                follows.Add(new() {FollowedAt=DateTime.Now, FromUserName=$"IFollow{datestring}{x}", ToUserName=OptionFlags.TwitchChannelName });
+            }
+
+            botController.HandleBotEventNewFollowers(follows);
         }
 
         [Fact]
@@ -198,8 +315,39 @@ namespace TestStreamerBot
         {
             Initialize();
 
+            // botController.HandleReSubscriber();
+        }
 
+        [Fact]
+        public void TestCommunitySub()
+        {
+            Initialize();
 
+            // botController.HandleCommunitySubscription();
+        }
+
+        [Fact]
+        public void TestGiftSubs()
+        {
+            Initialize();
+
+            // botController.HandleGiftSubscription();
+        }
+
+        [Fact]
+        public void TestCustomReward()
+        {
+            Initialize();
+
+            // botController.HandleCustomReward();
+        }
+
+        [Fact]
+        public void TestMsgReceived()
+        {
+            Initialize();
+
+            // botController.HandleMessageReceived();
         }
 
         [Fact]
@@ -214,10 +362,16 @@ namespace TestStreamerBot
 
             botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
 
-            botController.HandleIncomingRaidData("Pitcy", DateTime.Now.ToLocalTime(), "13", "Fortnite", Bots.TwitchChatBot);
-            botController.HandleUserJoined(new() { "Pitcy", "DarkStreamPhantom", "OutlawTorn14", "MrTopiczz", "pitcyissmelly" }, Bots.TwitchChatBot);
-            botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName="Pitcy", IsModerator = true, Message = "!followage" }, Bots.TwitchChatBot);
+            botController.HandleIncomingRaidData(new("Pitcy", Platform.Twitch), DateTime.Now.ToLocalTime(), "13", "Fortnite");
+            botController.HandleUserJoined(new() { new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly",Platform.Twitch) });
+            botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName="Pitcy", IsModerator = true, Message = "!followage" }, Platform.Twitch);
 
+        }
+
+        [Fact]
+        public void TestChatCommandReceived()
+        {
+            Initialize();
         }
 
         [Fact]
@@ -272,19 +426,19 @@ namespace TestStreamerBot
             Assert.False(dataManager.AddStream(onlineTime));
             Assert.True(dataManager.AddCategory(Id, Category));
 
-            botController.HandleIncomingRaidData(RaidUserName, DateTime.Now, Random.Next(5, Viewers).ToString(), GetRandomGameIdName().GameName, Bots.TwitchChatBot);
+            botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch), DateTime.Now, Random.Next(5, Viewers).ToString(), GetRandomGameIdName().GameName);
             Thread.Sleep(5000); // wait for category
 
-            Assert.True(StatisticsSystem.UserChat(RaidUserName));
+            Assert.True(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch)));
 
-            botController.HandleUserJoined(new() { RaidUserName }, Bots.TwitchChatBot);
-            Assert.False(StatisticsSystem.UserChat(RaidUserName));
+            botController.HandleUserJoined(new() { new(RaidUserName, Platform.Twitch) });
+            Assert.False(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch)));
 
-            botController.HandleUserLeft(RaidUserName, Bots.TwitchChatBot);
+            botController.HandleUserLeft(new(RaidUserName, Platform.Twitch));
 
             Thread.Sleep(2000);
 
-            Assert.False(StatisticsSystem.UserChat(RaidUserName)); // should be able to add the user again
+            Assert.False(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch))); // should be able to add the user again
 
         }
 
@@ -316,63 +470,11 @@ namespace TestStreamerBot
                 );
         }
 
-        [Theory]
-        [InlineData("BanMeUser1","Buy follows or else")]
-        [InlineData("BanMeUser2", "You must buy follows or else", true)]
-        [InlineData("BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
-        [InlineData("BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
-        public void TestUserBanned(string UserName, string Msg, bool Joined = false, bool JoinBan = false)
+        [Fact]
+        public void TestOverlayData()
         {
             Initialize();
 
-            string Title = "Let's try this stream test!";
-            DateTime onlineTime = DateTime.Now.ToLocalTime();
-
-            OnGetChannelGameNameEventArgs random = GetRandomGameIdName();
-
-            string Id = random.GameId;
-            string Category = random.GameName;
-
-            // go online
-            botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
-
-            // wait a bit
-            Thread.Sleep(20000);
-
-            // add some good/friendly users, waiting for joining
-            foreach (string U in new List<string> { "DarkStreamPhantom", "Jijijava", "CuteChibiChu", "BlkbryOnline", "NewUser", "OutlawTorn14" })
-            {
-                botController.HandleUserJoined(new() { U }, Bots.TwitchChatBot);
-                Thread.Sleep(Random.Next(10000, 80000));
-                botController.HandleMessageReceived(new() { DisplayName=U, IsSubscriber = 0 == Random.Next(0, 1), Message="Hey stud!" }, Bots.TwitchChatBot);
-            }
-
-            // wait a little more
-            Thread.Sleep(18000);
-
-            // receive the hostile ban message
-            botController.HandleMessageReceived(new() { DisplayName = UserName, IsSubscriber = 0 == Random.Next(0, 1), Message = Msg }, Bots.TwitchChatBot);
-
-            // wait a moment to recognize the message
-            Thread.Sleep(5000);
-
-            // ban before or after they join, or don't join at all
-            if(!JoinBan)
-            {
-                botController.HandleUserBanned(UserName, Bots.TwitchChatBot);
-                Thread.Sleep(5000);
-            }
-
-            if (Joined)
-            {
-                botController.HandleUserJoined(new() { UserName }, Bots.TwitchChatBot);
-                Thread.Sleep(5000);
-            }
-
-            if (JoinBan)
-            {
-                botController.HandleUserBanned(UserName, Bots.TwitchChatBot);
-            }
 
         }
     }

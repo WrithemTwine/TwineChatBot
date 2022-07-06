@@ -87,7 +87,7 @@ namespace StreamerBotLib.Data
                 catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{DataFileName}");
+                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{Path.GetFileName(DataFileName)}");
                     LoadFile(BackupDataFileXML);
                 }
             }

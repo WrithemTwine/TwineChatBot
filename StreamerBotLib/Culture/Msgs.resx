@@ -686,7 +686,7 @@
     <comment>MsgVar variable value</comment>
   </data>
   <data name="TwineBotInfo" xml:space="preserve">
-    <value>TwineChatBot by WrithemTwine, #url, version {0}.{1}.{2}.{3} is now connected!</value>
+    <value>Twine Chat Bot by WrithemTwine, #url, version {0}.{1}.{2}.{3} is now connected!</value>
     <comment>Leave " WrithemTwine ", " #url#author ", and " {0}.{1}.{2}.{3} " intact - used to provide information about the bot</comment>
   </data>
   <data name="unlurk" xml:space="preserve">

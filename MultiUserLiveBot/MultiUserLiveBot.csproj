@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>MultiUserLiveBot.App</StartupObject>
     <SignAssembly>false</SignAssembly>
@@ -31,10 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Data\DataSource.Designer.cs">
+    <Compile Update="Data\MultiDataSource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>DataSource.xsd</DependentUpon>
+      <DependentUpon>MultiDataSource.xsd</DependentUpon>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -56,9 +56,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\DataSource.xsd">
+    <None Update="Data\MultiDataSource.xsd">
       <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+      <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
     </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

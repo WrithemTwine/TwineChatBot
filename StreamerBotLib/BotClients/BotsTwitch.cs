@@ -117,7 +117,12 @@ namespace StreamerBotLib.BotClients
                 TwitchBotPubSub.HandlersAdded = true;
             }
 
-            ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
+            ThreadManager.CreateThreadStart(() =>
+                TwitchBotUserSvc.SetIds(
+                    DataManager.GetUserId(new(TwitchBotChatClient.TwitchChannelName, Platform.Twitch)),
+                    DataManager.GetUserId(new(TwitchBotChatClient.TwitchBotUserName, Platform.Twitch))
+                    )
+            );
         }
 
         #region Twitch Bot Chat Client
@@ -130,7 +135,7 @@ namespace StreamerBotLib.BotClients
 
             if (OptionFlags.TwitchChatBotConnectOnline || OptionFlags.IsStreamOnline)
             {
-                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new OnUserJoinedArgs() { Username = TwitchBotsBase.TwitchBotUserName, Channel = TwitchBotsBase.TwitchChannelName });
+                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new StreamerOnUserJoinedArgs() { LiveUser = AddUserId(TwitchBotsBase.TwitchBotUserName) });
             }
         }
 
@@ -190,7 +195,31 @@ namespace StreamerBotLib.BotClients
 
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
+            StreamerOnExistingUserDetectedArgs args = new()
+            {
+                Users = e.Users.ConvertAll((s) =>
+                {
+                    return AddUserId(s);
+                })
+            };
+
             InvokeBotEvent(this, BotEvents.TwitchExistingUsers, e);
+        }
+
+        private static Models.LiveUser AddUserId(string s)
+        {
+            Models.LiveUser user = new(s, Platform.Twitch);
+
+            string userId = DataManager.GetUserId(user);
+            if (userId == null || userId == string.Empty)
+            {
+                user.UserId = TwitchBotUserSvc.GetUserId(user.UserName);
+            }
+            else
+            {
+                user.UserId = userId;
+            }
+            return user;
         }
 
         private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
@@ -205,18 +234,13 @@ namespace StreamerBotLib.BotClients
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, e);
+            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username)});
         }
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, e);
+            InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new StreamerOnUserJoinedArgs() { LiveUser = AddUserId(e.Username) });
         }
-
-        //private void Client_OnRitualNewChatter(object sender, OnRitualNewChatterArgs e)
-        //{
-        //    InvokeBotEvent(this, BotEvents.TwitchRitualNewChatter, e);
-        //}
 
         private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
@@ -275,6 +299,11 @@ namespace StreamerBotLib.BotClients
             return result;
         }
 
+        public string GetUserId(string UserName)
+        {
+            return TwitchBotUserSvc.GetUserId(UserName);
+        }
+
         #endregion
 
         #region Follower Bot
@@ -324,16 +353,27 @@ namespace StreamerBotLib.BotClients
             }
             else
             {
-                if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
+                //if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
+                //{
+                //    TwitchBotChatClient.StartBot();
+                //}
+                //else
+                //{
+                //    ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
+                //}
+
+                if (OptionFlags.TwitchChatBotConnectOnline)
                 {
                     TwitchBotChatClient.StartBot();
                 }
-                else
+
+                if (OptionFlags.TwitchPubSubOnlineMode)
                 {
-                    ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
+                    TwitchBotPubSub.StartBot();
                 }
 
                 InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
+
                 if (!OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStarted)
                 {
                     InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new OnUserJoinedArgs() { Username = TwitchBotsBase.TwitchBotUserName, Channel = TwitchBotsBase.TwitchChannelName });
@@ -351,6 +391,11 @@ namespace StreamerBotLib.BotClients
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
             {
                 TwitchBotChatClient.StopBot();
+            }
+
+            if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
+            {
+                TwitchBotPubSub.StopBot();
             }
 
             if (OptionFlags.IsStreamOnline)
@@ -390,6 +435,16 @@ namespace StreamerBotLib.BotClients
             while (StartClips) { } // wait while receiving new clips
 
             InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
+        }
+
+        /// <summary>
+        /// Get the clips for a specific user channel.
+        /// </summary>
+        /// <param name="ChannelName">Channel to get the clips.</param>
+        /// <param name="ReturnData">The callback method when the clips are found.</param>
+        public void GetChannelClips(string ChannelName, Action<List<Models.Clip>> ReturnData)
+        {
+            ThreadManager.CreateThreadStart(() => ProcessChannelClips(ChannelName, ReturnData));
         }
 
         #endregion
@@ -457,6 +512,19 @@ namespace StreamerBotLib.BotClients
 
             InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
             StartClips = false;
+        }
+
+        private async void ProcessChannelClips(string ChannelName, Action<List<Models.Clip>> ActionCallback)
+        {
+            List<Clip> result = new();
+            TwitchBotClipSvc ChannelClips = new();
+            if (ChannelClips.StartBot())
+            {
+                result = await ChannelClips.GetAllClipsAsync(ChannelName);
+                ChannelClips.StopBot();
+            }
+
+            ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
         }
 
         #endregion

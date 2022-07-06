@@ -38,7 +38,8 @@
 
     <x:Array Type="system:String" x:Key="CredentialsTwitchStreamerFeatures">
         <system:String>Channel Point Rewards</system:String>
-        <system:String>Setting Channel Title and Category</system:String>
+        <system:String>Setting Channel Title</system:String>
+        <system:String>Setting Channel Category</system:String>
     </x:Array>
     
     <!-- End - Streamer Channel specific, when bot login is different than streamer channel -->

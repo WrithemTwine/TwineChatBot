@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertDataSourceFile", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib.MachineLearning", "StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj", "{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwineStreamerBot.MediaOverlayServer", "TwineStreamerBot.MediaOverlayServer\TwineStreamerBot.MediaOverlayServer.csproj", "{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaOverlayServer", "MediaOverlayServer\MediaOverlayServer.csproj", "{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

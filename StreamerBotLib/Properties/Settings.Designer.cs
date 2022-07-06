@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.2.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -980,6 +980,186 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["MediaOverlayAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MsgSendSOToChat {
+            get {
+                return ((bool)(this["MsgSendSOToChat"]));
+            }
+            set {
+                this["MsgSendSOToChat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayHelpExpand {
+            get {
+                return ((bool)(this["MediaOverlayHelpExpand"]));
+            }
+            set {
+                this["MediaOverlayHelpExpand"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MediaOverlayMRUPathSelect {
+            get {
+                return ((string)(this["MediaOverlayMRUPathSelect"]));
+            }
+            set {
+                this["MediaOverlayMRUPathSelect"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayShoutoutClips {
+            get {
+                return ((bool)(this["MediaOverlayShoutoutClips"]));
+            }
+            set {
+                this["MediaOverlayShoutoutClips"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppCurrWorkingPopup {
+            get {
+                return ((bool)(this["AppCurrWorkingPopup"]));
+            }
+            set {
+                this["AppCurrWorkingPopup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppCurrWorkingAppData {
+            get {
+                return ((bool)(this["AppCurrWorkingAppData"]));
+            }
+            set {
+                this["AppCurrWorkingAppData"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchPubSubOnlineMode {
+            get {
+                return ((bool)(this["TwitchPubSubOnlineMode"]));
+            }
+            set {
+                this["TwitchPubSubOnlineMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int RepeatUserMinutes {
+            get {
+                return ((int)(this["RepeatUserMinutes"]));
+            }
+            set {
+                this["RepeatUserMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int RepeatUserCount {
+            get {
+                return ((int)(this["RepeatUserCount"]));
+            }
+            set {
+                this["RepeatUserCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int RepeatChatMinutes {
+            get {
+                return ((int)(this["RepeatChatMinutes"]));
+            }
+            set {
+                this["RepeatChatMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int RepeatChatCount {
+            get {
+                return ((int)(this["RepeatChatCount"]));
+            }
+            set {
+                this["RepeatChatCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatAboveUserCount {
+            get {
+                return ((bool)(this["RepeatAboveUserCount"]));
+            }
+            set {
+                this["RepeatAboveUserCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatAboveChatCount {
+            get {
+                return ((bool)(this["RepeatAboveChatCount"]));
+            }
+            set {
+                this["RepeatAboveChatCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RepeatUseThresholds {
+            get {
+                return ((bool)(this["RepeatUseThresholds"]));
+            }
+            set {
+                this["RepeatUseThresholds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RepeatNoAdjustment {
+            get {
+                return ((bool)(this["RepeatNoAdjustment"]));
+            }
+            set {
+                this["RepeatNoAdjustment"] = value;
             }
         }
     }

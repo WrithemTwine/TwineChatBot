@@ -27,7 +27,7 @@ namespace StreamerBotLib.Systems
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
         public static ObservableCollection<string> GiveawayCollection { get; set; } = new();
-
+        public static ObservableCollection<string> CurrUserJoin { get; private set; } = new();
 
         public static string Category { get; set; }
 
@@ -35,8 +35,14 @@ namespace StreamerBotLib.Systems
         /// The streamer channel monitored.
         /// </summary>
         public static string ChannelName { get; set; }
+        /// <summary>
+        /// The account user name of the bot account.
+        /// </summary>
         public static string BotUserName { get; set; }
 
+        /// <summary>
+        /// Time delays to use in threads
+        /// </summary>
         protected const int SecondsDelay = 2000;
         protected static bool StreamUpdateClockStarted;
 
@@ -55,8 +61,6 @@ namespace StreamerBotLib.Systems
         /// <returns>The DateTime of the stream start time.</returns>
         public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
         private delegate void ProcMessage(string UserName, string Message);
-
-        public SystemsBase() { }
 
         public static void ManageDatabase()
         {
@@ -160,6 +164,16 @@ namespace StreamerBotLib.Systems
             DataManage.AddNewAutoShoutUser(UserName);
         }
 
+        internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
+        {
+            DataManage.SetIsEnabled(dataRows, IsEnabled);
+        }
+
+        internal static bool CheckField(string dataTable, string fieldName)
+        {
+            return DataManage.CheckField(dataTable, fieldName);
+        }
+        
         public static bool AddClip(Clip c)
         {
             return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
@@ -195,6 +209,16 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        public static void UpdateGUICurrUsers()
+        {
+            CurrUserJoin.Clear();
+            CurrUsers.Sort();
+            foreach (LiveUser liveUser in CurrUsers)
+            {
+                CurrUserJoin.Add(liveUser.UserName);
+            }
+        }
+
         internal static void AddChatString(string UserName, string Message)
         {
             Application.Current?.Dispatcher.BeginInvoke(new ProcMessage(UpdateGUIChatMessages), UserName, Message);
@@ -218,6 +242,7 @@ namespace StreamerBotLib.Systems
         {
             AddChatString(Settings.Default.TwitchBotUserName, e.Msg);
         }
+
 
     }
 }

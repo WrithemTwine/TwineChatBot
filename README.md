@@ -1,5 +1,5 @@
 # TwineChatBot
-Twitch bots written using .NET 5.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file and future support may include SQL databases for storage. 
+Twitch bots written using .NET 6.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file and future support may include SQL databases for storage. 
 
 --------------------------
 # Application - Multi-Live Bot:
@@ -29,6 +29,9 @@ Implements:
    - Twitch "Clip" bot
    - Twitch PubSub Bot
 
+   - App Services Bot
+     - Media Overlay Server
+
 (future scalability) the app setup allows adding more Twitch bots (different Twitch functions) and other platforms
    - TBD, next featured bot
 
@@ -47,8 +50,9 @@ Database management to organize:
          - a simple text message, with certain variables to customize the message (e.g. refer to the viewer who called the command)
          - a data retrieval message - some implementation, currently updating and coding; to allow user customization for a data return message, define your own messages to get data returned from the database through a command message
          - repeat timers - repeat any of the above messages per defined seconds
-   - Currency system - your viewers earn virtual currency to use in chat games
+   - Currency system - your viewers earn virtual currency to use in (future) chat games
    - Currency games (future feature) - using currency earned from watching
+   - Overlay System - customize alerts to appear in stream overlay based on selected events
 
 Options to manage bot actions (enable or disable):
    - saving bot authentication tokens, with a reminder for refreshing the token
@@ -76,6 +80,10 @@ Options to manage bot actions (enable or disable):
       - Specify Commands or Channel Points (requires PubSub bot active) for the user to enter
       - Specify the user can enter 1 or more times up to a specified max limit
       - Giveaway - Start, Stop, and Winner customizable messages can be sent to chat
+   - Manage Overlay Alerts
+      - First, select events such as Channel Point rewards, Commands, Channel Event (new follower, subscription, etc), 
+      - Then, select an image and/or video to display for an amount of time
+
 - Twitch Features:
    - Add "/me" to messages (i.e. italicized message)
       - all messages or 
@@ -126,7 +134,6 @@ Future features not implemented - and may not be implemented:
 - Currency system - currency (implemented-testing), the chat gaming side (in process)
 - Message spam protection: if there are a large influx of follows at a time or significant number of subscriptions; limit the number of messages
 
-- Considering a compact webserver to provide notifications for streaming software.
 - Possibly a Twitch extension to connect to the webserver, to help provide overlays when streaming e.g. Xbox or Playstation without using a capture card to overlay a camera and notifications before sending to a streaming platform
 
 - Considering options for attaching bot to a user-specified SQL database, which would be easier to manage sizes and data archives.

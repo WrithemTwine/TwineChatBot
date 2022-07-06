@@ -23,11 +23,12 @@ namespace StreamerBotLib.GUI
         public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
 
         public FlowDocument ChatData { get; private set; }
+        public ObservableCollection<string> CurrUserList { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
         public ObservableCollection<string> GiveawayCollection { get; set; }
-        public int CurrFollowers => Followers.Table.Select("IsFollower=true").Count();
+        public int CurrFollowers => Followers.Table.Select("IsFollower=true").Length;
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -48,6 +49,7 @@ namespace StreamerBotLib.GUI
         public DataView LearnMsgs { get; private set; }
         public DataView BanRules { get; private set; }
         public DataView BanReasons { get; private set; }
+        public DataView OverlayService { get; private set; }
 
         #endregion
 
@@ -56,6 +58,7 @@ namespace StreamerBotLib.GUI
             ChatData = SystemsBase.ChatData;
             JoinCollection = SystemsBase.JoinCollection;
             GiveawayCollection = SystemsBase.GiveawayCollection;
+            CurrUserList = SystemsBase.CurrUserJoin;
             SetDataTableViews(SystemsController.DataManage);
         }
 
@@ -107,6 +110,7 @@ namespace StreamerBotLib.GUI
             LearnMsgs = dataManager._DataSource.LearnMsgs.DefaultView;
             BanRules = dataManager._DataSource.BanRules.DefaultView;
             BanReasons = dataManager._DataSource.BanReasons.DefaultView;
+            OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
 
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
@@ -127,6 +131,7 @@ namespace StreamerBotLib.GUI
             LearnMsgs.ListChanged += DataView_ListChanged;
             BanRules.ListChanged += DataView_ListChanged;
             BanReasons.ListChanged += DataView_ListChanged;
+            OverlayService.ListChanged += DataView_ListChanged;
 
             SetCommandCollection();
         }

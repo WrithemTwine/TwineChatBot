@@ -2,13 +2,14 @@
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
+using Newtonsoft.Json.Linq;
+
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 
 using TwitchLib.PubSub;
 using TwitchLib.PubSub.Events;
@@ -20,6 +21,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public TwitchPubSub TwitchPubSub { get; private set; }
         private Logger<TwitchPubSub> LogData { get; set; }
 
+        private bool IsConnected;
         private string UserId;
 
         public TwitchBotPubSub()
@@ -43,10 +45,20 @@ namespace StreamerBotLib.BotClients.Twitch
                     )
                 );
 
-            TwitchPubSub = new(LogData);
+            BuildPubSubClient();
+        }
 
-            TwitchPubSub.OnLog += TwitchPubSub_OnLog;
-            TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
+        private void BuildPubSubClient()
+        {
+            if (TwitchPubSub == null)
+            {
+                TwitchPubSub = new(LogData);
+
+                TwitchPubSub.OnLog += TwitchPubSub_OnLog;
+                TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
+                TwitchPubSub.OnPubSubServiceClosed += TwitchPubSub_OnPubSubServiceClosed;
+                IsConnected = false;
+            }
         }
 
         private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
@@ -75,6 +87,8 @@ namespace StreamerBotLib.BotClients.Twitch
                                 TwitchPubSub.ListenToChannelPoints(UserId);
                             }
 
+                            //BuildPubSubClient();
+
                             TwitchPubSub.Connect();
                             Connected = true;
                             IsStarted = true;
@@ -101,24 +115,25 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Stopped = true;
 
-            lock (this)
+            ThreadManager.CreateThreadStart(() =>
             {
-                try
+                lock (this)
                 {
-                    if (IsStarted)
+                    try
                     {
-                        IsStarted = false;
-                        IsStopped = true;
-                        TwitchPubSub.Disconnect();
-                        RefreshSettings();
-                        InvokeBotStopped();
+                        if (IsStarted)
+                        {
+                            IsStarted = false;
+                            IsStopped = true;
+                            TwitchPubSub.Disconnect();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
                 }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-            }
+            });
 
             return Stopped;
         }
@@ -130,20 +145,50 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceConnected(object sender, EventArgs e)
         {
+            if (!IsConnected && IsStarted)
+            {
+                string Token;
+                if (OptionFlags.TwitchStreamerUseToken)
+                {
+                    Token = OptionFlags.TwitchStreamOauthToken;
+                }
+                else
+                {
+                    Token = OptionFlags.TwitchBotAccessToken;
+                }
+
+                if (Token != null)
+                {
+                    // send the topics to listen
+                    TwitchPubSub?.SendTopics(Token);
+
+                    InvokeBotStarted();
+                }
+
+                IsConnected = true;
+            }
+        }
+
+        private void TwitchPubSub_OnPubSubServiceClosed(object sender, EventArgs e)
+        {
+
             string Token;
             if (OptionFlags.TwitchStreamerUseToken)
             {
                 Token = OptionFlags.TwitchStreamOauthToken;
-            } else
+            }
+            else
             {
                 Token = OptionFlags.TwitchBotAccessToken;
             }
 
-            // send the topics to listen
-            TwitchPubSub.SendTopics(Token);
+            TwitchPubSub?.SendTopics(Token, true);
 
-            InvokeBotStarted();
+            //TwitchPubSub = null;
+            IsConnected = false;
+            RefreshSettings();
+            InvokeBotStopped();
+
         }
-
     }
 }
