@@ -3,8 +3,10 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace StreamerBotLib.BotClients
@@ -21,9 +23,16 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         /// <param name="UriList">The POST Uris collection of webhooks.</param>
         /// <param name="Msg">The message to send.</param>
-        public static void SendMessage(Uri uri, string Msg)
+        public static void SendMessage(Uri uri, string Msg, bool AllowEveryone = false)
         {
-            JsonContent content = JsonContent.Create(new WebhookJSON(Msg, new AllowedMentions(new AllowedMentionTypes[] { AllowedMentionTypes.everyone }, null, null)));
+            AllowedMentionTypes[] UserSpecMentions = null;
+            if (AllowEveryone)
+            {
+                UserSpecMentions = new[] { AllowedMentionTypes.everyone };
+            }
+            
+            JsonContent content = JsonContent.Create(new WebhookJSON(Msg, null, null, false, null, null, null,
+                new AllowedMentions(UserSpecMentions, null, null)));
 
             lock (DataJobs)
             {
@@ -101,75 +110,70 @@ namespace StreamerBotLib.BotClients
 
     public enum AllowedMentionTypes { roles, users, everyone }
 
-    public class AllowedMentions
+    public record AllowedMentions
     {
         private const int max_data = 100;
 
-        public string[] Parse { get; private set; }
-        public string[] Roles { get; private set; }
-        public string[] Users { get; private set; }
+
+        [property: JsonPropertyName("parse")]
+        public string[] Parse { get; init; }
+
+        [property: JsonPropertyName("roles")]
+        public string[] Roles { get; init; }
+
+        [property: JsonPropertyName("users")]
+        public string[] Users { get; init; }
 
         public AllowedMentions(AllowedMentionTypes[] mentions, string[] Roles, string[] Users)
         {
-            List<string> temp = new();
             List<AllowedMentionTypes> tempmentions = new(mentions);
 
             tempmentions.UniqueAdd(AllowedMentionTypes.everyone);
             tempmentions.UniqueAdd(AllowedMentionTypes.roles);
             tempmentions.UniqueAdd(AllowedMentionTypes.users);
 
-            Parse = temp.ToArray();
+            Parse = new List<string>().ToArray();
 
-            if (Roles?.Length > max_data)
-            {
-                List<string> temproles = new(Roles);
-                temproles.RemoveRange(max_data, temproles.Count - max_data);
-                this.Roles = temproles.ToArray();
-            }
-            else
-            {
-                this.Roles = Roles;
-            }
-
-            if (Users?.Length > max_data)
-            {
-                List<string> tempusers = new(Users);
-                tempusers.RemoveRange(max_data, tempusers.Count - max_data);
-                this.Users = tempusers.ToArray();
-            }
-            else
-            {
-                this.Users = Users;
-            }
+            this.Roles = Roles[..max_data];
+            this.Users = Users[..max_data];
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Names are required in lower case because of the Discord/Webhook JSON specification.")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CA1707:Underscores in Names", Justification = "The underscores in names are required for the Discord/Webhook JSON specification.")]
-    public class WebhookJSON
+    public record WebhookJSON
     {
+        public WebhookJSON(string content, string username, string avatar_url, bool tts, object file, object[] embeds, string payload_json, AllowedMentions allowed_mentions)
+        {
+            Content = content;
+            Username = username;
+            Avatar_url = avatar_url;
+            Tts = tts;
+            File = file;
+            Embeds = embeds;
+            Payload_json = payload_json;
+            Allowed_mentions = allowed_mentions;
+        }
+
         //private const int max_embeds = 10;
 
-        public string content { get; private set; }
-        public string username { get; private set; }
-        public string avatar_url { get; private set; }
-        public bool tts { get; private set; }
+        [property: JsonPropertyName("content")]
+        public string Content { get; init; }
+        [property: JsonPropertyName("username")]
+        public string Username { get; init; }
+        [property: JsonPropertyName("avatar_url")]
+        public string Avatar_url { get; init; }
+        [property: JsonPropertyName("tts")]
+        public bool Tts { get; init; }
 
-        public object file { get; private set; } = null;
-        public object[] embeds { get; private set; } = null; // Discord expects to remove in future API updates
-        public string payload_json { get; private set; }
-        public AllowedMentions allowed_mentions { get; private set; }
+        [property: JsonPropertyName("file")]
+        public object File { get; init; } = null;
+        [property: JsonPropertyName("embeds")]
+        public object[] Embeds { get; init; } = null; // Discord expects to remove in future API updates
+        [property: JsonPropertyName("payload_json")]
+        public string Payload_json { get; init; }
+        [property: JsonPropertyName("allowed_mentions")]
+        public AllowedMentions Allowed_mentions { get; init; }
 
-        public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username = null, string Avatar_Url = null, bool TTS = false,
-            string Payload_Json = null)
-        {
-            content = Content;
-            allowed_mentions = Allowed_Mentions;
-            username = Username;
-            avatar_url = Avatar_Url;
-            tts = TTS;
-            payload_json = Payload_Json;
-        }
+
     }
 
 

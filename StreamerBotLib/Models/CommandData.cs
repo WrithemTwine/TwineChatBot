@@ -10,7 +10,7 @@ using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Models
 {
-    public class CommandData
+    public record CommandData
     {
         public string Usage { get; }
         public bool IsEnabled { get; }

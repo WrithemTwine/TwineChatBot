@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.Events
 {
-    public class UserJoinEventArgs : UserJoin
+    public record UserJoinEventArgs : UserJoin
     {
         // without command prefix; default '!'
         public string Command { get; set; }
