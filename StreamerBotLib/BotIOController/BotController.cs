@@ -664,13 +664,8 @@ namespace StreamerBotLib.BotIOController
                         {
                             foreach (Tuple<bool, Uri> u in StatisticsSystem.GetDiscordWebhooks(WebhooksKind.Live))
                             {
-                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                                                {
-                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
-                                                                }
-                                                            )
-                                                        )
-                                                    );
+                                // TODO check "add everyone" in Discord allowed mentions
+                                DiscordWebhook.SendMessage(u.Item2, TempMsg, u.Item1);
                                 Systems.UpdatedStat(StreamStatType.Discord);
                             }
                         }

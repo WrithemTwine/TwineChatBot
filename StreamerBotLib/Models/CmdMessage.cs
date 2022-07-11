@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StreamerBotLib.Models
 {
-    public class CmdMessage
+    public record CmdMessage
     {
         public string CommandText { get; set; }
         public List<string> CommandArguments { get; set; }

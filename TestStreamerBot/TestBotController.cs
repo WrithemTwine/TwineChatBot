@@ -194,12 +194,14 @@ namespace TestStreamerBot
 
             Follow GenerateFollower(string prefix)
             {
-                return new()
-                {
-                    FromUserName = $"{prefix}Follower{x}",
-                    FollowedAt = getFollowedAt(),
-                    ToUserName = TwitchBotsBase.TwitchBotUserName
-                };
+                return new(
+                    getFollowedAt(),
+                    "00112233",
+                    $"{prefix}Follower{x}",
+                    "9988776655",
+                    TwitchBotsBase.TwitchBotUserName,
+                    new($"{prefix}Follower{x}", Platform.Default)
+                );
             }
 
             List<Follow> bulkfollows = new();
@@ -239,7 +241,14 @@ namespace TestStreamerBot
 
             for(int x=0; x < Random.Next(1,20); x++)
             {
-                follows.Add(new() {FollowedAt=DateTime.Now, FromUserName=$"IFollow{datestring}{x}", ToUserName=OptionFlags.TwitchChannelName });
+                follows.Add(new(
+                    followedAt: DateTime.Now, 
+                    fromUserName: $"IFollow{datestring}{x}",
+                    fromUserId: "00112233",
+                    toUserName: OptionFlags.TwitchChannelName, 
+                    toUserId: "99887766",
+                    fromUser: new($"IFollow{datestring}{x}", Platform.Default))
+                    );
             }
 
             botController.HandleBotEventNewFollowers(follows);
