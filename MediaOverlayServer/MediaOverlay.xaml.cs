@@ -68,12 +68,13 @@ namespace MediaOverlayServer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+
             if(OptionFlags.MediaOverlayPort!=0 && OptionFlags.AutoStart)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
 
-            AddEditPages();
+            UpdateLinks();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -96,7 +97,7 @@ namespace MediaOverlayServer
 
             if((sender as CheckBox).Name == "CheckBox_OptionSamePage")
             {
-                AddEditPages();
+                UpdateLinks();
             }
         }
 
@@ -130,7 +131,6 @@ namespace MediaOverlayServer
         {
             SetIsEnabled();
             Controller.StartServer();
-            GUIData.UpdateLinks();
         }
 
         private void AddEditPages()
@@ -201,6 +201,14 @@ namespace MediaOverlayServer
             TextBox port = sender as TextBox;
 
             OptionFlags.MediaOverlayPort = TwineBotWebServer.ValidatePort(int.Parse(port.Text));
+            UpdateLinks();
+        }
+
+        private void UpdateLinks()
+        {
+            AddEditPages();
+            PrefixGenerator.GetPrefixes();
+            GUIData.UpdateLinks();
         }
 
         private async void TextBox_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -212,5 +220,6 @@ namespace MediaOverlayServer
         {
             ((OverlayStyle)((sender as TextBox).DataContext)).SaveFile();
         }
+
     }
 }

@@ -1121,7 +1121,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Row="0" Margin="5">
-                                    <TextBlock>Double-click the MsgStr for your custom message. Use the 'Commands' to customize to a name or relevant values.<LineBreak/>'Live' is a message to Discord/other services.</TextBlock>
+                                    <TextBlock>Double-click the Message for your custom message. Use the 'Commands' to customize to a name or relevant values.<LineBreak/>'Live' is a message to Discord/other services.</TextBlock>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Button x:Name="Button_SystemEvents_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_SystemEvents_Click"/>
                                         <Button x:Name="Button_SystemEvents_Disabled" Width="80" Content="Disable All" Click="Button_SystemEvents_Click" />
