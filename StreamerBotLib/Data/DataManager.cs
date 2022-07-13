@@ -94,6 +94,7 @@ namespace StreamerBotLib.Data
                 }
                 else
                 {
+                    Msg = null;
                     Multi = 0;
                     Enabled = false;
                 }
