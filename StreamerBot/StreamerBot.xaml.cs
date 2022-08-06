@@ -37,9 +37,6 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
-        // TODO: add button to hide the 'clear data' buttons in the GUI, to prevent accidental deletions
-        // TODO: media overlay doesn't auto-start
-
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 

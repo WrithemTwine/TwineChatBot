@@ -30,7 +30,6 @@ namespace StreamerBotLib.Models
 
         public CommandData(CommandsRow row)
         {
-            // TODO: check and account for null rows, handle checks
             if (row != null)
             {
                 Usage = ColHelper<string>(row.Usage);

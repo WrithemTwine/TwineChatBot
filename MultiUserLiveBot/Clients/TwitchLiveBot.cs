@@ -1,5 +1,4 @@
-﻿using MultiUserLiveBot.Data;
-using MultiUserLiveBot.Properties;
+﻿using MultiUserLiveBot.Properties;
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,8 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Services;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
+
+using StreamerBotLib.Data.MultiLive;
 
 namespace MultiUserLiveBot.Clients
 {

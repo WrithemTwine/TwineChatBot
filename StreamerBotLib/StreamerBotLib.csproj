@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
     <ProjectReference Include="..\MediaOverlayServer\MediaOverlayServer.csproj" />
   </ItemGroup>
 
@@ -39,6 +38,11 @@
     </Compile>
     <Compile Update="Data\DataSource.Designer.cs">
       <DependentUpon>DataSource.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Data\MultiLive\MultiDataSource.Designer.cs">
+      <DependentUpon>MultiDataSource.xsd</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
@@ -68,6 +72,10 @@
   <ItemGroup>
     <None Update="Data\DataSource.xsd">
       <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+    </None>
+    <None Update="Data\MultiLive\MultiDataSource.xsd">
+      <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
       <Generator>MSDataSetGenerator</Generator>
     </None>
     <None Update="Properties\Settings.settings">

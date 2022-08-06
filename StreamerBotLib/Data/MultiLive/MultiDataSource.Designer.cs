@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace MultiUserLiveBot.Data {
+namespace StreamerBotLib.Data.MultiLive {
     
     
     /// <summary>

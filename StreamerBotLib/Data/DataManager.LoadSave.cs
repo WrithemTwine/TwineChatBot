@@ -234,7 +234,6 @@ namespace StreamerBotLib.Data
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Setting up and checking default commands, adding missing commands.");
 #endif
 
-            // TODO: move !intro to default commands <- for the custom welcome message
             lock (GUIDataManagerLock.Lock)
             {
                 if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)

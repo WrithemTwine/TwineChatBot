@@ -1,6 +1,7 @@
 ﻿using MultiUserLiveBot.Clients;
-using MultiUserLiveBot.Data;
 using MultiUserLiveBot.Properties;
+
+using StreamerBotLib.Data.MultiLive;
 
 using System;
 using System.Collections.Generic;

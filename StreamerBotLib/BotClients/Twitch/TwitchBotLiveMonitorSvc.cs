@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Data.MultiLive;
+using StreamerBotLib.Enums;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
@@ -136,7 +137,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region MultiLive Bot
 
-        public static MultiUserLiveBot.Data.MultiDataManager MultiLiveDataManager { get; private set; } = new();
+        public static MultiDataManager MultiLiveDataManager { get; private set; } = new();
 
         private const int maxlength = 8000;
 

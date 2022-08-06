@@ -58,7 +58,7 @@ namespace TestStreamerBot
                 botController.OutputSentToBots += BotController_OutputSentToBots;
                        
                 botController.SetDispatcher(Dispatcher.CurrentDispatcher);
-                dataManager = SystemsBase.DataManage;
+                dataManager = SystemsController.DataManage;
             }
         }
 
