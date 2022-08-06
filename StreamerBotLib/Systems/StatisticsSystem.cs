@@ -7,32 +7,12 @@ using System.Collections.Generic;
 
 namespace StreamerBotLib.Systems
 {
-    public class StatisticsSystem : SystemsBase
+    internal partial class ActionSystem
     {
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock < - currency is (should be) earned when online.
         /// </summary>
         // private Thread StreamUpdateThread;
-
-        public event EventHandler BeginCurrencyClock;
-        public event EventHandler BeginWatchTime;
-
-        public StatisticsSystem()
-        {
-        }
-
-        /// <summary>
-        /// Attempt to start the currency clock. The setting "TwitchCurrencyOnline" can be user set and changed during bot operation. This method checks and starts the clock if not already started. The Currency System "StartClock()" method has checks for whether this setting is enabled.
-        /// </summary>
-        public void StartCurrencyClock()
-        {
-            BeginCurrencyClock?.Invoke(this, new()); // try to start clock, in case accrual is started for offline mode
-        }
-
-        public void MonitorWatchTime()
-        {
-            BeginWatchTime?.Invoke(this, new());
-        }
 
         public void ManageUsers()
         {

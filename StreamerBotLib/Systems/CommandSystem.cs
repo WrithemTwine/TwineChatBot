@@ -16,12 +16,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
+using TwitchLib.Api.Helix;
+
 using static StreamerBotLib.Data.DataSource;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StreamerBotLib.Systems
 {
-    public class CommandSystem : SystemsBase, INotifyPropertyChanged
+    internal partial class ActionSystem : INotifyPropertyChanged
     {
         private static Thread ElapsedThread;
         private bool ChatBotStarted;
@@ -34,21 +36,10 @@ namespace StreamerBotLib.Systems
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
-        public event EventHandler<CheckOverlayEventArgs> CheckOverlayEvent;
 
         public void NotifyPropertyChanged(string ParamName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
-        }
-
-        public CommandSystem()
-        {
-            //StartElapsedTimerThread();
-        }
-
-        private void OnCheckOverlayEvent(CheckOverlayEventArgs e)
-        {
-            CheckOverlayEvent?.Invoke(this, e);
         }
 
         public void StartElapsedTimerThread()
@@ -81,6 +72,9 @@ namespace StreamerBotLib.Systems
         private void ElapsedCommandTimers()
         {
             // TODO: consider some AI bot chat when channel is slower
+            // TODO: repeat timers using thresholds - once started they don't stop repeating when back under threshold
+            // TODO: repeat command still performs when command not enabled
+
             List<TimerCommand> RepeatList = new();
 
             chattime = DateTime.Now.ToLocalTime(); // the time to check chats sent
@@ -543,8 +537,9 @@ namespace StreamerBotLib.Systems
                                 LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Found !so message with a category, {resultcat}.");
 #endif
 
-                                OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = DefaultCommand.so.ToString(), UserName = User.UserName, UserMsg = tempHTMLResponse });
-
+                                CheckForOverlayEvent(overlayType: MediaOverlayServer.Enums.OverlayTypes.Commands,
+                                    Action: DefaultCommand.so.ToString(),
+                                    UserName: User.UserName, UserMsg: tempHTMLResponse);
                             }
                         });
 
@@ -569,7 +564,7 @@ namespace StreamerBotLib.Systems
 
             if (result != "")
             {
-                OnCheckOverlayEvent(new() { OverlayType = MediaOverlayServer.Enums.OverlayTypes.Commands, Action = command, UserName = User.UserName, UserMsg = tempHTMLResponse });
+                CheckForOverlayEvent(overlayType: MediaOverlayServer.Enums.OverlayTypes.Commands, Action: command, UserName: User.UserName, UserMsg: tempHTMLResponse);
             }
 
             result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;

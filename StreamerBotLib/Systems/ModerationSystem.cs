@@ -9,7 +9,7 @@ using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Systems
 {
-    public class ModerationSystem : SystemsBase
+    internal partial class ActionSystem
     {
         public void ManageLearnedMsgList()
         {

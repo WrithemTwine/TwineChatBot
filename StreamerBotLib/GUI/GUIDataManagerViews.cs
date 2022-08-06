@@ -55,10 +55,10 @@ namespace StreamerBotLib.GUI
 
         public GUIDataManagerViews()
         {
-            ChatData = SystemsBase.ChatData;
-            JoinCollection = SystemsBase.JoinCollection;
-            GiveawayCollection = SystemsBase.GiveawayCollection;
-            CurrUserList = SystemsBase.CurrUserJoin;
+            ChatData = ActionSystem.ChatData;
+            JoinCollection = ActionSystem.JoinCollection;
+            GiveawayCollection = ActionSystem.GiveawayCollection;
+            CurrUserList = ActionSystem.CurrUserJoin;
             SetDataTableViews(SystemsController.DataManage);
         }
 
