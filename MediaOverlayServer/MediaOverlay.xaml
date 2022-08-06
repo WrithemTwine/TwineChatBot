@@ -77,10 +77,10 @@
                     </GroupBox>
                 </WrapPanel>
             </TabItem>
-            <TabItem Header="Links" >
+            <TabItem x:Name="TabItem_Links" Header="Links">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server.</TextBlock>
-                    <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayLinks, Mode=OneWay}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}">
+                    <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayLinks, Mode=OneWay, NotifyOnSourceUpdated=True}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}">
                     </ListView>
                 </DockPanel>
             </TabItem>

@@ -15,6 +15,8 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotClipSvc : TwitchBotsBase
     {
+        // TODO: catch HTTP timeout exception with getting clips
+
         public ClipMonitorService ClipMonitorService { get; set; }
 
         public TwitchBotClipSvc()

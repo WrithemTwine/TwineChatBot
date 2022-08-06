@@ -64,9 +64,9 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
-            SystemsBase.BotUserName = TwitchBotsBase.TwitchBotUserName;
-            SystemsBase.ChannelName = TwitchBotsBase.TwitchChannelName;
-            OutputSentToBots += SystemsBase.OutputSentToBotsHandler;
+            ActionSystem.BotUserName = TwitchBotsBase.TwitchBotUserName;
+            ActionSystem.ChannelName = TwitchBotsBase.TwitchChannelName;
+            OutputSentToBots += ActionSystem.OutputSentToBotsHandler;
 
             //OverlayServerBot = new();
             SetNewOverlayEventHandler();
@@ -636,11 +636,11 @@ namespace StreamerBotLib.BotIOController
             try
             {
                 bool Started = Systems.StreamOnline(StartedAt);
-                SystemsBase.ChannelName = ChannelName;
+                ActionSystem.ChannelName = ChannelName;
 
                 if (Started)
                 {
-                    bool MultiLive = StatisticsSystem.CheckStreamTime(StartedAt);
+                    bool MultiLive = ActionSystem.CheckStreamTime(StartedAt);
                     SystemsController.SetCategory(GameId, Category);
                     PostGameCategoryEvent(GameId, Category);
 
@@ -662,15 +662,10 @@ namespace StreamerBotLib.BotIOController
 
                         if (Enabled && !Debug)
                         {
-                            foreach (Tuple<bool, Uri> u in StatisticsSystem.GetDiscordWebhooks(WebhooksKind.Live))
+                            foreach (Tuple<bool, Uri> u in ActionSystem.GetDiscordWebhooks(WebhooksKind.Live))
                             {
-                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                                                {
-                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
-                                                                }
-                                                            )
-                                                        )
-                                                    );
+                                // TODO check "add everyone" in Discord allowed mentions
+                                DiscordWebhook.SendMessage(u.Item2, TempMsg, u.Item1);
                                 Systems.UpdatedStat(StreamStatType.Discord);
                             }
                         }

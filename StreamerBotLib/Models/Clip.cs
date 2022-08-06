@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Models
 {
-    public class Clip
+    public record Clip
     {
         public string ClipId { get; set; }
         public string CreatedAt { get; set; }

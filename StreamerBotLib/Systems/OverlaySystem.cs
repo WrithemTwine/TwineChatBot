@@ -19,7 +19,7 @@ using System.Threading;
 
 namespace StreamerBotLib.Systems
 {
-    internal class OverlaySystem : SystemsBase
+    internal partial class ActionSystem
     {
         /// <summary>
         /// A stream action caused an Overlay Event to occur, and should be displayed via the Media Overlay Server.
