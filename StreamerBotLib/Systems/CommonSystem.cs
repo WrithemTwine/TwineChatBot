@@ -174,7 +174,10 @@ namespace StreamerBotLib.Systems
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
         {
-            DataManage.SetIsEnabled(dataRows, IsEnabled);
+            lock (GUI.GUIDataManagerLock.Lock)
+            {
+                DataManage.SetIsEnabled(dataRows, IsEnabled);
+            }
         }
 
         internal static bool CheckField(string dataTable, string fieldName)
