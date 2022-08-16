@@ -18,7 +18,7 @@ namespace MediaOverlayServer.GUI
         /// </summary>
         public List<OverlayStat> OverlayStats { get; private set; }
 
-        public static List<OverlayPage> OverlayLinks => PrefixGenerator.GetLinks();
+        public List<OverlayPage> OverlayLinks { get; private set; } = new();
 
         public List<OverlayStyle> OverlayEditStyles { get; private set; } = new();
 
@@ -66,10 +66,22 @@ namespace MediaOverlayServer.GUI
 
         public void RefreshStats()
         {
-            OnPropertyChanged(nameof(OverlayStats));
+            foreach (OverlayStat overlayStat in OverlayStats)
+            {
+                OnPropertyChanged(nameof(overlayStat));
+            }
         }
 
         public void UpdateLinks()
+        {
+            OverlayLinks = new();
+            RefreshLinks();
+
+            OverlayLinks = PrefixGenerator.GetLinks();
+            RefreshLinks();
+        }
+
+        private void RefreshLinks()
         {
             OnPropertyChanged(nameof(OverlayLinks));
         }
@@ -77,6 +89,12 @@ namespace MediaOverlayServer.GUI
         public void ClearEditPages()
         {
             OverlayEditStyles.Clear();
+        }
+
+        public void ClearLinks()
+        {
+            OverlayLinks.Clear();
+            RefreshLinks();
         }
 
         public void AddEditPage(string overlayType)
@@ -87,8 +105,10 @@ namespace MediaOverlayServer.GUI
 
         public void AddEditPage(string[] overlayTypes)
         {
-            OverlayEditStyles.AddRange(new List<string>(overlayTypes).ConvertAll((t) => new OverlayStyle(t)));
-
+            foreach(string s in overlayTypes)
+            {
+                AddEditPage(s);
+            }
         }
 
         public void SaveEditPage()

@@ -3,9 +3,9 @@
 namespace StreamerBotLib.Models
 {
     [DebuggerDisplay("Parameter={Parameter}, Value={Value}")]
-    public class Command
+    public record Command
     {
-        public string Parameter { get; set; }
-        public string Value { get; set; }
+        public string Parameter { get; init; } = default;
+        public string Value { get; init; } = default;
     }
 }

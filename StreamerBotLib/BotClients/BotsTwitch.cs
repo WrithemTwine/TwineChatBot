@@ -23,6 +23,8 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
+
+        // TODO: fix condition where OAuth token expires or becomes invalid (if account password changes), yet bot continues to try to run and should otherwise stop if date expires
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; } = new();
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = new();
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = new();

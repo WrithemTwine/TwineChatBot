@@ -2,6 +2,7 @@
 using MediaOverlayServer.Interfaces;
 using MediaOverlayServer.Static;
 
+using System.Diagnostics;
 using System.IO;
 
 namespace MediaOverlayServer.Models
@@ -9,6 +10,7 @@ namespace MediaOverlayServer.Models
     /// <summary>
     /// Loads a style and saves to a file.
     /// </summary>
+    [DebuggerDisplay("OverlayType = {OverlayType}")]
     public class OverlayStyle : IOverlayStyle
     {
         private string FileNameStyle;
@@ -51,6 +53,7 @@ namespace MediaOverlayServer.Models
         /// </summary>
         public void SaveFile()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(FileNameStyle));
             File.WriteAllText(FileNameStyle, OverlayStyleText);
         }
     }

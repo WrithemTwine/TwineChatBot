@@ -31,11 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Data\MultiDataSource.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>MultiDataSource.xsd</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -56,10 +55,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\MultiDataSource.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
-    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

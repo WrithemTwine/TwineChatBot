@@ -9,8 +9,6 @@ using System.Text;
 
 namespace StreamerBotLib.Static
 {
-    // TODO: Fix "months" portion of output:  "1 year, 14 months, ..."
-
     // specific partial class for the common messages processes
     public static class FormatData
     {

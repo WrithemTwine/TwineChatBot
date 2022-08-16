@@ -9,19 +9,23 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 
 namespace StreamerBotLib.Systems
 {
+
     /// <summary>
     /// The common shared operations class between each of the subsystems. 
-    /// Should not be referenced outside of <c>ChatBot_Net5.Systems</c> namespace.
+    /// Should not be referenced outside of <c>StreamerBotLib.Systems</c> namespace.
     /// Perform direct DataManager tasks here.
     /// Each Subsystem class derives from this base class and can access the 
     /// DataManager and static properties here to share data between systems.
     /// </summary>
-    public class SystemsBase
+    internal partial class ActionSystem
     {
         public static DataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
@@ -61,6 +65,10 @@ namespace StreamerBotLib.Systems
         /// <returns>The DateTime of the stream start time.</returns>
         public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
         private delegate void ProcMessage(string UserName, string Message);
+
+        public ActionSystem()
+        {
+        }
 
         public static void ManageDatabase()
         {
@@ -166,14 +174,17 @@ namespace StreamerBotLib.Systems
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
         {
-            DataManage.SetIsEnabled(dataRows, IsEnabled);
+            lock (GUI.GUIDataManagerLock.Lock)
+            {
+                DataManage.SetIsEnabled(dataRows, IsEnabled);
+            }
         }
 
         internal static bool CheckField(string dataTable, string fieldName)
         {
             return DataManage.CheckField(dataTable, fieldName);
         }
-        
+
         public static bool AddClip(Clip c)
         {
             return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
@@ -242,7 +253,6 @@ namespace StreamerBotLib.Systems
         {
             AddChatString(Settings.Default.TwitchBotUserName, e.Msg);
         }
-
 
     }
 }

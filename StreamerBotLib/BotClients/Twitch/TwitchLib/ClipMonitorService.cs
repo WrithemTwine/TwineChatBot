@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
@@ -76,7 +77,22 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             foreach (string channel in ChannelsToMonitor)
             {
                 List<Clip> newClips;
-                List<Clip> latestClips = await GetLatestClipsAsync(channel);
+                List<Clip> latestClips = null;
+
+                int loop = 0;
+
+                while (loop < 5 && latestClips == null)
+                {
+                    try
+                    {
+                        latestClips = await GetLatestClipsAsync(channel);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        loop++;
+                    }
+                }
 
                 if (latestClips.Count == 0) { continue; }
 
@@ -128,9 +144,17 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             async Task<GetClipsResponse> Clips(string Channel, int queryCount, string after = null)
             {
-                return after == null ? await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int) param[0], broadcasterId: c),
-                Channel, new object[] { queryCount }) : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int) param[1], broadcasterId: c, after: (string)param[0]),
-                Channel, new object[] { queryCount, after });
+                try
+                {
+                    return after == null ? await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
+                    Channel, new object[] { queryCount }) : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]),
+                    Channel, new object[] { queryCount, after });
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    return null;
+                }
             }
 
             List<Clip> allClips = new();
@@ -138,27 +162,30 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             async Task<int> AddClip(string Channel, int queryCount, string after = null)
             {
-                GetClipsResponse getClips = await Clips(Channel, queryCount, after);
-                allClips.AddRange(getClips.Clips);
-                cursor = getClips.Pagination.Cursor;
-                return getClips.Clips.Length;
+                GetClipsResponse getClips = null;
+                int x = 0;
+
+                while (getClips == null && x < 5)
+                {
+                    getClips = await Clips(Channel, queryCount, after);
+
+                    if (getClips != null)
+                    {
+                        allClips.AddRange(getClips.Clips);
+                        cursor = getClips.Pagination.Cursor;
+                    } else
+                    {
+                        Thread.Sleep(5000);
+                        x++;
+                    }
+                }
+                return getClips?.Clips?.Length ?? -1;
             }
 
-            int count = 0;
+            int count = 0, loop = 0;
 
-            while (allClips.Count == 0)
-            {
-                try
-                {
-                    count = await AddClip(ChannelName, 100);
-                }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-            }
-
-            while (count == 100)
+            while ((allClips.Count == 0 || count == 100 || count == -1) && loop < 5)
+                // either start with an empty list, start filling the list (count == 100, 100 clips per request), or an exception getting the list (count == -1), continue up to 5 tries on failures (loop = 0, loop++ < 5)
             {
                 try
                 {
@@ -167,6 +194,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 catch (Exception ex)
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
+                if (count == -1) // -1 => fail condition based on exception
+                {
+                    loop++;
                 }
             }
 

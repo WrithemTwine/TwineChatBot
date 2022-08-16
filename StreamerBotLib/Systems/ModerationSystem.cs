@@ -9,25 +9,28 @@ using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Systems
 {
-    public class ModerationSystem : SystemsBase
+    internal partial class ActionSystem
     {
         public void ManageLearnedMsgList()
         {
-            List<LearnMsgsRow> learnMsgsRows = DataManage.UpdateLearnedMsgs();
-            if (learnMsgsRows != null)
+            lock (GUI.GUIDataManagerLock.Lock)
             {
-                List<BotModAction> botModActions = new();
-
-                foreach (LearnMsgsRow M in learnMsgsRows)
+                List<LearnMsgsRow> learnMsgsRows = DataManage.UpdateLearnedMsgs();
+                if (learnMsgsRows != null)
                 {
-                    botModActions.Add(new()
-                    {
-                        LearnMsg = M.TeachingMsg,
-                        ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
-                    });
-                }
+                    List<BotModAction> botModActions = new();
 
-                MessageAnalysis.UpdateLearningList(botModActions);
+                    foreach (LearnMsgsRow M in learnMsgsRows)
+                    {
+                        botModActions.Add(new()
+                        {
+                            LearnMsg = M.TeachingMsg,
+                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
+                        });
+                    }
+
+                    MessageAnalysis.UpdateLearningList(botModActions);
+                }
             }
         }
 
@@ -35,11 +38,14 @@ namespace StreamerBotLib.Systems
         {
             ManageLearnedMsgList();
 
-            MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
+            lock (GUI.GUIDataManagerLock.Lock)
+            {
+                MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
 
-            Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
+                Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
 
-            return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
+                return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
+            }
         }
     }
 }

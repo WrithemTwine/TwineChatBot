@@ -9,14 +9,11 @@ using System.Linq;
 
 namespace StreamerBotLib.Systems
 {
-    public class CurrencySystem : SystemsBase
+    internal partial class ActionSystem
     {
         private bool CurAccrualStarted;
         private bool WatchStarted;
 
-        public CurrencySystem()
-        {
-        }
 
         public void StartCurrencyClock()
         {
