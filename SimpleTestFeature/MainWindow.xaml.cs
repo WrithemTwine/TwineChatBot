@@ -11,12 +11,15 @@ namespace SimpleTestFeature
         {
             InitializeComponent();
 
-            _ = typeof(MainWindow).InvokeMember(
-                "UpdateGUI",
-                System.Reflection.BindingFlags.InvokeMethod,
-                null, 
-                this, 
-                new[] { "Invoke Member worked." });
+            Dispatcher.Invoke(() =>
+            {
+                _ = typeof(MainWindow).InvokeMember(
+                    "UpdateGUI",
+                    System.Reflection.BindingFlags.InvokeMethod,
+                    null,
+                    this,
+                    new[] { "Invoke Member worked." });
+            });
 
         }
 
