@@ -95,7 +95,21 @@ namespace StreamerBotLib.BotIOController
         {
             AppDispatcher.Invoke(() =>
             {
-                _ = typeof(BotController).InvokeMember(name: e.MethodName, invokeAttr: BindingFlags.InvokeMethod, binder: null, target: this, args: new[] { e.e }, culture: CultureInfo.CurrentCulture);
+                try
+                {
+                    _ = typeof(BotController).InvokeMember(
+                            name: e.MethodName,
+                            invokeAttr: BindingFlags.InvokeMethod | BindingFlags.IgnoreCase | BindingFlags.OptionalParamBinding,
+                            binder: null,
+                            target: this,
+                            args: e.e == null ? null : new[] { e.e },
+                            culture: null);
+
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
             });
         }
 

@@ -514,6 +514,7 @@ namespace StreamerBot
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
                 {
+
                     if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
                     {
                         Dispatcher.BeginInvoke(new BotOperation(() =>
@@ -523,7 +524,7 @@ namespace StreamerBot
                     }
                     else
                     {
-#if MultiLive
+#if MultiLive  // preprocessor directive
                         SetMultiLiveButtons();
                         MultiBotRadio(true); 
 #endif
@@ -668,7 +669,7 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart,  Radio_Services_OverlayBotStart };
+            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
 
             void SetButtons(bool value)
             {
@@ -678,7 +679,11 @@ namespace StreamerBot
                 }
             }
 
-            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
+            if (TB_Twitch_Channel.Text.Length != 0 
+                && TB_Twitch_BotUser.Text.Length != 0 
+                && TB_Twitch_ClientID.Text.Length != 0 
+                && TB_Twitch_AccessToken.Text.Length != 0 
+                && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
             {
                 SetButtons(true);
             }
@@ -782,7 +787,7 @@ namespace StreamerBot
             ToggleButton TBSource = null;
             StackPanel SPSource = null;
             GroupBox GBSource = null;
-            if (sender.GetType() == typeof(CheckBox) || sender.GetType()==typeof(RadioButton))
+            if (sender.GetType() == typeof(CheckBox) || sender.GetType() == typeof(RadioButton))
             {
                 TBSource = (ToggleButton)sender;
             }

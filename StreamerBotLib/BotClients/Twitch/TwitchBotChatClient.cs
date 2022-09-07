@@ -1,5 +1,5 @@
 ﻿
-#define TwitchLib_ConnectProblem
+#define noTwitchLib_ConnectProblem
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;

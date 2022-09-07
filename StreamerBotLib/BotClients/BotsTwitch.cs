@@ -133,7 +133,7 @@ namespace StreamerBotLib.BotClients
         {
             RegisterHandlers();
 
-            InvokeBotEvent(this, BotEvents.TwitchChatBotStarted, new());
+            InvokeBotEvent(this, BotEvents.TwitchChatBotStarted, null);
 
             if (OptionFlags.TwitchChatBotConnectOnline || OptionFlags.IsStreamOnline)
             {

@@ -25,9 +25,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TwitchLib" Version="3.3.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.5.2" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.5.2" />
+    <PackageReference Include="TwitchLib" Version="3.4.1" />
+    <PackageReference Include="TwitchLib.Api" Version="3.6.1" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.6.1" />
   </ItemGroup>
 
   <ItemGroup>
