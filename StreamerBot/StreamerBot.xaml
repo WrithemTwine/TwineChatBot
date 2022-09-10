@@ -3,11 +3,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=TwineStreamerBotLib"
-        xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=TwineStreamerBotLib"
-        xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=TwineStreamerBotLib"
-        xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=TwineStreamerBotLib"
-        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=TwineStreamerBotLib"
+        xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
+        xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
+        xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
+        xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
+        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="750" Width="1100"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True">
@@ -808,7 +808,7 @@
                                                     <TextBlock>Enable auto shoutout for incoming channel raid streamers</TextBlock>
                                                 </CheckBox>
                                                 <CheckBox IsChecked="{Binding MsgSendSOToChat}">
-                                                    <TextBlock>Send !so command to chat-other bots can use for messages.</TextBlock>
+                                                    <TextBlock>Send !so command to chat-other bots can use for messages. Also applies when 'Auto ShoutOut Incoming Channel Raid' is active.</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>

@@ -62,9 +62,9 @@ namespace StreamerBotLib.Data {
         
         private OverlayServicesDataTable tableOverlayServices;
         
-        private global::System.Data.DataRelation relationFK_Users_Currency;
-        
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
+        
+        private global::System.Data.DataRelation relationFK_Users_Currency;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -632,8 +632,8 @@ namespace StreamerBotLib.Data {
                     this.tableOverlayServices.InitVars();
                 }
             }
-            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
         }
         
@@ -684,16 +684,16 @@ namespace StreamerBotLib.Data {
             this.tableOverlayServices = new OverlayServicesDataTable();
             base.Tables.Add(this.tableOverlayServices);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -705,14 +705,14 @@ namespace StreamerBotLib.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn}, false);
-            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -5097,6 +5097,8 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnCategory;
             
+            private static System.DateTime columnDateTime_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public InRaidDataDataTable() {
@@ -5262,6 +5264,7 @@ namespace StreamerBotLib.Data {
                 this.columnId.AutoIncrement = true;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnDateTime.DefaultValue = ((System.DateTime)(InRaidDataDataTable.columnDateTime_defaultValue));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5400,6 +5403,8 @@ namespace StreamerBotLib.Data {
             private global::System.Data.DataColumn columnChannelRaided;
             
             private global::System.Data.DataColumn columnDateTime;
+            
+            private static System.DateTime columnDateTime_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -5550,6 +5555,7 @@ namespace StreamerBotLib.Data {
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnDateTime.DefaultValue = ((System.DateTime)(OutRaidDataDataTable.columnDateTime_defaultValue));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7591,23 +7597,23 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public CurrencyTypeRow CurrencyTypeRow {
                 get {
                     return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
                 }
             }
             

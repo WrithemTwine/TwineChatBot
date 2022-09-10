@@ -97,9 +97,14 @@ namespace StreamerBotLib.BotIOController
             {
                 try
                 {
+                    if (e.MethodName.Contains('.'))
+                    {
+                        throw new ArgumentException("Method name to invoke contains '.', which is invalid.");
+                    }
+
                     _ = typeof(BotController).InvokeMember(
                             name: e.MethodName,
-                            invokeAttr: BindingFlags.InvokeMethod | BindingFlags.IgnoreCase | BindingFlags.OptionalParamBinding,
+                            invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
                             binder: null,
                             target: this,
                             args: e.e == null ? null : new[] { e.e },

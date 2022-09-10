@@ -1,5 +1,5 @@
 ﻿using StreamerBotLib.Enums;
-using StreamerBotLib.MachineLearning;
+using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 
 using System;
@@ -15,12 +15,12 @@ namespace StreamerBotLib.Systems
         {
             lock (GUI.GUIDataManagerLock.Lock)
             {
-                List<LearnMsgsRow> learnMsgsRows = DataManage.UpdateLearnedMsgs();
+                List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
                 if (learnMsgsRows != null)
                 {
                     List<BotModAction> botModActions = new();
 
-                    foreach (LearnMsgsRow M in learnMsgsRows)
+                    foreach (LearnMsgRecord M in learnMsgsRows)
                     {
                         botModActions.Add(new()
                         {

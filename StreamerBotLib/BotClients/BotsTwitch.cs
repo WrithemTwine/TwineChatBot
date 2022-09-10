@@ -205,7 +205,7 @@ namespace StreamerBotLib.BotClients
                 })
             };
 
-            InvokeBotEvent(this, BotEvents.TwitchExistingUsers, e);
+            InvokeBotEvent(this, BotEvents.TwitchExistingUsers, args);
         }
 
         private static Models.LiveUser AddUserId(string s)
@@ -475,7 +475,7 @@ namespace StreamerBotLib.BotClients
                 {
                     string ChannelName = TwitchBotsBase.TwitchChannelName;
 
-                    InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, new EventArgs());
+                    InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, null);
 
                     // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
                     List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
@@ -496,7 +496,7 @@ namespace StreamerBotLib.BotClients
                             });
                     }
 
-                    InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, new EventArgs());
+                    InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
                 });
                 MultiThreadOps.Add(BulkLoadFollows);
                 BulkLoadFollows.Start();

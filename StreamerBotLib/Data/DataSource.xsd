@@ -178,7 +178,7 @@
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" minOccurs="0" />
               <xs:element name="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_UserColumnName="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" type="xs:string" minOccurs="0" />
               <xs:element name="ViewerCount" msprop:Generator_ColumnPropNameInTable="ViewerCountColumn" msprop:Generator_ColumnPropNameInRow="ViewerCount" msprop:Generator_UserColumnName="ViewerCount" msprop:Generator_ColumnVarNameInTable="columnViewerCount" type="xs:string" minOccurs="0" />
-              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
               <xs:element name="Category" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_UserColumnName="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
@@ -188,7 +188,7 @@
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" />
               <xs:element name="ChannelRaided" msprop:Generator_ColumnPropNameInTable="ChannelRaidedColumn" msprop:Generator_ColumnPropNameInRow="ChannelRaided" msprop:Generator_UserColumnName="ChannelRaided" msprop:Generator_ColumnVarNameInTable="columnChannelRaided" type="xs:string" minOccurs="0" />
-              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -367,17 +367,17 @@
       <xs:field xpath="mstns:OverlayAction" />
       <xs:field xpath="mstns:UserName" />
     </xs:unique>
-    <xs:keyref name="Users_Followers" refer="Users_Constraint2" msprop:rel_Generator_UserParentTable="Users" msprop:rel_Generator_UserChildTable="Followers" msprop:rel_Generator_RelationVarName="relationUsers_Followers" msprop:rel_Generator_ChildPropName="GetFollowersRows" msprop:rel_Generator_UserRelationName="Users_Followers" msprop:rel_Generator_ParentPropName="UsersRow" msdata:UpdateRule="None">
+    <xs:keyref name="Users_Followers" refer="Users_Constraint2" msprop:rel_Generator_UserParentTable="Users" msprop:rel_Generator_UserChildTable="Followers" msprop:rel_Generator_RelationVarName="relationUsers_Followers" msprop:rel_Generator_ChildPropName="GetFollowersRows" msprop:rel_Generator_ParentPropName="UsersRow" msprop:rel_Generator_UserRelationName="Users_Followers" msdata:UpdateRule="None">
       <xs:selector xpath=".//mstns:Followers" />
       <xs:field xpath="mstns:Id" />
     </xs:keyref>
-    <xs:keyref name="FK_Users_Currency" refer="Users_Constraint1" msprop:rel_Generator_UserParentTable="Users" msprop:rel_Generator_UserChildTable="Currency" msprop:rel_Generator_RelationVarName="relationFK_Users_Currency" msprop:rel_Generator_ChildPropName="GetCurrencyRows" msprop:rel_Generator_ParentPropName="UsersRow" msprop:rel_Generator_UserRelationName="FK_Users_Currency">
-      <xs:selector xpath=".//mstns:Currency" />
-      <xs:field xpath="mstns:UserName" />
-    </xs:keyref>
-    <xs:keyref name="Currency_CurrencyType" refer="CurrencyType_Constraint1" msprop:rel_Generator_UserParentTable="CurrencyType" msprop:rel_Generator_UserChildTable="Currency" msprop:rel_Generator_RelationVarName="relationCurrency_CurrencyType" msprop:rel_Generator_ChildPropName="GetCurrencyRows" msprop:rel_Generator_ParentPropName="CurrencyTypeRow" msprop:rel_Generator_UserRelationName="Currency_CurrencyType">
+    <xs:keyref name="Currency_CurrencyType" refer="CurrencyType_Constraint1" msprop:rel_Generator_UserParentTable="CurrencyType" msprop:rel_Generator_UserChildTable="Currency" msprop:rel_Generator_RelationVarName="relationCurrency_CurrencyType" msprop:rel_Generator_ChildPropName="GetCurrencyRows" msprop:rel_Generator_UserRelationName="Currency_CurrencyType" msprop:rel_Generator_ParentPropName="CurrencyTypeRow">
       <xs:selector xpath=".//mstns:Currency" />
       <xs:field xpath="mstns:CurrencyName" />
+    </xs:keyref>
+    <xs:keyref name="FK_Users_Currency" refer="Users_Constraint1" msprop:rel_Generator_UserParentTable="Users" msprop:rel_Generator_UserChildTable="Currency" msprop:rel_Generator_RelationVarName="relationFK_Users_Currency" msprop:rel_Generator_ChildPropName="GetCurrencyRows" msprop:rel_Generator_UserRelationName="FK_Users_Currency" msprop:rel_Generator_ParentPropName="UsersRow">
+      <xs:selector xpath=".//mstns:Currency" />
+      <xs:field xpath="mstns:UserName" />
     </xs:keyref>
   </xs:element>
 </xs:schema>

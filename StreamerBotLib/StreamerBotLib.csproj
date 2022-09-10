@@ -4,8 +4,8 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Version>0.2.3.1</Version>
-    <PackageId>TwineStreamerBotLib</PackageId>
-    <AssemblyName>TwineStreamerBotLib</AssemblyName>
+    <PackageId>StreamerBotLib</PackageId>
+    <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
     <Company>TwineStreamerBotLib</Company>
     <Product>TwineStreamerBotLib</Product>

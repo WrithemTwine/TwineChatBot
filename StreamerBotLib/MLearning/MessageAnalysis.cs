@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace StreamerBotLib.MachineLearning
+namespace StreamerBotLib.MLearning
 {
     public static class MessageAnalysis
     {
@@ -943,9 +943,9 @@ zero
             }
 
 #if UPDATELEARN
-          //  KNearest = new(k: 3, distance: new Levenshtein());
+            //  KNearest = new(k: 3, distance: new Levenshtein());
 
-          //  KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
+            //  KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
 #endif
         }
 

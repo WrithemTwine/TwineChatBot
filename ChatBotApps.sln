@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib.MachineLearn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaOverlayServer", "MediaOverlayServer\MediaOverlayServer.csproj", "{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTestFeature", "SimpleTestFeature\SimpleTestFeature.csproj", "{F735F8FE-6259-4FB7-A980-FF9250CD4650}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTestFeature", "SimpleTestFeature\SimpleTestFeature.csproj", "{F735F8FE-6259-4FB7-A980-FF9250CD4650}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

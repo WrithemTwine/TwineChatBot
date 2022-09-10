@@ -6,7 +6,7 @@ using MediaOverlayServer.Models;
 
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
-using StreamerBotLib.MachineLearning;
+using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -477,7 +477,7 @@ switches:
         #region Stream Statistics
         private StreamStatsRow CurrStreamStatRow;
 
-        public StreamStatsRow[] GetAllStreamData()
+        private StreamStatsRow[] GetAllStreamData()
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all stream data.");
@@ -1423,7 +1423,7 @@ switches:
             LearnMsgChanged = true;
         }
 
-        public List<LearnMsgsRow> UpdateLearnedMsgs()
+        public List<LearnMsgRecord> UpdateLearnedMsgs()
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, get all the learned messages to update training model.");
@@ -1434,7 +1434,8 @@ switches:
                 if (LearnMsgChanged)
                 {
                     LearnMsgChanged = false;
-                    return new((LearnMsgsRow[])GetRows(_DataSource.LearnMsgs));
+                    List<LearnMsgsRow> result = new((LearnMsgsRow[])GetRows(_DataSource.LearnMsgs));
+                    return result.ConvertAll((L) => new LearnMsgRecord(L.Id, L.MsgType, L.TeachingMsg));
                 }
                 else
                 {
