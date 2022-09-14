@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaOverlayServer\MediaOverlayServer.csproj" />
+    <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
   </ItemGroup>
 
   <ItemGroup>

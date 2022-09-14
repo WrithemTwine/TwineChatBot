@@ -157,6 +157,8 @@ namespace StreamerBotLib.Data
                             {
                                 lock (GUIDataManagerLock.Lock)
                                 {
+                                    _DataSource.AcceptChanges();
+
                                     try
                                     {
                                         MemoryStream SaveData = new();  // new memory stream

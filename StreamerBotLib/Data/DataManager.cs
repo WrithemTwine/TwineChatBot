@@ -744,7 +744,7 @@ switches:
                 foreach (string U in Users)
                 {
                     UpdateWatchTime(U, CurrTime);
-                }
+        }
                 NotifySaveData();
             }
         }
@@ -858,7 +858,7 @@ switches:
                 else
                 {
                     newfollow = true;
-                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString());
+                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate);
                 }
                 NotifySaveData();
                 return newfollow;
@@ -878,31 +878,30 @@ switches:
 #endif
 
             UsersRow usersRow = null;
-
-            if (!CheckUser(User))
+            lock (GUIDataManagerLock.Lock)
             {
-                lock (GUIDataManagerLock.Lock)
+                if (!CheckUser(User))
                 {
+
                     usersRow = _DataSource.Users.AddUsersRow(User.UserName, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero, User.UserId, User.Source.ToString());
                     //AddCurrencyRows(ref usersRow);
                 }
-            }
 
-            // if the user is added to list before identified as follower, update first seen date to followed date
-            lock(GUIDataManagerLock.Lock)
-            {
-                usersRow = (UsersRow)GetRow(_DataSource.Users,$"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}'");
+
+                // if the user is added to list before identified as follower, update first seen date to followed date
+
+                usersRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}'");
 
                 if (FirstSeen <= usersRow.FirstDateSeen)
                 {
                     usersRow.FirstDateSeen = FirstSeen;
                 }
 
-                if(usersRow.UserId == null && User.UserId != null)
+                if (usersRow.UserId == null && User.UserId != null)
                 {
                     usersRow.UserId = User.UserId;
                 }
-                if(usersRow.Platform == null)
+                if (usersRow.Platform == null)
                 {
                     usersRow.Platform = User.Source.ToString();
                 }
@@ -912,7 +911,7 @@ switches:
             return usersRow;
         }
 
-        public void StartFollowers()
+        public void StartBulkFollowers()
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Start updating followers in bulk, set all as false to then mark as a follower.");
@@ -950,18 +949,33 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Stop bulk updating all followers.");
 #endif
+            List<FollowersRow> temp = new((FollowersRow[])GetRows(_DataSource.Followers));
 
             if (OptionFlags.TwitchPruneNonFollowers)
             {
                 lock(GUIDataManagerLock.Lock)
                 {
-                    List<FollowersRow> temp = new();
-                    temp.AddRange((FollowersRow[])GetRows(_DataSource.Followers));
                     foreach (FollowersRow f in from FollowersRow f in temp
                                                where !f.IsFollower
                                                select f)
                     {
                         _DataSource.Followers.RemoveFollowersRow(f);
+                    }
+                }
+            } 
+            else
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    DateTime datenow = DateTime.Now;
+                    foreach(FollowersRow FR in from FollowersRow f in temp
+                                              where !f.IsFollower
+                                              select f)
+                    {
+                        if(DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate)
+                        {
+                            FR.StatusChangeDate = datenow;
+                        }
                     }
                 }
             }
