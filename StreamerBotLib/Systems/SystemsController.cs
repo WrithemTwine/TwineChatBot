@@ -223,7 +223,7 @@ namespace StreamerBotLib.Systems
                                 string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
                                 SendMessage(message);
 
-                                 SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUserName, UserMsg: message);
+                                SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUserName, UserMsg: message);
                             }
                         }
 

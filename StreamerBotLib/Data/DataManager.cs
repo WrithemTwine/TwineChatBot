@@ -858,7 +858,7 @@ switches:
                 else
                 {
                     newfollow = true;
-                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString());
+                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate);
                 }
                 NotifySaveData();
                 return newfollow;
