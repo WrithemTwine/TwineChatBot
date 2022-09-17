@@ -227,6 +227,7 @@ namespace StreamerBotLib.Data
         }
 
         private readonly string DefaulSocialMsg = "Social media url here";
+
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>

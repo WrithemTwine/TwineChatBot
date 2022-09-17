@@ -3,7 +3,6 @@ using MediaOverlayServer.Models;
 using MediaOverlayServer.Server;
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace MediaOverlayServer.GUI
@@ -26,7 +25,7 @@ namespace MediaOverlayServer.GUI
         {
             OverlayStats = new() 
             {
-#if DEBUG_
+#if DEBUG
                 new() { OverlayType = OverlayTypes.ChannelPoints.ToString(), OverlayCount = 5 }, 
                 new() { OverlayCount=10, OverlayType=OverlayTypes.ChannelEvents.ToString() }
 #endif
@@ -51,7 +50,7 @@ namespace MediaOverlayServer.GUI
         public void UpdateStat(string OverType)
         {
             UpdateStat(new OverlayStat() { OverlayType = OverType });
-            RefreshStats();
+            //RefreshStats();
         }
 
         public void UpdateStat(OverlayStat overlayStatData)

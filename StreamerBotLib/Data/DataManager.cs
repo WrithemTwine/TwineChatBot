@@ -685,7 +685,7 @@ switches:
                 UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{User.Source}'");
                 if (user != null)
                 {
-                    UpdateWatchTime(ref user, LastSeen); // will update the "LastDateSeen"
+                    UpdateWatchTime(User.UserName, LastSeen); // will update the "LastDateSeen"
                     if (OptionFlags.TwitchCurrencyStart && (OptionFlags.TwitchCurrencyOnline && OptionFlags.IsStreamOnline))
                     {
                         UpdateCurrency(ref user, LastSeen);
@@ -694,59 +694,31 @@ switches:
             }
         }
 
-        private void UpdateWatchTime(ref UsersRow User, DateTime CurrTime)
+        public void UpdateWatchTime(string User, DateTime CurrTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update the user's watchtime, for {User.UserName} at {CurrTime}.");
-#endif
-
-            if (User != null)
-            {
-                lock(GUIDataManagerLock.Lock)
-                {
-                    if (User.LastDateSeen <= CurrStreamStart)
-                    {
-                        User.LastDateSeen = CurrStreamStart;
-                    }
-
-                    if (CurrTime >= User.LastDateSeen && CurrTime >= CurrStreamStart)
-                    {
-                        User.WatchTime = User.WatchTime.Add(CurrTime - User.LastDateSeen);
-                    }
-
-                    User.LastDateSeen = CurrTime;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Accepts the string version of a UserName and will look up the user in the database.
-        /// </summary>
-        /// <param name="UserName">String of the UserName to update the watchtime.</param>
-        /// <param name="CurrTime">The Current Time to compare against for updating the watch time.</param>
-        private void UpdateWatchTime(string UserName, DateTime CurrTime)
-        {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Specifically update watch time for user {UserName} and at {CurrTime}.");
-#endif
-
-            lock (GUIDataManagerLock.Lock)
-            {
-                UsersRow user = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{UserName}'").FirstOrDefault();
-                UpdateWatchTime(ref user, CurrTime);
-            }
+            UpdateWatchTime(new List<string>(){ User }, CurrTime);
         }
 
         public void UpdateWatchTime(List<string> Users, DateTime CurrTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach (string U in Users)
+                foreach(UsersRow U in (UsersRow [])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ({ string.Join(", ", Users.ToArray())})"))
                 {
-                    UpdateWatchTime(U, CurrTime);
-        }
-                NotifySaveData();
+                    if (U.LastDateSeen <= CurrStreamStart)
+                    {
+                        U.LastDateSeen = CurrStreamStart;
+                    }
+
+                    if (CurrTime >= U.LastDateSeen && CurrTime >= CurrStreamStart)
+                    {
+                        U.WatchTime = U.WatchTime.Add(CurrTime - U.LastDateSeen);
+                    }
+
+                    U.LastDateSeen = CurrTime;
+                }
             }
+            NotifySaveData();
         }
 
         /// <summary>
