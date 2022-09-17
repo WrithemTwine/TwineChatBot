@@ -25,7 +25,6 @@ using TwitchLib.Client.Events;
 
 
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
-// TODO: *finished-test for reliability* add streaming category count, track number of streams per category 
 
 namespace StreamerBotLib.BotIOController
 {

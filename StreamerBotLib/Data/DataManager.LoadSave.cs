@@ -157,6 +157,8 @@ namespace StreamerBotLib.Data
                             {
                                 lock (GUIDataManagerLock.Lock)
                                 {
+                                    _DataSource.AcceptChanges();
+
                                     try
                                     {
                                         MemoryStream SaveData = new();  // new memory stream
@@ -225,6 +227,7 @@ namespace StreamerBotLib.Data
         }
 
         private readonly string DefaulSocialMsg = "Social media url here";
+
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>

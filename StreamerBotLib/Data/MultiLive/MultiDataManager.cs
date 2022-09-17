@@ -112,6 +112,7 @@ namespace StreamerBotLib.Data.MultiLive
                     {
                         lock (_DataSource)
                         {
+                            _DataSource.AcceptChanges();
                             try
                             {
                                 MemoryStream SaveData = new();  // new memory stream
@@ -139,7 +140,6 @@ namespace StreamerBotLib.Data.MultiLive
                     }));
                 }
             }
-
         }
 
         private void PerformSaveOp()

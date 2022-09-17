@@ -27,7 +27,7 @@ namespace StreamerBotLib.Systems
     /// </summary>
     internal partial class ActionSystem
     {
-        public static DataManager DataManage { get; set; }
+        internal static DataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
         public static ObservableCollection<string> GiveawayCollection { get; set; } = new();
