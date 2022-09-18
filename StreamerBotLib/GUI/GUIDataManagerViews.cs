@@ -188,10 +188,10 @@ namespace StreamerBotLib.GUI
                 NotifyPropertyChanged(nameof(sender));
 
                 // refresh the 'status bar' count items
-                NotifyPropertyChanged(nameof(Users));
+                NotifyPropertyChanged(nameof(CurrUserCount));
                 NotifyPropertyChanged(nameof(CurrFollowers));
-                NotifyPropertyChanged(nameof(BuiltInCommands));
-                NotifyPropertyChanged(nameof(Commands));
+                NotifyPropertyChanged(nameof(CurrBuiltInComCount));
+                NotifyPropertyChanged(nameof(CurrUserComsCount));
 
                 if (sender == Commands)
                 {
