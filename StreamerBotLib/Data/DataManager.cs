@@ -703,7 +703,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach(UsersRow U in (UsersRow [])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ({ string.Join(", ", Users.ToArray())})"))
+                foreach(UsersRow U in (UsersRow [])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ('{ string.Join("', '", Users.ToArray())}')"))
                 {
                     if (U.LastDateSeen <= CurrStreamStart)
                     {

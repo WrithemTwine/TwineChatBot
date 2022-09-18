@@ -28,7 +28,16 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
         public ObservableCollection<string> GiveawayCollection { get; set; }
-        public int CurrFollowers => Followers.Table.Select("IsFollower=true").Length;
+        public int CurrFollowers
+        {
+            get
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    return Followers.Table.Select("IsFollower=true").Length;
+                }
+            }        
+        }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
