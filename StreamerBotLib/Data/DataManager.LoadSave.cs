@@ -3,6 +3,7 @@
 #endif
 
 using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
@@ -40,6 +41,8 @@ namespace StreamerBotLib.Data
         /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
         /// </summary>
         public event EventHandler OnSaveData;
+
+        public event EventHandler<OnDataUpdatedEventArgs> OnDataUpdated;
 
         /// <summary>
         /// Load the data source and populate with default data; if regular data source is corrupted, attempt to load backup data.
@@ -148,7 +151,16 @@ namespace StreamerBotLib.Data
                     {
                         lock (GUIDataManagerLock.Lock)
                         {
+                            OnDataUpdatedEventArgs args = new();
+                            foreach(DataTable d in _DataSource.Tables)
+                            {
+
+                            }
+    
+                            OnDataUpdated?.Invoke(this, new());
+
                             _DataSource.AcceptChanges();
+
                         }
 
                         lock (SaveTasks) // lock the Queue, block thread if currently save task has started

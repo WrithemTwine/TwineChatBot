@@ -703,14 +703,14 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach(UsersRow U in (UsersRow [])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ({ string.Join(", ", Users.ToArray())})"))
+                foreach(UsersRow U in (UsersRow [])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ('{ string.Join("', '", Users.ToArray())}')"))
                 {
-                    if (U.LastDateSeen <= CurrStreamStart)
+                    if (U.LastDateSeen < CurrStreamStart)
                     {
                         U.LastDateSeen = CurrStreamStart;
                     }
 
-                    if (CurrTime >= U.LastDateSeen && CurrTime >= CurrStreamStart)
+                    if (CurrTime > U.LastDateSeen && CurrTime > CurrStreamStart)
                     {
                         U.WatchTime = U.WatchTime.Add(CurrTime - U.LastDateSeen);
                     }

@@ -28,7 +28,16 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
         public ObservableCollection<string> GiveawayCollection { get; set; }
-        public int CurrFollowers => Followers.Table.Select("IsFollower=true").Length;
+        public int CurrFollowers
+        {
+            get
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    return Followers.Table.Select("IsFollower=true").Length;
+                }
+            }
+        }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -112,30 +121,31 @@ namespace StreamerBotLib.GUI
             BanReasons = dataManager._DataSource.BanReasons.DefaultView;
             OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
 
-            ChannelEvents.ListChanged += DataView_ListChanged;
-            Users.ListChanged += DataView_ListChanged;
-            Followers.ListChanged += DataView_ListChanged;
-            Discord.ListChanged += DataView_ListChanged;
-            CurrencyType.ListChanged += DataView_ListChanged;
-            Currency.ListChanged += DataView_ListChanged;
-            BuiltInCommands.ListChanged += DataView_ListChanged;
-            Commands.ListChanged += DataView_ListChanged;
-            StreamStats.ListChanged += DataView_ListChanged;
-            ShoutOuts.ListChanged += DataView_ListChanged;
-            Category.ListChanged += DataView_ListChanged;
-            Clips.ListChanged += DataView_ListChanged;
-            InRaidData.ListChanged += DataView_ListChanged;
-            OutRaidData.ListChanged += DataView_ListChanged;
-            GiveawayUserData.ListChanged += DataView_ListChanged;
-            CustomWelcomeData.ListChanged += DataView_ListChanged;
-            LearnMsgs.ListChanged += DataView_ListChanged;
-            BanRules.ListChanged += DataView_ListChanged;
-            BanReasons.ListChanged += DataView_ListChanged;
-            OverlayService.ListChanged += DataView_ListChanged;
+            //ChannelEvents.ListChanged += DataView_ListChanged;
+            //Users.ListChanged += DataView_ListChanged;
+            //Followers.ListChanged += DataView_ListChanged;
+            //Discord.ListChanged += DataView_ListChanged;
+            //CurrencyType.ListChanged += DataView_ListChanged;
+            //Currency.ListChanged += DataView_ListChanged;
+            //BuiltInCommands.ListChanged += DataView_ListChanged;
+            //Commands.ListChanged += DataView_ListChanged;
+            //StreamStats.ListChanged += DataView_ListChanged;
+            //ShoutOuts.ListChanged += DataView_ListChanged;
+            //Category.ListChanged += DataView_ListChanged;
+            //Clips.ListChanged += DataView_ListChanged;
+            //InRaidData.ListChanged += DataView_ListChanged;
+            //OutRaidData.ListChanged += DataView_ListChanged;
+            //GiveawayUserData.ListChanged += DataView_ListChanged;
+            //CustomWelcomeData.ListChanged += DataView_ListChanged;
+            //LearnMsgs.ListChanged += DataView_ListChanged;
+            //BanRules.ListChanged += DataView_ListChanged;
+            //BanReasons.ListChanged += DataView_ListChanged;
+            //OverlayService.ListChanged += DataView_ListChanged;
 
             SetCommandCollection();
         }
 
+        /*
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             lock (GUIDataManagerLock.Lock)
@@ -154,6 +164,7 @@ namespace StreamerBotLib.GUI
                 }
             }
         }
+        */
 
         private void SetCommandCollection()
         {
