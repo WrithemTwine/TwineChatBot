@@ -83,7 +83,7 @@
             <StatusBarItem>
                 <StackPanel>
                     <Label ToolTip="All Users who visited the stream while online.">All Viewers:</Label>
-                    <Label Content="{Binding Users.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                    <Label Content="{Binding CurrUserCount, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
@@ -108,9 +108,9 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label ToolTip="Built-in Commands" Padding="3,0">Built-in:</Label>
-                        <Label Content="{Binding BuiltInCommands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}"  Padding="3,0" />
+                        <Label Content="{Binding CurrBuiltInComCount, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}"  Padding="3,0" />
                         <Label ToolTip="User-Defined Commands" Padding="3,0">User-Defined:</Label>
-                        <Label Content="{Binding Commands.Count, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" Padding="3,0" />
+                        <Label Content="{Binding CurrUserComsCount, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" Padding="3,0" />
                     </StackPanel>
                 </StackPanel>
             </StatusBarItem>
