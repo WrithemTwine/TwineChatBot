@@ -9,11 +9,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
 </Project>

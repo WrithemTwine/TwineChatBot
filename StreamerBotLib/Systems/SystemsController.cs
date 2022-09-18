@@ -152,7 +152,7 @@ namespace StreamerBotLib.Systems
 
         public static void StartBulkFollowers()
         {
-            DataManage.StartFollowers();
+            DataManage.StartBulkFollowers();
         }
 
         public static void UpdateFollowers(IEnumerable<Follow> Follows)
