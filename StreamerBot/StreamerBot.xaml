@@ -1347,8 +1347,8 @@
                         <TabItem.Resources>
                             <DataTemplate x:Key="AppStatTemplate">
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Width="250" Content="{Binding Name}" />
-                                    <Label Width="200" Content="{Binding Value, Converter={StaticResource AppDataConverter}}" />
+                                    <Label Width="200" Content="{Binding Name}" />
+                                    <Label Content="{Binding Value, Converter={StaticResource AppDataConverter}}" />
                                 </StackPanel>
                             </DataTemplate>
                             <Style TargetType="ListViewItem">

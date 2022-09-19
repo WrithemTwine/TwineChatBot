@@ -183,6 +183,8 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+
+                _DataSource.Commands.AcceptChanges();
             }
             NotifySaveData();
             return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
@@ -199,25 +201,24 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 CommandsRow commandsRow = (CommandsRow)GetRow(_DataSource.Commands, cmd);
-                lock (GUIDataManagerLock.Lock)
+                if (commandsRow != null)
                 {
-                    if (commandsRow != null)
-                    {
-                        Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
+                    Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
 
-                        foreach (string k in EditParamsDict.Keys)
-                        {
-                            commandsRow[k] = EditParamsDict[k];
-                        }
-                        result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
-                    }
-                    else
+                    foreach (string k in EditParamsDict.Keys)
                     {
-                        result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+                        commandsRow[k] = EditParamsDict[k];
                     }
+                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
+
+                    _DataSource.Commands.AcceptChanges();
+                    NotifySaveData();
+                }
+                else
+                {
+                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
                 }
             }
-            NotifySaveData();
             return result;
         }
 
@@ -452,12 +453,18 @@ switches:
 
         public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
         {
-            foreach(DataRow dr in dataRows)
+            lock (GUIDataManagerLock.Lock)
             {
-                if (CheckField(dr.Table.TableName, "IsEnabled"))
+                List<DataTable> updated = new();
+                foreach (DataRow dr in dataRows)
                 {
-                    SetDataRowFieldRow(dr, "IsEnabled", IsEnabled);
+                    if (CheckField(dr.Table.TableName, "IsEnabled"))
+                    {
+                        updated.UniqueAdd(dr.Table);
+                        SetDataRowFieldRow(dr, "IsEnabled", IsEnabled);
+                    }
                 }
+                updated.ForEach((T) => T.AcceptChanges());
             }
         }
 
@@ -557,6 +564,7 @@ switches:
                 lock(GUIDataManagerLock.Lock)
                 {
                     _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    _DataSource.StreamStats.AcceptChanges();
                     NotifySaveData();
                     returnvalue = true;
                 }
@@ -595,6 +603,7 @@ switches:
                         }
                     }
                 }
+                _DataSource.StreamStats.AcceptChanges();
             }
             NotifySaveData();
         }
@@ -654,6 +663,7 @@ switches:
                 UsersRow userrow = AddNewUser(User, NowSeen);
                 userrow.CurrLoginDate = Max(userrow.CurrLoginDate, NowSeen);
                 userrow.LastDateSeen = Max(userrow.LastDateSeen, NowSeen);
+                _DataSource.Users.AcceptChanges();
                 NotifySaveData();
             }
         }
@@ -689,7 +699,9 @@ switches:
                     if (OptionFlags.TwitchCurrencyStart && (OptionFlags.TwitchCurrencyOnline && OptionFlags.IsStreamOnline))
                     {
                         UpdateCurrency(ref user, LastSeen);
+                        _DataSource.Currency.AcceptChanges();
                     } // will update the "CurrLoginDate"
+                        _DataSource.Users.AcceptChanges();
                 }
             }
         }
@@ -717,6 +729,7 @@ switches:
 
                     U.LastDateSeen = CurrTime;
                 }
+                _DataSource.Users.AcceptChanges();
             }
             NotifySaveData();
         }
@@ -749,7 +762,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                UsersRow user = (UsersRow)_DataSource.Users.Select($"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}' AND ({_DataSource.Users.PlatformColumn.ColumnName}='{User.Source.ToString()}' OR {_DataSource.Users.PlatformColumn.ColumnName} is NULL)").FirstOrDefault();
+                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}' AND ({_DataSource.Users.PlatformColumn.ColumnName}='{User.Source.ToString()}' OR {_DataSource.Users.PlatformColumn.ColumnName} is NULL)");
 
                 return user != null && user.FirstDateSeen <= ToDateTime;
             }
@@ -783,7 +796,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                FollowersRow datafollowers = (FollowersRow)_DataSource.Followers.Select($"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'").FirstOrDefault();
+                FollowersRow datafollowers = (FollowersRow)GetRow(_DataSource.Followers,$"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'");
 
                 return datafollowers != null
                     && datafollowers.IsFollower
@@ -806,6 +819,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 bool newfollow;
+                bool update = false;
 
                 UsersRow users = AddNewUser(User, FollowedDate);
                 FollowersRow followers = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserNameColumn.ColumnName}='{User.UserName}'");
@@ -821,16 +835,23 @@ switches:
                     if (followers.UserId == null && User.UserId != string.Empty && User.UserId != null)
                     {
                         followers.UserId = User.UserId;
+                        update = true;
                     }
                     if (followers.Platform == string.Empty || followers.Platform == null)
                     {
                         followers.Platform = User.Source.ToString();
+                        update = true;
                     }
                 }
                 else
                 {
                     newfollow = true;
                     _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate);
+                    update = true;
+                }
+                if (update)
+                {
+                    _DataSource.Followers.AcceptChanges();
                 }
                 NotifySaveData();
                 return newfollow;
@@ -896,7 +917,7 @@ switches:
                 temp.AddRange((FollowersRow[])GetRows(_DataSource.Followers));
                 temp.ForEach((f) => f.IsFollower = false);
             }
-            NotifySaveData();
+            //NotifySaveData();
         }
 
         public void UpdateFollowers(IEnumerable<Follow> follows)
@@ -913,7 +934,7 @@ switches:
                 }
             }
 
-            NotifySaveData();
+            //NotifySaveData();
         }
 
         public void StopBulkFollows()
@@ -925,7 +946,7 @@ switches:
 
             if (OptionFlags.TwitchPruneNonFollowers)
             {
-                lock(GUIDataManagerLock.Lock)
+                lock (GUIDataManagerLock.Lock)
                 {
                     foreach (FollowersRow f in from FollowersRow f in temp
                                                where !f.IsFollower
@@ -934,24 +955,26 @@ switches:
                         _DataSource.Followers.RemoveFollowersRow(f);
                     }
                 }
-            } 
+            }
             else
             {
                 lock (GUIDataManagerLock.Lock)
                 {
                     DateTime datenow = DateTime.Now;
-                    foreach(FollowersRow FR in from FollowersRow f in temp
-                                              where !f.IsFollower
-                                              select f)
+                    foreach (FollowersRow FR in from FollowersRow f in temp
+                                                where !f.IsFollower
+                                                select f)
                     {
-                        if(DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate)
+                        if (DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate)
                         {
                             FR.StatusChangeDate = datenow;
                         }
                     }
                 }
             }
-
+            lock(GUIDataManagerLock.Lock) { 
+            _DataSource.Followers.AcceptChanges();
+        }
             NotifySaveData();
             UpdatingFollowers = false;
         }
@@ -978,6 +1001,7 @@ switches:
                 if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
                 {
                     _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
+                    _DataSource.ShoutOuts.AcceptChanges();
                 }
             }
         }
@@ -994,6 +1018,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 _ = _DataSource.GiveawayUserData.AddGiveawayUserDataRow(DisplayName, dateTime);
+                _DataSource.GiveawayUserData.AcceptChanges();
             }
             NotifySaveData();
         }
@@ -1001,7 +1026,6 @@ switches:
         #endregion
 
         #region Currency
-
 
         public void UpdateCurrency(List<string> Users, DateTime dateTime)
         {
@@ -1011,6 +1035,8 @@ switches:
                 {
                     UpdateCurrency(U, dateTime);
                 }
+                _DataSource.Currency.AcceptChanges();
+                _DataSource.Users.AcceptChanges();
                 NotifySaveData();
             }
         }
@@ -1062,7 +1088,6 @@ switches:
                     foreach ((CurrencyTypeRow typeRow, CurrencyRow currencyRow) in currencyType.SelectMany(typeRow => userCurrency.Where(currencyRow => currencyRow.CurrencyName == typeRow.CurrencyName).Select(currencyRow => (typeRow, currencyRow))))
                     {
                         currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + ComputeCurrency(typeRow.AccrueAmt, typeRow.Seconds), 2), typeRow.MaxValue);
-
                     }
 
                     // set the current login date, always set regardless if currency accrual is started
@@ -1123,6 +1148,7 @@ switches:
                     UsersRow users = UserRows[i];
                     AddCurrencyRows(ref users);
                 }
+                _DataSource.Currency.AcceptChanges();
                 NotifySaveData();
             }
         }
@@ -1139,18 +1165,16 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                foreach (UsersRow U in GetRows(_DataSource.Users))
+                foreach (UsersRow U in GetRows(_DataSource.Users).Cast<UsersRow>())
                 {
-                    if (_DataSource.Followers.Select($"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'").FirstOrDefault() == null)
+                    if (GetRow(_DataSource.Followers, $"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'") == null 
+                        || GetRow(_DataSource.Followers, $"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}' AND {_DataSource.Followers.IsFollowerColumn.ColumnName}=false") != null )
                     {
                         RemoveIds.Add(U.Id.ToString());
                     }
                 }
 
-                foreach (string Id in RemoveIds)
-                {
-                    ((UsersRow)_DataSource.Users.Select($"{_DataSource.Users.IdColumn.ColumnName}='{Id}'").FirstOrDefault()).Delete();
-                }
+                DeleteDataRows(GetRows(_DataSource.Users, $"{_DataSource.Users.IdColumn.ColumnName} in ('{string.Join("', '",RemoveIds)}')"));
             }
             NotifySaveData();
         }
@@ -1179,6 +1203,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 _ = _DataSource.InRaidData.AddInRaidDataRow(user, viewers, time, gamename);
+                _DataSource.InRaidData.AcceptChanges();
             }
             NotifySaveData();
         }
@@ -1219,6 +1244,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 _ = _DataSource.OutRaidData.AddOutRaidDataRow(HostedChannel, dateTime);
+                _DataSource.OutRaidData.AcceptChanges();
             }
             NotifySaveData();
         }
@@ -1258,29 +1284,36 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
-
+                bool found = false;
                 if (categoryList == null)
                 {
                     _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
-                    NotifySaveData();
+                    found = true;
                 }
                 else
                 {
                     if (categoryList.CategoryId == null)
                     {
                         categoryList.CategoryId = CategoryId;
+                        found = true;
                     }
                     if (categoryList.Category == null)
                     {
                         categoryList.Category = newCategory;
+                        found = true;
                     }
 
                     if (OptionFlags.IsStreamOnline)
                     {
                         categoryList.StreamCount++;
+                        found = true;
                     }
-                    NotifySaveData();
+                }
 
+                if (found)
+                {
+                    _DataSource.CategoryList.AcceptChanges();
+                    NotifySaveData();
                 }
 
                 return categoryList != null;
@@ -1332,6 +1365,7 @@ switches:
                 if (!((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Any())
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime(), Title, GameId, Language, (decimal)Duration, Url);
+                    _DataSource.Clips.AcceptChanges();
                     NotifySaveData();
                     result = true;
                 }
@@ -1355,27 +1389,46 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
+                bool found = false;
+
                 if (!GetRows(_DataSource.LearnMsgs).Any())
                 {
                     foreach (LearnedMessage M in LearnedMessagesPrimer.PrimerList)
                     {
                         _DataSource.LearnMsgs.AddLearnMsgsRow(M.MsgType.ToString(), M.Message);
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        _DataSource.LearnMsgs.AcceptChanges();
                     }
                 }
 
                 if (!GetRows(_DataSource.BanReasons).Any())
                 {
+                    found = false;
                     foreach (BanReason B in LearnedMessagesPrimer.BanReasonList)
                     {
                         _DataSource.BanReasons.AddBanReasonsRow(B.MsgType.ToString(), B.Reason.ToString());
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        _DataSource.BanReasons.AcceptChanges();
                     }
                 }
 
                 if (!GetRows(_DataSource.BanRules).Any())
                 {
+                    found = false;
                     foreach (BanViewerRule BVR in LearnedMessagesPrimer.BanViewerRulesList)
                     {
                         _DataSource.BanRules.AddBanRulesRow(BVR.ViewerType.ToString(), BVR.MsgType.ToString(), BVR.ModAction.ToString(), BVR.TimeoutSeconds);
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        _DataSource.BanRules.AcceptChanges();
                     }
                 }
                 NotifySaveData();
@@ -1420,8 +1473,9 @@ switches:
                 if (LearnMsgChanged)
                 {
                     LearnMsgChanged = false;
-                    List<LearnMsgsRow> result = new((LearnMsgsRow[])GetRows(_DataSource.LearnMsgs));
-                    return result.ConvertAll((L) => new LearnMsgRecord(L.Id, L.MsgType, L.TeachingMsg));
+                    return new List<LearnMsgsRow>(
+                        (LearnMsgsRow[])GetRows(_DataSource.LearnMsgs)).ConvertAll(
+                        (L) => new LearnMsgRecord(L.Id, L.MsgType, L.TeachingMsg));
                 }
                 else
                 {
@@ -1443,7 +1497,7 @@ switches:
                 if (!found)
                 {
                     _DataSource.LearnMsgs.AddLearnMsgsRow(MsgType.ToString(), Message);
-
+                    _DataSource.LearnMsgs.AcceptChanges();
                     NotifySaveData();
                 }
             }
@@ -1472,8 +1526,6 @@ switches:
             }
         }
 
-
-
         #endregion
 
         #region Media Overlay Service
@@ -1497,7 +1549,6 @@ switches:
                 return result;
             }
         }
-
 
         #endregion
 

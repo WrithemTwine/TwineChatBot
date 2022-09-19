@@ -149,19 +149,19 @@ namespace StreamerBotLib.Data
 
                     if (_DataSource.HasChanges())
                     {
-                        lock (GUIDataManagerLock.Lock)
-                        {
-                            OnDataUpdatedEventArgs args = new();
-                            foreach(DataTable d in _DataSource.Tables)
-                            {
+                        //lock (GUIDataManagerLock.Lock)
+                        //{
+                        //    OnDataUpdatedEventArgs args = new();
+                        //    foreach (DataTable d in _DataSource.Tables)
+                        //    {
 
-                            }
-    
-                            OnDataUpdated?.Invoke(this, new());
+                        //    }
 
-                            _DataSource.AcceptChanges();
+                        //    OnDataUpdated?.Invoke(this, new());
 
-                        }
+                        //    _DataSource.AcceptChanges();
+
+                        //}
 
                         lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                         {
@@ -169,7 +169,7 @@ namespace StreamerBotLib.Data
                             {
                                 lock (GUIDataManagerLock.Lock)
                                 {
-                                    _DataSource.AcceptChanges();
+                                    //_DataSource.AcceptChanges();
 
                                     try
                                     {
@@ -290,12 +290,19 @@ namespace StreamerBotLib.Data
                     DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
                 }
 
+                bool found = false;
                 foreach (var (key, param) in from string key in DefCommandsDictionary.Keys
                                              where CheckName(key)
                                              let param = CommandParams.Parse(DefCommandsDictionary[key].Item2)
                                              select (key, param))
                 {
                     _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                    found = true;
+                }
+
+                if (found)
+                {
+                    _DataSource.Commands.AcceptChanges();
                 }
             }
         }
@@ -321,6 +328,8 @@ namespace StreamerBotLib.Data
 
                 return channelEventsRow == null;
             }
+
+            bool found = false;
 
             Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
@@ -377,7 +386,7 @@ namespace StreamerBotLib.Data
                     new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 }
             };
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
                 foreach (var (command, values) in from ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions))// consider only the values in the dictionary, check if data is already defined in the data table
                                                   where dictionary.ContainsKey(command) && CheckName(command.ToString())// extract the default data from the dictionary and add to the data table
@@ -385,6 +394,12 @@ namespace StreamerBotLib.Data
                                                   select (command, values))
                 {
                     _ = _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), 0, false, true, values.Item1, values.Item2);
+                    found = true;
+                }
+
+                if (found)
+                {
+                    _DataSource.ChannelEvents.AcceptChanges();
                 }
             }
         }

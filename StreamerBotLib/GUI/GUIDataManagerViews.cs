@@ -185,7 +185,8 @@ namespace StreamerBotLib.GUI
         {
             lock (GUIDataManagerLock.Lock)
             {
-                NotifyPropertyChanged(nameof(sender));
+                DataView dataView = (DataView)sender;
+                NotifyPropertyChanged(nameof(dataView.Table));
 
                 // refresh the 'status bar' count items
                 NotifyPropertyChanged(nameof(CurrUserCount));
