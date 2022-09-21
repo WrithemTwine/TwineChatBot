@@ -66,6 +66,14 @@ namespace StreamerBotLib.Static
         /// Specifies threshold above which is considered a bot follow storm, and invokes banning the accounts included within the follow storm.
         /// </summary>
         public static int TwitchFollowerAutoBanCount { get; set; }
+        /// <summary>
+        /// Specifies whether bot starts when stream is detected online.
+        /// </summary>
+        public static bool TwitchFollowerConnectOnline { get; set; }
+        /// <summary>
+        /// Specifies whether bot stops when stream is detected offline.
+        /// </summary>
+        public static bool TwitchFollowerDisconnectOffline { get; set; }
 
         /// <summary>
         /// Specifies whether to welcome a user when they first join the given channel.
@@ -242,7 +250,14 @@ namespace StreamerBotLib.Static
         /// Specifies whether to post a channel clip link to Discord, and Discord webhooks need a 'clips' link.
         /// </summary>
         public static bool TwitchClipPostDiscord { get; set; }
-
+        /// <summary>
+        /// Specifies whether the clip bot connects when the stream is detected online.
+        /// </summary>
+        public static bool TwitchClipConnectOnline { get; set; }
+        /// <summary>
+        /// Specifies whether the clip bot disconnects when the stream is detected offline.
+        /// </summary>
+        public static bool TwitchClipDisconnectOffline { get; set; }
         /// <summary>
         /// Specifies starting currency accruals.
         /// </summary>
@@ -392,6 +407,8 @@ namespace StreamerBotLib.Static
 
                 TwitchClipPostChat = Settings.Default.TwitchClipPostChat;
                 TwitchClipPostDiscord = Settings.Default.TwitchClipPostDiscord;
+                TwitchClipConnectOnline = Settings.Default.TwitchClipConnectOnline;
+                TwitchClipDisconnectOffline = Settings.Default.TwitchClipDisconnectOffline;
 
                 TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
                 TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
@@ -407,6 +424,8 @@ namespace StreamerBotLib.Static
                 TwitchFollowerMsgLimit = Settings.Default.TwitchFollowerMsgLimit;
                 TwitchFollowerAutoBanBots = Settings.Default.TwitchFollowerAutoBanBots;
                 TwitchFollowerAutoBanCount = Settings.Default.TwitchFollowerAutoBanCount;
+                TwitchFollowerConnectOnline = Settings.Default.TwitchFollowerConnectOnline;
+                TwitchFollowerDisconnectOffline = Settings.Default.TwitchFollowerDisconnectOffline;
 
                 #endregion
 

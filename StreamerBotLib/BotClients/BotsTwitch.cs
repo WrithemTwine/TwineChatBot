@@ -16,6 +16,7 @@ using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
+using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.PubSub.Events;
 
@@ -401,6 +402,16 @@ namespace StreamerBotLib.BotClients
                     TwitchBotPubSub.StartBot();
                 }
 
+                if (OptionFlags.TwitchFollowerConnectOnline)
+                {
+                    TwitchFollower.StartBot();
+                }
+
+                if (OptionFlags.TwitchClipConnectOnline)
+                {
+                    TwitchBotClipSvc.StartBot();
+                }
+
                 InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
 
                 if (!OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStarted)
@@ -425,6 +436,16 @@ namespace StreamerBotLib.BotClients
             if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
             {
                 TwitchBotPubSub.StopBot();
+            }
+
+            if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
+            {
+                TwitchBotClipSvc.StopBot();
+            }
+
+            if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
+            {
+                TwitchFollower.StopBot();
             }
 
             if (OptionFlags.IsStreamOnline)

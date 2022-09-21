@@ -1162,5 +1162,53 @@ namespace StreamerBotLib.Properties {
                 this["RepeatNoAdjustment"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipConnectOnline {
+            get {
+                return ((bool)(this["TwitchClipConnectOnline"]));
+            }
+            set {
+                this["TwitchClipConnectOnline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchClipDisconnectOffline {
+            get {
+                return ((bool)(this["TwitchClipDisconnectOffline"]));
+            }
+            set {
+                this["TwitchClipDisconnectOffline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerConnectOnline {
+            get {
+                return ((bool)(this["TwitchFollowerConnectOnline"]));
+            }
+            set {
+                this["TwitchFollowerConnectOnline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchFollowerDisconnectOffline {
+            get {
+                return ((bool)(this["TwitchFollowerDisconnectOffline"]));
+            }
+            set {
+                this["TwitchFollowerDisconnectOffline"] = value;
+            }
+        }
     }
 }

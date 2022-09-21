@@ -28,6 +28,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace StreamerBot
@@ -50,6 +51,9 @@ namespace StreamerBot
         private const string MultiLiveName = "MultiUserLiveBot";
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
+
+        internal Storyboard LiveStatusStoryBoardStart { get; set; } = new();
+        internal Storyboard LiveStatusStoryBoardStop { get; set; } = new();
 
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
@@ -95,6 +99,8 @@ namespace StreamerBot
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.OnBotStarted += GUI_OnBotStarted;
@@ -115,6 +121,31 @@ namespace StreamerBot
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
 #endif
+
+            SetStoryBoard();
+        }
+
+        private void SetStoryBoard()
+        {
+            // Label_LiveStreamStatus
+
+            ColorAnimation LiveColorAnimationStart = new(Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0), new Duration(new(0, 0, 5)));
+            RegisterName("LabelLiveStatusBorderBrush", Label_StreamStatus.BorderBrush);
+            RegisterName("LableLiveStatusForeground", Label_StreamStatus.Foreground);
+            Storyboard.SetTargetName(LiveColorAnimationStart, "LabelLiveStatusBorderBrush");
+            Storyboard.SetTargetName(LiveColorAnimationStart, "LableLiveStatusForeground");
+            Storyboard.SetTargetProperty(LiveColorAnimationStart, new(SolidColorBrush.ColorProperty));
+
+            LiveStatusStoryBoardStart.Children.Add(LiveColorAnimationStart);
+
+            ColorAnimation LiveColorAnimationStop = new(Color.FromRgb(0, 255, 0), Color.FromRgb(255, 0, 0), new Duration(new(0, 0, 5)));
+            RegisterName("LabelLiveStatusBorderBrush", Label_StreamStatus.BorderBrush);
+            RegisterName("LableLiveStatusForeground", Label_StreamStatus.Foreground);
+            Storyboard.SetTargetName(LiveColorAnimationStop, "LabelLiveStatusBorderBrush");
+            Storyboard.SetTargetName(LiveColorAnimationStop, "LableLiveStatusForeground");
+            Storyboard.SetTargetProperty(LiveColorAnimationStop, new(SolidColorBrush.ColorProperty));
+
+            LiveStatusStoryBoardStop.Children.Add(LiveColorAnimationStop);
         }
 
         private static string GetAppDataCWD()
@@ -296,6 +327,16 @@ namespace StreamerBot
             BeginUpdateCategory();
         }
 
+
+        private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
+        {
+            LiveStatusStoryBoardStart.Begin();
+        }
+
+        private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
         private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
         {
             BeginUpdateCategory();
