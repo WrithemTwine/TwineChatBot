@@ -81,8 +81,12 @@
                 </Style>
             </StatusBar.Resources>
             <StatusBarItem>
-                <Label x:Name="Label_StreamStatus" Content="Stream Offline" Height="Auto" Width="100" 
+                <StackPanel>
+                    <Label Visibility="Visible" x:Name="Label_StreamStatusOff" FontWeight="ExtraBold" Content="Stream Offline" Height="Auto" Width="110" 
                        BorderThickness="3" Foreground="Red" HorizontalContentAlignment="Center" BorderBrush="Red" />
+                    <Label Visibility="Collapsed" x:Name="Label_StreamStatusOn" FontWeight="ExtraBold" Content="Stream Online" Height="Auto" Width="110" 
+                       BorderThickness="3" Foreground="LimeGreen" HorizontalContentAlignment="Center" BorderBrush="LimeGreen" />
+                </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
