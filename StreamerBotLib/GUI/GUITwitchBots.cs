@@ -42,6 +42,7 @@ namespace StreamerBotLib.GUI
             TwitchFollower.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchLiveMonitor.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchLiveMonitor.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchClip.OnBotStarted += TwitchBot_OnBotStarted;

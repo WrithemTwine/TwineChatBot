@@ -928,16 +928,22 @@ namespace StreamerBot
 
         private void SetLiveStreamActive(bool Online = true)
         {
-            if (Online)
-            {
-                Label_StreamStatusOff.Visibility = Visibility.Collapsed;
-                Label_StreamStatusOn.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Label_StreamStatusOff.Visibility = Visibility.Visible;
-                Label_StreamStatusOn.Visibility = Visibility.Collapsed;
-            }
+
+
+            Dispatcher.Invoke(
+                () =>
+                {
+                    if (Online)
+                    {
+                        Label_StreamStatusOff.Visibility = Visibility.Collapsed;
+                        Label_StreamStatusOn.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        Label_StreamStatusOff.Visibility = Visibility.Visible;
+                        Label_StreamStatusOn.Visibility = Visibility.Collapsed;
+                    }
+                });
         }
 
         #endregion
