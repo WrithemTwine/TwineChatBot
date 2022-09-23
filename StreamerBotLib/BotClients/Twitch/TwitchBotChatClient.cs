@@ -45,6 +45,8 @@ namespace StreamerBotLib.BotClients.Twitch
         private string ConnectedChannelName = "";
 #endif
 
+        public event EventHandler<EventArgs> UnRegisterHandlers;
+
         // limits of the number of IRC commands or messages you are allowed to send to the server
         //Limit Applies to …
         //20 per 30 seconds Users sending commands or messages to channels in which they do not have Moderator or Operator status
@@ -429,6 +431,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (IsStarted && !IsStopped) // && !TwitchChat.IsConnected)
             {
                 IsStarted = false;
+                UnregisterHandlers();
                 StartBot();
             } 
             else
@@ -437,5 +440,17 @@ namespace StreamerBotLib.BotClients.Twitch
             }
 #endif
         }
+
+#if TwitchLib_ConnectProblem
+        private void UnregisterHandlers()
+        {
+            TwitchChat.OnLog -= TwitchChat_OnLog;
+            TwitchChat.OnDisconnected -= TwitchChat_OnDisconnected;
+            TwitchChat.LeaveChannel(TwitchChannelName);
+
+            UnRegisterHandlers?.Invoke(this, new());
+        }
+#endif
+
     }
 }

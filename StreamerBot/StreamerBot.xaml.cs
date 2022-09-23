@@ -28,6 +28,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace StreamerBot
@@ -50,6 +51,9 @@ namespace StreamerBot
         private const string MultiLiveName = "MultiUserLiveBot";
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
+
+        internal Storyboard LiveStatusStoryBoardStart { get; set; } = new();
+        internal Storyboard LiveStatusStoryBoardStop { get; set; } = new();
 
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
@@ -95,6 +99,8 @@ namespace StreamerBot
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.OnBotStarted += GUI_OnBotStarted;
@@ -115,6 +121,40 @@ namespace StreamerBot
             TabItem_Data_Separator.Visibility = Visibility.Collapsed;
             GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
 #endif
+
+            //SetStoryBoard();
+        }
+
+        private void SetStoryBoard()
+        {
+            // Label_LiveStreamStatus
+
+            ColorAnimation LiveColorAnimationStartBorder = new(Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0), new Duration(new(0, 0, 5)));
+            RegisterName("LabelLiveStatusBorderBrush", Label_StreamStatusOff.BorderBrush);
+            Storyboard.SetTargetName(LiveColorAnimationStartBorder, "LabelLiveStatusBorderBrush");
+            Storyboard.SetTargetProperty(LiveColorAnimationStartBorder, new(SolidColorBrush.ColorProperty));
+
+            ColorAnimation LiveColorAnimationStartText = new(Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0), new Duration(new(0, 0, 5)));
+            RegisterName("LabelLiveStatusForeground", Label_StreamStatusOff.Foreground);
+            Storyboard.SetTargetName(LiveColorAnimationStartText, "LabelLiveStatusForeground");
+            Storyboard.SetTargetProperty(LiveColorAnimationStartText, new(SolidColorBrush.ColorProperty));
+
+            LiveStatusStoryBoardStart.Children.Add(LiveColorAnimationStartBorder);
+            LiveStatusStoryBoardStart.Children.Add(LiveColorAnimationStartText);
+
+            ColorAnimation LiveColorAnimationStopBorder = new(Color.FromRgb(0, 255, 0), Color.FromRgb(255, 0, 0), new Duration(new(0, 0, 5)));
+            RegisterName("LabelLiveStatusBorderBrush", Label_StreamStatusOff.BorderBrush);
+            Storyboard.SetTargetName(LiveColorAnimationStopBorder, "LabelLiveStatusBorderBrush");
+            Storyboard.SetTargetProperty(LiveColorAnimationStopBorder, new(SolidColorBrush.ColorProperty));
+
+            ColorAnimation LiveColorAnimationStopText = new(Color.FromRgb(0, 255, 0), Color.FromRgb(255, 0, 0), new Duration(new(0, 0, 5)));
+            RegisterName("LabelLiveStatusForeground", Label_StreamStatusOff.Foreground);
+            Storyboard.SetTargetName(LiveColorAnimationStopText, "LabelLiveStatusForeground");
+            Storyboard.SetTargetProperty(LiveColorAnimationStopText, new(SolidColorBrush.ColorProperty));
+
+            LiveStatusStoryBoardStop.Children.Add(LiveColorAnimationStopBorder);
+            LiveStatusStoryBoardStop.Children.Add(LiveColorAnimationStopText);
+
         }
 
         private static string GetAppDataCWD()
@@ -296,6 +336,16 @@ namespace StreamerBot
             BeginUpdateCategory();
         }
 
+
+        private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
+        {
+            SetLiveStreamActive(true);
+        }
+
+        private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
+        {
+            SetLiveStreamActive(false);
+        }
         private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
         {
             BeginUpdateCategory();
@@ -514,6 +564,7 @@ namespace StreamerBot
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
                 {
+
                     if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
                     {
                         Dispatcher.BeginInvoke(new BotOperation(() =>
@@ -523,7 +574,7 @@ namespace StreamerBot
                     }
                     else
                     {
-#if MultiLive
+#if MultiLive  // preprocessor directive
                         SetMultiLiveButtons();
                         MultiBotRadio(true); 
 #endif
@@ -668,7 +719,7 @@ namespace StreamerBot
         {
             OptionFlags.SetSettings();
 
-            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart,  Radio_Services_OverlayBotStart };
+            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
 
             void SetButtons(bool value)
             {
@@ -678,7 +729,11 @@ namespace StreamerBot
                 }
             }
 
-            if (TB_Twitch_Channel.Text.Length != 0 && TB_Twitch_BotUser.Text.Length != 0 && TB_Twitch_ClientID.Text.Length != 0 && TB_Twitch_AccessToken.Text.Length != 0 && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
+            if (TB_Twitch_Channel.Text.Length != 0 
+                && TB_Twitch_BotUser.Text.Length != 0 
+                && TB_Twitch_ClientID.Text.Length != 0 
+                && TB_Twitch_AccessToken.Text.Length != 0 
+                && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
             {
                 SetButtons(true);
             }
@@ -782,7 +837,7 @@ namespace StreamerBot
             ToggleButton TBSource = null;
             StackPanel SPSource = null;
             GroupBox GBSource = null;
-            if (sender.GetType() == typeof(CheckBox) || sender.GetType()==typeof(RadioButton))
+            if (sender.GetType() == typeof(CheckBox) || sender.GetType() == typeof(RadioButton))
             {
                 TBSource = (ToggleButton)sender;
             }
@@ -869,11 +924,35 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
-#region Moderate Followers
+        #region LiveStatus Online Indicator
 
-#endregion
+        private void SetLiveStreamActive(bool Online = true)
+        {
 
-#region GUIAppStats
+
+            Dispatcher.Invoke(
+                () =>
+                {
+                    if (Online)
+                    {
+                        Label_StreamStatusOff.Visibility = Visibility.Collapsed;
+                        Label_StreamStatusOn.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        Label_StreamStatusOff.Visibility = Visibility.Visible;
+                        Label_StreamStatusOn.Visibility = Visibility.Collapsed;
+                    }
+                });
+        }
+
+        #endregion
+
+        #region Moderate Followers
+
+        #endregion
+
+        #region GUIAppStats
         private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
         {
             AppDispatcher.BeginInvoke(new BotOperation(() =>
@@ -1024,7 +1103,7 @@ namespace StreamerBot
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate")
                         {
                             Collapse(dc);
                         }
@@ -1250,6 +1329,8 @@ namespace StreamerBot
                 Random random = new();
                 Tuple<string, string> itemfound = output[random.Next(output.Count)];
                 Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
+
+                SetLiveStreamActive(true);
             }
 
         }
@@ -1261,6 +1342,8 @@ namespace StreamerBot
                 BotController.HandleOnStreamOffline();
 
                 DebugStreamStarted = DateTime.MinValue;
+
+                SetLiveStreamActive(false);
             }
 
         }

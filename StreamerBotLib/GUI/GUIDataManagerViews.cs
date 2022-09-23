@@ -28,7 +28,49 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = new();
         public ObservableCollection<string> GiveawayCollection { get; set; }
-        public int CurrFollowers => Followers.Table.Select("IsFollower=true").Length;
+        public int CurrFollowers
+        {
+            get
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    return Followers.Table.Select("IsFollower=true").Length;
+                }
+            }
+        }
+
+        public int CurrUserCount
+        {
+            get
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    return Users.Count;
+                }
+            }
+        }
+
+        public int CurrBuiltInComCount
+        {
+            get
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    return BuiltInCommands.Count;
+                }
+            }
+        }
+
+        public int CurrUserComsCount
+        {
+            get
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    return Commands.Count;
+                }
+            }
+        }
 
         public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
         public DataView Users { get; private set; }  // DataSource.UsersDataTable
@@ -112,6 +154,7 @@ namespace StreamerBotLib.GUI
             BanReasons = dataManager._DataSource.BanReasons.DefaultView;
             OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
 
+            /**/
             ChannelEvents.ListChanged += DataView_ListChanged;
             Users.ListChanged += DataView_ListChanged;
             Followers.ListChanged += DataView_ListChanged;
@@ -132,21 +175,24 @@ namespace StreamerBotLib.GUI
             BanRules.ListChanged += DataView_ListChanged;
             BanReasons.ListChanged += DataView_ListChanged;
             OverlayService.ListChanged += DataView_ListChanged;
+            /**/
 
             SetCommandCollection();
         }
 
+        /**/
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             lock (GUIDataManagerLock.Lock)
             {
-                NotifyPropertyChanged(nameof(sender));
+                DataView dataView = (DataView)sender;
+                NotifyPropertyChanged(nameof(dataView.Table));
 
                 // refresh the 'status bar' count items
-                NotifyPropertyChanged(nameof(Users));
+                NotifyPropertyChanged(nameof(CurrUserCount));
                 NotifyPropertyChanged(nameof(CurrFollowers));
-                NotifyPropertyChanged(nameof(BuiltInCommands));
-                NotifyPropertyChanged(nameof(Commands));
+                NotifyPropertyChanged(nameof(CurrBuiltInComCount));
+                NotifyPropertyChanged(nameof(CurrUserComsCount));
 
                 if (sender == Commands)
                 {
@@ -154,6 +200,7 @@ namespace StreamerBotLib.GUI
                 }
             }
         }
+        /* */
 
         private void SetCommandCollection()
         {

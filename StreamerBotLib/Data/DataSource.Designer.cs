@@ -3230,7 +3230,11 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnPlatform;
             
+            private global::System.Data.DataColumn columnStatusChangeDate;
+            
             private static System.DateTime columnFollowedDate_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
+            
+            private static System.DateTime columnStatusChangeDate_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -3315,6 +3319,14 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn StatusChangeDateColumn {
+                get {
+                    return this.columnStatusChangeDate;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -3350,7 +3362,7 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public FollowersRow AddFollowersRow(UsersRow parentUsersRowByUsers_Followers, string UserName, bool IsFollower, System.DateTime FollowedDate, string UserId, string Platform) {
+            public FollowersRow AddFollowersRow(UsersRow parentUsersRowByUsers_Followers, string UserName, bool IsFollower, System.DateTime FollowedDate, string UserId, string Platform, System.DateTime StatusChangeDate) {
                 FollowersRow rowFollowersRow = ((FollowersRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -3358,7 +3370,8 @@ namespace StreamerBotLib.Data {
                         IsFollower,
                         FollowedDate,
                         UserId,
-                        Platform};
+                        Platform,
+                        StatusChangeDate};
                 if ((parentUsersRowByUsers_Followers != null)) {
                     columnValuesArray[0] = parentUsersRowByUsers_Followers[0];
                 }
@@ -3398,6 +3411,7 @@ namespace StreamerBotLib.Data {
                 this.columnFollowedDate = base.Columns["FollowedDate"];
                 this.columnUserId = base.Columns["UserId"];
                 this.columnPlatform = base.Columns["Platform"];
+                this.columnStatusChangeDate = base.Columns["StatusChangeDate"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3415,6 +3429,8 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnUserId);
                 this.columnPlatform = new global::System.Data.DataColumn("Platform", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnPlatform);
+                this.columnStatusChangeDate = new global::System.Data.DataColumn("StatusChangeDate", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStatusChangeDate);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
@@ -3430,6 +3446,7 @@ namespace StreamerBotLib.Data {
                 this.columnIsFollower.DefaultValue = ((bool)(false));
                 this.columnFollowedDate.Caption = "Followed Date";
                 this.columnFollowedDate.DefaultValue = ((System.DateTime)(FollowersDataTable.columnFollowedDate_defaultValue));
+                this.columnStatusChangeDate.DefaultValue = ((System.DateTime)(FollowersDataTable.columnStatusChangeDate_defaultValue));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5097,6 +5114,8 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnCategory;
             
+            private static System.DateTime columnDateTime_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public InRaidDataDataTable() {
@@ -5262,6 +5281,7 @@ namespace StreamerBotLib.Data {
                 this.columnId.AutoIncrement = true;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnDateTime.DefaultValue = ((System.DateTime)(InRaidDataDataTable.columnDateTime_defaultValue));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5400,6 +5420,8 @@ namespace StreamerBotLib.Data {
             private global::System.Data.DataColumn columnChannelRaided;
             
             private global::System.Data.DataColumn columnDateTime;
+            
+            private static System.DateTime columnDateTime_defaultValue = global::System.DateTime.Parse("1900-01-01T00:00:00");
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -5550,6 +5572,7 @@ namespace StreamerBotLib.Data {
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnDateTime.DefaultValue = ((System.DateTime)(OutRaidDataDataTable.columnDateTime_defaultValue));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -8964,6 +8987,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public System.DateTime StatusChangeDate {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableFollowers.StatusChangeDateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'StatusChangeDate\' in table \'Followers\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableFollowers.StatusChangeDateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public UsersRow UsersRow {
                 get {
                     return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["Users_Followers"])));
@@ -9019,6 +9058,18 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetPlatformNull() {
                 this[this.tableFollowers.PlatformColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsStatusChangeDateNull() {
+                return this.IsNull(this.tableFollowers.StatusChangeDateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetStatusChangeDateNull() {
+                this[this.tableFollowers.StatusChangeDateColumn] = global::System.Convert.DBNull;
             }
         }
         

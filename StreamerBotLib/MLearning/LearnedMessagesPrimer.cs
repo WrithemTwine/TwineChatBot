@@ -1,12 +1,11 @@
-﻿
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
 
-namespace StreamerBotLib.MachineLearning
+namespace StreamerBotLib.MLearning
 {
     public class LearnedMessagesPrimer
     {
@@ -75,7 +74,7 @@ namespace StreamerBotLib.MachineLearning
                         {
                             ModActions.Allow => "0",
                             ModActions.Ban => "0",
-                            ModActions.Timeout => (V is > ViewerTypes.Broadcaster and < ViewerTypes.VIP) ? "0" : "1800",
+                            ModActions.Timeout => V is > ViewerTypes.Broadcaster and < ViewerTypes.VIP ? "0" : "1800",
                             ModActions.Respond => "0",
                             _ => throw new NotImplementedException()
                         };

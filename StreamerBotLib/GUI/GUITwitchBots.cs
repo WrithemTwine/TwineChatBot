@@ -4,6 +4,7 @@ using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.Events;
 
 using System;
+using System.Windows;
 
 namespace StreamerBotLib.GUI
 {
@@ -12,6 +13,7 @@ namespace StreamerBotLib.GUI
         public event EventHandler OnLiveStreamStarted;
         public event EventHandler OnLiveStreamUpdated;
         public event EventHandler OnFollowerBotStarted;
+        public event EventHandler OnLiveStreamStopped;
 
         /// <summary>
         /// Specifically Twitch Lib chat bot.
@@ -40,6 +42,7 @@ namespace StreamerBotLib.GUI
             TwitchFollower.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchLiveMonitor.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchLiveMonitor.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchClip.OnBotStarted += TwitchBot_OnBotStarted;
@@ -61,6 +64,12 @@ namespace StreamerBotLib.GUI
 
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
+            TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
+        }
+
+        private void LiveStreamMonitor_OnStreamOffline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOfflineArgs e)
+        {
+            OnLiveStreamStopped?.Invoke(this, new());
         }
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamUpdateArgs e)

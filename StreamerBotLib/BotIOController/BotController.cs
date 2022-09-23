@@ -25,7 +25,6 @@ using TwitchLib.Client.Events;
 
 
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
-// TODO: *finished-test for reliability* add streaming category count, track number of streams per category 
 
 namespace StreamerBotLib.BotIOController
 {
@@ -95,7 +94,26 @@ namespace StreamerBotLib.BotIOController
         {
             AppDispatcher.Invoke(() =>
             {
-                _ = typeof(BotController).InvokeMember(name: e.MethodName, invokeAttr: BindingFlags.InvokeMethod, binder: null, target: this, args: new[] { e.e }, culture: CultureInfo.CurrentCulture);
+                try
+                {
+                    if (e.MethodName.Contains('.'))
+                    {
+                        throw new ArgumentException("Method name to invoke contains '.', which is invalid.");
+                    }
+
+                    _ = typeof(BotController).InvokeMember(
+                            name: e.MethodName,
+                            invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
+                            binder: null,
+                            target: this,
+                            args: e.e == null ? null : new[] { e.e },
+                            culture: null);
+
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
             });
         }
 

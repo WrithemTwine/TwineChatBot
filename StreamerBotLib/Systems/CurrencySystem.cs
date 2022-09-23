@@ -59,11 +59,11 @@ namespace StreamerBotLib.Systems
                         {
                             lock (CurrUsers)
                             {
-                                DataManage.UpdateWatchTime(new(from LiveUser U in CurrUsers
-                                                               select U.UserName), DateTime.Now.ToLocalTime());
+                                DataManage.UpdateWatchTime(new List<string>(from LiveUser U in CurrUsers
+                                                                            select U.UserName), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
-                            Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));                            
+                            Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
                         }
                         WatchStarted = false;
                     });
