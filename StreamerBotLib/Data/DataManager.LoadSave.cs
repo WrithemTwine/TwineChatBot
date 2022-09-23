@@ -3,6 +3,7 @@
 #endif
 
 using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
@@ -40,6 +41,8 @@ namespace StreamerBotLib.Data
         /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
         /// </summary>
         public event EventHandler OnSaveData;
+
+        public event EventHandler<OnDataUpdatedEventArgs> OnDataUpdated;
 
         /// <summary>
         /// Load the data source and populate with default data; if regular data source is corrupted, attempt to load backup data.
@@ -146,10 +149,19 @@ namespace StreamerBotLib.Data
 
                     if (_DataSource.HasChanges())
                     {
-                        lock (GUIDataManagerLock.Lock)
-                        {
-                            _DataSource.AcceptChanges();
-                        }
+                        //lock (GUIDataManagerLock.Lock)
+                        //{
+                        //    OnDataUpdatedEventArgs args = new();
+                        //    foreach (DataTable d in _DataSource.Tables)
+                        //    {
+
+                        //    }
+
+                        //    OnDataUpdated?.Invoke(this, new());
+
+                        //    _DataSource.AcceptChanges();
+
+                        //}
 
                         lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                         {
@@ -157,6 +169,8 @@ namespace StreamerBotLib.Data
                             {
                                 lock (GUIDataManagerLock.Lock)
                                 {
+                                    //_DataSource.AcceptChanges();
+
                                     try
                                     {
                                         MemoryStream SaveData = new();  // new memory stream
@@ -225,6 +239,7 @@ namespace StreamerBotLib.Data
         }
 
         private readonly string DefaulSocialMsg = "Social media url here";
+
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
@@ -234,7 +249,6 @@ namespace StreamerBotLib.Data
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Setting up and checking default commands, adding missing commands.");
 #endif
 
-            // TODO: move !intro to default commands <- for the custom welcome message
             lock (GUIDataManagerLock.Lock)
             {
                 if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
@@ -276,12 +290,19 @@ namespace StreamerBotLib.Data
                     DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
                 }
 
+                bool found = false;
                 foreach (var (key, param) in from string key in DefCommandsDictionary.Keys
                                              where CheckName(key)
                                              let param = CommandParams.Parse(DefCommandsDictionary[key].Item2)
                                              select (key, param))
                 {
                     _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                    found = true;
+                }
+
+                if (found)
+                {
+                    _DataSource.Commands.AcceptChanges();
                 }
             }
         }
@@ -307,6 +328,8 @@ namespace StreamerBotLib.Data
 
                 return channelEventsRow == null;
             }
+
+            bool found = false;
 
             Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
@@ -363,7 +386,7 @@ namespace StreamerBotLib.Data
                     new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
                 }
             };
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
                 foreach (var (command, values) in from ChannelEventActions command in System.Enum.GetValues(typeof(ChannelEventActions))// consider only the values in the dictionary, check if data is already defined in the data table
                                                   where dictionary.ContainsKey(command) && CheckName(command.ToString())// extract the default data from the dictionary and add to the data table
@@ -371,6 +394,12 @@ namespace StreamerBotLib.Data
                                                   select (command, values))
                 {
                     _ = _DataSource.ChannelEvents.AddChannelEventsRow(command.ToString(), 0, false, true, values.Item1, values.Item2);
+                    found = true;
+                }
+
+                if (found)
+                {
+                    _DataSource.ChannelEvents.AcceptChanges();
                 }
             }
         }

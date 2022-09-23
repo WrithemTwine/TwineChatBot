@@ -218,9 +218,15 @@ namespace StreamerBotLib.Data
 
             lock (GUIDataManagerLock.Lock)
             {
+                bool found = false;
                 foreach (DataRow row in dataTable.Select(Filter))
                 {
                     row[dataColumn] = value;
+                    found = true;
+                }
+                if (found)
+                {
+                    dataTable.AcceptChanges();
                 }
                 NotifySaveData();
             }
@@ -250,10 +256,16 @@ namespace StreamerBotLib.Data
 
             lock (GUIDataManagerLock.Lock)
             {
+                List<DataTable> temp = new(); // manage tables with deleted rows
                 foreach (DataRow D in dataRows)
                 {
                     D.Delete();
+                    temp.UniqueAdd(D.Table); // track the tables with rows deleted
                 }
+
+                // accept the changes for every table with deleted rows
+                temp.ForEach((T) => T.AcceptChanges());
+
                 NotifySaveData();
             }
         }
@@ -273,6 +285,7 @@ namespace StreamerBotLib.Data
                 {
                     result = true;
                     temp.Delete();
+                    table.AcceptChanges();
                     NotifySaveData();
                 }
 

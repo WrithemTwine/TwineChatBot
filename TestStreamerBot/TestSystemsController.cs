@@ -86,8 +86,8 @@ namespace TestStreamerBot
             systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, Category);
             SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
-            Assert.True(SystemsBase.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
-            Assert.True(SystemsBase.DataManage.TestOutRaidData(RaidName, RaidTime));
+            Assert.True(SystemsController.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
+            Assert.True(SystemsController.DataManage.TestOutRaidData(RaidName, RaidTime));
         }
 
         [Theory]

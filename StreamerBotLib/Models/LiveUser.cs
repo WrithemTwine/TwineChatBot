@@ -30,10 +30,11 @@ namespace StreamerBotLib.Models
         /// <param name="User">Name of the user.</param>
         /// <param name="botSource">The bot source of user.</param>
         /// <param name="userType">The type of the user.</param>
-        public LiveUser(string User, Platform botSource)
+        public LiveUser(string User, Platform botSource, string Id = "")
         {
             UserName = User;
             Source = botSource;
+            UserId = Id;
         }
 
         ///// <summary>

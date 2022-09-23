@@ -23,7 +23,22 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<string> GetUserId(string UserName)
         {
-            string result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id ?? null;
+            string result = null;
+            int loop = 0;
+
+            while (loop < 5 && result == null)
+            {
+                try
+                {
+                    result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id ?? null;
+                }
+                catch
+                {
+                    loop++;
+                }
+            }
+
+
             return result;
         }
 

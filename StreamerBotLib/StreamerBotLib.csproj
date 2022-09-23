@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.2.1</Version>
-    <PackageId>TwineStreamerBotLib</PackageId>
-    <AssemblyName>TwineStreamerBotLib</AssemblyName>
+    <Version>0.2.4.0</Version>
+    <PackageId>StreamerBotLib</PackageId>
+    <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
     <Company>TwineStreamerBotLib</Company>
     <Product>TwineStreamerBotLib</Product>
@@ -16,16 +16,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.5.2" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.5.2" />
-    <PackageReference Include="TwitchLib.Api.Helix" Version="3.5.2" />
-    <PackageReference Include="TwitchLib.Client" Version="3.2.4" />
-    <PackageReference Include="TwitchLib.PubSub" Version="3.2.5-preview-e27b78571148879a04eaea2cf45441a35b0e908f" />
+    <PackageReference Include="TwitchLib.Api" Version="3.6.1" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.6.1" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.6.1" />
+    <PackageReference Include="TwitchLib.Client" Version="3.2.6" />
+    <PackageReference Include="TwitchLib.PubSub" Version="3.2.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MultiUserLiveBot\MultiUserLiveBot.csproj" />
     <ProjectReference Include="..\MediaOverlayServer\MediaOverlayServer.csproj" />
+    <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +39,11 @@
     </Compile>
     <Compile Update="Data\DataSource.Designer.cs">
       <DependentUpon>DataSource.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Data\MultiLive\MultiDataSource.Designer.cs">
+      <DependentUpon>MultiDataSource.xsd</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
@@ -68,6 +73,10 @@
   <ItemGroup>
     <None Update="Data\DataSource.xsd">
       <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+    </None>
+    <None Update="Data\MultiLive\MultiDataSource.xsd">
+      <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
       <Generator>MSDataSetGenerator</Generator>
     </None>
     <None Update="Properties\Settings.settings">

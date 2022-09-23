@@ -109,6 +109,7 @@
               <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_UserColumnName="FollowedDate" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
               <xs:element name="UserId" msprop:Generator_ColumnPropNameInTable="UserIdColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="UserId" msprop:Generator_UserColumnName="UserId" msprop:Generator_ColumnVarNameInTable="columnUserId" type="xs:string" minOccurs="0" />
               <xs:element name="Platform" msprop:Generator_ColumnPropNameInTable="PlatformColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="Platform" msprop:Generator_UserColumnName="Platform" msprop:Generator_ColumnVarNameInTable="columnPlatform" type="xs:string" minOccurs="0" />
+              <xs:element name="StatusChangeDate" msprop:Generator_ColumnPropNameInRow="StatusChangeDate" msprop:Generator_ColumnPropNameInTable="StatusChangeDateColumn" msprop:Generator_ColumnVarNameInTable="columnStatusChangeDate" msprop:Generator_UserColumnName="StatusChangeDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -178,7 +179,7 @@
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" minOccurs="0" />
               <xs:element name="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_UserColumnName="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" type="xs:string" minOccurs="0" />
               <xs:element name="ViewerCount" msprop:Generator_ColumnPropNameInTable="ViewerCountColumn" msprop:Generator_ColumnPropNameInRow="ViewerCount" msprop:Generator_UserColumnName="ViewerCount" msprop:Generator_ColumnVarNameInTable="columnViewerCount" type="xs:string" minOccurs="0" />
-              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
               <xs:element name="Category" msprop:Generator_ColumnPropNameInTable="CategoryColumn" msprop:Generator_ColumnPropNameInRow="Category" msprop:Generator_UserColumnName="Category" msprop:Generator_ColumnVarNameInTable="columnCategory" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
@@ -188,7 +189,7 @@
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" />
               <xs:element name="ChannelRaided" msprop:Generator_ColumnPropNameInTable="ChannelRaidedColumn" msprop:Generator_ColumnPropNameInRow="ChannelRaided" msprop:Generator_UserColumnName="ChannelRaided" msprop:Generator_ColumnVarNameInTable="columnChannelRaided" type="xs:string" minOccurs="0" />
-              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="DateTime" msprop:Generator_ColumnPropNameInTable="DateTimeColumn" msprop:Generator_ColumnPropNameInRow="DateTime" msprop:Generator_UserColumnName="DateTime" msprop:Generator_ColumnVarNameInTable="columnDateTime" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

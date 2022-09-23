@@ -24,7 +24,7 @@ namespace StreamerBotLib.Interfaces
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks);
         bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
         bool TestOutRaidData(string HostedChannel, DateTime dateTime);
-        List<DataSource.LearnMsgsRow> UpdateLearnedMsgs();
+        List<LearnMsgRecord> UpdateLearnedMsgs();
         List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn);
         DataRow[] GetRows(DataTable dataTable, string Filter = null, string Sort = null);
         DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null);

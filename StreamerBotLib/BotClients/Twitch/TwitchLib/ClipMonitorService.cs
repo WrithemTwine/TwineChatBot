@@ -77,7 +77,22 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             foreach (string channel in ChannelsToMonitor)
             {
                 List<Clip> newClips;
-                List<Clip> latestClips = await GetLatestClipsAsync(channel);
+                List<Clip> latestClips = null;
+
+                int loop = 0;
+
+                while (loop < 5 && latestClips == null)
+                {
+                    try
+                    {
+                        latestClips = await GetLatestClipsAsync(channel);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        loop++;
+                    }
+                }
 
                 if (latestClips.Count == 0) { continue; }
 

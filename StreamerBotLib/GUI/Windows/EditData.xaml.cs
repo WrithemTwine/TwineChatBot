@@ -83,7 +83,7 @@ namespace StreamerBotLib.GUI.Windows
                     builtInCmds.Add(d.ToString());
                 }
 
-                if (builtInCmds.Contains(dataRow.Table.Columns.Contains("CmdName") ? dataRow["CmdName"].ToString() : "") || dataRow.Table.TableName is "ChannelEvents")
+                if (builtInCmds.Contains(SaveDataRow.Table.Columns.Contains("CmdName") ? SaveDataRow["CmdName"].ToString() : "") || SaveDataRow.Table.TableName is "ChannelEvents")
                 {
                     CheckLockTable = true;
                 }

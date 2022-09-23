@@ -352,7 +352,7 @@ namespace StreamerBotLib.Systems
             response = "";
             if (DataManage.CheckShoutName(User.UserName) || !AutoShout)
             {
-                if (AutoShout && OptionFlags.MsgSendSOToChat)
+                if (OptionFlags.MsgSendSOToChat)
                 {
                     OnProcessCommand($"!{LocalizedMsgSystem.GetVar(DefaultCommand.so)} {User.UserName}");
                 }

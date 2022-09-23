@@ -30,24 +30,26 @@ namespace StreamerBotLib.Models
 
         public CommandData(CommandsRow row)
         {
-            // TODO: check and account for null rows, handle checks
-            if (row != null)
+            lock (GUI.GUIDataManagerLock.Lock)
             {
-                Usage = ColHelper<string>(row.Usage);
-                IsEnabled = ColHelper<bool>(row.IsEnabled);
-                SendMsgCount = ColHelper<short>(row.SendMsgCount);
-                Permission = ColHelper<string>(row.Permission);
-                AddMe = ColHelper<bool>(row.AddMe);
-                Message = ColHelper<string>(row.Message);
-                AllowParam = ColHelper<bool>(row.AllowParam);
-                Lookupdata = ColHelper<bool>(row.lookupdata);
-                Top = ColHelper<int>(row.top);
-                Action = ColHelper<string>(row.action);
-                CmdName = ColHelper<string>(row.CmdName);
-                Table = ColHelper<string>(row.table);
-                Key_field = ColHelper<string>(row.key_field);
-                Data_field = ColHelper<string>(row.data_field);
-                Sort = ColHelper<string>(row.sort);
+                if (row != null)
+                {
+                    Usage = ColHelper<string>(row.Usage);
+                    IsEnabled = ColHelper<bool>(row.IsEnabled);
+                    SendMsgCount = ColHelper<short>(row.SendMsgCount);
+                    Permission = ColHelper<string>(row.Permission);
+                    AddMe = ColHelper<bool>(row.AddMe);
+                    Message = ColHelper<string>(row.Message);
+                    AllowParam = ColHelper<bool>(row.AllowParam);
+                    Lookupdata = ColHelper<bool>(row.lookupdata);
+                    Top = ColHelper<int>(row.top);
+                    Action = ColHelper<string>(row.action);
+                    CmdName = ColHelper<string>(row.CmdName);
+                    Table = ColHelper<string>(row.table);
+                    Key_field = ColHelper<string>(row.key_field);
+                    Data_field = ColHelper<string>(row.data_field);
+                    Sort = ColHelper<string>(row.sort);
+                }
             }
         }
 
