@@ -10,6 +10,7 @@ using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
 using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
+using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
@@ -109,6 +110,20 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         public async Task<GetGamesResponse> GetGameId(List<string> GameId = null, List<string> GameName = null)
         {
             return await _api.Helix.Games.GetGamesAsync(GameId, GameName);
+        }
+
+        public async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
+        {
+            if (ToUserId != null)
+            {
+                return await _api.Helix.Raids.StartRaidAsync(FromId, ToUserId);
+            }
+            else if (ToUserName != null)
+            {
+                return await _api.Helix.Raids.StartRaidAsync(FromId, await GetUserId(ToUserName));
+            }
+
+            return null;
         }
     }
 }

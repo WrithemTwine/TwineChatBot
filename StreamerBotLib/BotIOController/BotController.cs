@@ -326,6 +326,14 @@ namespace StreamerBotLib.BotIOController
             return result;
         }
 
+        public void RaidChannel(string ToChannelName, Platform bots)
+        {
+            if (bots == Platform.Twitch)
+            {
+                TwitchBots.RaidChannel(ToChannelName);
+            }
+        }
+
         #endregion
 
         #region Twitch Bot Events

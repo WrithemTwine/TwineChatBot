@@ -56,13 +56,13 @@ namespace StreamerBotLib.BotClients
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+            TwitchBotUserSvc.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
             DataManager = SystemsController.DataManage;
 
             //ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
-
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -332,6 +332,17 @@ namespace StreamerBotLib.BotClients
         public string GetUserId(string UserName)
         {
             return TwitchBotUserSvc.GetUserId(UserName);
+        }
+
+        public void RaidChannel(string ToUserName)
+        {
+            TwitchBotUserSvc.RaidChannel(ToUserName);
+        }
+
+        private void TwitchBotUserSvc_StartRaidEventResponse(object sender, OnStreamRaidResponseEventArgs e)
+        {
+            //TODO: add Outgoing raid pathway, and add waiting - 90 seconds Twitch UXI raid timer - in case the raid cancels to not prematurely note the channel raided
+
         }
 
         #endregion

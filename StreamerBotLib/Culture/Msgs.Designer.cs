@@ -1456,6 +1456,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to raid.
+        /// </summary>
+        internal static string raid {
+            get {
+                return ResourceManager.GetString("raid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Currently not used..
         /// </summary>
         internal static string Random {

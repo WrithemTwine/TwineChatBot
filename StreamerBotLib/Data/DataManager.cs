@@ -703,6 +703,7 @@ switches:
                     } // will update the "CurrLoginDate"
                         _DataSource.Users.AcceptChanges();
                 }
+                NotifySaveData();
             }
         }
 
@@ -1002,6 +1003,7 @@ switches:
                 {
                     _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
                     _DataSource.ShoutOuts.AcceptChanges();
+                    NotifySaveData();
                 }
             }
         }

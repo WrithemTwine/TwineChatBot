@@ -12,7 +12,9 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
+using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Schedule;
+using TwitchLib.PubSub.Models.Responses;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -25,6 +27,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
+        public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
 
         public TwitchBotUserSvc()
         {
@@ -217,6 +220,27 @@ namespace StreamerBotLib.BotClients.Twitch
                 result = false;
             }
             return result;
+        }
+
+        public void RaidChannel(string ToChannelName)
+        {
+            ChooseConnectUserService(true);
+
+            if(ToChannelName == null)
+            {
+                return;
+            } else
+            {
+                try
+                {
+                    StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
+                    StartRaidEventResponse?.Invoke(this, new() {ToChannel = ToChannelName, CreatedAt = response.Data[0].CreatedAt, IsMature = response.Data[0].IsMature });
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
+            }
         }
 
         #endregion

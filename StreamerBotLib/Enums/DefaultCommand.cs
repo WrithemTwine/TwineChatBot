@@ -22,6 +22,7 @@
         usage,
         followage,
         intro,
-        settitle, setcategory
+        settitle, setcategory,
+        raid
     }
 }

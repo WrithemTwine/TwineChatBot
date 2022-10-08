@@ -651,6 +651,10 @@
     <value>queue</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="raid" xml:space="preserve">
+    <value>raid</value>
+    <comment>default command, can be translated</comment>
+  </data>
   <data name="Random" xml:space="preserve">
     <value>Currently not used.</value>
   </data>
