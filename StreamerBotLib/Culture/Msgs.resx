@@ -512,7 +512,7 @@
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramcancelraid" xml:space="preserve">
-    <value>-use:!cancelraid Mod only -P:Mod</value>
+    <value>-use:!cancelraid Mod only -p:Mod</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramcommands" xml:space="preserve">
@@ -574,7 +574,7 @@
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramraid" xml:space="preserve">
-    <value>-use:!raid &lt;user&gt; Mod only -param:true -P:Mod</value>
+    <value>-use:!raid &lt;user&gt; Mod only -param:true -p:Mod</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramremovecommand" xml:space="preserve">

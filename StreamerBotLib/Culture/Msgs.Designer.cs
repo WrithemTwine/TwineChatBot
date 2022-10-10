@@ -1123,7 +1123,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -use:!cancelraid Mod only -P:Mod.
+        ///   Looks up a localized string similar to -use:!cancelraid Mod only -p:Mod.
         /// </summary>
         internal static string Paramcancelraid {
             get {
@@ -1267,7 +1267,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -use:!raid &lt;user&gt; Mod only -param:true -P:Mod.
+        ///   Looks up a localized string similar to -use:!raid &lt;user&gt; Mod only -param:true -p:Mod.
         /// </summary>
         internal static string Paramraid {
             get {
