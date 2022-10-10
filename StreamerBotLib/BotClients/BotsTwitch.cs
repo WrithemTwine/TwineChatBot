@@ -611,7 +611,7 @@ namespace StreamerBotLib.BotClients
                 OutRaidStarted = RaidCreated;
             }
 
-            if (RaidLoop != null) // create only 1 thread
+            if (RaidLoop != null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
             {
                 RaidLoop = ThreadManager.CreateThread(() =>
                 {
