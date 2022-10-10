@@ -28,6 +28,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
         public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
+        public event EventHandler CancelRaidEvent;
 
         public TwitchBotUserSvc()
         {
@@ -234,12 +235,29 @@ namespace StreamerBotLib.BotClients.Twitch
                 try
                 {
                     StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
-                    StartRaidEventResponse?.Invoke(this, new() {ToChannel = ToChannelName, CreatedAt = response.Data[0].CreatedAt, IsMature = response.Data[0].IsMature });
+                    if (response != null)
+                    {
+                        StartRaidEventResponse?.Invoke(this, new() { ToChannel = ToChannelName, CreatedAt = response.Data[0].CreatedAt, IsMature = response.Data[0].IsMature });
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                 }
+            }
+        }
+
+        public void CancelRaidChannel()
+        {
+            ChooseConnectUserService(true);
+            try
+            {
+                userLookupService?.CancelRaid(TwitchChannelId);
+                CancelRaidEvent?.Invoke(this, new());
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 

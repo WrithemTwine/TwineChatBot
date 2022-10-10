@@ -293,7 +293,7 @@ namespace StreamerBotLib.BotIOController
 
         public static bool VerifyUserExist(string ChannelName, Platform bots)
         {
-            if(bots == Platform.Twitch)
+            if (bots == Platform.Twitch)
             {
                 return BotsTwitch.VerifyUserExist(ChannelName);
             }
@@ -326,11 +326,19 @@ namespace StreamerBotLib.BotIOController
             return result;
         }
 
-        public void RaidChannel(string ToChannelName, Platform bots)
+        public static void RaidChannel(string ToChannelName, Platform bots)
         {
             if (bots == Platform.Twitch)
             {
-                TwitchBots.RaidChannel(ToChannelName);
+                BotsTwitch.RaidChannel(ToChannelName);
+            }
+        }
+
+        public static void CancelRaidChannel(Platform bots)
+        {
+            if(bots == Platform.Twitch)
+            {
+                BotsTwitch.CancelRaidChannel();
             }
         }
 
@@ -383,13 +391,13 @@ namespace StreamerBotLib.BotIOController
             return follows.ConvertAll((f) =>
             {
                 return new Models.Follow(
-                
+
                     f.FollowedAt.ToLocalTime(),
                     f.FromUserId,
                     f.FromUserName,
                     f.ToUserId,
                     f.ToUserName,
-                    new(f.FromUserName,Source, f.FromUserId)
+                    new(f.FromUserName, Source, f.FromUserId)
                 );
             });
         }
@@ -530,7 +538,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchOnUserJoined(StreamerOnUserJoinedArgs e)
         {
-            HandleUserJoined( new() { e.LiveUser });
+            HandleUserJoined(new() { e.LiveUser });
         }
 
         public void TwitchOnUserLeft(StreamerOnUserLeftArgs e)
@@ -581,6 +589,11 @@ namespace StreamerBotLib.BotIOController
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
         {
             HandleIncomingRaidData(new(e.DisplayName, Platform.Twitch), e.RaidTime, e.ViewerCount, e.Category);
+        }
+
+        public void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
+        {
+            HandleOutgoingRaidData(e.ToChannel, e.CreatedAt);
         }
 
         public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
@@ -715,11 +728,11 @@ namespace StreamerBotLib.BotIOController
             PostGameCategoryEvent(gameId, gameName);
         }
 
-        public static void HandleOnStreamOffline(string HostedChannel = null)
+        public static void HandleOnStreamOffline(string HostedChannel = null, DateTime? RaidTime = null)
         {
             if (OptionFlags.IsStreamOnline)
             {
-                DateTime currTime = DateTime.Now.ToLocalTime();
+                DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
             }
@@ -924,6 +937,11 @@ namespace StreamerBotLib.BotIOController
         public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, string ViewerCount, string Category)
         {
             Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
+        }
+
+        public void HandleOutgoingRaidData(string ToChannelName, DateTime RaidTime)
+        {
+            HandleOnStreamOffline(ToChannelName, RaidTime);
         }
 
         public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Platform Source)

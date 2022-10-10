@@ -129,6 +129,10 @@
     <value>bot</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="cancelraid" xml:space="preserve">
+    <value>cancelraid</value>
+    <comment>default command, can be translated</comment>
+  </data>
   <data name="commands" xml:space="preserve">
     <value>commands</value>
     <comment>default command, can be translated</comment>
@@ -507,6 +511,10 @@
     <value>-use:!bot</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramcancelraid" xml:space="preserve">
+    <value>-use:!cancelraid Mod only -P:Mod</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
   <data name="Paramcommands" xml:space="preserve">
     <value>-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -563,6 +571,10 @@
   </data>
   <data name="Paramqueue" xml:space="preserve">
     <value>-p:Mod -use:!queue mods only</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramraid" xml:space="preserve">
+    <value>-use:!raid &lt;user&gt; Mod only -param:true -P:Mod</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramremovecommand" xml:space="preserve">

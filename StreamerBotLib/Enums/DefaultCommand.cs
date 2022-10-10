@@ -23,6 +23,6 @@
         followage,
         intro,
         settitle, setcategory,
-        raid
+        raid, cancelraid
     }
 }

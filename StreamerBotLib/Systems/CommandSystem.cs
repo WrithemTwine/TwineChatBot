@@ -400,6 +400,21 @@ namespace StreamerBotLib.Systems
                     result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
                 }
             }
+            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.raid))
+            {
+                if (arglist.Count > 0)
+                {
+                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Source);
+                } 
+                else
+                {
+                    result = DataManage.GetUsage(command);
+                }
+            }
+            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
+            {
+                BotController.CancelRaidChannel(User.Source);
+            }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
             {
                 if (arglist.Count > 0)

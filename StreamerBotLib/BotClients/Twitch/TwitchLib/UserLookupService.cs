@@ -125,5 +125,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             return null;
         }
+
+        public async Task CancelRaid(string FromId)
+        {
+            await _api.Helix.Raids.CancelRaidAsync(FromId);
+        }
     }
 }
