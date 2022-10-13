@@ -479,7 +479,10 @@ namespace StreamerBotLib.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public static void TwitchStreamOffline(OnStreamOfflineArgs e = null)
         {
-            HandleOnStreamOffline();
+            if (!OptionFlags.TwitchOutRaidStarted)
+            {
+                HandleOnStreamOffline();
+            }
         }
 
         public void TwitchNewSubscriber(OnNewSubscriberArgs e)
@@ -735,6 +738,7 @@ namespace StreamerBotLib.BotIOController
                 DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
+                OptionFlags.TwitchOutRaidStarted = false;
             }
         }
 

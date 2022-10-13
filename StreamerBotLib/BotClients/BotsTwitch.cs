@@ -155,7 +155,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.HandlersAdded = false;
             }
         }
-
+ 
         #region Twitch Bot Chat Client
 
         private void TwitchBotChatClient_OnBotStarted(object sender, EventArgs e)
@@ -447,7 +447,7 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
         }
 
-        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
+         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
             {
@@ -601,8 +601,7 @@ namespace StreamerBotLib.BotClients
         private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
         private DateTime OutRaidStarted;
         private Thread RaidLoop;
-        private string RaidLock = "lock";
-        private bool CancelRaid = false;
+        private readonly string RaidLock = "lock";
 
         private void StartRaid(string ToChannelName, DateTime RaidCreated)
         {
@@ -611,32 +610,32 @@ namespace StreamerBotLib.BotClients
                 OutRaidStarted = RaidCreated;
             }
 
-            if (RaidLoop != null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
+            if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
             {
                 RaidLoop = ThreadManager.CreateThread(() =>
                 {
                     // declare locals, so we can use a thread-safe lock
                     DateTime LocalRaidStart;
-                    bool LocalCancelRaid;
+                    bool LocalRaidStarted;
 
                     lock (RaidLock)
                     {
                         LocalRaidStart = OutRaidStarted;
-                        LocalCancelRaid = CancelRaid;
+                        LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
                     }
 
-                    while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && !LocalCancelRaid)
+                    while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && LocalRaidStarted)
                     { // check for 90 seconds
                         lock (RaidLock)
                         { // update values, in case they changed - use thread lock safety as another thread may change these
                             LocalRaidStart = OutRaidStarted;
-                            LocalCancelRaid = CancelRaid;
+                            LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
                         }
                         Thread.Sleep(10);
                     }
 
                     // if the raid wasn't canceled after the loop finished, send raid event to main bot
-                    if (!LocalCancelRaid)
+                    if (LocalRaidStarted)
                     {
                         InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
                             new OnStreamRaidResponseEventArgs()
@@ -645,6 +644,7 @@ namespace StreamerBotLib.BotClients
                                 CreatedAt = OutRaidStarted
                             });
                     }
+                    RaidLoop = null;
                 });
                 RaidLoop.Start();
             }
@@ -655,7 +655,7 @@ namespace StreamerBotLib.BotClients
         {
             lock (RaidLock)
             {
-                CancelRaid = true;
+                OptionFlags.TwitchOutRaidStarted = false;
             }
         }
 
