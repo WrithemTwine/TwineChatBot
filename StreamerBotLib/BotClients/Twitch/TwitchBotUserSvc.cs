@@ -237,7 +237,11 @@ namespace StreamerBotLib.BotClients.Twitch
                     StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
                     if (response != null)
                     {
-                        StartRaidEventResponse?.Invoke(this, new() { ToChannel = ToChannelName, CreatedAt = response.Data[0].CreatedAt, IsMature = response.Data[0].IsMature });
+                        StartRaidEventResponse?.Invoke(this, new() { 
+                            ToChannel = ToChannelName, 
+                            CreatedAt = response.Data[0].CreatedAt, 
+                            IsMature = response.Data[0].IsMature 
+                        });
                     }
                 }
                 catch (Exception ex)

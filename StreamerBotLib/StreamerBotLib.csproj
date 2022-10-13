@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.4.1</Version>
+    <Version>0.2.4.2</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>

@@ -600,7 +600,7 @@ namespace StreamerBotLib.BotClients
 
         private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
         private DateTime OutRaidStarted;
-        private Thread RaidLoop;
+        private Thread RaidLoop = null;
         private string RaidLock = "lock";
         private bool CancelRaid = false;
 
@@ -611,7 +611,7 @@ namespace StreamerBotLib.BotClients
                 OutRaidStarted = RaidCreated;
             }
 
-            if (RaidLoop != null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
+            if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
             {
                 RaidLoop = ThreadManager.CreateThread(() =>
                 {
@@ -645,6 +645,7 @@ namespace StreamerBotLib.BotClients
                                 CreatedAt = OutRaidStarted
                             });
                     }
+                    RaidLoop = null;
                 });
                 RaidLoop.Start();
             }

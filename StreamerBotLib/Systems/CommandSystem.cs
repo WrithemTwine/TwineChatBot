@@ -405,6 +405,7 @@ namespace StreamerBotLib.Systems
                 if (arglist.Count > 0)
                 {
                     BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Source);
+                    result = cmdrow.Message;
                 } 
                 else
                 {
@@ -414,6 +415,7 @@ namespace StreamerBotLib.Systems
             else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
             {
                 BotController.CancelRaidChannel(User.Source);
+                result = cmdrow.Message;
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
             {
