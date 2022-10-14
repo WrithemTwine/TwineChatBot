@@ -124,6 +124,11 @@ namespace StreamerBotLib.Static
         public static bool TwitchRaidShoutOut { get; set; }
 
         /// <summary>
+        /// Flags whether the streamer channel started a raid - could be anyone based on command rights
+        /// </summary>
+        public static bool TwitchOutRaidStarted { get; set; } = false;
+
+        /// <summary>
         /// Enables repeat timer commands.
         /// </summary>
         public static bool RepeatTimer { get; set; }

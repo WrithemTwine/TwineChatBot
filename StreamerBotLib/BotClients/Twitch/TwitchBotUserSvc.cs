@@ -234,6 +234,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 try
                 {
+                    OptionFlags.TwitchOutRaidStarted = true;
                     StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
                     if (response != null)
                     {

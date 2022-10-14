@@ -50,6 +50,8 @@ namespace StreamerBotLib.GUI
 
             TwitchBotPubSub.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchBotPubSub.OnBotStopped += TwitchBot_OnBotStopped;
+
+            TwitchBotUserSvc.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
         }
 
         public void Send(string msg)
@@ -65,6 +67,11 @@ namespace StreamerBotLib.GUI
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
+        }
+
+        private void TwitchBotUserSvc_StartRaidEventResponse(object sender, OnStreamRaidResponseEventArgs e)
+        {
+            LiveStreamMonitor_OnStreamOffline(this, new());
         }
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOfflineArgs e)

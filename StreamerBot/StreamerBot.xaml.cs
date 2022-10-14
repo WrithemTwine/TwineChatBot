@@ -926,7 +926,7 @@ namespace StreamerBot
 
         #region LiveStatus Online Indicator
 
-        private void SetLiveStreamActive(bool Online = true)
+        private void  SetLiveStreamActive(bool Online = true)
         {
 
 
