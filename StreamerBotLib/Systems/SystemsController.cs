@@ -231,6 +231,8 @@ namespace StreamerBotLib.Systems
                     }
                 }
 
+                AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, FollowList.Last().FromUserName);
+
                 if (UserList.Count > 0)
                 {
                     int Pick = 5;
@@ -580,13 +582,14 @@ namespace StreamerBotLib.Systems
                         SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits.ToString(), MsgReceived.DisplayName);
                     }));
                 }
+
+                AddNewOverlayTickerItem(OverlayTickerItem.LastBits, MsgReceived.DisplayName);
             }
 
             if (RegisterJoinedUser(User, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
             {
                 UserWelcomeMessage(User);
             }
-
         }
 
         private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
@@ -624,6 +627,10 @@ namespace StreamerBotLib.Systems
             if (OptionFlags.ManageRaidData)
             {
                 ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
+            }
+            if (OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.UpdateOverlayTicker(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }
 
@@ -839,6 +846,14 @@ namespace StreamerBotLib.Systems
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             SystemActions.CheckForOverlayEvent(overlayType, Action, UserName, UserMsg, ProvidedURL, UrlDuration);
+        }
+
+        public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
+        {
+            if (OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.UpdateOverlayTicker(item, UserName);
+            }
         }
 
         #endregion

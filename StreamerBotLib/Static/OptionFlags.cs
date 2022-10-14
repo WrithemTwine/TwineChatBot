@@ -239,6 +239,11 @@ namespace StreamerBotLib.Static
         public static bool ManageClearButtonEnabled { get; set; }
 
         /// <summary>
+        /// Specifies to save OverlayTicker data in the database.
+        /// </summary>
+        public static bool ManageOverlayTicker { get; set; }
+
+        /// <summary>
         /// Enables starting the Twitch Chat Bot once the stream goes live. Depends on the live service detecting going live.
         /// </summary>
         public static bool TwitchChatBotConnectOnline { get; set; }
@@ -483,6 +488,7 @@ namespace StreamerBotLib.Static
                 ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
                 ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
                 ManageClearButtonEnabled = Settings.Default.ManageClearButtonEnabled;
+                ManageOverlayTicker = Settings.Default.ManageOverlayTicker;
 
                 #endregion
 

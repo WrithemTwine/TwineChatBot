@@ -896,6 +896,9 @@
                                                 <CheckBox x:Name="CheckBox_ManageGiveawayUsers" IsChecked="{Binding ManageGiveawayUsers}">
                                                     <TextBlock TextWrapping="Wrap">Record Giveaway data results.*</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox x:Name="CheckBox_ManageOverlayTicker" IsChecked="{Binding ManageOverlayTicker}">
+                                                    <TextBlock TextWrapping="Wrap">Record Overlay Ticker items.*</TextBlock>
+                                                </CheckBox>
                                                 <Label>
                                                     <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>
                                                 </Label>

@@ -1552,6 +1552,23 @@ switches:
             }
         }
 
+        public void UpdateOverlayTicker(OverlayTickerItem item, string name)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                if (_DataSource.OverlayTicker.Select($"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'").Any())
+                {
+                    SetDataTableFieldRows(_DataSource.OverlayTicker, _DataSource.OverlayTicker.TickerNameColumn, name, $"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'");
+                }
+                else
+                {
+                    _DataSource.OverlayTicker.AddOverlayTickerRow(item.ToString(), name);
+                    _DataSource.OverlayTicker.AcceptChanges();
+                    NotifySaveData();
+                }
+            }
+        }
+
         #endregion
 
         #region Remove Data
@@ -1613,6 +1630,14 @@ switches:
 #endif
 
             DeleteDataRows(GetRows(_DataSource.GiveawayUserData));
+        }
+
+        /// <summary>
+        /// Removes all OverlayTicker table data from the database.
+        /// </summary>
+        public void RemoveAllOverlayTickerData()
+        {
+            DeleteDataRows(GetRows(_DataSource.OverlayTicker));
         }
 
         #endregion

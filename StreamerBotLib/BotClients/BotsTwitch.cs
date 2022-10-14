@@ -600,7 +600,7 @@ namespace StreamerBotLib.BotClients
 
         private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
         private DateTime OutRaidStarted;
-        private Thread RaidLoop;
+        private Thread RaidLoop = null;
         private readonly string RaidLock = "lock";
 
         private void StartRaid(string ToChannelName, DateTime RaidCreated)
