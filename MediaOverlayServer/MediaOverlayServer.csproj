@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <StartupObject>MediaOverlayServer.App</StartupObject>
     <AssemblyName>MediaOverlayServer</AssemblyName>
-    <Version>0.2.4.2</Version>
+    <Version>0.2.5.0</Version>
     <Company>TwineStreamerBot</Company>
     <Authors>WrithemTwine</Authors>
   </PropertyGroup>

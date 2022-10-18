@@ -38,6 +38,8 @@ namespace StreamerBotLib.BotClients
 
         private const int BulkFollowSkipCount = 1000;
 
+        public static event EventHandler<EventArgs> RaidCompleted;
+
         public BotsTwitch()
         {
             // not including "TwitchBotUserSvc" bot, it's an authentication on-demand bot to get the info
@@ -643,6 +645,8 @@ namespace StreamerBotLib.BotClients
                                 ToChannel = ToChannelName,
                                 CreatedAt = OutRaidStarted
                             });
+
+                        RaidCompleted?.Invoke(this, new());
                     }
                     RaidLoop = null;
                 });
