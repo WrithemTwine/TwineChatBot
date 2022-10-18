@@ -38,6 +38,8 @@ namespace StreamerBotLib.BotClients
 
         private const int BulkFollowSkipCount = 1000;
 
+        public static event EventHandler<EventArgs> RaidCompleted;
+
         public BotsTwitch()
         {
             // not including "TwitchBotUserSvc" bot, it's an authentication on-demand bot to get the info
@@ -56,13 +58,14 @@ namespace StreamerBotLib.BotClients
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+            TwitchBotUserSvc.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
+            TwitchBotUserSvc.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
             DataManager = SystemsController.DataManage;
 
             //ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
-
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -154,7 +157,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.HandlersAdded = false;
             }
         }
-
+ 
         #region Twitch Bot Chat Client
 
         private void TwitchBotChatClient_OnBotStarted(object sender, EventArgs e)
@@ -334,6 +337,26 @@ namespace StreamerBotLib.BotClients
             return TwitchBotUserSvc.GetUserId(UserName);
         }
 
+        public static void RaidChannel(string ToUserName)
+        {
+            TwitchBotUserSvc.RaidChannel(ToUserName);
+        }
+
+        public static void CancelRaidChannel()
+        {
+            TwitchBotUserSvc.CancelRaidChannel();
+        }
+
+        private void TwitchBotUserSvc_StartRaidEventResponse(object sender, OnStreamRaidResponseEventArgs e)
+        {
+            StartRaid(e.ToChannel, e.CreatedAt.ToLocalTime());
+        }
+
+        private void TwitchBotUserSvc_CancelRaidEvent(object sender, EventArgs e)
+        {
+            CancelRaidLoop();
+        }
+
         #endregion
 
         #region Follower Bot
@@ -426,7 +449,7 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
         }
 
-        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
+         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
             if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
             {
@@ -575,6 +598,69 @@ namespace StreamerBotLib.BotClients
             }
 
             ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
+        }
+
+        private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
+        private DateTime OutRaidStarted;
+        private Thread RaidLoop = null;
+        private readonly string RaidLock = "lock";
+
+        private void StartRaid(string ToChannelName, DateTime RaidCreated)
+        {
+            lock (RaidLock)
+            {
+                OutRaidStarted = RaidCreated;
+            }
+
+            if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
+            {
+                RaidLoop = ThreadManager.CreateThread(() =>
+                {
+                    // declare locals, so we can use a thread-safe lock
+                    DateTime LocalRaidStart;
+                    bool LocalRaidStarted;
+
+                    lock (RaidLock)
+                    {
+                        LocalRaidStart = OutRaidStarted;
+                        LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
+                    }
+
+                    while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && LocalRaidStarted)
+                    { // check for 90 seconds
+                        lock (RaidLock)
+                        { // update values, in case they changed - use thread lock safety as another thread may change these
+                            LocalRaidStart = OutRaidStarted;
+                            LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
+                        }
+                        Thread.Sleep(10);
+                    }
+
+                    // if the raid wasn't canceled after the loop finished, send raid event to main bot
+                    if (LocalRaidStarted)
+                    {
+                        InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
+                            new OnStreamRaidResponseEventArgs()
+                            {
+                                ToChannel = ToChannelName,
+                                CreatedAt = OutRaidStarted
+                            });
+
+                        RaidCompleted?.Invoke(this, new());
+                    }
+                    RaidLoop = null;
+                });
+                RaidLoop.Start();
+            }
+
+        }
+
+        private void CancelRaidLoop()
+        {
+            lock (RaidLock)
+            {
+                OptionFlags.TwitchOutRaidStarted = false;
+            }
         }
 
         #endregion

@@ -124,6 +124,11 @@ namespace StreamerBotLib.Static
         public static bool TwitchRaidShoutOut { get; set; }
 
         /// <summary>
+        /// Flags whether the streamer channel started a raid - could be anyone based on command rights
+        /// </summary>
+        public static bool TwitchOutRaidStarted { get; set; } = false;
+
+        /// <summary>
         /// Enables repeat timer commands.
         /// </summary>
         public static bool RepeatTimer { get; set; }
@@ -232,6 +237,11 @@ namespace StreamerBotLib.Static
         /// Enables 'clear data' buttons in the GUI, to prevent accidental clicking.
         /// </summary>
         public static bool ManageClearButtonEnabled { get; set; }
+
+        /// <summary>
+        /// Specifies to save OverlayTicker data in the database.
+        /// </summary>
+        public static bool ManageOverlayTicker { get; set; }
 
         /// <summary>
         /// Enables starting the Twitch Chat Bot once the stream goes live. Depends on the live service detecting going live.
@@ -478,6 +488,7 @@ namespace StreamerBotLib.Static
                 ManageGiveawayUsers = Settings.Default.ManageGiveawayUsers;
                 ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
                 ManageClearButtonEnabled = Settings.Default.ManageClearButtonEnabled;
+                ManageOverlayTicker = Settings.Default.ManageOverlayTicker;
 
                 #endregion
 

@@ -293,7 +293,7 @@ namespace StreamerBotLib.BotIOController
 
         public static bool VerifyUserExist(string ChannelName, Platform bots)
         {
-            if(bots == Platform.Twitch)
+            if (bots == Platform.Twitch)
             {
                 return BotsTwitch.VerifyUserExist(ChannelName);
             }
@@ -324,6 +324,22 @@ namespace StreamerBotLib.BotIOController
             }
 
             return result;
+        }
+
+        public static void RaidChannel(string ToChannelName, Platform bots)
+        {
+            if (bots == Platform.Twitch)
+            {
+                BotsTwitch.RaidChannel(ToChannelName);
+            }
+        }
+
+        public static void CancelRaidChannel(Platform bots)
+        {
+            if(bots == Platform.Twitch)
+            {
+                BotsTwitch.CancelRaidChannel();
+            }
         }
 
         #endregion
@@ -375,13 +391,13 @@ namespace StreamerBotLib.BotIOController
             return follows.ConvertAll((f) =>
             {
                 return new Models.Follow(
-                
+
                     f.FollowedAt.ToLocalTime(),
                     f.FromUserId,
                     f.FromUserName,
                     f.ToUserId,
                     f.ToUserName,
-                    new(f.FromUserName,Source, f.FromUserId)
+                    new(f.FromUserName, Source, f.FromUserId)
                 );
             });
         }
@@ -463,7 +479,10 @@ namespace StreamerBotLib.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public static void TwitchStreamOffline(OnStreamOfflineArgs e = null)
         {
-            HandleOnStreamOffline();
+            if (!OptionFlags.TwitchOutRaidStarted)
+            {
+                HandleOnStreamOffline();
+            }
         }
 
         public void TwitchNewSubscriber(OnNewSubscriberArgs e)
@@ -522,7 +541,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchOnUserJoined(StreamerOnUserJoinedArgs e)
         {
-            HandleUserJoined( new() { e.LiveUser });
+            HandleUserJoined(new() { e.LiveUser });
         }
 
         public void TwitchOnUserLeft(StreamerOnUserLeftArgs e)
@@ -573,6 +592,11 @@ namespace StreamerBotLib.BotIOController
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
         {
             HandleIncomingRaidData(new(e.DisplayName, Platform.Twitch), e.RaidTime, e.ViewerCount, e.Category);
+        }
+
+        public void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
+        {
+            HandleOutgoingRaidData(e.ToChannel, e.CreatedAt);
         }
 
         public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
@@ -707,13 +731,14 @@ namespace StreamerBotLib.BotIOController
             PostGameCategoryEvent(gameId, gameName);
         }
 
-        public static void HandleOnStreamOffline(string HostedChannel = null)
+        public static void HandleOnStreamOffline(string HostedChannel = null, DateTime? RaidTime = null)
         {
             if (OptionFlags.IsStreamOnline)
             {
-                DateTime currTime = DateTime.Now.ToLocalTime();
+                DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
+                OptionFlags.TwitchOutRaidStarted = false;
             }
         }
 
@@ -777,6 +802,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
@@ -805,7 +831,7 @@ namespace StreamerBotLib.BotIOController
              Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
-
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
         public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
@@ -827,6 +853,8 @@ namespace StreamerBotLib.BotIOController
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
@@ -849,6 +877,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.AutoEvents);
 
             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
         }
 
         public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
@@ -916,6 +945,11 @@ namespace StreamerBotLib.BotIOController
         public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, string ViewerCount, string Category)
         {
             Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
+        }
+
+        public void HandleOutgoingRaidData(string ToChannelName, DateTime RaidTime)
+        {
+            HandleOnStreamOffline(ToChannelName, RaidTime);
         }
 
         public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Platform Source)

@@ -88,6 +88,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to cancelraid.
+        /// </summary>
+        internal static string cancelraid {
+            get {
+                return ResourceManager.GetString("cancelraid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to commands.
         /// </summary>
         internal static string commands {
@@ -1114,6 +1123,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -use:!cancelraid Mod only -p:Mod.
+        /// </summary>
+        internal static string Paramcancelraid {
+            get {
+                return ResourceManager.GetString("Paramcancelraid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands.
         /// </summary>
         internal static string Paramcommands {
@@ -1245,6 +1263,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramqueue {
             get {
                 return ResourceManager.GetString("Paramqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!raid &lt;user&gt; Mod only -param:true -p:Mod.
+        /// </summary>
+        internal static string Paramraid {
+            get {
+                return ResourceManager.GetString("Paramraid", resourceCulture);
             }
         }
         
@@ -1452,6 +1479,15 @@ namespace StreamerBotLib.Culture {
         internal static string queue {
             get {
                 return ResourceManager.GetString("queue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to raid.
+        /// </summary>
+        internal static string raid {
+            get {
+                return ResourceManager.GetString("raid", resourceCulture);
             }
         }
         

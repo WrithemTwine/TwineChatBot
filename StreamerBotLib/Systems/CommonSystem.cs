@@ -112,6 +112,11 @@ namespace StreamerBotLib.Systems
             {
                 DataManage.RemoveAllGiveawayData();
             }
+
+            if (!OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.RemoveAllOverlayTickerData();
+            }
         }
 
         /// <summary>

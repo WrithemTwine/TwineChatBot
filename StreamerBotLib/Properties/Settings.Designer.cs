@@ -1210,5 +1210,17 @@ namespace StreamerBotLib.Properties {
                 this["TwitchFollowerDisconnectOffline"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ManageOverlayTicker {
+            get {
+                return ((bool)(this["ManageOverlayTicker"]));
+            }
+            set {
+                this["ManageOverlayTicker"] = value;
+            }
+        }
     }
 }
