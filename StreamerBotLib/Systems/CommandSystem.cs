@@ -57,6 +57,7 @@ namespace StreamerBotLib.Systems
         {
             ChatBotStarted = false;
             ElapsedThread?.Join();
+            ElapsedThread = null;
         }
 
         private const int ThreadSleep = 5000;
@@ -86,7 +87,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimer)
+                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimer && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
                 {
                     DiluteTime = CheckDilute();
 
@@ -137,7 +138,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimer)
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimer && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -157,7 +158,6 @@ namespace StreamerBotLib.Systems
 
                     if (cmd.CheckFireTime())
                     {
-
                         lock (GUI.GUIDataManagerLock.Lock) // lock it up because accessing a DataManage row
                         {
                             lock (RepeatLock)
@@ -171,7 +171,14 @@ namespace StreamerBotLib.Systems
                                         && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
                                    )
                                 {
-                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    if (cmd.Command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
+                                    {
+                                        BotController.GetViewerCount(Platform.Twitch);
+                                    }
+                                    else
+                                    {
+                                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    }
                                 }
                             }
                         }
@@ -478,7 +485,8 @@ namespace StreamerBotLib.Systems
                 result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                     new( MsgVars.user, ChannelName ),
-                    new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) )
+                    new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
+                    new( MsgVars.viewers, FormatData.Plurality(arglist[0], MsgVars.Pluralviewers) )
                 }));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))

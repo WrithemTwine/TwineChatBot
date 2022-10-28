@@ -11,8 +11,11 @@ using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
 using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
@@ -130,5 +133,21 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             await _api.Helix.Raids.CancelRaidAsync(FromId);
         }
+
+        public async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
+        {
+            if (UserId != null)
+            {
+                return await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId } );
+            }
+            else if (UserName != null)
+            {
+                string UserId_result = await GetUserId(UserName);
+                return UserId_result != null ? await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId_result }) : null;
+            }
+
+            return null;
+        }
+
     }
 }

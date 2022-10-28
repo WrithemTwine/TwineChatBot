@@ -604,7 +604,7 @@
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramuptime" xml:space="preserve">
-    <value>-use:!uptime</value>
+    <value>-use:!uptime -param:true</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramusage" xml:space="preserve">

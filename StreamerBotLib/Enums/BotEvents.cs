@@ -31,6 +31,7 @@
         TwitchIncomingRaid,
         TwitchChatCommandReceived,
         TwitchChannelPointsRewardRedeemed,
-        TwitchOutgoingRaid
+        TwitchOutgoingRaid,
+        TwitchBotCommandCall
     }
 }

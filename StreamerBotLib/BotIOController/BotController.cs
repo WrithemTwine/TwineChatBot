@@ -342,6 +342,14 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
+        public static void GetViewerCount(Platform bots)
+        {
+            if(bots == Platform.Twitch)
+            {
+                BotsTwitch.GetViewerCount();
+            }
+        }
+
         #endregion
 
         #region Twitch Bot Events
@@ -619,6 +627,11 @@ namespace StreamerBotLib.BotIOController
                 IsVip = e.Command.ChatMessage.IsVip,
                 Message = e.Command.ChatMessage.Message
             }, Platform.Twitch);
+        }
+
+        public void TwitchBotCommandCall(SendBotCommandEventArgs e)
+        {
+            HandleChatCommandReceived(e.CmdMessage, Platform.Twitch);
         }
 
         public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)

@@ -60,12 +60,14 @@ namespace StreamerBotLib.BotClients
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotUserSvc.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
             TwitchBotUserSvc.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
+            TwitchBotUserSvc.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
             DataManager = SystemsController.DataManage;
 
             //ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
+
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -355,6 +357,35 @@ namespace StreamerBotLib.BotClients
         private void TwitchBotUserSvc_CancelRaidEvent(object sender, EventArgs e)
         {
             CancelRaidLoop();
+        }
+
+        public static void GetViewerCount()
+        {
+            TwitchBotUserSvc.GetViewerCount(TwitchBotsBase.TwitchChannelName);
+        }
+        private void TwitchBotUserSvc_OnGetStreamsViewerCount(object sender, GetStreamsViewerCountEventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchBotCommandCall, new SendBotCommandEventArgs()
+            {
+                CmdMessage = new()
+                {
+                    CommandArguments = new() { e.Count.ToString() },
+                    CommandText = LocalizedMsgSystem.GetVar(DefaultCommand.uptime),
+                    DisplayName = TwitchBotsBase.TwitchBotUserName,
+                    Channel = TwitchBotsBase.TwitchChannelName,
+                    IsBroadcaster = TwitchBotsBase.TwitchBotUserName == TwitchBotsBase.TwitchChannelName,
+                    IsHighlighted = false,
+                    IsMe = false,
+                    IsModerator = TwitchBotsBase.TwitchBotUserName == TwitchBotsBase.TwitchChannelName,
+                    IsPartner = false,
+                    IsSkippingSubMode = false,
+                    IsStaff = false,
+                    IsSubscriber = false,
+                    IsTurbo = false,
+                    IsVip = false,
+                    Message = $"!{LocalizedMsgSystem.GetVar(MsgVars.uptime)} {e.Count}"
+                }
+            });
         }
 
         #endregion

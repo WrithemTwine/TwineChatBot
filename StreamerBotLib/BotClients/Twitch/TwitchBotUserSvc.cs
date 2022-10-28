@@ -14,6 +14,7 @@ using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Schedule;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.PubSub.Models.Responses;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -28,6 +29,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
         public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
+        public event EventHandler<GetStreamsViewerCountEventArgs> GetStreamsViewerCount;
         public event EventHandler CancelRaidEvent;
 
         public TwitchBotUserSvc()
@@ -139,7 +141,12 @@ namespace StreamerBotLib.BotClients.Twitch
             return userLookupService.GetGameId(GameName: new() { GameName }).Result.Games[0].Id;
         }
 
-
+        public void GetViewerCount(string UserName)
+        {
+            ChooseConnectUserService();
+            GetStreamsResponse getStreamsResponse = userLookupService.GetStreams(UserName: UserName).Result;
+            GetStreamsViewerCount?.Invoke(this, new() { Count = getStreamsResponse.Streams[0].ViewerCount });
+        }
 
         #endregion
 

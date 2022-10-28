@@ -1339,7 +1339,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -use:!uptime.
+        ///   Looks up a localized string similar to -use:!uptime -param:true.
         /// </summary>
         internal static string Paramuptime {
             get {
