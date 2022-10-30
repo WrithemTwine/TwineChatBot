@@ -529,7 +529,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to display name of the user sending action.
+        ///   Looks up a localized string similar to display the number of viewers.
         /// </summary>
         internal static string Helpviewers {
             get {
@@ -1051,7 +1051,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #user has been streaming for #uptime..
+        ///   Looks up a localized string similar to #user has been streaming for #uptime, with #viewers..
         /// </summary>
         internal static string Msguptime {
             get {

@@ -287,7 +287,7 @@
     <value>The message the bot uses to welcome users to the channel. See options for "no welcome", "welcome when joined", or "welcome when user chats".</value>
   </data>
   <data name="Helpviewers" xml:space="preserve">
-    <value>display name of the user sending action</value>
+    <value>display the number of viewers</value>
   </data>
   <data name="Helpwinner" xml:space="preserve">
     <value>display winner of Giveaway event</value>
@@ -483,7 +483,7 @@
     <value>#user has returned. Welcome back!</value>
   </data>
   <data name="Msguptime" xml:space="preserve">
-    <value>#user has been streaming for #uptime.</value>
+    <value>#user has been streaming for #uptime, with #viewers.</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgusage" xml:space="preserve">
