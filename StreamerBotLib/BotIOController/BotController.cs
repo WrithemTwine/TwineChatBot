@@ -344,9 +344,12 @@ namespace StreamerBotLib.BotIOController
 
         public static void GetViewerCount(Platform bots)
         {
-            if(bots == Platform.Twitch)
+            if (OptionFlags.IsStreamOnline)
             {
-                BotsTwitch.GetViewerCount();
+                if (bots == Platform.Twitch || bots == Platform.Default)
+                {
+                    BotsTwitch.GetViewerCount();
+                }
             }
         }
 

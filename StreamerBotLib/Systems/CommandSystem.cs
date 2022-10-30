@@ -171,14 +171,7 @@ namespace StreamerBotLib.Systems
                                         && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
                                    )
                                 {
-                                    if (cmd.Command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
-                                    {
-                                        BotController.GetViewerCount(Platform.Twitch);
-                                    }
-                                    else
-                                    {
-                                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
-                                    }
+                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
                                 }
                             }
                         }
@@ -407,19 +400,19 @@ namespace StreamerBotLib.Systems
                     result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
                 }
             }
-            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.raid))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.raid))
             {
                 if (arglist.Count > 0)
                 {
                     BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Source);
                     result = cmdrow.Message;
-                } 
+                }
                 else
                 {
                     result = DataManage.GetUsage(command);
                 }
             }
-            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
             {
                 BotController.CancelRaidChannel(User.Source);
                 result = cmdrow.Message;
@@ -482,12 +475,20 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
             {
-                result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                if (arglist.Count == 0)
                 {
+                    BotController.GetViewerCount(User.Source);
+                    result = "";
+                }
+                else
+                {
+                    result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
                     new( MsgVars.user, ChannelName ),
                     new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
                     new( MsgVars.viewers, FormatData.Plurality(arglist[0], MsgVars.Pluralviewers) )
-                }));
+                    }));
+                }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
             {

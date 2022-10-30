@@ -145,7 +145,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             ChooseConnectUserService();
             GetStreamsResponse getStreamsResponse = userLookupService.GetStreams(UserName: UserName).Result;
-            GetStreamsViewerCount?.Invoke(this, new() { Count = getStreamsResponse.Streams[0].ViewerCount });
+            GetStreamsViewerCount?.Invoke(this, new() { Count = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
         }
 
         #endregion
