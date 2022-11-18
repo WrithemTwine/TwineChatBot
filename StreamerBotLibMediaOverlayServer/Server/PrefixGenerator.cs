@@ -1,20 +1,20 @@
-﻿using MediaOverlayServer.Enums;
-using MediaOverlayServer.Models;
-using MediaOverlayServer.Static;
+﻿using StreamerBotLibMediaOverlayServer.Enums;
+using StreamerBotLibMediaOverlayServer.Models;
+using StreamerBotLibMediaOverlayServer.Static;
 
 using System;
 using System.Collections.Generic;
 
-namespace MediaOverlayServer.Server
+namespace StreamerBotLibMediaOverlayServer.Server
 {
-    internal static class PrefixGenerator
+    public static class PrefixGenerator
     {
         private static string ServerAddress { get; } = $"http://localhost:{OptionFlags.MediaOverlayPort}/";
 
         private static List<string> Prefixes { get; set; } = new();
         private static List<OverlayPage> Links { get; set; } = new();
 
-        internal static List<string> GetPrefixes()
+        public static List<string> GetPrefixes()
         {
             Prefixes.Clear();
             Links.Clear();
@@ -39,7 +39,7 @@ namespace MediaOverlayServer.Server
             return Prefixes;
         }
 
-        internal static List<OverlayPage> GetLinks()
+        public static List<OverlayPage> GetLinks()
         {
             return Links;
         }

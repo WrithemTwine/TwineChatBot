@@ -132,6 +132,37 @@ namespace StreamerBotLib.Data
             }
         }
 
+        public IEnumerable<string> GetKeys(string Table)
+        {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check table {Table} and get the keys.");
+#endif
+
+            // TODO: better error check this method, espeically for null key fields or multiple key fields
+            List<string> keys = new();
+            
+            lock (GUIDataManagerLock.Lock)
+            {
+                if (Table is not null and not "")
+                {
+                    DataColumn[] k = _DataSource?.Tables[Table]?.PrimaryKey;
+                    if (k?.Length > 1)
+                    {
+                        keys.AddRange(from d in
+                                          from DataColumn d in k
+                                          where d.ColumnName != "Id"
+                                          select d
+                                      select d.ColumnName);
+                    }
+                    else if (k?.Length == 1)
+                    {
+                        keys.Add(k?[0].ColumnName);
+                    }
+                }
+                return keys;
+            }
+        }
+
 
         public DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null)
         {

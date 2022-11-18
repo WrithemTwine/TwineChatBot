@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.5.1</Version>
+    <Version>0.2.5.3</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediaOverlayServer\MediaOverlayServer.csproj" />
     <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
+    <ProjectReference Include="..\StreamerBotLibMediaOverlayServer\StreamerBotLibMediaOverlayServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

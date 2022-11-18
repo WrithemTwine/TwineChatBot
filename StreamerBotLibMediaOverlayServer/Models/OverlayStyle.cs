@@ -1,11 +1,11 @@
-﻿using MediaOverlayServer.Communication;
-using MediaOverlayServer.Interfaces;
-using MediaOverlayServer.Static;
+﻿using StreamerBotLibMediaOverlayServer.Communication;
+using StreamerBotLibMediaOverlayServer.Interfaces;
+using StreamerBotLibMediaOverlayServer.Static;
 
 using System.Diagnostics;
 using System.IO;
 
-namespace MediaOverlayServer.Models
+namespace StreamerBotLibMediaOverlayServer.Models
 {
     /// <summary>
     /// Loads a style and saves to a file.

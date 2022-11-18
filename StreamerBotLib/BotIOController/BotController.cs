@@ -8,10 +8,11 @@ using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
+using StreamerBotLibMediaOverlayServer.Enums;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -268,6 +269,17 @@ namespace StreamerBotLib.BotIOController
 
         #region Query Bots
 
+        public static string GetBotName(Platform Source)
+        {
+            switch (Source)
+            {
+                case Platform.Twitch:
+                    return OptionFlags.TwitchBotUserName;
+                default:
+                    return "None";
+            }
+        }
+
         public static string GetUserCategory(string ChannelName, string UserId, Platform bots)
         {
             if (bots == Platform.Twitch)
@@ -346,10 +358,13 @@ namespace StreamerBotLib.BotIOController
         {
             if (OptionFlags.IsStreamOnline)
             {
-                if (bots == Platform.Twitch || bots == Platform.Default)
+                ThreadManager.CreateThreadStart(() =>
                 {
-                    BotsTwitch.GetViewerCount();
-                }
+                    if (bots == Platform.Twitch || bots == Platform.Default)
+                    {
+                        BotsTwitch.GetViewerCount();
+                    }
+                });
             }
         }
 
@@ -642,7 +657,7 @@ namespace StreamerBotLib.BotIOController
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
             // much more data exists in the resulting data output
 
-            HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title);
+            HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title, e.RewardRedeemed.Redemption.UserInput, Platform.Twitch);
         }
 
         #endregion
@@ -817,7 +832,7 @@ namespace StreamerBotLib.BotIOController
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
@@ -844,7 +859,7 @@ namespace StreamerBotLib.BotIOController
             {
        Send(ParsedMsg, Multi);
            }
-             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
+             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
@@ -868,7 +883,7 @@ namespace StreamerBotLib.BotIOController
                 Send(ParsedMsg, Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
@@ -892,7 +907,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
             Systems.UpdatedStat(StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
         }
 
@@ -914,7 +929,7 @@ namespace StreamerBotLib.BotIOController
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<Models.LiveUser> Users)
@@ -940,7 +955,7 @@ namespace StreamerBotLib.BotIOController
                 Systems.UpdatedStat(StreamStatType.UserBanned);
                 HandleUserLeft(new(UserName, Source));
 
-                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
+                Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
             }
             catch (Exception ex)
             {
@@ -977,16 +992,32 @@ namespace StreamerBotLib.BotIOController
             Systems.ProcessCommand(commandmsg, Source);
         }
 
-        public void HandleCustomReward(string DisplayName, string RewardTitle)
+        public void HandleCustomReward(string DisplayName, string RewardTitle, string RewardMsg, Platform Source)
         {
             if (GiveawayItemType == GiveawayTypes.CustomRewards && RewardTitle == GiveawayItemName)
             {
                 HandleGiveawayPostName(DisplayName);
             }
 
+            Tuple<string, string> approval = SystemsController.GetApprovalRule(ModActionType.ChannelPoints, RewardTitle);
+
+            if (approval != null)
+            {
+                switch (Source)
+                {
+                    case Platform.Twitch:
+                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}", new(() => {
+                        TwitchBots.PostInternalCommand(approval.Item2, new() { DisplayName, RewardMsg } ,$"!{approval.Item2} {DisplayName} {RewardMsg}");})
+                        );
+
+                        TwitchBots.PostInternalCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new(), $"!{LocalizedMsgSystem.GetVar(DefaultCommand.approve)}");
+                        break;
+                }
+            }
+
             if (OptionFlags.MediaOverlayChannelPoints)
             {
-                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
+                Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
             }
         }
 

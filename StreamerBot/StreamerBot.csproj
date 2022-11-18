@@ -12,13 +12,17 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
     <SignAssembly>false</SignAssembly>
-    <Version>0.2.5.1</Version>    
+    <Version>0.2.5.3</Version>    
     <Copyright>2022</Copyright>
     <PackageReleaseNotes>Updated repeating command process</PackageReleaseNotes>
     <Authors>WrithemTwine</Authors>
     <Company>TwineStreamerBot</Company>
     <ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -8,6 +8,8 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
+using StreamerBotLibMediaOverlayServer.Enums;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,11 +17,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-
-using TwitchLib.Api.Helix;
-
-using static StreamerBotLib.Data.DataSource;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StreamerBotLib.Systems
 {
@@ -171,7 +168,7 @@ namespace StreamerBotLib.Systems
                                         && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
                                    )
                                 {
-                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), null, DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), new(), DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
                                 }
                             }
                         }
@@ -293,7 +290,17 @@ namespace StreamerBotLib.Systems
             }
             else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
             {
-                result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
+                Tuple<string, string> ApproveAction = GetApprovalRule(ModActionType.Commands, cmdMessage.CommandText);
+                if (ApproveAction == null)
+                {
+                    result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
+                }
+                else
+                {
+                    AddApprovalRequest($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
+                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
+                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), new(), DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
+                }
             }
             else
             {
@@ -301,6 +308,16 @@ namespace StreamerBotLib.Systems
                 result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi);
             }
 
+            FormatResult(result, multi, cmdrow);
+        }
+
+        internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
+        {
+            return DataManage.CheckModApprovalRule(ActionType, Command);
+        }
+
+        private void FormatResult(string result, short multi, CommandData cmdrow)
+        {
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
             ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
@@ -378,7 +395,6 @@ namespace StreamerBotLib.Systems
 
         public string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
         {
-
             string result = "";
             string tempHTMLResponse = "";
             Dictionary<string, string> datavalues = null;
@@ -416,6 +432,44 @@ namespace StreamerBotLib.Systems
             {
                 BotController.CancelRaidChannel(User.Source);
                 result = cmdrow.Message;
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.approve))
+            {
+                if (arglist.Count == 0)
+                {
+                    datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                        new(MsgVars.list, string.Join(", ",GetDescriptions()) ),
+                        new(MsgVars.usage, cmdrow.Usage)
+                    });
+
+                    result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                }
+                else if (arglist.Count == 1)
+                {
+                    string AppLabel = GetLabel(arglist[0]);
+                    if (AppLabel != null)
+                    {
+                        RunApprovedRequest(AppLabel);
+                        result = LocalizedMsgSystem.GetVar(Msg.MsgModApproved);
+                    }
+                    else
+                    {
+                        result = LocalizedMsgSystem.GetVar(Msg.MsgModApproveNotFound);
+                    }
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setintro))
+            {
+                if (arglist.Count > 2)
+                {
+                    string adduser = arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0];
+                    string message = string.Join(' ', arglist.Skip(1));
+                }
+                else
+                {
+                    result = cmdrow.Usage;
+                }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
             {
@@ -471,22 +525,23 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {
+                // TODO: add option to separate social media output messages
                 result = cmdrow.Message + " " + DataManage.GetSocials();
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
             {
-                if (arglist.Count == 0)
+                if (arglist.Count == 0 && cmdrow.Message.Contains(MsgVars.viewers.ToString()))
                 {
                     BotController.GetViewerCount(User.Source);
                     result = "";
                 }
                 else
                 {
-                    result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetVar(Msg.Msguptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                     new( MsgVars.user, ChannelName ),
                     new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
-                    new( MsgVars.viewers, FormatData.Plurality(arglist[0], MsgVars.Pluralviewers) )
+                    new( MsgVars.viewers, FormatData.Plurality(arglist.Count > 0 ? arglist[0] : "", MsgVars.Pluralviewers) )
                     }));
                 }
             }
@@ -530,7 +585,7 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.url, paramvalue ),
                     new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
                     new( MsgVars.date, DateTime.Now.ToLocalTime().ToShortDateString() ),
-                    new( MsgVars.com, paramvalue)
+                    new( MsgVars.com, paramvalue )
                 });
 
                 if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Source))
@@ -563,7 +618,7 @@ namespace StreamerBotLib.Systems
                                 LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Found !so message with a category, {resultcat}.");
 #endif
 
-                                CheckForOverlayEvent(overlayType: MediaOverlayServer.Enums.OverlayTypes.Commands,
+                                CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
                                     Action: DefaultCommand.so.ToString(),
                                     UserName: User.UserName, UserMsg: tempHTMLResponse);
                             }
@@ -590,7 +645,7 @@ namespace StreamerBotLib.Systems
 
             if (result != "")
             {
-                CheckForOverlayEvent(overlayType: MediaOverlayServer.Enums.OverlayTypes.Commands, Action: command, UserName: User.UserName, UserMsg: tempHTMLResponse);
+                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, UserName: User.UserName, UserMsg: tempHTMLResponse);
             }
 
             result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;

@@ -29,7 +29,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
         public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
-        public event EventHandler<GetStreamsViewerCountEventArgs> GetStreamsViewerCount;
+        public event EventHandler<GetStreamsEventArgs> GetStreamsViewerCount;
         public event EventHandler CancelRaidEvent;
 
         public TwitchBotUserSvc()
@@ -145,7 +145,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             ChooseConnectUserService();
             GetStreamsResponse getStreamsResponse = userLookupService.GetStreams(UserName: UserName).Result;
-            GetStreamsViewerCount?.Invoke(this, new() { Count = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
+            GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
         }
 
         #endregion

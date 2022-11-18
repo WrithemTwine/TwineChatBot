@@ -21,8 +21,9 @@
         uptime,
         usage,
         followage,
-        intro,
+        intro, setintro,
         settitle, setcategory,
-        raid, cancelraid
+        raid, cancelraid,
+        approve
     }
 }

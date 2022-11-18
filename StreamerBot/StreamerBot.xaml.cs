@@ -46,6 +46,10 @@ namespace StreamerBot
         private readonly GUIAppServices guiAppServices;
         private readonly DateTime StartBotDate;
         private DateTime TwitchFollowRefresh;
+
+        private DateTime ChannelPtRetrievalDate = DateTime.MinValue;
+        private TimeSpan ChannelPtRefresh = new(0, 15, 0);
+
         private int TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
         private const string MultiLiveName = "MultiUserLiveBot";
@@ -975,6 +979,10 @@ namespace StreamerBot
         {
             BeginGiveawayChannelPtsUpdate();
         }
+        private void TabItem_ModApprove_GotFocus(object sender, RoutedEventArgs e)
+        {
+            BeginGiveawayChannelPtsUpdate();
+        }
 
         private void Button_Overlay_PauseAlerts_Click(object sender, RoutedEventArgs e)
         {
@@ -1046,14 +1054,14 @@ namespace StreamerBot
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
+            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(53);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
-            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(60);
+            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(53);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
@@ -1245,7 +1253,7 @@ namespace StreamerBot
 
         private void Popup_DataEdit(DataGrid sourceDataGrid, bool AddNew = true)
         {
-            if (sourceDataGrid.Name == "DataGrid_OverlayService_Actions")
+            if (sourceDataGrid.Name is "DataGrid_OverlayService_Actions" or "DG_ModApprove")
             {
                 PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
             }
@@ -1370,12 +1378,17 @@ namespace StreamerBot
 
         private void Button_Giveaway_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
         {
+            ChannelPtRetrievalDate = DateTime.MinValue; // reset the retrieve date to force retrieval
             BeginGiveawayChannelPtsUpdate();
         }
 
         private void BeginGiveawayChannelPtsUpdate()
         {
-            _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.GetChannelPoints(UserName: s)));
+            if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
+            {
+                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.GetChannelPoints(UserName: s)));
+                ChannelPtRetrievalDate = DateTime.Now;
+            }
         }
 
         private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)

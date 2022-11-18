@@ -4,13 +4,14 @@
 #define UseGUIDLL
 #endif
 
-using MediaOverlayServer.Communication;
-using MediaOverlayServer.Models;
-using MediaOverlayServer.Server;
+using StreamerBotLibMediaOverlayServer.Communication;
 
-namespace MediaOverlayServer.Control
+using StreamerBotLibMediaOverlayServer.Models;
+using StreamerBotLibMediaOverlayServer.Server;
+
+namespace StreamerBotLibMediaOverlayServer.Control
 {
-    internal class OverlayController
+    public class OverlayController
     {
         internal TwineBotWebServer _httpServer;
 
@@ -31,23 +32,23 @@ namespace MediaOverlayServer.Control
             _httpServer.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
         }
 #elif UseGUIDLL
-        internal OverlayController()
+        public OverlayController()
         {
             _httpServer = new();
         }
 
-        internal void SendAlert(OverlayPage overlayPage)
+        public void SendAlert(OverlayPage overlayPage)
         {
             _httpServer.SendAlert(overlayPage);
         }
 #endif
 
-        internal void StartServer()
+        public void StartServer()
         {
             _httpServer.StartServer();
         }
 
-        internal void StopServer()
+        public void StopServer()
         {
             _httpServer.StopServer();
         }

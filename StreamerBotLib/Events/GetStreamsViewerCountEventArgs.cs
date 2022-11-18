@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace StreamerBotLib.Events
 {
-    public class GetStreamsViewerCountEventArgs : EventArgs
+    public class GetStreamsEventArgs : EventArgs
     {
-        public int Count { get; set; }
+        public int ViewerCount { get; set; }
     }
 }

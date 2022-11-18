@@ -1,11 +1,11 @@
-﻿using MediaOverlayServer.Properties;
+﻿using StreamerBotLibMediaOverlayServer.Properties;
 
-namespace MediaOverlayServer.Static
+namespace StreamerBotLibMediaOverlayServer.Static
 {
     /// <summary>
     /// Connects Application Settings and key flags to a single object for reference across classes
     /// </summary>
-    internal static class OptionFlags
+    public static class OptionFlags
     {
         public static bool ActiveToken { get; set; }
 
@@ -17,7 +17,7 @@ namespace MediaOverlayServer.Static
 
         public static bool AutoStart { get; set; }
 
-        internal static void SetSettings()
+        public static void SetSettings()
         {
             Settings.Default.Save();
 

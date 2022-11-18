@@ -1,4 +1,4 @@
-﻿namespace MediaOverlayServer.Static
+﻿namespace StreamerBotLibMediaOverlayServer.Static
 {
     public static class PublicConstants
     {

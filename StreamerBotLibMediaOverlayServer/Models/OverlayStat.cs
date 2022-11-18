@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace MediaOverlayServer.Models
+namespace StreamerBotLibMediaOverlayServer.Models
 {
     /// <summary>
     /// Manages an Overlay statistic to show how much the server performed the Overlay action.
@@ -25,7 +25,7 @@ namespace MediaOverlayServer.Models
         /// </summary>
         public int OverlayCount
         {
-            get => overlayCount; 
+            get => overlayCount;
             set
             {
                 overlayCount = value;

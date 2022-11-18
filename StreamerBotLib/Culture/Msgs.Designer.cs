@@ -340,6 +340,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Specific to the moderator approval command, the list of pending approval items..
+        /// </summary>
+        internal static string Helplist {
+            get {
+                return ResourceManager.GetString("Helplist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The message to send out to social media when the channel goes live..
         /// </summary>
         internal static string HelpLive {
@@ -511,6 +520,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to shows the message usage.
+        /// </summary>
+        internal static string Helpusage {
+            get {
+                return ResourceManager.GetString("Helpusage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to display name of the user sending action.
         /// </summary>
         internal static string Helpuser {
@@ -552,6 +570,15 @@ namespace StreamerBotLib.Culture {
         internal static string host {
             get {
                 return ResourceManager.GetString("host", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to intro.
+        /// </summary>
+        internal static string intro {
+            get {
+                return ResourceManager.GetString("intro", resourceCulture);
             }
         }
         
@@ -615,6 +642,15 @@ namespace StreamerBotLib.Culture {
         internal static string MsgAllCateogry {
             get {
                 return ResourceManager.GetString("MsgAllCateogry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A moderator needs to approve (#usage): #list.
+        /// </summary>
+        internal static string Msgapprove {
+            get {
+                return ResourceManager.GetString("Msgapprove", resourceCulture);
             }
         }
         
@@ -831,6 +867,24 @@ namespace StreamerBotLib.Culture {
         internal static string Msglurk {
             get {
                 return ResourceManager.GetString("Msglurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moderator approval accepted..
+        /// </summary>
+        internal static string MsgModApproved {
+            get {
+                return ResourceManager.GetString("MsgModApproved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approval item not found..
+        /// </summary>
+        internal static string MsgModApproveNotFound {
+            get {
+                return ResourceManager.GetString("MsgModApproveNotFound", resourceCulture);
             }
         }
         
@@ -1114,6 +1168,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:!approval &lt;item number&gt;.
+        /// </summary>
+        internal static string Paramapprove {
+            get {
+                return ResourceManager.GetString("Paramapprove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -use:!bot.
         /// </summary>
         internal static string Parambot {
@@ -1290,6 +1353,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramsetcategory {
             get {
                 return ResourceManager.GetString("Paramsetcategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -p:Mod -f:Message -a:Post -use:!intro username message.
+        /// </summary>
+        internal static string Paramsetintro {
+            get {
+                return ResourceManager.GetString("Paramsetintro", resourceCulture);
             }
         }
         
@@ -1524,6 +1596,15 @@ namespace StreamerBotLib.Culture {
         internal static string setcategory {
             get {
                 return ResourceManager.GetString("setcategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to setintro.
+        /// </summary>
+        internal static string setintro {
+            get {
+                return ResourceManager.GetString("setintro", resourceCulture);
             }
         }
         

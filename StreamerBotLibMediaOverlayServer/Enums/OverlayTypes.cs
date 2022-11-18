@@ -1,4 +1,4 @@
-﻿namespace MediaOverlayServer.Enums
+﻿namespace StreamerBotLibMediaOverlayServer.Enums
 {
     public enum OverlayTypes { None, ChannelPoints, ChannelEvents, Commands, Giveaway }
 }

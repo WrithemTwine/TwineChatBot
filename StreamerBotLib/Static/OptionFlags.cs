@@ -362,6 +362,10 @@ namespace StreamerBotLib.Static
         /// Enable learning messages from the chat, to have a list of safe messages and unsafe messages needing moderation.
         /// </summary>
         public static bool ModerateUserLearnMsgs { get; set; }
+        /// <summary>
+        /// Specify number of minutes for when a moderator approval action will expire.
+        /// </summary>
+        public static int ModeratorApprovalTimeout { get; set; }
 
         /// <summary>
         /// Enable the Media Overlay Services.
@@ -389,11 +393,15 @@ namespace StreamerBotLib.Static
             {
                 Settings.Default.Save();
 
+                #region LogAction
+
                 LogBotStatus = Settings.Default.LogBotStatus;
                 LogExceptions = Settings.Default.LogExceptions;
 
+                #endregion
+
                 #region Twitch
- 
+
                 TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
@@ -441,6 +449,8 @@ namespace StreamerBotLib.Static
 
                 #endregion
 
+                #region Messages
+
                 FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
                 FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
 
@@ -453,6 +463,8 @@ namespace StreamerBotLib.Static
 
                 AutoShout = Settings.Default.MsgAutoShout;
                 MsgSendSOToChat = Settings.Default.MsgSendSOToChat;
+
+                #endregion
 
                 #region Repeat Commands
 
@@ -472,11 +484,19 @@ namespace StreamerBotLib.Static
 
                 #endregion
 
+                #region UserParty
+
                 UserPartyStart = Settings.Default.UserPartyStart;
                 UserPartyStop = Settings.Default.UserPartyStop;
 
+                #endregion
+
+                #region Live Messages
+
                 PostMultiLive = Settings.Default.PostMultiLive;
                 LiveMsg = Settings.Default.MsgLive;
+
+                #endregion
 
                 #region Data Manage
 
@@ -508,6 +528,7 @@ namespace StreamerBotLib.Static
                 ModerateUsersWarn = Settings.Default.ModerateUsersWarn;
                 ModerateUsersAction = Settings.Default.ModerateUsersAction;
                 ModerateUserLearnMsgs = Settings.Default.ModerateUserLearnMsgs;
+                ModeratorApprovalTimeout = Settings.Default.ModeratorApprovalTimeout;
 
                 #endregion
 

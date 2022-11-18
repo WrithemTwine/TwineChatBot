@@ -1,4 +1,4 @@
-﻿namespace MediaOverlayServer.Interfaces
+﻿namespace StreamerBotLibMediaOverlayServer.Interfaces
 {
     public interface IOverlayStyle
     {

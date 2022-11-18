@@ -1,9 +1,10 @@
-﻿
-using MediaOverlayServer.Communication;
-using MediaOverlayServer.Enums;
-using MediaOverlayServer.Interfaces;
-using MediaOverlayServer.Properties;
-using MediaOverlayServer.Static;
+﻿using StreamerBotLibMediaOverlayServer.Properties;
+
+using StreamerBotLibMediaOverlayServer.Communication;
+using StreamerBotLibMediaOverlayServer.Enums;
+using StreamerBotLibMediaOverlayServer.Interfaces;
+
+using StreamerBotLibMediaOverlayServer.Static;
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Threading;
 
-namespace MediaOverlayServer.Server
+namespace StreamerBotLibMediaOverlayServer.Server
 {
     public class TwineBotWebServer
     {
@@ -123,14 +124,16 @@ namespace MediaOverlayServer.Server
                             }
                         }
                         buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                    } else
+                    }
+                    else
                     {
                         if (File.Exists(request.RawUrl[1..]))
                         {
                             // BinaryReader br = new(new StreamReader(request.RawUrl).BaseStream);
                             buffer = File.ReadAllBytes(request.RawUrl[1..]);
 
-                        } else
+                        }
+                        else
                         {
                             buffer = System.Text.Encoding.UTF8.GetBytes("");
                         }

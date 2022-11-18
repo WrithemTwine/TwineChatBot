@@ -1,8 +1,8 @@
-﻿using MediaOverlayServer.Interfaces;
+﻿using StreamerBotLibMediaOverlayServer.Interfaces;
 
 using System;
 
-namespace MediaOverlayServer.Models
+namespace StreamerBotLibMediaOverlayServer.Models
 {
     public class OverlayPage : IEquatable<OverlayPage>, IOverlayPageReadOnly
     {

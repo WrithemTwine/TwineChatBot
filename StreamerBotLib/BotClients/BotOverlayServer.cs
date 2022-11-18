@@ -18,11 +18,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using MediaOverlayServer.Enums;
 using MediaOverlayServer.Static;
-using MediaOverlayServer.Models;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Reflection;
 using System.Windows;
+using StreamerBotLibMediaOverlayServer.Models;
 
 namespace StreamerBotLib.BotClients
 {

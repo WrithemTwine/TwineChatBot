@@ -1,11 +1,11 @@
-﻿using MediaOverlayServer.Enums;
-
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
+
+using StreamerBotLibMediaOverlayServer.Enums;
 
 using System;
 using System.Collections.Generic;
@@ -319,6 +319,25 @@ namespace StreamerBotLib.Systems
             return ActionSystem.CheckField(dataTable, FieldName);
         }
 
+        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        {
+            return DataManage.GetWebhooks(webhooksKind);
+        }
+     
+
+        #endregion
+
+        #region Mod Approval
+        public static Tuple<string, string> GetApprovalRule(ModActionType actionType, string ActionName)
+        {
+            return ActionSystem.GetApprovalRule(actionType, ActionName);
+        }
+
+        public void PostApproval(string Description, Task Action)
+        {
+            SystemActions.AddApprovalRequest(Description, Action);
+        }
+
         #endregion
 
         #region Statistics
@@ -427,11 +446,7 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
-        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
-        {
-            return DataManage.GetWebhooks(webhooksKind);
-        }
-
+        #region User Related
         private bool RegisterJoinedUser(LiveUser User, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
             bool FoundUserJoined = false;
@@ -684,6 +699,8 @@ namespace StreamerBotLib.Systems
             }
             UpdatedStat(StreamStatType.AutoCommands);
         }
+
+        #endregion
 
         #region Giveaway
         /// <summary>

@@ -6,6 +6,9 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
+using StreamerBotLibMediaOverlayServer.Enums;
+using StreamerBotLibMediaOverlayServer.Static;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,6 +39,11 @@ namespace StreamerBotLib.GUI.Windows
         private ComboBox TableElement;
         private ComboBox KeyFieldElement;
         private ComboBox DataFieldElement;
+
+        private ComboBox ModActionTypeElement;
+        private ComboBox ModActionElement;
+        private ComboBox ModPerformTypeElement;
+        private ComboBox ModPerformElement;
 
         private ComboBox OverlayTypeElement;
         private ComboBox OverlayActionTypeElement;
@@ -167,7 +175,7 @@ namespace StreamerBotLib.GUI.Windows
         private string FileCopy(string FileName, string OverlayType)
         {
             string resultfile;
-            string CopyFile = Path.Combine(MediaOverlayServer.Static.PublicConstants.BaseOverlayPath, OverlayType, Path.GetFileName(FileName)).Replace("_", " ").Replace(" ", ""); // replace '_' to prevent issues with converting class object to string to class object
+            string CopyFile = Path.Combine(PublicConstants.BaseOverlayPath, OverlayType, Path.GetFileName(FileName)).Replace("_", " ").Replace(" ", ""); // replace '_' to prevent issues with converting class object to string to class object
 
             if (FileName == "")
             {
@@ -276,7 +284,9 @@ namespace StreamerBotLib.GUI.Windows
                             { "ModAction", Enum.GetValues(typeof(ModActions)) },
                             { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
                             { "BanReason", Enum.GetValues(typeof(BanReasons)) },
-                            { "OverlayType", Enum.GetValues(typeof(MediaOverlayServer.Enums.OverlayTypes)) }
+                            { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
+                            { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
+                            { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) }
                         };
 
                     foreach (var E in ColEnums[dataColumn.ColumnName])
@@ -295,8 +305,50 @@ namespace StreamerBotLib.GUI.Windows
                     if (dataColumn.ColumnName == "OverlayType")
                     {
                         OverlayTypeElement = (ComboBox)dataout;
+                        ((ComboBox)dataout).Name = nameof(OverlayTypeElement);
                         ((ComboBox)dataout).SelectionChanged += OverlayTypeElement_SelectionChanged;
                     }
+                    else if (dataColumn.ColumnName == "ModActionType")
+                    {
+                        ModActionTypeElement = (ComboBox)dataout;
+                        ((ComboBox)dataout).Name = nameof(ModActionTypeElement);
+                        ((ComboBox)dataout).SelectionChanged += OverlayTypeElement_SelectionChanged;
+                    }
+                    else if (dataColumn.ColumnName == "ModPerformType")
+                    {
+                        ModPerformTypeElement = (ComboBox)dataout;
+                        ((ComboBox)dataout).Name = nameof(ModPerformTypeElement);
+                        ((ComboBox)dataout).SelectionChanged += OverlayTypeElement_SelectionChanged;
+                    }
+                    break;
+                case PopupEditTableDataType.combolist:
+                    List<string> combolistcollection = new();
+                    ComboBox CurrTypeElem = null;
+
+
+                    dataout = new ComboBox()
+                    {
+                        SelectedValue = datavalue.ToString(),
+                        Width = ValueWidth,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+
+                    if (dataColumn.ColumnName == "ModActionName")
+                    {
+                        CurrTypeElem = ModActionTypeElement;
+                        ModActionElement = (ComboBox)dataout;
+                    }
+                    else if (dataColumn.ColumnName == "ModPerformAction")
+                    {
+                        CurrTypeElem = ModPerformTypeElement;
+                        ModPerformElement = (ComboBox)dataout;
+                    }
+
+                    if (CurrTypeElem != null && CurrTypeElem.SelectedValue != null)
+                    {
+                        ((ComboBox)dataout).ItemsSource = MediaOverlayEventActions[CurrTypeElem.SelectedValue.ToString()];
+                    }
+
                     break;
                 case PopupEditTableDataType.combotable:
                     List<string> combocollection = new();
@@ -362,7 +414,7 @@ namespace StreamerBotLib.GUI.Windows
 
                             if (GUItable != null && GUItable.SelectedValue != null)
                             {
-                                combocollection.Add(DataManage.GetKey((string)GUItable.SelectedValue));
+                                combocollection.AddRange(DataManage.GetKeys((string)GUItable.SelectedValue));
                             }
 
                             dataout = new ComboBox()
@@ -437,17 +489,6 @@ namespace StreamerBotLib.GUI.Windows
 
                     break;
                 case PopupEditTableDataType.filebrowse:
-
-                    //if (OverlayTypeElement.SelectedValue as string == MediaOverlayServer.Enums.OverlayTypes.Clip.ToString())
-                    //{
-                    //    dataout = new TextBox()
-                    //    {
-                    //        Text = "The Clip link will be sent to the Overlay Action.",
-                    //        ToolTip = "The URL Twitch sends for the new clip, this will go to the Overlay event and referenced in the alert."
-                    //    };
-                    //}
-                    //else
-                    //{
                     dataout = new TextBox()
                     {
                         Text = datavalue.ToString(),
@@ -455,7 +496,6 @@ namespace StreamerBotLib.GUI.Windows
                         MinWidth = 200
                     };
                     ((TextBox)dataout).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
-                    //}
 
                     break;
                 case PopupEditTableDataType.text:
@@ -489,11 +529,25 @@ namespace StreamerBotLib.GUI.Windows
 
         private void OverlayTypeElement_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox OverlayTypes = (ComboBox)sender;
+            ComboBox ActionType = (ComboBox)sender;
+            ComboBox ActionNameElement = null;
 
-            if (OverlayTypes != null && OverlayTypes.SelectedValue.ToString() != "")
+            switch (ActionType.Name)
             {
-                OverlayActionTypeElement.ItemsSource = MediaOverlayEventActions[OverlayTypes.SelectedValue.ToString()];
+                case nameof(OverlayTypeElement):
+                    ActionNameElement = OverlayActionTypeElement;
+                    break;
+                case nameof(ModActionTypeElement):
+                    ActionNameElement = ModActionElement;
+                    break;
+                case nameof(ModPerformTypeElement):
+                    ActionNameElement = ModPerformElement;
+                    break;
+            }
+
+            if (ActionType != null && ActionType.SelectedValue.ToString() != "" && ActionNameElement != null)
+            {
+                ActionNameElement.ItemsSource = MediaOverlayEventActions[ActionType.SelectedValue.ToString()];
             }
         }
 
@@ -603,9 +657,10 @@ namespace StreamerBotLib.GUI.Windows
             {
                 case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata" or "UseChatMsg":
                     return PopupEditTableDataType.databool;
-                case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes" or "BanReason" or "OverlayType":
+                case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes" 
+                or "BanReason" or "OverlayType" or "ModActionType" or "ModPerformType":
                     return PopupEditTableDataType.comboenum;
-                case "":
+                case "ModActionName" or "ModPerformAction":
                     return PopupEditTableDataType.combolist;
                 case "Category" or "table" or "key_field" or "data_field" or "currency_field":
                     return PopupEditTableDataType.combotable;

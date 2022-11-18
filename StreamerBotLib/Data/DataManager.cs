@@ -2,14 +2,15 @@
 #define noLogDataManager_Actions
 #endif
 
-using MediaOverlayServer.Models;
-
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+
+using StreamerBotLibMediaOverlayServer.Enums;
+using StreamerBotLibMediaOverlayServer.Models;
 
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ namespace StreamerBotLib.Data
 
             string Msg = "";
 
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
                 ChannelEventsRow channelEventsRow = (ChannelEventsRow)GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{rowcriteria}'");
 
@@ -307,6 +308,11 @@ switches:
             }
 
             return result;
+        }
+
+        public IEnumerable<string> GetCommandList()
+        {
+            return GetCommands().Split(", ");
         }
 
         public object PerformQuery(CommandData row, string ParamValue)
@@ -681,6 +687,14 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 return ((CustomWelcomeRow)GetRow(_DataSource.CustomWelcome, Filter: $"{_DataSource.CustomWelcome.UserNameColumn.ColumnName}='{User}'"))?.Message ?? "";
+            }
+        }
+
+        public void AddWelcomeUser(string User, string WelcomeMsg)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                _DataSource.CustomWelcome.AddCustomWelcomeRow(User, WelcomeMsg);
             }
         }
 
@@ -1530,13 +1544,30 @@ switches:
 
         #endregion
 
+        #region Moderator Approval
+        public Tuple<string,string> CheckModApprovalRule(ModActionType modActionType, string ModAction)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                ModeratorApproveRow moderatorApproveRow = (ModeratorApproveRow)GetRow(
+                    _DataSource.ModeratorApprove,
+                    $"{_DataSource.ModeratorApprove.ModActionTypeColumn.ColumnName}='{modActionType}' AND {_DataSource.ModeratorApprove.ModActionNameColumn.ColumnName}='{ModAction}");
+
+                return moderatorApproveRow == null ? null : (moderatorApproveRow.ModPerformType == null && moderatorApproveRow.ModPerformAction == null)
+                    ? new(moderatorApproveRow.ModActionType, moderatorApproveRow.ModActionName)
+                    : new(moderatorApproveRow.ModPerformType, moderatorApproveRow.ModPerformAction);
+            }
+        }
+
+        #endregion
+
         #region Media Overlay Service
 
         public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
         {
             lock (GUIDataManagerLock.Lock)
             {
-                List<OverlayActionType> found = new(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')") select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaFile = overlayServicesRow.MediaFile, ImageFile = overlayServicesRow.ImageFile, Message = overlayServicesRow.Message, OverlayType = (MediaOverlayServer.Enums.OverlayTypes)Enum.Parse(typeof(MediaOverlayServer.Enums.OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
+                List<OverlayActionType> found = new(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')") select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaFile = overlayServicesRow.MediaFile, ImageFile = overlayServicesRow.ImageFile, Message = overlayServicesRow.Message, OverlayType = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
 
                 List<OverlayActionType> result = new();
 

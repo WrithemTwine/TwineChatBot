@@ -1,4 +1,4 @@
-﻿using MediaOverlayServer.Enums;
+﻿using StreamerBotLibMediaOverlayServer.Enums;
 
 using System;
 using System.Collections.Generic;

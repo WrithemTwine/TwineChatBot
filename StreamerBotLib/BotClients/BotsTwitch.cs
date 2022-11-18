@@ -363,27 +363,32 @@ namespace StreamerBotLib.BotClients
         {
             TwitchBotUserSvc.GetViewerCount(TwitchBotsBase.TwitchChannelName);
         }
-        private void TwitchBotUserSvc_OnGetStreamsViewerCount(object sender, GetStreamsViewerCountEventArgs e)
+        private void TwitchBotUserSvc_OnGetStreamsViewerCount(object sender, GetStreamsEventArgs e)
+        {
+            PostInternalCommand(LocalizedMsgSystem.GetVar(DefaultCommand.uptime), new() { e.ViewerCount.ToString() }, $"!{LocalizedMsgSystem.GetVar(MsgVars.uptime)} {e.ViewerCount}");
+        }
+
+        internal void PostInternalCommand(string Com, List<string> ComArgs, string ComMessage )
         {
             InvokeBotEvent(this, BotEvents.TwitchBotCommandCall, new SendBotCommandEventArgs()
             {
                 CmdMessage = new()
                 {
-                    CommandArguments = new() { e.Count.ToString() },
-                    CommandText = LocalizedMsgSystem.GetVar(DefaultCommand.uptime),
+                    CommandArguments = ComArgs,
+                    CommandText = Com,
                     DisplayName = TwitchBotsBase.TwitchBotUserName,
                     Channel = TwitchBotsBase.TwitchChannelName,
                     IsBroadcaster = TwitchBotsBase.TwitchBotUserName == TwitchBotsBase.TwitchChannelName,
                     IsHighlighted = false,
                     IsMe = false,
-                    IsModerator = TwitchBotsBase.TwitchBotUserName == TwitchBotsBase.TwitchChannelName,
+                    IsModerator = TwitchBotsBase.TwitchBotUserName != TwitchBotsBase.TwitchChannelName,
                     IsPartner = false,
                     IsSkippingSubMode = false,
                     IsStaff = false,
                     IsSubscriber = false,
                     IsTurbo = false,
                     IsVip = false,
-                    Message = $"!{LocalizedMsgSystem.GetVar(MsgVars.uptime)} {e.Count}"
+                    Message = ComMessage
                 }
             });
         }

@@ -1,11 +1,12 @@
-﻿using MediaOverlayServer.Enums;
-using MediaOverlayServer.Models;
-using MediaOverlayServer.Server;
+﻿using StreamerBotLibMediaOverlayServer.Enums;
+
+using StreamerBotLibMediaOverlayServer.Models;
+using StreamerBotLibMediaOverlayServer.Server;
 
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace MediaOverlayServer.GUI
+namespace StreamerBotLibMediaOverlayServer.GUI
 {
     /// <summary>
     /// Class to report any back end to GUI data.
@@ -23,10 +24,10 @@ namespace MediaOverlayServer.GUI
 
         public GUIData()
         {
-            OverlayStats = new() 
+            OverlayStats = new()
             {
 #if DEBUG
-                new() { OverlayType = OverlayTypes.ChannelPoints.ToString(), OverlayCount = 5 }, 
+                new() { OverlayType = OverlayTypes.ChannelPoints.ToString(), OverlayCount = 5 },
                 new() { OverlayCount=10, OverlayType=OverlayTypes.ChannelEvents.ToString() }
 #endif
             };
@@ -35,14 +36,15 @@ namespace MediaOverlayServer.GUI
             OverlayEditStyles.Add(new OverlayStyle(OverlayTypes.None.ToString()));
 #endif
 
-            foreach(string T in System.Enum.GetNames(typeof(OverlayTypes)))
+            foreach (string T in System.Enum.GetNames(typeof(OverlayTypes)))
             {
-                if (T != OverlayTypes.None.ToString()) {
+                if (T != OverlayTypes.None.ToString())
+                {
                     OverlayStat item = new() { OverlayCount = 0, OverlayType = T };
                     if (!OverlayStats.Contains(item))
                     {
                         OverlayStats.Add(item);
-                    } 
+                    }
                 }
             }
         }
@@ -104,7 +106,7 @@ namespace MediaOverlayServer.GUI
 
         public void AddEditPage(string[] overlayTypes)
         {
-            foreach(string s in overlayTypes)
+            foreach (string s in overlayTypes)
             {
                 AddEditPage(s);
             }
@@ -112,7 +114,7 @@ namespace MediaOverlayServer.GUI
 
         public void SaveEditPage()
         {
-            foreach(OverlayStyle overlayEditStyle in OverlayEditStyles)
+            foreach (OverlayStyle overlayEditStyle in OverlayEditStyles)
             {
                 overlayEditStyle.SaveFile();
             }

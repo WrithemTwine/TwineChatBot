@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using MediaOverlayServer.Enums;
+using StreamerBotLibMediaOverlayServer.Enums;
 
-namespace MediaOverlayServer.Models
+namespace StreamerBotLibMediaOverlayServer.Models
 {
     /// <summary>
     /// Defines message payload to either load data or specify active data via the named pipe from the main bot process.

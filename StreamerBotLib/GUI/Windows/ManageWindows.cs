@@ -39,7 +39,7 @@ namespace StreamerBotLib.GUI.Windows
             EditDataWindow = new();
             EditDataWindow.UpdatedDataRow += EditDataWindow_UpdatedDataRow;
 
-            if (dataTable.TableName == "OverlayServices")
+            if (dataTable.TableName is "OverlayServices" or "ModeratorApprove")
             {
                 EditDataWindow.SetOverlayActions(TableDataPairs);
             }

@@ -776,7 +776,30 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Moderation Messages">
                                             <StackPanel>
-                                                <Label>Currently not enabled-working on machine learning</Label>
+
+                                                <GroupBox Header="Approval Request Expiration" Width="Auto">
+                                                    <StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Label VerticalContentAlignment="Center" Content="Expiration Minutes: "/>
+                                                            <Label VerticalContentAlignment="Center" Content="{Binding Value, ElementName=Slider_ModApprovalTimeout}" />
+                                                        </StackPanel>
+                                                        <Slider x:Name="Slider_ModApprovalTimeout" Height="40" Width="Auto" AutoToolTipPlacement="TopLeft" Interval="1" 
+                                                                TickPlacement="Both"
+                                                                Value="{Binding ModeratorApprovalTimeout, Mode=TwoWay}" Maximum="60" Minimum="5" SmallChange="5" SelectionStart="5" SelectionEnd="60" Margin="5,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5">
+                                                            <Slider.ToolTip>
+                                                                <TextBlock>
+                                                                    On 'Data/Moderator/User Approve' tab, specify which commands or <LineBreak />
+                                                                    channel points redemptions users can request moderator approval. <LineBreak />
+                                                                    Specifically, actions that can modify bot data. Specify here how <LineBreak />
+                                                                    many minutes should moderators have to approve the request. <LineBreak />
+                                                                    After these specified minutes, the request will expire.                                                                    
+                                                                </TextBlock> 
+                                                            </Slider.ToolTip>
+                                                        </Slider>
+                                                    </StackPanel>
+                                                </GroupBox>
+                                                
+                                                <TextBlock>Currently not enabled-working on machine learning</TextBlock>
                                                 <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
                                                     <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                                 </CheckBox>
@@ -945,7 +968,25 @@
                             </DockPanel>
                         </TabItem>
                         <TabItem Header="Moderation">
-                            <DockPanel>
+                            <TabControl>
+                                <TabItem Header="User Approve" GotFocus="TabItem_ModApprove_GotFocus">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Top">
+                                            Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.<LineBreak />
+                                            <LineBreak />
+                                            ModActionType-the type of defined action-a command, channel point redeem, etc<LineBreak />
+                                            ModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro<LineBreak />
+                                            <Line Height="10" Width="500" Fill="Black" X1="10" X2="210" /><LineBreak />
+                                            ModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.<LineBreak />
+                                            ModPerformAction-the name of the action to perform once approved<LineBreak />
+                                            <LineBreak />
+                                            The default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".<LineBreak />
+                                        </TextBlock>
+                                        <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top" ItemsSource="{Binding ModeratorApprove, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                    </DockPanel>
+                                </TabItem>
+                                <TabItem Header="Msg Mod">
+                                    <DockPanel>
                                 <TextBlock DockPanel.Dock="Top" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
@@ -961,6 +1002,8 @@
 
                                 <DataGrid ItemsSource="{Binding LearnMsgs}" DockPanel.Dock="Bottom" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
                             </DockPanel>
+                                </TabItem>
+                            </TabControl>
                         </TabItem>
                         <TabItem Header="User Data" x:Name="TabItem_Users">
                             <TabControl>

@@ -1,23 +1,23 @@
-﻿using MediaOverlayServer.Models;
+﻿using StreamerBotLibMediaOverlayServer.Models;
 
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Xml.Linq;
 
-namespace MediaOverlayServer.Communication
+namespace StreamerBotLibMediaOverlayServer.Communication
 {
     /// <summary>
     /// Provides HTML strings to supply via the HTTP server, includes building an Overlay media page based on provided image, audio, and/or video.
     /// </summary>
-    internal static class ProcessHyperText
+    public static class ProcessHyperText
     {
         private static string RefreshToken(int Duration)
         {
             return $"<meta http-equiv=\"refresh\" content=\"{Duration}\" />";
         }
 
-        internal static string DefaultPage
+        public static string DefaultPage
         {
             get
             {
@@ -25,7 +25,7 @@ namespace MediaOverlayServer.Communication
             }
         }
 
-        internal static string DefaultActionPage
+        public static string DefaultActionPage
         {
             get
             {
@@ -33,12 +33,12 @@ namespace MediaOverlayServer.Communication
             }
         }
 
-        internal static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia=false)
+        public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false)
         {
-            return $"<html><head>{(IsMedia?"":RefreshToken(Duration))}<style>{OverlayStyle}</style></head><body><div class=\"maindiv\">{OverlayBody}</div></body></html>";
+            return $"<html><head>{(IsMedia ? "" : RefreshToken(Duration))}<style>{OverlayStyle}</style></head><body><div class=\"maindiv\">{OverlayBody}</div></body></html>";
         }
 
-        internal static string ProcessOverlay(OverlayActionType overlayActionType)
+        public static string ProcessOverlay(OverlayActionType overlayActionType)
         {
             // todo: finish building output
 
@@ -47,7 +47,7 @@ namespace MediaOverlayServer.Communication
             if (overlayActionType.ImageFile != "" && File.Exists(overlayActionType.ImageFile))
             {
                 Size sz = Image.FromFile(overlayActionType.ImageFile, false).Size;
-                Img = new XElement("img", new XAttribute("class","image"), new XAttribute("src", overlayActionType.ImageFile), new XAttribute("width", sz.Width), new XAttribute("height", sz.Height)).ToString();
+                Img = new XElement("img", new XAttribute("class", "image"), new XAttribute("src", overlayActionType.ImageFile), new XAttribute("width", sz.Width), new XAttribute("height", sz.Height)).ToString();
             }
 
             string Media = "";
@@ -58,13 +58,13 @@ namespace MediaOverlayServer.Communication
 
             string BuildMediaElement(string tag, string Extension, Dictionary<string, string> MediaTypes)
             {
-                return new XElement($"{tag}", new XAttribute("id","myalert"), new XAttribute("onended","window.location.reload();"), new XElement("source", new XAttribute("src", overlayActionType.MediaFile), new XAttribute("type", MediaTypes[Extension]))).ToString().Replace($"<{tag}", $"<{tag} autoplay");
+                return new XElement($"{tag}", new XAttribute("id", "myalert"), new XAttribute("onended", "window.location.reload();"), new XElement("source", new XAttribute("src", overlayActionType.MediaFile), new XAttribute("type", MediaTypes[Extension]))).ToString().Replace($"<{tag}", $"<{tag} autoplay");
             }
 
             if (overlayActionType.MediaFile.Contains("http"))
             {
                 Media = new XElement("iframe", new XAttribute("id", "myalert"), new XElement("src", overlayActionType.MediaFile)).ToString();
-            } 
+            }
             else if (audio.ContainsKey(ext) && File.Exists(overlayActionType.MediaFile))
             {
                 Media = BuildMediaElement("audio", ext, audio);
@@ -79,7 +79,7 @@ namespace MediaOverlayServer.Communication
             return ProcessPage(new OverlayStyle(overlayActionType.OverlayType.ToString()).OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
         }
 
-        internal static string DefaultStyle
+        public static string DefaultStyle
         {
             get
             {

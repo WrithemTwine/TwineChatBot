@@ -35,6 +35,8 @@
         Pluralday,
         Pluralhour,
         Pluralminute, 
-        or
+        or,
+        list,
+        usage
     }
 }
