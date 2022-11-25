@@ -7,7 +7,6 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using StreamerBotLibMediaOverlayServer.Enums;
-using StreamerBotLibMediaOverlayServer.Static;
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +18,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+
+using LogWriter = StreamerBotLib.Static.LogWriter;
+using PublicConstants = StreamerBotLibMediaOverlayServer.Static.PublicConstants;
 
 namespace StreamerBotLib.GUI.Windows
 {

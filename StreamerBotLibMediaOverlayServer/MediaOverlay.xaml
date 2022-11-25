@@ -1,10 +1,10 @@
-﻿<Window x:Class="MediaOverlayServer.MainWindow"
+﻿<Window x:Class="StreamerBotLibMediaOverlayServer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Data="clr-namespace:StreamerBotLibMediaOverlayServer.GUI;assembly=StreamerBotLibMediaOverlayServer"
-        xmlns:Prop="clr-namespace:StreamerBotLibMediaOverlayServer.Properties;assembly=StreamerBotLibMediaOverlayServer"
+        xmlns:Data="clr-namespace:StreamerBotLibMediaOverlayServer.GUI"
+        xmlns:Prop="clr-namespace:StreamerBotLibMediaOverlayServer.Properties"
         mc:Ignorable="d"
         Title="Media Overlay" Height="450" Width="600" UseLayoutRounding="True" SnapsToDevicePixels="True" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>
@@ -105,7 +105,7 @@
                             </FlowDocument>
                         </FlowDocumentScrollViewer>
                     </Expander>
-                    
+
                     <TabControl x:Name="TabControl_OverlayStyles" />
                 </DockPanel>
 
@@ -113,3 +113,4 @@
         </TabControl>
     </DockPanel>
 </Window>
+

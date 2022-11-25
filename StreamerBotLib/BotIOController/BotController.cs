@@ -24,6 +24,8 @@ using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 
+using LogType = StreamerBotLib.Enums.LogType;
+
 
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
 
@@ -550,10 +552,10 @@ namespace StreamerBotLib.BotIOController
                 e.GiftedSubscription.MsgParamSubPlan.ToString());
         }
 
-        public void TwitchBeingHosted(OnBeingHostedArgs e)
-        {
-            HandleBeingHosted(e.BeingHostedNotification.HostedByChannel, e.BeingHostedNotification.IsAutoHosted, e.BeingHostedNotification.Viewers);
-        }
+        //public void TwitchBeingHosted(OnBeingHostedArgs e)
+        //{
+        //    HandleBeingHosted(e.BeingHostedNotification.HostedByChannel, e.BeingHostedNotification.IsAutoHosted, e.BeingHostedNotification.Viewers);
+        //}
 
         public static void TwitchNowHosting(OnNowHostingArgs e)
         {
@@ -1006,8 +1008,10 @@ namespace StreamerBotLib.BotIOController
                 switch (Source)
                 {
                     case Platform.Twitch:
-                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}", new(() => {
-                        TwitchBots.PostInternalCommand(approval.Item2, new() { DisplayName, RewardMsg } ,$"!{approval.Item2} {DisplayName} {RewardMsg}");})
+                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}", 
+                            new(() => {
+                                TwitchBots.PostInternalCommand(approval.Item2, new() { DisplayName, RewardMsg } ,$"!{approval.Item2} {DisplayName} {RewardMsg}");
+                            })
                         );
 
                         TwitchBots.PostInternalCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new(), $"!{LocalizedMsgSystem.GetVar(DefaultCommand.approve)}");

@@ -208,7 +208,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUser,f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser,f.FollowedAt.ToLocalTime())))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -553,7 +553,7 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.ModerateUserLearnMsgs)
             {
-                DataManage.AddLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
+                DataManage.PostLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
             }
 
             ActionSystem.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);

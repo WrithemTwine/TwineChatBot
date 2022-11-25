@@ -175,7 +175,7 @@ switches:
             }
         }
 
-        public string AddCommand(string cmd, CommandParams Params)
+        public string PostCommand(string cmd, CommandParams Params)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new command called {cmd}.");
@@ -551,7 +551,7 @@ switches:
                     select row).Count() > 1;
         }
 
-        public bool AddStream(DateTime StreamStart)
+        public bool PostStream(DateTime StreamStart)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new stream for {StreamStart}, checking if one already exists.");
@@ -666,7 +666,7 @@ switches:
 
             lock(GUIDataManagerLock.Lock)
             {
-                UsersRow userrow = AddNewUser(User, NowSeen);
+                UsersRow userrow = PostNewUser(User, NowSeen);
                 userrow.CurrLoginDate = Max(userrow.CurrLoginDate, NowSeen);
                 userrow.LastDateSeen = Max(userrow.LastDateSeen, NowSeen);
                 _DataSource.Users.AcceptChanges();
@@ -690,7 +690,7 @@ switches:
             }
         }
 
-        public void AddWelcomeUser(string User, string WelcomeMsg)
+        public void PostUserCustomWelcome(string User, string WelcomeMsg)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -825,7 +825,7 @@ switches:
         /// <param name="User">The Username of the new Follow</param>
         /// <param name="FollowedDate">The date of the Follow.</param>
         /// <returns>True if the follower is the first time. False if already followed.</returns>
-        public bool AddFollower(LiveUser User, DateTime FollowedDate)
+        public bool PostFollower(LiveUser User, DateTime FollowedDate)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add user {User} as a new follower at {FollowedDate}.");
@@ -836,7 +836,7 @@ switches:
                 bool newfollow;
                 bool update = false;
 
-                UsersRow users = AddNewUser(User, FollowedDate);
+                UsersRow users = PostNewUser(User, FollowedDate);
                 FollowersRow followers = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserNameColumn.ColumnName}='{User.UserName}'");
 
                 if (followers != null)
@@ -879,7 +879,7 @@ switches:
         /// <param name="User">The user name.</param>
         /// <param name="FirstSeen">The first time the user is seen.</param>
         /// <returns>True if the user is added, else false if the user already existed.</returns>
-        private UsersRow AddNewUser(LiveUser User, DateTime FirstSeen)
+        private UsersRow PostNewUser(LiveUser User, DateTime FirstSeen)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new user {User}, first seen at {FirstSeen}.");
@@ -945,7 +945,7 @@ switches:
             {
                 foreach (Follow f in follows)
                 {
-                    _ = AddFollower(f.FromUser, f.FollowedAt);
+                    _ = PostFollower(f.FromUser, f.FollowedAt);
                 }
             }
 
@@ -1006,7 +1006,7 @@ switches:
             SetDataTableFieldRows(_DataSource.Users, _DataSource.Users.WatchTimeColumn, new TimeSpan(0));
         }
 
-        public void AddNewAutoShoutUser(string UserName)
+        public void PostNewAutoShoutUser(string UserName)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding user {UserName} to the auto shout-out listing.");
@@ -1020,6 +1020,48 @@ switches:
                     NotifySaveData();
                 }
             }
+        }
+
+        public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
+        {
+            bool success = false;
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                // do currency updates first
+
+                CurrencyRow[] CurrencyCurrUserRow = (CurrencyRow[])GetRows(_DataSource.Currency,$"{_DataSource.Currency.UserNameColumn.ColumnName}='{CurrUser}'");
+                CurrencyRow[] CurrencySourceUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{SourceUser}'");
+     
+                foreach (var (Scr, Ccr) in CurrencySourceUserRow.SelectMany(Scr => CurrencyCurrUserRow.Where(Ccr => Scr.CurrencyName == Ccr.CurrencyName).Select(Ccr => (Scr, Ccr))))
+                {
+                    Ccr.Value += Scr.Value;
+                    success = true;
+                }
+
+                foreach (CurrencyRow cr in CurrencySourceUserRow)
+                {
+                    cr.Delete();
+                }
+
+                _DataSource.Currency.AcceptChanges();
+
+                // do user table updates last
+                UsersRow CurrUserRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{CurrUser}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{platform}'");
+                UsersRow SourceUserRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{SourceUser}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{platform}'");
+
+                if (CurrUserRow != null && SourceUserRow != null)
+                {
+                    CurrUserRow.WatchTime += SourceUserRow.WatchTime;
+                    SourceUserRow.Delete();
+                    _DataSource.Users.AcceptChanges();
+                    success = success && true;
+                }
+
+                NotifySaveData();
+            }
+
+            return success;
         }
 
         #endregion Users and Followers
@@ -1096,7 +1138,7 @@ switches:
                         return Accrue * (currencyclock.TotalSeconds / Seconds);
                     }
 
-                    AddCurrencyRows(ref User);
+                    PostCurrencyRows(ref User);
 
                     CurrencyTypeRow[] currencyType = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
                     CurrencyRow[] userCurrency = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.IdColumn.ColumnName}='{User.Id}'");
@@ -1117,7 +1159,7 @@ switches:
         /// Update the currency accrual for the specified user, add all currency rows per the user.
         /// </summary>
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
-        public void AddCurrencyRows(ref UsersRow usersRow)
+        public void PostCurrencyRows(ref UsersRow usersRow)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add all currency rows for user {usersRow.UserName}.");
@@ -1150,7 +1192,7 @@ switches:
         /// <summary>
         /// For every user in the database, add currency rows for each currency type - add missing rows.
         /// </summary>
-        public void AddCurrencyRows()
+        public void PostCurrencyRows()
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add currency for all users.");
@@ -1162,7 +1204,7 @@ switches:
                 for (int i = 0; i < UserRows.Length; i++)
                 {
                     UsersRow users = UserRows[i];
-                    AddCurrencyRows(ref users);
+                    PostCurrencyRows(ref users);
                 }
                 _DataSource.Currency.AcceptChanges();
                 NotifySaveData();
@@ -1291,7 +1333,7 @@ switches:
         /// <param name="CategoryId">The ID of the stream category.</param>
         /// <param name="newCategory">The category to add to the list if it's not available.</param>
         /// <returns>True if category OR game ID are found; False if no category nor game ID is found.</returns>
-        public bool AddCategory(string CategoryId, string newCategory)
+        public bool PostCategory(string CategoryId, string newCategory)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add and update the {newCategory} category.");
@@ -1369,7 +1411,7 @@ switches:
         /// <param name="Title">The clip title a viewer assigned the clip</param>
         /// <param name="Url">The URL to reach the clip</param>
         /// <returns><c>true</c> when clip added to database, <c>false</c> when clip is already added.</returns>
-        public bool AddClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
+        public bool PostClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new clip.");
@@ -1500,7 +1542,7 @@ switches:
             }
         }
 
-        public void AddLearnMsgsRow(string Message, MsgTypes MsgType)
+        public void PostLearnMsgsRow(string Message, MsgTypes MsgType)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding a new learned message row.");
@@ -1545,7 +1587,7 @@ switches:
         #endregion
 
         #region Moderator Approval
-        public Tuple<string,string> CheckModApprovalRule(ModActionType modActionType, string ModAction)
+        public Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -1553,9 +1595,10 @@ switches:
                     _DataSource.ModeratorApprove,
                     $"{_DataSource.ModeratorApprove.ModActionTypeColumn.ColumnName}='{modActionType}' AND {_DataSource.ModeratorApprove.ModActionNameColumn.ColumnName}='{ModAction}");
 
-                return moderatorApproveRow == null ? null : (moderatorApproveRow.ModPerformType == null && moderatorApproveRow.ModPerformAction == null)
-                    ? new(moderatorApproveRow.ModActionType, moderatorApproveRow.ModActionName)
-                    : new(moderatorApproveRow.ModPerformType, moderatorApproveRow.ModPerformAction);
+                string ActionType    = DBNull.Value.Equals(moderatorApproveRow.ModPerformType) || moderatorApproveRow.ModPerformType == "" ? moderatorApproveRow.ModActionType : moderatorApproveRow.ModPerformType;
+                string ActionPerform = DBNull.Value.Equals(moderatorApproveRow.ModPerformAction) || moderatorApproveRow.ModPerformAction == "" ? moderatorApproveRow.ModActionName : moderatorApproveRow.ModPerformAction;
+
+                return moderatorApproveRow == null ? null : new(ActionType, ActionPerform);
             }
         }
 

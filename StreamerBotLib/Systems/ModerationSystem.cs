@@ -4,7 +4,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -58,6 +57,11 @@ namespace StreamerBotLib.Systems
         #endregion
 
         #region User Requests
+
+        internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
+        {
+            return DataManage.CheckModApprovalRule(ActionType, Command);
+        }
 
         /// <summary>
         /// Adds a request to the approval list.

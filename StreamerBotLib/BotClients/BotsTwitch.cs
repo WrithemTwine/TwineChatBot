@@ -78,7 +78,7 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.IsStarted && !TwitchBotChatClient.HandlersAdded)
             {
-                TwitchBotChatClient.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
+                //TwitchBotChatClient.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
@@ -86,7 +86,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
-                TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
+                //TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
                 TwitchBotChatClient.TwitchChat.OnUserBanned += Client_OnUserBanned;
@@ -139,7 +139,7 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.HandlersAdded)
             {
-                TwitchBotChatClient.TwitchChat.OnBeingHosted -= Client_OnBeingHosted;
+                //TwitchBotChatClient.TwitchChat.OnBeingHosted -= Client_OnBeingHosted;
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived -= Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription -= Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected -= Client_OnExistingUsersDetected;
@@ -147,7 +147,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel -= Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived -= Client_OnMessageReceived;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber -= Client_OnNewSubscriber;
-                TwitchBotChatClient.TwitchChat.OnNowHosting -= Client_OnNowHosting;
+                //TwitchBotChatClient.TwitchChat.OnNowHosting -= Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification -= Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber -= Client_OnReSubscriber;
                 TwitchBotChatClient.TwitchChat.OnUserBanned -= Client_OnUserBanned;
@@ -206,10 +206,10 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
         }
 
-        private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
-        }
+        //private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
+        //{
+        //    InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
+        //}
 
         private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
         {

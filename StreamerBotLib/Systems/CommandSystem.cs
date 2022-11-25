@@ -311,10 +311,6 @@ namespace StreamerBotLib.Systems
             FormatResult(result, multi, cmdrow);
         }
 
-        internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
-        {
-            return DataManage.CheckModApprovalRule(ActionType, Command);
-        }
 
         private void FormatResult(string result, short multi, CommandData cmdrow)
         {
@@ -357,7 +353,7 @@ namespace StreamerBotLib.Systems
             });
         }
 
-/// <summary>
+        /// <summary>
         /// See if the user is part of the user's auto-shout out list to determine if the message should be called, or shout-out from a raid or other similar event.
         /// </summary>
         /// <param name="UserName">The user to check</param>
@@ -402,7 +398,7 @@ namespace StreamerBotLib.Systems
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
-                result = DataManage.AddCommand(newcom[1..], CommandParams.Parse(arglist));
+                result = DataManage.PostCommand(newcom[1..], CommandParams.Parse(arglist));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
             {
@@ -465,11 +461,26 @@ namespace StreamerBotLib.Systems
                 {
                     string adduser = arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0];
                     string message = string.Join(' ', arglist.Skip(1));
+
+                    DataManage.PostUserCustomWelcome(adduser, message);
                 }
                 else
                 {
                     result = cmdrow.Usage;
                 }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.mergeaccounts))
+            {
+                bool? output = null;
+                if (arglist.Count == 0)
+                {
+                    result = cmdrow.Usage;
+                }
+                else
+                {
+                    output = DataManage.PostMergeUserStats(arglist.Count == 1 ? User.UserName : arglist[0], arglist[0], User.Source);
+                }
+                result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
             {

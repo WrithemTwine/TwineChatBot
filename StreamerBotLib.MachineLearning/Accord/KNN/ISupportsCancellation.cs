@@ -21,7 +21,7 @@
 //
 using System.Threading;
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN // TODO: Move those classes to the root Accord namespace
+namespace StreamerBotLib.MachineLearning.Accord.KNN 
 {
     /// <summary>
     ///   Common interface for algorithms that can be canceled

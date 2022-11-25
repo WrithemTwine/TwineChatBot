@@ -24,6 +24,7 @@
         intro, setintro,
         settitle, setcategory,
         raid, cancelraid,
-        approve
+        approve,
+        mergeaccounts
     }
 }

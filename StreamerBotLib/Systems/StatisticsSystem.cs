@@ -46,7 +46,7 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.ManageStreamStats)
             {
-                DataManage.AddCategory(categoryId, category);
+                DataManage.PostCategory(categoryId, category);
             }
         }
 
@@ -184,7 +184,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
-                    DataManage.AddStream(CurrStream.StreamStart);
+                    DataManage.PostStream(CurrStream.StreamStart);
 
                     found = false;
                 }

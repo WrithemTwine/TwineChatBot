@@ -17,7 +17,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Xml;
 
 using static StreamerBotLib.Data.DataSource;

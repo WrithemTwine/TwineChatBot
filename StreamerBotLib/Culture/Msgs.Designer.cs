@@ -70,6 +70,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to approve.
+        /// </summary>
+        internal static string approve {
+            get {
+                return ResourceManager.GetString("approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to auto-hosting.
         /// </summary>
         internal static string autohost {
@@ -628,6 +637,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to mergeaccounts.
+        /// </summary>
+        internal static string mergeaccounts {
+            get {
+                return ResourceManager.GetString("mergeaccounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command {0} added!.
         /// </summary>
         internal static string Msgaddcommand {
@@ -867,6 +885,24 @@ namespace StreamerBotLib.Culture {
         internal static string Msglurk {
             get {
                 return ResourceManager.GetString("Msglurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The account merge failed..
+        /// </summary>
+        internal static string MsgMergeFailed {
+            get {
+                return ResourceManager.GetString("MsgMergeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts successfully merged..
+        /// </summary>
+        internal static string MsgMergeSuccessful {
+            get {
+                return ResourceManager.GetString("MsgMergeSuccessful", resourceCulture);
             }
         }
         
@@ -1290,6 +1326,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramlurk {
             get {
                 return ResourceManager.GetString("Paramlurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:(Mod level) !mergeaccounts &lt;currname&gt; &lt;previousname&gt; &apos;or&apos; (user level) !mergeaccounts &lt;previousname&gt;.
+        /// </summary>
+        internal static string Parammergeaccounts {
+            get {
+                return ResourceManager.GetString("Parammergeaccounts", resourceCulture);
             }
         }
         

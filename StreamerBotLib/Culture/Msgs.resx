@@ -121,6 +121,9 @@
     <value>addcommand</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="approve" xml:space="preserve">
+    <value>approve</value>
+  </data>
   <data name="autohost" xml:space="preserve">
     <value>auto-hosting</value>
     <comment>MsgVar variable value</comment>
@@ -323,6 +326,10 @@
     <value>lurk</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="mergeaccounts" xml:space="preserve">
+    <value>mergeaccounts</value>
+    <comment>default command, can be translated</comment>
+  </data>
   <data name="Msgaddcommand" xml:space="preserve">
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
@@ -414,6 +421,12 @@
   </data>
   <data name="Msglurk" xml:space="preserve">
     <value>#user is now lurking. See you soon!</value>
+  </data>
+  <data name="MsgMergeFailed" xml:space="preserve">
+    <value>The account merge failed.</value>
+  </data>
+  <data name="MsgMergeSuccessful" xml:space="preserve">
+    <value>Accounts successfully merged.</value>
   </data>
   <data name="MsgModApproved" xml:space="preserve">
     <value>Moderator approval accepted.</value>
@@ -580,6 +593,10 @@
   </data>
   <data name="Paramlurk" xml:space="preserve">
     <value>-use:!lurk</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Parammergeaccounts" xml:space="preserve">
+    <value>-p:Mod -use:(Mod level) !mergeaccounts &lt;currname&gt; &lt;previousname&gt; 'or' (user level) !mergeaccounts &lt;previousname&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramqinfo" xml:space="preserve">

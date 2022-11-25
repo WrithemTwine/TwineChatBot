@@ -16,13 +16,14 @@ using System.IO;
 using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using MediaOverlayServer.Enums;
-using MediaOverlayServer.Static;
+using StreamerBotLibMediaOverlayServer.Enums;
+using StreamerBotLibMediaOverlayServer.Static;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Reflection;
 using System.Windows;
 using StreamerBotLibMediaOverlayServer.Models;
+using OptionFlags = StreamerBotLib.Static.OptionFlags;
 
 namespace StreamerBotLib.BotClients
 {
@@ -222,7 +223,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
 #elif UseGUIDLL
-        private MediaOverlayServer.MainWindow OverlayWindow;
+        private StreamerBotLibMediaOverlayServer.MainWindow OverlayWindow;
 
         public BotOverlayServer()
         {

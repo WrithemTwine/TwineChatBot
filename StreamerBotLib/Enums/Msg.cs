@@ -10,6 +10,8 @@
         MsgNoCategory,
         MsgNoUserFound,
         MsgModApproved,
-        MsgModApproveNotFound
+        MsgModApproveNotFound,
+        MsgMergeSuccessful,
+        MsgMergeFailed
     }
 }

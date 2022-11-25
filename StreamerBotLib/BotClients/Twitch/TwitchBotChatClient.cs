@@ -259,7 +259,7 @@ namespace StreamerBotLib.BotClients.Twitch
             else
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
-                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
+                //TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 TwitchChat.Connect();
                 isConnected = true;
             }
