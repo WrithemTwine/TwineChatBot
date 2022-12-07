@@ -210,6 +210,9 @@
   <data name="Helpdate" xml:space="preserve">
     <value>Gets the current date in your timezone</value>
   </data>
+  <data name="Helpdeltaviewers" xml:space="preserve">
+    <value>Applies to uptime, displays the change in viewers since last query of live viewers.</value>
+  </data>
   <data name="Helpeveryone" xml:space="preserve">
     <value>When included, will replace '#everyone' with either (true) '@everyone' or (false) '&lt;blank&gt;' depending on whether the 'AddEveryone' is checked (true) or unchecked (false) alongside the Discord Server link.</value>
     <comment>Add help info for the 'everyone' message variable.</comment>
@@ -518,7 +521,7 @@
     <value>#user has returned. Welcome back!</value>
   </data>
   <data name="Msguptime" xml:space="preserve">
-    <value>#user has been streaming for #uptime, with #viewers.</value>
+    <value>#user has been streaming for #uptime, with #viewers (#deltaviewers).</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgusage" xml:space="preserve">

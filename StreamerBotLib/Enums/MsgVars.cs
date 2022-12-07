@@ -25,6 +25,7 @@
         user,
         winner,
         viewers,
+        deltaviewers,
         Pluralbits,
         Pluralmonth,
         Pluralsub,

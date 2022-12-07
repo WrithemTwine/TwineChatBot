@@ -169,6 +169,7 @@ namespace StreamerBotLib.Systems
             OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
+            LastLiveViewerCount = 0; // reset count to 0 for new stream
 
             ManageUsers(Started);
 

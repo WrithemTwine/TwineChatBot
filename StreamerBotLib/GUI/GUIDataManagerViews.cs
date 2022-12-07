@@ -16,6 +16,8 @@ namespace StreamerBotLib.GUI
 {
     public class GUIDataManagerViews : INotifyPropertyChanged
     {
+        // TODO: Add probable datamanagerview sorting options, per user input
+
         #region DataManager TableViews
 
         // datatable views to display the data in the GUI

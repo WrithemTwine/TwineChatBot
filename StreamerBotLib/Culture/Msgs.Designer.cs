@@ -304,6 +304,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applies to uptime, displays the change in viewers since last query of live viewers..
+        /// </summary>
+        internal static string Helpdeltaviewers {
+            get {
+                return ResourceManager.GetString("Helpdeltaviewers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When included, will replace &apos;#everyone&apos; with either (true) &apos;@everyone&apos; or (false) &apos;&lt;blank&gt;&apos; depending on whether the &apos;AddEveryone&apos; is checked (true) or unchecked (false) alongside the Discord Server link..
         /// </summary>
         internal static string Helpeveryone {
@@ -1141,7 +1150,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #user has been streaming for #uptime, with #viewers..
+        ///   Looks up a localized string similar to #user has been streaming for #uptime, with #viewers (#deltaviewers)..
         /// </summary>
         internal static string Msguptime {
             get {

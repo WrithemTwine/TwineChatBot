@@ -25,8 +25,15 @@ namespace StreamerBotLib.Systems
         private static Thread ElapsedThread;
         private bool ChatBotStarted;
 
-        // TODO: add account merging for a user, approval by a mod+ (moderator, broadcaster)
-        // TODO: add approval to manage channel point redemption for custom welcome message
+        private const int ThreadSleep = 5000;
+        private DateTime chattime;
+        private DateTime viewertime;
+        private int chats;
+        private int viewers;
+        private string RepeatLock = "";
+
+        private static int LastLiveViewerCount = 0;
+
         // TODO: add quotes
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
@@ -57,12 +64,6 @@ namespace StreamerBotLib.Systems
             ElapsedThread = null;
         }
 
-        private const int ThreadSleep = 5000;
-        private DateTime chattime;
-        private DateTime viewertime;
-        private int chats;
-        private int viewers;
-        private string RepeatLock = "";
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
@@ -70,7 +71,6 @@ namespace StreamerBotLib.Systems
         private void ElapsedCommandTimers()
         {
             // TODO: consider some AI bot chat when channel is slower
-            // TODO: repeat timers using thresholds - once started they don't stop repeating when back under threshold
             // TODO: repeat command still performs when command not enabled
 
             List<TimerCommand> RepeatList = new();
@@ -548,12 +548,17 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+                    int DeltaViewers = Convert.ToInt32(arglist[0]) - LastLiveViewerCount;
+
                     result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                     new( MsgVars.user, ChannelName ),
                     new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
-                    new( MsgVars.viewers, FormatData.Plurality(arglist.Count > 0 ? arglist[0] : "", MsgVars.Pluralviewers) )
+                    new( MsgVars.viewers, FormatData.Plurality(arglist.Count > 0 ? arglist[0] : "", MsgVars.Pluralviewers) ),
+                    new( MsgVars.deltaviewers, $"{(DeltaViewers>0?'+':"")}{DeltaViewers}" )
                     }));
+
+                    LastLiveViewerCount = Convert.ToInt32(arglist[0]);
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
