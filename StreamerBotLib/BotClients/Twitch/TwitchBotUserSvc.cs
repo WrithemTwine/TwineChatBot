@@ -248,7 +248,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         StartRaidEventResponse?.Invoke(this, new() { 
                             ToChannel = ToChannelName, 
                             CreatedAt = response.Data[0].CreatedAt, 
-                            IsMature = response.Data[0].IsMature 
+                            IsMature = response.Data[0].IsMature
                         });
                     }
                 }

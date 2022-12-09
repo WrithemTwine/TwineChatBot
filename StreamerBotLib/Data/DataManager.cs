@@ -695,7 +695,9 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 _DataSource.CustomWelcome.AddCustomWelcomeRow(User, WelcomeMsg);
+                _DataSource.CustomWelcome.AcceptChanges();
             }
+            NotifySaveData();
         }
 
         public void UserLeft(LiveUser User, DateTime LastSeen)
@@ -1593,12 +1595,13 @@ switches:
             {
                 ModeratorApproveRow moderatorApproveRow = (ModeratorApproveRow)GetRow(
                     _DataSource.ModeratorApprove,
-                    $"{_DataSource.ModeratorApprove.ModActionTypeColumn.ColumnName}='{modActionType}' AND {_DataSource.ModeratorApprove.ModActionNameColumn.ColumnName}='{ModAction}");
+                    $"{_DataSource.ModeratorApprove.ModActionTypeColumn.ColumnName}='{modActionType}' AND {_DataSource.ModeratorApprove.ModActionNameColumn.ColumnName}='{ModAction}'");
 
-                string ActionType    = DBNull.Value.Equals(moderatorApproveRow.ModPerformType) || moderatorApproveRow.ModPerformType == "" ? moderatorApproveRow.ModActionType : moderatorApproveRow.ModPerformType;
-                string ActionPerform = DBNull.Value.Equals(moderatorApproveRow.ModPerformAction) || moderatorApproveRow.ModPerformAction == "" ? moderatorApproveRow.ModActionName : moderatorApproveRow.ModPerformAction;
-
-                return moderatorApproveRow == null ? null : new(ActionType, ActionPerform);
+                return moderatorApproveRow == null ? null : 
+                    new(
+                    DBNull.Value.Equals(moderatorApproveRow.ModPerformType) || moderatorApproveRow.ModPerformType == "" ? moderatorApproveRow.ModActionType : moderatorApproveRow.ModPerformType,
+                    DBNull.Value.Equals(moderatorApproveRow.ModPerformAction) || moderatorApproveRow.ModPerformAction == "" ? moderatorApproveRow.ModActionName : moderatorApproveRow.ModPerformAction
+                    );
             }
         }
 

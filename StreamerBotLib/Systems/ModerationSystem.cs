@@ -60,7 +60,7 @@ namespace StreamerBotLib.Systems
 
         internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
         {
-            return DataManage.CheckModApprovalRule(ActionType, Command);
+            return DataManage.CheckModApprovalRule(ActionType, FormatData.AddEscapeFormat(Command));
         }
 
         /// <summary>

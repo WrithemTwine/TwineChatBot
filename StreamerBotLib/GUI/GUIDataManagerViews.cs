@@ -137,13 +137,13 @@ namespace StreamerBotLib.GUI
             }
 
             ChannelEvents = dataManager._DataSource.ChannelEvents.DefaultView;
-            Users = dataManager._DataSource.Users.DefaultView;
-            Followers = dataManager._DataSource.Followers.DefaultView;
+            Users = new( dataManager._DataSource.Users, null, dataManager._DataSource.Users.LastDateSeenColumn.ColumnName, DataViewRowState.CurrentRows);
+            Followers = new( dataManager._DataSource.Followers,null, dataManager._DataSource.Followers.FollowedDateColumn.ColumnName,DataViewRowState.CurrentRows);
             Discord = dataManager._DataSource.Discord.DefaultView;
             CurrencyType = dataManager._DataSource.CurrencyType.DefaultView;
             Currency = dataManager._DataSource.Currency.DefaultView;
-            BuiltInCommands = new(dataManager._DataSource.Commands, "CmdName IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
-            Commands = new(dataManager._DataSource.Commands, "CmdName NOT IN (" + ComFilter() + ")", "CmdName", DataViewRowState.CurrentRows);
+            BuiltInCommands = new(dataManager._DataSource.Commands, $"{dataManager._DataSource.Commands.CmdNameColumn.ColumnName} IN (" + ComFilter() + ")", dataManager._DataSource.Commands.CmdNameColumn.ColumnName, DataViewRowState.CurrentRows);
+            Commands = new(dataManager._DataSource.Commands, $"{dataManager._DataSource.Commands.CmdNameColumn.ColumnName} NOT IN (" + ComFilter() + ")", dataManager._DataSource.Commands.CmdNameColumn.ColumnName, DataViewRowState.CurrentRows);
             StreamStats = dataManager._DataSource.StreamStats.DefaultView;
             ShoutOuts = dataManager._DataSource.ShoutOuts.DefaultView;
             Category = dataManager._DataSource.CategoryList.DefaultView;
