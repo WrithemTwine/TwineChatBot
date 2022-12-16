@@ -602,6 +602,9 @@
                                                 <CheckBox x:Name="CheckBox_Debug_Livestream" IsChecked="{Binding DebugLiveStream}">
                                                     <TextBlock>Enable Livestream debug buttons.</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgCommandNotFound}">
+                                                    <TextBlock>Enable "Command Not Found" output message.</TextBlock>
+                                                </CheckBox>
                                                 <CheckBox IsChecked="{Binding ManageClearButtonEnabled}">
                                                     <CheckBox.ToolTip>
                                                         <TextBlock>This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</TextBlock>
@@ -878,7 +881,7 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Twitch - Currency System">
+                                        <GroupBox Header="Any - Currency System">
                                             <StackPanel>
                                                 <CheckBox IsChecked="{Binding TwitchCurrencyStart, Mode=TwoWay}">
                                                     <TextBlock>Enable Currency Accrual - still permits adding currencies</TextBlock>

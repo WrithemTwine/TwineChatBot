@@ -1234,5 +1234,65 @@ namespace StreamerBotLib.Properties {
                 this["ModeratorApprovalTimeout"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MsgCommandNotFound {
+            get {
+                return ((bool)(this["MsgCommandNotFound"]));
+            }
+            set {
+                this["MsgCommandNotFound"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayLogExceptions {
+            get {
+                return ((bool)(this["MediaOverlayLogExceptions"]));
+            }
+            set {
+                this["MediaOverlayLogExceptions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MediaOverlayPort {
+            get {
+                return ((int)(this["MediaOverlayPort"]));
+            }
+            set {
+                this["MediaOverlayPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayUseSameStyle {
+            get {
+                return ((bool)(this["MediaOverlayUseSameStyle"]));
+            }
+            set {
+                this["MediaOverlayUseSameStyle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayAutoServerStart {
+            get {
+                return ((bool)(this["MediaOverlayAutoServerStart"]));
+            }
+            set {
+                this["MediaOverlayAutoServerStart"] = value;
+            }
+        }
     }
 }

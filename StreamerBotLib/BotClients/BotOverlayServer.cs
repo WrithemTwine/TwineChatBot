@@ -7,22 +7,14 @@
 
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay;
+using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using StreamerBotLibMediaOverlayServer.Enums;
-using StreamerBotLibMediaOverlayServer.Static;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Reflection;
-using System.Windows;
-using StreamerBotLibMediaOverlayServer.Models;
+
 using OptionFlags = StreamerBotLib.Static.OptionFlags;
 
 namespace StreamerBotLib.BotClients
@@ -223,7 +215,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
 #elif UseGUIDLL
-        private StreamerBotLibMediaOverlayServer.MainWindow OverlayWindow;
+        private MainWindow OverlayWindow;
 
         public BotOverlayServer()
         {

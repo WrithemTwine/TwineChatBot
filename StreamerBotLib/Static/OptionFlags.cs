@@ -92,6 +92,11 @@ namespace StreamerBotLib.Static
         /// Adds /me to all outgoing bot messages.
         /// </summary>
         public static bool MsgAddMe { get; set; }
+        
+        /// <summary>
+        /// Enable the bot to emit "Command Not Found" response message when command is not found.
+        /// </summary>
+        public static bool MsgCommandNotFound { get; set; }
         /// <summary>
         /// Does not include /me on any message.
         /// </summary>
@@ -384,6 +389,13 @@ namespace StreamerBotLib.Static
         /// Enables whether shouting out a user shows a random clip from their channel
         /// </summary>
         public static bool MediaOverlayShoutoutClips { get; set; }
+        public static int MediaOverlayMediaPort { get; set; }
+
+        public static bool MediaOverlayLogExceptions { get; set; }
+
+        public static bool MediaOverlayUseSameStyle { get; set; }
+        public static bool MediaOverlayAutoStart { get; set; }
+
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
@@ -455,6 +467,7 @@ namespace StreamerBotLib.Static
                 FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
 
                 MsgAddMe = Settings.Default.MsgInsertMe;
+                MsgCommandNotFound = Settings.Default.MsgCommandNotFound;
                 MsgNoMe = Settings.Default.MsgNoMe;
                 MsgPerComMe = Settings.Default.MsgPerComMe;
 
@@ -538,6 +551,11 @@ namespace StreamerBotLib.Static
                 MediaOverlayChannelPoints = Settings.Default.MediaOverlayChannelPoints;
                 MediaOverlayMRUPathSelect = Settings.Default.MediaOverlayMRUPathSelect;
                 MediaOverlayShoutoutClips = Settings.Default.MediaOverlayShoutoutClips;
+                MediaOverlayMediaPort = Settings.Default.MediaOverlayPort;
+                MediaOverlayLogExceptions = Settings.Default.LogExceptions;
+                MediaOverlayUseSameStyle = Settings.Default.MediaOverlayUseSameStyle;
+                MediaOverlayAutoStart = Settings.Default.MediaOverlayAutoStart;
+
                 #endregion
 
             }

@@ -6,9 +6,8 @@ using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
-
-using StreamerBotLibMediaOverlayServer.Enums;
 
 using System;
 using System.Collections.Generic;
@@ -282,7 +281,7 @@ namespace StreamerBotLib.Systems
 
             if (cmdrow == null)
             {
-                result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound);
+                result = OptionFlags.MsgCommandNotFound ? LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound) : "";
             }
             else if (!cmdrow.IsEnabled)
             {

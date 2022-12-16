@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.5.4</Version>
+    <Version>0.2.5.5</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -24,11 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
-    <ProjectReference Include="..\StreamerBotLibMediaOverlayServer\StreamerBotLibMediaOverlayServer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="BotClients\Twitch\TwitchLib\Core\ServiceTimer.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -46,6 +41,9 @@
       <DependentUpon>MultiDataSource.xsd</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Overlay\MediaOverlay.xaml.cs">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

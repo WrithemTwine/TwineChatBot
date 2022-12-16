@@ -6,11 +6,10 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-
-using StreamerBotLibMediaOverlayServer.Enums;
-using StreamerBotLibMediaOverlayServer.Models;
 
 using System;
 using System.Collections.Generic;

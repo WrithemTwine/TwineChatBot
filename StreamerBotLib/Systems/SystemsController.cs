@@ -3,9 +3,8 @@ using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
-
-using StreamerBotLibMediaOverlayServer.Enums;
 
 using System;
 using System.Collections.Generic;

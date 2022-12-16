@@ -1,9 +1,8 @@
 ﻿using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
-
-using StreamerBotLibMediaOverlayServer.Enums;
-using StreamerBotLibMediaOverlayServer.Models;
 
 using System;
 using System.Collections.Generic;

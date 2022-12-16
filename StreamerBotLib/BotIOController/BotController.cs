@@ -5,10 +5,9 @@ using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.PubSub;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-
-using StreamerBotLibMediaOverlayServer.Enums;
 
 using System;
 using System.Collections.Generic;
