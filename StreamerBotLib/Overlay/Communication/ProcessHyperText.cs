@@ -40,8 +40,6 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static string ProcessOverlay(OverlayActionType overlayActionType)
         {
-            // todo: finish building output
-
             string Img = "";
 
             if (overlayActionType.ImageFile != "" && File.Exists(overlayActionType.ImageFile))

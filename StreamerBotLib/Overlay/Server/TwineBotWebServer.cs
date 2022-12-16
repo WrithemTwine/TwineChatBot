@@ -71,7 +71,7 @@ namespace StreamerBotLib.Overlay.Server
             {
                 lock (OverlayPages)
                 {
-                    OverlayPages.Insert(0, overlayPage);
+                    OverlayPages.Add(overlayPage);
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace StreamerBotLib.Overlay.Server
                         {
                             if (OverlayPages.Count > 0)
                             {
-                                IOverlayPageReadOnly? found = null;
+                                IOverlayPageReadOnly found = null;
 
                                 foreach (var page in OverlayPages)
                                 {
