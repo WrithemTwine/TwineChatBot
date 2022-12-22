@@ -19,8 +19,8 @@ namespace TestStreamerBot
         private string result = string.Empty;
         private const int Viewers = 80;
 
-        private BotController botController;
-        private DataManager dataManager;
+        private BotController botController = new();
+        private DataManager dataManager = SystemsController.DataManage;
 
         private Random Random { get; set; } = new();
 
@@ -48,11 +48,9 @@ namespace TestStreamerBot
 
                 Initialized = true;
 
-                botController = new();
                 botController.OutputSentToBots += BotController_OutputSentToBots;
                        
                 botController.SetDispatcher(Dispatcher.CurrentDispatcher);
-                dataManager = SystemsController.DataManage;
             }
         }
 

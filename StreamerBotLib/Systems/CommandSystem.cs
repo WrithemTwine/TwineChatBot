@@ -413,8 +413,6 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.raid))
             {
-                // TODO: fix exception about parameter "stringToEscape" can't be null as part of API (change?) - or arglist parse issue
-
                 if (arglist.Count > 0)
                 {
                     BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Source);
@@ -537,8 +535,21 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {
-                // TODO: add option to separate social media output messages
-                result = cmdrow.Message + " " + DataManage.GetSocials();
+                // User chose to send separate messages for the socials
+                if (OptionFlags.MsgSocialSeparate)
+                {
+                    string Socialresult = "";
+                    foreach (string Social in DataManage.GetSocialComs())
+                    {
+                        CommandData SocialRow = DataManage.GetCommand(Social);
+                        Socialresult = ParseCommand(Social, User, null, SocialRow, out multi);
+                        FormatResult(Socialresult, SocialRow.SendMsgCount, SocialRow);
+                    }
+                }
+                else
+                {
+                    result = cmdrow.Message + " " + DataManage.GetSocials();
+                }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
             {

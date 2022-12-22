@@ -236,6 +236,37 @@ switches:
             return DeleteDataRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{command}'");
         }
 
+        public List<string> GetSocialComs()
+        {
+            List<string> Coms = new();
+            string filter = "";
+
+            System.Collections.IList list = Enum.GetValues(typeof(DefaultSocials));
+            for (int i = 0; i < list.Count; i++)
+            {
+                DefaultSocials s = (DefaultSocials)list[i];
+                filter += $"{(i != 0 ? ", " : "")}'{s}'";
+            }
+
+            string socials = "";
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                foreach (string Command in from CommandsRow com in GetRows(_DataSource.Commands, $"CmdName IN ({filter})")
+                        where com.Message != DefaulSocialMsg && com.Message != string.Empty
+                        select com.CmdName)
+                {
+                    Coms.Add(Command);
+                }
+            }
+
+            return Coms;
+        }
+
+        /// <summary>
+        /// Retrieves all of the non-default social messages.
+        /// </summary>
+        /// <returns>Searches each social message and combines each social message which isn't the default message.</returns>
         public string GetSocials()
         {
 #if LogDataManager_Actions

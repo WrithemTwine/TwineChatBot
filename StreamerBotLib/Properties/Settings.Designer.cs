@@ -1294,5 +1294,17 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayAutoServerStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MsgSocialSeparate {
+            get {
+                return ((bool)(this["MsgSocialSeparate"]));
+            }
+            set {
+                this["MsgSocialSeparate"] = value;
+            }
+        }
     }
 }

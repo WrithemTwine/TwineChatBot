@@ -124,6 +124,6 @@ namespace StreamerBotLib.Overlay.GUI
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Propname));
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

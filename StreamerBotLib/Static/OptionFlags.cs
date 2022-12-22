@@ -111,6 +111,10 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool MsgWelcomeStreamer { get; set; }
         /// <summary>
+        /// Enables sending the social messages separately to the chat channel.
+        /// </summary>
+        public static bool MsgSocialSeparate { get; set; }
+        /// <summary>
         /// Enables a custom welcome message depending on the user entering the channel, is active alongside the welcome user setting.
         /// </summary>
         public static bool WelcomeCustomMsg { get; set; }
@@ -476,6 +480,8 @@ namespace StreamerBotLib.Static
 
                 AutoShout = Settings.Default.MsgAutoShout;
                 MsgSendSOToChat = Settings.Default.MsgSendSOToChat;
+
+                MsgSocialSeparate = Settings.Default.MsgSocialSeparate;
 
                 #endregion
 

@@ -605,6 +605,9 @@
                                                 <CheckBox IsChecked="{Binding MsgCommandNotFound}">
                                                     <TextBlock>Enable "Command Not Found" output message.</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgSocialSeparate}" ToolTip="Using !socials, click to send each social message separately to chat.">
+                                                    <TextBlock>Enable separate Social messages.</TextBlock>
+                                                </CheckBox>
                                                 <CheckBox IsChecked="{Binding ManageClearButtonEnabled}">
                                                     <CheckBox.ToolTip>
                                                         <TextBlock>This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</TextBlock>
