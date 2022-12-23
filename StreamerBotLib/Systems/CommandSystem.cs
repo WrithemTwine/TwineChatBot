@@ -477,7 +477,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
-                    output = DataManage.PostMergeUserStats(arglist.Count == 1 ? User.UserName : arglist[0], arglist[0], User.Source);
+                    output = DataManage.PostMergeUserStats(arglist.Count == 1 ? User.UserName : arglist[0], arglist.Count == 2 ? arglist[1] : arglist[0], User.Source);
                 }
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }

@@ -188,7 +188,7 @@ namespace StreamerBot
                         Bots.TwitchLiveBot => Radio_Twitch_LiveBotStart,
                         Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StartBot,
                         Bots.TwitchPubSub => Radio_Twitch_PubSubBotStart,
-                     Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
+                        Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
                         Bots.Default => throw new NotImplementedException(),
                         Bots.TwitchUserBot => throw new NotImplementedException(),
                         _ => throw new NotImplementedException()
@@ -211,7 +211,7 @@ namespace StreamerBot
                       Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
                       Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
                       Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
-                 Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
+                      Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
                       Bots.Default => throw new NotImplementedException(),
                       Bots.TwitchUserBot => throw new NotImplementedException(),
                       _ => throw new NotImplementedException()

@@ -584,23 +584,30 @@ namespace StreamerBotLib.BotClients
 
                     InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, null);
 
-                    // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
-                    List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
-
-                    follows.Reverse();
-
-                    for (int i = 0; i < follows.Count; i++)
+                    try
                     {
-                        // break up the follower list so chunks of the big list are sent in parts via event
-                        List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
+                        // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
+                        List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-                        InvokeBotEvent(
-                            this,
-                            BotEvents.TwitchBulkPostFollowers,
-                            new OnNewFollowersDetectedArgs()
-                            {
-                                NewFollowers = pieces
-                            });
+                        follows.Reverse();
+
+                        for (int i = 0; i < follows.Count; i++)
+                        {
+                            // break up the follower list so chunks of the big list are sent in parts via event
+                            List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
+
+                            InvokeBotEvent(
+                                this,
+                                BotEvents.TwitchBulkPostFollowers,
+                                new OnNewFollowersDetectedArgs()
+                                {
+                                    NewFollowers = pieces
+                                });
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
 
                     InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
