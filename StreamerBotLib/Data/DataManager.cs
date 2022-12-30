@@ -1062,18 +1062,24 @@ switches:
             {
                 // do currency updates first
 
-                CurrencyRow[] CurrencyCurrUserRow = (CurrencyRow[])GetRows(_DataSource.Currency,$"{_DataSource.Currency.UserNameColumn.ColumnName}='{CurrUser}'");
+                CurrencyRow[] CurrencyCurrUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{CurrUser}'");
                 CurrencyRow[] CurrencySourceUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{SourceUser}'");
-     
-                foreach (var (Scr, Ccr) in CurrencySourceUserRow.SelectMany(Scr => CurrencyCurrUserRow.Where(Ccr => Scr.CurrencyName == Ccr.CurrencyName).Select(Ccr => (Scr, Ccr))))
+
+                foreach (var (SCR, CCR) in from CurrencyRow SCR in CurrencySourceUserRow
+                                           from CurrencyRow CCR in CurrencyCurrUserRow
+                                           where SCR.CurrencyName == CCR.CurrencyName
+                                           select (SCR, CCR))
                 {
-                    Ccr.Value += Scr.Value;
+                    CCR.Value += SCR.Value;
                     success = true;
                 }
 
-                foreach (CurrencyRow cr in CurrencySourceUserRow)
+                if (success)
                 {
-                    cr.Delete();
+                    foreach (CurrencyRow cr in CurrencySourceUserRow)
+                    {
+                        cr.Delete();
+                    }
                 }
 
                 _DataSource.Currency.AcceptChanges();
@@ -1087,10 +1093,14 @@ switches:
                     CurrUserRow.WatchTime += SourceUserRow.WatchTime;
                     SourceUserRow.Delete();
                     _DataSource.Users.AcceptChanges();
+                    _DataSource.Followers.AcceptChanges();
                     success = success && true;
                 }
 
-                NotifySaveData();
+                if (success)
+                {
+                    NotifySaveData();
+                }
             }
 
             return success;

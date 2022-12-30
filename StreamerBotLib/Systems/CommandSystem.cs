@@ -477,7 +477,25 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
-                    output = DataManage.PostMergeUserStats(arglist.Count == 1 ? User.UserName : arglist[0], arglist.Count == 2 ? arglist[1] : arglist[0], User.Source);
+                    /* -p:Mod 
+                     * -use:(Mod level) !mergeaccounts <currname> <previousname> 'or' (user level) !mergeaccounts <previousname>
+                     */
+                    string CurrUser, SrcUsr;
+
+                    switch (arglist.Count)
+                    {
+                        case 1:
+                            CurrUser = User.UserName;
+                            SrcUsr = arglist[0];
+                            break;
+                        case 2:
+                        default:
+                            CurrUser = arglist[0];
+                            SrcUsr = arglist[1];
+                            break;
+                    }
+
+                    output = DataManage.PostMergeUserStats(CurrUser, SrcUsr, User.Source);
                 }
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
