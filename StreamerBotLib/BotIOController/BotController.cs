@@ -304,6 +304,17 @@ namespace StreamerBotLib.BotIOController
             //};
         }
 
+        public static DateTime GetUserAccountAge(string UserName, Platform bots)
+        {
+            if(bots == Platform.Twitch)
+            {
+                return BotsTwitch.GetUserAccountAge(UserName: UserName);
+            } else
+            {
+                return DateTime.MaxValue;
+            }
+        }
+
         public static bool VerifyUserExist(string ChannelName, Platform bots)
         {
             if (bots == Platform.Twitch)

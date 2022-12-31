@@ -308,6 +308,11 @@ namespace StreamerBotLib.BotClients
             return TwitchBotUserSvc.GetUserGameCategory(UserId: UserId, UserName: UserName);
         }
 
+        public static DateTime GetUserAccountAge(string UserId = null, string UserName = null)
+        {
+            return TwitchBotUserSvc.GetUserCreatedAt(UserName: UserName, UserId: UserId);
+        }
+
         public static bool VerifyUserExist(string UserName)
         {
             return TwitchBotUserSvc.GetUserId(UserName) != null;

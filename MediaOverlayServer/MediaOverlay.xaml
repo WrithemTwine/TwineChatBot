@@ -3,8 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Data="clr-namespace:StreamerBotLibMediaOverlayServer.GUI;assembly=StreamerBotLibMediaOverlayServer"
-        xmlns:Prop="clr-namespace:StreamerBotLibMediaOverlayServer.Properties;assembly=StreamerBotLibMediaOverlayServer"
+        xmlns:Data="clr-namespace:StreamerBotLib.Overlay.GUI;assembly=StreamerBotLib"
+        xmlns:Prop="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
         mc:Ignorable="d"
         Title="Media Overlay" Height="450" Width="600" UseLayoutRounding="True" SnapsToDevicePixels="True" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>

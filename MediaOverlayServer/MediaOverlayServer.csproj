@@ -20,7 +20,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\StreamerBotLibMediaOverlayServer\StreamerBotLibMediaOverlayServer.csproj" />
+	  <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
 	</ItemGroup>
 
 </Project>

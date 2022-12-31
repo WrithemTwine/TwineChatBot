@@ -148,6 +148,13 @@ namespace StreamerBotLib.BotClients.Twitch
             GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
         }
 
+        public DateTime GetUserCreatedAt(string UserName=null, string UserId = null)
+        {
+            ChooseConnectUserService();
+            DateTime result = userLookupService.GetUserCreatedAt(UserName, UserId).Result;
+            return result;
+        }
+
         #endregion
 
         #region StreamerChannel Client Id and Request UserId must be the same

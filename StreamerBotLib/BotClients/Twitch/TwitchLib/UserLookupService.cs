@@ -12,10 +12,9 @@ using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
@@ -23,6 +22,19 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
     {
         public UserLookupService(ITwitchAPI api, int checkIntervalInSeconds = 60) : base(api, checkIntervalInSeconds)
         {
+        }
+
+        private async Task<GetUsersResponse> GetUsersAsync(string UserName = null, string Id = null)
+        {
+            if (UserName != null)
+            {
+                return await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName });
+            }
+            else if (Id != null)
+            {
+                return await _api.Helix.Users.GetUsersAsync(ids: new List<string> { Id });
+            }
+            return null;
         }
 
         public async Task<string> GetUserId(string UserName)
@@ -34,7 +46,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             {
                 try
                 {
-                    result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id ?? null;
+                    result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
                 }
                 catch
                 {
@@ -42,7 +54,20 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 }
             }
 
+            return result;
+        }
 
+        public async Task<DateTime> GetUserCreatedAt(string UserName = null, string UserId = null)
+        {
+            DateTime result = DateTime.MinValue;
+            if (UserId != null)
+            {
+                result = (await GetUsersAsync(Id: UserId)).Users.FirstOrDefault().CreatedAt;
+            }
+            else if (UserName != null)
+            {
+                result = (await GetUsersAsync(UserName: UserName)).Users.FirstOrDefault().CreatedAt;
+            }
             return result;
         }
 
@@ -138,7 +163,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             if (UserId != null)
             {
-                return await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId } );
+                return await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId });
             }
             else if (UserName != null)
             {

@@ -1,12 +1,12 @@
 ﻿
-using StreamerBotLibMediaOverlayServer.Communication;
-using StreamerBotLibMediaOverlayServer.Control;
-using StreamerBotLibMediaOverlayServer.Enums;
-using StreamerBotLibMediaOverlayServer.GUI;
-using StreamerBotLibMediaOverlayServer.Models;
-using StreamerBotLibMediaOverlayServer.Properties;
-using StreamerBotLibMediaOverlayServer.Server;
-using StreamerBotLibMediaOverlayServer.Static;
+using StreamerBotLib.Overlay.Communication;
+using StreamerBotLib.Overlay.Control;
+using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Overlay.GUI;
+using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Overlay.Server;
+using StreamerBotLib.Properties;
+using StreamerBotLib.Static;
 
 using System;
 using System.Windows;

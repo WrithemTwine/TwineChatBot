@@ -234,6 +234,7 @@ namespace StreamerBotLib.Data
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
             SetLearnedMessages();
+            CleanUpTables();
             NotifySaveData();
         }
 
@@ -404,5 +405,26 @@ namespace StreamerBotLib.Data
         }
         #endregion Regular Channel Events
 
+        private void CleanUpTables()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                foreach (UsersRow UR in _DataSource.Users.Rows)
+                {
+                    if (DBNull.Value.Equals(UR.Platform))
+                    {
+                        UR.Platform = Platform.Twitch.ToString();
+                    }
+                }
+
+                foreach (FollowersRow FR in _DataSource.Followers.Rows)
+                {
+                    if (DBNull.Value.Equals(FR.Platform))
+                    {
+                        FR.Platform = Platform.Twitch.ToString();
+                    }
+                }
+            }
+        }
     }
 }
