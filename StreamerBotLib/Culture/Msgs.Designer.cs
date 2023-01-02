@@ -61,6 +61,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to accountage.
+        /// </summary>
+        internal static string accountage {
+            get {
+                return ResourceManager.GetString("accountage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to addcommand.
         /// </summary>
         internal static string addcommand {
@@ -655,6 +664,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account #user created #date ago..
+        /// </summary>
+        internal static string Msgaccountage {
+            get {
+                return ResourceManager.GetString("Msgaccountage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command {0} added!.
         /// </summary>
         internal static string Msgaddcommand {
@@ -1200,6 +1218,15 @@ namespace StreamerBotLib.Culture {
         internal static string or {
             get {
                 return ResourceManager.GetString("or", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -param:true -use:!accountage or !accountage &lt;viewername&gt;.
+        /// </summary>
+        internal static string Paramaccountage {
+            get {
+                return ResourceManager.GetString("Paramaccountage", resourceCulture);
             }
         }
         

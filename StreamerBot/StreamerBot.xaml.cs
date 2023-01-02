@@ -1,13 +1,13 @@
-﻿#define MultiLiveNo
-
+﻿
 using StreamerBotLib.BotClients;
-using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotIOController;
+using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
+using StreamerBotLib.MultiLive;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -28,7 +28,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace StreamerBot
@@ -55,9 +54,6 @@ namespace StreamerBot
         private const string MultiLiveName = "MultiUserLiveBot";
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
-
-        internal Storyboard LiveStatusStoryBoardStart { get; set; } = new();
-        internal Storyboard LiveStatusStoryBoardStop { get; set; } = new();
 
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
@@ -119,46 +115,6 @@ namespace StreamerBot
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
-
-#if !MultiLive
-            TabItem_Data_MultiLive.Visibility = Visibility.Collapsed;
-            TabItem_Data_Separator.Visibility = Visibility.Collapsed;
-            GroupBox_Bots_Starts_MultiLive.Visibility = Visibility.Collapsed;
-#endif
-
-            //SetStoryBoard();
-        }
-
-        private void SetStoryBoard()
-        {
-            // Label_LiveStreamStatus
-
-            ColorAnimation LiveColorAnimationStartBorder = new(Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0), new Duration(new(0, 0, 5)));
-            RegisterName("LabelLiveStatusBorderBrush", Label_StreamStatusOff.BorderBrush);
-            Storyboard.SetTargetName(LiveColorAnimationStartBorder, "LabelLiveStatusBorderBrush");
-            Storyboard.SetTargetProperty(LiveColorAnimationStartBorder, new(SolidColorBrush.ColorProperty));
-
-            ColorAnimation LiveColorAnimationStartText = new(Color.FromRgb(255, 0, 0), Color.FromRgb(0, 255, 0), new Duration(new(0, 0, 5)));
-            RegisterName("LabelLiveStatusForeground", Label_StreamStatusOff.Foreground);
-            Storyboard.SetTargetName(LiveColorAnimationStartText, "LabelLiveStatusForeground");
-            Storyboard.SetTargetProperty(LiveColorAnimationStartText, new(SolidColorBrush.ColorProperty));
-
-            LiveStatusStoryBoardStart.Children.Add(LiveColorAnimationStartBorder);
-            LiveStatusStoryBoardStart.Children.Add(LiveColorAnimationStartText);
-
-            ColorAnimation LiveColorAnimationStopBorder = new(Color.FromRgb(0, 255, 0), Color.FromRgb(255, 0, 0), new Duration(new(0, 0, 5)));
-            RegisterName("LabelLiveStatusBorderBrush", Label_StreamStatusOff.BorderBrush);
-            Storyboard.SetTargetName(LiveColorAnimationStopBorder, "LabelLiveStatusBorderBrush");
-            Storyboard.SetTargetProperty(LiveColorAnimationStopBorder, new(SolidColorBrush.ColorProperty));
-
-            ColorAnimation LiveColorAnimationStopText = new(Color.FromRgb(0, 255, 0), Color.FromRgb(255, 0, 0), new Duration(new(0, 0, 5)));
-            RegisterName("LabelLiveStatusForeground", Label_StreamStatusOff.Foreground);
-            Storyboard.SetTargetName(LiveColorAnimationStopText, "LabelLiveStatusForeground");
-            Storyboard.SetTargetProperty(LiveColorAnimationStopText, new(SolidColorBrush.ColorProperty));
-
-            LiveStatusStoryBoardStop.Children.Add(LiveColorAnimationStopBorder);
-            LiveStatusStoryBoardStop.Children.Add(LiveColorAnimationStopText);
-
         }
 
         private static string GetAppDataCWD()
@@ -407,9 +363,7 @@ namespace StreamerBot
         private void SetMultiLiveActive(bool ProcessFound = false)
         {
             Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-#if MultiLive
             SetMultiLiveButtons();
-#endif
         }
 
         private void SetMultiLiveButtons()
@@ -419,7 +373,7 @@ namespace StreamerBot
                 SetMultiLiveTabItems(true);
 
                 BotController.ConnectTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = !Radio_Twitch_LiveBotStart.IsChecked ?? false;
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
                 Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
                 NotifyPropertyChanged(nameof(guiTwitchBot));
             }
@@ -474,11 +428,11 @@ namespace StreamerBot
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StartBot.IsChecked = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
-
-                    DG_Multi_LiveStreamStats.ItemsSource = null;
-                    DG_Multi_LiveStreamStats.Visibility = Visibility.Collapsed;
-
-                    Panel_BotActivity.Visibility = Visibility.Visible;
+                    if (IsMultiProcActive == false)
+                    {
+                        (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
+                        (MultiLive_Data.Content as MultiLiveDataGrids).SetLiveManagerBot(guiTwitchBot.TwitchLiveMonitor);
+                    }
                 }
                 else
                 {
@@ -486,29 +440,8 @@ namespace StreamerBot
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-
-                    if (IsMultiProcActive == true)
-                    {
-                        DG_Multi_LiveStreamStats.ItemsSource = TwitchBotLiveMonitorSvc.MultiLiveDataManager.LiveStream;
-                    }
-                    DG_Multi_LiveStreamStats.Visibility = Visibility.Visible;
-
-                    Panel_BotActivity.Visibility = Visibility.Collapsed;
                 }
             }
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            int start = TB_LiveMsg.SelectionStart;
-
-            if (TB_LiveMsg.SelectionLength > 0)
-            {
-                TB_LiveMsg.Text = TB_LiveMsg.Text.Remove(start, TB_LiveMsg.SelectionLength);
-            }
-
-            TB_LiveMsg.Text = TB_LiveMsg.Text.Insert(start, (sender as MenuItem).Header.ToString());
-            TB_LiveMsg.SelectionStart = start;
         }
 
         private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
@@ -516,11 +449,11 @@ namespace StreamerBot
             BotController.UpdateTwitchMultiLiveChannels();
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region PopOut Chat Window
+        #region PopOut Chat Window
         private void PopOutChatButton_Click(object sender, RoutedEventArgs e)
         {
             //    CP.Show();
@@ -544,11 +477,11 @@ namespace StreamerBot
             }
         }
 
-#endregion
+        #endregion
 
-#region Helpers
+        #region Helpers
 
-#region Window Open and Close
+        #region Window Open and Close
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -578,10 +511,8 @@ namespace StreamerBot
                     }
                     else
                     {
-#if MultiLive  // preprocessor directive
                         SetMultiLiveButtons();
-                        MultiBotRadio(true); 
-#endif
+                        MultiBotRadio(true);
                     }
                 }
                 BeginUpdateCategory();
@@ -604,7 +535,7 @@ namespace StreamerBot
             OptionFlags.SetSettings();
         }
 
-#endregion
+        #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string propname)
@@ -733,10 +664,10 @@ namespace StreamerBot
                 }
             }
 
-            if (TB_Twitch_Channel.Text.Length != 0 
-                && TB_Twitch_BotUser.Text.Length != 0 
-                && TB_Twitch_ClientID.Text.Length != 0 
-                && TB_Twitch_AccessToken.Text.Length != 0 
+            if (TB_Twitch_Channel.Text.Length != 0
+                && TB_Twitch_BotUser.Text.Length != 0
+                && TB_Twitch_ClientID.Text.Length != 0
+                && TB_Twitch_AccessToken.Text.Length != 0
                 && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
             {
                 SetButtons(true);
@@ -775,7 +706,6 @@ namespace StreamerBot
             RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
             StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
 
-            MultiBotRadio();
             CheckDebug();
             SetVisibility();
 
@@ -874,12 +804,12 @@ namespace StreamerBot
             {
                 if (TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name)
                 {
-                    SetVisibility(RadioButton_RepeatTimer_ThresholdOption, StackPanel_Repeat_ThresholdsOptions); 
+                    SetVisibility(RadioButton_RepeatTimer_ThresholdOption, StackPanel_Repeat_ThresholdsOptions);
                 }
 
                 if (RadioButton_RepeatTimer_NoAdjustment != null && RadioButton_RepeatTimer_SlowDownOption != null && GroupBox_RepeatTimer_ThresholdOptions != null)
-                { 
-                    SetVisibility(RadioButton_RepeatTimer_SlowDownOption.IsChecked == true ? RadioButton_RepeatTimer_SlowDownOption : RadioButton_RepeatTimer_ThresholdOption, GroupBox_RepeatTimer_ThresholdOptions); 
+                {
+                    SetVisibility(RadioButton_RepeatTimer_SlowDownOption.IsChecked == true ? RadioButton_RepeatTimer_SlowDownOption : RadioButton_RepeatTimer_ThresholdOption, GroupBox_RepeatTimer_ThresholdOptions);
                 }
             }
             else if (TBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
@@ -930,7 +860,7 @@ namespace StreamerBot
 
         #region LiveStatus Online Indicator
 
-        private void  SetLiveStreamActive(bool Online = true)
+        private void SetLiveStreamActive(bool Online = true)
         {
 
 
@@ -971,9 +901,9 @@ namespace StreamerBot
             AppDispatcher.BeginInvoke(new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); }));
         }
 
-#endregion
+        #endregion
 
-#region Overlay Service
+        #region Overlay Service
 
         private void TabItem_Overlays_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -999,11 +929,11 @@ namespace StreamerBot
             Controller.Systems.SetChannelRewardList(channelPointNames);
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Data side
+        #region Data side
 
         private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -1066,7 +996,7 @@ namespace StreamerBot
             CheckFocus();
         }
 
-#region DataGrid Columns and Editing
+        #region DataGrid Columns and Editing
         private void DG_AutoGeneratedColumns(object sender, EventArgs e)
         {
             const int DGColWidth = 250;
@@ -1207,7 +1137,7 @@ namespace StreamerBot
             {
                 bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
-                bool FoundIsEnabled = SystemsController.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName , "IsEnabled");
+                bool FoundIsEnabled = SystemsController.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName, "IsEnabled");
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
@@ -1217,11 +1147,11 @@ namespace StreamerBot
                         {
                             ((MenuItem)M).IsEnabled = !FoundAddEdit;
                         }
-                        else if (((MenuItem)M).Name == "DataGridContextMenu_AutoShout")
+                        else if (((MenuItem)M).Name is "DataGridContextMenu_AutoShout" or "DataGridContextMenu_LiveMonitor")
                         {
                             ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
-                        } 
-                        else if ( ((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
+                        }
+                        else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
                         {
                             ((MenuItem)M).IsEnabled = FoundIsEnabled;
                         }
@@ -1300,6 +1230,15 @@ namespace StreamerBot
             }
         }
 
+        private void MenuItem_LiveMonitorClick(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
+            foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
+            {
+                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString());
+            }
+        }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -1505,7 +1444,7 @@ namespace StreamerBot
         /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
-        private bool? IsMultiProcActive;
+        private bool? IsMultiProcActive { get; set; }
 
         private delegate void ProcWatch(bool IsActive);
 

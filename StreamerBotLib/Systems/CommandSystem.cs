@@ -29,11 +29,11 @@ namespace StreamerBotLib.Systems
         private DateTime viewertime;
         private int chats;
         private int viewers;
-        private string RepeatLock = "";
+        private readonly string RepeatLock = "";
 
         private static int LastLiveViewerCount = 0;
 
-        // TODO: add quotes
+        // TODO: add user quotes - retrieve sayings saved during stream
 
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
@@ -62,7 +62,6 @@ namespace StreamerBotLib.Systems
             ElapsedThread?.Join();
             ElapsedThread = null;
         }
-
 
         /// <summary>
         /// Performs the commands with timers > 0 seconds. Runs on a separate thread.
@@ -550,6 +549,24 @@ namespace StreamerBotLib.Systems
                 {
                     result = LocalizedMsgSystem.GetVar("Msgdefaultcommand");
                 }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.accountage))
+            {
+                string ParamUser = arglist.Count == 1 ? arglist[0] : User.UserName;
+
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    DateTime created = BotController.GetUserAccountAge(ParamUser, User.Source);
+                    datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                        new(MsgVars.user,ParamUser),
+                        new(MsgVars.date, FormatData.FormatTimes(created))
+                    });
+
+                    OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));
+
+                });
+
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {

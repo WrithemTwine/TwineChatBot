@@ -27,6 +27,7 @@
                 <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
                 <Separator x:Name="DataGridContextMenu_Separator1" />
                 <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
+                <MenuItem x:Name="DataGridContextMenu_LiveMonitor" Header="Add User to LiveMonitor list" ToolTip="Does not Duplicate, 100 max" Visibility="Collapsed" Click="MenuItem_LiveMonitorClick"/>
                 <Separator x:Name="DataGridContextMenu_Separator2" />
                 <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
@@ -886,10 +887,10 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Currency System">
                                             <StackPanel>
-                                                <CheckBox IsChecked="{Binding TwitchCurrencyStart, Mode=TwoWay}">
+                                                <CheckBox IsChecked="{Binding CurrencyStart, Mode=TwoWay}">
                                                     <TextBlock>Enable Currency Accrual - still permits adding currencies</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding TwitchCurrencyOnline, Mode=TwoWay}" Visibility="Collapsed">
+                                                <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding CurrencyOnline, Mode=TwoWay}" Visibility="Collapsed">
                                                     <TextBlock>Enable Currency Accrual only when Streaming Online</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
@@ -1366,62 +1367,9 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Collapsed" />
-                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Collapsed">
-                            <Grid x:Name="TabItem_MultiUserLiveMonitor" IsEnabled="False">
-                                <Grid.Resources>
-                                    <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
-                                        <Setter Property="Margin" Value="5"/>
-                                        <Setter Property="MaxColumnWidth" Value="160" />
-                                        <Setter Property="CanUserAddRows" Value="True" />
-                                        <Setter Property="CanUserDeleteRows" Value="True" />
-                                    </Style>
-                                </Grid.Resources>
-                                <Grid.DataContext>
-                                    <Binding Mode="OneWay" Path="TwitchLiveMonitor" Source="{StaticResource TwitchBot}"/>
-                                </Grid.DataContext>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="298*" />
-                                    <ColumnDefinition Width="52"/>
-                                    <ColumnDefinition Width="100"  />
-                                    <ColumnDefinition Width="52"/>
-                                    <ColumnDefinition Width="293*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3"><Run Text="Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
-                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Foreground="Red" Visibility="{Binding Visibility, ElementName=Label_LiveStream_MultiLiveActiveMsg}">
-                                    <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
-                                </Label>
-                                <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
-                                <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
-                             DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding MsgLive}" 
-                             TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
-                                    <TextBox.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="#user" Click="MenuItem_Click" />
-                                            <MenuItem Header="#category" Click="MenuItem_Click" />
-                                            <MenuItem Header="#title" Click="MenuItem_Click" />
-                                            <MenuItem Header="#url" Click="MenuItem_Click" />
-                                        </ContextMenu>
-                                    </TextBox.ContextMenu>
-                                    <TextBox.ToolTip>
-                                        <TextBlock><Run Text="Use these tags within the message and it'll be replaced before sending the posted live message."/><LineBreak /><Run Text="Available by right-click menu - insert at cursor."/><LineBreak /><Run Text="&quot;#user&quot; - channel name of the user"/><LineBreak /><Run Text="&quot;#category&quot; - the category of the stream"/><LineBreak /><Run Text="&quot;#title&quot; - the title of the stream when it goes live"/><LineBreak /><Run Text="&quot;#url&quot; - to send someone to the Twitch channel, it's already prepared &quot; twitch.tv/user &quot;"/><LineBreak /><LineBreak /><Run Text="Example: @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url"/></TextBlock>
-                                    </TextBox.ToolTip>
-                                </TextBox>
-
-                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding Channels, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" IsEnabled="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-
-                                <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
-                                    <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-                                    <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}"  />
-                                </DockPanel>
-                            </Grid>
+                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Visible" />
+                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Visible">
+                            <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" />
                         </TabItem>
                     </TabControl>
                 </DockPanel>

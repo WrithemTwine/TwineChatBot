@@ -742,7 +742,7 @@ switches:
                 if (user != null)
                 {
                     UpdateWatchTime(User.UserName, LastSeen); // will update the "LastDateSeen"
-                    if (OptionFlags.TwitchCurrencyStart && (OptionFlags.TwitchCurrencyOnline && OptionFlags.IsStreamOnline))
+                    if (OptionFlags.CurrencyStart && (OptionFlags.CurrencyOnline && OptionFlags.IsStreamOnline))
                     {
                         UpdateCurrency(ref user, LastSeen);
                         _DataSource.Currency.AcceptChanges();

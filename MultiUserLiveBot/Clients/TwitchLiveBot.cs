@@ -67,7 +67,7 @@ namespace MultiUserLiveBot.Clients
                     {
                         if (u.Item1 == "Discord")
                         {
-                            DiscordWebhook.SendLiveMessage(u.Item2, GoLiveWindow.ParseReplace(msg, dictionary)).Wait();
+                            DiscordWebhook.SendMessage(u.Item2, GoLiveWindow.ParseReplace(msg, dictionary));
                         }
                     }
                 }

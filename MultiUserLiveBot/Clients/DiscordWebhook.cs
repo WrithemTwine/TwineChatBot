@@ -1,7 +1,10 @@
-﻿using System;
+﻿using StreamerBotLib.Static;
+
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MultiUserLiveBot.Clients
@@ -10,20 +13,59 @@ namespace MultiUserLiveBot.Clients
     {
         private static readonly HttpClient client = new();
 
+        private static readonly Queue<Tuple<Uri, JsonContent>> DataJobs = new();
+        private static bool JobThread;
+
         /// <summary>
         /// Send a message to provided Webhooks
         /// </summary>
         /// <param name="UriList">The POST Uris collection of webhooks.</param>
         /// <param name="Msg">The message to send.</param>
-        public async static Task SendLiveMessage(Uri uri, string Msg)
+        public static void SendMessage(Uri uri, string Msg)
         {
             JsonContent content = JsonContent.Create(new WebhookJSON(Msg, new AllowedMentions(new AllowedMentionTypes[] { AllowedMentionTypes.everyone }, null, null)));
 
-            await client.PostAsync(uri.AbsoluteUri, content);
+            lock (DataJobs)
+            {
+                DataJobs.Enqueue(new(uri, content));
+            }
+
+            if (!JobThread) // check if job thread is running
+            {
+                ThreadManager.CreateThreadStart(SendDataAsync);
+
+                lock (DataJobs)
+                {
+                    JobThread = true;
+                }
+            }
         }
+
+        private async static void SendDataAsync()
+        {
+            while (DataJobs.Count > 0)
+            {
+                Tuple<Uri, JsonContent> job;
+                lock (DataJobs)
+                {
+                    job = DataJobs.Dequeue();
+                }
+
+                _ = await client.PostAsync(job.Item1.AbsoluteUri, job.Item2);
+
+                // wait so Discord doesn't complain about bots posting too fast to a page
+                Thread.Sleep(20000); // wait 20 seconds between posting, 3 posts a minute
+            }
+
+            lock (DataJobs)
+            {
+                JobThread = false;  // job thread stopped, signal to start another thread
+            }
+        }
+
     }
 
- 
+
     // Webhook JSON format for sending data
     //
     // https://discord.com/developers/docs/resources/webhook#execute-webhook
@@ -63,7 +105,7 @@ namespace MultiUserLiveBot.Clients
     {
         private const int max_data = 100;
 
-        public string[] Parse { get; private set; }        
+        public string[] Parse { get; private set; }
         public string[] Roles { get; private set; }
         public string[] Users { get; private set; }
 
@@ -103,28 +145,31 @@ namespace MultiUserLiveBot.Clients
     }
 
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Names are required in lower case because of the Discord/Webhook JSON specification.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "CA1707:Underscores in Names", Justification = "The underscores in names are required for the Discord/Webhook JSON specification.")]
     public class WebhookJSON
     {
         //private const int max_embeds = 10;
 
-        public string Content { get; private set; }
-        public string Username { get; private set; }
-        public string Avatar_url { get; private set; }
-        public bool Tts { get; private set; }
-        public object File { get; private set; } = null;
-        public object[] Embeds { get; private set; } = null; // Discord expects to remove in future API updates
-        public string Payload_json { get; private set; }
-        public AllowedMentions Allowed_mentions { get; private set; }
+        public string content { get; private set; }
+        public string username { get; private set; }
+        public string avatar_url { get; private set; }
+        public bool tts { get; private set; }
 
-        public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username=null, string Avatar_Url=null, bool TTS=false,
-            string Payload_Json=null)
+        public object file { get; private set; } = null;
+        public object[] embeds { get; private set; } = null; // Discord expects to remove in future API updates
+        public string payload_json { get; private set; }
+        public AllowedMentions allowed_mentions { get; private set; }
+
+        public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username = null, string Avatar_Url = null, bool TTS = false,
+            string Payload_Json = null)
         {
-            this.Content = Content;
-            Allowed_mentions = Allowed_Mentions;
-            this.Username = Username;
-            Avatar_url = Avatar_Url;
-            Tts = TTS;
-            Payload_json = Payload_Json;
+            content = Content;
+            allowed_mentions = Allowed_Mentions;
+            username = Username;
+            avatar_url = Avatar_Url;
+            tts = TTS;
+            payload_json = Payload_Json;
         }
     }
 

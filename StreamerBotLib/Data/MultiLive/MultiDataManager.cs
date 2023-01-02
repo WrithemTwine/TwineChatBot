@@ -13,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using static StreamerBotLib.Data.MultiLive.DataSource;
+
 namespace StreamerBotLib.Data.MultiLive
 {
     public class MultiDataManager : INotifyPropertyChanged
@@ -50,9 +52,9 @@ namespace StreamerBotLib.Data.MultiLive
         {
             _DataSource = new();
 
-            Channels = new DataView(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
-            MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, "Id", DataViewRowState.CurrentRows);
-            LiveStream = new DataView(_DataSource.LiveStream, null, "ChannelName", DataViewRowState.CurrentRows);
+            Channels = new DataView(_DataSource.Channels, null, $"{_DataSource.Channels.ChannelNameColumn.ColumnName}", DataViewRowState.CurrentRows);
+            MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, $"{_DataSource.MsgEndPoints.IdColumn.ColumnName}", DataViewRowState.CurrentRows);
+            LiveStream = new DataView(_DataSource.LiveStream, null, $"{_DataSource.LiveStream.LiveDateColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
 
             Channels.ListChanged += DataView_ListChanged;
             MsgEndPoints.ListChanged += DataView_ListChanged;
@@ -70,6 +72,7 @@ namespace StreamerBotLib.Data.MultiLive
         /// </summary>
         public void LoadData()
         {
+            _DataSource.Clear();
             if (!File.Exists(DataFileName))
             {
                 _DataSource.WriteXml(DataFileName);
@@ -77,6 +80,14 @@ namespace StreamerBotLib.Data.MultiLive
 
             using XmlReader xmlreader = new XmlTextReader(DataFileName);
             _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+
+            foreach(MsgEndPointsRow dataRow in _DataSource.MsgEndPoints.Rows)
+            {
+                if (DBNull.Value.Equals(dataRow["IsEnabled"]))
+                {
+                    dataRow.IsEnabled = true;
+                }
+            }
         }
 
         /// <summary>
@@ -84,12 +95,6 @@ namespace StreamerBotLib.Data.MultiLive
         /// </summary>
         public void SaveData()
         {
-            //lock (_DataSource)
-            //{
-            //    _DataSource.AcceptChanges();
-            //    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram);
-            //}
-
             int CurrMins = DateTime.Now.Minute;
             bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
 
@@ -101,11 +106,6 @@ namespace StreamerBotLib.Data.MultiLive
 
             if (_DataSource.HasChanges())
             {
-                lock (_DataSource)
-                {
-                    _DataSource.AcceptChanges();
-                }
-
                 lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                 {
                     SaveTasks.Enqueue(new(() =>
@@ -174,9 +174,12 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>true if the channel and date have already posted 2+ events for the same day. false if there is no match or just 1 event post for the current date.</returns>
         public bool CheckStreamDate(string ChannelName, DateTime dateTime)
         {
-            return (from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
-                    where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString() == dateTime.ToShortDateString()
-                    select liveStreamRow).Count() > 1;
+            lock (_DataSource)
+            {
+                return (from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
+                        where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString() == dateTime.ToShortDateString()
+                        select liveStreamRow).Count() > 1;
+            }
         }
 
         /// <summary>
@@ -187,24 +190,27 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>true if the event posted. false if the date & time duplicates.</returns>
         public bool PostStreamDate(string ChannelName, DateTime dateTime)
         {
-            bool result = false;
-
-            if ((from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
-                 where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime
-                 select new { }).Any())
+            lock (_DataSource)
             {
-                result = false;
-            }
-            else
-            {
-                _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
-                SaveData();
-                OnPropertyChanged(nameof(LiveStream));
+                bool result = false;
 
-                result = true;
-            }
+                if ((from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
+                     where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime
+                     select new { }).Any())
+                {
+                    result = false;
+                }
+                else
+                {
+                    _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
+                    SaveData();
+                    OnPropertyChanged(nameof(LiveStream));
 
-            return result;
+                    result = true;
+                }
+
+                return result;
+            }
         }
 
         /// <summary>
@@ -213,8 +219,11 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>A list of strings from the Channels table.</returns>
         public List<string> GetChannelNames()
         {
-            return new(from DataSource.ChannelsRow c in _DataSource.Channels.Select()
-                       select c.ChannelName);
+            lock (_DataSource)
+            {
+                return new(from DataSource.ChannelsRow c in _DataSource.Channels.Select()
+                           select c.ChannelName);
+            }
         }
 
         /// <summary>
@@ -223,8 +232,67 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>A list of URI objects for the Endpoint links.</returns>
         public List<Tuple<string, Uri>> GetWebLinks()
         {
-            return new(from DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[])_DataSource.MsgEndPoints.Select()
-                       select new Tuple<string, Uri>(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
+            lock (_DataSource)
+            {
+                return new(from DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[])_DataSource.MsgEndPoints.Select()
+                           select new Tuple<string, Uri>(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
+            }
+        }
+
+
+        public void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
+        {
+            lock (_DataSource)
+            {
+                List<DataTable> updated = new();
+                foreach (DataRow dr in dataRows)
+                {
+                    if (CheckField(dr.Table.TableName, "IsEnabled"))
+                    {
+                        updated.UniqueAdd(dr.Table);
+                        SetDataRowFieldRow(dr, "IsEnabled", IsEnabled);
+                    }
+                }
+                updated.ForEach((T) => T.AcceptChanges());
+            }
+        }
+
+
+        /// <summary>
+        /// Check if the provided field is part of the supplied table.
+        /// </summary>
+        /// <param name="table">The table to check.</param>
+        /// <param name="field">The field within the table to see if it exists.</param>
+        /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
+        public bool CheckField(string table, string field)
+        {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if field {field} is in table {table}.");
+#endif
+
+            lock (_DataSource)
+            {
+                return _DataSource.Tables[table].Columns.Contains(field);
+            }
+        }
+
+        public void SetDataRowFieldRow(DataRow dataRow, string dataColumn, object value)
+        {
+            lock (_DataSource)
+            {
+                dataRow[dataColumn] = value;
+            }
+        }
+
+        public void PostMonitorChannel(string UserName)
+        {
+            lock (_DataSource)
+            {
+                if(_DataSource.Channels.Count < 100)
+                {
+                    _DataSource.Channels.AddChannelsRow(UserName);
+                }
+            }
         }
     }
 }

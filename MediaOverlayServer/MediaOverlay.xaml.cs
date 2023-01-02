@@ -27,13 +27,13 @@ namespace MediaOverlayServer
 
         public MainWindow(EventHandler<EventArgs>? HideWindow = null)
         {
-            if (Settings.Default.SettingsUpgrade)
-            {
-                Settings.Default.Upgrade();
-                Settings.Default.SettingsUpgrade = false;
-            }
-            OptionFlags.SetSettings();
-            OptionFlags.ActiveToken = true;
+            //if (Settings.Default.SettingsUpgrade)
+            //{
+            //    Settings.Default.Upgrade();
+            //    Settings.Default.SettingsUpgrade = false;
+            //}
+            //OptionFlags.SetSettings();
+            //OptionFlags.ActiveToken = true;
 
             Controller = new();
 
@@ -69,7 +69,7 @@ namespace MediaOverlayServer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
-            if(OptionFlags.MediaOverlayPort!=0 && OptionFlags.AutoStart)
+            if(OptionFlags.MediaOverlayMediaPort != 0 && OptionFlags.MediaOverlayAutoStart)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
@@ -136,7 +136,7 @@ namespace MediaOverlayServer
         private void AddEditPages()
         {
             GUIData.ClearEditPages();
-            if (OptionFlags.UseSameOverlayStyle)
+            if (OptionFlags.MediaOverlayUseSameStyle)
             {
                 GUIData.AddEditPage(OverlayTypes.None.ToString());
             }
@@ -158,7 +158,7 @@ namespace MediaOverlayServer
 
             foreach (OverlayStyle O in GUIData.OverlayEditStyles)
             {
-                if (O.OverlayType != OverlayTypes.None.ToString() || OptionFlags.UseSameOverlayStyle)
+                if (O.OverlayType != OverlayTypes.None.ToString() || OptionFlags.MediaOverlayUseSameStyle)
                 {
                     TextBox textBox = new()
                     {
@@ -200,7 +200,7 @@ namespace MediaOverlayServer
         {
             TextBox port = sender as TextBox;
 
-            OptionFlags.MediaOverlayPort = TwineBotWebServer.ValidatePort(int.Parse(port.Text));
+            OptionFlags.MediaOverlayMediaPort = TwineBotWebServer.ValidatePort(int.Parse(port.Text));
             UpdateLinks();
         }
 

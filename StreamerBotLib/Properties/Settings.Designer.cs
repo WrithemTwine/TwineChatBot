@@ -398,24 +398,24 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool TwitchCurrencyOnline {
+        public bool CurrencyOnline {
             get {
-                return ((bool)(this["TwitchCurrencyOnline"]));
+                return ((bool)(this["CurrencyOnline"]));
             }
             set {
-                this["TwitchCurrencyOnline"] = value;
+                this["CurrencyOnline"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TwitchCurrencyStart {
+        public bool CurrencyStart {
             get {
-                return ((bool)(this["TwitchCurrencyStart"]));
+                return ((bool)(this["CurrencyStart"]));
             }
             set {
-                this["TwitchCurrencyStart"] = value;
+                this["CurrencyStart"] = value;
             }
         }
         
@@ -1304,6 +1304,18 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["MsgSocialSeparate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayCSSExpandHelp {
+            get {
+                return ((bool)(this["MediaOverlayCSSExpandHelp"]));
+            }
+            set {
+                this["MediaOverlayCSSExpandHelp"] = value;
             }
         }
     }

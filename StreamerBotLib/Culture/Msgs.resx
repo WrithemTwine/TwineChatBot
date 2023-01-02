@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="accountage" xml:space="preserve">
+    <value>accountage</value>
+    <comment>default command, can be translated</comment>
+  </data>
   <data name="addcommand" xml:space="preserve">
     <value>addcommand</value>
     <comment>default command, can be translated</comment>
@@ -333,6 +337,10 @@
     <value>mergeaccounts</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="Msgaccountage" xml:space="preserve">
+    <value>Account #user created #date ago.</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary</comment>
+  </data>
   <data name="Msgaddcommand" xml:space="preserve">
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
@@ -540,6 +548,10 @@
   <data name="or" xml:space="preserve">
     <value>{0} or {1}</value>
     <comment>translate "or", leave {0} and {1} for the message</comment>
+  </data>
+  <data name="Paramaccountage" xml:space="preserve">
+    <value>-param:true -use:!accountage or !accountage &lt;viewername&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramaddcommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>

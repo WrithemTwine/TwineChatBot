@@ -95,10 +95,10 @@
     <Setting Name="TwitchClipPostDiscord" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TwitchCurrencyOnline" Type="System.Boolean" Scope="User">
+    <Setting Name="CurrencyOnline" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="TwitchCurrencyStart" Type="System.Boolean" Scope="User">
+    <Setting Name="CurrencyStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="TwitchDisconnectBot" Type="System.Boolean" Scope="User">
@@ -321,6 +321,9 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="MsgSocialSeparate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MediaOverlayCSSExpandHelp" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

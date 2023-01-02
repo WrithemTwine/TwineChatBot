@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
-using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System;
@@ -109,6 +108,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStarted)
                 {
+                    StopMultiLive();
                     LiveStreamMonitor.Stop();
                     LiveStreamMonitor = null;
                     IsStarted = false;
@@ -197,11 +197,11 @@ namespace StreamerBotLib.BotClients.Twitch
             if (IsMultiLiveBotActive)
             {
                 // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt);
+                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
 
                 if (PostedLive)
                 {
-                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, e.Stream.StartedAt);
+                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, e.Stream.StartedAt.ToLocalTime());
 
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
@@ -214,10 +214,10 @@ namespace StreamerBotLib.BotClients.Twitch
                             { "#user", e.Stream.UserName },
                             { "#category", e.Stream.GameName },
                             { "#title", e.Stream.Title },
-                            { "#url", Resources.TwitchHomepage + e.Stream.UserName }
+                            { "#url", e.Stream.UserName }
                         };
 
-                        LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt);
+                        LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt.ToLocalTime());
                         foreach (Tuple<string, Uri> u in MultiLiveDataManager.GetWebLinks())
                         {
                             if (u.Item1 == "Discord")

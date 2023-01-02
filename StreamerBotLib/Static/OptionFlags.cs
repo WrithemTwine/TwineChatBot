@@ -280,11 +280,11 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies starting currency accruals.
         /// </summary>
-        public static bool TwitchCurrencyStart { get; set; }
+        public static bool CurrencyStart { get; set; }
         /// <summary>
         /// Specifies whether currency accrual should only occur when stream is live (online), for testing purposes.
         /// </summary>
-        public static bool TwitchCurrencyOnline { get; set; }
+        public static bool CurrencyOnline { get; set; }
 
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
@@ -444,8 +444,6 @@ namespace StreamerBotLib.Static
                 TwitchClipConnectOnline = Settings.Default.TwitchClipConnectOnline;
                 TwitchClipDisconnectOffline = Settings.Default.TwitchClipDisconnectOffline;
 
-                TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
-                TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
 
                 #region Followers - Twitch
 
@@ -528,6 +526,9 @@ namespace StreamerBotLib.Static
                 ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
                 ManageClearButtonEnabled = Settings.Default.ManageClearButtonEnabled;
                 ManageOverlayTicker = Settings.Default.ManageOverlayTicker;
+ 
+                CurrencyStart = Settings.Default.CurrencyStart;
+                CurrencyOnline = Settings.Default.CurrencyOnline;
 
                 #endregion
 

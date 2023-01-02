@@ -25,6 +25,7 @@
         settitle, setcategory,
         raid, cancelraid,
         approve,
-        mergeaccounts
+        mergeaccounts,
+        accountage
     }
 }

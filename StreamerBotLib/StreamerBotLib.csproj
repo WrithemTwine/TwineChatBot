@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.5.5</Version>
+    <Version>0.2.5.6</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -81,6 +81,17 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       <Generator>PublicSettingsSingleFileGenerator</Generator>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MultiLive\Culture\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="MultiLive\MultiLiveDataGrids.xaml">
+      <CustomToolNamespace></CustomToolNamespace>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
   </ItemGroup>
   
 

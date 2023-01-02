@@ -54,7 +54,7 @@
             <TabItem Header="Options" DataContext="{x:Static Prop:Settings.Default}">
                 <WrapPanel>
                     <GroupBox Header="Overlay Settings">
-                        <CheckBox x:Name="CheckBox_OptionSamePage" IsChecked="{Binding UseSameOverlayStyle}">
+                        <CheckBox x:Name="CheckBox_OptionSamePage" IsChecked="{Binding MediaOverlayUseSameStyle}">
                             <TextBlock>Enable the same Overlay style for every alert.</TextBlock>
                         </CheckBox>
                     </GroupBox>
@@ -73,7 +73,7 @@
                     </GroupBox>
                     <GroupBox Header="Overlay Media Server">
                         <StackPanel>
-                            <CheckBox IsChecked="{Binding AutoStart}" Content="Enable Auto-Starting Server" />
+                            <CheckBox IsChecked="{Binding MediaOverlayAutoServerStart}" Content="Enable Auto-Starting Server" />
                             <RadioButton x:Name="RadioButton_OverlayServer_Start" Content="Start Server" Checked="RadioButton_OverlayServer_Start_Checked" />
                             <RadioButton x:Name="RadioButton_OverlayServer_Stop" Content="Stop Server" Checked="RadioButton_OverlayServer_Stop_Checked" IsChecked="True" />
                         </StackPanel>
@@ -89,7 +89,7 @@
             </TabItem>
             <TabItem Header="Overlay Styles" >
                 <DockPanel Margin="3">
-                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding CSSExpandHelp}" DockPanel.Dock="Top" Expanded="Expander_Click_SaveSettings" Collapsed="Expander_Click_SaveSettings">
+                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayCSSExpandHelp}" DockPanel.Dock="Top" Expanded="Expander_Click_SaveSettings" Collapsed="Expander_Click_SaveSettings">
                         <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <FlowDocument>
                                 <Section>
