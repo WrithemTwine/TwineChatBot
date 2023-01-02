@@ -411,19 +411,23 @@ namespace StreamerBotLib.Data
             {
                 foreach (UsersRow UR in _DataSource.Users.Rows)
                 {
-                    if (DBNull.Value.Equals(UR.Platform))
+                    if (DBNull.Value.Equals(UR["Platform"]))
                     {
                         UR.Platform = Platform.Twitch.ToString();
                     }
                 }
 
+                _DataSource.Users.AcceptChanges();
+
                 foreach (FollowersRow FR in _DataSource.Followers.Rows)
                 {
-                    if (DBNull.Value.Equals(FR.Platform))
+                    if (DBNull.Value.Equals(FR["Platform"]))
                     {
                         FR.Platform = Platform.Twitch.ToString();
                     }
                 }
+
+                _DataSource.Followers.AcceptChanges();
             }
         }
     }
