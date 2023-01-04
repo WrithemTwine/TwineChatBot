@@ -447,15 +447,6 @@ namespace StreamerBotLib.BotClients
             }
             else
             {
-                //if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
-                //{
-                //    TwitchBotChatClient.StartBot();
-                //}
-                //else
-                //{
-                //    ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
-                //}
-
                 if (OptionFlags.TwitchChatBotConnectOnline)
                 {
                     TwitchBotChatClient.StartBot();
@@ -487,34 +478,40 @@ namespace StreamerBotLib.BotClients
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+            if (e.Channel == TwitchBotsBase.TwitchChannelName)
+            {
+                InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+            }
         }
 
-         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
+        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+            if (e.Channel == TwitchBotsBase.TwitchChannelName)
             {
-                TwitchBotChatClient.StopBot();
-            }
+                if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+                {
+                    TwitchBotChatClient.StopBot();
+                }
 
-            if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
-            {
-                TwitchBotPubSub.StopBot();
-            }
+                if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
+                {
+                    TwitchBotPubSub.StopBot();
+                }
 
-            if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
-            {
-                TwitchBotClipSvc.StopBot();
-            }
+                if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
+                {
+                    TwitchBotClipSvc.StopBot();
+                }
 
-            if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
-            {
-                TwitchFollower.StopBot();
-            }
+                if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
+                {
+                    TwitchFollower.StopBot();
+                }
 
-            if (OptionFlags.IsStreamOnline)
-            {
-                InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+                if (OptionFlags.IsStreamOnline)
+                {
+                    InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+                }
             }
         }
 

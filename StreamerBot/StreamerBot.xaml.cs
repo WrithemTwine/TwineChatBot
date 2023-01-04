@@ -430,6 +430,9 @@ namespace StreamerBot
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
                     if (IsMultiProcActive == false)
                     {
+                        // allow edits while bot is active
+                        (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
+
                         (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
                         (MultiLive_Data.Content as MultiLiveDataGrids).SetLiveManagerBot(guiTwitchBot.TwitchLiveMonitor);
                     }
@@ -440,6 +443,9 @@ namespace StreamerBot
                     Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
                     Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
                     Radio_MultiLiveTwitch_StopBot.IsChecked = true;
+
+                    // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
+                    (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
                 }
             }
         }

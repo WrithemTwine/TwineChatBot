@@ -409,7 +409,7 @@ namespace StreamerBotLib.Data
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach (UsersRow UR in _DataSource.Users.Rows)
+                foreach (UsersRow UR in _DataSource.Users.Select())
                 {
                     if (DBNull.Value.Equals(UR["Platform"]))
                     {
@@ -419,7 +419,7 @@ namespace StreamerBotLib.Data
 
                 _DataSource.Users.AcceptChanges();
 
-                foreach (FollowersRow FR in _DataSource.Followers.Rows)
+                foreach (FollowersRow FR in _DataSource.Followers.Select())
                 {
                     if (DBNull.Value.Equals(FR["Platform"]))
                     {

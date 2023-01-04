@@ -48,6 +48,11 @@ namespace StreamerBotLib.MultiLive
             TB_LiveMsg.SelectionStart = start;
         }
 
+        public void SetIsEnabled(bool IsEnabled)
+        {
+            Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
+        }
+
         public void SetLiveManagerBot(TwitchBotLiveMonitorSvc twitchBotLiveMonitorSvc)
         {
             Grid_MultiUserLiveMonitor.DataContext = twitchBotLiveMonitorSvc;

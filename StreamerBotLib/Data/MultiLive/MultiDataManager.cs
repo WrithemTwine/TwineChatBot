@@ -1,5 +1,6 @@
 ﻿
 using StreamerBotLib.Enums;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Static;
 
 using System;
@@ -63,7 +64,11 @@ namespace StreamerBotLib.Data.MultiLive
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            OnPropertyChanged(nameof(sender));
+            lock (_DataSource)
+            {
+                DataView dataView = (DataView)sender;
+                OnPropertyChanged(nameof(dataView.Table));
+            }
         }
 
         #region Load and Exit Ops

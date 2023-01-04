@@ -196,12 +196,14 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsMultiLiveBotActive)
             {
+                DateTime CurrTime = e.Stream.StartedAt.ToLocalTime();
+
                 // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.StartedAt.ToLocalTime());
+                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, CurrTime);
 
                 if (PostedLive)
                 {
-                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, e.Stream.StartedAt.ToLocalTime());
+                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, CurrTime);
 
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
@@ -217,7 +219,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             { "#url", e.Stream.UserName }
                         };
 
-                        LogEntry(VariableParser.ParseReplace(msg, dictionary), e.Stream.StartedAt.ToLocalTime());
+                        LogEntry(VariableParser.ParseReplace(msg, dictionary), CurrTime);
                         foreach (Tuple<string, Uri> u in MultiLiveDataManager.GetWebLinks())
                         {
                             if (u.Item1 == "Discord")
