@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TwitchLib.Api.Helix;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
@@ -59,28 +60,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<DateTime> GetUserCreatedAt(string UserName = null, string UserId = null)
         {
-            DateTime result = DateTime.MinValue;
-            if (UserId != null)
-            {
-                result = (await GetUsersAsync(Id: UserId)).Users.FirstOrDefault().CreatedAt;
-            }
-            else if (UserName != null)
-            {
-                result = (await GetUsersAsync(UserName: UserName)).Users.FirstOrDefault().CreatedAt;
-            }
-            return result;
+            return (await GetUsersAsync(UserName: UserName, Id: UserId))?.Users.FirstOrDefault().CreatedAt ?? DateTime.MinValue;
         }
 
         public async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null)
+            if (UserId != null || UserName != null)
             {
-                return await _api.Helix.Channels.GetChannelInformationAsync(UserId);
-            }
-            else if (UserName != null)
-            {
-                string UserId_result = await GetUserId(UserName);
-                return UserId_result != null ? await _api.Helix.Channels.GetChannelInformationAsync(UserId_result) : null;
+                return await _api.Helix.Channels.GetChannelInformationAsync(UserId ?? await GetUserId(UserName));
             }
 
             return null;
@@ -88,15 +75,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null)
+            if (UserId != null || UserName != null)
             {
-                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId);
+                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId ?? await GetUserId(UserName));
             }
-            else if (UserName != null)
-            {
-                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(await GetUserId(UserName));
-            }
-
             return null;
         }
 
@@ -142,15 +124,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
         {
-            if (ToUserId != null)
+            if (ToUserId != null || ToUserName != null)
             {
-                return await _api.Helix.Raids.StartRaidAsync(FromId, ToUserId);
+                return await _api.Helix.Raids.StartRaidAsync(FromId, ToUserId ?? await GetUserId(ToUserName));
             }
-            else if (ToUserName != null)
-            {
-                return await _api.Helix.Raids.StartRaidAsync(FromId, await GetUserId(ToUserName));
-            }
-
             return null;
         }
 
@@ -161,16 +138,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
         {
-            if (UserId != null)
+            if (UserId != null || UserName != null)
             {
-                return await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId });
+                return await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId ?? await GetUserId(UserName) });
             }
-            else if (UserName != null)
-            {
-                string UserId_result = await GetUserId(UserName);
-                return UserId_result != null ? await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId_result }) : null;
-            }
-
             return null;
         }
 

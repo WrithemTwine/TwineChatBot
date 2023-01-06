@@ -161,7 +161,7 @@ namespace MultiUserLiveBot
             (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
 
             (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-            (MultiLive_Data.Content as MultiLiveDataGrids).SetLiveManagerBot(TwitchLiveBot);
+            (MultiLive_Data.Content as MultiLiveDataGrids).SetLiveManagerBot(TwitchLiveBot.MultiLiveDataManager);
 
             ThreadManager.CreateThreadStart(() =>
             {

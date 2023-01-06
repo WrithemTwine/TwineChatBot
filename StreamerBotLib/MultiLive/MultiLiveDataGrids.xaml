@@ -62,9 +62,16 @@
             </TextBox>
         </StackPanel>
 
-        <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding MsgEndPoints}" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
-        <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding Channels}" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
-        <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+        <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" 
+                  ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" 
+                  ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                  MouseDoubleClick="DG_MouseDoubleClick" />
+        <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" 
+                  ItemsSource="{Binding Channels, Mode=OneWay}" 
+                  ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                  MouseDoubleClick="DG_MouseDoubleClick" />
+        <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" 
+                  ItemsSource="{Binding LiveStream, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
 
         <DockPanel x:Name="Panel_BotActivity" Grid.Row="2" Grid.Column="0" Visibility="Visible">
             <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />

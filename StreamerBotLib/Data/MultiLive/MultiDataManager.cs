@@ -27,6 +27,7 @@ namespace StreamerBotLib.Data.MultiLive
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
+        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
 
         private readonly DataSource _DataSource;
 
@@ -37,14 +38,17 @@ namespace StreamerBotLib.Data.MultiLive
         private int BackupSaveToken = 0;
         private const int BackupSaveIntervalMins = 15;
         private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
-        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
+
+        private const int maxlength = 8000;
+
+        public string MultiLiveStatusLog { get; set; } = "";
 
         public DataView Channels { get; set; }
         public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string PropName)
+        private void NotifyPropertyChanged(string PropName)
         {
             PropertyChanged?.Invoke(this, new(PropName));
         }
@@ -64,12 +68,10 @@ namespace StreamerBotLib.Data.MultiLive
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            lock (_DataSource)
-            {
-                DataView dataView = (DataView)sender;
-                OnPropertyChanged(nameof(dataView.Table));
-            }
+            DataView dataView = (DataView)sender;
+            NotifyPropertyChanged(nameof(dataView.Table));
         }
+
 
         #region Load and Exit Ops
         /// <summary>
@@ -94,9 +96,9 @@ namespace StreamerBotLib.Data.MultiLive
                 }
             }
 
-            OnPropertyChanged(nameof(Channels));
-            OnPropertyChanged(nameof(MsgEndPoints));
-            OnPropertyChanged(nameof(LiveStream));
+            NotifyPropertyChanged(nameof(Channels));
+            NotifyPropertyChanged(nameof(MsgEndPoints));
+            NotifyPropertyChanged(nameof(LiveStream));
         }
 
         /// <summary>
@@ -113,41 +115,34 @@ namespace StreamerBotLib.Data.MultiLive
                 ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
             }
 
-            if (_DataSource.HasChanges())
+            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
             {
-                lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+                SaveTasks.Enqueue(new(() =>
                 {
-                    SaveTasks.Enqueue(new(() =>
+                    lock (_DataSource)
                     {
-                        lock (_DataSource)
+                        try
                         {
-                            _DataSource.AcceptChanges();
-                            try
-                            {
-                                MemoryStream SaveData = new();  // new memory stream
+                            MemoryStream SaveData = new();  // new memory stream
 
-                                _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
+                            _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
 
-                                DataSource testinput = new();   // start a new database
-                                SaveData.Position = 0;          // reset the reader
-                                testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
+                            DataSource testinput = new();   // start a new database
+                            SaveData.Position = 0;          // reset the reader
+                            testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
 
-                                _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+                            _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
 
-                                // determine if current time is within a certain time frame, and perform the save
-                                if (IsBackup && OptionFlags.IsStreamOnline)
-                                {
-                                    // write backup file
-                                    _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                            }
+                            // determine if current time is within a certain time frame, and perform the save
+                            // write backup file
+                            _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
                         }
-                    }));
-                }
+                        catch (Exception ex)
+                        {
+                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        }
+                    }
+                }));
             }
         }
 
@@ -214,7 +209,6 @@ namespace StreamerBotLib.Data.MultiLive
                     _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
                     _DataSource.LiveStream.AcceptChanges();
                     SaveData();
-                    OnPropertyChanged(nameof(LiveStream));
 
                     result = true;
                 }
@@ -263,6 +257,7 @@ namespace StreamerBotLib.Data.MultiLive
                     }
                 }
                 updated.ForEach((T) => T.AcceptChanges());
+                SaveData();
             }
         }
 
@@ -304,5 +299,24 @@ namespace StreamerBotLib.Data.MultiLive
                 }
             }
         }
+
+
+        /// <summary>
+        /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
+        /// </summary>
+        /// <param name="data">The string of the message.</param>
+        /// <param name="dateTime">The time of the event.</param>
+        public void LogEntry(string data, DateTime dateTime)
+        {
+            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= maxlength)
+            {
+                MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
+            }
+
+            MultiLiveStatusLog += dateTime.ToString() + " " + data + "\n";
+
+            NotifyPropertyChanged(nameof(MultiLiveStatusLog));
+        }
+
     }
 }

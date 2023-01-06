@@ -53,10 +53,10 @@ namespace StreamerBotLib.MultiLive
             Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
         }
 
-        public void SetLiveManagerBot(TwitchBotLiveMonitorSvc twitchBotLiveMonitorSvc)
+        public void SetLiveManagerBot(MultiDataManager MultiLiveDataManager)
         {
-            Grid_MultiUserLiveMonitor.DataContext = twitchBotLiveMonitorSvc;
-            MultiLiveData = twitchBotLiveMonitorSvc.MultiLiveDataManager;
+            Grid_MultiUserLiveMonitor.DataContext = MultiLiveDataManager;
+            MultiLiveData = MultiLiveDataManager;
         }
 
         public void SetHandlers(EventHandler<RoutedEventArgs> SettingsLostFocus, EventHandler<TextChangedEventArgs> TextChanged)

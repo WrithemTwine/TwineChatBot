@@ -5,6 +5,7 @@ using StreamerBotLib.Static;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -31,6 +32,7 @@ namespace StreamerBotLib.BotClients.Twitch
             IsStarted = false;
             IsStopped = true;
         }
+
 
         public void ConnectLiveMonitorService()
         {
@@ -139,12 +141,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public MultiDataManager MultiLiveDataManager { get; private set; } = new();
 
-        private const int maxlength = 8000;
-
-        public string MultiLiveStatusLog { get; set; } = "";
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public void MultiConnect()
         {
             MultiLiveDataManager.LoadData();
@@ -155,7 +151,6 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             StopMultiLive();
             IsMultiConnected = false;
-            NotifyPropertyChanged(nameof(MultiLiveDataManager));
         }
 
         public void UpdateChannels()
@@ -170,7 +165,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 SetLiveMonitorChannels(new());
             }
             // TODO: localize the multilive bot data
-            LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
+            MultiLiveDataManager.LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
         }
 
         public void StartMultiLive()
@@ -188,7 +183,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 IsMultiLiveBotActive = false;
                 UpdateChannels();
-                LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
+                MultiLiveDataManager.LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
                 MultiLiveDataManager.SaveData();
             }
         }
@@ -220,7 +215,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             { "#url", e.Stream.UserName }
                         };
 
-                        LogEntry(VariableParser.ParseReplace(msg, dictionary), CurrTime);
+                        MultiLiveDataManager.LogEntry(VariableParser.ParseReplace(msg, dictionary), CurrTime);
                         foreach (Tuple<string, Uri> u in MultiLiveDataManager.GetWebLinks())
                         {
                             if (u.Item1 == "Discord")
@@ -233,27 +228,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
-        /// <summary>
-        /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
-        /// </summary>
-        /// <param name="data">The string of the message.</param>
-        /// <param name="dateTime">The time of the event.</param>
-        public void LogEntry(string data, DateTime dateTime)
-        {
-            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= maxlength)
-            {
-                MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
-            }
-
-            MultiLiveStatusLog += dateTime.ToString() + " " + data + "\n";
-
-            NotifyPropertyChanged(nameof(MultiLiveStatusLog));
-        }
 
         #endregion
     }
