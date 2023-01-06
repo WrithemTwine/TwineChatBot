@@ -93,6 +93,10 @@ namespace StreamerBotLib.Data.MultiLive
                     dataRow.IsEnabled = true;
                 }
             }
+
+            OnPropertyChanged(nameof(Channels));
+            OnPropertyChanged(nameof(MsgEndPoints));
+            OnPropertyChanged(nameof(LiveStream));
         }
 
         /// <summary>
@@ -199,7 +203,7 @@ namespace StreamerBotLib.Data.MultiLive
             {
                 bool result = false;
 
-                if ((from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
+                if ((from LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
                      where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime
                      select new { }).Any())
                 {
@@ -208,6 +212,7 @@ namespace StreamerBotLib.Data.MultiLive
                 else
                 {
                     _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
+                    _DataSource.LiveStream.AcceptChanges();
                     SaveData();
                     OnPropertyChanged(nameof(LiveStream));
 
@@ -244,7 +249,6 @@ namespace StreamerBotLib.Data.MultiLive
             }
         }
 
-
         public void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
         {
             lock (_DataSource)
@@ -261,7 +265,6 @@ namespace StreamerBotLib.Data.MultiLive
                 updated.ForEach((T) => T.AcceptChanges());
             }
         }
-
 
         /// <summary>
         /// Check if the provided field is part of the supplied table.
@@ -296,6 +299,8 @@ namespace StreamerBotLib.Data.MultiLive
                 if(_DataSource.Channels.Count < 100)
                 {
                     _DataSource.Channels.AddChannelsRow(UserName);
+                    _DataSource.Channels.AcceptChanges();
+                    SaveData();
                 }
             }
         }

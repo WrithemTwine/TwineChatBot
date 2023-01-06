@@ -6,7 +6,7 @@
       xmlns:s="clr-namespace:StreamerBotLib.Properties"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="MultiLiveDataGrids" Background="White">
+      Title="MultiLiveDataGrids" >
     <Page.Resources>
         <Style TargetType="{x:Type DataGrid}">
             <Setter Property="AlternationCount" Value="1" />
@@ -30,7 +30,7 @@
 
     <Grid x:Name="Grid_MultiUserLiveMonitor" DataContext="{Binding}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
+            <RowDefinition Height="60" />
             <RowDefinition Height="50*" />
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>

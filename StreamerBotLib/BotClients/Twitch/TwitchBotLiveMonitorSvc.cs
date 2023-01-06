@@ -137,11 +137,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region MultiLive Bot
 
-        public static MultiDataManager MultiLiveDataManager { get; private set; } = new();
+        public MultiDataManager MultiLiveDataManager { get; private set; } = new();
 
         private const int maxlength = 8000;
 
-        public static string MultiLiveStatusLog { get; set; } = "";
+        public string MultiLiveStatusLog { get; set; } = "";
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -189,6 +189,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 IsMultiLiveBotActive = false;
                 UpdateChannels();
                 LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
+                MultiLiveDataManager.SaveData();
             }
         }
 
