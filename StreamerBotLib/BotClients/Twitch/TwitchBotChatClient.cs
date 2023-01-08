@@ -19,7 +19,6 @@ using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
-using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Enums;
@@ -259,7 +258,7 @@ namespace StreamerBotLib.BotClients.Twitch
             else
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
-                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
+                //TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 TwitchChat.Connect();
                 isConnected = true;
             }

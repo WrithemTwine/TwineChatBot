@@ -25,7 +25,7 @@ namespace StreamerBotLib.Systems
                 {
                     ThreadManager.CreateThreadStart(() =>
                     {
-                        while (OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyStart && OptionFlags.ManageUsers)
+                        while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                         {
                             lock (CurrUsers)
                             {

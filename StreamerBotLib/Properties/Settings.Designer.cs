@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -398,24 +398,24 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool TwitchCurrencyOnline {
+        public bool CurrencyOnline {
             get {
-                return ((bool)(this["TwitchCurrencyOnline"]));
+                return ((bool)(this["CurrencyOnline"]));
             }
             set {
-                this["TwitchCurrencyOnline"] = value;
+                this["CurrencyOnline"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TwitchCurrencyStart {
+        public bool CurrencyStart {
             get {
-                return ((bool)(this["TwitchCurrencyStart"]));
+                return ((bool)(this["CurrencyStart"]));
             }
             set {
-                this["TwitchCurrencyStart"] = value;
+                this["CurrencyStart"] = value;
             }
         }
         
@@ -1220,6 +1220,102 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["ManageOverlayTicker"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int ModeratorApprovalTimeout {
+            get {
+                return ((int)(this["ModeratorApprovalTimeout"]));
+            }
+            set {
+                this["ModeratorApprovalTimeout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MsgCommandNotFound {
+            get {
+                return ((bool)(this["MsgCommandNotFound"]));
+            }
+            set {
+                this["MsgCommandNotFound"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayLogExceptions {
+            get {
+                return ((bool)(this["MediaOverlayLogExceptions"]));
+            }
+            set {
+                this["MediaOverlayLogExceptions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MediaOverlayPort {
+            get {
+                return ((int)(this["MediaOverlayPort"]));
+            }
+            set {
+                this["MediaOverlayPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayUseSameStyle {
+            get {
+                return ((bool)(this["MediaOverlayUseSameStyle"]));
+            }
+            set {
+                this["MediaOverlayUseSameStyle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayAutoServerStart {
+            get {
+                return ((bool)(this["MediaOverlayAutoServerStart"]));
+            }
+            set {
+                this["MediaOverlayAutoServerStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MsgSocialSeparate {
+            get {
+                return ((bool)(this["MsgSocialSeparate"]));
+            }
+            set {
+                this["MsgSocialSeparate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayCSSExpandHelp {
+            get {
+                return ((bool)(this["MediaOverlayCSSExpandHelp"]));
+            }
+            set {
+                this["MediaOverlayCSSExpandHelp"] = value;
             }
         }
     }

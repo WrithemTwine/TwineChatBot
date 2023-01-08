@@ -17,7 +17,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Xml;
 
 using static StreamerBotLib.Data.DataSource;
@@ -235,6 +234,7 @@ namespace StreamerBotLib.Data
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
             SetLearnedMessages();
+            CleanUpTables();
             NotifySaveData();
         }
 
@@ -405,5 +405,30 @@ namespace StreamerBotLib.Data
         }
         #endregion Regular Channel Events
 
+        private void CleanUpTables()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                foreach (UsersRow UR in _DataSource.Users.Select())
+                {
+                    if (DBNull.Value.Equals(UR["Platform"]))
+                    {
+                        UR.Platform = Platform.Twitch.ToString();
+                    }
+                }
+
+                _DataSource.Users.AcceptChanges();
+
+                foreach (FollowersRow FR in _DataSource.Followers.Select())
+                {
+                    if (DBNull.Value.Equals(FR["Platform"]))
+                    {
+                        FR.Platform = Platform.Twitch.ToString();
+                    }
+                }
+
+                _DataSource.Followers.AcceptChanges();
+            }
+        }
     }
 }

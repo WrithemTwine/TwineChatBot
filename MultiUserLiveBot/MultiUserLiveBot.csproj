@@ -16,6 +16,10 @@
     <Version>1.0.5</Version>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
@@ -23,12 +27,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="TwitchLib" Version="3.4.1" />
-    <PackageReference Include="TwitchLib.Api" Version="3.7.0" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.7.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />

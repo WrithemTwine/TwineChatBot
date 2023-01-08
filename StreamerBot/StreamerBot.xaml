@@ -27,6 +27,7 @@
                 <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
                 <Separator x:Name="DataGridContextMenu_Separator1" />
                 <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
+                <MenuItem x:Name="DataGridContextMenu_LiveMonitor" Header="Add User to LiveMonitor list" ToolTip="Does not Duplicate, 100 max" Visibility="Collapsed" Click="MenuItem_LiveMonitorClick"/>
                 <Separator x:Name="DataGridContextMenu_Separator2" />
                 <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
@@ -602,6 +603,12 @@
                                                 <CheckBox x:Name="CheckBox_Debug_Livestream" IsChecked="{Binding DebugLiveStream}">
                                                     <TextBlock>Enable Livestream debug buttons.</TextBlock>
                                                 </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgCommandNotFound}">
+                                                    <TextBlock>Enable "Command Not Found" output message.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgSocialSeparate}" ToolTip="Using !socials, click to send each social message separately to chat.">
+                                                    <TextBlock>Enable separate Social messages.</TextBlock>
+                                                </CheckBox>
                                                 <CheckBox IsChecked="{Binding ManageClearButtonEnabled}">
                                                     <CheckBox.ToolTip>
                                                         <TextBlock>This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</TextBlock>
@@ -776,7 +783,30 @@
                                         </GroupBox>
                                         <GroupBox Header="Any - Moderation Messages">
                                             <StackPanel>
-                                                <Label>Currently not enabled-working on machine learning</Label>
+
+                                                <GroupBox Header="Approval Request Expiration" Width="Auto">
+                                                    <StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Label VerticalContentAlignment="Center" Content="Expiration Minutes: "/>
+                                                            <Label VerticalContentAlignment="Center" Content="{Binding Value, ElementName=Slider_ModApprovalTimeout}" />
+                                                        </StackPanel>
+                                                        <Slider x:Name="Slider_ModApprovalTimeout" Height="40" Width="Auto" AutoToolTipPlacement="TopLeft" Interval="1" 
+                                                                TickPlacement="Both"
+                                                                Value="{Binding ModeratorApprovalTimeout, Mode=TwoWay}" Maximum="60" Minimum="5" SmallChange="5" SelectionStart="5" SelectionEnd="60" Margin="5,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="5">
+                                                            <Slider.ToolTip>
+                                                                <TextBlock>
+                                                                    On 'Data/Moderator/User Approve' tab, specify which commands or <LineBreak />
+                                                                    channel points redemptions users can request moderator approval. <LineBreak />
+                                                                    Specifically, actions that can modify bot data. Specify here how <LineBreak />
+                                                                    many minutes should moderators have to approve the request. <LineBreak />
+                                                                    After these specified minutes, the request will expire.                                                                    
+                                                                </TextBlock> 
+                                                            </Slider.ToolTip>
+                                                        </Slider>
+                                                    </StackPanel>
+                                                </GroupBox>
+                                                
+                                                <TextBlock>Currently not enabled-working on machine learning</TextBlock>
                                                 <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
                                                     <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                                 </CheckBox>
@@ -855,12 +885,12 @@
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Header="Twitch - Currency System">
+                                        <GroupBox Header="Any - Currency System">
                                             <StackPanel>
-                                                <CheckBox IsChecked="{Binding TwitchCurrencyStart, Mode=TwoWay}">
+                                                <CheckBox IsChecked="{Binding CurrencyStart, Mode=TwoWay}">
                                                     <TextBlock>Enable Currency Accrual - still permits adding currencies</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding TwitchCurrencyOnline, Mode=TwoWay}" Visibility="Collapsed">
+                                                <CheckBox x:Name="CheckBox_CurrencyOnline" IsChecked="{Binding CurrencyOnline, Mode=TwoWay}" Visibility="Collapsed">
                                                     <TextBlock>Enable Currency Accrual only when Streaming Online</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
@@ -945,7 +975,25 @@
                             </DockPanel>
                         </TabItem>
                         <TabItem Header="Moderation">
-                            <DockPanel>
+                            <TabControl>
+                                <TabItem Header="User Approve" GotFocus="TabItem_ModApprove_GotFocus">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Top">
+                                            Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.<LineBreak />
+                                            <LineBreak />
+                                            ModActionType-the type of defined action-a command, channel point redeem, etc<LineBreak />
+                                            ModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro<LineBreak />
+                                            <Line Height="10" Width="500" Fill="Black" X1="10" X2="210" /><LineBreak />
+                                            ModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.<LineBreak />
+                                            ModPerformAction-the name of the action to perform once approved<LineBreak />
+                                            <LineBreak />
+                                            The default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".<LineBreak />
+                                        </TextBlock>
+                                        <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top" ItemsSource="{Binding ModeratorApprove, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                    </DockPanel>
+                                </TabItem>
+                                <TabItem Header="Msg Mod">
+                                    <DockPanel>
                                 <TextBlock DockPanel.Dock="Top" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
@@ -961,6 +1009,8 @@
 
                                 <DataGrid ItemsSource="{Binding LearnMsgs}" DockPanel.Dock="Bottom" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
                             </DockPanel>
+                                </TabItem>
+                            </TabControl>
                         </TabItem>
                         <TabItem Header="User Data" x:Name="TabItem_Users">
                             <TabControl>
@@ -1317,62 +1367,9 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Collapsed" />
-                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Collapsed">
-                            <Grid x:Name="TabItem_MultiUserLiveMonitor" IsEnabled="False">
-                                <Grid.Resources>
-                                    <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
-                                        <Setter Property="Margin" Value="5"/>
-                                        <Setter Property="MaxColumnWidth" Value="160" />
-                                        <Setter Property="CanUserAddRows" Value="True" />
-                                        <Setter Property="CanUserDeleteRows" Value="True" />
-                                    </Style>
-                                </Grid.Resources>
-                                <Grid.DataContext>
-                                    <Binding Mode="OneWay" Path="TwitchLiveMonitor" Source="{StaticResource TwitchBot}"/>
-                                </Grid.DataContext>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="298*" />
-                                    <ColumnDefinition Width="52"/>
-                                    <ColumnDefinition Width="100"  />
-                                    <ColumnDefinition Width="52"/>
-                                    <ColumnDefinition Width="293*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock TextWrapping="Wrap" Grid.Row="0" Padding="3"><Run Text="Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
-                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Foreground="Red" Visibility="{Binding Visibility, ElementName=Label_LiveStream_MultiLiveActiveMsg}">
-                                    <TextBlock TextWrapping="Wrap"><Run Text="The MultiUserLiveBot is active, single channel activated."/></TextBlock>
-                                </Label>
-                                <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.Column="4" Text="Message for Live Notification:" />
-                                <TextBox x:Name="TB_LiveMsg" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Top" 
-                             DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding MsgLive}" 
-                             TextAlignment="Left" TextWrapping="Wrap" LostFocus="Settings_LostFocus" Margin="0,16,0,0">
-                                    <TextBox.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="#user" Click="MenuItem_Click" />
-                                            <MenuItem Header="#category" Click="MenuItem_Click" />
-                                            <MenuItem Header="#title" Click="MenuItem_Click" />
-                                            <MenuItem Header="#url" Click="MenuItem_Click" />
-                                        </ContextMenu>
-                                    </TextBox.ContextMenu>
-                                    <TextBox.ToolTip>
-                                        <TextBlock><Run Text="Use these tags within the message and it'll be replaced before sending the posted live message."/><LineBreak /><Run Text="Available by right-click menu - insert at cursor."/><LineBreak /><Run Text="&quot;#user&quot; - channel name of the user"/><LineBreak /><Run Text="&quot;#category&quot; - the category of the stream"/><LineBreak /><Run Text="&quot;#title&quot; - the title of the stream when it goes live"/><LineBreak /><Run Text="&quot;#url&quot; - to send someone to the Twitch channel, it's already prepared &quot; twitch.tv/user &quot;"/><LineBreak /><LineBreak /><Run Text="Example: @everyone, #user is now live streaming #category - #title! Come join and say hi at: #url"/></TextBlock>
-                                    </TextBox.ToolTip>
-                                </TextBox>
-
-                                <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding Channels, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                <DataGrid x:Name="DG_Multi_LiveStreamStats" Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" DataContext="{Binding MultiLiveDataManager}" ItemsSource="{Binding LiveStream, Mode=TwoWay}" IsEnabled="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-
-                                <DockPanel x:Name="Panel_BotActivity" Grid.Row="1" Grid.Column="4" Visibility="Collapsed">
-                                    <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-                                    <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}"  />
-                                </DockPanel>
-                            </Grid>
+                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Visible" />
+                        <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Visible">
+                            <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" />
                         </TabItem>
                     </TabControl>
                 </DockPanel>

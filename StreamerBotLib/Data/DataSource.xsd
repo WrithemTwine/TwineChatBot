@@ -109,7 +109,7 @@
               <xs:element name="FollowedDate" msdata:Caption="Followed Date" msprop:Generator_ColumnPropNameInTable="FollowedDateColumn" msprop:Generator_ColumnPropNameInRow="FollowedDate" msprop:Generator_UserColumnName="FollowedDate" msprop:Generator_ColumnVarNameInTable="columnFollowedDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
               <xs:element name="UserId" msprop:Generator_ColumnPropNameInTable="UserIdColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="UserId" msprop:Generator_UserColumnName="UserId" msprop:Generator_ColumnVarNameInTable="columnUserId" type="xs:string" minOccurs="0" />
               <xs:element name="Platform" msprop:Generator_ColumnPropNameInTable="PlatformColumn" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="Platform" msprop:Generator_UserColumnName="Platform" msprop:Generator_ColumnVarNameInTable="columnPlatform" type="xs:string" minOccurs="0" />
-              <xs:element name="StatusChangeDate" msprop:Generator_UserColumnName="StatusChangeDate" msprop:Generator_ColumnPropNameInTable="StatusChangeDateColumn" msprop:Generator_ColumnPropNameInRow="StatusChangeDate" msprop:Generator_ColumnVarNameInTable="columnStatusChangeDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
+              <xs:element name="StatusChangeDate" msprop:Generator_ColumnPropNameInTable="StatusChangeDateColumn" msprop:Generator_ColumnPropNameInRow="StatusChangeDate" msprop:Generator_UserColumnName="StatusChangeDate" msprop:Generator_ColumnVarNameInTable="columnStatusChangeDate" type="xs:dateTime" default="1900-01-01T00:00:00-05:00" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -256,12 +256,24 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="OverlayTicker" msprop:Generator_RowEvHandlerName="OverlayTickerRowChangeEventHandler" msprop:Generator_RowDeletedName="OverlayTickerRowDeleted" msprop:Generator_RowDeletingName="OverlayTickerRowDeleting" msprop:Generator_RowEvArgName="OverlayTickerRowChangeEvent" msprop:Generator_TablePropName="OverlayTicker" msprop:Generator_RowChangedName="OverlayTickerRowChanged" msprop:Generator_RowChangingName="OverlayTickerRowChanging" msprop:Generator_TableClassName="OverlayTickerDataTable" msprop:Generator_RowClassName="OverlayTickerRow" msprop:Generator_TableVarName="tableOverlayTicker" msprop:Generator_UserTableName="OverlayTicker">
+        <xs:element name="OverlayTicker" msprop:Generator_RowEvHandlerName="OverlayTickerRowChangeEventHandler" msprop:Generator_RowDeletedName="OverlayTickerRowDeleted" msprop:Generator_RowDeletingName="OverlayTickerRowDeleting" msprop:Generator_RowEvArgName="OverlayTickerRowChangeEvent" msprop:Generator_TablePropName="OverlayTicker" msprop:Generator_RowChangedName="OverlayTickerRowChanged" msprop:Generator_UserTableName="OverlayTicker" msprop:Generator_RowChangingName="OverlayTickerRowChanging" msprop:Generator_RowClassName="OverlayTickerRow" msprop:Generator_TableClassName="OverlayTickerDataTable" msprop:Generator_TableVarName="tableOverlayTicker">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Id" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnVarNameInTable="columnId" msprop:Generator_UserColumnName="Id" type="xs:int" minOccurs="0" />
-              <xs:element name="TickerName" msprop:Generator_ColumnPropNameInRow="TickerName" msprop:Generator_ColumnPropNameInTable="TickerNameColumn" msprop:Generator_ColumnVarNameInTable="columnTickerName" msprop:Generator_UserColumnName="TickerName" type="xs:string" minOccurs="0" />
-              <xs:element name="UserName" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_ColumnVarNameInTable="columnUserName" msprop:Generator_UserColumnName="UserName" type="xs:string" minOccurs="0" />
+              <xs:element name="Id" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="1" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" minOccurs="0" />
+              <xs:element name="TickerName" msprop:Generator_ColumnPropNameInTable="TickerNameColumn" msprop:Generator_ColumnPropNameInRow="TickerName" msprop:Generator_UserColumnName="TickerName" msprop:Generator_ColumnVarNameInTable="columnTickerName" type="xs:string" minOccurs="0" />
+              <xs:element name="UserName" msprop:Generator_ColumnPropNameInTable="UserNameColumn" msprop:Generator_ColumnPropNameInRow="UserName" msprop:Generator_UserColumnName="UserName" msprop:Generator_ColumnVarNameInTable="columnUserName" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ModeratorApprove" msprop:Generator_RowClassName="ModeratorApproveRow" msprop:Generator_RowEvHandlerName="ModeratorApproveRowChangeEventHandler" msprop:Generator_RowDeletedName="ModeratorApproveRowDeleted" msprop:Generator_RowDeletingName="ModeratorApproveRowDeleting" msprop:Generator_RowEvArgName="ModeratorApproveRowChangeEvent" msprop:Generator_TablePropName="ModeratorApprove" msprop:Generator_RowChangedName="ModeratorApproveRowChanged" msprop:Generator_UserTableName="ModeratorApprove" msprop:Generator_RowChangingName="ModeratorApproveRowChanging" msprop:Generator_TableClassName="ModeratorApproveDataTable" msprop:Generator_TableVarName="tableModeratorApprove">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" minOccurs="0" />
+              <xs:element name="IsEnabled" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" msprop:Generator_UserColumnName="IsEnabled" type="xs:boolean" default="false" minOccurs="0" />
+              <xs:element name="ModActionType" msdata:Caption="The type of the action requiring mod approval, command-channel points redeem-etc" msprop:Generator_UserColumnName="ModActionType" msprop:Generator_ColumnPropNameInTable="ModActionTypeColumn" msprop:Generator_ColumnPropNameInRow="ModActionType" msprop:Generator_ColumnVarNameInTable="columnModActionType" type="xs:string" minOccurs="0" />
+              <xs:element name="ModActionName" msdata:Caption="The name of the action to perform based on the 'ModActionType'." msprop:Generator_UserColumnName="ModActionName" msprop:Generator_ColumnPropNameInTable="ModActionNameColumn" msprop:Generator_ColumnPropNameInRow="ModActionName" msprop:Generator_ColumnVarNameInTable="columnModActionName" type="xs:string" minOccurs="0" />
+              <xs:element name="ModPerformType" msdata:Caption="Perform an action, another command or events or other, from approved action" msprop:Generator_UserColumnName="ModPerformType" msprop:Generator_ColumnPropNameInTable="ModPerformTypeColumn" msprop:Generator_ColumnPropNameInRow="ModPerformType" msprop:Generator_ColumnVarNameInTable="columnModPerformType" type="xs:string" minOccurs="0" />
+              <xs:element name="ModPerformAction" msdata:Caption="The type of the perform action, to identify what to perform - command, points redeem, etc" msprop:Generator_UserColumnName="ModPerformAction" msprop:Generator_ColumnPropNameInTable="ModPerformActionColumn" msprop:Generator_ColumnPropNameInRow="ModPerformAction" msprop:Generator_ColumnVarNameInTable="columnModPerformAction" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -383,6 +395,10 @@
     </xs:unique>
     <xs:unique name="OverlayTicker_Constraint2" msdata:ConstraintName="Constraint2">
       <xs:selector xpath=".//mstns:OverlayTicker" />
+      <xs:field xpath="mstns:Id" />
+    </xs:unique>
+    <xs:unique name="ModeratorApprove_Constraint1" msdata:ConstraintName="Constraint1">
+      <xs:selector xpath=".//mstns:ModeratorApprove" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
     <xs:keyref name="Users_Followers" refer="Users_Constraint2" msprop:rel_Generator_UserParentTable="Users" msprop:rel_Generator_UserChildTable="Followers" msprop:rel_Generator_RelationVarName="relationUsers_Followers" msprop:rel_Generator_ChildPropName="GetFollowersRows" msprop:rel_Generator_ParentPropName="UsersRow" msprop:rel_Generator_UserRelationName="Users_Followers" msdata:UpdateRule="None">

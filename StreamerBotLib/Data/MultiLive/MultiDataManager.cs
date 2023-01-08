@@ -1,5 +1,6 @@
 ﻿
 using StreamerBotLib.Enums;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Static;
 
 using System;
@@ -13,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using static StreamerBotLib.Data.MultiLive.DataSource;
+
 namespace StreamerBotLib.Data.MultiLive
 {
     public class MultiDataManager : INotifyPropertyChanged
@@ -24,6 +27,7 @@ namespace StreamerBotLib.Data.MultiLive
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
+        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
 
         private readonly DataSource _DataSource;
 
@@ -34,25 +38,30 @@ namespace StreamerBotLib.Data.MultiLive
         private int BackupSaveToken = 0;
         private const int BackupSaveIntervalMins = 15;
         private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
-        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
+
+        private const int maxlength = 8000;
+
+        public string MultiLiveStatusLog { get; set; } = "";
 
         public DataView Channels { get; set; }
         public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string PropName)
+        private void NotifyPropertyChanged(string PropName)
         {
             PropertyChanged?.Invoke(this, new(PropName));
         }
+
+        public event EventHandler UpdatedMonitoringChannels;
 
         public MultiDataManager()
         {
             _DataSource = new();
 
-            Channels = new DataView(_DataSource.Channels, null, "ChannelName", DataViewRowState.CurrentRows);
-            MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, "Id", DataViewRowState.CurrentRows);
-            LiveStream = new DataView(_DataSource.LiveStream, null, "ChannelName", DataViewRowState.CurrentRows);
+            Channels = new DataView(_DataSource.Channels, null, $"{_DataSource.Channels.ChannelNameColumn.ColumnName}", DataViewRowState.CurrentRows);
+            MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, $"{_DataSource.MsgEndPoints.IdColumn.ColumnName}", DataViewRowState.CurrentRows);
+            LiveStream = new DataView(_DataSource.LiveStream, null, $"{_DataSource.LiveStream.LiveDateColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
 
             Channels.ListChanged += DataView_ListChanged;
             MsgEndPoints.ListChanged += DataView_ListChanged;
@@ -61,8 +70,15 @@ namespace StreamerBotLib.Data.MultiLive
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
-            OnPropertyChanged(nameof(sender));
+            DataView dataView = (DataView)sender;
+            NotifyPropertyChanged(nameof(dataView.Table));
+
+            if(dataView.Table == _DataSource.Channels)
+            {
+                UpdatedMonitoringChannels?.Invoke(this, new());
+            }
         }
+
 
         #region Load and Exit Ops
         /// <summary>
@@ -70,6 +86,7 @@ namespace StreamerBotLib.Data.MultiLive
         /// </summary>
         public void LoadData()
         {
+            _DataSource.Clear();
             if (!File.Exists(DataFileName))
             {
                 _DataSource.WriteXml(DataFileName);
@@ -77,6 +94,18 @@ namespace StreamerBotLib.Data.MultiLive
 
             using XmlReader xmlreader = new XmlTextReader(DataFileName);
             _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+
+            foreach(MsgEndPointsRow dataRow in _DataSource.MsgEndPoints.Rows)
+            {
+                if (DBNull.Value.Equals(dataRow["IsEnabled"]))
+                {
+                    dataRow.IsEnabled = true;
+                }
+            }
+
+            NotifyPropertyChanged(nameof(Channels));
+            NotifyPropertyChanged(nameof(MsgEndPoints));
+            NotifyPropertyChanged(nameof(LiveStream));
         }
 
         /// <summary>
@@ -84,12 +113,6 @@ namespace StreamerBotLib.Data.MultiLive
         /// </summary>
         public void SaveData()
         {
-            //lock (_DataSource)
-            //{
-            //    _DataSource.AcceptChanges();
-            //    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram);
-            //}
-
             int CurrMins = DateTime.Now.Minute;
             bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
 
@@ -99,46 +122,34 @@ namespace StreamerBotLib.Data.MultiLive
                 ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
             }
 
-            if (_DataSource.HasChanges())
+            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
             {
-                lock (_DataSource)
+                SaveTasks.Enqueue(new(() =>
                 {
-                    _DataSource.AcceptChanges();
-                }
-
-                lock (SaveTasks) // lock the Queue, block thread if currently save task has started
-                {
-                    SaveTasks.Enqueue(new(() =>
+                    lock (_DataSource)
                     {
-                        lock (_DataSource)
+                        try
                         {
-                            _DataSource.AcceptChanges();
-                            try
-                            {
-                                MemoryStream SaveData = new();  // new memory stream
+                            MemoryStream SaveData = new();  // new memory stream
 
-                                _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
+                            _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
 
-                                DataSource testinput = new();   // start a new database
-                                SaveData.Position = 0;          // reset the reader
-                                testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
+                            DataSource testinput = new();   // start a new database
+                            SaveData.Position = 0;          // reset the reader
+                            testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
 
-                                _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+                            _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
 
-                                // determine if current time is within a certain time frame, and perform the save
-                                if (IsBackup && OptionFlags.IsStreamOnline)
-                                {
-                                    // write backup file
-                                    _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                            }
+                            // determine if current time is within a certain time frame, and perform the save
+                            // write backup file
+                            _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
                         }
-                    }));
-                }
+                        catch (Exception ex)
+                        {
+                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        }
+                    }
+                }));
             }
         }
 
@@ -174,9 +185,12 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>true if the channel and date have already posted 2+ events for the same day. false if there is no match or just 1 event post for the current date.</returns>
         public bool CheckStreamDate(string ChannelName, DateTime dateTime)
         {
-            return (from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
-                    where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString() == dateTime.ToShortDateString()
-                    select liveStreamRow).Count() > 1;
+            lock (_DataSource)
+            {
+                return (from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
+                        where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString() == dateTime.ToShortDateString()
+                        select liveStreamRow).Count() > 1;
+            }
         }
 
         /// <summary>
@@ -187,24 +201,27 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>true if the event posted. false if the date & time duplicates.</returns>
         public bool PostStreamDate(string ChannelName, DateTime dateTime)
         {
-            bool result = false;
-
-            if ((from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
-                 where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime
-                 select new { }).Any())
+            lock (_DataSource)
             {
-                result = false;
-            }
-            else
-            {
-                _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
-                SaveData();
-                OnPropertyChanged(nameof(LiveStream));
+                bool result = false;
 
-                result = true;
-            }
+                if ((from LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
+                     where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime
+                     select new { }).Any())
+                {
+                    result = false;
+                }
+                else
+                {
+                    _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
+                    _DataSource.LiveStream.AcceptChanges();
+                    SaveData();
 
-            return result;
+                    result = true;
+                }
+
+                return result;
+            }
         }
 
         /// <summary>
@@ -213,8 +230,11 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>A list of strings from the Channels table.</returns>
         public List<string> GetChannelNames()
         {
-            return new(from DataSource.ChannelsRow c in _DataSource.Channels.Select()
-                       select c.ChannelName);
+            lock (_DataSource)
+            {
+                return new(from DataSource.ChannelsRow c in _DataSource.Channels.Select()
+                           select c.ChannelName);
+            }
         }
 
         /// <summary>
@@ -223,8 +243,87 @@ namespace StreamerBotLib.Data.MultiLive
         /// <returns>A list of URI objects for the Endpoint links.</returns>
         public List<Tuple<string, Uri>> GetWebLinks()
         {
-            return new(from DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[])_DataSource.MsgEndPoints.Select()
-                       select new Tuple<string, Uri>(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
+            lock (_DataSource)
+            {
+                return new(from MsgEndPointsRow MsgEndPointsRow in (MsgEndPointsRow[])_DataSource.MsgEndPoints.Select("IsEnabled='True'")
+                           select new Tuple<string, Uri>(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
+            }
         }
+
+        public void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
+        {
+            lock (_DataSource)
+            {
+                List<DataTable> updated = new();
+                foreach (DataRow dr in dataRows)
+                {
+                    if (CheckField(dr.Table.TableName, "IsEnabled"))
+                    {
+                        updated.UniqueAdd(dr.Table);
+                        SetDataRowFieldRow(dr, "IsEnabled", IsEnabled);
+                    }
+                }
+                updated.ForEach((T) => T.AcceptChanges());
+                SaveData();
+            }
+        }
+
+        /// <summary>
+        /// Check if the provided field is part of the supplied table.
+        /// </summary>
+        /// <param name="table">The table to check.</param>
+        /// <param name="field">The field within the table to see if it exists.</param>
+        /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
+        public bool CheckField(string table, string field)
+        {
+#if LogDataManager_Actions
+            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if field {field} is in table {table}.");
+#endif
+
+            lock (_DataSource)
+            {
+                return _DataSource.Tables[table].Columns.Contains(field);
+            }
+        }
+
+        public void SetDataRowFieldRow(DataRow dataRow, string dataColumn, object value)
+        {
+            lock (_DataSource)
+            {
+                dataRow[dataColumn] = value;
+            }
+        }
+
+        public void PostMonitorChannel(string UserName)
+        {
+            lock (_DataSource)
+            {
+                if(_DataSource.Channels.Count < 99)
+                {
+                    _DataSource.Channels.AddChannelsRow(UserName);
+                    _DataSource.Channels.AcceptChanges();
+                    SaveData();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
+        /// </summary>
+        /// <param name="data">The string of the message.</param>
+        /// <param name="dateTime">The time of the event.</param>
+        public void LogEntry(string data, DateTime dateTime)
+        {
+            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= maxlength)
+            {
+                MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
+            }
+
+            MultiLiveStatusLog += dateTime.ToString() + " " + data + "\n";
+
+            NotifyPropertyChanged(nameof(MultiLiveStatusLog));
+        }
+
     }
 }

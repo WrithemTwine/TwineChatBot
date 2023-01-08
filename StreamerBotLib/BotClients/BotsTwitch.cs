@@ -60,12 +60,14 @@ namespace StreamerBotLib.BotClients
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
             TwitchBotUserSvc.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
             TwitchBotUserSvc.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
+            TwitchBotUserSvc.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
             DataManager = SystemsController.DataManage;
 
             //ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
+
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -76,7 +78,7 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.IsStarted && !TwitchBotChatClient.HandlersAdded)
             {
-                TwitchBotChatClient.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
+                //TwitchBotChatClient.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
@@ -84,7 +86,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
-                TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
+                //TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
                 TwitchBotChatClient.TwitchChat.OnUserBanned += Client_OnUserBanned;
@@ -137,7 +139,7 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.HandlersAdded)
             {
-                TwitchBotChatClient.TwitchChat.OnBeingHosted -= Client_OnBeingHosted;
+                //TwitchBotChatClient.TwitchChat.OnBeingHosted -= Client_OnBeingHosted;
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived -= Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription -= Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected -= Client_OnExistingUsersDetected;
@@ -145,7 +147,7 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel -= Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived -= Client_OnMessageReceived;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber -= Client_OnNewSubscriber;
-                TwitchBotChatClient.TwitchChat.OnNowHosting -= Client_OnNowHosting;
+                //TwitchBotChatClient.TwitchChat.OnNowHosting -= Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification -= Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber -= Client_OnReSubscriber;
                 TwitchBotChatClient.TwitchChat.OnUserBanned -= Client_OnUserBanned;
@@ -204,10 +206,10 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
         }
 
-        private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
-        }
+        //private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
+        //{
+        //    InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
+        //}
 
         private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
         {
@@ -306,6 +308,11 @@ namespace StreamerBotLib.BotClients
             return TwitchBotUserSvc.GetUserGameCategory(UserId: UserId, UserName: UserName);
         }
 
+        public static DateTime GetUserAccountAge(string UserId = null, string UserName = null)
+        {
+            return TwitchBotUserSvc.GetUserCreatedAt(UserName: UserName, UserId: UserId);
+        }
+
         public static bool VerifyUserExist(string UserName)
         {
             return TwitchBotUserSvc.GetUserId(UserName) != null;
@@ -357,6 +364,40 @@ namespace StreamerBotLib.BotClients
             CancelRaidLoop();
         }
 
+        public static void GetViewerCount()
+        {
+            TwitchBotUserSvc.GetViewerCount(TwitchBotsBase.TwitchChannelName);
+        }
+        private void TwitchBotUserSvc_OnGetStreamsViewerCount(object sender, GetStreamsEventArgs e)
+        {
+            PostInternalCommand(LocalizedMsgSystem.GetVar(DefaultCommand.uptime), new() { e.ViewerCount.ToString() }, $"!{LocalizedMsgSystem.GetVar(MsgVars.uptime)} {e.ViewerCount}");
+        }
+
+        internal void PostInternalCommand(string Com, List<string> ComArgs, string ComMessage )
+        {
+            InvokeBotEvent(this, BotEvents.TwitchBotCommandCall, new SendBotCommandEventArgs()
+            {
+                CmdMessage = new()
+                {
+                    CommandArguments = ComArgs,
+                    CommandText = Com,
+                    DisplayName = TwitchBotsBase.TwitchBotUserName,
+                    Channel = TwitchBotsBase.TwitchChannelName,
+                    IsBroadcaster = TwitchBotsBase.TwitchBotUserName == TwitchBotsBase.TwitchChannelName,
+                    IsHighlighted = false,
+                    IsMe = false,
+                    IsModerator = TwitchBotsBase.TwitchBotUserName != TwitchBotsBase.TwitchChannelName,
+                    IsPartner = false,
+                    IsSkippingSubMode = false,
+                    IsStaff = false,
+                    IsSubscriber = false,
+                    IsTurbo = false,
+                    IsVip = false,
+                    Message = ComMessage
+                }
+            });
+        }
+
         #endregion
 
         #region Follower Bot
@@ -406,15 +447,6 @@ namespace StreamerBotLib.BotClients
             }
             else
             {
-                //if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
-                //{
-                //    TwitchBotChatClient.StartBot();
-                //}
-                //else
-                //{
-                //    ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
-                //}
-
                 if (OptionFlags.TwitchChatBotConnectOnline)
                 {
                     TwitchBotChatClient.StartBot();
@@ -446,34 +478,40 @@ namespace StreamerBotLib.BotClients
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+            if (e.Channel == TwitchBotsBase.TwitchChannelName)
+            {
+                InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+            }
         }
 
-         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
+        private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+            if (e.Channel == TwitchBotsBase.TwitchChannelName)
             {
-                TwitchBotChatClient.StopBot();
-            }
+                if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+                {
+                    TwitchBotChatClient.StopBot();
+                }
 
-            if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
-            {
-                TwitchBotPubSub.StopBot();
-            }
+                if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
+                {
+                    TwitchBotPubSub.StopBot();
+                }
 
-            if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
-            {
-                TwitchBotClipSvc.StopBot();
-            }
+                if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
+                {
+                    TwitchBotClipSvc.StopBot();
+                }
 
-            if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
-            {
-                TwitchFollower.StopBot();
-            }
+                if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
+                {
+                    TwitchFollower.StopBot();
+                }
 
-            if (OptionFlags.IsStreamOnline)
-            {
-                InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+                if (OptionFlags.IsStreamOnline)
+                {
+                    InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+                }
             }
         }
 
@@ -548,23 +586,30 @@ namespace StreamerBotLib.BotClients
 
                     InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, null);
 
-                    // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
-                    List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
-
-                    follows.Reverse();
-
-                    for (int i = 0; i < follows.Count; i++)
+                    try
                     {
-                        // break up the follower list so chunks of the big list are sent in parts via event
-                        List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
+                        // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
+                        List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-                        InvokeBotEvent(
-                            this,
-                            BotEvents.TwitchBulkPostFollowers,
-                            new OnNewFollowersDetectedArgs()
-                            {
-                                NewFollowers = pieces
-                            });
+                        follows.Reverse();
+
+                        for (int i = 0; i < follows.Count; i++)
+                        {
+                            // break up the follower list so chunks of the big list are sent in parts via event
+                            List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
+
+                            InvokeBotEvent(
+                                this,
+                                BotEvents.TwitchBulkPostFollowers,
+                                new OnNewFollowersDetectedArgs()
+                                {
+                                    NewFollowers = pieces
+                                });
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
 
                     InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);

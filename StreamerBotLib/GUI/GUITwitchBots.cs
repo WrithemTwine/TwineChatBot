@@ -2,9 +2,9 @@
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.Events;
+using StreamerBotLib.Static;
 
 using System;
-using System.Windows;
 
 namespace StreamerBotLib.GUI
 {
@@ -62,7 +62,7 @@ namespace StreamerBotLib.GUI
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStarted( new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
+            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
 
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
@@ -76,17 +76,26 @@ namespace StreamerBotLib.GUI
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOfflineArgs e)
         {
-            OnLiveStreamStopped?.Invoke(this, new());
+            if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
+            {
+                OnLiveStreamStopped?.Invoke(this, new());
+            }
         }
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamUpdateArgs e)
         {
-            OnLiveStreamUpdated?.Invoke(this, new());
+            if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
+            {
+                OnLiveStreamUpdated?.Invoke(this, new());
+            }
         }
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOnlineArgs e)
         {
-            OnLiveStreamStarted?.Invoke(this, new());
+            if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
+            {
+                OnLiveStreamStarted?.Invoke(this, new());
+            }
         }
 
         private void TwitchBot_OnBotStopped(object sender, EventArgs e)

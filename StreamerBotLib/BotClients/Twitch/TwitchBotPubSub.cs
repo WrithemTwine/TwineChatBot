@@ -24,6 +24,8 @@ namespace StreamerBotLib.BotClients.Twitch
         private bool IsConnected;
         private string UserId;
 
+        private string Token;
+
         public TwitchBotPubSub()
         {
             BotClientName = Bots.TwitchPubSub;
@@ -79,6 +81,8 @@ namespace StreamerBotLib.BotClients.Twitch
                         if (IsStopped || !IsStarted)
                         {
                             RefreshSettings();
+                            BuildPubSubClient();
+
                             UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(TwitchChannelName);
 
                             // add Listen to Topics here
@@ -87,7 +91,6 @@ namespace StreamerBotLib.BotClients.Twitch
                                 TwitchPubSub.ListenToChannelPoints(UserId);
                             }
 
-                            //BuildPubSubClient();
 
                             TwitchPubSub.Connect();
                             Connected = true;
@@ -126,6 +129,11 @@ namespace StreamerBotLib.BotClients.Twitch
                             IsStarted = false;
                             IsStopped = true;
                             TwitchPubSub.Disconnect();
+
+                            TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
+                            TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
+                            TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+                            TwitchPubSub = null;
                         }
                     }
                     catch (Exception ex)
@@ -147,16 +155,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (!IsConnected && IsStarted)
             {
-                string Token;
-                if (OptionFlags.TwitchStreamerUseToken)
-                {
-                    Token = OptionFlags.TwitchStreamOauthToken;
-                }
-                else
-                {
-                    Token = OptionFlags.TwitchBotAccessToken;
-                }
-
+                Token = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamOauthToken : OptionFlags.TwitchBotAccessToken;
                 if (Token != null)
                 {
                     // send the topics to listen
@@ -171,17 +170,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TwitchPubSub_OnPubSubServiceClosed(object sender, EventArgs e)
         {
-
-            string Token;
-            if (OptionFlags.TwitchStreamerUseToken)
-            {
-                Token = OptionFlags.TwitchStreamOauthToken;
-            }
-            else
-            {
-                Token = OptionFlags.TwitchBotAccessToken;
-            }
-
             TwitchPubSub?.SendTopics(Token, true);
 
             //TwitchPubSub = null;

@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TwitchLib.Api.Helix;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
 using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 
@@ -22,6 +25,19 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
         }
 
+        private async Task<GetUsersResponse> GetUsersAsync(string UserName = null, string Id = null)
+        {
+            if (UserName != null)
+            {
+                return await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName });
+            }
+            else if (Id != null)
+            {
+                return await _api.Helix.Users.GetUsersAsync(ids: new List<string> { Id });
+            }
+            return null;
+        }
+
         public async Task<string> GetUserId(string UserName)
         {
             string result = null;
@@ -31,7 +47,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             {
                 try
                 {
-                    result = (await _api.Helix.Users.GetUsersAsync(logins: new List<string> { UserName })).Users.FirstOrDefault()?.Id ?? null;
+                    result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
                 }
                 catch
                 {
@@ -39,20 +55,19 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 }
             }
 
-
             return result;
+        }
+
+        public async Task<DateTime> GetUserCreatedAt(string UserName = null, string UserId = null)
+        {
+            return (await GetUsersAsync(UserName: UserName, Id: UserId))?.Users.FirstOrDefault().CreatedAt ?? DateTime.MinValue;
         }
 
         public async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null)
+            if (UserId != null || UserName != null)
             {
-                return await _api.Helix.Channels.GetChannelInformationAsync(UserId);
-            }
-            else if (UserName != null)
-            {
-                string UserId_result = await GetUserId(UserName);
-                return UserId_result != null ? await _api.Helix.Channels.GetChannelInformationAsync(UserId_result) : null;
+                return await _api.Helix.Channels.GetChannelInformationAsync(UserId ?? await GetUserId(UserName));
             }
 
             return null;
@@ -60,15 +75,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null)
+            if (UserId != null || UserName != null)
             {
-                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId);
+                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(UserId ?? await GetUserId(UserName));
             }
-            else if (UserName != null)
-            {
-                return await _api.Helix.ChannelPoints.GetCustomRewardAsync(await GetUserId(UserName));
-            }
-
             return null;
         }
 
@@ -114,15 +124,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
         {
-            if (ToUserId != null)
+            if (ToUserId != null || ToUserName != null)
             {
-                return await _api.Helix.Raids.StartRaidAsync(FromId, ToUserId);
+                return await _api.Helix.Raids.StartRaidAsync(FromId, ToUserId ?? await GetUserId(ToUserName));
             }
-            else if (ToUserName != null)
-            {
-                return await _api.Helix.Raids.StartRaidAsync(FromId, await GetUserId(ToUserName));
-            }
-
             return null;
         }
 
@@ -130,5 +135,15 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             await _api.Helix.Raids.CancelRaidAsync(FromId);
         }
+
+        public async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
+        {
+            if (UserId != null || UserName != null)
+            {
+                return await _api.Helix.Streams.GetStreamsAsync(userIds: new() { UserId ?? await GetUserId(UserName) });
+            }
+            return null;
+        }
+
     }
 }

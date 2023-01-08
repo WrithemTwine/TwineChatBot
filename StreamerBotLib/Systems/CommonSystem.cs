@@ -124,7 +124,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public static void UpdateCurrencyTable()
         {
-            DataManage.AddCurrencyRows();
+            DataManage.PostCurrencyRows();
         }
 
         public static void ClearWatchTime()
@@ -174,7 +174,7 @@ namespace StreamerBotLib.Systems
 
         public static void AddNewAutoShoutUser(string UserName)
         {
-            DataManage.AddNewAutoShoutUser(UserName);
+            DataManage.PostNewAutoShoutUser(UserName);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
@@ -192,7 +192,7 @@ namespace StreamerBotLib.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.PostClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
 
         /// <summary>

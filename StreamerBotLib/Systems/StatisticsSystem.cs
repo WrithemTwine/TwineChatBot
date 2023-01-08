@@ -46,7 +46,7 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.ManageStreamStats)
             {
-                DataManage.AddCategory(categoryId, category);
+                DataManage.PostCategory(categoryId, category);
             }
         }
 
@@ -169,6 +169,7 @@ namespace StreamerBotLib.Systems
             OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
+            LastLiveViewerCount = 0; // reset count to 0 for new stream
 
             ManageUsers(Started);
 
@@ -184,7 +185,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
-                    DataManage.AddStream(CurrStream.StreamStart);
+                    DataManage.PostStream(CurrStream.StreamStart);
 
                     found = false;
                 }

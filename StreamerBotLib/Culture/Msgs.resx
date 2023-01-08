@@ -117,9 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="accountage" xml:space="preserve">
+    <value>accountage</value>
+    <comment>default command, can be translated</comment>
+  </data>
   <data name="addcommand" xml:space="preserve">
     <value>addcommand</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value>approve</value>
   </data>
   <data name="autohost" xml:space="preserve">
     <value>auto-hosting</value>
@@ -207,6 +214,9 @@
   <data name="Helpdate" xml:space="preserve">
     <value>Gets the current date in your timezone</value>
   </data>
+  <data name="Helpdeltaviewers" xml:space="preserve">
+    <value>Applies to uptime, displays the change in viewers since last query of live viewers.</value>
+  </data>
   <data name="Helpeveryone" xml:space="preserve">
     <value>When included, will replace '#everyone' with either (true) '@everyone' or (false) '&lt;blank&gt;' depending on whether the 'AddEveryone' is checked (true) or unchecked (false) alongside the Discord Server link.</value>
     <comment>Add help info for the 'everyone' message variable.</comment>
@@ -222,6 +232,9 @@
   </data>
   <data name="HelpLeaveChannel" xml:space="preserve">
     <value>Currently not used.</value>
+  </data>
+  <data name="Helplist" xml:space="preserve">
+    <value>Specific to the moderator approval command, the list of pending approval items.</value>
   </data>
   <data name="HelpLive" xml:space="preserve">
     <value>The message to send out to social media when the channel goes live.</value>
@@ -280,6 +293,9 @@
   <data name="Helpurl" xml:space="preserve">
     <value>Specify user's name, will add Twitch's URL prefix</value>
   </data>
+  <data name="Helpusage" xml:space="preserve">
+    <value>shows the message usage</value>
+  </data>
   <data name="Helpuser" xml:space="preserve">
     <value>display name of the user sending action</value>
   </data>
@@ -287,13 +303,17 @@
     <value>The message the bot uses to welcome users to the channel. See options for "no welcome", "welcome when joined", or "welcome when user chats".</value>
   </data>
   <data name="Helpviewers" xml:space="preserve">
-    <value>display name of the user sending action</value>
+    <value>display the number of viewers</value>
   </data>
   <data name="Helpwinner" xml:space="preserve">
     <value>display winner of Giveaway event</value>
   </data>
   <data name="host" xml:space="preserve">
     <value>hosting</value>
+  </data>
+  <data name="intro" xml:space="preserve">
+    <value>intro</value>
+    <comment>default command, can be translated</comment>
   </data>
   <data name="join" xml:space="preserve">
     <value>join</value>
@@ -313,6 +333,14 @@
     <value>lurk</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="mergeaccounts" xml:space="preserve">
+    <value>mergeaccounts</value>
+    <comment>default command, can be translated</comment>
+  </data>
+  <data name="Msgaccountage" xml:space="preserve">
+    <value>Account #user created #date ago.</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary</comment>
+  </data>
   <data name="Msgaddcommand" xml:space="preserve">
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
@@ -320,6 +348,10 @@
   <data name="MsgAllCateogry" xml:space="preserve">
     <value>All</value>
     <comment>The default gaming category a command applies, actual categories will get added this is default 'all' categories.</comment>
+  </data>
+  <data name="Msgapprove" xml:space="preserve">
+    <value>A moderator needs to approve (#usage): #list</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="MsgBannedUser" xml:space="preserve">
     <value>#user was just banned.</value>
@@ -401,6 +433,20 @@
   <data name="Msglurk" xml:space="preserve">
     <value>#user is now lurking. See you soon!</value>
   </data>
+  <data name="MsgMergeFailed" xml:space="preserve">
+    <value>The account merge failed.</value>
+  </data>
+  <data name="MsgMergeSuccessful" xml:space="preserve">
+    <value>Accounts successfully merged.</value>
+  </data>
+  <data name="MsgModApproved" xml:space="preserve">
+    <value>Moderator approval accepted.</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary</comment>
+  </data>
+  <data name="MsgModApproveNotFound" xml:space="preserve">
+    <value>Approval item not found.</value>
+    <comment>Can be translated</comment>
+  </data>
   <data name="MsgNewFollow" xml:space="preserve">
     <value>Thanks #user for the follow!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
@@ -469,7 +515,7 @@
   </data>
   <data name="Msgstreamoffline" xml:space="preserve">
     <value>The stream is offline.</value>
-    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary</comment>
   </data>
   <data name="MsgSubscribe" xml:space="preserve">
     <value>Thanks #user for the subscribing!</value>
@@ -483,7 +529,7 @@
     <value>#user has returned. Welcome back!</value>
   </data>
   <data name="Msguptime" xml:space="preserve">
-    <value>#user has been streaming for #uptime.</value>
+    <value>#user has been streaming for #uptime, with #viewers (#deltaviewers).</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgusage" xml:space="preserve">
@@ -503,9 +549,16 @@
     <value>{0} or {1}</value>
     <comment>translate "or", leave {0} and {1} for the message</comment>
   </data>
+  <data name="Paramaccountage" xml:space="preserve">
+    <value>-param:true -use:!accountage or !accountage &lt;viewername&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
   <data name="Paramaddcommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramapprove" xml:space="preserve">
+    <value>-p:Mod -use:!approval &lt;item number&gt;</value>
   </data>
   <data name="Parambot" xml:space="preserve">
     <value>-use:!bot</value>
@@ -557,6 +610,10 @@
     <value>-use:!lurk</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Parammergeaccounts" xml:space="preserve">
+    <value>-p:Mod -use:(Mod level) !mergeaccounts &lt;currname&gt; &lt;previousname&gt; 'or' (user level) !mergeaccounts &lt;previousname&gt;</value>
+    <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
   <data name="Paramqinfo" xml:space="preserve">
     <value>-use:!qinfo</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -584,6 +641,9 @@
   <data name="Paramsetcategory" xml:space="preserve">
     <value>-use:!setcategory -p:Mod -param:true</value>
   </data>
+  <data name="Paramsetintro" xml:space="preserve">
+    <value>-t:CustomWelcome -param:true -p:Mod -f:Message -a:Post -use:!intro username message</value>
+  </data>
   <data name="Paramsettitle" xml:space="preserve">
     <value>-use:!settitle -p:Mod -param:true</value>
   </data>
@@ -604,7 +664,7 @@
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramuptime" xml:space="preserve">
-    <value>-use:!uptime</value>
+    <value>-use:!uptime -param:true</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramusage" xml:space="preserve">
@@ -679,6 +739,10 @@
   </data>
   <data name="setcategory" xml:space="preserve">
     <value>setcategory</value>
+    <comment>default command, can be translated</comment>
+  </data>
+  <data name="setintro" xml:space="preserve">
+    <value>setintro</value>
     <comment>default command, can be translated</comment>
   </data>
   <data name="settitle" xml:space="preserve">

@@ -2,13 +2,16 @@
 {
     public enum Msg
     {
-        Msguptime,
         Msgstreamoffline,
         MsgAllCateogry,
         MsgNotFollower,
         MsgNoUsage,
         MsgDataNotFound,
         MsgNoCategory,
-        MsgNoUserFound
+        MsgNoUserFound,
+        MsgModApproved,
+        MsgModApproveNotFound,
+        MsgMergeSuccessful,
+        MsgMergeFailed
     }
 }

@@ -359,6 +359,8 @@ namespace StreamerBotLib.Data.MultiLive {
             
             private global::System.Data.DataColumn columnId;
             
+            private global::System.Data.DataColumn columnIsEnabled;
+            
             private global::System.Data.DataColumn columnServer;
             
             private global::System.Data.DataColumn columnType;
@@ -403,6 +405,14 @@ namespace StreamerBotLib.Data.MultiLive {
             public global::System.Data.DataColumn IdColumn {
                 get {
                     return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsEnabledColumn {
+                get {
+                    return this.columnIsEnabled;
                 }
             }
             
@@ -467,10 +477,11 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MsgEndPointsRow AddMsgEndPointsRow(string Server, string Type, string URL) {
+            public MsgEndPointsRow AddMsgEndPointsRow(bool IsEnabled, string Server, string Type, string URL) {
                 MsgEndPointsRow rowMsgEndPointsRow = ((MsgEndPointsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
+                        IsEnabled,
                         Server,
                         Type,
                         URL};
@@ -504,6 +515,7 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
+                this.columnIsEnabled = base.Columns["IsEnabled"];
                 this.columnServer = base.Columns["Server"];
                 this.columnType = base.Columns["Type"];
                 this.columnURL = base.Columns["URL"];
@@ -514,6 +526,8 @@ namespace StreamerBotLib.Data.MultiLive {
             private void InitClass() {
                 this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
+                this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsEnabled);
                 this.columnServer = new global::System.Data.DataColumn("Server", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnServer);
                 this.columnType = new global::System.Data.DataColumn("Type", typeof(string), null, global::System.Data.MappingType.Element);
@@ -526,6 +540,7 @@ namespace StreamerBotLib.Data.MultiLive {
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnIsEnabled.DefaultValue = ((bool)(true));
                 this.columnType.DefaultValue = ((string)("Discord"));
             }
             
@@ -795,14 +810,15 @@ namespace StreamerBotLib.Data.MultiLive {
                 base.Columns.Add(this.columnId);
                 this.columnChannelName = new global::System.Data.DataColumn("ChannelName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnChannelName);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint3", new global::System.Data.DataColumn[] {
                                 this.columnId}, true));
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnChannelName}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnChannelName.AllowDBNull = false;
                 this.columnChannelName.Unique = true;
             }
             
@@ -1236,6 +1252,22 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsEnabled {
+                get {
+                    try {
+                        return ((bool)(this[this.tableMsgEndPoints.IsEnabledColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsEnabled\' in table \'MsgEndPoints\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableMsgEndPoints.IsEnabledColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Server {
                 get {
                     try {
@@ -1280,6 +1312,18 @@ namespace StreamerBotLib.Data.MultiLive {
                 set {
                     this[this.tableMsgEndPoints.URLColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsEnabledNull() {
+                return this.IsNull(this.tableMsgEndPoints.IsEnabledColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsEnabledNull() {
+                this[this.tableMsgEndPoints.IsEnabledColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1348,28 +1392,11 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string ChannelName {
                 get {
-                    try {
-                        return ((string)(this[this.tableChannels.ChannelNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelName\' in table \'Channels\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableChannels.ChannelNameColumn]));
                 }
                 set {
                     this[this.tableChannels.ChannelNameColumn] = value;
                 }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsChannelNameNull() {
-                return this.IsNull(this.tableChannels.ChannelNameColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetChannelNameNull() {
-                this[this.tableChannels.ChannelNameColumn] = global::System.Convert.DBNull;
             }
         }
         

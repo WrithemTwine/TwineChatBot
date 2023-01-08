@@ -39,5 +39,8 @@ namespace StreamerBotLib.Interfaces
         bool CheckUser(LiveUser User, DateTime ToDateTime);
         List<object> GetRowsDataColumn(string dataTable, string dataColumn);
         string GetUserId(LiveUser User);
+        IEnumerable<string> GetKeys(string Table);
+        IEnumerable<string> GetCommandList();
+        string GetCommands();
     }
 }

@@ -7,22 +7,15 @@
 
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay;
+using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using MediaOverlayServer.Enums;
-using MediaOverlayServer.Static;
-using MediaOverlayServer.Models;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Reflection;
-using System.Windows;
+
+using OptionFlags = StreamerBotLib.Static.OptionFlags;
 
 namespace StreamerBotLib.BotClients
 {
@@ -44,7 +37,7 @@ namespace StreamerBotLib.BotClients
     {
 #endif
 
-        public event EventHandler<BotEventArgs> BotEvent;
+        public event EventHandler<BotEventArgs> BotEvent = null;
         public event EventHandler<EventArgs> ActionQueueChanged;
         public event EventHandler<OverlayActionType> SendOverlayToServer;
         private bool PauseAlerts = false;
@@ -222,7 +215,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
 #elif UseGUIDLL
-        private MediaOverlayServer.MainWindow OverlayWindow;
+        private MainWindow OverlayWindow;
 
         public BotOverlayServer()
         {

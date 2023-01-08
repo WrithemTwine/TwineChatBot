@@ -92,6 +92,11 @@ namespace StreamerBotLib.Static
         /// Adds /me to all outgoing bot messages.
         /// </summary>
         public static bool MsgAddMe { get; set; }
+        
+        /// <summary>
+        /// Enable the bot to emit "Command Not Found" response message when command is not found.
+        /// </summary>
+        public static bool MsgCommandNotFound { get; set; }
         /// <summary>
         /// Does not include /me on any message.
         /// </summary>
@@ -105,6 +110,10 @@ namespace StreamerBotLib.Static
         /// Specifies whether to not welcome the streamer if they type a message.
         /// </summary>
         public static bool MsgWelcomeStreamer { get; set; }
+        /// <summary>
+        /// Enables sending the social messages separately to the chat channel.
+        /// </summary>
+        public static bool MsgSocialSeparate { get; set; }
         /// <summary>
         /// Enables a custom welcome message depending on the user entering the channel, is active alongside the welcome user setting.
         /// </summary>
@@ -271,11 +280,11 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies starting currency accruals.
         /// </summary>
-        public static bool TwitchCurrencyStart { get; set; }
+        public static bool CurrencyStart { get; set; }
         /// <summary>
         /// Specifies whether currency accrual should only occur when stream is live (online), for testing purposes.
         /// </summary>
-        public static bool TwitchCurrencyOnline { get; set; }
+        public static bool CurrencyOnline { get; set; }
 
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
@@ -362,6 +371,10 @@ namespace StreamerBotLib.Static
         /// Enable learning messages from the chat, to have a list of safe messages and unsafe messages needing moderation.
         /// </summary>
         public static bool ModerateUserLearnMsgs { get; set; }
+        /// <summary>
+        /// Specify number of minutes for when a moderator approval action will expire.
+        /// </summary>
+        public static int ModeratorApprovalTimeout { get; set; }
 
         /// <summary>
         /// Enable the Media Overlay Services.
@@ -380,6 +393,13 @@ namespace StreamerBotLib.Static
         /// Enables whether shouting out a user shows a random clip from their channel
         /// </summary>
         public static bool MediaOverlayShoutoutClips { get; set; }
+        public static int MediaOverlayMediaPort { get; set; }
+
+        public static bool MediaOverlayLogExceptions { get; set; }
+
+        public static bool MediaOverlayUseSameStyle { get; set; }
+        public static bool MediaOverlayAutoStart { get; set; }
+
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
@@ -389,11 +409,15 @@ namespace StreamerBotLib.Static
             {
                 Settings.Default.Save();
 
+                #region LogAction
+
                 LogBotStatus = Settings.Default.LogBotStatus;
                 LogExceptions = Settings.Default.LogExceptions;
 
+                #endregion
+
                 #region Twitch
- 
+
                 TwitchRefreshDate = Settings.Default.TwitchRefreshDate;
 
                 TwitchPubSubChannelPoints = Settings.Default.TwitchPubSubChannelPoints;
@@ -420,8 +444,6 @@ namespace StreamerBotLib.Static
                 TwitchClipConnectOnline = Settings.Default.TwitchClipConnectOnline;
                 TwitchClipDisconnectOffline = Settings.Default.TwitchClipDisconnectOffline;
 
-                TwitchCurrencyStart = Settings.Default.TwitchCurrencyStart;
-                TwitchCurrencyOnline = Settings.Default.TwitchCurrencyOnline;
 
                 #region Followers - Twitch
 
@@ -441,10 +463,13 @@ namespace StreamerBotLib.Static
 
                 #endregion
 
+                #region Messages
+
                 FirstUserJoinedMsg = Settings.Default.FirstUserJoinedMsg;
                 FirstUserChatMsg = Settings.Default.FirstUserChatMsg;
 
                 MsgAddMe = Settings.Default.MsgInsertMe;
+                MsgCommandNotFound = Settings.Default.MsgCommandNotFound;
                 MsgNoMe = Settings.Default.MsgNoMe;
                 MsgPerComMe = Settings.Default.MsgPerComMe;
 
@@ -453,6 +478,10 @@ namespace StreamerBotLib.Static
 
                 AutoShout = Settings.Default.MsgAutoShout;
                 MsgSendSOToChat = Settings.Default.MsgSendSOToChat;
+
+                MsgSocialSeparate = Settings.Default.MsgSocialSeparate;
+
+                #endregion
 
                 #region Repeat Commands
 
@@ -472,11 +501,19 @@ namespace StreamerBotLib.Static
 
                 #endregion
 
+                #region UserParty
+
                 UserPartyStart = Settings.Default.UserPartyStart;
                 UserPartyStop = Settings.Default.UserPartyStop;
 
+                #endregion
+
+                #region Live Messages
+
                 PostMultiLive = Settings.Default.PostMultiLive;
                 LiveMsg = Settings.Default.MsgLive;
+
+                #endregion
 
                 #region Data Manage
 
@@ -489,6 +526,9 @@ namespace StreamerBotLib.Static
                 ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
                 ManageClearButtonEnabled = Settings.Default.ManageClearButtonEnabled;
                 ManageOverlayTicker = Settings.Default.ManageOverlayTicker;
+ 
+                CurrencyStart = Settings.Default.CurrencyStart;
+                CurrencyOnline = Settings.Default.CurrencyOnline;
 
                 #endregion
 
@@ -508,6 +548,7 @@ namespace StreamerBotLib.Static
                 ModerateUsersWarn = Settings.Default.ModerateUsersWarn;
                 ModerateUsersAction = Settings.Default.ModerateUsersAction;
                 ModerateUserLearnMsgs = Settings.Default.ModerateUserLearnMsgs;
+                ModeratorApprovalTimeout = Settings.Default.ModeratorApprovalTimeout;
 
                 #endregion
 
@@ -517,6 +558,11 @@ namespace StreamerBotLib.Static
                 MediaOverlayChannelPoints = Settings.Default.MediaOverlayChannelPoints;
                 MediaOverlayMRUPathSelect = Settings.Default.MediaOverlayMRUPathSelect;
                 MediaOverlayShoutoutClips = Settings.Default.MediaOverlayShoutoutClips;
+                MediaOverlayMediaPort = Settings.Default.MediaOverlayPort;
+                MediaOverlayLogExceptions = Settings.Default.LogExceptions;
+                MediaOverlayUseSameStyle = Settings.Default.MediaOverlayUseSameStyle;
+                MediaOverlayAutoStart = Settings.Default.MediaOverlayAutoStart;
+
                 #endregion
 
             }
