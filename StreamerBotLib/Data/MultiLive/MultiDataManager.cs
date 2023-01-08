@@ -53,6 +53,8 @@ namespace StreamerBotLib.Data.MultiLive
             PropertyChanged?.Invoke(this, new(PropName));
         }
 
+        public event EventHandler UpdatedMonitoringChannels;
+
         public MultiDataManager()
         {
             _DataSource = new();
@@ -70,6 +72,11 @@ namespace StreamerBotLib.Data.MultiLive
         {
             DataView dataView = (DataView)sender;
             NotifyPropertyChanged(nameof(dataView.Table));
+
+            if(dataView.Table == _DataSource.Channels)
+            {
+                UpdatedMonitoringChannels?.Invoke(this, new());
+            }
         }
 
 
@@ -238,7 +245,7 @@ namespace StreamerBotLib.Data.MultiLive
         {
             lock (_DataSource)
             {
-                return new(from DataSource.MsgEndPointsRow MsgEndPointsRow in (DataSource.MsgEndPointsRow[])_DataSource.MsgEndPoints.Select()
+                return new(from MsgEndPointsRow MsgEndPointsRow in (MsgEndPointsRow[])_DataSource.MsgEndPoints.Select("IsEnabled='True'")
                            select new Tuple<string, Uri>(MsgEndPointsRow.Type, new(MsgEndPointsRow.URL)));
             }
         }
@@ -291,7 +298,7 @@ namespace StreamerBotLib.Data.MultiLive
         {
             lock (_DataSource)
             {
-                if(_DataSource.Channels.Count < 100)
+                if(_DataSource.Channels.Count < 99)
                 {
                     _DataSource.Channels.AddChannelsRow(UserName);
                     _DataSource.Channels.AcceptChanges();

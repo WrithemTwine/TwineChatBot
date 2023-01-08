@@ -26,13 +26,23 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public bool IsMultiLiveBotActive { get; set; }
         public bool IsMultiConnected { get; set; }
+        public MultiDataManager MultiLiveDataManager { get; private set; }
+
         public TwitchBotLiveMonitorSvc()
         {
             BotClientName = Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
+
         }
 
+        private void MultiLiveDataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
+        {
+            if (LiveStreamMonitor != null)
+            {
+                UpdateChannels();
+            }
+        }
 
         public void ConnectLiveMonitorService()
         {
@@ -58,12 +68,12 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 if (IsStarted)
                 {
-                    ChannelsToMonitor.Add(TwitchChannelName);
+                    ChannelsToMonitor.UniqueAdd(TwitchChannelName);
                 }
 
                 if (IsMultiConnected)
                 {
-                    ChannelsToMonitor.AddRange(ChannelList);
+                    ChannelsToMonitor.UniqueAddRange(ChannelList);
                 }
 
                 LiveStreamMonitor.SetChannelsByName(ChannelsToMonitor);
@@ -139,10 +149,14 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region MultiLive Bot
 
-        public MultiDataManager MultiLiveDataManager { get; private set; } = new();
-
         public void MultiConnect()
         {
+            if(MultiLiveDataManager== null)
+            {
+                MultiLiveDataManager = new();
+                MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;
+            }
+
             MultiLiveDataManager.LoadData();
             IsMultiConnected = true;
         }
@@ -227,8 +241,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
             }
         }
-
-
 
         #endregion
     }

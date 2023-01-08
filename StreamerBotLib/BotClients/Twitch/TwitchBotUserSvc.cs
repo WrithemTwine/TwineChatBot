@@ -13,9 +13,7 @@ using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
-using TwitchLib.Api.Helix.Models.Schedule;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
-using TwitchLib.PubSub.Models.Responses;
 
 namespace StreamerBotLib.BotClients.Twitch
 {

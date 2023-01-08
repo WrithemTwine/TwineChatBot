@@ -457,7 +457,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count > 2)
                 {
-                    string adduser = arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0];
+                    string adduser = arglist[0].Replace("@","");
                     string message = string.Join(' ', arglist.Skip(1));
 
                     DataManage.PostUserCustomWelcome(adduser, message);
@@ -494,7 +494,7 @@ namespace StreamerBotLib.Systems
                             break;
                     }
 
-                    output = DataManage.PostMergeUserStats(CurrUser, SrcUsr, User.Source);
+                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@",""), SrcUsr.Replace("@",""), User.Source);
                 }
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
@@ -552,7 +552,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.accountage))
             {
-                string ParamUser = arglist.Count == 1 ? arglist[0] : User.UserName;
+                string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@","") : User.UserName;
 
                 ThreadManager.CreateThreadStart(() =>
                 {
