@@ -30,16 +30,16 @@
 
     <Grid x:Name="Grid_MultiUserLiveMonitor" DataContext="{Binding}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
-            <RowDefinition Height="50*" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="60*" />
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="298*" />
             <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="150*"  />
+            <ColumnDefinition Width="180"  />
             <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="293*"/>
+            <ColumnDefinition Width="320"/>
         </Grid.ColumnDefinitions>
 
         <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="2" Padding="3"><Run Text="Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
