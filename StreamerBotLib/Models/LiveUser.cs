@@ -8,7 +8,7 @@ namespace StreamerBotLib.Models
     /// <summary>
     /// Data specifying details of a user joined to the live stream channel.
     /// </summary>
-    [DebuggerDisplay( "UserId,UserName,Source = {UserId},{UserName},{ Source}" )]
+    [DebuggerDisplay("UserId,UserName,Source = {UserId},{UserName},{ Source}")]
     public record LiveUser : IComparable<LiveUser>
     {
         /// <summary>
@@ -23,7 +23,7 @@ namespace StreamerBotLib.Models
         /// The User Id of the user name, per the Bot platform
         /// </summary>
         public string UserId { get; set; }
-        
+
         /// <summary>
         /// Constructs the object.
         /// </summary>

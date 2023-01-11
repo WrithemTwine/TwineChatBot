@@ -28,16 +28,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <returns>An async task with a list of 'Follow' objects.</returns>
         public async Task<List<Follow>> GetAllFollowersAsync(string ChannelName)
         {
-            int MaxFollowers = 100; // use the max for bulk retrieve
-
-            Users followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
-
             List<Follow> allfollows = new();
-
-            string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
 
             try
             {
+                int MaxFollowers = 100; // use the max for bulk retrieve
+                Users followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
+                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
+
                 GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(first: MaxFollowers, toId: channelId);
 
                 allfollows.AddRange(followsResponse.Follows);
@@ -55,7 +53,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             return allfollows;
         }
-
     }
 }
 

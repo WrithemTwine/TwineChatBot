@@ -54,7 +54,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }

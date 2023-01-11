@@ -71,7 +71,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
-        public void SetIds(string StreamerChannelId=null, string BotChannelId=null)
+        public void SetIds(string StreamerChannelId = null, string BotChannelId = null)
         {
             if (StreamerChannelId != null)
             {
@@ -83,7 +83,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchBotUserId = BotChannelId;
             }
 
-          if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
+            if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
             {
                 TwitchBotUserId = GetUserId(TwitchBotUserName);
                 TwitchChannelId = GetUserId(TwitchChannelName);
@@ -146,7 +146,7 @@ namespace StreamerBotLib.BotClients.Twitch
             GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
         }
 
-        public DateTime GetUserCreatedAt(string UserName=null, string UserId = null)
+        public DateTime GetUserCreatedAt(string UserName = null, string UserId = null)
         {
             ChooseConnectUserService();
             DateTime result = userLookupService.GetUserCreatedAt(UserName, UserId).Result;
@@ -239,10 +239,11 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             ChooseConnectUserService(true);
 
-            if(ToChannelName == null)
+            if (ToChannelName == null)
             {
                 return;
-            } else
+            }
+            else
             {
                 try
                 {
@@ -250,9 +251,10 @@ namespace StreamerBotLib.BotClients.Twitch
                     StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
                     if (response != null)
                     {
-                        StartRaidEventResponse?.Invoke(this, new() { 
-                            ToChannel = ToChannelName, 
-                            CreatedAt = response.Data[0].CreatedAt, 
+                        StartRaidEventResponse?.Invoke(this, new()
+                        {
+                            ToChannel = ToChannelName,
+                            CreatedAt = response.Data[0].CreatedAt,
                             IsMature = response.Data[0].IsMature
                         });
                     }

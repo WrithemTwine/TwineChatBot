@@ -4,11 +4,8 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -151,7 +148,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void MultiConnect()
         {
-            if(MultiLiveDataManager== null)
+            if (MultiLiveDataManager == null)
             {
                 MultiLiveDataManager = new();
                 MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;

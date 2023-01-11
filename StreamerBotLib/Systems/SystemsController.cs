@@ -207,7 +207,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser,f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime())))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -322,7 +322,7 @@ namespace StreamerBotLib.Systems
         {
             return DataManage.GetWebhooks(webhooksKind);
         }
-     
+
 
         #endregion
 

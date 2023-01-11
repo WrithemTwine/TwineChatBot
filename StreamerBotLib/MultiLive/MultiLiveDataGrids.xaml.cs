@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.Data.MultiLive;
+﻿using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Systems;
 
@@ -25,6 +24,8 @@ namespace StreamerBotLib.MultiLive
         private static MultiDataManager MultiLiveData;
         private ManageWindows PopupWindows { get; set; } = new();
 
+        private const int MaxChannelCount = 99;
+
         public MultiLiveDataGrids()
         {
             InitializeComponent();
@@ -32,7 +33,11 @@ namespace StreamerBotLib.MultiLive
 
         public void AddNewMonitorChannel(string UserName)
         {
-            MultiLiveData.PostMonitorChannel(UserName);
+            if (MultiLiveData.GetMonitorChannelCount() < MaxChannelCount
+                && !MultiLiveData.GetChannelNames().Contains(UserName))
+            {
+                MultiLiveData.PostMonitorChannel(UserName);
+            }
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -86,7 +91,8 @@ namespace StreamerBotLib.MultiLive
                         if (((MenuItem)M).Name is "DataGridContextMenu_AddItem")
                         {
                             ((MenuItem)M).IsEnabled = FoundAddEdit;
-                        } else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItem")
+                        }
+                        else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItem")
                         {
                             ((MenuItem)M).IsEnabled = true;
                         }

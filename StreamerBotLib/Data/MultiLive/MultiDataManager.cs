@@ -1,6 +1,5 @@
 ﻿
 using StreamerBotLib.Enums;
-using StreamerBotLib.GUI;
 using StreamerBotLib.Static;
 
 using System;
@@ -73,12 +72,11 @@ namespace StreamerBotLib.Data.MultiLive
             DataView dataView = (DataView)sender;
             NotifyPropertyChanged(nameof(dataView.Table));
 
-            if(dataView.Table == _DataSource.Channels)
+            if (dataView.Table == _DataSource.Channels)
             {
                 UpdatedMonitoringChannels?.Invoke(this, new());
             }
         }
-
 
         #region Load and Exit Ops
         /// <summary>
@@ -95,7 +93,7 @@ namespace StreamerBotLib.Data.MultiLive
             using XmlReader xmlreader = new XmlTextReader(DataFileName);
             _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
 
-            foreach(MsgEndPointsRow dataRow in _DataSource.MsgEndPoints.Rows)
+            foreach (MsgEndPointsRow dataRow in _DataSource.MsgEndPoints.Rows)
             {
                 if (DBNull.Value.Equals(dataRow["IsEnabled"]))
                 {
@@ -294,19 +292,23 @@ namespace StreamerBotLib.Data.MultiLive
             }
         }
 
+        public int GetMonitorChannelCount()
+        {
+            lock (_DataSource)
+            {
+                return _DataSource.Channels.Count;
+            }
+        }
+
         public void PostMonitorChannel(string UserName)
         {
             lock (_DataSource)
             {
-                if(_DataSource.Channels.Count < 99)
-                {
-                    _DataSource.Channels.AddChannelsRow(UserName);
-                    _DataSource.Channels.AcceptChanges();
-                    SaveData();
-                }
+                _DataSource.Channels.AddChannelsRow(UserName);
+                _DataSource.Channels.AcceptChanges();
+                SaveData();
             }
         }
-
 
         /// <summary>
         /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.

@@ -1,7 +1,6 @@
 ﻿
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
-using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
@@ -784,7 +783,8 @@ namespace StreamerBot
             else if (sender.GetType() == typeof(StackPanel))
             {
                 SPSource = (StackPanel)sender;
-            } else if (sender.GetType() == typeof(GroupBox))
+            }
+            else if (sender.GetType() == typeof(GroupBox))
             {
                 GBSource = (GroupBox)sender;
             }
@@ -1155,6 +1155,7 @@ namespace StreamerBot
                         }
                         else if (((MenuItem)M).Name is "DataGridContextMenu_AutoShout" or "DataGridContextMenu_LiveMonitor")
                         {
+                            // TODO: limit 'live monitor' menu access to only when the multi-live datamanager is active
                             ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
                         }
                         else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
@@ -1259,9 +1260,9 @@ namespace StreamerBot
             SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
         }
 
-#endregion
+        #endregion
 
-#region Debug Empty Stream
+        #region Debug Empty Stream
 
         private DateTime DebugStreamStarted = DateTime.MinValue;
 
@@ -1301,9 +1302,9 @@ namespace StreamerBot
 
         }
 
-#endregion
+        #endregion
 
-#region Giveaway
+        #region Giveaway
 
         private delegate void RefreshChannelPoints();
 
@@ -1434,11 +1435,11 @@ namespace StreamerBot
             }
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region WatcherTools
+        #region WatcherTools
 
         private bool WatchProcessOps;
 
@@ -1496,7 +1497,7 @@ namespace StreamerBot
             }
         }
 
-#region Refresh Followers
+        #region Refresh Followers
 
         private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
         {
@@ -1533,8 +1534,8 @@ namespace StreamerBot
 
 
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
     }
 }

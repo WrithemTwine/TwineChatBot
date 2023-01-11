@@ -432,7 +432,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 IsStarted = false;
                 UnregisterHandlers();
                 StartBot();
-            } 
+            }
             else
             {
                 UnregisterHandlers();

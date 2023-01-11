@@ -108,7 +108,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     string latestKnownClipDate = _lastClipsDates[channel];
                     newClips = new();
 
-                    foreach(Clip clip in latestClips)
+                    foreach (Clip clip in latestClips)
                     {
                         if (!existingClips.Add(clip.Id) || DateTime.Parse(clip.CreatedAt, CultureInfo.CurrentCulture) < DateTime.Parse(latestKnownClipDate, CultureInfo.CurrentCulture))
                         {
@@ -135,7 +135,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
                 if (callevents)
                 {
-                    OnNewClipFound?.Invoke(this, new OnNewClipsDetectedArgs() { Channel = channel, Clips = newClips});
+                    OnNewClipFound?.Invoke(this, new OnNewClipsDetectedArgs() { Channel = channel, Clips = newClips });
                 }
             }
         }
@@ -173,7 +173,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     {
                         allClips.AddRange(getClips.Clips);
                         cursor = getClips.Pagination.Cursor;
-                    } else
+                    }
+                    else
                     {
                         Thread.Sleep(5000);
                         x++;
@@ -185,7 +186,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             int count = 0, loop = 0;
 
             while ((allClips.Count == 0 || count == 100 || count == -1) && loop < 5)
-                // either start with an empty list, start filling the list (count == 100, 100 clips per request), or an exception getting the list (count == -1), continue up to 5 tries on failures (loop = 0, loop++ < 5)
+            // either start with an empty list, start filling the list (count == 100, 100 clips per request), or an exception getting the list (count == -1), continue up to 5 tries on failures (loop = 0, loop++ < 5)
             {
                 try
                 {

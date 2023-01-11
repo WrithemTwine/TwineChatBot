@@ -253,8 +253,8 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 foreach (string Command in from CommandsRow com in GetRows(_DataSource.Commands, $"CmdName IN ({filter})")
-                        where com.Message != DefaulSocialMsg && com.Message != string.Empty
-                        select com.CmdName)
+                                           where com.Message != DefaulSocialMsg && com.Message != string.Empty
+                                           select com.CmdName)
                 {
                     Coms.Add(Command);
                 }
@@ -384,12 +384,12 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the multi object query for command {row.CmdName}.");
 #endif
-            
+
             List<Tuple<object, object>> outlist = null;
             lock (GUIDataManagerLock.Lock)
             {
-               outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
-                                                          select new Tuple<object, object>(d[row.Key_field], d[row.Data_field]));
+                outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
+                              select new Tuple<object, object>(d[row.Key_field], d[row.Data_field]));
             }
 
             if (Top > 0)
@@ -597,7 +597,7 @@ switches:
             {
                 CurrStreamStart = StreamStart;
 
-                lock(GUIDataManagerLock.Lock)
+                lock (GUIDataManagerLock.Lock)
                 {
                     _DataSource.StreamStats.AddStreamStatsRow(StreamStart, StreamStart, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                     _DataSource.StreamStats.AcceptChanges();
@@ -694,7 +694,7 @@ switches:
 
             static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
 
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
                 UsersRow userrow = PostNewUser(User, NowSeen);
                 userrow.CurrLoginDate = Max(userrow.CurrLoginDate, NowSeen);
@@ -747,7 +747,7 @@ switches:
                         UpdateCurrency(ref user, LastSeen);
                         _DataSource.Currency.AcceptChanges();
                     } // will update the "CurrLoginDate"
-                        _DataSource.Users.AcceptChanges();
+                    _DataSource.Users.AcceptChanges();
                 }
                 NotifySaveData();
             }
@@ -755,14 +755,14 @@ switches:
 
         public void UpdateWatchTime(string User, DateTime CurrTime)
         {
-            UpdateWatchTime(new List<string>(){ User }, CurrTime);
+            UpdateWatchTime(new List<string>() { User }, CurrTime);
         }
 
         public void UpdateWatchTime(List<string> Users, DateTime CurrTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach(UsersRow U in (UsersRow [])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ('{ string.Join("', '", Users.ToArray())}')"))
+                foreach (UsersRow U in (UsersRow[])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ('{string.Join("', '", Users.ToArray())}')"))
                 {
                     if (U.LastDateSeen < CurrStreamStart)
                     {
@@ -843,7 +843,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                FollowersRow datafollowers = (FollowersRow)GetRow(_DataSource.Followers,$"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'");
+                FollowersRow datafollowers = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserNameColumn.ColumnName}='{User}'");
 
                 return datafollowers != null
                     && datafollowers.IsFollower
@@ -958,7 +958,7 @@ switches:
 #endif
 
             UpdatingFollowers = true;
-            lock(GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
                 List<FollowersRow> temp = new();
                 temp.AddRange((FollowersRow[])GetRows(_DataSource.Followers));
@@ -1019,9 +1019,10 @@ switches:
                     }
                 }
             }
-            lock(GUIDataManagerLock.Lock) { 
-            _DataSource.Followers.AcceptChanges();
-        }
+            lock (GUIDataManagerLock.Lock)
+            {
+                _DataSource.Followers.AcceptChanges();
+            }
             NotifySaveData();
             UpdatingFollowers = false;
         }
@@ -1267,14 +1268,14 @@ switches:
             {
                 foreach (UsersRow U in GetRows(_DataSource.Users).Cast<UsersRow>())
                 {
-                    if (GetRow(_DataSource.Followers, $"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'") == null 
-                        || GetRow(_DataSource.Followers, $"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}' AND {_DataSource.Followers.IsFollowerColumn.ColumnName}=false") != null )
+                    if (GetRow(_DataSource.Followers, $"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}'") == null
+                        || GetRow(_DataSource.Followers, $"{_DataSource.Followers.IdColumn.ColumnName}='{U.Id}' AND {_DataSource.Followers.IsFollowerColumn.ColumnName}=false") != null)
                     {
                         RemoveIds.Add(U.Id.ToString());
                     }
                 }
 
-                DeleteDataRows(GetRows(_DataSource.Users, $"{_DataSource.Users.IdColumn.ColumnName} in ('{string.Join("', '",RemoveIds)}')"));
+                DeleteDataRows(GetRows(_DataSource.Users, $"{_DataSource.Users.IdColumn.ColumnName} in ('{string.Join("', '", RemoveIds)}')"));
             }
             NotifySaveData();
         }
@@ -1544,14 +1545,14 @@ switches:
             LearnMsgChanged = true;
         }
 
-//        private void LearnMsgs_LearnMsgsRowChanged(object sender, LearnMsgsRowChangeEvent e)
-//        {
-//#if LogDataManager_Actions
-//            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, whether learned message rows are changed.");
-//#endif
+        //        private void LearnMsgs_LearnMsgsRowChanged(object sender, LearnMsgsRowChangeEvent e)
+        //        {
+        //#if LogDataManager_Actions
+        //            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, whether learned message rows are changed.");
+        //#endif
 
-//            LearnMsgChanged = true;
-//        }
+        //            LearnMsgChanged = true;
+        //        }
 
         private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
         {
@@ -1637,7 +1638,7 @@ switches:
                     _DataSource.ModeratorApprove,
                     $"{_DataSource.ModeratorApprove.ModActionTypeColumn.ColumnName}='{modActionType}' AND {_DataSource.ModeratorApprove.ModActionNameColumn.ColumnName}='{ModAction}'");
 
-                return moderatorApproveRow == null ? null : 
+                return moderatorApproveRow == null ? null :
                     new(
                     DBNull.Value.Equals(moderatorApproveRow.ModPerformType) || moderatorApproveRow.ModPerformType == "" ? moderatorApproveRow.ModActionType : moderatorApproveRow.ModPerformType,
                     DBNull.Value.Equals(moderatorApproveRow.ModPerformAction) || moderatorApproveRow.ModPerformAction == "" ? moderatorApproveRow.ModActionName : moderatorApproveRow.ModPerformAction
@@ -1657,9 +1658,9 @@ switches:
 
                 List<OverlayActionType> result = new();
 
-                foreach(OverlayActionType OAT in found)
+                foreach (OverlayActionType OAT in found)
                 {
-                    if(OAT.ActionValue == overlayAction)
+                    if (OAT.ActionValue == overlayAction)
                     {
                         result.Add(OAT);
                     }

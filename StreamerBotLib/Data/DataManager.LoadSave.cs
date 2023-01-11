@@ -54,7 +54,7 @@ namespace StreamerBotLib.Data
 
             void LoadFile(string filename)
             {
-                lock(GUIDataManagerLock.Lock)
+                lock (GUIDataManagerLock.Lock)
                 {
                     if (!File.Exists(filename))
                     {

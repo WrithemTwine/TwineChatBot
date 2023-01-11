@@ -139,7 +139,7 @@ namespace StreamerBotLib.Data
 
             // TODO: better error check this method, espeically for null key fields or multiple key fields
             List<string> keys = new();
-            
+
             lock (GUIDataManagerLock.Lock)
             {
                 if (Table is not null and not "")

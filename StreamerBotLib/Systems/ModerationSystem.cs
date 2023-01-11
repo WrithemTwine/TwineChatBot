@@ -82,7 +82,7 @@ namespace StreamerBotLib.Systems
                 ThreadManager.CreateThreadStart(() => { MonitorApprovals(); });
             }
         }
-        
+
         /// <summary>
         /// Retrieve the numbered description list for each request.
         /// </summary>
@@ -145,7 +145,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         private void MonitorApprovals()
         {
-            while(RequestApprovalList.Count > 0)
+            while (RequestApprovalList.Count > 0)
             {
                 DateTime Expiry = DateTime.Now;
                 List<Tuple<string, Task, DateTime>> toRemove = new();

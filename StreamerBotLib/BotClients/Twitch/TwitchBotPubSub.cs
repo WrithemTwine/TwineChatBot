@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
-using Newtonsoft.Json.Linq;
-
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 

@@ -25,10 +25,10 @@ namespace StreamerBotLib.GUI.Windows
             DataGridOpenRowWindow(dataTable, dataRow);
         }
 
-        public void SetTableData(Dictionary<string,List<string>> SourceData)
+        public void SetTableData(Dictionary<string, List<string>> SourceData)
         {
             TableDataPairs.Clear();
-            foreach(var D in SourceData)
+            foreach (var D in SourceData)
             {
                 TableDataPairs.Add(D.Key, D.Value);
             }

@@ -92,7 +92,7 @@ namespace StreamerBotLib.Static
         /// Adds /me to all outgoing bot messages.
         /// </summary>
         public static bool MsgAddMe { get; set; }
-        
+
         /// <summary>
         /// Enable the bot to emit "Command Not Found" response message when command is not found.
         /// </summary>
@@ -526,7 +526,7 @@ namespace StreamerBotLib.Static
                 ManageDataArchiveMsg = Settings.Default.ManageDataArchiveMsg;
                 ManageClearButtonEnabled = Settings.Default.ManageClearButtonEnabled;
                 ManageOverlayTicker = Settings.Default.ManageOverlayTicker;
- 
+
                 CurrencyStart = Settings.Default.CurrencyStart;
                 CurrencyOnline = Settings.Default.CurrencyOnline;
 

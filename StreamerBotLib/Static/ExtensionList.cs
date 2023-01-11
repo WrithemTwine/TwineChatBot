@@ -31,7 +31,7 @@ namespace StreamerBotLib.Static
         /// <param name="ItemEnumerable">The group of items to add.</param>
         public static void UniqueAddRange<T>(this List<T> List, IEnumerable<T> ItemEnumerable)
         {
-            foreach(T item in ItemEnumerable)
+            foreach (T item in ItemEnumerable)
             {
                 UniqueAdd(List, item);
             }

@@ -35,7 +35,7 @@
         Pluralyear,
         Pluralday,
         Pluralhour,
-        Pluralminute, 
+        Pluralminute,
         or,
         list,
         usage

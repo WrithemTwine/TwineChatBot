@@ -142,7 +142,7 @@ namespace StreamerBotLib.GUI.Windows
                 {
                     try
                     {
-                        SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]) ?? (string) SaveDataRow.Table.Columns["MediaFile"].DefaultValue;
+                        SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["MediaFile"].DefaultValue;
                         SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["ImageFile"].DefaultValue;
                     }
                     catch (Exception ex)
@@ -192,7 +192,7 @@ namespace StreamerBotLib.GUI.Windows
             {
                 resultfile = FileName;
             }
-            else 
+            else
             {
                 resultfile = CopyFile;
             }
@@ -552,11 +552,11 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-        public void SetOverlayActions(Dictionary<string,List<string>> keyValuePairs)
+        public void SetOverlayActions(Dictionary<string, List<string>> keyValuePairs)
         {
             MediaOverlayEventActions.Clear();
 
-            foreach(var K in keyValuePairs)
+            foreach (var K in keyValuePairs)
             {
                 MediaOverlayEventActions.Add(K.Key, K.Value);
             }
@@ -658,7 +658,7 @@ namespace StreamerBotLib.GUI.Windows
             {
                 case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata" or "UseChatMsg":
                     return PopupEditTableDataType.databool;
-                case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes" 
+                case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes"
                 or "BanReason" or "OverlayType" or "ModActionType" or "ModPerformType":
                     return PopupEditTableDataType.comboenum;
                 case "ModActionName" or "ModPerformAction":
@@ -692,17 +692,18 @@ namespace StreamerBotLib.GUI.Windows
             {
                 result = ((DatePicker)dataElement).Text;
             }
-            else if(dataElement.GetType() == typeof(ComboBox))
+            else if (dataElement.GetType() == typeof(ComboBox))
             {
                 result = (string)((ComboBox)dataElement).SelectedValue;
             }
             else if (dataElement.GetType() == typeof(ListBox))
             {
                 result = ((string[])((ListBox)dataElement).SelectedValue).ToString();
-            } else if (dataElement.GetType() == typeof(ListView))
+            }
+            else if (dataElement.GetType() == typeof(ListView))
             {
                 List<string> selections = new();
-                foreach(CheckBox c in ((ListView)dataElement).ItemsSource )
+                foreach (CheckBox c in ((ListView)dataElement).ItemsSource)
                 {
                     if (c.IsChecked == true)
                     {

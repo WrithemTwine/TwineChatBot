@@ -31,9 +31,9 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         /// <param name="ClientName">Override the Twitch Bot account name, another name used for connecting to a different channel (such as directly to streamer)</param>
         /// <param name="TwitchToken">Override the Twitch Bot token used and to connect to the <para>ClientName</para> channel with a specific token just for changing followers.</param>
-        public void ConnectFollowerService(string ClientName = null, string TwitchToken = null )
+        public void ConnectFollowerService(string ClientName = null, string TwitchToken = null)
         {
-            if(IsStarted)
+            if (IsStarted)
             {
                 FollowerService.Stop();
             }
