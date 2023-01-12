@@ -30,6 +30,8 @@ namespace StreamerBotLib.Data.MultiLive {
         
         private LiveStreamDataTable tableLiveStream;
         
+        private global::System.Data.DataRelation relationFK_Channels_LiveStream;
+        
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.ExcludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -242,6 +244,7 @@ namespace StreamerBotLib.Data.MultiLive {
                     this.tableLiveStream.InitVars();
                 }
             }
+            this.relationFK_Channels_LiveStream = this.Relations["FK_Channels_LiveStream"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -258,14 +261,12 @@ namespace StreamerBotLib.Data.MultiLive {
             base.Tables.Add(this.tableChannels);
             this.tableLiveStream = new LiveStreamDataTable();
             base.Tables.Add(this.tableLiveStream);
-            global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Channels_LiveStream", new global::System.Data.DataColumn[] {
+            this.relationFK_Channels_LiveStream = new global::System.Data.DataRelation("FK_Channels_LiveStream", new global::System.Data.DataColumn[] {
+                        this.tableChannels.IdColumn,
                         this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableLiveStream.ChannelNameColumn});
-            this.tableLiveStream.Constraints.Add(fkc);
-            fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
-            fkc.DeleteRule = global::System.Data.Rule.Cascade;
-            fkc.UpdateRule = global::System.Data.Rule.Cascade;
+                        this.tableLiveStream.IdColumn,
+                        this.tableLiveStream.ChannelNameColumn}, false);
+            this.Relations.Add(this.relationFK_Channels_LiveStream);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -813,6 +814,9 @@ namespace StreamerBotLib.Data.MultiLive {
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint3", new global::System.Data.DataColumn[] {
                                 this.columnId}, true));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnChannelName}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnId,
                                 this.columnChannelName}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
@@ -1398,6 +1402,17 @@ namespace StreamerBotLib.Data.MultiLive {
                     this[this.tableChannels.ChannelNameColumn] = value;
                 }
             }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public LiveStreamRow[] GetLiveStreamRows() {
+                if ((this.Table.ChildRelations["FK_Channels_LiveStream"] == null)) {
+                    return new LiveStreamRow[0];
+                }
+                else {
+                    return ((LiveStreamRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Channels_LiveStream"])));
+                }
+            }
         }
         
         /// <summary>
@@ -1459,6 +1474,17 @@ namespace StreamerBotLib.Data.MultiLive {
                 }
                 set {
                     this[this.tableLiveStream.LiveDateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public ChannelsRow ChannelsRowParent {
+                get {
+                    return ((ChannelsRow)(this.GetParentRow(this.Table.ParentRelations["FK_Channels_LiveStream"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Channels_LiveStream"]);
                 }
             }
             

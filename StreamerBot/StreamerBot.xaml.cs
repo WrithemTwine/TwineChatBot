@@ -95,10 +95,10 @@ namespace StreamerBot
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
-            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
@@ -149,6 +149,11 @@ namespace StreamerBot
                         _ => throw new NotImplementedException()
                     };
                     HelperStartBot(radio);
+
+                    if (e.BotName == Bots.TwitchLiveBot)
+                    {
+                        MultiBotRadio(true);
+                    }
                 }
             }), null);
         }
@@ -498,7 +503,6 @@ namespace StreamerBot
                     new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
                     new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                     new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                    new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
                     new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
                     new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart)
                 };
@@ -506,20 +510,13 @@ namespace StreamerBot
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
                 {
-
-                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                    Dispatcher.BeginInvoke(new BotOperation(() =>
                     {
-                        Dispatcher.BeginInvoke(new BotOperation(() =>
-                        {
-                            (tuple.Item2.DataContext as IOModule)?.StartBot();
-                        }), null);
-                    }
-                    else
-                    {
-                        SetMultiLiveButtons();
-                        MultiBotRadio(true);
-                    }
+                        (tuple.Item2.DataContext as IOModule)?.StartBot();
+                    }), null);
                 }
+
+                SetMultiLiveButtons();
                 BeginUpdateCategory();
             }
 

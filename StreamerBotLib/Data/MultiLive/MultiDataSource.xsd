@@ -16,7 +16,7 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:Generator_ColumnPropNameInTable="IdColumn" msprop:Generator_ColumnPropNameInRow="Id" msprop:Generator_UserColumnName="Id" msprop:Generator_ColumnVarNameInTable="columnId" type="xs:int" />
-              <xs:element name="IsEnabled" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" msprop:Generator_UserColumnName="IsEnabled" type="xs:boolean" default="true" minOccurs="0" />
+              <xs:element name="IsEnabled" msprop:Generator_ColumnPropNameInTable="IsEnabledColumn" msprop:Generator_ColumnPropNameInRow="IsEnabled" msprop:Generator_UserColumnName="IsEnabled" msprop:Generator_ColumnVarNameInTable="columnIsEnabled" type="xs:boolean" default="true" minOccurs="0" />
               <xs:element name="Server" msprop:Generator_ColumnPropNameInTable="ServerColumn" msprop:Generator_ColumnPropNameInRow="Server" msprop:Generator_UserColumnName="Server" msprop:Generator_ColumnVarNameInTable="columnServer" type="xs:string" minOccurs="0" />
               <xs:element name="Type" msprop:Generator_ColumnPropNameInTable="TypeColumn" msprop:Generator_ColumnPropNameInRow="Type" msprop:Generator_UserColumnName="Type" msprop:Generator_ColumnVarNameInTable="columnType" type="xs:string" default="Discord" minOccurs="0" />
               <xs:element name="URL" msprop:Generator_ColumnPropNameInTable="URLColumn" msprop:Generator_ColumnPropNameInRow="URL" msprop:Generator_UserColumnName="URL" msprop:Generator_ColumnVarNameInTable="columnURL" type="xs:string" minOccurs="0" />
@@ -54,13 +54,19 @@
       <xs:selector xpath=".//mstns:Channels" />
       <xs:field xpath="mstns:ChannelName" />
     </xs:unique>
+    <xs:unique name="Constraint2">
+      <xs:selector xpath=".//mstns:Channels" />
+      <xs:field xpath="mstns:Id" />
+      <xs:field xpath="mstns:ChannelName" />
+    </xs:unique>
     <xs:unique name="LiveStream_Constraint1" msdata:ConstraintName="Constraint1">
       <xs:selector xpath=".//mstns:LiveStream" />
       <xs:field xpath="mstns:Id" />
     </xs:unique>
-    <xs:keyref name="FK_Channels_LiveStream" refer="Channels_Constraint1" msdata:ConstraintOnly="true">
-      <xs:selector xpath=".//mstns:LiveStream" />
-      <xs:field xpath="mstns:ChannelName" />
-    </xs:keyref>
   </xs:element>
+  <xs:annotation>
+    <xs:appinfo>
+      <msdata:Relationship name="FK_Channels_LiveStream" msdata:parent="Channels" msdata:child="LiveStream" msdata:parentkey="Id ChannelName" msdata:childkey="Id ChannelName" msprop:Generator_UserParentTable="Channels" msprop:Generator_UserChildTable="LiveStream" msprop:Generator_RelationVarName="relationFK_Channels_LiveStream" msprop:Generator_ChildPropName="GetLiveStreamRows" msprop:Generator_ParentPropName="ChannelsRowParent" msprop:Generator_UserRelationName="FK_Channels_LiveStream" />
+    </xs:appinfo>
+  </xs:annotation>
 </xs:schema>
