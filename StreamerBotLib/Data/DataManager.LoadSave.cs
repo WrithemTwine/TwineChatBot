@@ -146,56 +146,37 @@ namespace StreamerBotLib.Data
                         ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
                     }
 
-                    if (_DataSource.HasChanges())
+                    lock (SaveTasks) // lock the Queue, block thread if currently save task has started
                     {
-                        //lock (GUIDataManagerLock.Lock)
-                        //{
-                        //    OnDataUpdatedEventArgs args = new();
-                        //    foreach (DataTable d in _DataSource.Tables)
-                        //    {
-
-                        //    }
-
-                        //    OnDataUpdated?.Invoke(this, new());
-
-                        //    _DataSource.AcceptChanges();
-
-                        //}
-
-                        lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+                        SaveTasks.Enqueue(new(() =>
                         {
-                            SaveTasks.Enqueue(new(() =>
+                            lock (GUIDataManagerLock.Lock)
                             {
-                                lock (GUIDataManagerLock.Lock)
+                                try
                                 {
-                                    //_DataSource.AcceptChanges();
+                                    MemoryStream SaveData = new();  // new memory stream
 
-                                    try
+                                    _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
+
+                                    DataSource testinput = new();   // start a new database
+                                    SaveData.Position = 0;          // reset the reader
+                                    testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
+
+                                    _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+
+                                    // determine if current time is within a certain time frame, and perform the save
+                                    if (IsBackup && OptionFlags.IsStreamOnline)
                                     {
-                                        MemoryStream SaveData = new();  // new memory stream
-
-                                        _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
-
-                                        DataSource testinput = new();   // start a new database
-                                        SaveData.Position = 0;          // reset the reader
-                                        testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-
-                                        _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
-
-                                        // determine if current time is within a certain time frame, and perform the save
-                                        if (IsBackup && OptionFlags.IsStreamOnline)
-                                        {
-                                            // write backup file
-                                            _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                        // write backup file
+                                        _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
                                     }
                                 }
-                            }));
-                        }
+                                catch (Exception ex)
+                                {
+                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                }
+                            }
+                        }));
                     }
                 }
             }

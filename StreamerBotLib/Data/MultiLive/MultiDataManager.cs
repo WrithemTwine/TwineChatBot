@@ -1,5 +1,6 @@
 ﻿
 using StreamerBotLib.Enums;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Static;
 
 using System;
@@ -85,20 +86,48 @@ namespace StreamerBotLib.Data.MultiLive
         public void LoadData()
         {
             _DataSource.Clear();
-            if (!File.Exists(DataFileName))
+            void LoadFile(string filename)
             {
-                _DataSource.WriteXml(DataFileName);
+                lock (GUIDataManagerLock.Lock)
+                {
+                    if (!File.Exists(filename))
+                    {
+                        _DataSource.WriteXml(filename);
+                    }
+
+                    using XmlReader xmlreader = new XmlTextReader(filename);
+                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+
+                }
+                OptionFlags.DataLoaded = true;
             }
 
-            using XmlReader xmlreader = new XmlTextReader(DataFileName);
-            _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
-
-            foreach (MsgEndPointsRow dataRow in _DataSource.MsgEndPoints.Rows)
+            foreach (DataTable table in _DataSource.Tables)
             {
-                if (DBNull.Value.Equals(dataRow["IsEnabled"]))
+                table.BeginLoadData();
+            }
+
+            try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
+            {
+                try // try the regular working file
                 {
-                    dataRow.IsEnabled = true;
+                    LoadFile(DataFileName);
                 }
+                catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{Path.GetFileName(DataFileName)}");
+                    LoadFile(BackupDataFileXML);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+
+            foreach (DataTable table in _DataSource.Tables)
+            {
+                table.EndLoadData();
             }
 
             NotifyPropertyChanged(nameof(Channels));
@@ -139,8 +168,11 @@ namespace StreamerBotLib.Data.MultiLive
                             _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
 
                             // determine if current time is within a certain time frame, and perform the save
-                            // write backup file
-                            _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
+                            if (IsBackup && OptionFlags.IsStreamOnline)
+                            {
+                                // write backup file
+                                _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -153,10 +185,6 @@ namespace StreamerBotLib.Data.MultiLive
 
         private void PerformSaveOp()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
-#endif
-
             if (OptionFlags.ActiveToken) // don't sleep if exiting app
             {
                 Thread.Sleep(SaveThreadWait);
