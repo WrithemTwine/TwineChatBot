@@ -114,6 +114,13 @@ namespace StreamerBot
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+
+            if(version.Revision != 0)
+            {
+                StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
+            }
         }
 
         private static string GetAppDataCWD()
@@ -587,7 +594,7 @@ namespace StreamerBot
             OptionFlags.SetSettings();
         }
 
-        private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
+        private void RoutedEvent_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
             OptionFlags.SetSettings();
 
@@ -1534,5 +1541,10 @@ namespace StreamerBot
         #endregion
 
         #endregion
+
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

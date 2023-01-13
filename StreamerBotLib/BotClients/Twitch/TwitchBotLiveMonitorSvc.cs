@@ -193,7 +193,10 @@ namespace StreamerBotLib.BotClients.Twitch
             if (IsMultiConnected && IsMultiLiveBotActive)
             {
                 IsMultiLiveBotActive = false;
-                UpdateChannels();
+                if (OptionFlags.ActiveToken)
+                {
+                    UpdateChannels();
+                }
                 MultiLiveDataManager.LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
                 MultiLiveDataManager.SaveData();
             }

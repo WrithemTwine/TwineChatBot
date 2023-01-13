@@ -3,11 +3,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
         xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
-        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="750" Width="1100"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True">
@@ -32,13 +32,19 @@
                 <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
             </ContextMenu>
-
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <DockPanel.Resources>
             <Style TargetType="{x:Type DockPanel}">
                 <Setter Property="Margin" Value="5" />
             </Style>
             <Style TargetType="{x:Type RadioButton}">
                 <Setter Property="Margin" Value="10,5,0,5" />
-                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
+                <EventSetter Event="Click" Handler="RoutedEvent_Click_SaveSettings" />
             </Style>
             <Style TargetType="{x:Type TabItem}">
                 <Setter Property="MinWidth" Value="50" />
@@ -52,7 +58,7 @@
             </Style>
             <Style TargetType="{x:Type CheckBox}">
                 <Setter Property="Margin" Value="5" />
-                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
+                <EventSetter Event="Click" Handler="RoutedEvent_Click_SaveSettings" />
             </Style>
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="TextWrapping" Value="Wrap" />
@@ -69,18 +75,18 @@
                 <Setter Property="IsReadOnly" Value="True" />
                 <EventSetter Event="MouseDoubleClick" Handler="DG_MouseDoubleClick" />
             </Style>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    <DockPanel>
+        </DockPanel.Resources>
         <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
             <StatusBar.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal" />
                 </Style>
             </StatusBar.Resources>
+            <StatusBarItem x:Name="StatusBarItem_BetaLabel" Visibility="Collapsed">
+                <StackPanel>
+                    <Label Content="Beta Version" Foreground="MediumVioletRed" FontSize="16" FontWeight="DemiBold" />
+                </StackPanel>
+            </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
                     <Label Visibility="Visible" x:Name="Label_StreamStatusOff" FontWeight="ExtraBold" Content="Stream Offline" Height="Auto" Width="110" 
@@ -89,6 +95,7 @@
                        BorderThickness="3" Foreground="LimeGreen" HorizontalContentAlignment="Center" BorderBrush="LimeGreen" />
                 </StackPanel>
             </StatusBarItem>
+
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
@@ -799,21 +806,21 @@
                                                                     channel points redemptions users can request moderator approval. <LineBreak />
                                                                     Specifically, actions that can modify bot data. Specify here how <LineBreak />
                                                                     many minutes should moderators have to approve the request. <LineBreak />
-                                                                    After these specified minutes, the request will expire.                                                                    
-                                                                </TextBlock> 
+                                                                    After these specified minutes, the request will expire.
+                                                                </TextBlock>
                                                             </Slider.ToolTip>
                                                         </Slider>
                                                     </StackPanel>
                                                 </GroupBox>
-                                                
+
                                                 <TextBlock>Currently not enabled-working on machine learning</TextBlock>
-                                                <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}" Click="CheckBox_Click_SaveSettings">
+                                                <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}">
                                                     <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox IsChecked="{Binding ModerateUsersWarn}" Click="CheckBox_Click_SaveSettings">
+                                                <CheckBox IsChecked="{Binding ModerateUsersWarn}">
                                                     <TextBlock>Provide chat message of probable moderator action.</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox IsChecked="{Binding ModerateUsersAction}" Click="CheckBox_Click_SaveSettings">
+                                                <CheckBox IsChecked="{Binding ModerateUsersAction}">
                                                     <TextBlock>The bot performs the moderation action</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
@@ -994,21 +1001,21 @@
                                 </TabItem>
                                 <TabItem Header="Msg Mod">
                                     <DockPanel>
-                                <TextBlock DockPanel.Dock="Top" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
+                                        <TextBlock DockPanel.Dock="Top" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
-                                <DockPanel DockPanel.Dock="Top" MaxHeight="150">
-                                    <DataGrid Height="250" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="True" DockPanel.Dock="Left" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                    <DataGrid Height="250" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" DockPanel.Dock="Right" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                    <TextBlock>
+                                        <DockPanel DockPanel.Dock="Top" MaxHeight="150">
+                                            <DataGrid Height="250" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="True" DockPanel.Dock="Left" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                            <DataGrid Height="250" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" DockPanel.Dock="Right" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                            <TextBlock>
                                         Timeout is marked in seconds, min is 1 and max is 1,209,600 (2 weeks). <LineBreak />
                                         When 'ModAction' is set to 'Ban', the timeout isn't used. <LineBreak />
                                         It's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.
-                                    </TextBlock>
-                                </DockPanel>
+                                            </TextBlock>
+                                        </DockPanel>
 
-                                <DataGrid ItemsSource="{Binding LearnMsgs}" DockPanel.Dock="Bottom" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                            </DockPanel>
+                                        <DataGrid ItemsSource="{Binding LearnMsgs}" DockPanel.Dock="Bottom" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                    </DockPanel>
                                 </TabItem>
                             </TabControl>
                         </TabItem>
@@ -1146,7 +1153,7 @@
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Number of Winners:</Label>
-                                                <TextBox Width="30" HorizontalContentAlignment="Center" Text="{Binding GiveawayCount, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings">
+                                                <TextBox Width="30" HorizontalContentAlignment="Center" Text="{Binding GiveawayCount, Mode=TwoWay}" LostFocus="RoutedEvent_Click_SaveSettings">
                                                     <TextBox.ToolTip>
                                                         <TextBlock>Specify how many viewers to select for the giveaway event.</TextBlock>
                                                     </TextBox.ToolTip>
@@ -1154,15 +1161,15 @@
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Giveaway start message:</Label>
-                                                <TextBox Text="{Binding GiveawayBegMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings"/>
+                                                <TextBox Text="{Binding GiveawayBegMsg, Mode=TwoWay}" LostFocus="RoutedEvent_Click_SaveSettings"/>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Giveaway end message:</Label>
-                                                <TextBox Text="{Binding GiveawayEndMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings"/>
+                                                <TextBox Text="{Binding GiveawayEndMsg, Mode=TwoWay}" LostFocus="RoutedEvent_Click_SaveSettings"/>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Winner Message (#winner):</Label>
-                                                <TextBox Text="{Binding GiveawayWinMsg, Mode=TwoWay}" LostFocus="CheckBox_Click_SaveSettings">
+                                                <TextBox Text="{Binding GiveawayWinMsg, Mode=TwoWay}" LostFocus="RoutedEvent_Click_SaveSettings">
                                                     <TextBox.ToolTip>
                                                         <TextBlock>Use #user to include the name in the Giveaway announcement text.</TextBlock>
                                                     </TextBox.ToolTip>
