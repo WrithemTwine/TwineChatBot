@@ -74,31 +74,34 @@ namespace StreamerBotLib.MultiLive
         {
             DataGrid item = sender as DataGrid;
 
-            Popup_DataEdit(item, false);
+            if (((DataGrid)sender).Name != "DG_Multi_ChannelNames" || MultiLiveData.GetMonitorChannelCount() < MaxChannelCount)
+            {
+                Popup_DataEdit(item, false);
+            }
         }
 
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddEdit = ((DataGrid)sender).Name is "DG_Multi_WebHooks" or "DG_Multi_ChannelNames";
+                bool FoundAddEdit = ((DataGrid)sender).Name == "DG_Multi_WebHooks" || (((DataGrid)sender).Name == "DG_Multi_ChannelNames" && MultiLiveData.GetMonitorChannelCount() < MaxChannelCount);
                 bool FoundIsEnabled = MultiLiveData.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName, "IsEnabled");
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
                     {
-                        if (((MenuItem)M).Name is "DataGridContextMenu_AddItem")
+                        switch (((MenuItem)M).Name)
                         {
-                            ((MenuItem)M).IsEnabled = FoundAddEdit;
-                        }
-                        else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItem")
-                        {
-                            ((MenuItem)M).IsEnabled = true;
-                        }
-                        else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
-                        {
-                            ((MenuItem)M).IsEnabled = FoundIsEnabled;
+                            case "DataGridContextMenu_AddItem":
+                                ((MenuItem)M).IsEnabled = FoundAddEdit;
+                                break;
+                            case "DataGridContextMenu_DeleteItem":
+                                ((MenuItem)M).IsEnabled = true;
+                                break;
+                            case "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems":
+                                ((MenuItem)M).IsEnabled = FoundIsEnabled;
+                                break;
                         }
                     }
                 }
