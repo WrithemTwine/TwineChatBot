@@ -61,7 +61,7 @@ namespace StreamerBotLib.Overlay.Server
             }
             HTTPListenServer.Start();
 
-            new Thread(new ThreadStart(ServerSendAlerts)).Start();
+            ThreadManager.CreateThreadStart(() => ServerSendAlerts());
         }
 
         public void SendAlert(IOverlayPageReadOnly overlayPage)
