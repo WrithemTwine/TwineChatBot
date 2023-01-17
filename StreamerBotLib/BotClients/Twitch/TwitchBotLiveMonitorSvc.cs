@@ -118,7 +118,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (IsStarted)
                 {
                     StopMultiLive();
-                    LiveStreamMonitor.Stop();
+                    LiveStreamMonitor?.Stop();
                     LiveStreamMonitor = null;
                     IsStarted = false;
                     IsStopped = true;
