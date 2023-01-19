@@ -30,7 +30,7 @@ namespace StreamerBotLib.GUI.Windows
     {
         private bool IsClosing;
 
-        private IDataManageReadOnly DataManage { get; set; } = SystemsController.DataManage;
+        private IDataManageReadOnly DataManage { get; set; }
         private DataRow SaveDataRow { get; set; }
         private bool IsNewRow { get; set; }
         private List<EditPopupTime> DateList { get; set; } = new();
@@ -63,10 +63,11 @@ namespace StreamerBotLib.GUI.Windows
         /// <summary>
         /// Constructor, initalizes window
         /// </summary>
-        public EditData()
+        public EditData(IDataManageReadOnly dataManageReadOnly)
         {
             InitializeComponent();
             IsNewRow = false;
+            DataManage = dataManageReadOnly;
         }
 
         /// <summary>

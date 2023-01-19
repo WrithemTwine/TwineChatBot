@@ -125,7 +125,7 @@ namespace StreamerBotLib.MultiLive
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
                 if (CurrdataView != null)
                 {
-                    PopupWindows.DataGridAddNewItem(CurrdataView.Table);
+                    PopupWindows.DataGridAddNewItem(MultiLiveData, CurrdataView.Table);
                 }
             }
             else
@@ -133,7 +133,7 @@ namespace StreamerBotLib.MultiLive
                 DataRowView dataView = (DataRowView)sourceDataGrid.SelectedItem;
                 if (dataView != null)
                 {
-                    PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
+                    PopupWindows.DataGridEditItem(MultiLiveData, dataView.Row.Table, dataView.Row);
                 }
             }
         }

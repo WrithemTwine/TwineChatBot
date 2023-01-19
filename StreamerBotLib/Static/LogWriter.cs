@@ -28,8 +28,8 @@ namespace StreamerBotLib.Static
             {
                 if (OptionFlags.LogExceptions)
                 {
-                    WriteLog(LogType.LogExceptions, DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture) + " " + Method);
-                    WriteLog(LogType.LogExceptions, ex.Message + "\nStack Trace: " + ex.StackTrace);
+                    WriteLog(LogType.LogExceptions, $"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {Method} {ex.GetType()}");
+                    WriteLog(LogType.LogExceptions, $"{ex.Message}\nStack Trace: {ex.StackTrace}");
                 }
             }
         }

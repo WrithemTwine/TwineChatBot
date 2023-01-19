@@ -50,7 +50,6 @@ namespace StreamerBotLib.Overlay
 
         public void CloseApp(bool Token = false)
         {
-            OptionFlags.ActiveToken = Token;
             Close();
         }
 

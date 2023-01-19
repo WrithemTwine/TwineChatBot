@@ -1,6 +1,8 @@
 ﻿
+using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
-using StreamerBotLib.GUI;
+using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System;
@@ -18,12 +20,12 @@ using static StreamerBotLib.Data.MultiLive.DataSource;
 
 namespace StreamerBotLib.Data.MultiLive
 {
-    public class MultiDataManager : INotifyPropertyChanged
+    public class MultiDataManager : INotifyPropertyChanged, IDataManageReadOnly
     {
         private static readonly string DataFileXML = "MultiChatbotData.xml";
 
 #if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\MultiUserLiveBot\bin\Debug\net6.0-windows", DataFileXML);
+        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML);
 #else
         private static readonly string DataFileName = DataFileXML;
 #endif
@@ -71,12 +73,13 @@ namespace StreamerBotLib.Data.MultiLive
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             DataView dataView = (DataView)sender;
-            NotifyPropertyChanged(nameof(dataView.Table));
 
-            if (dataView.Table == _DataSource.Channels)
+            if (dataView.Table == _DataSource.Channels && _DataSource.HasChanges())
             {
                 UpdatedMonitoringChannels?.Invoke(this, new());
             }
+            NotifyPropertyChanged(nameof(dataView.Table));
+            SaveData();
         }
 
         #region Load and Exit Ops
@@ -88,15 +91,14 @@ namespace StreamerBotLib.Data.MultiLive
             _DataSource.Clear();
             void LoadFile(string filename)
             {
-                lock (GUIDataManagerLock.Lock)
+                lock (_DataSource)
                 {
                     if (!File.Exists(filename))
                     {
                         _DataSource.WriteXml(filename);
                     }
 
-                    using XmlReader xmlreader = new XmlTextReader(filename);
-                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                    _ = _DataSource.ReadXml(new XmlTextReader(filename), XmlReadMode.DiffGram);
 
                 }
                 OptionFlags.DataLoaded = true;
@@ -125,9 +127,44 @@ namespace StreamerBotLib.Data.MultiLive
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
 
-            foreach (DataTable table in _DataSource.Tables)
+            try
             {
-                table.EndLoadData();
+                foreach (DataTable table in _DataSource.Tables)
+                {
+                    table.EndLoadData();
+                }
+
+                _DataSource.AcceptChanges();
+            }
+            catch (ConstraintException)
+            {
+                _DataSource.EnforceConstraints = false;
+
+                foreach(DataTable table in _DataSource.Tables)
+                {
+                    List<DataRow> UniqueRows = new();
+                    List<DataRow> DuplicateRows = new();
+
+                    foreach(DataRow datarow in table.Rows)
+                    {
+                        if (!UniqueRows.UniqueAdd(datarow, new DataRowEquatableComparer()))
+                        {
+                            DuplicateRows.Add(datarow);
+                        }
+                    }
+
+                    DuplicateRows.ForEach(r => r.Delete());
+                }
+
+                _DataSource.AcceptChanges();
+
+                foreach (DataTable table in _DataSource.Tables)
+                {
+                    table.EndLoadData();
+                }
+
+
+                _DataSource.EnforceConstraints = true;
             }
 
             NotifyPropertyChanged(nameof(Channels));
@@ -231,21 +268,22 @@ namespace StreamerBotLib.Data.MultiLive
             {
                 bool result = false;
 
-                if ((from LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
-                     where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate == dateTime
+                if ((from LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}'")
+                     where liveStreamRow.LiveDate == dateTime
                      select new { }).Any())
                 {
                     result = false;
                 }
                 else
                 {
-                    _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime);
+                    // since we know this addition is only from a source based on the Channels, we forego null checking
+                    _DataSource.LiveStream.AddLiveStreamRow((ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}'").FirstOrDefault(), dateTime);
                     _DataSource.LiveStream.AcceptChanges();
                     SaveData();
 
                     result = true;
                 }
-
+                NotifyPropertyChanged(nameof(LiveStream));
                 return result;
             }
         }
@@ -335,6 +373,7 @@ namespace StreamerBotLib.Data.MultiLive
                 _DataSource.Channels.AddChannelsRow(UserName);
                 _DataSource.Channels.AcceptChanges();
                 SaveData();
+                NotifyPropertyChanged(nameof(Channels));
             }
         }
 
@@ -355,5 +394,140 @@ namespace StreamerBotLib.Data.MultiLive
             NotifyPropertyChanged(nameof(MultiLiveStatusLog));
         }
 
+        #region interface members
+ 
+        public string GetKey(string Table)
+        {
+            return DataSetStatic.GetKey(_DataSource.Tables[Table], Table);
+        } 
+        
+        public List<string> GetTableFields(string TableName)
+        {
+            return DataSetStatic.GetTableFields(_DataSource.Tables[TableName]);
+        }
+        
+        public bool CheckPermission(string cmd, ViewerTypes permission)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckShoutName(string UserName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetSocials()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetUsage(string command)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CommandData GetCommand(string cmd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Tuple<string, int, string[]>> GetTimerCommands()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<LearnMsgRecord> UpdateLearnedMsgs()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        public List<string> GetTableNames()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Tuple<string, string>> GetGameCategories()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetCurrencyNames()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckFollower(string User)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckUser(LiveUser User)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckFollower(string User, DateTime ToDateTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckUser(LiveUser User, DateTime ToDateTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<object> GetRowsDataColumn(string dataTable, string dataColumn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetUserId(LiveUser User)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetKeys(string Table)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetCommandList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetCommands()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

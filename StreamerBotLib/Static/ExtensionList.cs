@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace StreamerBotLib.Static
 {
@@ -15,6 +16,27 @@ namespace StreamerBotLib.Static
         {
             bool found = false;
             if (!List.Contains(Item))
+            {
+                List.Add(Item);
+                found = true;
+            }
+
+            return found;
+        }
+
+        /// <summary>
+        /// Uniquely adds an item to the provided <paramref name="List"/>, first checking if <paramref name="List"/> contains the item.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the list.</typeparam>
+        /// <param name="List">The List to add the item.</param>
+        /// <param name="Item">The item to check if List contains and then add this item.</param>
+        /// <param name="comparer">An item comparer to use to determine if two list objects are equal.</param>
+        /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
+        public static bool UniqueAdd<T>(this List<T> List, T Item, IEqualityComparer<T> comparer)
+        {
+            bool found = false;            
+
+            if (!List.Where(Listitem => comparer.Equals(Item, Listitem)).Select(Listitem => new { }).Any())
             {
                 List.Add(Item);
                 found = true;

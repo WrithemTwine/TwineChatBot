@@ -2,6 +2,7 @@
 #define noLogDataManager_Actions
 #endif
 
+using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
@@ -40,7 +41,6 @@ namespace StreamerBotLib.Data
         /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
         /// </summary>
         public event EventHandler OnSaveData;
-
         public event EventHandler<OnDataUpdatedEventArgs> OnDataUpdated;
 
         /// <summary>
@@ -61,8 +61,7 @@ namespace StreamerBotLib.Data
                         _DataSource.WriteXml(filename);
                     }
 
-                    using XmlReader xmlreader = new XmlTextReader(filename);
-                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                    _ = _DataSource.ReadXml(new XmlTextReader(filename), XmlReadMode.DiffGram);
 
                     foreach (CommandsRow c in _DataSource.Commands.Select())
                     {
@@ -277,7 +276,7 @@ namespace StreamerBotLib.Data
                                              let param = CommandParams.Parse(DefCommandsDictionary[key].Item2)
                                              select (key, param))
                 {
-                    _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                    _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, DataSetStatic.GetKey(_DataSource.Tables[param.Table], param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     found = true;
                 }
 
@@ -300,7 +299,7 @@ namespace StreamerBotLib.Data
 
             bool CheckName(string criteria)
             {
-                ChannelEventsRow channelEventsRow = (ChannelEventsRow)GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{criteria}'");
+                ChannelEventsRow channelEventsRow = (ChannelEventsRow)DataSetStatic.GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{criteria}'");
 
                 if (channelEventsRow != null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
                 {

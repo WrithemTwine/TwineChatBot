@@ -75,6 +75,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     ClipMonitorService = null;
+                    HandlersAdded = false;
                 }
                 return true;
             }

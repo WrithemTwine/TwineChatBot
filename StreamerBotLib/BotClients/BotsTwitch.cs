@@ -100,6 +100,7 @@ namespace StreamerBotLib.BotClients
             if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
             {
                 TwitchFollower.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
+                TwitchFollower.FollowerService.OnBulkFollowsUpdate += FollowerService_OnBulkFollowsUpdate;
 
                 TwitchFollower.HandlersAdded = true;
             }
@@ -587,24 +588,26 @@ namespace StreamerBotLib.BotClients
 
                     try
                     {
-                        // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
-                        List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
+                        while(!TwitchFollower.GetAllFollowersBulkAsync().Result) { }
 
-                        follows.Reverse();
+                        //// TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
+                        //List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
 
-                        for (int i = 0; i < follows.Count; i++)
-                        {
-                            // break up the follower list so chunks of the big list are sent in parts via event
-                            List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
+                        //follows.Reverse();
 
-                            InvokeBotEvent(
-                                this,
-                                BotEvents.TwitchBulkPostFollowers,
-                                new OnNewFollowersDetectedArgs()
-                                {
-                                    NewFollowers = pieces
-                                });
-                        }
+                        //for (int i = 0; i < follows.Count; i++)
+                        //{
+                        //    // break up the follower list so chunks of the big list are sent in parts via event
+                        //    List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
+
+                        //    InvokeBotEvent(
+                        //        this,
+                        //        BotEvents.TwitchBulkPostFollowers,
+                        //        new OnNewFollowersDetectedArgs()
+                        //        {
+                        //            NewFollowers = pieces
+                        //        });
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -616,6 +619,17 @@ namespace StreamerBotLib.BotClients
                 MultiThreadOps.Add(BulkLoadFollows);
                 BulkLoadFollows.Start();
             }
+        }
+
+        private void FollowerService_OnBulkFollowsUpdate(object sender, OnNewFollowersDetectedArgs e)
+        {
+            InvokeBotEvent(
+                this,
+                BotEvents.TwitchBulkPostFollowers,
+                new OnNewFollowersDetectedArgs()
+                {
+                    NewFollowers = e.NewFollowers
+                });
         }
 
         private List<Clip> ClipList { get; set; }

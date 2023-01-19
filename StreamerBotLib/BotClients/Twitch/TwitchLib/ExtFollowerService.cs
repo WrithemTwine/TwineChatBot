@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Core.HttpCallHandlers;
@@ -17,6 +18,45 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public class ExtFollowerService : ExtApiService<GetUsersFollowsResponse>
     {
+        public event EventHandler<OnNewFollowersDetectedArgs> OnBulkFollowsUpdate;
+
+        private void BulkFollowsUpdate(string ChannelName, IEnumerable<Follow> follows)
+        {
+            OnBulkFollowsUpdate?.Invoke(this, new() { Channel=ChannelName, NewFollowers = new(follows) });
+        }
+
+        /// <summary>
+        /// Retrieves all followers for the streamer/watched channel, and is asynchronous
+        /// </summary>
+        /// <param name="ChannelName">The channel to retrieve the followers</param>
+        /// <returns>An async task with a list of 'Follow' objects.</returns>
+        public async Task<bool> GetAllFollowersBulkAsync(string ChannelName)
+        {
+            try
+            {
+                int MaxFollowers = 100; // use the max for bulk retrieve
+                Users followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
+                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
+
+                GetUsersFollowsResponse followsResponse = await followers.GetUsersFollowsAsync(first: MaxFollowers, toId: channelId);
+
+                BulkFollowsUpdate(ChannelName, followsResponse.Follows);
+
+                while (followsResponse?.Follows.Length == MaxFollowers && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
+                {
+                    followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, toId: channelId);
+                    BulkFollowsUpdate(ChannelName, followsResponse.Follows);
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Retrieves all followers for the streamer/watched channel, and is asynchronous
         /// </summary>
@@ -40,6 +80,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 {
                     followsResponse = await followers.GetUsersFollowsAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, toId: channelId);
                     allfollows.AddRange(followsResponse.Follows);
+                    Thread.Sleep(2000);
                 }
             }
             catch (Exception ex)

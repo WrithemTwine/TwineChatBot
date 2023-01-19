@@ -374,16 +374,19 @@ namespace StreamerBot
         private void SetMultiLiveActive(bool ProcessFound = false)
         {
             Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-            SetMultiLiveButtons();
+            SetMultiLiveButtons(false);
         }
 
-        private void SetMultiLiveButtons()
+        private void SetMultiLiveButtons(bool Connect = true)
         {
             if (IsMultiProcActive == false)
             {
                 SetMultiLiveTabItems(true);
 
-                BotController.ConnectTwitchMultiLive();
+                if (Connect) // only connect based on starting the bot
+                {
+                    BotController.ConnectTwitchMultiLive();
+                }
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
                 Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
                 NotifyPropertyChanged(nameof(guiTwitchBot));
@@ -394,6 +397,8 @@ namespace StreamerBot
                 MultiBotRadio();
                 BotController.DisconnectTwitchMultiLive();
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
+                NotifyPropertyChanged(nameof(guiTwitchBot));
+
             }
         }
 
@@ -1204,7 +1209,7 @@ namespace StreamerBot
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
                 if (CurrdataView != null)
                 {
-                    PopupWindows.DataGridAddNewItem(CurrdataView.Table);
+                    PopupWindows.DataGridAddNewItem(SystemsController.DataManage, CurrdataView.Table);
                 }
             }
             else
@@ -1212,7 +1217,7 @@ namespace StreamerBot
                 DataRowView dataView = (DataRowView)sourceDataGrid.SelectedItem;
                 if (dataView != null)
                 {
-                    PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
+                    PopupWindows.DataGridEditItem(SystemsController.DataManage, dataView.Row.Table, dataView.Row);
                 }
             }
         }

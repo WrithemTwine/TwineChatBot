@@ -2,6 +2,7 @@
 #define noLogDataManager_Actions
 #endif
 
+using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.MLearning;
@@ -19,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+using static StreamerBotLib.Data.DataSetCommonMethods.DataSetStatic;
 using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Data
@@ -63,7 +65,6 @@ namespace StreamerBotLib.Data
             OnSaveData += SaveData;
 
             _DataSource.LearnMsgs.TableNewRow += LearnMsgs_TableNewRow;
-            //_DataSource.LearnMsgs.LearnMsgsRowChanged += LearnMsgs_LearnMsgsRowChanged;
             _DataSource.LearnMsgs.LearnMsgsRowDeleted += LearnMsgs_LearnMsgsRowDeleted;
         }
 
@@ -182,7 +183,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, DataSetStatic.GetKey(_DataSource.Tables[Params.Table], Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
 
                 _DataSource.Commands.AcceptChanges();
             }
@@ -247,8 +248,6 @@ switches:
                 DefaultSocials s = (DefaultSocials)list[i];
                 filter += $"{(i != 0 ? ", " : "")}'{s}'";
             }
-
-            string socials = "";
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -437,6 +436,7 @@ switches:
 #endif
 
             SetDataTableFieldRows(_DataSource.ChannelEvents, _DataSource.ChannelEvents.IsEnabledColumn, Enabled);
+            NotifySaveData();
         }
 
         private static string ComFilter()
@@ -467,6 +467,7 @@ switches:
 #endif
 
             SetDataTableFieldRows(_DataSource.Commands, _DataSource.Commands.IsEnabledColumn, Enabled, "CmdName IN (" + ComFilter() + ")");
+            NotifySaveData();
         }
 
         public void SetUserDefinedCommandsEnabled(bool Enabled)
@@ -476,6 +477,7 @@ switches:
 #endif
 
             SetDataTableFieldRows(_DataSource.Commands, _DataSource.Commands.IsEnabledColumn, Enabled, "CmdName NOT IN (" + ComFilter() + ")");
+            NotifySaveData();
         }
 
         public void SetDiscordWebhooksEnabled(bool Enabled)
@@ -485,6 +487,7 @@ switches:
 #endif
 
             SetDataTableFieldRows(_DataSource.Discord, _DataSource.Discord.IsEnabledColumn, Enabled);
+            NotifySaveData();
         }
 
         public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
@@ -511,7 +514,7 @@ switches:
 #endif
             lock (GUIDataManagerLock.Lock)
             {
-                return GetRowsDataColumn(_DataSource.CurrencyType, _DataSource.CurrencyType.CurrencyNameColumn).ConvertAll((value) => value.ToString());
+                return DataSetStatic.GetRowsDataColumn(_DataSource.CurrencyType, _DataSource.CurrencyType.CurrencyNameColumn).ConvertAll((value) => value.ToString());
             }
         }
 
@@ -667,7 +670,8 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Remove all stream data.");
 #endif
 
-            DeleteDataRows(GetRows(_DataSource.StreamStats));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.StreamStats));
+            NotifySaveData();
         }
 
         #endregion
@@ -876,15 +880,23 @@ switches:
                     // newfollow = !followers.IsFollower;
                     newfollow = false;
                     followers.IsFollower = true;
-                    followers.FollowedDate = FollowedDate;
 
+                    if (DBNull.Value.Equals(followers["FollowedDate"]))
+                    {
+                        followers.FollowedDate = FollowedDate;
+                    }
 
-                    if (followers.UserId == null && User.UserId != string.Empty && User.UserId != null)
+                    if (DBNull.Value.Equals(followers["StatusChangeDate"]) || followers.StatusChangeDate != FollowedDate)
+                    {
+                        followers.StatusChangeDate = FollowedDate;
+                    }
+
+                    if (DBNull.Value.Equals(followers["UserId"]) && User.UserId != string.Empty && User.UserId != null)
                     {
                         followers.UserId = User.UserId;
                         update = true;
                     }
-                    if (followers.Platform == string.Empty || followers.Platform == null)
+                    if (DBNull.Value.Equals(followers["Platform"]) || followers.Platform == string.Empty)
                     {
                         followers.Platform = User.Source.ToString();
                         update = true;
@@ -1037,6 +1049,7 @@ switches:
 #endif
 
             SetDataTableFieldRows(_DataSource.Users, _DataSource.Users.WatchTimeColumn, new TimeSpan(0));
+            NotifySaveData();
         }
 
         public void PostNewAutoShoutUser(string UserName)
@@ -1275,7 +1288,7 @@ switches:
                     }
                 }
 
-                DeleteDataRows(GetRows(_DataSource.Users, $"{_DataSource.Users.IdColumn.ColumnName} in ('{string.Join("', '", RemoveIds)}')"));
+                DataSetStatic.DeleteDataRows(GetRows(_DataSource.Users, $"{_DataSource.Users.IdColumn.ColumnName} in ('{string.Join("', '", RemoveIds)}')"));
             }
             NotifySaveData();
         }
@@ -1290,6 +1303,7 @@ switches:
 #endif
 
             SetDataTableFieldRows(_DataSource.Currency, _DataSource.Currency.ValueColumn, 0);
+            NotifySaveData();
         }
 
         #endregion
@@ -1682,8 +1696,8 @@ switches:
                 {
                     _DataSource.OverlayTicker.AddOverlayTickerRow(item.ToString(), name);
                     _DataSource.OverlayTicker.AcceptChanges();
-                    NotifySaveData();
                 }
+                NotifySaveData();
             }
         }
 
@@ -1699,7 +1713,8 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all users.");
 #endif
 
-            DeleteDataRows(GetRows(_DataSource.Users));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.Users));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1711,7 +1726,8 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all followers.");
 #endif
 
-            DeleteDataRows(GetRows(_DataSource.Followers));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.Followers));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1723,7 +1739,8 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all incoming raid data.");
 #endif
 
-            DeleteDataRows(GetRows(_DataSource.InRaidData));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.InRaidData));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1735,7 +1752,8 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all outgoing raid data.");
 #endif
 
-            DeleteDataRows(GetRows(_DataSource.OutRaidData));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.OutRaidData));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1747,7 +1765,8 @@ switches:
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all giveaway data.");
 #endif
 
-            DeleteDataRows(GetRows(_DataSource.GiveawayUserData));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.GiveawayUserData));
+            NotifySaveData();
         }
 
         /// <summary>
@@ -1755,7 +1774,8 @@ switches:
         /// </summary>
         public void RemoveAllOverlayTickerData()
         {
-            DeleteDataRows(GetRows(_DataSource.OverlayTicker));
+            DataSetStatic.DeleteDataRows(GetRows(_DataSource.OverlayTicker));
+            NotifySaveData();
         }
 
         #endregion

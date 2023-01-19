@@ -15,7 +15,6 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotFollowerSvc : TwitchBotsBase
     {
-
         /// <summary>
         /// Listens for new followers.
         /// </summary>
@@ -82,6 +81,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     FollowerService = null;
+                    HandlersAdded = false;
                 }
                 return true;
             }
@@ -90,6 +90,11 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
             return false;
+        }
+
+        public async Task<bool> GetAllFollowersBulkAsync()
+        {
+            return await FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
         }
 
         public async Task<List<Follow>> GetAllFollowersAsync()

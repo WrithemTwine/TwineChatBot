@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Systems;
+﻿using StreamerBotLib.Interfaces;
+using StreamerBotLib.Systems;
 
 using System.Collections.Generic;
 using System.Data;
@@ -15,14 +16,14 @@ namespace StreamerBotLib.GUI.Windows
         {
         }
 
-        public void DataGridAddNewItem(DataTable dataTable)
+        public void DataGridAddNewItem(IDataManageReadOnly dataManageReadOnly, DataTable dataTable)
         {
-            DataGridOpenRowWindow(dataTable);
+            DataGridOpenRowWindow(dataManageReadOnly, dataTable);
         }
 
-        public void DataGridEditItem(DataTable dataTable, DataRow dataRow)
+        public void DataGridEditItem(IDataManageReadOnly dataManageReadOnly, DataTable dataTable, DataRow dataRow)
         {
-            DataGridOpenRowWindow(dataTable, dataRow);
+            DataGridOpenRowWindow(dataManageReadOnly, dataTable, dataRow);
         }
 
         public void SetTableData(Dictionary<string, List<string>> SourceData)
@@ -34,9 +35,9 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-        private void DataGridOpenRowWindow(DataTable dataTable, DataRow dataRow = null)
+        private void DataGridOpenRowWindow(IDataManageReadOnly dataManageReadOnly, DataTable dataTable, DataRow dataRow = null)
         {
-            EditDataWindow = new();
+            EditDataWindow = new(dataManageReadOnly);
             EditDataWindow.UpdatedDataRow += EditDataWindow_UpdatedDataRow;
 
             if (dataTable.TableName is "OverlayServices" or "ModeratorApprove")
