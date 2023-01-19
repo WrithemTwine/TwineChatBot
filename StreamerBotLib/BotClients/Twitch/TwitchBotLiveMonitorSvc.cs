@@ -198,7 +198,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     UpdateChannels();
                 }
                 MultiLiveDataManager.LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
-                MultiLiveDataManager.SaveData();
             }
         }
 
