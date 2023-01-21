@@ -404,6 +404,11 @@ namespace StreamerBotLib.Static
         public static bool MediaOverlayAutoStart { get; set; }
 
         /// <summary>
+        /// Specifies whether user wants the UserData->User Follow tab to adjust its layout when the width changes
+        /// </summary>
+        public static bool GridTabifyUserFollow { get; set; }
+
+        /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
         public static void SetSettings()
@@ -532,6 +537,8 @@ namespace StreamerBotLib.Static
 
                 CurrencyStart = Settings.Default.CurrencyStart;
                 CurrencyOnline = Settings.Default.CurrencyOnline;
+
+                GridTabifyUserFollow = Settings.Default.GridTabifyUserFollow;
 
                 #endregion
 

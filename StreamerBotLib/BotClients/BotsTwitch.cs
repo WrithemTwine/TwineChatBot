@@ -589,25 +589,6 @@ namespace StreamerBotLib.BotClients
                     try
                     {
                         while(!TwitchFollower.GetAllFollowersBulkAsync().Result) { }
-
-                        //// TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
-                        //List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
-
-                        //follows.Reverse();
-
-                        //for (int i = 0; i < follows.Count; i++)
-                        //{
-                        //    // break up the follower list so chunks of the big list are sent in parts via event
-                        //    List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
-
-                        //    InvokeBotEvent(
-                        //        this,
-                        //        BotEvents.TwitchBulkPostFollowers,
-                        //        new OnNewFollowersDetectedArgs()
-                        //        {
-                        //            NewFollowers = pieces
-                        //        });
-                        //}
                     }
                     catch (Exception ex)
                     {

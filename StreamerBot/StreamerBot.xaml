@@ -599,28 +599,39 @@
                             <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                                 <DockPanel Margin="10" DataContext="{Binding Source={x:Static s:Settings.Default}}" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
                                     <WrapPanel Orientation="Horizontal">
-                                        <GroupBox Header="Any - Bot Management">
+                                        <GroupBox Header="Any - Bot Management - App Interface">
                                             <StackPanel>
-                                                <CheckBox IsChecked="{Binding MsgBotConnection}">
-                                                    <TextBlock>Enable bot welcome message when connected to stream channel.</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding PostMultiLive}">
+                                                 <CheckBox IsChecked="{Binding PostMultiLive}">
                                                     <TextBlock>Enable posting to social media (e.g. Discord) multiple live messages in same day.</TextBlock>
                                                 </CheckBox>
+
                                                 <CheckBox x:Name="CheckBox_Debug_Livestream" IsChecked="{Binding DebugLiveStream}">
                                                     <TextBlock>Enable Livestream debug buttons.</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding MsgCommandNotFound}">
-                                                    <TextBlock>Enable "Command Not Found" output message.</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding MsgSocialSeparate}" ToolTip="Using !socials, click to send each social message separately to chat.">
-                                                    <TextBlock>Enable separate Social messages.</TextBlock>
                                                 </CheckBox>
                                                 <CheckBox IsChecked="{Binding ManageClearButtonEnabled}">
                                                     <CheckBox.ToolTip>
                                                         <TextBlock>This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</TextBlock>
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable 'Clear Data' buttons.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox x:Name="CheckBox_Option_TabUserFollow" IsChecked="{Binding GridTabifyUserFollow}">
+                                                    <TextBlock>Enable UserData User and Follow appearance to change based on size.</TextBlock>
+                                                    <CheckBox.ToolTip>
+                                                        <TextBlock>When the application width decreases too much, the User Follow listing is hard to read. This option enables the tab to be reconfigured when the width is decreased.</TextBlock>
+                                                    </CheckBox.ToolTip>
+                                                </CheckBox>
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <GroupBox Header="Any - Bot Management - Output">
+                                            <StackPanel>
+                                                <CheckBox IsChecked="{Binding MsgBotConnection}">
+                                                    <TextBlock>Enable bot welcome message when connected to stream channel.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgCommandNotFound}">
+                                                    <TextBlock>Enable "Command Not Found" output message.</TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding MsgSocialSeparate}" ToolTip="Using !socials, click to send each social message separately to chat.">
+                                                    <TextBlock>Enable separate Social messages.</TextBlock>
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
@@ -1022,29 +1033,38 @@
                         <TabItem Header="User Data" x:Name="TabItem_Users">
                             <TabControl>
                                 <TabItem Header="User Follow">
-
-                                    <Grid>
+                                    <Grid x:Name="Grid_UserData_UserFollow">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="25" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition MinWidth="675" Width="750*" />
+                                            <ColumnDefinition MinWidth="200" Width="*" />
                                             <ColumnDefinition Width="5" />
-                                            <ColumnDefinition MinWidth="200" Width="550*" />
+                                            <ColumnDefinition MinWidth="200" Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Row="0" Content="User List"/>
-                                        <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="120" Click="Button_ClearNonFollowers_Click">
-                                            <Button.ToolTip>
-                                                <TextBlock>Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</TextBlock>
-                                            </Button.ToolTip>
-                                        </Button>
-                                        <Button x:Name="Button_ClearWatchTime" Content="Reset All WatchTime" Grid.Row="0" Height="20" Width="120" Click="Button_ClearWatchTime_Click" HorizontalAlignment="Right" Margin="0,0,15,0" />
 
-                                        <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" Grid.Row="1" Grid.Column="0" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        <TabControl x:Name="TabControl_UD_UF_Grid_Tab" Visibility="Collapsed" Grid.ColumnSpan="3">
+                                            <TabItem Header="Users" Name="TabItem_UD_UF_Grid_Users" />
+                                            <TabItem Header="Followers" Name="TabItem_UD_UF_Grid_Followers" />
+                                        </TabControl>
+                                        
+                                        <DockPanel x:Name="DockPanel_UserData_Users" Grid.Row="0" Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                                                <Label Content="User List"/>
+                                                <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="120" Margin="70,0,15,0" Click="Button_ClearNonFollowers_Click">
+                                                    <Button.ToolTip>
+                                                        <TextBlock>Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</TextBlock>
+                                                    </Button.ToolTip>
+                                                </Button>
+                                                <Button x:Name="Button_ClearWatchTime" Content="Reset All WatchTime" Height="20" Width="120" Click="Button_ClearWatchTime_Click" Margin="15,0,15,0" />
+                                            </StackPanel>
+                                            <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        </DockPanel>
 
-                                        <Label Grid.Row="0" Grid.Column="2" Content="Follower List" />
-                                        <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" Grid.Row="1" Grid.Column="2" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        <DockPanel x:Name="DockPanel_UserData_Followers" Grid.Row="0" Grid.Column="2">
+                                            <Label Content="Follower List" DockPanel.Dock="Top" />
+                                            <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        </DockPanel>
                                     </Grid>
 
                                 </TabItem>

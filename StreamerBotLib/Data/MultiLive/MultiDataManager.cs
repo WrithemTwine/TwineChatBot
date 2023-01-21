@@ -37,12 +37,7 @@ namespace StreamerBotLib.Data.MultiLive
 
         public event EventHandler UpdatedMonitoringChannels;
 
-        public MultiDataManager() :
-#if DEBUG
-        base(Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML))
-#else
-        base(DataFileXML)
-#endif
+        public MultiDataManager() : base(DataFileXML)
         {
             _DataSource = new();
 
@@ -147,8 +142,7 @@ namespace StreamerBotLib.Data.MultiLive
                         DataSource testinput = new();   // start a new database
                         SaveDataMemoryStream.Position = 0;          // reset the reader
                         testinput.ReadXml(SaveDataMemoryStream);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-                    },
-                    true
+                    }
                     );
             }
         }

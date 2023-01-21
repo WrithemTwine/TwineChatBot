@@ -26,11 +26,28 @@ namespace StreamerBotLib.Data
 
         public BaseDataManager(string DataFileXMLName)
         {
-            DataFileName = DataFileXMLName;
-            BackupDataFileXML = $"Backup_{DataFileXMLName}";
-
+            DataFileName = FormatFileName(DataFileXMLName);
+            BackupDataFileXML = FormatFileName($"Backup_{DataFileXMLName}");
             BackupSaveToken = DateTime.Now.Minute / BackupSaveIntervalMins;
+        }
 
+        /// <summary>
+        /// Format the file name to handle debug path locations, otherwise ignored in release versions.
+        /// </summary>
+        /// <param name="fileName">Name of the file to format, prepend debug directory.</param>
+        /// <returns>File path, whether in debug directory or relative filename in current release directory - based on Current Working Directory.</returns>
+        private string FormatFileName(string fileName)
+        {
+            return
+#if DEBUG
+            // add specific directory location for debug purposes, ignore for release
+            Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows",
+#endif
+                fileName
+#if DEBUG
+                )
+#endif
+                ;
         }
 
         protected void BeginLoadData(DataTableCollection dataTables)
@@ -72,7 +89,7 @@ namespace StreamerBotLib.Data
 
         }
 
-        protected void SaveData(Action<Stream, XmlWriteMode> WriteXML, Action<string, XmlWriteMode> StringWriteXML, object Lock, Action<MemoryStream> TestDataSource, bool MultiData = false)
+        protected void SaveData(Action<Stream, XmlWriteMode> WriteXML, Action<string, XmlWriteMode> StringWriteXML, object Lock, Action<MemoryStream> TestDataSource)
         {
             int CurrMins = DateTime.Now.Minute;
             bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
@@ -105,7 +122,7 @@ namespace StreamerBotLib.Data
                             StringWriteXML(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
 
                             // determine if current time is within a certain time frame, and perform the save
-                            if (IsBackup && OptionFlags.IsStreamOnline || MultiData)
+                            if (IsBackup)
                             {
                                 // write backup file
                                 StringWriteXML(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file

@@ -1318,5 +1318,17 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayCSSExpandHelp"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool GridTabifyUserFollow {
+            get {
+                return ((bool)(this["GridTabifyUserFollow"]));
+            }
+            set {
+                this["GridTabifyUserFollow"] = value;
+            }
+        }
     }
 }

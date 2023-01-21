@@ -39,13 +39,7 @@ namespace StreamerBotLib.Data
         private bool LearnMsgChanged = true; // always true to begin one learning cycle
         public bool UpdatingFollowers { get; set; }
 
-        public DataManager() :
-#if DEBUG
-        base(Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML))
-#else
-        base(DataFileXML)
-#endif
-
+        public DataManager() : base(DataFileXML)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Build DataManager object.");
