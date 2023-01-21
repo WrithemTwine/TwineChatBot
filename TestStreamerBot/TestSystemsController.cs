@@ -18,6 +18,12 @@ namespace TestStreamerBot
 
         private SystemsController systemsController;
 
+        public TestSystemsController()
+        {
+            systemsController = new();
+            Initialize();
+        }
+
         private void Initialize()
         {
             if (!Initialized)
@@ -26,7 +32,6 @@ namespace TestStreamerBot
                 {
                     File.Delete(DataFileXML);
                 }
-                systemsController = new();
                 systemsController.PostChannelMessage += SystemsController_PostChannelMessage;
                 OptionFlags.SetSettings();
 

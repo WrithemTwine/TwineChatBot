@@ -31,33 +31,25 @@ namespace StreamerBotLib.Data
         /// <summary>
         /// Specifies the database xml save file name
         /// </summary>
-        public static readonly string DataFileXML = "ChatDataStore.xml";
-
-#if DEBUG
-        /// <summary>
-        /// Specifies the debug location of the database xml file name - user specific
-        /// </summary>
-        public static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML);
-#else
-        private static readonly string DataFileName = DataFileXML;
-#endif
+        private static readonly string DataFileXML = "ChatDataStore.xml";
 
         internal readonly DataSource _DataSource;
         #endregion DataSource
 
-
         private bool LearnMsgChanged = true; // always true to begin one learning cycle
-
         public bool UpdatingFollowers { get; set; }
 
-        public DataManager()
+        public DataManager() :
+#if DEBUG
+        base(Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML))
+#else
+        base(DataFileXML)
+#endif
+
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Build DataManager object.");
 #endif
-
-            BackupSaveToken = DateTime.Now.Minute / BackupSaveIntervalMins;
-
             _DataSource = new();
             _DataSource.BeginInit();
             LoadData();

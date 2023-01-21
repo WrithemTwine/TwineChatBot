@@ -5,14 +5,11 @@
 using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-
-using static StreamerBotLib.Data.DataSetCommonMethods.DataSetStatic;
 
 namespace StreamerBotLib.Data
 {

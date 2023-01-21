@@ -11,37 +11,17 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 
 using static StreamerBotLib.Data.MultiLive.DataSource;
 
 namespace StreamerBotLib.Data.MultiLive
 {
-    public class MultiDataManager : INotifyPropertyChanged, IDataManageReadOnly
+    public class MultiDataManager : BaseDataManager, INotifyPropertyChanged, IDataManageReadOnly
     {
         private static readonly string DataFileXML = "MultiChatbotData.xml";
 
-#if DEBUG
-        private static readonly string DataFileName = Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML);
-#else
-        private static readonly string DataFileName = DataFileXML;
-#endif
-        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
-
         private readonly DataSource _DataSource;
-
-        private readonly Queue<Task> SaveTasks = new();
-        private bool SaveThreadStarted = false;
-        private const int SaveThreadWait = 10000;
-
-        private int BackupSaveToken = 0;
-        private const int BackupSaveIntervalMins = 15;
-        private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
-
-        private const int maxlength = 8000;
 
         public string MultiLiveStatusLog { get; set; } = "";
 
@@ -57,7 +37,12 @@ namespace StreamerBotLib.Data.MultiLive
 
         public event EventHandler UpdatedMonitoringChannels;
 
-        public MultiDataManager()
+        public MultiDataManager() :
+#if DEBUG
+        base(Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows", DataFileXML))
+#else
+        base(DataFileXML)
+#endif
         {
             _DataSource = new();
 
@@ -101,38 +86,16 @@ namespace StreamerBotLib.Data.MultiLive
                     _ = _DataSource.ReadXml(new XmlTextReader(filename), XmlReadMode.DiffGram);
 
                 }
-                OptionFlags.DataLoaded = true;
+                OptionFlags.MultiDataLoaded = true;
             }
 
-            foreach (DataTable table in _DataSource.Tables)
-            {
-                table.BeginLoadData();
-            }
+            BeginLoadData(_DataSource.Tables);
 
-            try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
-            {
-                try // try the regular working file
-                {
-                    LoadFile(DataFileName);
-                }
-                catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{Path.GetFileName(DataFileName)}");
-                    LoadFile(BackupDataFileXML);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
+            TryLoadFile((xmlfile)=>LoadFile(xmlfile));
 
             try
             {
-                foreach (DataTable table in _DataSource.Tables)
-                {
-                    table.EndLoadData();
-                }
+                EndLoadData(_DataSource.Tables);
 
                 _DataSource.AcceptChanges();
             }
@@ -158,11 +121,7 @@ namespace StreamerBotLib.Data.MultiLive
 
                 _DataSource.AcceptChanges();
 
-                foreach (DataTable table in _DataSource.Tables)
-                {
-                    table.EndLoadData();
-                }
-
+                EndLoadData(_DataSource.Tables);
 
                 _DataSource.EnforceConstraints = true;
             }
@@ -177,65 +136,21 @@ namespace StreamerBotLib.Data.MultiLive
         /// </summary>
         public void SaveData()
         {
-            int CurrMins = DateTime.Now.Minute;
-            bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
-
-            if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+            if (OptionFlags.MultiDataLoaded)
             {
-                SaveThreadStarted = true;
-                ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
-            }
-
-            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
-            {
-                SaveTasks.Enqueue(new(() =>
-                {
-                    lock (_DataSource)
+                SaveData(
+                    (stream, xmlwrite) => _DataSource.WriteXml(stream, xmlwrite),
+                    (filename, xmlwrite) => _DataSource.WriteXml(filename, xmlwrite),
+                    _DataSource,
+                    (SaveDataMemoryStream) =>
                     {
-                        try
-                        {
-                            MemoryStream SaveData = new();  // new memory stream
-
-                            _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
-
-                            DataSource testinput = new();   // start a new database
-                            SaveData.Position = 0;          // reset the reader
-                            testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-
-                            _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
-
-                            // determine if current time is within a certain time frame, and perform the save
-                            if (IsBackup && OptionFlags.IsStreamOnline)
-                            {
-                                // write backup file
-                                _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                        }
-                    }
-                }));
+                        DataSource testinput = new();   // start a new database
+                        SaveDataMemoryStream.Position = 0;          // reset the reader
+                        testinput.ReadXml(SaveDataMemoryStream);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
+                    },
+                    true
+                    );
             }
-        }
-
-        private void PerformSaveOp()
-        {
-            if (OptionFlags.ActiveToken) // don't sleep if exiting app
-            {
-                Thread.Sleep(SaveThreadWait);
-            }
-
-            lock (SaveTasks) // in case save actions arrive during save try
-            {
-                if (SaveTasks.Count >= 1)
-                {
-                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
-                }
-                SaveTasks.Clear();
-            }
-            SaveThreadStarted = false; // indicate start another thread to save data
         }
 
         #endregion
@@ -296,7 +211,7 @@ namespace StreamerBotLib.Data.MultiLive
         {
             lock (_DataSource)
             {
-                return new(from DataSource.ChannelsRow c in _DataSource.Channels.Select()
+                return new(from ChannelsRow c in _DataSource.Channels.Select()
                            select c.ChannelName);
             }
         }
@@ -384,7 +299,7 @@ namespace StreamerBotLib.Data.MultiLive
         /// <param name="dateTime">The time of the event.</param>
         public void LogEntry(string data, DateTime dateTime)
         {
-            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= maxlength)
+            if (MultiLiveStatusLog.Length + dateTime.ToString().Length + data.Length + 2 >= MaxLogLength)
             {
                 MultiLiveStatusLog = MultiLiveStatusLog[MultiLiveStatusLog.IndexOf('\n')..];
             }

@@ -213,7 +213,10 @@ namespace StreamerBotLib.Static
         /// Indicates database xml file successfully loaded.
         /// </summary>
         public static bool DataLoaded { get; set; } = false;
-
+        /// <summary>
+        /// Indicates database xml file successfully loaded.
+        /// </summary>
+        public static bool MultiDataLoaded { get; set; } = false;
         /// <summary>
         /// Specifies to save user data in the database.
         /// </summary>
