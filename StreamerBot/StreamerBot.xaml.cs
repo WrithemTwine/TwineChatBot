@@ -60,8 +60,6 @@ namespace StreamerBot
 
         #endregion
 
-        // TODO: review the "user left" methodology to update faster so the user list reflects recent user join/leave changes
-
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
@@ -119,7 +117,7 @@ namespace StreamerBot
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
 
-            if(version.Revision != 0)
+            if (version.Revision != 0)
             {
                 StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
             }
@@ -389,7 +387,7 @@ namespace StreamerBot
             GroupBox_Bots_Starts_MultiLive.Visibility = ProcessFound ? Visibility.Collapsed : Visibility.Visible;
 
 
-            if(GroupBox_Bots_Starts_MultiLive.Visibility == Visibility.Visible)
+            if (GroupBox_Bots_Starts_MultiLive.Visibility == Visibility.Visible)
             {
                 Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked == true;
 
@@ -838,7 +836,7 @@ namespace StreamerBot
 
         private void Grid_UserData_UserFollow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if(e.NewSize.Width <= 950)
+            if (e.NewSize.Width <= 950)
             {
                 if (TabControl_UD_UF_Grid_Tab.Visibility == Visibility.Collapsed)
                 {
@@ -850,9 +848,10 @@ namespace StreamerBot
                     TabItem_UD_UF_Grid_Followers.Content = DockPanel_UserData_Followers;
                 }
 
-            } else
+            }
+            else
             {
-                if(TabControl_UD_UF_Grid_Tab.Visibility != Visibility.Collapsed)
+                if (TabControl_UD_UF_Grid_Tab.Visibility != Visibility.Collapsed)
                 {
                     TabItem_UD_UF_Grid_Users.Content = null;
                     TabItem_UD_UF_Grid_Followers.Content = null;

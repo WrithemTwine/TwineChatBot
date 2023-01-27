@@ -68,7 +68,7 @@ namespace TestStreamerBot
             return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
-        private void BotController_OutputSentToBots(object sender, PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object? sender, PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }

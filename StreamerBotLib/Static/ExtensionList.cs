@@ -34,7 +34,7 @@ namespace StreamerBotLib.Static
         /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
         public static bool UniqueAdd<T>(this List<T> List, T Item, IEqualityComparer<T> comparer)
         {
-            bool found = false;            
+            bool found = false;
 
             if (!List.Where(Listitem => comparer.Equals(Item, Listitem)).Select(Listitem => new { }).Any())
             {

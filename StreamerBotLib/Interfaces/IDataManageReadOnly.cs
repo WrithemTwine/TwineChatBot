@@ -36,11 +36,11 @@ namespace StreamerBotLib.Interfaces
         IEnumerable<string> GetCommandList();
         string GetCommands();
 
-    //  public bool CheckTable(string table);
-    //  List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn);
-    //  DataRow[] GetRows(DataTable dataTable, string Filter = null, string Sort = null);
-    //  DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null);
-    //  List<string> GetTableFields(DataTable dataTable);
+        //  public bool CheckTable(string table);
+        //  List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn);
+        //  DataRow[] GetRows(DataTable dataTable, string Filter = null, string Sort = null);
+        //  DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null);
+        //  List<string> GetTableFields(DataTable dataTable);
 
     }
 }

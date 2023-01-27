@@ -37,7 +37,7 @@ namespace StreamerBotLib.BotClients
     {
 #endif
 
-        public event EventHandler<BotEventArgs> BotEvent = null;
+        public event EventHandler<BotEventArgs> BotEvent;
         public event EventHandler<EventArgs> ActionQueueChanged;
         public event EventHandler<OverlayActionType> SendOverlayToServer;
         private bool PauseAlerts = false;

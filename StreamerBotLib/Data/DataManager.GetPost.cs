@@ -55,7 +55,7 @@ namespace StreamerBotLib.Data
         /// </summary>
         /// <param name="table">The table name to check.</param>
         /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
-       private bool CheckTable(string table)
+        private bool CheckTable(string table)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if table {table} is in the database.");
@@ -71,7 +71,7 @@ namespace StreamerBotLib.Data
         #endregion
 
         #region Interface
- 
+
         /// <summary>
         /// Check if the provided field is part of the supplied table.
         /// </summary>
@@ -90,7 +90,7 @@ namespace StreamerBotLib.Data
             }
         }
 
-       public List<object> GetRowsDataColumn( string dataTable, string dataColumn)
+        public List<object> GetRowsDataColumn(string dataTable, string dataColumn)
         {
             if (!CheckTable(dataTable) || !CheckField(dataTable, dataColumn))
             {

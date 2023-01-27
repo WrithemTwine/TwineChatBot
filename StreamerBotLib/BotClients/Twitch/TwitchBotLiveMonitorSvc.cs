@@ -153,7 +153,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 MultiLiveDataManager = new();
                 MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;
             }
-            
+
             MultiLiveDataManager.LoadData();
             IsMultiConnected = true;
         }

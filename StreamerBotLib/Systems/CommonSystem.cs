@@ -45,7 +45,6 @@ namespace StreamerBotLib.Systems
         /// Time delays to use in threads
         /// </summary>
         protected const int SecondsDelay = 2000;
-        protected static bool StreamUpdateClockStarted;
 
         protected static List<LiveUser> CurrUsers { get; private set; } = new();
         protected static List<string> UniqueUserJoined { get; private set; } = new();

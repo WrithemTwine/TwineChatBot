@@ -86,7 +86,7 @@ namespace StreamerBotLib.Data.MultiLive
 
             BeginLoadData(_DataSource.Tables);
 
-            TryLoadFile((xmlfile)=>LoadFile(xmlfile));
+            TryLoadFile((xmlfile) => LoadFile(xmlfile));
 
             try
             {
@@ -98,12 +98,12 @@ namespace StreamerBotLib.Data.MultiLive
             {
                 _DataSource.EnforceConstraints = false;
 
-                foreach(DataTable table in _DataSource.Tables)
+                foreach (DataTable table in _DataSource.Tables)
                 {
                     List<DataRow> UniqueRows = new();
                     List<DataRow> DuplicateRows = new();
 
-                    foreach(DataRow datarow in table.Rows)
+                    foreach (DataRow datarow in table.Rows)
                     {
                         if (!UniqueRows.UniqueAdd(datarow, new DataRowEquatableComparer()))
                         {
@@ -304,17 +304,17 @@ namespace StreamerBotLib.Data.MultiLive
         }
 
         #region interface members
- 
+
         public string GetKey(string Table)
         {
             return DataSetStatic.GetKey(_DataSource.Tables[Table], Table);
-        } 
-        
+        }
+
         public List<string> GetTableFields(string TableName)
         {
             return DataSetStatic.GetTableFields(_DataSource.Tables[TableName]);
         }
-        
+
         public bool CheckPermission(string cmd, ViewerTypes permission)
         {
             throw new NotImplementedException();

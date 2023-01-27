@@ -344,7 +344,6 @@
                                 <Setter Property="TextWrapping" Value="Wrap" />
                                 <EventSetter Event="PreviewMouseLeftButtonUp" Handler="PreviewMouseLeftButton_SelectAll" />
                                 <EventSetter Event="PreviewMouseLeftButtonDown" Handler="PreviewMouseLeftButton_SelectAll" />
-                                <EventSetter Event="LostFocus" Handler="Settings_LostFocus" />
                             </Style>
                         </TabItem.Resources>
                         <DockPanel LastChildFill="False">

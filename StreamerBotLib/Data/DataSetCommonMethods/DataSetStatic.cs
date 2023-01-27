@@ -105,7 +105,7 @@ namespace StreamerBotLib.Data.DataSetCommonMethods
                 return fields;
             }
         }
-#endregion
+        #endregion
 
         internal static void SetDataRowFieldRow(DataRow dataRow, string dataColumn, object value)
         {

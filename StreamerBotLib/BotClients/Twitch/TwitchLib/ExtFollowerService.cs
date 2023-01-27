@@ -22,7 +22,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private void BulkFollowsUpdate(string ChannelName, IEnumerable<Follow> follows)
         {
-            OnBulkFollowsUpdate?.Invoke(this, new() { Channel=ChannelName, NewFollowers = new(follows) });
+            OnBulkFollowsUpdate?.Invoke(this, new() { Channel = ChannelName, NewFollowers = new(follows) });
         }
 
         /// <summary>
