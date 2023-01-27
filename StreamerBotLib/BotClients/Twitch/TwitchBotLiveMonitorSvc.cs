@@ -153,7 +153,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 MultiLiveDataManager = new();
                 MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;
             }
-
+            
             MultiLiveDataManager.LoadData();
             IsMultiConnected = true;
         }
@@ -170,13 +170,13 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 MultiLiveDataManager.SaveData();
                 SetLiveMonitorChannels(MultiLiveDataManager.GetChannelNames());
+                // TODO: localize the multilive bot data
+                MultiLiveDataManager.LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
             }
             else
             {
                 SetLiveMonitorChannels(new());
             }
-            // TODO: localize the multilive bot data
-            MultiLiveDataManager.LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
         }
 
         public void StartMultiLive()

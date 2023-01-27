@@ -58,7 +58,7 @@ namespace StreamerBotLib.MultiLive
             Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
         }
 
-        public void SetLiveManagerBot(MultiDataManager MultiLiveDataManager)
+        public void SetDataManager(MultiDataManager MultiLiveDataManager)
         {
             Grid_MultiUserLiveMonitor.DataContext = MultiLiveDataManager;
             MultiLiveData = MultiLiveDataManager;

@@ -60,6 +60,8 @@ namespace StreamerBot
 
         #endregion
 
+        // TODO: review the "user left" methodology to update faster so the user list reflects recent user join/leave changes
+
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
@@ -162,11 +164,6 @@ namespace StreamerBot
                         _ => throw new NotImplementedException()
                     };
                     HelperStartBot(radio);
-
-                    if (e.BotName == Bots.TwitchLiveBot)
-                    {
-                        MultiBotRadio(true);
-                    }
                 }
             }), null);
         }
@@ -379,102 +376,74 @@ namespace StreamerBot
 
         private void SetMultiLiveActive(bool ProcessFound = false)
         {
-            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-            SetMultiLiveButtons(false);
-        }
-
-        private void SetMultiLiveButtons(bool Connect = true)
-        {
-            if (IsMultiProcActive == false)
+            if (ProcessFound)
             {
-                SetMultiLiveTabItems(true);
-
-                if (Connect) // only connect based on starting the bot
-                {
-                    BotController.ConnectTwitchMultiLive();
-                }
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
-                Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
-                NotifyPropertyChanged(nameof(guiTwitchBot));
-            }
-            else if (IsMultiProcActive == true)
-            {
-                SetMultiLiveTabItems();
-                MultiBotRadio();
                 BotController.DisconnectTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                NotifyPropertyChanged(nameof(guiTwitchBot));
-
             }
-        }
+            else
+            {
+                BotController.ConnectTwitchMultiLive();
+            }
 
-        private void SetMultiLiveTabItems(bool Visible = false)
-        {
-            TabItem_Data_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
-            TabItem_Data_Separator.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
-            GroupBox_Bots_Starts_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
+            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
+            GroupBox_Bots_Starts_MultiLive.Visibility = ProcessFound ? Visibility.Collapsed : Visibility.Visible;
+
+
+            if(GroupBox_Bots_Starts_MultiLive.Visibility == Visibility.Visible)
+            {
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked == true;
+
+                // allow edits while bot is active
+                (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
+                (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
+                (MultiLive_Data.Content as MultiLiveDataGrids).SetDataManager(guiTwitchBot.TwitchLiveMonitor.MultiLiveDataManager);
+            }
+            else
+            {
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
+                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
+                Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
+
+                // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
+                (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
+            }
         }
 
         private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
         {
-            Radio_MultiLiveTwitch_StartBot.IsEnabled = IsMultiProcActive == false && ((sender as RadioButton).IsChecked ?? false);
+            if (Radio_MultiLiveTwitch_StartBot != null)
+            {
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
+            }
         }
 
         private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender != null)
+            // stop MultiLive bot when LiveMonitor bot is stopped
+            if (Radio_MultiLiveTwitch_StopBot != null)
             {
-                MultiBotRadio();
+                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
             }
         }
 
-        private void BC_MultiLiveTwitch_BotOp(object sender, MouseButtonEventArgs e)
+        private void BC_MultiLiveTwitch_BotOp(object sender, RoutedEventArgs e)
         {
             if (sender == Radio_MultiLiveTwitch_StartBot)
             {
-                MultiBotRadio(true);
+                BotController.StartTwitchMultiLive();
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
+                Radio_MultiLiveTwitch_StartBot.IsChecked = true;
+                Radio_MultiLiveTwitch_StopBot.IsChecked = false;
+                Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
             }
             else if (sender == Radio_MultiLiveTwitch_StopBot)
             {
-                MultiBotRadio();
+                BotController.StopTwitchMultiLive();
+                Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
+                Radio_MultiLiveTwitch_StartBot.IsChecked = false;
+                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
+                Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
             }
-        }
-
-        private void MultiBotRadio(bool Start = false)
-        {
-            if (Controller != null && guiTwitchBot != null && guiTwitchBot.TwitchLiveMonitor.IsMultiConnected)
-            {
-                if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
-                {
-                    BotController.StartTwitchMultiLive();
-                    Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                    Radio_MultiLiveTwitch_StartBot.IsChecked = true;
-                    Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
-                    if (IsMultiProcActive == false)
-                    {
-                        // allow edits while bot is active
-                        (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
-
-                        (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-                        (MultiLive_Data.Content as MultiLiveDataGrids).SetLiveManagerBot(guiTwitchBot.TwitchLiveMonitor.MultiLiveDataManager);
-                    }
-                }
-                else
-                {
-                    BotController.StopTwitchMultiLive();
-                    Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-                    Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-                    Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-
-                    // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
-                    (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
-                }
-            }
-        }
-
-        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            BotController.UpdateTwitchMultiLiveChannels();
         }
 
         #endregion
@@ -534,7 +503,6 @@ namespace StreamerBot
                     }), null);
                 }
 
-                SetMultiLiveButtons();
                 BeginUpdateCategory();
             }
 
@@ -614,12 +582,12 @@ namespace StreamerBot
             CheckDebug();
             SetVisibility();
 
-            if (sender is CheckBox && ((CheckBox)sender).Name == "CheckBox_RepeatCommands_Enable")
+            if (sender is CheckBox box && box.Name == "CheckBox_RepeatCommands_Enable")
             {
                 Controller.ActivateRepeatTimers();
             }
 
-            if (sender is CheckBox && ((CheckBox)sender).Name == "CheckBox_Option_TabUserFollow")
+            if (sender is CheckBox checkbox && checkbox.Name == "CheckBox_Option_TabUserFollow")
             {
                 if (OptionFlags.GridTabifyUserFollow == true && !UserFollowTabEventAdded)
                 {
@@ -774,33 +742,6 @@ namespace StreamerBot
         }
 
         // TODO: fix scrolling in Sliders but not scroll the whole panel
-
-        private bool SliderMouseCaptured;
-
-        //private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        //{
-        //    Slider curr = (Slider)sender;
-        //    curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
-        //}
-
-        //private void Slider_MouseEnter(object sender, MouseEventArgs e)
-        //{
-        //    SliderMouseCaptured = true;
-        //}
-
-        //private void Slider_MouseLeave(object sender, MouseEventArgs e)
-        //{
-        //    SliderMouseCaptured = false;
-        //}
-
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (e.Delta != 0 && SliderMouseCaptured)
-            {
-                e.Handled = true;
-                return;
-            }
-        }
 
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
         {

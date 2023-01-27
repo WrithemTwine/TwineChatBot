@@ -189,6 +189,7 @@ namespace StreamerBotLib.BotIOController
         {
             try
             {
+                TwitchStreamOffline();
                 Systems.Exit();
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
