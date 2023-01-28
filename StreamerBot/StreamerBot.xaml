@@ -547,7 +547,6 @@
 
                             </Expander>
 
-
                             <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinWidth="320" >
                                 <GroupBox Header="Settings" Width="320" Height="Auto">
                                     <StackPanel HorizontalAlignment="Left">
@@ -600,7 +599,7 @@
                                     <WrapPanel Orientation="Horizontal">
                                         <GroupBox Header="Any - Bot Management - App Interface">
                                             <StackPanel>
-                                                 <CheckBox IsChecked="{Binding PostMultiLive}">
+                                                <CheckBox IsChecked="{Binding PostMultiLive}">
                                                     <TextBlock>Enable posting to social media (e.g. Discord) multiple live messages in same day.</TextBlock>
                                                 </CheckBox>
 
@@ -613,11 +612,34 @@
                                                     </CheckBox.ToolTip>
                                                     <TextBlock>Enable 'Clear Data' buttons.</TextBlock>
                                                 </CheckBox>
-                                                <CheckBox x:Name="CheckBox_Option_TabUserFollow" IsChecked="{Binding GridTabifyUserFollow}">
-                                                    <TextBlock>Enable UserData User and Follow appearance to change based on size.</TextBlock>
+
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <GroupBox Header="Any - Bot Management - Tabs">
+                                            <StackPanel>
+                                                <TextBlock Text="Enable width-based tab config for data tables. Enter width in pixels." />
+                                                <CheckBox x:Name="CheckBox_Option_TabUserFollow" IsChecked="{Binding GridTabifyUserFollow}" VerticalContentAlignment="Center">
                                                     <CheckBox.ToolTip>
-                                                        <TextBlock>When the application width decreases too much, the User Follow listing is hard to read. This option enables the tab to be reconfigured when the width is decreased.</TextBlock>
+                                                        <TextBlock>When the application width decreases too much, the User Follow listing is hard to read. This 
+                                                            option enables the tab to be reconfigured when the width is decreased.</TextBlock>
                                                     </CheckBox.ToolTip>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock>UserData User Follow</TextBlock>
+                                                        <TextBox HorizontalAlignment="Left" Text="{Binding GridTabifyUserFollowWidth}" Width="45"/>
+                                                    </StackPanel>
+
+                                                </CheckBox>
+
+                                                <CheckBox x:Name="CheckBox_Option_TabStreamRaids" IsChecked="{Binding GridTabifyStreamRaids}" VerticalContentAlignment="Center">
+                                                    <CheckBox.ToolTip>
+                                                        <TextBlock>When the application width decreases too much, the Incoming and Outgoing raid listing is hard to read. This 
+                                                            option enables the tab to be reconfigured when the width is decreased.</TextBlock>
+                                                    </CheckBox.ToolTip>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock>Stream In Out Raids</TextBlock>
+                                                        <TextBox HorizontalAlignment="Left" Text="{Binding GridTabifyStreamRaidsWidth}" Width="45"/>
+                                                    </StackPanel>
+
                                                 </CheckBox>
                                             </StackPanel>
                                         </GroupBox>
@@ -1042,11 +1064,15 @@
                                             <ColumnDefinition MinWidth="200" Width="*" />
                                         </Grid.ColumnDefinitions>
 
+                                        <!-- Follow this children format and add eventhandler to perform tabification of datagrids when user enables option -->
+
+                                        <TextBlock Visibility="Collapsed" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding GridTabifyUserFollowWidth}" />
+
                                         <TabControl x:Name="TabControl_UD_UF_Grid_Tab" Visibility="Collapsed" Grid.ColumnSpan="3">
                                             <TabItem Header="Users" Name="TabItem_UD_UF_Grid_Users" />
                                             <TabItem Header="Followers" Name="TabItem_UD_UF_Grid_Followers" />
                                         </TabControl>
-                                        
+
                                         <DockPanel x:Name="DockPanel_UserData_Users" Grid.Row="0" Grid.Column="0">
                                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                                                 <Label Content="User List"/>
@@ -1346,9 +1372,8 @@
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Raids">
-                                    <Grid>
+                                    <Grid x:Name="Grid_SD_Raids">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="55" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -1356,12 +1381,25 @@
                                             <ColumnDefinition Width="6" />
                                             <ColumnDefinition Width="300*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
-                                        <TextBlock Grid.Row="0" Grid.Column="2">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
 
+                                        <!-- Follow this children format and add eventhandler to perform tabification of datagrids when user enables option -->
+                                        
+                                        <TextBlock Visibility="Collapsed" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" Text="{Binding GridTabifyStreamRaidsWidth}" />
 
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding InRaidData, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
-                                        <DataGrid Grid.Row="1" Grid.Column="2" ItemsSource="{Binding OutRaidData, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        <TabControl x:Name="TabControl_SD_Raids" Grid.ColumnSpan="3" Visibility="Collapsed">
+                                            <TabItem x:Name="TabItem_SD_Raids_Incoming" Header="Incoming" />
+                                            <TabItem x:Name="TabItem_SD_Raids_Outgoing" Header="Outgoing" />
+                                        </TabControl>
+                                        
+                                        <DockPanel x:Name="DockPanel_StreamData_Raids_Incoming" Grid.Row="0" Grid.Column="0">
+                                            <TextBlock DockPanel.Dock="Top">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
+                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding InRaidData, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        </DockPanel>
+
+                                        <DockPanel x:Name="DockPanel_StreamData_Raids_Outgoing" Grid.Row="0" Grid.Column="2">
+                                            <TextBlock DockPanel.Dock="Top">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
+                                            <DataGrid x:Name="DG_OutRaids" ItemsSource="{Binding OutRaidData, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" />
+                                        </DockPanel>
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Categories" x:Name="TabItem_Category">

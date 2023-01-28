@@ -1330,5 +1330,41 @@ namespace StreamerBotLib.Properties {
                 this["GridTabifyUserFollow"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("950")]
+        public int GridTabifyUserFollowWidth {
+            get {
+                return ((int)(this["GridTabifyUserFollowWidth"]));
+            }
+            set {
+                this["GridTabifyUserFollowWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool GridTabifyStreamRaids {
+            get {
+                return ((bool)(this["GridTabifyStreamRaids"]));
+            }
+            set {
+                this["GridTabifyStreamRaids"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("950")]
+        public int GridTabifyStreamRaidsWidth {
+            get {
+                return ((int)(this["GridTabifyStreamRaidsWidth"]));
+            }
+            set {
+                this["GridTabifyStreamRaidsWidth"] = value;
+            }
+        }
     }
 }

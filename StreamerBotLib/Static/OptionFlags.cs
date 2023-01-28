@@ -408,6 +408,12 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool GridTabifyUserFollow { get; set; }
 
+        public static int GridTabifyUserFollowWidth { get; set; }
+
+        public static bool GridTabifyStreamRaids { get; set; }
+
+        public static int GridTabifyStreamRaidsWidth { get; set; }
+
         /// <summary>
         /// First saves the settings, then reads the settings into the flag properties. Thread-Safe update.
         /// </summary>
@@ -538,7 +544,15 @@ namespace StreamerBotLib.Static
                 CurrencyStart = Settings.Default.CurrencyStart;
                 CurrencyOnline = Settings.Default.CurrencyOnline;
 
+
+                #endregion
+
+                #region Tab Width Settings
+
                 GridTabifyUserFollow = Settings.Default.GridTabifyUserFollow;
+                GridTabifyUserFollowWidth = Settings.Default.GridTabifyUserFollowWidth;
+                GridTabifyStreamRaids = Settings.Default.GridTabifyStreamRaids;
+                GridTabifyStreamRaidsWidth = Settings.Default.GridTabifyStreamRaidsWidth;
 
                 #endregion
 

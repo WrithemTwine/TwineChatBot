@@ -29,6 +29,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+using TwitchLib.PubSub.Models.Responses.Messages.AutomodCaughtMessage;
+
 namespace StreamerBot
 {
     /// <summary>
@@ -120,12 +122,6 @@ namespace StreamerBot
             if (version.Revision != 0)
             {
                 StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
-            }
-
-            if (OptionFlags.GridTabifyUserFollow)
-            {
-                UserFollowTabEventAdded = true;
-                Grid_UserData_UserFollow.SizeChanged += Grid_UserData_UserFollow_SizeChanged;
             }
         }
 
@@ -571,8 +567,6 @@ namespace StreamerBot
             OptionFlags.SetSettings();
         }
 
-        private bool UserFollowTabEventAdded = false;
-
         private void RoutedEvent_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
             OptionFlags.SetSettings();
@@ -585,19 +579,7 @@ namespace StreamerBot
                 Controller.ActivateRepeatTimers();
             }
 
-            if (sender is CheckBox checkbox && checkbox.Name == "CheckBox_Option_TabUserFollow")
-            {
-                if (OptionFlags.GridTabifyUserFollow == true && !UserFollowTabEventAdded)
-                {
-                    UserFollowTabEventAdded = true;
-                    Grid_UserData_UserFollow.SizeChanged += Grid_UserData_UserFollow_SizeChanged;
-                }
-                else
-                {
-                    UserFollowTabEventAdded = false;
-                    Grid_UserData_UserFollow.SizeChanged -= Grid_UserData_UserFollow_SizeChanged;
-                }
-            }
+            GridReSizeEventHandlers();
         }
 
         private void CheckDebug()
@@ -711,6 +693,7 @@ namespace StreamerBot
             CheckDebug();
             SetVisibility();
 
+            GridReSizeEventHandlers();
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -834,35 +817,6 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
-        private void Grid_UserData_UserFollow_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (e.NewSize.Width <= 950)
-            {
-                if (TabControl_UD_UF_Grid_Tab.Visibility == Visibility.Collapsed)
-                {
-                    TabControl_UD_UF_Grid_Tab.Visibility = Visibility.Visible;
-                    Grid_UserData_UserFollow.Children.Remove(DockPanel_UserData_Users);
-                    Grid_UserData_UserFollow.Children.Remove(DockPanel_UserData_Followers);
-
-                    TabItem_UD_UF_Grid_Users.Content = DockPanel_UserData_Users;
-                    TabItem_UD_UF_Grid_Followers.Content = DockPanel_UserData_Followers;
-                }
-
-            }
-            else
-            {
-                if (TabControl_UD_UF_Grid_Tab.Visibility != Visibility.Collapsed)
-                {
-                    TabItem_UD_UF_Grid_Users.Content = null;
-                    TabItem_UD_UF_Grid_Followers.Content = null;
-
-                    Grid_UserData_UserFollow.Children.Add(DockPanel_UserData_Users);
-                    Grid_UserData_UserFollow.Children.Add(DockPanel_UserData_Followers);
-
-                    TabControl_UD_UF_Grid_Tab.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
 
         #region LiveStatus Online Indicator
 
