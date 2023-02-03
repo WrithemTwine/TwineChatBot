@@ -94,7 +94,7 @@
                                 Clicking the pull-down box loads available selection 
                                 data. Large sets may take a while. Please wait.
                             </TextBlock>
-                            <ComboBox x:Name="ComboBox_SummarizeLive_List" Height="32" 
+                            <ComboBox x:Name="ComboBox_SummarizeLive_List" Height="32"
                                       MaxDropDownHeight="800" VerticalAlignment="Top" VerticalContentAlignment="Center" 
                                       ItemsSource="{Binding CleanupList}" DropDownOpened="ComboBox_DropDownOpened" 
                                       IsReadOnly="True" IsSynchronizedWithCurrentItem="True" 

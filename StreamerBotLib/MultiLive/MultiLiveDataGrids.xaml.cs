@@ -220,7 +220,6 @@ namespace StreamerBotLib.MultiLive
             ArchiveMultiStream selectedItem = (ArchiveMultiStream)ComboBox_SummarizeLive_List.SelectedItem;
             MultiLiveData.SummarizeStreamData(selectedItem);
             ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
-            ComboBox_SummarizeLive_List.Items.Refresh();
             TabItem_DailyData.IsEnabled = true;
             TabItem_SummaryDailyData.IsEnabled = true;
         }
