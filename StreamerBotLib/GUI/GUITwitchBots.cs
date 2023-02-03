@@ -107,7 +107,6 @@ namespace StreamerBotLib.GUI
             BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
         }
 
-
         private void TwitchFollower_OnBotStarted(object sender, EventArgs e)
         {
             OnFollowerBotStarted?.Invoke(this, new());

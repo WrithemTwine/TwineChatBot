@@ -18,11 +18,12 @@ namespace StreamerBot
         {
             void CheckSetting(bool OptionTabSetting, Grid targetGrid, ref bool EventHandleAdded)
             {
-                if(OptionTabSetting && !EventHandleAdded)
+                if (OptionTabSetting && !EventHandleAdded)
                 {
                     targetGrid.SizeChanged += Grid_SizeChanged;
                     EventHandleAdded = true;
-                } else
+                }
+                else
                 {
                     targetGrid.SizeChanged -= Grid_SizeChanged;
                     EventHandleAdded = false;

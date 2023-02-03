@@ -189,7 +189,7 @@
                                                         <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
                                                     </Label>
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
-                                                        <TextBlock>Auto-start when application starts</TextBlock>
+                                                        <TextBlock>Auto-start when LiveMonitor starts</TextBlock>
                                                     </CheckBox>
                                                     <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot" IsEnabled="False" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp"/>
                                                     <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp"/>

@@ -218,6 +218,10 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool MultiDataLoaded { get; set; } = false;
         /// <summary>
+        /// Specifies if the MultiLive bot autostarts when application opens, standalone app isn't running, and LiveMonitor bot is started.
+        /// </summary>
+        public static bool TwitchMultiLiveAutoStart { get; set; } = false;
+        /// <summary>
         /// Specifies to save user data in the database.
         /// </summary>
         public static bool ManageUsers { get; set; }
@@ -458,6 +462,7 @@ namespace StreamerBotLib.Static
                 TwitchClipConnectOnline = Settings.Default.TwitchClipConnectOnline;
                 TwitchClipDisconnectOffline = Settings.Default.TwitchClipDisconnectOffline;
 
+                TwitchMultiLiveAutoStart = Settings.Default.TwitchMultiLiveAutoStart;
 
                 #region Followers - Twitch
 

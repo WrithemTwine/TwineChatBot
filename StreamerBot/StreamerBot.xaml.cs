@@ -29,8 +29,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-using TwitchLib.PubSub.Models.Responses.Messages.AutomodCaughtMessage;
-
 namespace StreamerBot
 {
     /// <summary>
@@ -52,7 +50,6 @@ namespace StreamerBot
 
         private int TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
-        private const string MultiLiveName = "MultiUserLiveBot";
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
 
@@ -298,18 +295,14 @@ namespace StreamerBot
                 })).Start();
             }
         }
-
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
         {
             BeginUpdateCategory();
         }
-
-
         private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
         {
             SetLiveStreamActive(true);
         }
-
         private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
         {
             SetLiveStreamActive(false);
@@ -318,12 +311,10 @@ namespace StreamerBot
         {
             BeginUpdateCategory();
         }
-
         private void BeginUpdateCategory()
         {
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
         }
-
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -362,82 +353,6 @@ namespace StreamerBot
 
                 CheckFocus();
             });
-        }
-
-        #endregion
-
-        #region MultiLive
-
-        private void SetMultiLiveActive(bool ProcessFound = false)
-        {
-            if (ProcessFound)
-            {
-                BotController.DisconnectTwitchMultiLive();
-            }
-            else
-            {
-                BotController.ConnectTwitchMultiLive();
-            }
-
-            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-            GroupBox_Bots_Starts_MultiLive.Visibility = ProcessFound ? Visibility.Collapsed : Visibility.Visible;
-
-
-            if (GroupBox_Bots_Starts_MultiLive.Visibility == Visibility.Visible)
-            {
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked == true;
-
-                // allow edits while bot is active
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetDataManager(guiTwitchBot.TwitchLiveMonitor.MultiLiveDataManager);
-            }
-            else
-            {
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-                Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-
-                // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
-            }
-        }
-
-        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Radio_MultiLiveTwitch_StartBot != null)
-            {
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-            }
-        }
-
-        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
-        {
-            // stop MultiLive bot when LiveMonitor bot is stopped
-            if (Radio_MultiLiveTwitch_StopBot != null)
-            {
-                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-            }
-        }
-
-        private void BC_MultiLiveTwitch_BotOp(object sender, RoutedEventArgs e)
-        {
-            if (sender == Radio_MultiLiveTwitch_StartBot)
-            {
-                BotController.StartTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                Radio_MultiLiveTwitch_StartBot.IsChecked = true;
-                Radio_MultiLiveTwitch_StopBot.IsChecked = false;
-                Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
-            }
-            else if (sender == Radio_MultiLiveTwitch_StopBot)
-            {
-                BotController.StopTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-                Radio_MultiLiveTwitch_StartBot.IsChecked = false;
-                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-                Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-            }
         }
 
         #endregion
@@ -722,8 +637,6 @@ namespace StreamerBot
             TextBlock_TwitchBotLog.ScrollToEnd();
         }
 
-        // TODO: fix scrolling in Sliders but not scroll the whole panel
-
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
         {
             ToggleButton TBSource = null;
@@ -817,13 +730,10 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
-
         #region LiveStatus Online Indicator
 
         private void SetLiveStreamActive(bool Online = true)
         {
-
-
             Dispatcher.Invoke(
                 () =>
                 {
@@ -1387,102 +1297,6 @@ namespace StreamerBot
             {
                 Button_GiveawayBegin.IsEnabled = true;
             }
-        }
-
-        #endregion
-
-        #endregion
-
-        #region WatcherTools
-
-        private bool WatchProcessOps;
-
-        /// <summary>
-        /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
-        /// </summary>
-        public event EventHandler NotifyExpiredCredentials;
-
-        /// <summary>
-        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
-        /// </summary>
-        private bool? IsMultiProcActive { get; set; }
-
-        private delegate void ProcWatch(bool IsActive);
-
-        private void UpdateProc(bool IsActive)
-        {
-            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
-        }
-
-        private void ProcessWatcher()
-        {
-            const int sleep = 2000;
-
-            try
-            {
-                while (WatchProcessOps)
-                {
-                    Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                    if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
-                    {
-                        UpdateProc(processes.Length > 0);
-                        IsMultiProcActive = processes.Length > 0;
-                    }
-
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
-                    {
-                        NotifyExpiredCredentials?.Invoke(this, new());
-                    }
-
-                    if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
-                    {
-                        Controller.TwitchStartUpdateAllFollowers();
-                        TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
-                    }
-
-                    UpdateAppTime();
-
-                    Thread.Sleep(sleep);
-                }
-            }
-            catch (ThreadInterruptedException ex) // will always throw exception when exiting during a Sleep
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        #region Refresh Followers
-
-        private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
-        {
-            SetTwitchFollowerRefreshTime();
-        }
-
-        /// <summary>
-        /// Initialize the DateTime used to refresh Twitch Followers in the Follower Refresh process after user specified hours.
-        /// Activates with constructor and when "follow bot" is started - to prevent null/non-sensible values - and spec is 'refresh every N hours after follow bot starts".
-        /// </summary>
-        private void SetTwitchFollowerRefreshTime()
-        {
-            TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
-        }
-
-        private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox srchrs = sender as ComboBox;
-            int hrs = (int)srchrs.SelectedValue;
-
-            OptionFlags.SetSettings();
-            CheckDebug();
-
-            // changes the refresh time - which is already set at this point
-            TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
-            TwitchFollowerCurrRefreshHrs = hrs;
-        }
-
-        private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
-        {
-            Controller.TwitchStartUpdateAllFollowers();
         }
 
         #endregion
