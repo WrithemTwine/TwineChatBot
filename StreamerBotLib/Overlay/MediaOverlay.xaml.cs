@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Overlay.Communication;
+﻿using StreamerBotLib.MachineLearning.Accord.KNN;
+using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Control;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.GUI;
@@ -49,7 +50,7 @@ namespace StreamerBotLib.Overlay
         }
 
         public void CloseApp(bool Token = false)
-        {
+        {            
             Close();
         }
 
@@ -68,16 +69,8 @@ namespace StreamerBotLib.Overlay
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (OptionFlags.ActiveToken)
-            {
-                e.Cancel = true;
-                Hide();
-                UserHideWindow?.Invoke(this, new());
-            }
-            else
-            {
-                Controller.StopServer();
-            }
+            UserHideWindow?.Invoke(this, new());
+            Controller.StopServer();
         }
 
         private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)

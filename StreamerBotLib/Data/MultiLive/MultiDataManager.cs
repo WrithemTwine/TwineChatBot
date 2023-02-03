@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Windows.Threading;
 using System.Xml;
 
 using static StreamerBotLib.Data.MultiLive.DataSource;
@@ -22,12 +23,15 @@ namespace StreamerBotLib.Data.MultiLive
         private static readonly string DataFileXML = "MultiChatbotData.xml";
 
         private readonly DataSource _DataSource;
+        private bool IsLiveStreamUpdated = false;
 
         public string MultiLiveStatusLog { get; set; } = "";
 
         public DataView Channels { get; set; }
         public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; }
+        public DataView SummaryLiveStream { get; set; }
+        public List<ArchiveMultiStream> CleanupList { get; private set; } = new List<ArchiveMultiStream>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string PropName)
@@ -41,13 +45,15 @@ namespace StreamerBotLib.Data.MultiLive
         {
             _DataSource = new();
 
-            Channels = new DataView(_DataSource.Channels, null, $"{_DataSource.Channels.ChannelNameColumn.ColumnName}", DataViewRowState.CurrentRows);
-            MsgEndPoints = new DataView(_DataSource.MsgEndPoints, null, $"{_DataSource.MsgEndPoints.IdColumn.ColumnName}", DataViewRowState.CurrentRows);
-            LiveStream = new DataView(_DataSource.LiveStream, null, $"{_DataSource.LiveStream.LiveDateColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
+            Channels = new(_DataSource.Channels, null, $"{_DataSource.Channels.ChannelNameColumn.ColumnName}", DataViewRowState.CurrentRows);
+            MsgEndPoints = new(_DataSource.MsgEndPoints, null, $"{_DataSource.MsgEndPoints.IdColumn.ColumnName}", DataViewRowState.CurrentRows);
+            LiveStream = new(_DataSource.LiveStream, null, $"{_DataSource.LiveStream.LiveDateColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
+            SummaryLiveStream = new(_DataSource.SummaryLiveStream, null, $"{_DataSource.SummaryLiveStream.ChannelNameColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
 
             Channels.ListChanged += DataView_ListChanged;
             MsgEndPoints.ListChanged += DataView_ListChanged;
             LiveStream.ListChanged += DataView_ListChanged;
+            SummaryLiveStream.ListChanged += DataView_ListChanged;
         }
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
@@ -191,9 +197,82 @@ namespace StreamerBotLib.Data.MultiLive
                     SaveData();
 
                     result = true;
+                    IsLiveStreamUpdated = true; // flag to update the summary due to new entry
                 }
                 NotifyPropertyChanged(nameof(LiveStream));
                 return result;
+            }
+        }
+
+        public void SummarizeStreamData()
+        {
+            if (IsLiveStreamUpdated || CleanupList.Count == 0) // only perform if flag for update occurs
+            {
+                CleanupList.Clear();
+                NotifyPropertyChanged(nameof(CleanupList));
+
+                List<DateTime> AllDates = new(DataSetStatic.GetRows(_DataSource.LiveStream).Select(dataRow => ((LiveStreamRow)dataRow).LiveDate.Date).OrderByDescending((k) => k.Date));
+                List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
+                CleanupList.AddRange(UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
+                {
+                    ThroughDate = uniqueDate,
+                    StreamCount = (from DateTime dates in AllDates
+                                   where dates.Date <= uniqueDate
+                                   select dates).Count()
+                }));
+
+                IsLiveStreamUpdated = false; // reset update flag indicator
+                NotifyPropertyChanged(nameof(CleanupList));
+            }
+        }
+
+        public void SummarizeStreamData(ArchiveMultiStream archiveRecord)
+        {
+            lock (_DataSource)
+            {
+                List<LiveStreamRow> toDeleteRows = new(from LiveStreamRow dataRow in DataSetStatic.GetRows(_DataSource.LiveStream)
+                                                       where dataRow.LiveDate.Date <= archiveRecord.ThroughDate.Date
+                                                       select dataRow);
+
+                foreach ((ArchiveMultiStream SumNameRows, SummaryLiveStreamRow summaryrow) in from ArchiveMultiStream SumNameRows in toDeleteRows.GroupBy(
+                     (key) => key.ChannelName,
+                     (date) => date.LiveDate,
+                     (name, dates) => new ArchiveMultiStream
+                     {
+                         Name = name,
+                         StreamCount = dates.Count(),
+                         ThroughDate = dates.Max()
+                     }
+                     )
+                                                          let summaryrow = (SummaryLiveStreamRow)DataSetStatic.GetRow(_DataSource.SummaryLiveStream, $"{_DataSource.SummaryLiveStream.ChannelNameColumn.ColumnName}='{SumNameRows.Name}'")
+                                                          select (SumNameRows, summaryrow)
+                 )
+                {
+                    if (summaryrow == null)
+                    {
+                        ChannelsRow UserRow = (ChannelsRow)DataSetStatic.GetRow(_DataSource.Channels, $"{_DataSource.Channels.ChannelNameColumn}='{SumNameRows.Name}'");
+                        _DataSource.SummaryLiveStream.AddSummaryLiveStreamRow(UserRow.Id, UserRow.ChannelName, SumNameRows.StreamCount, SumNameRows.ThroughDate);
+                    }
+                    else
+                    {
+                        summaryrow.StreamCount += SumNameRows.StreamCount;
+                        summaryrow.ThroughDate = summaryrow.ThroughDate < SumNameRows.ThroughDate ? SumNameRows.ThroughDate : summaryrow.ThroughDate;
+
+                    }
+                }
+
+                toDeleteRows.ForEach((r) => r.Delete());
+                _DataSource.LiveStream.AcceptChanges();
+                _DataSource.SummaryLiveStream.AcceptChanges();
+                SaveData();
+                IsLiveStreamUpdated = true;
+
+                NotifyPropertyChanged(nameof(LiveStream));
+                NotifyPropertyChanged(nameof(SummaryLiveStream));
+                CleanupList.Clear();
+                NotifyPropertyChanged(nameof(CleanupList));
+
+                SummarizeStreamData();
             }
         }
 
@@ -314,6 +393,25 @@ namespace StreamerBotLib.Data.MultiLive
         {
             return DataSetStatic.GetTableFields(_DataSource.Tables[TableName]);
         }
+        public List<string> GetTableNames()
+        {
+            lock (_DataSource)
+            {
+                return new(from DataTable table in _DataSource.Tables
+                           select table.TableName);
+            }
+        }
+
+        public List<object> GetRowsDataColumn(string dataTable, string dataColumn)
+        {
+            lock (_DataSource)
+            {
+                return GetTableNames().Contains(dataTable) && CheckField(dataTable, dataColumn)
+                    ? (from DataRow row in _DataSource.Tables[dataTable].Rows
+                            select row[dataColumn]).ToList()
+                    : (new());
+            }
+        }
 
         public bool CheckPermission(string cmd, ViewerTypes permission)
         {
@@ -375,13 +473,6 @@ namespace StreamerBotLib.Data.MultiLive
             throw new NotImplementedException();
         }
 
-
-
-        public List<string> GetTableNames()
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Tuple<string, string>> GetGameCategories()
         {
             throw new NotImplementedException();
@@ -412,10 +503,6 @@ namespace StreamerBotLib.Data.MultiLive
             throw new NotImplementedException();
         }
 
-        public List<object> GetRowsDataColumn(string dataTable, string dataColumn)
-        {
-            throw new NotImplementedException();
-        }
 
         public string GetUserId(LiveUser User)
         {

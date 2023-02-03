@@ -154,9 +154,8 @@ namespace StreamerBotLib.Data
 #endif
             lock (GUIDataManagerLock.Lock)
             {
-                List<string> names = new(from DataTable table in _DataSource.Tables
+                return new(from DataTable table in _DataSource.Tables
                                          select table.TableName);
-                return names;
             }
         }
         #endregion

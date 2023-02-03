@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
 using System;
@@ -194,6 +195,34 @@ namespace StreamerBotLib.MultiLive
                     }
                     break;
             }
+        }
+
+        private void ComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            MultiLiveData.SummarizeStreamData();
+            ComboBox_SummarizeLive_List.Items.Refresh();
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (((ComboBox)sender).SelectedItem != null)
+            {
+                Button_StartSummarizingLiveData.IsEnabled = true;
+            }
+        }
+
+        private void Button_StartSummarizingLiveData_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem_DailyData.IsEnabled = false;
+            TabItem_SummaryDailyData.IsEnabled = false;
+            Button_StartSummarizingLiveData.IsEnabled = false;
+
+            ArchiveMultiStream selectedItem = (ArchiveMultiStream)ComboBox_SummarizeLive_List.SelectedItem;
+            MultiLiveData.SummarizeStreamData(selectedItem);
+            ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
+            ComboBox_SummarizeLive_List.Items.Refresh();
+            TabItem_DailyData.IsEnabled = true;
+            TabItem_SummaryDailyData.IsEnabled = true;
         }
     }
 }
