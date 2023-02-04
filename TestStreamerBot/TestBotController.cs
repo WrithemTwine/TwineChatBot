@@ -7,13 +7,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using System.Windows.Threading;
-
-using Xunit;
 
 namespace TestStreamerBot
 {
@@ -25,8 +19,8 @@ namespace TestStreamerBot
         private string result = string.Empty;
         private const int Viewers = 80;
 
-        private BotController botController;
-        private DataManager dataManager;
+        private BotController botController = new();
+        private DataManager dataManager = SystemsController.DataManage;
 
         private Random Random { get; set; } = new();
 
@@ -54,11 +48,9 @@ namespace TestStreamerBot
 
                 Initialized = true;
 
-                botController = new();
                 botController.OutputSentToBots += BotController_OutputSentToBots;
                        
                 botController.SetDispatcher(Dispatcher.CurrentDispatcher);
-                dataManager = SystemsController.DataManage;
             }
         }
 
@@ -76,7 +68,7 @@ namespace TestStreamerBot
             return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
-        private void BotController_OutputSentToBots(object sender, PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object? sender, PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }
@@ -216,18 +208,18 @@ namespace TestStreamerBot
 
             BotController.HandleBotEventStartBulkFollowers();
             botController.HandleBotEventNewFollowers(regularfollower);
-            Assert.True(dataManager.AddFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
+            Assert.True(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
 
             BotController.HandleBotEventBulkPostFollowers(bulkfollows);
             BotController.HandleBotEventStopBulkFollowers();
 
             foreach (Follow f in bulkfollows)
             {
-                Assert.False(dataManager.AddFollower(f.FromUser, f.FollowedAt));
+                Assert.False(dataManager.PostFollower(f.FromUser, f.FollowedAt));
             }
 
             Thread.Sleep(5000); // wait enough time for the regular followers to add into the database
-            Assert.False(dataManager.AddFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
+            Assert.False(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
         }
 
         [Fact]
@@ -274,7 +266,7 @@ namespace TestStreamerBot
 
             botController.HandleBotEventPostNewClip(clips);
 
-            Assert.False(dataManager.AddClip(clips[0].ClipId, clips[0].CreatedAt, clips[0].Duration, clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url));
+            Assert.False(dataManager.PostClip(clips[0].ClipId, clips[0].CreatedAt, clips[0].Duration, clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url));
         }
 
         [Fact]
@@ -290,15 +282,15 @@ namespace TestStreamerBot
             botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
 
             Thread.Sleep(1000);
-            Assert.False(dataManager.AddStream(onlineTime));
-            Assert.True(dataManager.AddCategory(Id, Category));
+            Assert.False(dataManager.PostStream(onlineTime));
+            Assert.True(dataManager.PostCategory(Id, Category));
 
             string newId = "981578";
             string newCategory = "DebugStreamCategory";
 
             botController.HandleOnStreamUpdate(newId, newCategory);
 
-            Assert.True(dataManager.AddCategory(newId, newCategory));
+            Assert.True(dataManager.PostCategory(newId, newCategory));
 
             BotController.HandleOnStreamOffline();
         }
@@ -394,7 +386,7 @@ namespace TestStreamerBot
             OptionFlags.GiveawayBegMsg = "Test Project Begin the Giveaway";
             OptionFlags.GiveawayEndMsg = "Test Project End the Giveaway";
             OptionFlags.GiveawayWinMsg = "Test Project the winner is #winner!";
-            OptionFlags.GiveawayMultiEntries = 5;
+            OptionFlags.GiveawayMaxEntries = 5;
             OptionFlags.GiveawayMultiUser = true;
             OptionFlags.GiveawayCount = 2;
             OptionFlags.ManageGiveawayUsers = true;
@@ -406,7 +398,7 @@ namespace TestStreamerBot
             foreach(string s in entrylist)
             {
                 int y = 0;
-                while (y < OptionFlags.GiveawayMultiEntries)
+                while (y < OptionFlags.GiveawayMaxEntries)
                 {
                     botController.HandleGiveawayPostName(s);
                     y++;
@@ -432,8 +424,8 @@ namespace TestStreamerBot
             botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
 
             Thread.Sleep(1000);
-            Assert.False(dataManager.AddStream(onlineTime));
-            Assert.True(dataManager.AddCategory(Id, Category));
+            Assert.False(dataManager.PostStream(onlineTime));
+            Assert.True(dataManager.PostCategory(Id, Category));
 
             botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch), DateTime.Now, Random.Next(5, Viewers).ToString(), GetRandomGameIdName().GameName);
             Thread.Sleep(5000); // wait for category
@@ -475,7 +467,7 @@ namespace TestStreamerBot
             Thread.Sleep(2000);
             
             Assert.False(
-                dataManager.AddClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
+                dataManager.PostClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
                 );
         }
 

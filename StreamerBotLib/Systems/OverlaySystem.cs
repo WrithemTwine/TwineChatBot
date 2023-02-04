@@ -1,8 +1,7 @@
-﻿using MediaOverlayServer.Enums;
-using MediaOverlayServer.Models;
-
-using StreamerBotLib.Events;
+﻿using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
 using System;
@@ -60,7 +59,7 @@ namespace StreamerBotLib.Systems
             OverlayActionPairs.Add(OverlayTypes.Giveaway.ToString(), new() { OverlayTypes.Giveaway.ToString() });
             //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
 
-            foreach(string K in OverlayActionPairs.Keys)
+            foreach (string K in OverlayActionPairs.Keys)
             {
                 OverlayActionPairs[K].Sort();
             }
@@ -138,7 +137,7 @@ namespace StreamerBotLib.Systems
         }
 
         public class ShoutOutOverlayAction
-        {       
+        {
             private OverlayActionType ShoutOut;
             private readonly Action<NewOverlayEventArgs> PerformShoutOut;
 
@@ -152,7 +151,7 @@ namespace StreamerBotLib.Systems
 
             public void FoundChannelClips(List<Clip> clips)
             {
-                if(clips.Count > 0)
+                if (clips.Count > 0)
                 {
                     Random random = new Random();
                     int found = random.Next(clips.Count);

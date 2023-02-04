@@ -2,7 +2,7 @@
 {
     public enum DataSort
     {
-        ASC, 
+        ASC,
         DESC
     }
 }

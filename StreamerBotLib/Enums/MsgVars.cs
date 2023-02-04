@@ -25,6 +25,7 @@
         user,
         winner,
         viewers,
+        deltaviewers,
         Pluralbits,
         Pluralmonth,
         Pluralsub,
@@ -34,7 +35,9 @@
         Pluralyear,
         Pluralday,
         Pluralhour,
-        Pluralminute, 
-        or
+        Pluralminute,
+        or,
+        list,
+        usage
     }
 }

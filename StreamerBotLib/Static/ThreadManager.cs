@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace StreamerBotLib.Static
 {
@@ -125,6 +126,16 @@ namespace StreamerBotLib.Static
         {
             ThreadData threadData = CreateThreadData(action, waitState, Priority);
             threadData.ThreadItem.Start();
+        }
+
+        private static ThreadData CreateThreadData(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
+        {
+            return CreateThreadData(() => task.Start(), waitState, Priority);
+        }
+
+        public static void CreateThreadStart(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
+        {
+            CreateThreadStart(() => task.Start(), waitState, Priority);
         }
 
         private static int GetThreadPriority(ThreadExitPriority threadExitPriority)

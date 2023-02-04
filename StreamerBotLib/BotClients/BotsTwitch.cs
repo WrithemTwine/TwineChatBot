@@ -8,7 +8,6 @@ using StreamerBotLib.Systems;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -16,7 +15,6 @@ using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
-using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.PubSub.Events;
 
@@ -38,6 +36,8 @@ namespace StreamerBotLib.BotClients
 
         private const int BulkFollowSkipCount = 1000;
 
+        public static event EventHandler<EventArgs> RaidCompleted;
+
         public BotsTwitch()
         {
             // not including "TwitchBotUserSvc" bot, it's an authentication on-demand bot to get the info
@@ -56,11 +56,13 @@ namespace StreamerBotLib.BotClients
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotUserSvc.GetChannelGameName += TwitchBotUserSvc_GetChannelGameName;
+            TwitchBotUserSvc.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
+            TwitchBotUserSvc.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
+            TwitchBotUserSvc.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
             DataManager = SystemsController.DataManage;
 
-            //ThreadManager.CreateThreadStart(() => TwitchBotUserSvc.SetIds());
         }
 
 
@@ -73,7 +75,6 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.IsStarted && !TwitchBotChatClient.HandlersAdded)
             {
-                TwitchBotChatClient.TwitchChat.OnBeingHosted += Client_OnBeingHosted;
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
@@ -81,7 +82,6 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel += Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived += Client_OnMessageReceived;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber += Client_OnNewSubscriber;
-                TwitchBotChatClient.TwitchChat.OnNowHosting += Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification += Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber += Client_OnReSubscriber;
                 TwitchBotChatClient.TwitchChat.OnUserBanned += Client_OnUserBanned;
@@ -96,6 +96,7 @@ namespace StreamerBotLib.BotClients
             if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
             {
                 TwitchFollower.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
+                TwitchFollower.FollowerService.OnBulkFollowsUpdate += FollowerService_OnBulkFollowsUpdate;
 
                 TwitchFollower.HandlersAdded = true;
             }
@@ -134,7 +135,6 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.HandlersAdded)
             {
-                TwitchBotChatClient.TwitchChat.OnBeingHosted -= Client_OnBeingHosted;
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived -= Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription -= Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected -= Client_OnExistingUsersDetected;
@@ -142,7 +142,6 @@ namespace StreamerBotLib.BotClients
                 TwitchBotChatClient.TwitchChat.OnJoinedChannel -= Client_OnJoinedChannel;
                 TwitchBotChatClient.TwitchChat.OnMessageReceived -= Client_OnMessageReceived;
                 TwitchBotChatClient.TwitchChat.OnNewSubscriber -= Client_OnNewSubscriber;
-                TwitchBotChatClient.TwitchChat.OnNowHosting -= Client_OnNowHosting;
                 TwitchBotChatClient.TwitchChat.OnRaidNotification -= Client_OnRaidNotification;
                 TwitchBotChatClient.TwitchChat.OnReSubscriber -= Client_OnReSubscriber;
                 TwitchBotChatClient.TwitchChat.OnUserBanned -= Client_OnUserBanned;
@@ -201,10 +200,10 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
         }
 
-        private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
-        }
+        //private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
+        //{
+        //    InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
+        //}
 
         private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
         {
@@ -264,7 +263,7 @@ namespace StreamerBotLib.BotClients
 
         private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username)});
+            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username) });
         }
 
         private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
@@ -291,7 +290,7 @@ namespace StreamerBotLib.BotClients
 
         private void Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
         {
-            
+
         }
 
         #endregion
@@ -301,6 +300,11 @@ namespace StreamerBotLib.BotClients
         public static string GetUserCategory(string UserId = null, string UserName = null)
         {
             return TwitchBotUserSvc.GetUserGameCategory(UserId: UserId, UserName: UserName);
+        }
+
+        public static DateTime GetUserAccountAge(string UserId = null, string UserName = null)
+        {
+            return TwitchBotUserSvc.GetUserCreatedAt(UserName: UserName, UserId: UserId);
         }
 
         public static bool VerifyUserExist(string UserName)
@@ -334,6 +338,60 @@ namespace StreamerBotLib.BotClients
             return TwitchBotUserSvc.GetUserId(UserName);
         }
 
+        public static void RaidChannel(string ToUserName)
+        {
+            TwitchBotUserSvc.RaidChannel(ToUserName);
+        }
+
+        public static void CancelRaidChannel()
+        {
+            TwitchBotUserSvc.CancelRaidChannel();
+        }
+
+        private void TwitchBotUserSvc_StartRaidEventResponse(object sender, OnStreamRaidResponseEventArgs e)
+        {
+            StartRaid(e.ToChannel, e.CreatedAt.ToLocalTime());
+        }
+
+        private void TwitchBotUserSvc_CancelRaidEvent(object sender, EventArgs e)
+        {
+            CancelRaidLoop();
+        }
+
+        public static void GetViewerCount()
+        {
+            TwitchBotUserSvc.GetViewerCount(TwitchBotsBase.TwitchChannelName);
+        }
+        private void TwitchBotUserSvc_OnGetStreamsViewerCount(object sender, GetStreamsEventArgs e)
+        {
+            PostInternalCommand(LocalizedMsgSystem.GetVar(DefaultCommand.uptime), new() { e.ViewerCount.ToString() }, $"!{LocalizedMsgSystem.GetVar(MsgVars.uptime)} {e.ViewerCount}");
+        }
+
+        internal void PostInternalCommand(string Com, List<string> ComArgs, string ComMessage)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchBotCommandCall, new SendBotCommandEventArgs()
+            {
+                CmdMessage = new()
+                {
+                    CommandArguments = ComArgs,
+                    CommandText = Com,
+                    DisplayName = TwitchBotsBase.TwitchBotUserName,
+                    Channel = TwitchBotsBase.TwitchChannelName,
+                    IsBroadcaster = TwitchBotsBase.TwitchBotUserName == TwitchBotsBase.TwitchChannelName,
+                    IsHighlighted = false,
+                    IsMe = false,
+                    IsModerator = TwitchBotsBase.TwitchBotUserName != TwitchBotsBase.TwitchChannelName,
+                    IsPartner = false,
+                    IsSkippingSubMode = false,
+                    IsStaff = false,
+                    IsSubscriber = false,
+                    IsTurbo = false,
+                    IsVip = false,
+                    Message = ComMessage
+                }
+            });
+        }
+
         #endregion
 
         #region Follower Bot
@@ -349,7 +407,7 @@ namespace StreamerBotLib.BotClients
         {
             List<Follow> newFollows = new();
 
-            foreach(Follow F in e.NewFollowers)
+            foreach (Follow F in e.NewFollowers)
             {
                 if (!DataManager.CheckFollower(F.FromUserName))
                 {
@@ -383,15 +441,6 @@ namespace StreamerBotLib.BotClients
             }
             else
             {
-                //if (OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStopped)
-                //{
-                //    TwitchBotChatClient.StartBot();
-                //}
-                //else
-                //{
-                //    ThreadManager.CreateThreadStart(() => { CheckStreamOnlineChatBot(); });
-                //}
-
                 if (OptionFlags.TwitchChatBotConnectOnline)
                 {
                     TwitchBotChatClient.StartBot();
@@ -423,40 +472,46 @@ namespace StreamerBotLib.BotClients
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+            if (e.Channel == TwitchBotsBase.TwitchChannelName)
+            {
+                InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
+            }
         }
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+            if (e.Channel == TwitchBotsBase.TwitchChannelName)
             {
-                TwitchBotChatClient.StopBot();
-            }
+                if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+                {
+                    TwitchBotChatClient.StopBot();
+                }
 
-            if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
-            {
-                TwitchBotPubSub.StopBot();
-            }
+                if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
+                {
+                    TwitchBotPubSub.StopBot();
+                }
 
-            if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
-            {
-                TwitchBotClipSvc.StopBot();
-            }
+                if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
+                {
+                    TwitchBotClipSvc.StopBot();
+                }
 
-            if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
-            {
-                TwitchFollower.StopBot();
-            }
+                if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
+                {
+                    TwitchFollower.StopBot();
+                }
 
-            if (OptionFlags.IsStreamOnline)
-            {
-                InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+                if (OptionFlags.IsStreamOnline)
+                {
+                    InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+                }
             }
         }
 
         private void CheckStreamOnlineChatBot()
         {
-            while(OptionFlags.IsStreamOnline && !TwitchBotChatClient.IsStarted)
+            while (OptionFlags.IsStreamOnline && !TwitchBotChatClient.IsStarted)
             {
                 if (OptionFlags.TwitchChatBotConnectOnline)
                 {
@@ -525,23 +580,13 @@ namespace StreamerBotLib.BotClients
 
                     InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, null);
 
-                    // TODO: convert to permit Async to post significant followers to update in bulk, would otherwise generate significant memory to store until processed - consider creating a data stream
-                    List<Follow> follows = TwitchFollower.GetAllFollowersAsync().Result;
-
-                    follows.Reverse();
-
-                    for (int i = 0; i < follows.Count; i++)
+                    try
                     {
-                        // break up the follower list so chunks of the big list are sent in parts via event
-                        List<Follow> pieces = new(follows.Skip(i * BulkFollowSkipCount).Take(BulkFollowSkipCount));
-
-                        InvokeBotEvent(
-                            this,
-                            BotEvents.TwitchBulkPostFollowers,
-                            new OnNewFollowersDetectedArgs()
-                            {
-                                NewFollowers = pieces
-                            });
+                        while (!TwitchFollower.GetAllFollowersBulkAsync().Result) { }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
 
                     InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
@@ -549,6 +594,17 @@ namespace StreamerBotLib.BotClients
                 MultiThreadOps.Add(BulkLoadFollows);
                 BulkLoadFollows.Start();
             }
+        }
+
+        private void FollowerService_OnBulkFollowsUpdate(object sender, OnNewFollowersDetectedArgs e)
+        {
+            InvokeBotEvent(
+                this,
+                BotEvents.TwitchBulkPostFollowers,
+                new OnNewFollowersDetectedArgs()
+                {
+                    NewFollowers = e.NewFollowers
+                });
         }
 
         private List<Clip> ClipList { get; set; }
@@ -575,6 +631,69 @@ namespace StreamerBotLib.BotClients
             }
 
             ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
+        }
+
+        private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
+        private DateTime OutRaidStarted;
+        private Thread RaidLoop = null;
+        private readonly string RaidLock = "lock";
+
+        private void StartRaid(string ToChannelName, DateTime RaidCreated)
+        {
+            lock (RaidLock)
+            {
+                OutRaidStarted = RaidCreated;
+            }
+
+            if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
+            {
+                RaidLoop = ThreadManager.CreateThread(() =>
+                {
+                    // declare locals, so we can use a thread-safe lock
+                    DateTime LocalRaidStart;
+                    bool LocalRaidStarted;
+
+                    lock (RaidLock)
+                    {
+                        LocalRaidStart = OutRaidStarted;
+                        LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
+                    }
+
+                    while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && LocalRaidStarted)
+                    { // check for 90 seconds
+                        lock (RaidLock)
+                        { // update values, in case they changed - use thread lock safety as another thread may change these
+                            LocalRaidStart = OutRaidStarted;
+                            LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
+                        }
+                        Thread.Sleep(10);
+                    }
+
+                    // if the raid wasn't canceled after the loop finished, send raid event to main bot
+                    if (LocalRaidStarted)
+                    {
+                        InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
+                            new OnStreamRaidResponseEventArgs()
+                            {
+                                ToChannel = ToChannelName,
+                                CreatedAt = OutRaidStarted
+                            });
+
+                        RaidCompleted?.Invoke(this, new());
+                    }
+                    RaidLoop = null;
+                });
+                RaidLoop.Start();
+            }
+
+        }
+
+        private void CancelRaidLoop()
+        {
+            lock (RaidLock)
+            {
+                OptionFlags.TwitchOutRaidStarted = false;
+            }
         }
 
         #endregion

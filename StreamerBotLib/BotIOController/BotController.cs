@@ -5,13 +5,13 @@ using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.PubSub;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +22,8 @@ using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
+
+using LogType = StreamerBotLib.Enums.LogType;
 
 
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
@@ -187,6 +189,7 @@ namespace StreamerBotLib.BotIOController
         {
             try
             {
+                TwitchStreamOffline();
                 Systems.Exit();
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
@@ -268,6 +271,17 @@ namespace StreamerBotLib.BotIOController
 
         #region Query Bots
 
+        public static string GetBotName(Platform Source)
+        {
+            switch (Source)
+            {
+                case Platform.Twitch:
+                    return OptionFlags.TwitchBotUserName;
+                default:
+                    return "None";
+            }
+        }
+
         public static string GetUserCategory(string ChannelName, string UserId, Platform bots)
         {
             if (bots == Platform.Twitch)
@@ -291,9 +305,21 @@ namespace StreamerBotLib.BotIOController
             //};
         }
 
+        public static DateTime GetUserAccountAge(string UserName, Platform bots)
+        {
+            if (bots == Platform.Twitch)
+            {
+                return BotsTwitch.GetUserAccountAge(UserName: UserName);
+            }
+            else
+            {
+                return DateTime.MaxValue;
+            }
+        }
+
         public static bool VerifyUserExist(string ChannelName, Platform bots)
         {
-            if(bots == Platform.Twitch)
+            if (bots == Platform.Twitch)
             {
                 return BotsTwitch.VerifyUserExist(ChannelName);
             }
@@ -324,6 +350,36 @@ namespace StreamerBotLib.BotIOController
             }
 
             return result;
+        }
+
+        public static void RaidChannel(string ToChannelName, Platform bots)
+        {
+            if (bots == Platform.Twitch)
+            {
+                BotsTwitch.RaidChannel(ToChannelName);
+            }
+        }
+
+        public static void CancelRaidChannel(Platform bots)
+        {
+            if (bots == Platform.Twitch)
+            {
+                BotsTwitch.CancelRaidChannel();
+            }
+        }
+
+        public static void GetViewerCount(Platform bots)
+        {
+            if (OptionFlags.IsStreamOnline)
+            {
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    if (bots == Platform.Twitch || bots == Platform.Default)
+                    {
+                        BotsTwitch.GetViewerCount();
+                    }
+                });
+            }
         }
 
         #endregion
@@ -375,13 +431,13 @@ namespace StreamerBotLib.BotIOController
             return follows.ConvertAll((f) =>
             {
                 return new Models.Follow(
-                
+
                     f.FollowedAt.ToLocalTime(),
                     f.FromUserId,
                     f.FromUserName,
                     f.ToUserId,
                     f.ToUserName,
-                    new(f.FromUserName,Source, f.FromUserId)
+                    new(f.FromUserName, Source, f.FromUserId)
                 );
             });
         }
@@ -463,7 +519,10 @@ namespace StreamerBotLib.BotIOController
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
         public static void TwitchStreamOffline(OnStreamOfflineArgs e = null)
         {
-            HandleOnStreamOffline();
+            if (!OptionFlags.TwitchOutRaidStarted)
+            {
+                HandleOnStreamOffline();
+            }
         }
 
         public void TwitchNewSubscriber(OnNewSubscriberArgs e)
@@ -505,10 +564,10 @@ namespace StreamerBotLib.BotIOController
                 e.GiftedSubscription.MsgParamSubPlan.ToString());
         }
 
-        public void TwitchBeingHosted(OnBeingHostedArgs e)
-        {
-            HandleBeingHosted(e.BeingHostedNotification.HostedByChannel, e.BeingHostedNotification.IsAutoHosted, e.BeingHostedNotification.Viewers);
-        }
+        //public void TwitchBeingHosted(OnBeingHostedArgs e)
+        //{
+        //    HandleBeingHosted(e.BeingHostedNotification.HostedByChannel, e.BeingHostedNotification.IsAutoHosted, e.BeingHostedNotification.Viewers);
+        //}
 
         public static void TwitchNowHosting(OnNowHostingArgs e)
         {
@@ -522,7 +581,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchOnUserJoined(StreamerOnUserJoinedArgs e)
         {
-            HandleUserJoined( new() { e.LiveUser });
+            HandleUserJoined(new() { e.LiveUser });
         }
 
         public void TwitchOnUserLeft(StreamerOnUserLeftArgs e)
@@ -575,6 +634,11 @@ namespace StreamerBotLib.BotIOController
             HandleIncomingRaidData(new(e.DisplayName, Platform.Twitch), e.RaidTime, e.ViewerCount, e.Category);
         }
 
+        public void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
+        {
+            HandleOutgoingRaidData(e.ToChannel, e.CreatedAt);
+        }
+
         public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
         {
             HandleChatCommandReceived(new()
@@ -597,12 +661,17 @@ namespace StreamerBotLib.BotIOController
             }, Platform.Twitch);
         }
 
+        public void TwitchBotCommandCall(SendBotCommandEventArgs e)
+        {
+            HandleChatCommandReceived(e.CmdMessage, Platform.Twitch);
+        }
+
         public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)
         {
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
             // much more data exists in the resulting data output
 
-            HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title);
+            HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title, e.RewardRedeemed.Redemption.UserInput, Platform.Twitch);
         }
 
         #endregion
@@ -707,13 +776,14 @@ namespace StreamerBotLib.BotIOController
             PostGameCategoryEvent(gameId, gameName);
         }
 
-        public static void HandleOnStreamOffline(string HostedChannel = null)
+        public static void HandleOnStreamOffline(string HostedChannel = null, DateTime? RaidTime = null)
         {
             if (OptionFlags.IsStreamOnline)
             {
-                DateTime currTime = DateTime.Now.ToLocalTime();
+                DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
+                OptionFlags.TwitchOutRaidStarted = false;
             }
         }
 
@@ -776,13 +846,14 @@ namespace StreamerBotLib.BotIOController
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled, out short Multi);
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
                 new( MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.submonths, FormatData.Plurality(TotalMonths, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))),
@@ -790,22 +861,22 @@ namespace StreamerBotLib.BotIOController
                 new( MsgVars.subplanname,SubscriptionName )
                 });
 
-                // add the streak element if user wants their sub streak displayed
-                if (ShareStreak)
-                {
-                    VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, StreakMonths) });
-                }
+            // add the streak element if user wants their sub streak displayed
+            if (ShareStreak)
+            {
+                VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, StreakMonths) });
+            }
 
-                string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true) ;
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-       Send(ParsedMsg, Multi);
-           }
-             Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
+                Send(ParsedMsg, Multi);
+            }
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
-
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
         public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
@@ -820,35 +891,38 @@ namespace StreamerBotLib.BotIOController
                 });
 
             string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
-           if (Enabled)
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
+            if (Enabled)
             {
                 Send(ParsedMsg, Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled, out short Multi);
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                     new(MsgVars.user, DisplayName),
                     new(MsgVars.count, FormatData.Plurality(SubCount, MsgVars.Pluralsub, Subscription)),
                     new(MsgVars.subplan, Subscription)
                 });
 
-                string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-              Send(ParsedMsg, Multi);
+                Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
             Systems.UpdatedStat(StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
         }
 
         public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
@@ -862,14 +936,14 @@ namespace StreamerBotLib.BotIOController
                      ))
                                             });
             string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
-               if (Enabled)
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
+            if (Enabled)
             {
-             Send(ParsedMsg, Multi);
+                Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName: HostedByChannel, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<Models.LiveUser> Users)
@@ -895,7 +969,7 @@ namespace StreamerBotLib.BotIOController
                 Systems.UpdatedStat(StreamStatType.UserBanned);
                 HandleUserLeft(new(UserName, Source));
 
-                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
+                Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
             }
             catch (Exception ex)
             {
@@ -905,7 +979,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleAddChat(string UserName, Platform Source)
         {
-            Systems.UserJoined(new() { new(UserName,Source) });
+            Systems.UserJoined(new() { new(UserName, Source) });
         }
 
         public void HandleMessageReceived(Models.CmdMessage MsgReceived, Platform Source)
@@ -918,6 +992,11 @@ namespace StreamerBotLib.BotIOController
             Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
         }
 
+        public void HandleOutgoingRaidData(string ToChannelName, DateTime RaidTime)
+        {
+            HandleOnStreamOffline(ToChannelName, RaidTime);
+        }
+
         public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Platform Source)
         {
             if (GiveawayItemType == GiveawayTypes.Command && commandmsg.CommandText == GiveawayItemName)
@@ -927,16 +1006,35 @@ namespace StreamerBotLib.BotIOController
             Systems.ProcessCommand(commandmsg, Source);
         }
 
-        public void HandleCustomReward(string DisplayName, string RewardTitle)
+        public void HandleCustomReward(string DisplayName, string RewardTitle, string RewardMsg, Platform Source)
         {
             if (GiveawayItemType == GiveawayTypes.CustomRewards && RewardTitle == GiveawayItemName)
             {
                 HandleGiveawayPostName(DisplayName);
             }
 
+            Tuple<string, string> approval = SystemsController.GetApprovalRule(ModActionType.ChannelPoints, RewardTitle);
+
+            if (approval != null)
+            {
+                switch (Source)
+                {
+                    case Platform.Twitch:
+                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}",
+                            new(() =>
+                            {
+                                TwitchBots.PostInternalCommand(approval.Item2, new() { DisplayName, RewardMsg }, $"!{approval.Item2} {DisplayName} {RewardMsg}");
+                            })
+                        );
+
+                        TwitchBots.PostInternalCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new(), $"!{LocalizedMsgSystem.GetVar(DefaultCommand.approve)}");
+                        break;
+                }
+            }
+
             if (OptionFlags.MediaOverlayChannelPoints)
             {
-                Systems.CheckForOverlayEvent(MediaOverlayServer.Enums.OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
+                Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
             }
         }
 
@@ -986,7 +1084,7 @@ namespace StreamerBotLib.BotIOController
 
         private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
         {
-            if(e.User.Source == Platform.Twitch)
+            if (e.User.Source == Platform.Twitch)
             {
                 // TODO: verify users are correctly determined to be banned before banning, added to log
                 LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.User.UserName} for {e.BanReason} for {e.Duration} seconds.");

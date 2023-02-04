@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>0.2.4.0</Version>
+    <Version>1.2.6.4</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -15,17 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.6.1" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.6.1" />
-    <PackageReference Include="TwitchLib.Api.Helix" Version="3.6.1" />
-    <PackageReference Include="TwitchLib.Client" Version="3.2.6" />
-    <PackageReference Include="TwitchLib.PubSub" Version="3.2.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MediaOverlayServer\MediaOverlayServer.csproj" />
-    <ProjectReference Include="..\StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.8.0" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.8.0" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.8.0" />
+    <PackageReference Include="TwitchLib.Client" Version="3.3.1" />
+    <PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +41,9 @@
       <DependentUpon>MultiDataSource.xsd</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Overlay\MediaOverlay.xaml.cs">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
@@ -83,6 +81,17 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       <Generator>PublicSettingsSingleFileGenerator</Generator>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MultiLive\Culture\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="MultiLive\MultiLiveDataGrids.xaml">
+      <CustomToolNamespace></CustomToolNamespace>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
   </ItemGroup>
   
 

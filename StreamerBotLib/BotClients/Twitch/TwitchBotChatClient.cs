@@ -84,8 +84,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     )
                 );
 
-            RefreshSettings();
-
 #if !TwitchLib_ConnectProblem
             CreateClient();
 #endif
@@ -96,7 +94,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void CreateClient()
         {
-            RefreshSettings();
             ClientOptions options = new()
             {
                 UseSsl = true,
@@ -258,7 +255,7 @@ namespace StreamerBotLib.BotClients.Twitch
             else
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
-                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
+                //TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 TwitchChat.Connect();
                 isConnected = true;
             }
@@ -314,8 +311,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     TwitchChat.Disconnect();
-                    TwitchChat = null;
-                    RefreshSettings();
                     InvokeBotStopped();
                 }
                 Stopped = true;
@@ -433,9 +428,10 @@ namespace StreamerBotLib.BotClients.Twitch
                 IsStarted = false;
                 UnregisterHandlers();
                 StartBot();
-            } 
+            }
             else
             {
+                UnregisterHandlers();
                 InvokeBotStopped();
             }
 #endif

@@ -12,7 +12,7 @@ namespace StreamerBotLib.Models
         {
             if (value.GetType() == typeof(int))
             {
-                return string.Format("{0:N0}", (int) value);
+                return string.Format("{0:N0}", (int)value);
             }
             else if (value.GetType() == typeof(TimeSpan))
             {

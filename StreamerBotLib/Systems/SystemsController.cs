@@ -1,10 +1,9 @@
-﻿using MediaOverlayServer.Enums;
-
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 
 using System;
@@ -208,7 +207,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.AddFollower(f.FromUser,f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime())))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -230,6 +229,8 @@ namespace StreamerBotLib.Systems
                         UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
                     }
                 }
+
+                AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, FollowList.Last().FromUserName);
 
                 if (UserList.Count > 0)
                 {
@@ -315,6 +316,25 @@ namespace StreamerBotLib.Systems
         public static bool CheckField(string dataTable, string FieldName)
         {
             return ActionSystem.CheckField(dataTable, FieldName);
+        }
+
+        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        {
+            return DataManage.GetWebhooks(webhooksKind);
+        }
+
+
+        #endregion
+
+        #region Mod Approval
+        public static Tuple<string, string> GetApprovalRule(ModActionType actionType, string ActionName)
+        {
+            return ActionSystem.GetApprovalRule(actionType, ActionName);
+        }
+
+        public void PostApproval(string Description, Task Action)
+        {
+            SystemActions.AddApprovalRequest(Description, Action);
         }
 
         #endregion
@@ -425,11 +445,7 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
-        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
-        {
-            return DataManage.GetWebhooks(webhooksKind);
-        }
-
+        #region User Related
         private bool RegisterJoinedUser(LiveUser User, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
             bool FoundUserJoined = false;
@@ -536,7 +552,7 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.ModerateUserLearnMsgs)
             {
-                DataManage.AddLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
+                DataManage.PostLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
             }
 
             ActionSystem.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
@@ -580,13 +596,14 @@ namespace StreamerBotLib.Systems
                         SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits.ToString(), MsgReceived.DisplayName);
                     }));
                 }
+
+                AddNewOverlayTickerItem(OverlayTickerItem.LastBits, MsgReceived.DisplayName);
             }
 
             if (RegisterJoinedUser(User, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
             {
                 UserWelcomeMessage(User);
             }
-
         }
 
         private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
@@ -624,6 +641,10 @@ namespace StreamerBotLib.Systems
             if (OptionFlags.ManageRaidData)
             {
                 ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
+            }
+            if (OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.UpdateOverlayTicker(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }
 
@@ -665,7 +686,7 @@ namespace StreamerBotLib.Systems
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
-            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
+            if (OptionFlags.RepeatTimerCommands && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 short x = 0;
 
@@ -677,6 +698,8 @@ namespace StreamerBotLib.Systems
             }
             UpdatedStat(StreamStatType.AutoCommands);
         }
+
+        #endregion
 
         #region Giveaway
         /// <summary>
@@ -697,12 +720,12 @@ namespace StreamerBotLib.Systems
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
         {
-            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMultiEntries) || GiveawayCollectionList.UniqueAdd(DisplayName)))
+            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMaxEntries) || GiveawayCollectionList.UniqueAdd(DisplayName)))
             {
                 ActionSystem.GiveawayCollection.Add(DisplayName);
             }
 
-            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMultiEntries)
+            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMaxEntries)
             {
                 GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == DisplayName));
             }
@@ -839,6 +862,14 @@ namespace StreamerBotLib.Systems
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             SystemActions.CheckForOverlayEvent(overlayType, Action, UserName, UserMsg, ProvidedURL, UrlDuration);
+        }
+
+        public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
+        {
+            if (OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.UpdateOverlayTicker(item, UserName);
+            }
         }
 
         #endregion

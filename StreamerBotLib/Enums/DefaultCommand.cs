@@ -21,7 +21,11 @@
         uptime,
         usage,
         followage,
-        intro,
-        settitle, setcategory
+        intro, setintro,
+        settitle, setcategory,
+        raid, cancelraid,
+        approve,
+        mergeaccounts,
+        accountage
     }
 }

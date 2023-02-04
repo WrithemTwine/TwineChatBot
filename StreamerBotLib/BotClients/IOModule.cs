@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Properties;
 
 using System;
 
@@ -80,17 +79,6 @@ namespace StreamerBotLib.BotClients
 
         public virtual bool StopBot()
         {
-            return true;
-        }
-
-        public virtual void RefreshSettings()
-        {
-            return;
-        }
-
-        public virtual bool SaveParams()
-        {
-            Settings.Default.Save();
             return true;
         }
 

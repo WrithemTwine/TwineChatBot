@@ -1,0 +1,116 @@
+﻿<Window x:Class="StreamerBotLib.Overlay.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Data="clr-namespace:StreamerBotLib.Overlay.GUI"
+        xmlns:Prop="clr-namespace:StreamerBotLib.Properties"
+        mc:Ignorable="d"
+        Title="Media Overlay" Height="450" Width="600" UseLayoutRounding="True" SnapsToDevicePixels="True" Closing="Window_Closing" Loaded="Window_Loaded">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
+            <DataTemplate x:Key="OverlayTypeStatTemplate">
+                <StatusBarItem BorderThickness="1,1,1,1" BorderBrush="Black" Padding="0">
+                    <StackPanel Orientation="Horizontal" Margin="0">
+                        <Label Content="{Binding OverlayType}" />
+                        <Label Content="{Binding OverlayCount, FallbackValue=0, NotifyOnSourceUpdated=True}" />
+                    </StackPanel>
+                </StatusBarItem>
+            </DataTemplate>
+            <DataTemplate x:Key="PageLinksTemplate">
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="90" Content="{Binding OverlayType}" />
+                        <TextBox Width="400" Text="{Binding OverlayHyperText}" IsReadOnly="True" IsReadOnlyCaretVisible="False" PreviewMouseLeftButtonUp="TextBox_PreviewMouseLeftButtonUp" VerticalContentAlignment="Center" Padding="2,0" />
+                    </StackPanel>
+                </ListViewItem>
+            </DataTemplate>
+            <Style TargetType="{x:Type GroupBox}">
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="Width" Value="230" />
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="BorderBrush" Value="#FF212D34" />
+            </Style>
+            <Style TargetType="{x:Type CheckBox}">
+                <Setter Property="Margin" Value="5" />
+                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="Padding" Value="5,0" />
+            </Style>
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="Margin" Value="10,5,0,5" />
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom" 
+                   DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
+                   ItemsSource="{Binding OverlayStats}" 
+                   ItemTemplate="{Binding Mode=OneWay, Source={StaticResource OverlayTypeStatTemplate}}" />
+        <TabControl Margin="3">
+            <TabItem Header="Options" DataContext="{x:Static Prop:Settings.Default}">
+                <WrapPanel>
+                    <GroupBox Header="Overlay Settings">
+                        <CheckBox x:Name="CheckBox_OptionSamePage" IsChecked="{Binding MediaOverlayUseSameStyle}">
+                            <TextBlock>Enable the same Overlay style for every alert.</TextBlock>
+                        </CheckBox>
+                    </GroupBox>
+                    <GroupBox Header="Server Settings">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                <Label Content="Server Port Number: "/>
+                                <TextBox x:Name="TextBox_PortNumber" Height="18" Width="80" Text="{Binding MediaOverlayPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" LostFocus="TextBox_PortNumber_LostFocus" />
+                            </StackPanel>
+                            <TextBlock>
+                                Ports consist of 1-65535, the lower ports often have assigned services. <LineBreak />
+                                Initial loading will choose a random port.<LineBreak />
+                                This will affect the access URLs for the Overlay notices.
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Overlay Media Server">
+                        <StackPanel>
+                            <CheckBox IsChecked="{Binding MediaOverlayAutoServerStart}" Content="Enable Auto-Starting Server" />
+                            <RadioButton x:Name="RadioButton_OverlayServer_Start" Content="Start Server" Checked="RadioButton_OverlayServer_Start_Checked" />
+                            <RadioButton x:Name="RadioButton_OverlayServer_Stop" Content="Stop Server" Checked="RadioButton_OverlayServer_Stop_Checked" IsChecked="True" />
+                        </StackPanel>
+                    </GroupBox>
+                </WrapPanel>
+            </TabItem>
+            <TabItem x:Name="TabItem_Links" Header="Links">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server.</TextBlock>
+                    <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayLinks, Mode=OneWay, NotifyOnSourceUpdated=True}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}">
+                    </ListView>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Overlay Styles" >
+                <DockPanel Margin="3">
+                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayHelpExpand}" DockPanel.Dock="Top">
+                        <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <FlowDocument>
+                                <Section>
+                                    <Paragraph FontSize="12">
+                                        <Run>These are CSS class styles, allowing you to customize the overlay response style. Please ensure the input is valid, such as at</Run>
+                                        <TextBox Foreground="Blue" PreviewMouseLeftButtonUp="TextBox_PreviewMouseLeftButtonUp">https://jigsaw.w3.org/css-validator/</TextBox>
+                                        <Run>under direct input. Any syntax errors will invalidate the HTML styles and the Overlay response may fail.</Run>
+                                        <LineBreak />
+                                        <LineBreak />
+                                        <Run>(Stopping the app first,) deleting the *.css files will restore the default data (when the app is opened again).</Run>
+                                    </Paragraph>
+                                </Section>
+                            </FlowDocument>
+                        </FlowDocumentScrollViewer>
+                    </Expander>
+
+                    <TabControl x:Name="TabControl_OverlayStyles" />
+                </DockPanel>
+
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
+

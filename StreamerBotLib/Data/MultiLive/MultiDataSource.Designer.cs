@@ -30,6 +30,12 @@ namespace StreamerBotLib.Data.MultiLive {
         
         private LiveStreamDataTable tableLiveStream;
         
+        private SummaryLiveStreamDataTable tableSummaryLiveStream;
+        
+        private global::System.Data.DataRelation relationFK_Channels_LiveStream;
+        
+        private global::System.Data.DataRelation relationFK_Channels_SummaryLiveStream;
+        
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.ExcludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -66,6 +72,9 @@ namespace StreamerBotLib.Data.MultiLive {
                 }
                 if ((ds.Tables["LiveStream"] != null)) {
                     base.Tables.Add(new LiveStreamDataTable(ds.Tables["LiveStream"]));
+                }
+                if ((ds.Tables["SummaryLiveStream"] != null)) {
+                    base.Tables.Add(new SummaryLiveStreamDataTable(ds.Tables["SummaryLiveStream"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -112,6 +121,16 @@ namespace StreamerBotLib.Data.MultiLive {
         public LiveStreamDataTable LiveStream {
             get {
                 return this.tableLiveStream;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public SummaryLiveStreamDataTable SummaryLiveStream {
+            get {
+                return this.tableSummaryLiveStream;
             }
         }
         
@@ -191,6 +210,9 @@ namespace StreamerBotLib.Data.MultiLive {
                 if ((ds.Tables["LiveStream"] != null)) {
                     base.Tables.Add(new LiveStreamDataTable(ds.Tables["LiveStream"]));
                 }
+                if ((ds.Tables["SummaryLiveStream"] != null)) {
+                    base.Tables.Add(new SummaryLiveStreamDataTable(ds.Tables["SummaryLiveStream"]));
+                }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
                 this.Namespace = ds.Namespace;
@@ -242,6 +264,14 @@ namespace StreamerBotLib.Data.MultiLive {
                     this.tableLiveStream.InitVars();
                 }
             }
+            this.tableSummaryLiveStream = ((SummaryLiveStreamDataTable)(base.Tables["SummaryLiveStream"]));
+            if ((initTable == true)) {
+                if ((this.tableSummaryLiveStream != null)) {
+                    this.tableSummaryLiveStream.InitVars();
+                }
+            }
+            this.relationFK_Channels_LiveStream = this.Relations["FK_Channels_LiveStream"];
+            this.relationFK_Channels_SummaryLiveStream = this.Relations["FK_Channels_SummaryLiveStream"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -258,6 +288,8 @@ namespace StreamerBotLib.Data.MultiLive {
             base.Tables.Add(this.tableChannels);
             this.tableLiveStream = new LiveStreamDataTable();
             base.Tables.Add(this.tableLiveStream);
+            this.tableSummaryLiveStream = new SummaryLiveStreamDataTable();
+            base.Tables.Add(this.tableSummaryLiveStream);
             global::System.Data.ForeignKeyConstraint fkc;
             fkc = new global::System.Data.ForeignKeyConstraint("FK_Channels_LiveStream", new global::System.Data.DataColumn[] {
                         this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
@@ -266,6 +298,25 @@ namespace StreamerBotLib.Data.MultiLive {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Channels_SummaryLiveStream", new global::System.Data.DataColumn[] {
+                        this.tableChannels.IdColumn,
+                        this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableSummaryLiveStream.IdColumn,
+                        this.tableSummaryLiveStream.ChannelNameColumn});
+            this.tableSummaryLiveStream.Constraints.Add(fkc);
+            fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
+            fkc.DeleteRule = global::System.Data.Rule.Cascade;
+            fkc.UpdateRule = global::System.Data.Rule.Cascade;
+            this.relationFK_Channels_LiveStream = new global::System.Data.DataRelation("FK_Channels_LiveStream", new global::System.Data.DataColumn[] {
+                        this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableLiveStream.ChannelNameColumn}, false);
+            this.Relations.Add(this.relationFK_Channels_LiveStream);
+            this.relationFK_Channels_SummaryLiveStream = new global::System.Data.DataRelation("FK_Channels_SummaryLiveStream", new global::System.Data.DataColumn[] {
+                        this.tableChannels.IdColumn,
+                        this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableSummaryLiveStream.IdColumn,
+                        this.tableSummaryLiveStream.ChannelNameColumn}, false);
+            this.Relations.Add(this.relationFK_Channels_SummaryLiveStream);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -283,6 +334,12 @@ namespace StreamerBotLib.Data.MultiLive {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         private bool ShouldSerializeLiveStream() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        private bool ShouldSerializeSummaryLiveStream() {
             return false;
         }
         
@@ -350,6 +407,9 @@ namespace StreamerBotLib.Data.MultiLive {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         public delegate void LiveStreamRowChangeEventHandler(object sender, LiveStreamRowChangeEvent e);
         
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        public delegate void SummaryLiveStreamRowChangeEventHandler(object sender, SummaryLiveStreamRowChangeEvent e);
+        
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
@@ -358,6 +418,8 @@ namespace StreamerBotLib.Data.MultiLive {
         public partial class MsgEndPointsDataTable : global::System.Data.TypedTableBase<MsgEndPointsRow> {
             
             private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnIsEnabled;
             
             private global::System.Data.DataColumn columnServer;
             
@@ -403,6 +465,14 @@ namespace StreamerBotLib.Data.MultiLive {
             public global::System.Data.DataColumn IdColumn {
                 get {
                     return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsEnabledColumn {
+                get {
+                    return this.columnIsEnabled;
                 }
             }
             
@@ -467,10 +537,11 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MsgEndPointsRow AddMsgEndPointsRow(string Server, string Type, string URL) {
+            public MsgEndPointsRow AddMsgEndPointsRow(bool IsEnabled, string Server, string Type, string URL) {
                 MsgEndPointsRow rowMsgEndPointsRow = ((MsgEndPointsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
+                        IsEnabled,
                         Server,
                         Type,
                         URL};
@@ -504,6 +575,7 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
+                this.columnIsEnabled = base.Columns["IsEnabled"];
                 this.columnServer = base.Columns["Server"];
                 this.columnType = base.Columns["Type"];
                 this.columnURL = base.Columns["URL"];
@@ -514,6 +586,8 @@ namespace StreamerBotLib.Data.MultiLive {
             private void InitClass() {
                 this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
+                this.columnIsEnabled = new global::System.Data.DataColumn("IsEnabled", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsEnabled);
                 this.columnServer = new global::System.Data.DataColumn("Server", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnServer);
                 this.columnType = new global::System.Data.DataColumn("Type", typeof(string), null, global::System.Data.MappingType.Element);
@@ -526,6 +600,7 @@ namespace StreamerBotLib.Data.MultiLive {
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnIsEnabled.DefaultValue = ((bool)(true));
                 this.columnType.DefaultValue = ((string)("Discord"));
             }
             
@@ -795,14 +870,18 @@ namespace StreamerBotLib.Data.MultiLive {
                 base.Columns.Add(this.columnId);
                 this.columnChannelName = new global::System.Data.DataColumn("ChannelName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnChannelName);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint3", new global::System.Data.DataColumn[] {
                                 this.columnId}, true));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnChannelName}, false));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnId,
                                 this.columnChannelName}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
+                this.columnChannelName.AllowDBNull = false;
                 this.columnChannelName.Unique = true;
             }
             
@@ -1037,15 +1116,26 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public LiveStreamRow AddLiveStreamRow(string ChannelName, System.DateTime LiveDate) {
+            public LiveStreamRow AddLiveStreamRow(ChannelsRow parentChannelsRowByFK_Channels_LiveStream, System.DateTime LiveDate) {
                 LiveStreamRow rowLiveStreamRow = ((LiveStreamRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
-                        ChannelName,
+                        null,
                         LiveDate};
+                if ((parentChannelsRowByFK_Channels_LiveStream != null)) {
+                    columnValuesArray[1] = parentChannelsRowByFK_Channels_LiveStream[1];
+                }
                 rowLiveStreamRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowLiveStreamRow);
                 return rowLiveStreamRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public LiveStreamRow FindByChannelNameLiveDate(string ChannelName, System.DateTime LiveDate) {
+                return ((LiveStreamRow)(this.Rows.Find(new object[] {
+                            ChannelName,
+                            LiveDate})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1081,8 +1171,13 @@ namespace StreamerBotLib.Data.MultiLive {
                 base.Columns.Add(this.columnLiveDate);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, false));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnChannelName,
+                                this.columnLiveDate}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.Unique = true;
+                this.columnChannelName.AllowDBNull = false;
+                this.columnLiveDate.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1210,6 +1305,308 @@ namespace StreamerBotLib.Data.MultiLive {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class SummaryLiveStreamDataTable : global::System.Data.TypedTableBase<SummaryLiveStreamRow> {
+            
+            private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnChannelName;
+            
+            private global::System.Data.DataColumn columnStreamCount;
+            
+            private global::System.Data.DataColumn columnThroughDate;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamDataTable() {
+                this.TableName = "SummaryLiveStream";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            internal SummaryLiveStreamDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected SummaryLiveStreamDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ChannelNameColumn {
+                get {
+                    return this.columnChannelName;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn StreamCountColumn {
+                get {
+                    return this.columnStreamCount;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ThroughDateColumn {
+                get {
+                    return this.columnThroughDate;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamRow this[int index] {
+                get {
+                    return ((SummaryLiveStreamRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event SummaryLiveStreamRowChangeEventHandler SummaryLiveStreamRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event SummaryLiveStreamRowChangeEventHandler SummaryLiveStreamRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event SummaryLiveStreamRowChangeEventHandler SummaryLiveStreamRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event SummaryLiveStreamRowChangeEventHandler SummaryLiveStreamRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void AddSummaryLiveStreamRow(SummaryLiveStreamRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamRow AddSummaryLiveStreamRow(int Id, string ChannelName, int StreamCount, System.DateTime ThroughDate) {
+                SummaryLiveStreamRow rowSummaryLiveStreamRow = ((SummaryLiveStreamRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        Id,
+                        ChannelName,
+                        StreamCount,
+                        ThroughDate};
+                rowSummaryLiveStreamRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowSummaryLiveStreamRow);
+                return rowSummaryLiveStreamRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamRow FindByIdChannelName(int Id, string ChannelName) {
+                return ((SummaryLiveStreamRow)(this.Rows.Find(new object[] {
+                            Id,
+                            ChannelName})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                SummaryLiveStreamDataTable cln = ((SummaryLiveStreamDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new SummaryLiveStreamDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            internal void InitVars() {
+                this.columnId = base.Columns["Id"];
+                this.columnChannelName = base.Columns["ChannelName"];
+                this.columnStreamCount = base.Columns["StreamCount"];
+                this.columnThroughDate = base.Columns["ThroughDate"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            private void InitClass() {
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
+                this.columnChannelName = new global::System.Data.DataColumn("ChannelName", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnChannelName);
+                this.columnStreamCount = new global::System.Data.DataColumn("StreamCount", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStreamCount);
+                this.columnThroughDate = new global::System.Data.DataColumn("ThroughDate", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnThroughDate);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnId,
+                                this.columnChannelName}, true));
+                this.columnId.AllowDBNull = false;
+                this.columnChannelName.AllowDBNull = false;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamRow NewSummaryLiveStreamRow() {
+                return ((SummaryLiveStreamRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new SummaryLiveStreamRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(SummaryLiveStreamRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.SummaryLiveStreamRowChanged != null)) {
+                    this.SummaryLiveStreamRowChanged(this, new SummaryLiveStreamRowChangeEvent(((SummaryLiveStreamRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.SummaryLiveStreamRowChanging != null)) {
+                    this.SummaryLiveStreamRowChanging(this, new SummaryLiveStreamRowChangeEvent(((SummaryLiveStreamRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.SummaryLiveStreamRowDeleted != null)) {
+                    this.SummaryLiveStreamRowDeleted(this, new SummaryLiveStreamRowChangeEvent(((SummaryLiveStreamRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.SummaryLiveStreamRowDeleting != null)) {
+                    this.SummaryLiveStreamRowDeleting(this, new SummaryLiveStreamRowChangeEvent(((SummaryLiveStreamRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void RemoveSummaryLiveStreamRow(SummaryLiveStreamRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DataSource ds = new DataSource();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "SummaryLiveStreamDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class MsgEndPointsRow : global::System.Data.DataRow {
@@ -1231,6 +1628,22 @@ namespace StreamerBotLib.Data.MultiLive {
                 }
                 set {
                     this[this.tableMsgEndPoints.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsEnabled {
+                get {
+                    try {
+                        return ((bool)(this[this.tableMsgEndPoints.IsEnabledColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsEnabled\' in table \'MsgEndPoints\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableMsgEndPoints.IsEnabledColumn] = value;
                 }
             }
             
@@ -1280,6 +1693,18 @@ namespace StreamerBotLib.Data.MultiLive {
                 set {
                     this[this.tableMsgEndPoints.URLColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsEnabledNull() {
+                return this.IsNull(this.tableMsgEndPoints.IsEnabledColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsEnabledNull() {
+                this[this.tableMsgEndPoints.IsEnabledColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1348,12 +1773,7 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string ChannelName {
                 get {
-                    try {
-                        return ((string)(this[this.tableChannels.ChannelNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelName\' in table \'Channels\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableChannels.ChannelNameColumn]));
                 }
                 set {
                     this[this.tableChannels.ChannelNameColumn] = value;
@@ -1362,14 +1782,24 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsChannelNameNull() {
-                return this.IsNull(this.tableChannels.ChannelNameColumn);
+            public SummaryLiveStreamRow[] GetSummaryLiveStreamRows() {
+                if ((this.Table.ChildRelations["FK_Channels_SummaryLiveStream"] == null)) {
+                    return new SummaryLiveStreamRow[0];
+                }
+                else {
+                    return ((SummaryLiveStreamRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Channels_SummaryLiveStream"])));
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetChannelNameNull() {
-                this[this.tableChannels.ChannelNameColumn] = global::System.Convert.DBNull;
+            public LiveStreamRow[] GetLiveStreamRows() {
+                if ((this.Table.ChildRelations["FK_Channels_LiveStream"] == null)) {
+                    return new LiveStreamRow[0];
+                }
+                else {
+                    return ((LiveStreamRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Channels_LiveStream"])));
+                }
             }
         }
         
@@ -1407,12 +1837,7 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string ChannelName {
                 get {
-                    try {
-                        return ((string)(this[this.tableLiveStream.ChannelNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ChannelName\' in table \'LiveStream\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableLiveStream.ChannelNameColumn]));
                 }
                 set {
                     this[this.tableLiveStream.ChannelNameColumn] = value;
@@ -1423,15 +1848,21 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public System.DateTime LiveDate {
                 get {
-                    try {
-                        return ((global::System.DateTime)(this[this.tableLiveStream.LiveDateColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'LiveDate\' in table \'LiveStream\' is DBNull.", e);
-                    }
+                    return ((global::System.DateTime)(this[this.tableLiveStream.LiveDateColumn]));
                 }
                 set {
                     this[this.tableLiveStream.LiveDateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public ChannelsRow ChannelsRow {
+                get {
+                    return ((ChannelsRow)(this.GetParentRow(this.Table.ParentRelations["FK_Channels_LiveStream"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Channels_LiveStream"]);
                 }
             }
             
@@ -1446,29 +1877,109 @@ namespace StreamerBotLib.Data.MultiLive {
             public void SetIdNull() {
                 this[this.tableLiveStream.IdColumn] = global::System.Convert.DBNull;
             }
+        }
+        
+        /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class SummaryLiveStreamRow : global::System.Data.DataRow {
+            
+            private SummaryLiveStreamDataTable tableSummaryLiveStream;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsChannelNameNull() {
-                return this.IsNull(this.tableLiveStream.ChannelNameColumn);
+            internal SummaryLiveStreamRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableSummaryLiveStream = ((SummaryLiveStreamDataTable)(this.Table));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetChannelNameNull() {
-                this[this.tableLiveStream.ChannelNameColumn] = global::System.Convert.DBNull;
+            public int Id {
+                get {
+                    return ((int)(this[this.tableSummaryLiveStream.IdColumn]));
+                }
+                set {
+                    this[this.tableSummaryLiveStream.IdColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsLiveDateNull() {
-                return this.IsNull(this.tableLiveStream.LiveDateColumn);
+            public string ChannelName {
+                get {
+                    return ((string)(this[this.tableSummaryLiveStream.ChannelNameColumn]));
+                }
+                set {
+                    this[this.tableSummaryLiveStream.ChannelNameColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetLiveDateNull() {
-                this[this.tableLiveStream.LiveDateColumn] = global::System.Convert.DBNull;
+            public int StreamCount {
+                get {
+                    try {
+                        return ((int)(this[this.tableSummaryLiveStream.StreamCountColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'StreamCount\' in table \'SummaryLiveStream\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableSummaryLiveStream.StreamCountColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public System.DateTime ThroughDate {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableSummaryLiveStream.ThroughDateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ThroughDate\' in table \'SummaryLiveStream\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableSummaryLiveStream.ThroughDateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public ChannelsRow ChannelsRowParent {
+                get {
+                    return ((ChannelsRow)(this.GetParentRow(this.Table.ParentRelations["FK_Channels_SummaryLiveStream"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Channels_SummaryLiveStream"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsStreamCountNull() {
+                return this.IsNull(this.tableSummaryLiveStream.StreamCountColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetStreamCountNull() {
+                this[this.tableSummaryLiveStream.StreamCountColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsThroughDateNull() {
+                return this.IsNull(this.tableSummaryLiveStream.ThroughDateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetThroughDateNull() {
+                this[this.tableSummaryLiveStream.ThroughDateColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -1560,6 +2071,40 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public LiveStreamRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        public class SummaryLiveStreamRowChangeEvent : global::System.EventArgs {
+            
+            private SummaryLiveStreamRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamRowChangeEvent(SummaryLiveStreamRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public SummaryLiveStreamRow Row {
                 get {
                     return this.eventRow;
                 }

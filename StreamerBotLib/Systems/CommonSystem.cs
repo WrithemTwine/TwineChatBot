@@ -9,9 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 
@@ -48,7 +45,6 @@ namespace StreamerBotLib.Systems
         /// Time delays to use in threads
         /// </summary>
         protected const int SecondsDelay = 2000;
-        protected static bool StreamUpdateClockStarted;
 
         protected static List<LiveUser> CurrUsers { get; private set; } = new();
         protected static List<string> UniqueUserJoined { get; private set; } = new();
@@ -112,6 +108,11 @@ namespace StreamerBotLib.Systems
             {
                 DataManage.RemoveAllGiveawayData();
             }
+
+            if (!OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.RemoveAllOverlayTickerData();
+            }
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public static void UpdateCurrencyTable()
         {
-            DataManage.AddCurrencyRows();
+            DataManage.PostCurrencyRows();
         }
 
         public static void ClearWatchTime()
@@ -169,7 +170,7 @@ namespace StreamerBotLib.Systems
 
         public static void AddNewAutoShoutUser(string UserName)
         {
-            DataManage.AddNewAutoShoutUser(UserName);
+            DataManage.PostNewAutoShoutUser(UserName);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
@@ -187,7 +188,7 @@ namespace StreamerBotLib.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.AddClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.PostClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
 
         /// <summary>

@@ -12,7 +12,8 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
-using TwitchLib.Api.Helix.Models.Schedule;
+using TwitchLib.Api.Helix.Models.Raids.StartRaid;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -25,12 +26,13 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
+        public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
+        public event EventHandler<GetStreamsEventArgs> GetStreamsViewerCount;
+        public event EventHandler CancelRaidEvent;
 
         public TwitchBotUserSvc()
         {
             BotClientName = Bots.TwitchUserBot;
-
-            RefreshSettings();
         }
 
         /// <summary>
@@ -42,8 +44,6 @@ namespace StreamerBotLib.BotClients.Twitch
             string SettingsClientId;
             string ClientId;
             string OauthToken;
-
-            RefreshSettings();
 
             if (OptionFlags.TwitchStreamerUseToken && UseStreamToken)
             {
@@ -67,7 +67,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
-        public void SetIds(string StreamerChannelId=null, string BotChannelId=null)
+        public void SetIds(string StreamerChannelId = null, string BotChannelId = null)
         {
             if (StreamerChannelId != null)
             {
@@ -79,7 +79,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchBotUserId = BotChannelId;
             }
 
-          if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
+            if (TwitchChannelId == null && TwitchBotUserId == null && TwitchChannelName != null)
             {
                 TwitchBotUserId = GetUserId(TwitchBotUserName);
                 TwitchChannelId = GetUserId(TwitchChannelName);
@@ -135,7 +135,19 @@ namespace StreamerBotLib.BotClients.Twitch
             return userLookupService.GetGameId(GameName: new() { GameName }).Result.Games[0].Id;
         }
 
+        public void GetViewerCount(string UserName)
+        {
+            ChooseConnectUserService();
+            GetStreamsResponse getStreamsResponse = userLookupService.GetStreams(UserName: UserName).Result;
+            GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
+        }
 
+        public DateTime GetUserCreatedAt(string UserName = null, string UserId = null)
+        {
+            ChooseConnectUserService();
+            DateTime result = userLookupService.GetUserCreatedAt(UserName, UserId).Result;
+            return result;
+        }
 
         #endregion
 
@@ -217,6 +229,51 @@ namespace StreamerBotLib.BotClients.Twitch
                 result = false;
             }
             return result;
+        }
+
+        public void RaidChannel(string ToChannelName)
+        {
+            ChooseConnectUserService(true);
+
+            if (ToChannelName == null)
+            {
+                return;
+            }
+            else
+            {
+                try
+                {
+                    OptionFlags.TwitchOutRaidStarted = true;
+                    StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
+                    if (response != null)
+                    {
+                        StartRaidEventResponse?.Invoke(this, new()
+                        {
+                            ToChannel = ToChannelName,
+                            CreatedAt = response.Data[0].CreatedAt,
+                            IsMature = response.Data[0].IsMature
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
+            }
+        }
+
+        public void CancelRaidChannel()
+        {
+            ChooseConnectUserService(true);
+            try
+            {
+                userLookupService?.CancelRaid(TwitchChannelId);
+                CancelRaidEvent?.Invoke(this, new());
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         #endregion

@@ -11,7 +11,7 @@ namespace StreamerBotLib.Models
         {
             ListViewItem item = (ListViewItem)value;
             ListView listView = ItemsControl.ItemsControlFromItemContainer(item) as ListView;
-            int index = listView.ItemContainerGenerator.IndexFromContainer(item)+1;
+            int index = listView.ItemContainerGenerator.IndexFromContainer(item) + 1;
             return index.ToString();
         }
 

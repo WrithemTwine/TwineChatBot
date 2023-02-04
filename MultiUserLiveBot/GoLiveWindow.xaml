@@ -3,7 +3,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:Clients="clr-namespace:MultiUserLiveBot.Clients"
+    xmlns:Clients="clr-namespace:StreamerBotLib.BotClients.Twitch;assembly=StreamerBotLib"
     xmlns:s="clr-namespace:MultiUserLiveBot.Properties"
     x:Class="MultiUserLiveBot.GoLiveWindow"
         mc:Ignorable="d"
@@ -12,9 +12,23 @@
         Title="Multi-Channel Go Live Bot" Height="700" MaxWidth="1000" Width="1000" Closing="Window_Closing">
     <Window.Resources>
         <!--<Data:DataManager x:Key="DataManager" x:Name="DataManager" />-->
-        <Clients:TwitchLiveBot x:Key="TwitchLiveBot" x:Name="TwitchLiveBot" />
+        <Clients:TwitchBotLiveMonitorSvc x:Key="TwitchLiveBot" x:Name="TwitchLiveBot" />
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="5" />
+            <Setter Property="Width" Value="230" />
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#FF212D34" />
+        </Style>
+        <Style TargetType="{x:Type RadioButton}">
+            <Setter Property="Margin" Value="10,5,0,5" />
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MaxColumnWidth" Value="160" />
+            <Setter Property="AlternationCount" Value="1" />
+            <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4" />
+            <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+            <Setter Property="CanUserAddRows" Value="False" />
         </Style>
     </Window.Resources>
     <DockPanel DataContext="{DynamicResource TwitchLiveBot}">
@@ -27,21 +41,24 @@
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Web Links: " />
-                    <Label DataContext="{Binding ElementName=DG_WebHooks, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
+                    <Label DataContext="{Binding MultiLiveDataManager}" 
+                           Content="{Binding MsgEndPoints.Count}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Added Channels: " />
-                    <Label DataContext="{Binding ElementName=DG_ChannelNames, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
+                    <Label DataContext="{Binding MultiLiveDataManager}" 
+                           Content="{Binding Channels.Count}" />
                 </StackPanel>
             </StatusBarItem>
             <Separator Width="1" />
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Live Events: " />
-                    <Label DataContext="{Binding ElementName=DG_LiveStreamStats, Mode=OneWay}" Content="{Binding Path=Items.Count, NotifyOnSourceUpdated=True}" />
+                    <Label DataContext="{Binding MultiLiveDataManager}" 
+                           Content="{Binding LiveStream.Count}" />
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
@@ -263,7 +280,21 @@
                 </DockPanel>
             </TabItem>
             <TabItem x:Name="Tab_Channels" Header="Channels">
-                <Grid>
+                <DockPanel>
+                    <GroupBox x:Name="BC_T_groupBox" Header="Bot Processing" BorderBrush="#FF212D34" DockPanel.Dock="Top">
+                        <WrapPanel Orientation="Vertical">
+                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" Click="CheckBox_Click">
+                                <TextBlock Margin="0">Automatically Start Bot with App</TextBlock>
+                            </CheckBox>
+                            <StackPanel Orientation="Vertical">
+                                <RadioButton x:Name="Radio_Twitch_StartBot" Content="Start Bot" PreviewMouseDown="BC_Twitch_StartStopBot" />
+                                <RadioButton x:Name="Radio_Twitch_StopBot" Content="Stop Bot" PreviewMouseDown="BC_Twitch_StartStopBot" IsChecked="True"  />
+                            </StackPanel>
+                        </WrapPanel>
+                    </GroupBox>
+                    <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" LoadCompleted="MultiLive_Data_LoadCompleted" />
+                </DockPanel>
+                <!--<Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="70" />
                         <RowDefinition/>
@@ -346,7 +377,7 @@
                         <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
                         <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}" />
                     </DockPanel>
-                </Grid>
+                </Grid>-->
             </TabItem>
         </TabControl>
     </DockPanel>

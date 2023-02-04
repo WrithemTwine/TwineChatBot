@@ -13,6 +13,7 @@ namespace ConvertDataSourceFile
             {
                 ConvertDataSource_v_0_1_12_0();
                 ConvertDataSource_v_0_1_12_4();
+                ConvertDataSource_v_0_2_5_1();
             }
         }
 
@@ -134,6 +135,75 @@ namespace ConvertDataSourceFile
 
             output.Close();
             File.Delete(tempfile);
+        }
+
+        private static void ConvertDataSource_v_0_2_5_1()
+        {
+            /*
+             * 
+                  <Commands diffgr:id="Commands22" msdata:rowOrder="21">
+                      <Id>22</Id>
+                      <CmdName>uptime</CmdName>
+                      <AddMe>false</AddMe>
+                      <Permission>Viewer</Permission>
+                      <IsEnabled>false</IsEnabled>
+                      <Message>#user has been streaming for #uptime.</Message>
+                      <RepeatTimer>0</RepeatTimer>
+                      <SendMsgCount>0</SendMsgCount>
+                      <Category>All</Category>
+                      <AllowParam>false</AllowParam>
+                      <Usage>!uptime</Usage>
+                      <lookupdata>false</lookupdata>
+                      <table />
+                      <key_field />
+                      <data_field />
+                      <currency_field />
+                      <unit />
+                      <action>Get</action>
+                      <top>0</top>
+                      <sort>ASC</sort>
+                  </Commands>
+             *
+             */
+
+            File.Move(DataFileXML, "temp_" + DataFileXML);
+            string tempfile = "temp_" + DataFileXML;
+
+            StreamWriter output = new(DataFileXML);
+
+            bool Found = false;
+
+            using (StreamReader sr = new(tempfile))
+            {
+                do
+                {
+                    string line = sr.ReadLine();
+
+                    if (line.Contains("CmdName") && line.Contains("uptime"))
+                    {
+                        Found = true;
+                    }
+
+                    if (line.Contains("AllowParam"))
+                    {
+                        if (!Found)
+                        {
+                            output.WriteLine("<AllowParam>true</AllowParam>");
+                        }
+
+                        Found = false;
+                    }
+
+                    output.WriteLine(line);
+                }
+                while (!sr.EndOfStream);
+
+                sr.Close();
+            }
+
+            output.Close();
+            File.Delete(tempfile);
+
         }
     }
 }

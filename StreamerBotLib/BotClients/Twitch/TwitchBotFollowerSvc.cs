@@ -15,7 +15,6 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotFollowerSvc : TwitchBotsBase
     {
-
         /// <summary>
         /// Listens for new followers.
         /// </summary>
@@ -31,14 +30,13 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         /// <param name="ClientName">Override the Twitch Bot account name, another name used for connecting to a different channel (such as directly to streamer)</param>
         /// <param name="TwitchToken">Override the Twitch Bot token used and to connect to the <para>ClientName</para> channel with a specific token just for changing followers.</param>
-        public void ConnectFollowerService(string ClientName = null, string TwitchToken = null )
+        public void ConnectFollowerService(string ClientName = null, string TwitchToken = null)
         {
-            if(IsStarted)
+            if (IsStarted)
             {
                 FollowerService.Stop();
             }
 
-            RefreshSettings();
             ApiSettings apifollow = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
             FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
             FollowerService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
@@ -82,6 +80,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     FollowerService = null;
+                    HandlersAdded = false;
                 }
                 return true;
             }
@@ -90,6 +89,11 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
             return false;
+        }
+
+        public async Task<bool> GetAllFollowersBulkAsync()
+        {
+            return await FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
         }
 
         public async Task<List<Follow>> GetAllFollowersAsync()

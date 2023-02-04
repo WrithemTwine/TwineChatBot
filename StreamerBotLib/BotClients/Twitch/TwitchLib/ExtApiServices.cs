@@ -11,12 +11,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public abstract class ExtApiService<T> : ApiService
     {
-        public CoreMonitor<T> _monitor;
-        public IdBasedMonitor<T> _idBasedMonitor;
-        public NameBasedMonitor<T> _nameBasedMonitor;
+        protected CoreMonitor<T> _monitor;
+        protected IdBasedMonitor<T> _idBasedMonitor;
+        protected NameBasedMonitor<T> _nameBasedMonitor;
 
-        public IdBasedMonitor<T> IdBasedMonitor => _idBasedMonitor ?? (_idBasedMonitor = new IdBasedMonitor<T>(_api));
-        public NameBasedMonitor<T> NameBasedMonitor => _nameBasedMonitor ?? (_nameBasedMonitor = new NameBasedMonitor<T>(_api));
+        protected IdBasedMonitor<T> IdBasedMonitor => _idBasedMonitor ??= new(_api);
+        protected NameBasedMonitor<T> NameBasedMonitor => _nameBasedMonitor ??= new(_api);
 
         protected ExtApiService(ITwitchAPI api, int checkIntervalInSeconds) : base(api, checkIntervalInSeconds)
         {

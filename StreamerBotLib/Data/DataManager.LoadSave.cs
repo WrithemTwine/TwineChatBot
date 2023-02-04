@@ -2,8 +2,8 @@
 #define noLogDataManager_Actions
 #endif
 
+using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
@@ -14,35 +14,21 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Xml;
 
 using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Data
 {
-    public partial class DataManager
+    public partial class DataManager : BaseDataManager
     {
-        private readonly Queue<Task> SaveTasks = new();
-        private bool SaveThreadStarted = false;
-        private const int SaveThreadWait = 10000;
-
-        private int BackupSaveToken = 0;
-        private const int BackupSaveIntervalMins = 15;
-        private const int BackupHrInterval = 60 / BackupSaveIntervalMins;
-        private readonly string BackupDataFileXML = $"Backup_{DataFileXML}";
-
         #region Load and Exit Ops
 
         /// <summary>
         /// Provide an internal notification event to save the data outside of any multi-threading mechanisms.
         /// </summary>
         public event EventHandler OnSaveData;
-
-        public event EventHandler<OnDataUpdatedEventArgs> OnDataUpdated;
+        //public event EventHandler<OnDataUpdatedEventArgs> OnDataUpdated;
 
         /// <summary>
         /// Load the data source and populate with default data; if regular data source is corrupted, attempt to load backup data.
@@ -55,15 +41,14 @@ namespace StreamerBotLib.Data
 
             void LoadFile(string filename)
             {
-                lock(GUIDataManagerLock.Lock)
+                lock (GUIDataManagerLock.Lock)
                 {
                     if (!File.Exists(filename))
                     {
                         _DataSource.WriteXml(filename);
                     }
 
-                    using XmlReader xmlreader = new XmlTextReader(filename);
-                    _ = _DataSource.ReadXml(xmlreader, XmlReadMode.DiffGram);
+                    _ = _DataSource.ReadXml(new XmlTextReader(filename), XmlReadMode.DiffGram);
 
                     foreach (CommandsRow c in _DataSource.Commands.Select())
                     {
@@ -76,33 +61,9 @@ namespace StreamerBotLib.Data
                 OptionFlags.DataLoaded = true;
             }
 
-            foreach (DataTable table in _DataSource.Tables)
-            {
-                table.BeginLoadData();
-            }
-
-            try // try to catch any exception when loading the backup working file, incase there's an issue loading the backup file
-            {
-                try // try the regular working file
-                {
-                    LoadFile(DataFileName);
-                }
-                catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{Path.GetFileName(DataFileName)}");
-                    LoadFile(BackupDataFileXML);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-
-            foreach (DataTable table in _DataSource.Tables)
-            {
-                table.EndLoadData();
-            }
+            BeginLoadData(_DataSource.Tables);
+            TryLoadFile((xmlfile) => LoadFile(xmlfile));
+            EndLoadData(_DataSource.Tables);
 
             SaveData(this, new());
         }
@@ -127,101 +88,22 @@ namespace StreamerBotLib.Data
 
             if (OptionFlags.DataLoaded)
             {
-                int CurrMins = DateTime.Now.Minute;
-                bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
-
-                if (IsBackup)
-                {
-                    lock (BackupDataFileXML)
-                    {
-                        BackupSaveToken = (CurrMins / BackupSaveIntervalMins) % BackupHrInterval;
-
-                    }
-                }
-
                 if (!UpdatingFollowers) // block saving data until the follower updating is completed
                 {
-                    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
-                    {
-                        SaveThreadStarted = true;
-                        ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
-                    }
 
-                    if (_DataSource.HasChanges())
-                    {
-                        //lock (GUIDataManagerLock.Lock)
-                        //{
-                        //    OnDataUpdatedEventArgs args = new();
-                        //    foreach (DataTable d in _DataSource.Tables)
-                        //    {
-
-                        //    }
-
-                        //    OnDataUpdated?.Invoke(this, new());
-
-                        //    _DataSource.AcceptChanges();
-
-                        //}
-
-                        lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+                    SaveData(
+                        (stream, xmlwrite) => _DataSource.WriteXml(stream, xmlwrite),
+                        (filename, xmlwrite) => _DataSource.WriteXml(filename, xmlwrite),
+                        GUIDataManagerLock.Lock,
+                        (SaveDataMemoryStream) =>
                         {
-                            SaveTasks.Enqueue(new(() =>
-                            {
-                                lock (GUIDataManagerLock.Lock)
-                                {
-                                    //_DataSource.AcceptChanges();
-
-                                    try
-                                    {
-                                        MemoryStream SaveData = new();  // new memory stream
-
-                                        _DataSource.WriteXml(SaveData, XmlWriteMode.DiffGram); // save the database to the memory stream
-
-                                        DataSource testinput = new();   // start a new database
-                                        SaveData.Position = 0;          // reset the reader
-                                        testinput.ReadXml(SaveData);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
-
-                                        _DataSource.WriteXml(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
-
-                                        // determine if current time is within a certain time frame, and perform the save
-                                        if (IsBackup && OptionFlags.IsStreamOnline)
-                                        {
-                                            // write backup file
-                                            _DataSource.WriteXml(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                                    }
-                                }
-                            }));
+                            DataSource testinput = new();   // start a new database
+                            SaveDataMemoryStream.Position = 0;          // reset the reader
+                            testinput.ReadXml(SaveDataMemoryStream);    // try to read the database, when in valid state this doesn't cause an exception (try/catch)
                         }
-                    }
+                        );
                 }
             }
-        }
-
-        private void PerformSaveOp()
-        {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
-#endif
-
-            if (OptionFlags.ActiveToken) // don't sleep if exiting app
-            {
-                Thread.Sleep(SaveThreadWait);
-            }
-
-            lock (SaveTasks) // in case save actions arrive during save try
-            {
-                if (SaveTasks.Count >= 1)
-                {
-                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
-                }
-                SaveTasks.Clear();
-            }
-            SaveThreadStarted = false; // indicate start another thread to save data
         }
 
         #endregion
@@ -235,6 +117,7 @@ namespace StreamerBotLib.Data
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
             SetLearnedMessages();
+            CleanUpTables();
             NotifySaveData();
         }
 
@@ -296,7 +179,7 @@ namespace StreamerBotLib.Data
                                              let param = CommandParams.Parse(DefCommandsDictionary[key].Item2)
                                              select (key, param))
                 {
-                    _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, GetKey(param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
+                    _DataSource.Commands.AddCommandsRow(key, false, param.Permission.ToString(), param.IsEnabled, DefCommandsDictionary[key].Item1, param.Timer, param.RepeatMsg, param.Category, param.AllowParam, param.Usage, param.LookupData, param.Table, DataSetStatic.GetKey(_DataSource.Tables[param.Table], param.Table), param.Field, param.Currency, param.Unit, param.Action, param.Top, param.Sort);
                     found = true;
                 }
 
@@ -319,7 +202,7 @@ namespace StreamerBotLib.Data
 
             bool CheckName(string criteria)
             {
-                ChannelEventsRow channelEventsRow = (ChannelEventsRow)GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{criteria}'");
+                ChannelEventsRow channelEventsRow = (ChannelEventsRow)DataSetStatic.GetRow(_DataSource.ChannelEvents, $"{_DataSource.ChannelEvents.NameColumn.ColumnName}='{criteria}'");
 
                 if (channelEventsRow != null && DBNull.Value.Equals(channelEventsRow["RepeatMsg"]))
                 {
@@ -405,5 +288,30 @@ namespace StreamerBotLib.Data
         }
         #endregion Regular Channel Events
 
+        private void CleanUpTables()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                foreach (UsersRow UR in _DataSource.Users.Select())
+                {
+                    if (DBNull.Value.Equals(UR["Platform"]))
+                    {
+                        UR.Platform = Platform.Twitch.ToString();
+                    }
+                }
+
+                _DataSource.Users.AcceptChanges();
+
+                foreach (FollowersRow FR in _DataSource.Followers.Select())
+                {
+                    if (DBNull.Value.Equals(FR["Platform"]))
+                    {
+                        FR.Platform = Platform.Twitch.ToString();
+                    }
+                }
+
+                _DataSource.Followers.AcceptChanges();
+            }
+        }
     }
 }

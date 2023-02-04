@@ -1,4 +1,4 @@
-﻿using MediaOverlayServer.Models;
+﻿using StreamerBotLib.Overlay.Models;
 
 using System;
 

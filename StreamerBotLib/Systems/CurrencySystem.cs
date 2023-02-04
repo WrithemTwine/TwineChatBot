@@ -3,9 +3,9 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Linq;
 
 namespace StreamerBotLib.Systems
 {
@@ -25,7 +25,7 @@ namespace StreamerBotLib.Systems
                 {
                     ThreadManager.CreateThreadStart(() =>
                     {
-                        while (OptionFlags.IsStreamOnline && OptionFlags.TwitchCurrencyStart && OptionFlags.ManageUsers)
+                        while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                         {
                             lock (CurrUsers)
                             {
