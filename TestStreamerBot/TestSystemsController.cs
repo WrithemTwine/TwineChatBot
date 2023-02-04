@@ -33,7 +33,6 @@ namespace TestStreamerBot
                     File.Delete(DataFileXML);
                 }
                 systemsController.PostChannelMessage += SystemsController_PostChannelMessage;
-                OptionFlags.SetSettings();
 
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;

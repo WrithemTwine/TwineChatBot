@@ -14,19 +14,22 @@ namespace StreamerBot
         private bool UserFollowTabEventAdded = false;
         private bool InOutRaidsEventAdded = false;
 
-        private void GridReSizeEventHandlers()
+        private void CheckBox_TabifySettings_Clicked(object sender, RoutedEventArgs e)
         {
             void CheckSetting(bool OptionTabSetting, Grid targetGrid, ref bool EventHandleAdded)
             {
-                if (OptionTabSetting && !EventHandleAdded)
+                if (targetGrid != null)
                 {
-                    targetGrid.SizeChanged += Grid_SizeChanged;
-                    EventHandleAdded = true;
-                }
-                else
-                {
-                    targetGrid.SizeChanged -= Grid_SizeChanged;
-                    EventHandleAdded = false;
+                    if (OptionTabSetting && !EventHandleAdded)
+                    {
+                        targetGrid.SizeChanged += Grid_SizeChanged;
+                        EventHandleAdded = true;
+                    }
+                    else
+                    {
+                        targetGrid.SizeChanged -= Grid_SizeChanged;
+                        EventHandleAdded = false;
+                    }
                 }
             }
 

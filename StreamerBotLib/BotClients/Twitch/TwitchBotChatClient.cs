@@ -84,8 +84,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     )
                 );
 
-            RefreshSettings();
-
 #if !TwitchLib_ConnectProblem
             CreateClient();
 #endif
@@ -96,7 +94,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void CreateClient()
         {
-            RefreshSettings();
             ClientOptions options = new()
             {
                 UseSsl = true,
@@ -314,7 +311,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     TwitchChat.Disconnect();
-                    RefreshSettings();
                     InvokeBotStopped();
                 }
                 Stopped = true;

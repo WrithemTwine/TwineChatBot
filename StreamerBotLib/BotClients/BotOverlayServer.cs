@@ -13,6 +13,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 using OptionFlags = StreamerBotLib.Static.OptionFlags;
@@ -37,7 +38,9 @@ namespace StreamerBotLib.BotClients
     {
 #endif
 
+        [SuppressMessage("Style", "CS0067:The event is never used", Justification = "Included to implement interface, but is unused")]
         public event EventHandler<BotEventArgs> BotEvent;
+
         public event EventHandler<EventArgs> ActionQueueChanged;
         public event EventHandler<OverlayActionType> SendOverlayToServer;
         private bool PauseAlerts = false;

@@ -33,8 +33,6 @@ namespace StreamerBotLib.BotClients.Twitch
         public TwitchBotUserSvc()
         {
             BotClientName = Bots.TwitchUserBot;
-
-            RefreshSettings();
         }
 
         /// <summary>
@@ -46,8 +44,6 @@ namespace StreamerBotLib.BotClients.Twitch
             string SettingsClientId;
             string ClientId;
             string OauthToken;
-
-            RefreshSettings();
 
             if (OptionFlags.TwitchStreamerUseToken && UseStreamToken)
             {

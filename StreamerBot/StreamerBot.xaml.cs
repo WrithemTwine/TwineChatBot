@@ -78,7 +78,6 @@ namespace StreamerBot
 
             WatchProcessOps = true;
             IsMultiProcActive = null;
-            OptionFlags.SetSettings();
 
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
@@ -89,8 +88,33 @@ namespace StreamerBot
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
 
-            guiAppServices.AppDataDirectory = GetAppDataCWD();
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            SetTwitchFollowerRefreshTime();
 
+            ThreadManager.CreateThreadStart(ProcessWatcher);
+
+            if (Assembly.GetEntryAssembly().GetName().Version.Revision != 0)
+            {
+                StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
+            }
+
+            ConstructEvents();
+        }
+
+        /// <summary>
+        /// Get the application current working directory
+        /// </summary>
+        /// <returns>The user's local application data path to store application save data.</returns>
+        private static string GetAppDataCWD()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
+        }
+
+        /// <summary>
+        /// Called from constructor, sets events 
+        /// </summary>
+        private void ConstructEvents()
+        {
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
@@ -101,30 +125,15 @@ namespace StreamerBot
             guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
+            guiAppServices.AppDataDirectory = GetAppDataCWD();
             guiAppServices.OnBotStarted += GUI_OnBotStarted;
             guiAppServices.OnBotStopped += GUI_OnBotStopped;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
+
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
-            List<int> hrslist = new() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
-            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = hrslist;
-            SetTwitchFollowerRefreshTime();
-
-            ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
-
-            Version version = Assembly.GetEntryAssembly().GetName().Version;
-
-            if (version.Revision != 0)
-            {
-                StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
-            }
-        }
-
-        private static string GetAppDataCWD()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
         }
 
         #region Bot_Ops
@@ -417,6 +426,7 @@ namespace StreamerBot
 
             CheckMessageBoxes();
             CheckBox_ManageData_Click(sender, new());
+            CheckBox_TabifySettings_Clicked(this, new());
 
             // TODO: research auto-refreshing token
         }
@@ -428,8 +438,6 @@ namespace StreamerBot
             OptionFlags.ActiveToken = false;
 
             Controller.ExitBots();
-
-            OptionFlags.SetSettings();
         }
 
         #endregion
@@ -447,7 +455,6 @@ namespace StreamerBot
                 MessageBox.Show(LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveMsg), LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveTitle));
 
                 Settings.Default.ManageDataArchiveMsg = false;
-                OptionFlags.SetSettings();
             }
 
 
@@ -479,40 +486,28 @@ namespace StreamerBot
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
             CheckFocus();
-            OptionFlags.SetSettings();
         }
 
-        private void RoutedEvent_Click_SaveSettings(object sender, RoutedEventArgs e)
+        private void CheckDebug(object sender, RoutedEventArgs e)
         {
-            OptionFlags.SetSettings();
-
-            CheckDebug();
-            SetVisibility();
-
-            if (sender is CheckBox box && box.Name == "CheckBox_RepeatCommands_Enable")
+            if (StackPanel_DebugLivestream != null)
             {
-                Controller.ActivateRepeatTimers();
+                StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
             }
-
-            GridReSizeEventHandlers();
         }
 
-        private void CheckDebug()
+        private void SetVisibility(object sender, RoutedEventArgs e)
         {
-            StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void SetVisibility()
-        {
-            Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-            Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-            Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+            if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null)
+            {
+                Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+                Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+                Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+            }
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
         {
-            OptionFlags.SetSettings();
-
             if (CheckBox_ManageUsers.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
@@ -551,8 +546,6 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
-            OptionFlags.SetSettings();
-
             List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
 
             void SetButtons(bool value)
@@ -604,11 +597,6 @@ namespace StreamerBot
             List<DateTime> RefreshTokenDateExpiry = new() { OptionFlags.TwitchRefreshDate, OptionFlags.TwitchStreamerTokenDate };
             RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
             StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
-
-            CheckDebug();
-            SetVisibility();
-
-            GridReSizeEventHandlers();
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -671,6 +659,7 @@ namespace StreamerBot
             if (TBSource?.Name == CheckBox_RepeatCommands_Enable?.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions?.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+                Controller.ActivateRepeatTimers();
             }
             else if (TBSource?.Name == RadioButton_RepeatTimer_NoAdjustment.Name || TBSource?.Name == RadioButton_RepeatTimer_SlowDownOption.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption.Name || GBSource?.Name == GroupBox_RepeatTimer_ThresholdOptions.Name)
             {

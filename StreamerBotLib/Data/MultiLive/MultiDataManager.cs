@@ -64,8 +64,6 @@ namespace StreamerBotLib.Data.MultiLive
             {
                 UpdatedMonitoringChannels?.Invoke(this, new());
             }
-            NotifyPropertyChanged(nameof(dataView.Table));
-            SaveData();
         }
 
         #region Load and Exit Ops
@@ -130,6 +128,10 @@ namespace StreamerBotLib.Data.MultiLive
             NotifyPropertyChanged(nameof(Channels));
             NotifyPropertyChanged(nameof(MsgEndPoints));
             NotifyPropertyChanged(nameof(LiveStream));
+            NotifyPropertyChanged(nameof(_DataSource.Channels));
+            NotifyPropertyChanged(nameof(_DataSource.MsgEndPoints));
+            NotifyPropertyChanged(nameof(_DataSource.LiveStream));
+
         }
 
         /// <summary>
@@ -165,7 +167,7 @@ namespace StreamerBotLib.Data.MultiLive
         {
             lock (_DataSource)
             {
-                return (from DataSource.LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
+                return (from LiveStreamRow liveStreamRow in _DataSource.LiveStream.Select()
                         where liveStreamRow.ChannelName == ChannelName && liveStreamRow.LiveDate.ToShortDateString() == dateTime.ToShortDateString()
                         select liveStreamRow).Count() > 1;
             }
@@ -194,12 +196,12 @@ namespace StreamerBotLib.Data.MultiLive
                     // since we know this addition is only from a source based on the Channels, we forego null checking
                     _DataSource.LiveStream.AddLiveStreamRow((ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}'").FirstOrDefault(), dateTime);
                     _DataSource.LiveStream.AcceptChanges();
+                    NotifyPropertyChanged(nameof(_DataSource.LiveStream));
                     SaveData();
 
                     result = true;
                     IsLiveStreamUpdated = true; // flag to update the summary due to new entry
                 }
-                NotifyPropertyChanged(nameof(LiveStream));
                 return result;
             }
         }
@@ -209,7 +211,6 @@ namespace StreamerBotLib.Data.MultiLive
             if (IsLiveStreamUpdated || CleanupList.Count == 0) // only perform if flag for update occurs
             {
                 CleanupList.Clear();
-                NotifyPropertyChanged(nameof(CleanupList));
 
                 List<DateTime> AllDates = new(DataSetStatic.GetRows(_DataSource.LiveStream).Select(dataRow => ((LiveStreamRow)dataRow).LiveDate.Date).OrderByDescending((k) => k.Date));
                 List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
@@ -267,8 +268,8 @@ namespace StreamerBotLib.Data.MultiLive
                 SaveData();
                 IsLiveStreamUpdated = true;
 
-                NotifyPropertyChanged(nameof(LiveStream));
-                NotifyPropertyChanged(nameof(SummaryLiveStream));
+                NotifyPropertyChanged(nameof(_DataSource.LiveStream));
+                NotifyPropertyChanged(nameof(_DataSource.SummaryLiveStream));
                 CleanupList.Clear();
                 NotifyPropertyChanged(nameof(CleanupList));
 
@@ -361,7 +362,7 @@ namespace StreamerBotLib.Data.MultiLive
                 _DataSource.Channels.AddChannelsRow(UserName);
                 _DataSource.Channels.AcceptChanges();
                 SaveData();
-                NotifyPropertyChanged(nameof(Channels));
+                NotifyPropertyChanged(nameof(_DataSource.Channels));
             }
         }
 

@@ -90,9 +90,6 @@ namespace StreamerBot
             ComboBox srchrs = sender as ComboBox;
             int hrs = (int)srchrs.SelectedValue;
 
-            OptionFlags.SetSettings();
-            CheckDebug();
-
             // changes the refresh time - which is already set at this point
             TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
             TwitchFollowerCurrRefreshHrs = hrs;

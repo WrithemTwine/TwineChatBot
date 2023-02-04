@@ -31,7 +31,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 ClipMonitorService.Stop();
             }
 
-            RefreshSettings();
             ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
             ClipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Ceiling(TwitchFrequencyClipTime));
             ClipMonitorService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });

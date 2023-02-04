@@ -75,17 +75,10 @@ namespace StreamerBotLib.Overlay
 
         private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
         {
-            OptionFlags.SetSettings();
-
             if ((sender as CheckBox).Name == "CheckBox_OptionSamePage")
             {
                 UpdateLinks();
             }
-        }
-
-        private void Expander_Click_SaveSettings(object sender, RoutedEventArgs e)
-        {
-            OptionFlags.SetSettings();
         }
 
         /// <summary>

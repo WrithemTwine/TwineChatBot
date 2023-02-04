@@ -47,7 +47,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LiveStreamMonitor?.Stop();
             }
-            RefreshSettings();
+
             ApiSettings apilive = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
         }
@@ -217,7 +217,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
                         // get message, set a default if otherwise deleted/unavailable
-                        string msg = OptionFlags.LiveMsg ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+                        string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
 
                         // keys for exchanging codes for representative names
                         Dictionary<string, string> dictionary = new()

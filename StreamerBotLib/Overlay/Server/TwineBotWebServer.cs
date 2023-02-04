@@ -28,7 +28,6 @@ namespace StreamerBotLib.Overlay.Server
                 int port = ValidatePort(random.Next(1024, 65536));
 
                 Settings.Default.MediaOverlayPort = port;
-                OptionFlags.SetSettings();
             }
         }
 

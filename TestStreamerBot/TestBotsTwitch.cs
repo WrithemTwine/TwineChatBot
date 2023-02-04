@@ -14,7 +14,7 @@ namespace TestStreamerBot
 
         private BotsTwitch TwitchBot { get; set; } = new();
 
-        private void Initizlize()
+        private void Initialize()
         {
             TwitchBotsBase.TwitchChannelName = ChannelName;
             TwitchBotsBase.TwitchClientID = ClientId;
@@ -25,7 +25,7 @@ namespace TestStreamerBot
         [Fact]
         public void TestRaid()
         {
-            Initizlize();
+            Initialize();
 
             //BotsTwitch.TwitchBotChatClient.StartBot();
 

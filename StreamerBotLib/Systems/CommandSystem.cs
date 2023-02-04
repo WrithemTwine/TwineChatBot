@@ -82,7 +82,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimer && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
+                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimerCommands && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
                 {
                     DiluteTime = CheckDilute();
 
@@ -133,7 +133,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimer && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimerCommands && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -160,7 +160,7 @@ namespace StreamerBotLib.Systems
                                 UpdateChatUserStats();
 
                                 if (OptionFlags.RepeatNoAdjustment // no limits, just perform repeat command
-                                    || OptionFlags.RepeatTimerDilute // diluted command, performance time
+                                    || OptionFlags.RepeatTimerComSlowdown // diluted command, performance time
                                     || (OptionFlags.RepeatUseThresholds
                                         && ((OptionFlags.RepeatAboveUserCount && viewers >= OptionFlags.RepeatUserCount) || !OptionFlags.RepeatAboveUserCount) // if user threshold, check threshold, else, accept the check
                                         && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
@@ -208,7 +208,7 @@ namespace StreamerBotLib.Systems
 
             UpdateChatUserStats();
 
-            if (OptionFlags.RepeatTimerDilute) // only calculate if user wants diluted/smart-mode repeat commands
+            if (OptionFlags.RepeatTimerComSlowdown) // only calculate if user wants diluted/smart-mode repeat commands
             {
                 double factor = (chats + viewers) / ((OptionFlags.RepeatChatCount + OptionFlags.RepeatUserCount) == 0 ? 1 : OptionFlags.RepeatChatCount + OptionFlags.RepeatUserCount);
 
