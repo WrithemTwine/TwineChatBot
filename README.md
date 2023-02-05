@@ -2,8 +2,8 @@
 Twitch bots written using .NET 6.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file and future support may include SQL databases for storage. 
 
 
-[![build](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml/badge.svg?event=release)](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml)
-[![build](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml/badge.svg?event=status)](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml)
+[![build](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml/badge.svg?branch=main&event=release)](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml)
+[![build](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml/badge.svg?branch=main&event=status)](https://github.com/WrithemTwine/TwineChatBot/actions/workflows/main.yml)
 
 --------------------------
 # Application - Multi-Live Bot:
