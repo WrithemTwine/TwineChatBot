@@ -1,5 +1,4 @@
-﻿
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
@@ -16,7 +15,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -81,6 +79,8 @@ namespace StreamerBot
 
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
+
+            //LoaderDLLFolderPath = "./";
 
             InitializeComponent();
 

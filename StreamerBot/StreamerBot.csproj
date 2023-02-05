@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -39,8 +40,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1518.46" />
   </ItemGroup>
-
-  <ItemGroup>
+	
+  <PropertyGroup Label="Globals">
+    <WebView2LoaderPreference>Static</WebView2LoaderPreference>
+  </PropertyGroup>
+  
+	<ItemGroup>
     <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
   </ItemGroup>
 
