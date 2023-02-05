@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace StreamerBotLib.Static
 {
@@ -24,6 +25,27 @@ namespace StreamerBotLib.Static
         }
 
         /// <summary>
+        /// Uniquely adds an item to the provided <paramref name="List"/>, first checking if <paramref name="List"/> contains the item.
+        /// </summary>
+        /// <typeparam name="T">The generic type of the list.</typeparam>
+        /// <param name="List">The List to add the item.</param>
+        /// <param name="Item">The item to check if List contains and then add this item.</param>
+        /// <param name="comparer">An item comparer to use to determine if two list objects are equal.</param>
+        /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
+        public static bool UniqueAdd<T>(this List<T> List, T Item, IEqualityComparer<T> comparer)
+        {
+            bool found = false;
+
+            if (!List.Where(Listitem => comparer.Equals(Item, Listitem)).Select(Listitem => new { }).Any())
+            {
+                List.Add(Item);
+                found = true;
+            }
+
+            return found;
+        }
+
+        /// <summary>
         /// Uniquely adds a group of items to the provided <paramref name="List"/>, first checking if each item is in the <paramref name="List"/>.
         /// </summary>
         /// <typeparam name="T">The List item type.</typeparam>
@@ -31,7 +53,7 @@ namespace StreamerBotLib.Static
         /// <param name="ItemEnumerable">The group of items to add.</param>
         public static void UniqueAddRange<T>(this List<T> List, IEnumerable<T> ItemEnumerable)
         {
-            foreach(T item in ItemEnumerable)
+            foreach (T item in ItemEnumerable)
             {
                 UniqueAdd(List, item);
             }

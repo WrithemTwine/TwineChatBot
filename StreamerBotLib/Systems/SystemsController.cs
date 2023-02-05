@@ -207,7 +207,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser,f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime())))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -322,7 +322,7 @@ namespace StreamerBotLib.Systems
         {
             return DataManage.GetWebhooks(webhooksKind);
         }
-     
+
 
         #endregion
 
@@ -686,7 +686,7 @@ namespace StreamerBotLib.Systems
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)
         {
-            if (OptionFlags.RepeatTimer && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
+            if (OptionFlags.RepeatTimerCommands && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 short x = 0;
 
@@ -720,12 +720,12 @@ namespace StreamerBotLib.Systems
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
         {
-            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMultiEntries) || GiveawayCollectionList.UniqueAdd(DisplayName)))
+            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMaxEntries) || GiveawayCollectionList.UniqueAdd(DisplayName)))
             {
                 ActionSystem.GiveawayCollection.Add(DisplayName);
             }
 
-            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMultiEntries)
+            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMaxEntries)
             {
                 GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == DisplayName));
             }

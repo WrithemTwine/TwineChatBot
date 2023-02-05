@@ -61,9 +61,6 @@ namespace StreamerBotLib.GUI
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
-
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
             TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
@@ -109,7 +106,6 @@ namespace StreamerBotLib.GUI
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
         }
-
 
         private void TwitchFollower_OnBotStarted(object sender, EventArgs e)
         {

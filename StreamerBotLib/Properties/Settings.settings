@@ -326,5 +326,17 @@
     <Setting Name="MediaOverlayCSSExpandHelp" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="GridTabifyUserFollow" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GridTabifyUserFollowWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">950</Value>
+    </Setting>
+    <Setting Name="GridTabifyStreamRaids" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GridTabifyStreamRaidsWidth" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">950</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

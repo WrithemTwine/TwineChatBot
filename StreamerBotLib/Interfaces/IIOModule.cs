@@ -32,8 +32,6 @@ namespace StreamerBotLib.Interfaces
         // Stop operations
         bool StopBot();
 
-        void RefreshSettings();
-
         // Procedures for full app exit
         bool ExitBot();
     }

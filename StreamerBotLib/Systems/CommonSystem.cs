@@ -9,9 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 
@@ -48,7 +45,6 @@ namespace StreamerBotLib.Systems
         /// Time delays to use in threads
         /// </summary>
         protected const int SecondsDelay = 2000;
-        protected static bool StreamUpdateClockStarted;
 
         protected static List<LiveUser> CurrUsers { get; private set; } = new();
         protected static List<string> UniqueUserJoined { get; private set; } = new();

@@ -1,7 +1,5 @@
-﻿
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
-using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
@@ -17,7 +15,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -51,7 +48,6 @@ namespace StreamerBot
 
         private int TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
-        private const string MultiLiveName = "MultiUserLiveBot";
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
 
@@ -80,10 +76,11 @@ namespace StreamerBot
 
             WatchProcessOps = true;
             IsMultiProcActive = null;
-            OptionFlags.SetSettings();
 
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
+
+            //LoaderDLLFolderPath = "./";
 
             InitializeComponent();
 
@@ -91,35 +88,55 @@ namespace StreamerBot
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
 
-            guiAppServices.AppDataDirectory = GetAppDataCWD();
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            SetTwitchFollowerRefreshTime();
 
+            ThreadManager.CreateThreadStart(ProcessWatcher);
+
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            if (version.Revision != 0)
+            {
+                StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
+            }
+
+            StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+
+            ConstructEvents();
+        }
+
+        /// <summary>
+        /// Get the application current working directory
+        /// </summary>
+        /// <returns>The user's local application data path to store application save data.</returns>
+        private static string GetAppDataCWD()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
+        }
+
+        /// <summary>
+        /// Called from constructor, sets events 
+        /// </summary>
+        private void ConstructEvents()
+        {
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
-            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
             guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
             guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
+            guiAppServices.AppDataDirectory = GetAppDataCWD();
             guiAppServices.OnBotStarted += GUI_OnBotStarted;
             guiAppServices.OnBotStopped += GUI_OnBotStopped;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
+
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
-            List<int> hrslist = new() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
-            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = hrslist;
-            SetTwitchFollowerRefreshTime();
-
-            ThreadManager.CreateThreadStart(ProcessWatcher);
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
-        }
-
-        private static string GetAppDataCWD()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
         }
 
         #region Bot_Ops
@@ -290,18 +307,14 @@ namespace StreamerBot
                 })).Start();
             }
         }
-
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
         {
             BeginUpdateCategory();
         }
-
-
         private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
         {
             SetLiveStreamActive(true);
         }
-
         private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
         {
             SetLiveStreamActive(false);
@@ -310,12 +323,10 @@ namespace StreamerBot
         {
             BeginUpdateCategory();
         }
-
         private void BeginUpdateCategory()
         {
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
         }
-
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -354,105 +365,6 @@ namespace StreamerBot
 
                 CheckFocus();
             });
-        }
-
-        #endregion
-
-        #region MultiLive
-
-        private void SetMultiLiveActive(bool ProcessFound = false)
-        {
-            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-            SetMultiLiveButtons();
-        }
-
-        private void SetMultiLiveButtons()
-        {
-            if (IsMultiProcActive == false)
-            {
-                SetMultiLiveTabItems(true);
-
-                BotController.ConnectTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked ?? false;
-                Radio_Twitch_LiveBotStop.IsEnabled = false; // can't stop the live bot service while monitoring multiple channels
-                NotifyPropertyChanged(nameof(guiTwitchBot));
-            }
-            else if (IsMultiProcActive == true)
-            {
-                SetMultiLiveTabItems();
-                MultiBotRadio();
-                BotController.DisconnectTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-            }
-        }
-
-        private void SetMultiLiveTabItems(bool Visible = false)
-        {
-            TabItem_Data_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
-            TabItem_Data_Separator.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
-            GroupBox_Bots_Starts_MultiLive.Visibility = Visible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
-        {
-            Radio_MultiLiveTwitch_StartBot.IsEnabled = IsMultiProcActive == false && ((sender as RadioButton).IsChecked ?? false);
-        }
-
-        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
-        {
-            if (sender != null)
-            {
-                MultiBotRadio();
-            }
-        }
-
-        private void BC_MultiLiveTwitch_BotOp(object sender, MouseButtonEventArgs e)
-        {
-            if (sender == Radio_MultiLiveTwitch_StartBot)
-            {
-                MultiBotRadio(true);
-            }
-            else if (sender == Radio_MultiLiveTwitch_StopBot)
-            {
-                MultiBotRadio();
-            }
-        }
-
-        private void MultiBotRadio(bool Start = false)
-        {
-            if (Controller != null && guiTwitchBot != null && guiTwitchBot.TwitchLiveMonitor.IsMultiConnected)
-            {
-                if (Start && Radio_MultiLiveTwitch_StartBot.IsEnabled && Radio_MultiLiveTwitch_StartBot.IsChecked != true)
-                {
-                    BotController.StartTwitchMultiLive();
-                    Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                    Radio_MultiLiveTwitch_StartBot.IsChecked = true;
-                    Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
-                    if (IsMultiProcActive == false)
-                    {
-                        // allow edits while bot is active
-                        (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
-
-                        (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-                        (MultiLive_Data.Content as MultiLiveDataGrids).SetLiveManagerBot(guiTwitchBot.TwitchLiveMonitor.MultiLiveDataManager);
-                    }
-                }
-                else
-                {
-                    BotController.StopTwitchMultiLive();
-                    Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-                    Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-                    Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-
-                    // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
-                    (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
-                }
-            }
-        }
-
-        private void DG_ChannelNames_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            BotController.UpdateTwitchMultiLiveChannels();
         }
 
         #endregion
@@ -499,7 +411,6 @@ namespace StreamerBot
                     new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
                     new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                     new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                    new(Settings.Default.TwitchMultiLiveAutoStart, Radio_MultiLiveTwitch_StartBot),
                     new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
                     new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart)
                 };
@@ -507,25 +418,18 @@ namespace StreamerBot
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
                 {
-
-                    if (tuple.Item2 != Radio_MultiLiveTwitch_StartBot)
+                    Dispatcher.BeginInvoke(new BotOperation(() =>
                     {
-                        Dispatcher.BeginInvoke(new BotOperation(() =>
-                        {
-                            (tuple.Item2.DataContext as IOModule)?.StartBot();
-                        }), null);
-                    }
-                    else
-                    {
-                        SetMultiLiveButtons();
-                        MultiBotRadio(true);
-                    }
+                        (tuple.Item2.DataContext as IOModule)?.StartBot();
+                    }), null);
                 }
+
                 BeginUpdateCategory();
             }
 
             CheckMessageBoxes();
             CheckBox_ManageData_Click(sender, new());
+            CheckBox_TabifySettings_Clicked(this, new());
 
             // TODO: research auto-refreshing token
         }
@@ -537,8 +441,6 @@ namespace StreamerBot
             OptionFlags.ActiveToken = false;
 
             Controller.ExitBots();
-
-            OptionFlags.SetSettings();
         }
 
         #endregion
@@ -556,7 +458,6 @@ namespace StreamerBot
                 MessageBox.Show(LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveMsg), LocalizedMsgSystem.GetVar(MsgBox.MsgBoxManageDataArchiveTitle));
 
                 Settings.Default.ManageDataArchiveMsg = false;
-                OptionFlags.SetSettings();
             }
 
 
@@ -588,38 +489,28 @@ namespace StreamerBot
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
             CheckFocus();
-            OptionFlags.SetSettings();
         }
 
-        private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
+        private void CheckDebug(object sender, RoutedEventArgs e)
         {
-            OptionFlags.SetSettings();
-
-            CheckDebug();
-            SetVisibility();
-
-            if (sender is CheckBox && ((CheckBox)sender).Name == "CheckBox_RepeatCommands_Enable")
+            if (StackPanel_DebugLivestream != null)
             {
-                Controller.ActivateRepeatTimers();
+                StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
-        private void CheckDebug()
+        private void SetVisibility(object sender, RoutedEventArgs e)
         {
-            StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void SetVisibility()
-        {
-            Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-            Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-            Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+            if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null)
+            {
+                Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+                Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+                Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+            }
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
         {
-            OptionFlags.SetSettings();
-
             if (CheckBox_ManageUsers.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
@@ -658,8 +549,6 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
-            OptionFlags.SetSettings();
-
             List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
 
             void SetButtons(bool value)
@@ -711,10 +600,6 @@ namespace StreamerBot
             List<DateTime> RefreshTokenDateExpiry = new() { OptionFlags.TwitchRefreshDate, OptionFlags.TwitchStreamerTokenDate };
             RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
             StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
-
-            CheckDebug();
-            SetVisibility();
-
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -743,35 +628,6 @@ namespace StreamerBot
             TextBlock_TwitchBotLog.ScrollToEnd();
         }
 
-        // TODO: fix scrolling in Sliders but not scroll the whole panel
-
-        private bool SliderMouseCaptured;
-
-        //private void Slider_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        //{
-        //    Slider curr = (Slider)sender;
-        //    curr.Value += (e.Delta > 0 ? 1 : -1) * curr.SmallChange;
-        //}
-
-        //private void Slider_MouseEnter(object sender, MouseEventArgs e)
-        //{
-        //    SliderMouseCaptured = true;
-        //}
-
-        //private void Slider_MouseLeave(object sender, MouseEventArgs e)
-        //{
-        //    SliderMouseCaptured = false;
-        //}
-
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (e.Delta != 0 && SliderMouseCaptured)
-            {
-                e.Handled = true;
-                return;
-            }
-        }
-
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
         {
             ToggleButton TBSource = null;
@@ -784,7 +640,8 @@ namespace StreamerBot
             else if (sender.GetType() == typeof(StackPanel))
             {
                 SPSource = (StackPanel)sender;
-            } else if (sender.GetType() == typeof(GroupBox))
+            }
+            else if (sender.GetType() == typeof(GroupBox))
             {
                 GBSource = (GroupBox)sender;
             }
@@ -802,9 +659,10 @@ namespace StreamerBot
             }
 
             // be sure this list is in XAML object order
-            if (TBSource?.Name == CheckBox_RepeatCommands_Enable.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions.Name)
+            if (TBSource?.Name == CheckBox_RepeatCommands_Enable?.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions?.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+                Controller.ActivateRepeatTimers();
             }
             else if (TBSource?.Name == RadioButton_RepeatTimer_NoAdjustment.Name || TBSource?.Name == RadioButton_RepeatTimer_SlowDownOption.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption.Name || GBSource?.Name == GroupBox_RepeatTimer_ThresholdOptions.Name)
             {
@@ -868,8 +726,6 @@ namespace StreamerBot
 
         private void SetLiveStreamActive(bool Online = true)
         {
-
-
             Dispatcher.Invoke(
                 () =>
                 {
@@ -1155,6 +1011,7 @@ namespace StreamerBot
                         }
                         else if (((MenuItem)M).Name is "DataGridContextMenu_AutoShout" or "DataGridContextMenu_LiveMonitor")
                         {
+                            // TODO: limit 'live monitor' menu access to only when the multi-live datamanager is active
                             ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
                         }
                         else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
@@ -1199,7 +1056,7 @@ namespace StreamerBot
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
                 if (CurrdataView != null)
                 {
-                    PopupWindows.DataGridAddNewItem(CurrdataView.Table);
+                    PopupWindows.DataGridAddNewItem(SystemsController.DataManage, CurrdataView.Table);
                 }
             }
             else
@@ -1207,7 +1064,7 @@ namespace StreamerBot
                 DataRowView dataView = (DataRowView)sourceDataGrid.SelectedItem;
                 if (dataView != null)
                 {
-                    PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
+                    PopupWindows.DataGridEditItem(SystemsController.DataManage, dataView.Row.Table, dataView.Row);
                 }
             }
         }
@@ -1259,9 +1116,9 @@ namespace StreamerBot
             SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
         }
 
-#endregion
+        #endregion
 
-#region Debug Empty Stream
+        #region Debug Empty Stream
 
         private DateTime DebugStreamStarted = DateTime.MinValue;
 
@@ -1301,9 +1158,9 @@ namespace StreamerBot
 
         }
 
-#endregion
+        #endregion
 
-#region Giveaway
+        #region Giveaway
 
         private delegate void RefreshChannelPoints();
 
@@ -1434,107 +1291,9 @@ namespace StreamerBot
             }
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region WatcherTools
-
-        private bool WatchProcessOps;
-
-        /// <summary>
-        /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
-        /// </summary>
-        public event EventHandler NotifyExpiredCredentials;
-
-        /// <summary>
-        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
-        /// </summary>
-        private bool? IsMultiProcActive { get; set; }
-
-        private delegate void ProcWatch(bool IsActive);
-
-        private void UpdateProc(bool IsActive)
-        {
-            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
-        }
-
-        private void ProcessWatcher()
-        {
-            const int sleep = 2000;
-
-            try
-            {
-                while (WatchProcessOps)
-                {
-                    Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                    if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
-                    {
-                        UpdateProc(processes.Length > 0);
-                        IsMultiProcActive = processes.Length > 0;
-                    }
-
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
-                    {
-                        NotifyExpiredCredentials?.Invoke(this, new());
-                    }
-
-                    if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
-                    {
-                        Controller.TwitchStartUpdateAllFollowers();
-                        TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
-                    }
-
-                    UpdateAppTime();
-
-                    Thread.Sleep(sleep);
-                }
-            }
-            catch (ThreadInterruptedException ex) // will always throw exception when exiting during a Sleep
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-#region Refresh Followers
-
-        private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
-        {
-            SetTwitchFollowerRefreshTime();
-        }
-
-        /// <summary>
-        /// Initialize the DateTime used to refresh Twitch Followers in the Follower Refresh process after user specified hours.
-        /// Activates with constructor and when "follow bot" is started - to prevent null/non-sensible values - and spec is 'refresh every N hours after follow bot starts".
-        /// </summary>
-        private void SetTwitchFollowerRefreshTime()
-        {
-            TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
-        }
-
-        private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox srchrs = sender as ComboBox;
-            int hrs = (int)srchrs.SelectedValue;
-
-            OptionFlags.SetSettings();
-            CheckDebug();
-
-            // changes the refresh time - which is already set at this point
-            TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
-            TwitchFollowerCurrRefreshHrs = hrs;
-        }
-
-        private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
-        {
-            Controller.TwitchStartUpdateAllFollowers();
-        }
-
-
-
-
-#endregion
-
-#endregion
     }
 }

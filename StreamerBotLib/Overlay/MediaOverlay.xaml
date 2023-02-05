@@ -89,7 +89,7 @@
             </TabItem>
             <TabItem Header="Overlay Styles" >
                 <DockPanel Margin="3">
-                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayHelpExpand}" DockPanel.Dock="Top" Expanded="Expander_Click_SaveSettings" Collapsed="Expander_Click_SaveSettings">
+                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayHelpExpand}" DockPanel.Dock="Top">
                         <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <FlowDocument>
                                 <Section>

@@ -18,6 +18,12 @@ namespace TestStreamerBot
 
         private SystemsController systemsController;
 
+        public TestSystemsController()
+        {
+            systemsController = new();
+            Initialize();
+        }
+
         private void Initialize()
         {
             if (!Initialized)
@@ -26,9 +32,7 @@ namespace TestStreamerBot
                 {
                     File.Delete(DataFileXML);
                 }
-                systemsController = new();
                 systemsController.PostChannelMessage += SystemsController_PostChannelMessage;
-                OptionFlags.SetSettings();
 
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;
@@ -37,7 +41,7 @@ namespace TestStreamerBot
             }
         }
 
-        private void SystemsController_PostChannelMessage(object sender, StreamerBotLib.Events.PostChannelMessageEventArgs e)
+        private void SystemsController_PostChannelMessage(object? sender, StreamerBotLib.Events.PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }

@@ -21,7 +21,7 @@
 //
 using System.Threading;
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN 
+namespace StreamerBotLib.MachineLearning.Accord.KNN
 {
     /// <summary>
     ///   Common interface for algorithms that can be canceled

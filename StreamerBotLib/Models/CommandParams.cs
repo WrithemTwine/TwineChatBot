@@ -134,7 +134,7 @@ namespace StreamerBotLib.Models
             return data;
         }
 
-        public static Dictionary<string,string> ParseEditCommandParams(List<string> arglist)
+        public static Dictionary<string, string> ParseEditCommandParams(List<string> arglist)
         {
             Dictionary<string, string> edit = new();
             foreach (var (keyvalue, value) in from string param in arglist

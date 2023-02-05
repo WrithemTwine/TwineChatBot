@@ -13,6 +13,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 using OptionFlags = StreamerBotLib.Static.OptionFlags;
@@ -37,11 +38,14 @@ namespace StreamerBotLib.BotClients
     {
 #endif
 
-        public event EventHandler<BotEventArgs> BotEvent = null;
+        [SuppressMessage("Style", "CS0067:The event is never used", Justification = "Included to implement interface, but is unused")]
+        public event EventHandler<BotEventArgs> BotEvent;
+
         public event EventHandler<EventArgs> ActionQueueChanged;
         public event EventHandler<OverlayActionType> SendOverlayToServer;
         private bool PauseAlerts = false;
         private bool AlertsThreadStarted = false;
+        private bool WindowClosing = false;
 
         private Queue<Thread> SendAlerts { get; set; } = new();
         public int MediaItems
@@ -227,10 +231,11 @@ namespace StreamerBotLib.BotClients
 
         public override bool StartBot()
         {
+            WindowClosing = false;
             IsStopped = false;
             IsStarted = true;
 
-            if(OverlayWindow == null)
+            if (OverlayWindow == null)
             {
                 OverlayWindow = new(OverlayWindow_UserHideWindow);
                 SendOverlayToServer += OverlayWindow.GetOverlayActionReceivedHandler();
@@ -238,7 +243,7 @@ namespace StreamerBotLib.BotClients
 
             if (!AlertsThreadStarted)
             {
-                ThreadManager.CreateThread(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High).Start();
+                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High);
             }
 
             InvokeBotStarted();
@@ -249,22 +254,23 @@ namespace StreamerBotLib.BotClients
 
         private void OverlayWindow_UserHideWindow(object sender, EventArgs e)
         {
+            WindowClosing = true;
+
             InvokeBotStopped();
+            StopBot();
         }
 
         public override bool StopBot()
         {
             IsStarted = false;
             IsStopped = true;
-
-            if (!OptionFlags.ActiveToken)
+     
+            SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
+            if (!WindowClosing)
             {
                 OverlayWindow?.CloseApp();
-            } 
-            else
-            {
-                OverlayWindow?.Hide();
             }
+            OverlayWindow = null;
 
             InvokeBotStopped();
 
@@ -276,7 +282,7 @@ namespace StreamerBotLib.BotClients
         {
             lock (SendAlerts)
             {
-                SendAlerts.Enqueue( ThreadManager.CreateThread( () => SendAlert(e.OverlayAction) ) );
+                SendAlerts.Enqueue(ThreadManager.CreateThread(() => SendAlert(e.OverlayAction)));
                 NotifyActionQueueChanged();
             }
         }
@@ -351,7 +357,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
 
-#region unused interface
+        #region unused interface
         public override bool Send(string s)
         {
             return false;
@@ -370,6 +376,6 @@ namespace StreamerBotLib.BotClients
 
         }
 
-#endregion
+        #endregion
     }
 }

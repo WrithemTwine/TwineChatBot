@@ -4,7 +4,6 @@
 #define UseGUIDLL
 #endif
 
-using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Models;
 
 using StreamerBotLib.Overlay.Server;

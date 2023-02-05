@@ -59,7 +59,7 @@ namespace StreamerBotLib.Static
 
             sb = sb.Append(' ');
 
-           sb = sb.Append(plural[src == 1.0 ? 0 : 1]);
+            sb = sb.Append(plural[src == 1.0 ? 0 : 1]);
 
             if (Suffix != null)
             {

@@ -137,8 +137,8 @@ namespace StreamerBotLib.GUI
             }
 
             ChannelEvents = dataManager._DataSource.ChannelEvents.DefaultView;
-            Users = new( dataManager._DataSource.Users, null, $"{dataManager._DataSource.Users.LastDateSeenColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
-            Followers = new( dataManager._DataSource.Followers,null, $"{dataManager._DataSource.Followers.FollowedDateColumn.ColumnName} DESC",DataViewRowState.CurrentRows);
+            Users = new(dataManager._DataSource.Users, null, $"{dataManager._DataSource.Users.LastDateSeenColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
+            Followers = new(dataManager._DataSource.Followers, null, $"{dataManager._DataSource.Followers.FollowedDateColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             Discord = dataManager._DataSource.Discord.DefaultView;
             CurrencyType = dataManager._DataSource.CurrencyType.DefaultView;
             Currency = dataManager._DataSource.Currency.DefaultView;

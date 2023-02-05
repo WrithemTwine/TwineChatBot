@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -12,7 +13,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
     <SignAssembly>false</SignAssembly>
-    <Version>1.2.6.0</Version>    
+    <Version>1.2.7.0</Version>    
     <Copyright>2022</Copyright>
     <PackageReleaseNotes>Updated repeating command process</PackageReleaseNotes>
     <Authors>WrithemTwine</Authors>
@@ -37,9 +38,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1518.46" />
   </ItemGroup>
-
-  <ItemGroup>
+	
+  <PropertyGroup Label="Globals">
+    <WebView2LoaderPreference>Static</WebView2LoaderPreference>
+  </PropertyGroup>
+  
+	<ItemGroup>
     <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
   </ItemGroup>
 

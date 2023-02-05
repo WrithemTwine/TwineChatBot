@@ -130,7 +130,7 @@ namespace StreamerBotLib.Static
 
         private static ThreadData CreateThreadData(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            return CreateThreadData(()=>task.Start(), waitState, Priority);
+            return CreateThreadData(() => task.Start(), waitState, Priority);
         }
 
         public static void CreateThreadStart(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
@@ -138,7 +138,7 @@ namespace StreamerBotLib.Static
             CreateThreadStart(() => task.Start(), waitState, Priority);
         }
 
-            private static int GetThreadPriority(ThreadExitPriority threadExitPriority)
+        private static int GetThreadPriority(ThreadExitPriority threadExitPriority)
         {
             //    VeryHigh, High, Normal, Low, VeryLow
 

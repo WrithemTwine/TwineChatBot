@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
-using Newtonsoft.Json.Linq;
-
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
@@ -80,7 +78,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         if (IsStopped || !IsStarted)
                         {
-                            RefreshSettings();
                             BuildPubSubClient();
 
                             UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(TwitchChannelName);
@@ -149,8 +146,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Event handler used to send all of the user selected 'listen to topics' to the server. This must be performed within 15 seconds of the connection, otherwise, the Twitch server disconnects the connection.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Object sending the event.</param>
+        /// <param name="e">Parameters for event.</param>
         private void TwitchPubSub_OnPubSubServiceConnected(object sender, EventArgs e)
         {
             if (!IsConnected && IsStarted)
@@ -172,11 +169,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             TwitchPubSub?.SendTopics(Token, true);
 
-            //TwitchPubSub = null;
             IsConnected = false;
-            RefreshSettings();
             InvokeBotStopped();
-
         }
     }
 }

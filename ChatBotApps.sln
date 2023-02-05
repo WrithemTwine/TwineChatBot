@@ -13,13 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib", "StreamerB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertDataSourceFile", "ConvertDataSourceFile\ConvertDataSourceFile.csproj", "{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib.MachineLearning", "StreamerBotLib.MachineLearning\StreamerBotLib.MachineLearning.csproj", "{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaOverlayServer", "MediaOverlayServer\MediaOverlayServer.csproj", "{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTestFeature", "SimpleTestFeature\SimpleTestFeature.csproj", "{F735F8FE-6259-4FB7-A980-FF9250CD4650}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLibMediaOverlayServer", "StreamerBotLibMediaOverlayServer\StreamerBotLibMediaOverlayServer.csproj", "{D7E0AE9E-243D-4DB2-A13F-EE19531FAE1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,22 +41,10 @@ Global
 		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F6BA384-5869-446F-B87D-E83CBA7FEBF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A53BCCB-62E8-465F-ACE3-A90443F3D03D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7E0AE9E-243D-4DB2-A13F-EE19531FAE1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7E0AE9E-243D-4DB2-A13F-EE19531FAE1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7E0AE9E-243D-4DB2-A13F-EE19531FAE1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7E0AE9E-243D-4DB2-A13F-EE19531FAE1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

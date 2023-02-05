@@ -1,6 +1,6 @@
-﻿using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.Data.MultiLive;
+﻿using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
 using System;
@@ -25,6 +25,8 @@ namespace StreamerBotLib.MultiLive
         private static MultiDataManager MultiLiveData;
         private ManageWindows PopupWindows { get; set; } = new();
 
+        private const int MaxChannelCount = 99;
+
         public MultiLiveDataGrids()
         {
             InitializeComponent();
@@ -32,7 +34,11 @@ namespace StreamerBotLib.MultiLive
 
         public void AddNewMonitorChannel(string UserName)
         {
-            MultiLiveData.PostMonitorChannel(UserName);
+            if (MultiLiveData.GetMonitorChannelCount() < MaxChannelCount
+                && !MultiLiveData.GetChannelNames().Contains(UserName))
+            {
+                MultiLiveData.PostMonitorChannel(UserName);
+            }
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -53,7 +59,7 @@ namespace StreamerBotLib.MultiLive
             Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
         }
 
-        public void SetLiveManagerBot(MultiDataManager MultiLiveDataManager)
+        public void SetDataManager(MultiDataManager MultiLiveDataManager)
         {
             Grid_MultiUserLiveMonitor.DataContext = MultiLiveDataManager;
             MultiLiveData = MultiLiveDataManager;
@@ -69,30 +75,34 @@ namespace StreamerBotLib.MultiLive
         {
             DataGrid item = sender as DataGrid;
 
-            Popup_DataEdit(item, false);
+            if (((DataGrid)sender).Name != "DG_Multi_ChannelNames" || MultiLiveData.GetMonitorChannelCount() < MaxChannelCount)
+            {
+                Popup_DataEdit(item, false);
+            }
         }
 
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddEdit = ((DataGrid)sender).Name is "DG_Multi_WebHooks" or "DG_Multi_ChannelNames";
+                bool FoundAddEdit = ((DataGrid)sender).Name == "DG_Multi_WebHooks" || (((DataGrid)sender).Name == "DG_Multi_ChannelNames" && MultiLiveData.GetMonitorChannelCount() < MaxChannelCount);
                 bool FoundIsEnabled = MultiLiveData.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName, "IsEnabled");
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
                     {
-                        if (((MenuItem)M).Name is "DataGridContextMenu_AddItem")
+                        switch (((MenuItem)M).Name)
                         {
-                            ((MenuItem)M).IsEnabled = FoundAddEdit;
-                        } else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItem")
-                        {
-                            ((MenuItem)M).IsEnabled = true;
-                        }
-                        else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
-                        {
-                            ((MenuItem)M).IsEnabled = FoundIsEnabled;
+                            case "DataGridContextMenu_AddItem":
+                                ((MenuItem)M).IsEnabled = FoundAddEdit;
+                                break;
+                            case "DataGridContextMenu_DeleteItem":
+                                ((MenuItem)M).IsEnabled = true;
+                                break;
+                            case "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems":
+                                ((MenuItem)M).IsEnabled = FoundIsEnabled;
+                                break;
                         }
                     }
                 }
@@ -116,7 +126,7 @@ namespace StreamerBotLib.MultiLive
                 DataView CurrdataView = (DataView)sourceDataGrid.ItemsSource;
                 if (CurrdataView != null)
                 {
-                    PopupWindows.DataGridAddNewItem(CurrdataView.Table);
+                    PopupWindows.DataGridAddNewItem(MultiLiveData, CurrdataView.Table);
                 }
             }
             else
@@ -124,7 +134,7 @@ namespace StreamerBotLib.MultiLive
                 DataRowView dataView = (DataRowView)sourceDataGrid.SelectedItem;
                 if (dataView != null)
                 {
-                    PopupWindows.DataGridEditItem(dataView.Row.Table, dataView.Row);
+                    PopupWindows.DataGridEditItem(MultiLiveData, dataView.Row.Table, dataView.Row);
                 }
             }
         }
@@ -164,5 +174,54 @@ namespace StreamerBotLib.MultiLive
             MultiLiveData.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
         }
 
+        private void DG_Multi_ChannelNames_AutoGeneratedColumns(object sender, EventArgs e)
+        {
+            static void Collapse(DataGridColumn dgc)
+            {
+                dgc.Visibility = Visibility.Collapsed;
+            }
+
+            DataGrid dg = (DataGrid)sender;
+
+            switch (dg.Name)
+            {
+                case "DG_Multi_ChannelNames":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() is not "Id" and not "ChannelName")
+                        {
+                            Collapse(dc);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private void ComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            MultiLiveData.SummarizeStreamData();
+            ComboBox_SummarizeLive_List.Items.Refresh();
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (((ComboBox)sender).SelectedItem != null)
+            {
+                Button_StartSummarizingLiveData.IsEnabled = true;
+            }
+        }
+
+        private void Button_StartSummarizingLiveData_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem_DailyData.IsEnabled = false;
+            TabItem_SummaryDailyData.IsEnabled = false;
+            Button_StartSummarizingLiveData.IsEnabled = false;
+
+            ArchiveMultiStream selectedItem = (ArchiveMultiStream)ComboBox_SummarizeLive_List.SelectedItem;
+            MultiLiveData.SummarizeStreamData(selectedItem);
+            ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
+            TabItem_DailyData.IsEnabled = true;
+            TabItem_SummaryDailyData.IsEnabled = true;
+        }
     }
 }

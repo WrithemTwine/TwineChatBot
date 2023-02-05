@@ -4,11 +4,8 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -50,7 +47,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LiveStreamMonitor?.Stop();
             }
-            RefreshSettings();
+
             ApiSettings apilive = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
             LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
         }
@@ -121,7 +118,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (IsStarted)
                 {
                     StopMultiLive();
-                    LiveStreamMonitor.Stop();
+                    LiveStreamMonitor?.Stop();
                     LiveStreamMonitor = null;
                     IsStarted = false;
                     IsStopped = true;
@@ -151,7 +148,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void MultiConnect()
         {
-            if(MultiLiveDataManager== null)
+            if (MultiLiveDataManager == null)
             {
                 MultiLiveDataManager = new();
                 MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;
@@ -173,13 +170,13 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 MultiLiveDataManager.SaveData();
                 SetLiveMonitorChannels(MultiLiveDataManager.GetChannelNames());
+                // TODO: localize the multilive bot data
+                MultiLiveDataManager.LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
             }
             else
             {
                 SetLiveMonitorChannels(new());
             }
-            // TODO: localize the multilive bot data
-            MultiLiveDataManager.LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
         }
 
         public void StartMultiLive()
@@ -196,9 +193,11 @@ namespace StreamerBotLib.BotClients.Twitch
             if (IsMultiConnected && IsMultiLiveBotActive)
             {
                 IsMultiLiveBotActive = false;
-                UpdateChannels();
+                if (OptionFlags.ActiveToken)
+                {
+                    UpdateChannels();
+                }
                 MultiLiveDataManager.LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
-                MultiLiveDataManager.SaveData();
             }
         }
 
@@ -218,7 +217,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
                         // get message, set a default if otherwise deleted/unavailable
-                        string msg = OptionFlags.LiveMsg ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+                        string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
 
                         // keys for exchanging codes for representative names
                         Dictionary<string, string> dictionary = new()

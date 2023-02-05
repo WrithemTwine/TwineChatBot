@@ -31,7 +31,7 @@ namespace StreamerBotLib.Systems
                         DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
                     }
                 }
-               
+
             }
         }
 
@@ -149,7 +149,7 @@ namespace StreamerBotLib.Systems
         {
             return DataManage.CheckUser(User, CurrStream.StreamStart);
         }
-        
+
         #region Incoming Raids
 
         public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)

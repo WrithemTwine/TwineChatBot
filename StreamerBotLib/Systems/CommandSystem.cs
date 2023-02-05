@@ -82,7 +82,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimer && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
+                while (OptionFlags.ActiveToken && ChatBotStarted && OptionFlags.RepeatTimerCommands && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
                 {
                     DiluteTime = CheckDilute();
 
@@ -133,7 +133,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimer && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
+                while (OptionFlags.ActiveToken && repeat != 0 && InCategory && ChatBotStarted && OptionFlags.RepeatTimerCommands && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -160,7 +160,7 @@ namespace StreamerBotLib.Systems
                                 UpdateChatUserStats();
 
                                 if (OptionFlags.RepeatNoAdjustment // no limits, just perform repeat command
-                                    || OptionFlags.RepeatTimerDilute // diluted command, performance time
+                                    || OptionFlags.RepeatTimerComSlowdown // diluted command, performance time
                                     || (OptionFlags.RepeatUseThresholds
                                         && ((OptionFlags.RepeatAboveUserCount && viewers >= OptionFlags.RepeatUserCount) || !OptionFlags.RepeatAboveUserCount) // if user threshold, check threshold, else, accept the check
                                         && ((OptionFlags.RepeatAboveChatCount && chats >= OptionFlags.RepeatChatCount) || !OptionFlags.RepeatAboveChatCount)) // if chat threshold, check threshold, else, accept the check
@@ -208,7 +208,7 @@ namespace StreamerBotLib.Systems
 
             UpdateChatUserStats();
 
-            if (OptionFlags.RepeatTimerDilute) // only calculate if user wants diluted/smart-mode repeat commands
+            if (OptionFlags.RepeatTimerComSlowdown) // only calculate if user wants diluted/smart-mode repeat commands
             {
                 double factor = (chats + viewers) / ((OptionFlags.RepeatChatCount + OptionFlags.RepeatUserCount) == 0 ? 1 : OptionFlags.RepeatChatCount + OptionFlags.RepeatUserCount);
 
@@ -372,7 +372,7 @@ namespace StreamerBotLib.Systems
                 // handle when returned without #category in the message
                 if (response != "" && response != "/me ")
                 {
-                    OnProcessCommand( response, multi);
+                    OnProcessCommand(response, multi);
 
 #if LogDataManager_Actions
                     LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Sent message with no #category symbol.");
@@ -457,7 +457,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count > 2)
                 {
-                    string adduser = arglist[0].Replace("@","");
+                    string adduser = arglist[0].Replace("@", "");
                     string message = string.Join(' ', arglist.Skip(1));
 
                     DataManage.PostUserCustomWelcome(adduser, message);
@@ -494,7 +494,7 @@ namespace StreamerBotLib.Systems
                             break;
                     }
 
-                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@",""), SrcUsr.Replace("@",""), User.Source);
+                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Source);
                 }
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
@@ -552,7 +552,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.accountage))
             {
-                string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@","") : User.UserName;
+                string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@", "") : User.UserName;
 
                 ThreadManager.CreateThreadStart(() =>
                 {

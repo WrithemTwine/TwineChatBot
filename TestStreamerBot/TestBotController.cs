@@ -68,7 +68,7 @@ namespace TestStreamerBot
             return new() { GameId = itemfound.Item1, GameName = itemfound.Item2 };
         }
 
-        private void BotController_OutputSentToBots(object sender, PostChannelMessageEventArgs e)
+        private void BotController_OutputSentToBots(object? sender, PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }
@@ -386,7 +386,7 @@ namespace TestStreamerBot
             OptionFlags.GiveawayBegMsg = "Test Project Begin the Giveaway";
             OptionFlags.GiveawayEndMsg = "Test Project End the Giveaway";
             OptionFlags.GiveawayWinMsg = "Test Project the winner is #winner!";
-            OptionFlags.GiveawayMultiEntries = 5;
+            OptionFlags.GiveawayMaxEntries = 5;
             OptionFlags.GiveawayMultiUser = true;
             OptionFlags.GiveawayCount = 2;
             OptionFlags.ManageGiveawayUsers = true;
@@ -398,7 +398,7 @@ namespace TestStreamerBot
             foreach(string s in entrylist)
             {
                 int y = 0;
-                while (y < OptionFlags.GiveawayMultiEntries)
+                while (y < OptionFlags.GiveawayMaxEntries)
                 {
                     botController.HandleGiveawayPostName(s);
                     y++;

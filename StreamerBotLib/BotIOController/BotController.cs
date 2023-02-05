@@ -189,6 +189,7 @@ namespace StreamerBotLib.BotIOController
         {
             try
             {
+                TwitchStreamOffline();
                 Systems.Exit();
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
@@ -306,10 +307,11 @@ namespace StreamerBotLib.BotIOController
 
         public static DateTime GetUserAccountAge(string UserName, Platform bots)
         {
-            if(bots == Platform.Twitch)
+            if (bots == Platform.Twitch)
             {
                 return BotsTwitch.GetUserAccountAge(UserName: UserName);
-            } else
+            }
+            else
             {
                 return DateTime.MaxValue;
             }
@@ -360,7 +362,7 @@ namespace StreamerBotLib.BotIOController
 
         public static void CancelRaidChannel(Platform bots)
         {
-            if(bots == Platform.Twitch)
+            if (bots == Platform.Twitch)
             {
                 BotsTwitch.CancelRaidChannel();
             }
@@ -851,7 +853,7 @@ namespace StreamerBotLib.BotIOController
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled, out short Multi);
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                 new( MsgVars.user, DisplayName ),
                 new( MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.submonths, FormatData.Plurality(TotalMonths, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))),
@@ -859,19 +861,19 @@ namespace StreamerBotLib.BotIOController
                 new( MsgVars.subplanname,SubscriptionName )
                 });
 
-                // add the streak element if user wants their sub streak displayed
-                if (ShareStreak)
-                {
-                    VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, StreakMonths) });
-                }
+            // add the streak element if user wants their sub streak displayed
+            if (ShareStreak)
+            {
+                VariableParser.AddData(ref dictionary, new Tuple<MsgVars, string>[] { new(MsgVars.streak, StreakMonths) });
+            }
 
-                string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true) ;
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-       Send(ParsedMsg, Multi);
-           }
-             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
+                Send(ParsedMsg, Multi);
+            }
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
@@ -889,8 +891,8 @@ namespace StreamerBotLib.BotIOController
                 });
 
             string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
-           if (Enabled)
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
+            if (Enabled)
             {
                 Send(ParsedMsg, Multi);
             }
@@ -903,17 +905,17 @@ namespace StreamerBotLib.BotIOController
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled, out short Multi);
-                Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                     new(MsgVars.user, DisplayName),
                     new(MsgVars.count, FormatData.Plurality(SubCount, MsgVars.Pluralsub, Subscription)),
                     new(MsgVars.subplan, Subscription)
                 });
 
-                string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
+            string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-              Send(ParsedMsg, Multi);
+                Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
@@ -934,14 +936,14 @@ namespace StreamerBotLib.BotIOController
                      ))
                                             });
             string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
-            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary,true);
-               if (Enabled)
+            string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
+            if (Enabled)
             {
-             Send(ParsedMsg, Multi);
+                Send(ParsedMsg, Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName:HostedByChannel, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName: HostedByChannel, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<Models.LiveUser> Users)
@@ -977,7 +979,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleAddChat(string UserName, Platform Source)
         {
-            Systems.UserJoined(new() { new(UserName,Source) });
+            Systems.UserJoined(new() { new(UserName, Source) });
         }
 
         public void HandleMessageReceived(Models.CmdMessage MsgReceived, Platform Source)
@@ -1018,9 +1020,10 @@ namespace StreamerBotLib.BotIOController
                 switch (Source)
                 {
                     case Platform.Twitch:
-                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}", 
-                            new(() => {
-                                TwitchBots.PostInternalCommand(approval.Item2, new() { DisplayName, RewardMsg } ,$"!{approval.Item2} {DisplayName} {RewardMsg}");
+                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}",
+                            new(() =>
+                            {
+                                TwitchBots.PostInternalCommand(approval.Item2, new() { DisplayName, RewardMsg }, $"!{approval.Item2} {DisplayName} {RewardMsg}");
                             })
                         );
 
@@ -1081,7 +1084,7 @@ namespace StreamerBotLib.BotIOController
 
         private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
         {
-            if(e.User.Source == Platform.Twitch)
+            if (e.User.Source == Platform.Twitch)
             {
                 // TODO: verify users are correctly determined to be banned before banning, added to log
                 LogWriter.WriteLog(LogType.LogBotStatus, $"Request to ban or timeout user {e.User.UserName} for {e.BanReason} for {e.Duration} seconds.");

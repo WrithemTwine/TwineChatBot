@@ -31,7 +31,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 ClipMonitorService.Stop();
             }
 
-            RefreshSettings();
             ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
             ClipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Ceiling(TwitchFrequencyClipTime));
             ClipMonitorService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
@@ -54,7 +53,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
@@ -75,6 +74,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     ClipMonitorService = null;
+                    HandlersAdded = false;
                 }
                 return true;
             }

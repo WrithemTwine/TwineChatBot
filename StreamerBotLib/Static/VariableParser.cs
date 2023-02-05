@@ -78,8 +78,8 @@ namespace StreamerBotLib.Static
                     if (message.Contains(k))
                     {
                         message = message.Replace(k,
-                            (HTMLMarkup ? 
-                            
+                            (HTMLMarkup ?
+
                             Markup(k, (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
                             dictionary[k]) :
 

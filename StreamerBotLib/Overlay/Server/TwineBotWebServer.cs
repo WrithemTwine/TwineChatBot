@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Interfaces;
-using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
@@ -12,7 +11,6 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Threading;
 
 namespace StreamerBotLib.Overlay.Server
 {
@@ -30,7 +28,6 @@ namespace StreamerBotLib.Overlay.Server
                 int port = ValidatePort(random.Next(1024, 65536));
 
                 Settings.Default.MediaOverlayPort = port;
-                OptionFlags.SetSettings();
             }
         }
 
@@ -62,7 +59,7 @@ namespace StreamerBotLib.Overlay.Server
             }
             HTTPListenServer.Start();
 
-            new Thread(new ThreadStart(ServerSendAlerts)).Start();
+            ThreadManager.CreateThreadStart(() => ServerSendAlerts());
         }
 
         public void SendAlert(IOverlayPageReadOnly overlayPage)
