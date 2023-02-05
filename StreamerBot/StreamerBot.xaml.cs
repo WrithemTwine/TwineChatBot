@@ -94,11 +94,7 @@ namespace StreamerBot
             ThreadManager.CreateThreadStart(ProcessWatcher);
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
-            if (version.Revision != 0)
-            {
-                StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
-            }
-
+            StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
             StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             ConstructEvents();

@@ -83,7 +83,7 @@
             </StatusBar.Resources>
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
-                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" Visibility="Visible" Content="Beta" Foreground="MediumVioletRed" FontSize="16" FontWeight="DemiBold" />
+                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" Visibility="Collapsed" Content="Beta" Foreground="MediumVioletRed" FontSize="16" FontWeight="DemiBold" />
                     <Label x:Name="StatusBar_Label_Version" Content="Version: 1.2.5.0" Padding="0"/>
                 </StackPanel>
             </StatusBarItem>
