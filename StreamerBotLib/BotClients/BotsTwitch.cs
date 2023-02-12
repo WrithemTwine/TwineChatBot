@@ -212,7 +212,7 @@ namespace StreamerBotLib.BotClients
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            if (IOModule.ShowConnectionMsg)
+            if (OptionFlags.MsgBotConnection)
             {
                 Version version = Assembly.GetEntryAssembly().GetName().Version;
                 string s = string.Format(CultureInfo.CurrentCulture,

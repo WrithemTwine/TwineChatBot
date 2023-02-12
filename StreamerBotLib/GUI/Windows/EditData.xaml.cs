@@ -287,7 +287,8 @@ namespace StreamerBotLib.GUI.Windows
                             { "BanReason", Enum.GetValues(typeof(BanReasons)) },
                             { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
                             { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
-                            { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) }
+                            { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
+                            { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) }
                         };
 
                     foreach (var E in ColEnums[dataColumn.ColumnName])
@@ -659,7 +660,7 @@ namespace StreamerBotLib.GUI.Windows
                 case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata" or "UseChatMsg":
                     return PopupEditTableDataType.databool;
                 case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes"
-                or "BanReason" or "OverlayType" or "ModActionType" or "ModPerformType":
+                or "BanReason" or "OverlayType" or "ModActionType" or "ModPerformType" or "TickerName":
                     return PopupEditTableDataType.comboenum;
                 case "ModActionName" or "ModPerformAction":
                     return PopupEditTableDataType.combolist;

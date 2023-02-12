@@ -233,6 +233,11 @@ namespace StreamerBotLib.Static
         /// Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
         /// </summary>
         public static bool PostMultiLive => Settings.Default.PostMultiLive;
+
+        /// <summary>
+        /// Whether to display the bot welcome message when connecting to the channel.
+        /// </summary>
+        public static bool MsgBotConnection => Settings.Default.MsgBotConnection;
         /// <summary>
         /// The social media message to use to notify the given channel is live.
         /// </summary>

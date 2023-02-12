@@ -414,6 +414,11 @@ switches:
             }
         }
 
+        public int? GetTimerCommandTime(string Cmd)
+        {
+            return GetTimerCommand(Cmd)?.Item2;
+        }
+
         public void SetSystemEventsEnabled(bool Enabled)
         {
 #if LogDataManager_Actions
@@ -1022,6 +1027,11 @@ switches:
             }
             NotifySaveData();
             UpdatingFollowers = false;
+        }
+
+        public string GetNewestFollower()
+        {
+            return ((FollowersRow)GetRows(_DataSource.Followers, null, $"{_DataSource.Followers.FollowedDateColumn.ColumnName} DESC").FirstOrDefault()).UserName;
         }
 
         /// <summary>
@@ -1675,13 +1685,13 @@ switches:
             {
                 if (_DataSource.OverlayTicker.Select($"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'").Any())
                 {
-                    SetDataTableFieldRows(_DataSource.OverlayTicker, _DataSource.OverlayTicker.TickerNameColumn, name, $"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'");
+                    SetDataTableFieldRows(_DataSource.OverlayTicker, _DataSource.OverlayTicker.UserNameColumn, name, $"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'");
                 }
                 else
                 {
                     _DataSource.OverlayTicker.AddOverlayTickerRow(item.ToString(), name);
                     _DataSource.OverlayTicker.AcceptChanges();
-                }
+               }
                 NotifySaveData();
             }
         }

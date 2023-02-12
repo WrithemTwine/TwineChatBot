@@ -94,6 +94,7 @@ namespace StreamerBotLib.GUI
         public DataView BanRules { get; private set; }
         public DataView BanReasons { get; private set; }
         public DataView OverlayService { get; private set; }
+        public DataView OverlayTicker { get; private set; }
         public DataView ModeratorApprove { get; private set; }
 
         #endregion
@@ -156,6 +157,7 @@ namespace StreamerBotLib.GUI
             BanRules = dataManager._DataSource.BanRules.DefaultView;
             BanReasons = dataManager._DataSource.BanReasons.DefaultView;
             OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
+            OverlayTicker = dataManager._DataSource.OverlayTicker.DefaultView;
             ModeratorApprove = dataManager._DataSource.ModeratorApprove.DefaultView;
 
             /**/
@@ -179,6 +181,7 @@ namespace StreamerBotLib.GUI
             BanRules.ListChanged += DataView_ListChanged;
             BanReasons.ListChanged += DataView_ListChanged;
             OverlayService.ListChanged += DataView_ListChanged;
+            OverlayTicker.ListChanged += DataView_ListChanged;
             ModeratorApprove.ListChanged += DataView_ListChanged;
             /**/
 

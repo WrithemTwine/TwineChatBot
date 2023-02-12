@@ -162,6 +162,8 @@ namespace StreamerBotLib.Systems
         public static void StopBulkFollowers()
         {
             DataManage.StopBulkFollows();
+
+            AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, DataManage.GetNewestFollower());
         }
 
         private delegate void ProcFollowDelegate();
@@ -556,7 +558,12 @@ namespace StreamerBotLib.Systems
             }
 
             ActionSystem.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
-            UpdatedStat(StreamStatType.TotalChats);
+
+            // TODO: review for detecting whether the bot sent message, and not including those chats in total chats (in terms of repeat timer chat thresholds)
+            if (User.UserName != OptionFlags.TwitchBotUserName)
+            {
+                UpdatedStat(StreamStatType.TotalChats);
+            }
 
             if (MsgReceived.IsSubscriber)
             {
@@ -834,11 +841,6 @@ namespace StreamerBotLib.Systems
             SystemActions.NewOverlayEvent += eventHandler;
         }
 
-        //public void SetChannelClipsHandler(EventHandler<GetChannelClipsEventArgs> eventHandler)
-        //{
-        //    Overlay.GetChannelClipsEvent += eventHandler;
-        //}
-
         public Dictionary<string, List<string>> GetOverlayActions()
         {
             return SystemActions.GetOverlayActions();
@@ -848,11 +850,6 @@ namespace StreamerBotLib.Systems
         {
             SystemActions.SetChannelRewardList(RewardList);
         }
-
-        //public void CheckForOverlayEvent(object? sender, CheckOverlayEventArgs e)
-        //{
-        //    CheckForOverlayEvent(e.OverlayType, e.Action, e.UserName, e.UserMsg, e.ProvidedURL);
-        //}
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
