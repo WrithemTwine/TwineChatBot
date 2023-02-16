@@ -836,9 +836,15 @@ namespace StreamerBotLib.Systems
 
         #region Media Overlay Server
 
-        public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> eventHandler)
+        public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
         {
-            SystemActions.NewOverlayEvent += eventHandler;
+            SystemActions.NewOverlayEvent += NewOverlayeventHandler;
+            ActionSystem.UpdatedTickerItems += UpdatedTickerEventHandler;
+        }
+
+        public void SendInitialTickerItems()
+        {
+            SystemActions.SendInitialTickerItems();
         }
 
         public Dictionary<string, List<string>> GetOverlayActions()
@@ -863,10 +869,7 @@ namespace StreamerBotLib.Systems
 
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
-            if (OptionFlags.ManageOverlayTicker)
-            {
-                DataManage.UpdateOverlayTicker(item, UserName);
-            }
+            ActionSystem.AddNewOverlayTickerItem(item, UserName);
         }
 
         #endregion

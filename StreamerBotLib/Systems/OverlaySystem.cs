@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Events;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
@@ -6,6 +7,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 /*
@@ -25,17 +27,17 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public event EventHandler<NewOverlayEventArgs> NewOverlayEvent;
         public event EventHandler<GetChannelClipsEventArgs> GetChannelClipsEvent;
+        public static event EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerItems;
 
         /// <summary>
         /// List of Table/Column pairs for building the overlay action selections
         /// </summary>
-        private Dictionary<string, string> OverlayActionColumnPairs = new()
+        private readonly Dictionary<string, string> OverlayActionColumnPairs = new()
         {
             {"Commands", "CmdName"},
             {"ChannelEvents", "Name" }
         };
         private List<string> ChannelPointRewards = new();
-
 
         public void SetChannelRewardList(List<string> RewardList)
         {
@@ -130,7 +132,6 @@ namespace StreamerBotLib.Systems
             }
         }
 
-
         private void OnGetChannelClipsEvent(GetChannelClipsEventArgs e)
         {
             GetChannelClipsEvent?.Invoke(this, e);
@@ -165,6 +166,21 @@ namespace StreamerBotLib.Systems
                 Finish = true;
             }
 
+        }
+
+        public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
+        {
+            if (OptionFlags.ManageOverlayTicker)
+            {
+                DataManage.UpdateOverlayTicker(item, UserName);
+
+                UpdatedTickerItems?.Invoke(null, new() { TickerItems = DataManage.GetTickerItems() });
+            }
+        }
+
+        public void SendInitialTickerItems()
+        {
+            UpdatedTickerItems?.Invoke(this, new() { TickerItems = DataManage.GetTickerItems() });
         }
     }
 }

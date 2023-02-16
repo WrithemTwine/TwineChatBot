@@ -5,6 +5,7 @@
 #endif
 
 
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Overlay;
@@ -13,10 +14,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-
-using OptionFlags = StreamerBotLib.Static.OptionFlags;
 
 namespace StreamerBotLib.BotClients
 {
@@ -38,11 +36,11 @@ namespace StreamerBotLib.BotClients
     {
 #endif
 
-        [SuppressMessage("Style", "CS0067:The event is never used", Justification = "Included to implement interface, but is unused")]
         public event EventHandler<BotEventArgs> BotEvent;
 
         public event EventHandler<EventArgs> ActionQueueChanged;
         public event EventHandler<OverlayActionType> SendOverlayToServer;
+        public event EventHandler<UpdatedTickerItemsEventArgs> SendTickerToServer;
         private bool PauseAlerts = false;
         private bool AlertsThreadStarted = false;
         private bool WindowClosing = false;
@@ -223,10 +221,12 @@ namespace StreamerBotLib.BotClients
 
         public BotOverlayServer()
         {
-            BotClientName = Enums.Bots.MediaOverlayServer;
+            BotClientName = Bots.MediaOverlayServer;
 
             IsStarted = false;
             IsStopped = true;
+
+            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty.ToString() });
         }
 
         public override bool StartBot()
@@ -239,11 +239,12 @@ namespace StreamerBotLib.BotClients
             {
                 OverlayWindow = new(OverlayWindow_UserHideWindow);
                 SendOverlayToServer += OverlayWindow.GetOverlayActionReceivedHandler();
+                SendTickerToServer += OverlayWindow.GetupdatedTickerReceivedHandler();
             }
 
             if (!AlertsThreadStarted)
             {
-                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High);
+                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
             }
 
             InvokeBotStarted();
@@ -266,6 +267,8 @@ namespace StreamerBotLib.BotClients
             IsStopped = true;
      
             SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
+            SendTickerToServer -= OverlayWindow.GetupdatedTickerReceivedHandler();
+
             if (!WindowClosing)
             {
                 OverlayWindow?.CloseApp();
@@ -285,6 +288,11 @@ namespace StreamerBotLib.BotClients
                 SendAlerts.Enqueue(ThreadManager.CreateThread(() => SendAlert(e.OverlayAction)));
                 NotifyActionQueueChanged();
             }
+        }
+
+        public void UpdatedTickerEventHandler(object sender, UpdatedTickerItemsEventArgs e)
+        {
+            SendTickerToServer?.Invoke(sender, e);
         }
 
         private void NotifyActionQueueChanged()

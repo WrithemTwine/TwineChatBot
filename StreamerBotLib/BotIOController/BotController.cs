@@ -69,9 +69,7 @@ namespace StreamerBotLib.BotIOController
             ActionSystem.ChannelName = TwitchBotsBase.TwitchChannelName;
             OutputSentToBots += ActionSystem.OutputSentToBotsHandler;
 
-            //OverlayServerBot = new();
             SetNewOverlayEventHandler();
-            //SetGetChannelClipsHandler();
 
             BotsList.Add(TwitchBots);
             BotsList.Add(OverlayServerBot);
@@ -678,6 +676,14 @@ namespace StreamerBotLib.BotIOController
 
         #region Handle Bot Events
 
+        /// <summary>
+        /// Empty non-event just to satisfy the "BotEvent" handler through the bot interface - some bots don't call this event handler.
+        /// </summary>
+        public void HandleBotEventEmpty()
+        {
+            // I do nothing else.
+        }
+
         #region Followers
 
         public void HandleBotEventNewFollowers(List<Models.Follow> follows)
@@ -847,7 +853,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
+            ActionSystem.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
@@ -1101,18 +1107,11 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         private void SetNewOverlayEventHandler()
         {
-            Systems.SetNewOverlayEventHandler(OverlayServerBot.NewOverlayEventHandler);
+            Systems.SetNewOverlayEventHandler(
+                OverlayServerBot.NewOverlayEventHandler, 
+                OverlayServerBot.UpdatedTickerEventHandler
+                );
         }
-
-        //private void SetGetChannelClipsHandler()
-        //{
-        //    Systems.SetChannelClipsHandler(GetAllChannelClips);
-        //}
-
-        //private void GetAllChannelClips(object sender, GetChannelClipsEventArgs e)
-        //{
-        //    TwitchBots.GetChannelClips(e.ChannelName,e.CallBackResult);
-        //}
 
         #endregion
 

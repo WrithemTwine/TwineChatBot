@@ -13,7 +13,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
     <SignAssembly>false</SignAssembly>
-    <Version>1.2.7.1</Version>    
+    <Version>1.2.7.2</Version>    
     <Copyright>2022</Copyright>
     <PackageReleaseNotes>Updated repeating command process</PackageReleaseNotes>
     <Authors>WrithemTwine</Authors>

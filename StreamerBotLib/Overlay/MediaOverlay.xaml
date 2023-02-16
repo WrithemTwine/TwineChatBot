@@ -5,11 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Data="clr-namespace:StreamerBotLib.Overlay.GUI"
         xmlns:Prop="clr-namespace:StreamerBotLib.Properties"
+        xmlns:M ="clr-namespace:StreamerBotLib.Overlay.Models"
         mc:Ignorable="d"
-        Title="Media Overlay" Height="450" Width="600" UseLayoutRounding="True" SnapsToDevicePixels="True" Closing="Window_Closing" Loaded="Window_Loaded">
+        Title="Media Overlay" 
+        Height="500" Width="500" 
+        UseLayoutRounding="True" 
+        SnapsToDevicePixels="True" 
+        Closing="Window_Closing" 
+        Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary>
             <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
+            <M:SelectedTickerItems x:Name="TickerSelectedItems" x:Key="TickerSelectedItems" />
             <DataTemplate x:Key="OverlayTypeStatTemplate">
                 <StatusBarItem BorderThickness="1,1,1,1" BorderBrush="Black" Padding="0">
                     <StackPanel Orientation="Horizontal" Margin="0">
@@ -34,7 +41,6 @@
             </Style>
             <Style TargetType="{x:Type CheckBox}">
                 <Setter Property="Margin" Value="5" />
-                <EventSetter Event="Click" Handler="CheckBox_Click_SaveSettings" />
             </Style>
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="TextWrapping" Value="Wrap" />
@@ -52,9 +58,9 @@
                    ItemTemplate="{Binding Mode=OneWay, Source={StaticResource OverlayTypeStatTemplate}}" />
         <TabControl Margin="3">
             <TabItem Header="Options" DataContext="{x:Static Prop:Settings.Default}">
-                <WrapPanel>
+                <WrapPanel Orientation="Vertical" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
                     <GroupBox Header="Overlay Settings">
-                        <CheckBox x:Name="CheckBox_OptionSamePage" IsChecked="{Binding MediaOverlayUseSameStyle}">
+                        <CheckBox x:Name="CheckBox_OptionSamePage" IsChecked="{Binding MediaOverlayUseSameStyle}" Click="Click_UpdateLinks">
                             <TextBlock>Enable the same Overlay style for every alert.</TextBlock>
                         </CheckBox>
                     </GroupBox>
@@ -62,7 +68,8 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
                                 <Label Content="Server Port Number: "/>
-                                <TextBox x:Name="TextBox_PortNumber" Height="18" Width="80" Text="{Binding MediaOverlayPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" LostFocus="TextBox_PortNumber_LostFocus" />
+                                <TextBox x:Name="TextBox_PortNumber" Height="18" Width="80" 
+                                         Text="{Binding MediaOverlayPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" LostFocus="Click_UpdateLinks" />
                             </StackPanel>
                             <TextBlock>
                                 Ports consist of 1-65535, the lower ports often have assigned services. <LineBreak />
@@ -78,13 +85,49 @@
                             <RadioButton x:Name="RadioButton_OverlayServer_Stop" Content="Stop Server" Checked="RadioButton_OverlayServer_Stop_Checked" IsChecked="True" />
                         </StackPanel>
                     </GroupBox>
+                    <GroupBox Header="Ticker Item Arrangement">
+                        <StackPanel>
+                            <GroupBox Header="Itemizations" Width="Auto">
+                                <StackPanel>
+                                    <RadioButton Content="Single Item Ticker Pages" IsChecked="{Binding MediaOverlayTickerSingle}" Click="TickerSpecChanges" />
+                                    <RadioButton Content="Show All Ticker Items" IsChecked="{Binding MediaOverlayTickerMulti}" Click="TickerSpecChanges" />
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="Direction" Width="Auto">
+                                <StackPanel>
+                                    <RadioButton Content="Horizontal" IsChecked="{Binding MediaOverlayTickerHorizontal}" Click="TickerSpecChanges" />
+                                    <RadioButton Content="Vertical" IsChecked="{Binding MediaOverlayTickerVertical}" Click="TickerSpecChanges" />
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Show Ticker Items" Padding="6">
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" FontSize="10">Select which items to include in the ticker</TextBlock>
+                            <ListBox DataContext="{Binding Source={StaticResource TickerSelectedItems}}" 
+                                     ItemsSource="{Binding TickerItems}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="M:SelectedTickerItem">
+                                        <StackPanel>
+                                            <CheckBox Margin="1" 
+                                                      IsChecked="{Binding IsSelected}" 
+                                                      Content="{Binding OverlayTickerItem}" 
+                                                      Click="TickerSelections" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </GroupBox>
                 </WrapPanel>
             </TabItem>
             <TabItem x:Name="TabItem_Links" Header="Links">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server.</TextBlock>
-                    <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" ItemsSource="{Binding OverlayLinks, Mode=OneWay, NotifyOnSourceUpdated=True}" ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}">
-                    </ListView>
+                    <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
+                              ItemsSource="{Binding OverlayLinks}" 
+                              ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}" 
+                               />
                 </DockPanel>
             </TabItem>
             <TabItem Header="Overlay Styles" >

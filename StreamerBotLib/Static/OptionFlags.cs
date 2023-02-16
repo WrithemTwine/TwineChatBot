@@ -492,6 +492,23 @@ namespace StreamerBotLib.Static
         public static bool MediaOverlayAutoStart => Settings.Default.MediaOverlayAutoStart;
 
         /// <summary>
+        /// Defines using the ticker in single pages for each ticker item
+        /// </summary>
+        public static bool MediaOverlayTickerSingle => Settings.Default.MediaOverlayTickerSingle;
+
+        /// <summary>
+        /// Defines using a single output page to show all of the ticker items together
+        /// </summary>
+        public static bool MediaOverlayTickerMulti => Settings.Default.MediaOverlayTickerMulti;
+        public static bool MediaOverlayTickerHorizontal => Settings.Default.MediaOverlayTickerHorizontal;
+        public static bool MediaOverlayTickerVertical => Settings.Default.MediaOverlayTickerVertical;
+
+        public static string[] MediaOverlayTickerSelected
+        {
+            get => (Settings.Default.MediaOverlayTickerSelected).Split('_');
+            set => Settings.Default.MediaOverlayTickerSelected = string.Join('_', value);
+        }
+        /// <summary>
         /// Specifies whether user wants the UserData->User Follow tab to adjust its layout when the width changes
         /// </summary>
         public static bool GridTabifyUserFollow => Settings.Default.GridTabifyUserFollow;

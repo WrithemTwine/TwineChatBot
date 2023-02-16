@@ -1,8 +1,10 @@
-﻿using StreamerBotLib.Overlay.Enums;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Server;
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace StreamerBotLib.Overlay.GUI
@@ -17,7 +19,7 @@ namespace StreamerBotLib.Overlay.GUI
         /// </summary>
         public List<OverlayStat> OverlayStats { get; private set; }
 
-        public List<OverlayPage> OverlayLinks { get; private set; } = new();
+        public ObservableCollection<OverlayPage> OverlayLinks { get; private set; } = new();
 
         public List<OverlayStyle> OverlayEditStyles { get; private set; } = new();
 
@@ -74,16 +76,12 @@ namespace StreamerBotLib.Overlay.GUI
 
         public void UpdateLinks()
         {
-            OverlayLinks = new();
-            RefreshLinks();
+            OverlayLinks.Clear();
 
-            OverlayLinks = PrefixGenerator.GetLinks();
-            RefreshLinks();
-        }
-
-        private void RefreshLinks()
-        {
-            OnPropertyChanged(nameof(OverlayLinks));
+            foreach (OverlayPage O in PrefixGenerator.GetLinks())
+            {
+                OverlayLinks.Add(O);
+            }
         }
 
         public void ClearEditPages()
@@ -94,7 +92,6 @@ namespace StreamerBotLib.Overlay.GUI
         public void ClearLinks()
         {
             OverlayLinks.Clear();
-            RefreshLinks();
         }
 
         public void AddEditPage(string overlayType)
@@ -106,6 +103,20 @@ namespace StreamerBotLib.Overlay.GUI
         public void AddEditPage(string[] overlayTypes)
         {
             foreach (string s in overlayTypes)
+            {
+                AddEditPage(s);
+            }
+        }
+
+        public void AddEditPage(OverlayTickerItem overlayTickerItem)
+        {
+            OverlayEditStyles.Add(new OverlayStyle(overlayTickerItem));
+            OnPropertyChanged(nameof(OverlayEditStyles));
+        }
+
+        public void AddEditPage(OverlayTickerItem[] overlayTickerItems)
+        {
+            foreach (OverlayTickerItem s in overlayTickerItems)
             {
                 AddEditPage(s);
             }

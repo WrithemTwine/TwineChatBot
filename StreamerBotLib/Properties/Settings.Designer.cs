@@ -1366,5 +1366,65 @@ namespace StreamerBotLib.Properties {
                 this["GridTabifyStreamRaidsWidth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayTickerSingle {
+            get {
+                return ((bool)(this["MediaOverlayTickerSingle"]));
+            }
+            set {
+                this["MediaOverlayTickerSingle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerMulti {
+            get {
+                return ((bool)(this["MediaOverlayTickerMulti"]));
+            }
+            set {
+                this["MediaOverlayTickerMulti"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayTickerHorizontal {
+            get {
+                return ((bool)(this["MediaOverlayTickerHorizontal"]));
+            }
+            set {
+                this["MediaOverlayTickerHorizontal"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerVertical {
+            get {
+                return ((bool)(this["MediaOverlayTickerVertical"]));
+            }
+            set {
+                this["MediaOverlayTickerVertical"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MediaOverlayTickerSelected {
+            get {
+                return ((string)(this["MediaOverlayTickerSelected"]));
+            }
+            set {
+                this["MediaOverlayTickerSelected"] = value;
+            }
+        }
     }
 }

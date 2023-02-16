@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Overlay.Communication;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Overlay.Communication;
 
 using StreamerBotLib.Overlay.Interfaces;
 using StreamerBotLib.Overlay.Static;
@@ -33,7 +34,7 @@ namespace StreamerBotLib.Overlay.Models
         /// <param name="overlayType">Specify the type of the Overlay.</param>
         public OverlayStyle(string overlayType)
         {
-            OverlayType = OptionFlags.MediaOverlayUseSameStyle ? "All" : overlayType;
+            OverlayType = OptionFlags.MediaOverlayUseSameStyle ? "All Overlays" : overlayType;
 
             FileNameStyle = Path.Combine(PublicConstants.BaseOverlayPath, $"{(OptionFlags.MediaOverlayUseSameStyle || OverlayType == "None" ? "" : OverlayType)}", $"{PublicConstants.OverlayStyle}");
 
@@ -47,6 +48,29 @@ namespace StreamerBotLib.Overlay.Models
             else
             {
                 OverlayStyleText = ProcessHyperText.DefaultStyle;
+            }
+        }
+
+        /// <summary>
+        /// Used to hold the edit page text for the GUI, for the specified Ticker.
+        /// </summary>
+        /// <param name="overlayTickerItem">The specific ticker item for its style.</param>
+        public OverlayStyle(OverlayTickerItem overlayTickerItem)
+        {
+            OverlayType = OptionFlags.MediaOverlayTickerMulti ? "All Tickers" : overlayTickerItem.ToString();
+
+            FileNameStyle = Path.Combine(PublicConstants.BaseTickerPath, $"{(OptionFlags.MediaOverlayTickerMulti ? PublicConstants.TickerStyle("ticker") : PublicConstants.TickerStyle(OverlayType))}");
+            
+            if (File.Exists(FileNameStyle))
+            {
+                using (StreamReader sr = new(FileNameStyle))
+                {
+                    OverlayStyleText = sr.ReadToEnd();
+                }
+            }
+            else
+            {
+                OverlayStyleText = ProcessHyperText.DefaultTickerStyle(OverlayType);
             }
         }
 

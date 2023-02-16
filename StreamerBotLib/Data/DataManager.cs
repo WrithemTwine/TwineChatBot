@@ -1679,6 +1679,16 @@ switches:
             }
         }
 
+        public List<TickerItem> GetTickerItems()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                return new(from OverlayTickerRow row in GetRows(_DataSource.OverlayTicker)
+                       let ticker = new TickerItem() { OverlayTickerItem = (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), row.TickerName), UserName = row.UserName }
+                       select ticker);
+            }
+        }
+
         public void UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
             lock (GUIDataManagerLock.Lock)

@@ -1,9 +1,16 @@
-﻿using StreamerBotLib.Overlay.Models;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Control;
+using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Static;
 
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
+
+using Size = System.Drawing.Size;
 
 namespace StreamerBotLib.Overlay.Communication
 {
@@ -35,7 +42,10 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false)
         {
-            return $"<html><head>{(IsMedia ? "" : RefreshToken(Duration))}<style>{OverlayStyle}</style></head><body><div class=\"maindiv\">{OverlayBody}</div></body></html>";
+            return $"<html>\n" +
+                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n<style>\n{OverlayStyle}\n</style>\n</head>\n" +
+                $"<body>\n<div class=\"maindiv\">{OverlayBody}</div>\n</body>\n" +
+                $"</html>\n";
         }
 
         public static string ProcessOverlay(OverlayActionType overlayActionType)
@@ -75,6 +85,83 @@ namespace StreamerBotLib.Overlay.Communication
             string Msg = $"<div class=\"message\">{overlayActionType.Message}</div>";
 
             return ProcessPage(new OverlayStyle(overlayActionType.OverlayType.ToString()).OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
+        }
+
+        public static OverlayPage ProcessTicker(TickerItem tickerItem)
+        {
+            return
+                new OverlayPage()
+                {
+                    OverlayType = tickerItem.OverlayTickerItem.ToString(),
+                    OverlayHyperText = ProcessPage(
+                        new OverlayStyle(tickerItem.OverlayTickerItem).OverlayStyleText,
+                        ProcessTicker(tickerItem.OverlayTickerItem, tickerItem.UserName).ToString()
+                        , 5)
+                };
+        }
+
+        private static XElement ProcessTicker(OverlayTickerItem tickerItem, string UserName)
+        {
+            return new XElement("span",
+                            new XAttribute("class", tickerItem),
+                            $"{tickerItem}: {UserName}");
+        }
+
+        public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems)
+        {
+            string directionstyle = "display: ";
+            if (OptionFlags.MediaOverlayTickerHorizontal)
+            {
+                directionstyle += "inline-block;";
+            }
+            else
+            { //if(OptionFlags.MediaOverlayTickerVertical)
+                directionstyle += "block;";
+            }
+
+            return
+                new OverlayPage()
+                {
+                    OverlayType = "All",
+                    OverlayHyperText = ProcessPage(
+                        // just send any item, the correct style returns
+                        new OverlayStyle(OverlayTickerItem.LastFollower).OverlayStyleText,
+                        new XElement("div", 
+                            new XAttribute("style", directionstyle),
+                            from TickerItem T in tickerItems
+                             select ProcessTicker(T.OverlayTickerItem, T.UserName)
+                        ).ToString(), 5)
+                };
+        }
+
+        public static string DefaultTickerStyle(string TagClassName)
+        {
+            string style;
+            if (TagClassName == "All")
+            {
+                style = "/* Ticker Items */\n";
+                foreach(SelectedTickerItem S in TickerFormatter.selectedTickerItems)
+                {
+                    style += TickerStyle(S.OverlayTickerItem);
+                }
+            } else
+            {
+
+                style = $"/* Ticker Items */\n{TickerStyle(TagClassName)}";
+            }
+
+            static string TickerStyle(string TagName)
+            {
+                return $"\n" +
+                    $".{TagName} {{\n" +
+                    $"background: black;\n" +
+                    $"color: white;\n" +
+                    $"text-align: center;\n" +
+                    $"padding: 10px;" +
+                    $"}}\n";
+            }
+
+            return style;
         }
 
         public static string DefaultStyle

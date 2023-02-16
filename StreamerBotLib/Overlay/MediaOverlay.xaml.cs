@@ -1,13 +1,15 @@
-﻿using StreamerBotLib.MachineLearning.Accord.KNN;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Control;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.GUI;
 using StreamerBotLib.Overlay.Models;
-using StreamerBotLib.Overlay.Server;
 using StreamerBotLib.Static;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -49,6 +51,16 @@ namespace StreamerBotLib.Overlay
             GUIData.UpdateStat(e.OverlayType.ToString());
         }
 
+        public EventHandler<UpdatedTickerItemsEventArgs> GetupdatedTickerReceivedHandler()
+        {
+            return TickerReceivedEvent;
+        }
+
+        public void TickerReceivedEvent(object sender, UpdatedTickerItemsEventArgs e)
+        {
+            Controller.SetTickerData(e.TickerItems);
+        }
+
         public void CloseApp(bool Token = false)
         {            
             Close();
@@ -58,12 +70,12 @@ namespace StreamerBotLib.Overlay
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
             if (OptionFlags.MediaOverlayMediaPort != 0 && OptionFlags.MediaOverlayAutoStart)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
 
+            TickerSelections(sender, new());
             UpdateLinks();
         }
 
@@ -73,12 +85,9 @@ namespace StreamerBotLib.Overlay
             Controller.StopServer();
         }
 
-        private void CheckBox_Click_SaveSettings(object sender, RoutedEventArgs e)
+        private void Click_UpdateLinks(object sender, RoutedEventArgs e)
         {
-            if ((sender as CheckBox).Name == "CheckBox_OptionSamePage")
-            {
-                UpdateLinks();
-            }
+            UpdateLinks();
         }
 
         /// <summary>
@@ -119,6 +128,18 @@ namespace StreamerBotLib.Overlay
             else
             {
                 GUIData.AddEditPage(Enum.GetNames(typeof(OverlayTypes)));
+            }
+
+            if (OptionFlags.MediaOverlayTickerMulti)
+            {
+                // if multi, just send 1 item and the style is set
+                GUIData.AddEditPage(OverlayTickerItem.LastFollower);
+            }
+            else
+            {
+                GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
+                                        select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
+
             }
 
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
@@ -172,18 +193,9 @@ namespace StreamerBotLib.Overlay
             Controller.StopServer();
         }
 
-        private void TextBox_PortNumber_LostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox port = sender as TextBox;
-
-            OptionFlags.MediaOverlayMediaPort = TwineBotWebServer.ValidatePort(int.Parse(port.Text));
-            UpdateLinks();
-        }
-
         private void UpdateLinks()
         {
             AddEditPages();
-            PrefixGenerator.GetPrefixes();
             GUIData.UpdateLinks();
         }
 
@@ -195,7 +207,21 @@ namespace StreamerBotLib.Overlay
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             ((OverlayStyle)(sender as TextBox).DataContext).SaveFile();
+            Controller.UpdateTicker();
         }
 
+        private void TickerSelections(object sender, RoutedEventArgs e)
+        {
+            SelectedTickerItems selectedTickerItems = ((SelectedTickerItems)Resources["TickerSelectedItems"]);
+            selectedTickerItems.SaveSelections();
+            Controller.SetTickerItems(selectedTickerItems.GetSelectedTickers());
+            UpdateLinks();
+        }
+
+        private void TickerSpecChanges(object sender, RoutedEventArgs e)
+        {
+            Controller.UpdateTicker();
+            UpdateLinks();
+        }
     }
 }

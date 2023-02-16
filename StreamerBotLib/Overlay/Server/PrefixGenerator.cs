@@ -1,4 +1,6 @@
-﻿using StreamerBotLib.Overlay.Enums;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Overlay.Control;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
@@ -37,11 +39,27 @@ namespace StreamerBotLib.Overlay.Server
                 }
             }
 
+            Prefixes.Add($"{ServerAddress}ticker/");
+            if (OptionFlags.MediaOverlayTickerMulti)
+            {
+                Links.Add(new() { OverlayType = "All Tickers", OverlayHyperText = $"{ServerAddress}ticker/{PublicConstants.OverlayPageName}" });
+            }
+            else
+            {
+                foreach (SelectedTickerItem T in TickerFormatter.selectedTickerItems)
+                {
+                    Links.Add(new() { OverlayType = T.OverlayTickerItem, OverlayHyperText = $"{ServerAddress}ticker/{T.OverlayTickerItem}.html" });
+                }
+            }
+
             return Prefixes;
         }
 
         public static List<OverlayPage> GetLinks()
         {
+            // ensure the links are current
+            _ = GetPrefixes();
+
             return Links;
         }
     }

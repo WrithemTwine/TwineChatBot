@@ -19,6 +19,7 @@ namespace StreamerBotLib.Overlay.Server
         private HttpListener HTTPListenServer { get; set; } = new();
 
         private List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
+        private List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
 
         public TwineBotWebServer()
         {
@@ -73,11 +74,37 @@ namespace StreamerBotLib.Overlay.Server
             }
         }
 
+        /// <summary>
+        /// Clear and replace all TickerPages when the user changes the visual ticker appearance.
+        /// </summary>
+        /// <param name="UpdateTickerPages">All of the new ticker pages to replace the current ticker pages.</param>
+        public void UpdateTicker(IEnumerable<IOverlayPageReadOnly> UpdateTickerPages)
+        {
+            lock (TickerPages)
+            {
+                TickerPages.Clear();
+                TickerPages.AddRange(UpdateTickerPages);
+            }
+        }
+
+        public void UpdateTicker(IOverlayPageReadOnly UpdateTickerPage)
+        {
+            lock (TickerPages)
+            {
+                int idx = TickerPages.FindIndex((T) => T.OverlayType == UpdateTickerPage.OverlayType);
+
+                if (idx >= 0)
+                {
+                    TickerPages[idx] = UpdateTickerPage;
+                }
+            }
+        }
+
         private void ServerSendAlerts()
         {
             try
             {
-                while (HTTPListenServer.IsListening && OptionFlags.ActiveToken)
+                while (OptionFlags.ActiveToken && HTTPListenServer.IsListening)
                 {
                     HttpListenerContext context = HTTPListenServer.GetContext();
                     HttpListenerRequest request = context.Request;
@@ -87,14 +114,36 @@ namespace StreamerBotLib.Overlay.Server
 
                     byte[] buffer;
 
-                    if (request.RawUrl.Contains("index.html"))
+                    if (request.RawUrl.Contains("ticker"))
+                    {
+                        string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+
+                        lock (TickerPages)
+                        {
+                            if (TickerPages.Count == 1)
+                            {
+                                responseString = TickerPages[0].OverlayHyperText;
+                            } 
+                            else if(TickerPages.Count > 1)
+                            {
+                                foreach (var T in from T in TickerPages
+                                                  where request.RawUrl.Contains(T.OverlayType)
+                                                  select T)
+                                {
+                                    responseString = T.OverlayHyperText;
+                                }
+                            }
+                        }
+
+                        buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                    }
+                    else if (request.RawUrl.Contains("index.html"))
                     {
                         string RequestType = OverlayTypes.None.ToString();
                         if (!OptionFlags.MediaOverlayUseSameStyle)
                         {
                             RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
                         }
-
 
                         string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
 
@@ -125,9 +174,7 @@ namespace StreamerBotLib.Overlay.Server
                     {
                         if (File.Exists(request.RawUrl[1..]))
                         {
-                            // BinaryReader br = new(new StreamReader(request.RawUrl).BaseStream);
                             buffer = File.ReadAllBytes(request.RawUrl[1..]);
-
                         }
                         else
                         {

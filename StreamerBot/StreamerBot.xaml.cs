@@ -166,6 +166,11 @@ namespace StreamerBot
                         _ => throw new NotImplementedException()
                     };
                     HelperStartBot(radio);
+
+                    if(e.BotName == Bots.MediaOverlayServer)
+                    {
+                        Controller.Systems.SendInitialTickerItems();
+                    }
                 }
             }), null);
         }
