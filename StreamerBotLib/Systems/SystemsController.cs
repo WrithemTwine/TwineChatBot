@@ -370,7 +370,7 @@ namespace StreamerBotLib.Systems
                         SystemActions.StreamDataUpdate();
                     }), null);
 
-                    Thread.Sleep(SleepWait); // wait 10 seconds
+                    Thread.Sleep(SleepWait); // wait 6 seconds
                 }
             });
         }
@@ -649,9 +649,9 @@ namespace StreamerBotLib.Systems
             {
                 ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
             }
-            if (OptionFlags.ManageOverlayTicker)
-            {
-                DataManage.UpdateOverlayTicker(OverlayTickerItem.LastInRaid, User.UserName);
+            if (OptionFlags.ManageOverlayTicker) 
+            { 
+                AddNewOverlayTickerItem(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }
 

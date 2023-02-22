@@ -93,10 +93,14 @@
                                     <RadioButton Content="Show All Ticker Items" IsChecked="{Binding MediaOverlayTickerMulti}" Click="TickerSpecChanges" />
                                 </StackPanel>
                             </GroupBox>
-                            <GroupBox Header="Direction" Width="Auto">
+                            <GroupBox Header="Animation" Width="Auto">
+                                <GroupBox.ToolTip>
+                                    <TextBlock>CSS has all of these styles, the selection adds the chosen class attribute to html tag.</TextBlock>
+                                </GroupBox.ToolTip>
                                 <StackPanel>
-                                    <RadioButton Content="Horizontal" IsChecked="{Binding MediaOverlayTickerHorizontal}" Click="TickerSpecChanges" />
-                                    <RadioButton Content="Vertical" IsChecked="{Binding MediaOverlayTickerVertical}" Click="TickerSpecChanges" />
+                                    <RadioButton Content="Static" IsChecked="{Binding MediaOverlayTickerStatic}" Click="TickerSpecChanges" />
+                                    <RadioButton Content="Rotation Cycle" IsChecked="{Binding MediaOverlayTickerRotate}" Click="TickerSpecChanges" />
+                                    <RadioButton Content="Marquee Scroll" IsChecked="{Binding MediaOverlayTickerMarquee}" Click="TickerSpecChanges" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>

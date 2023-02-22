@@ -1702,6 +1702,7 @@ switches:
                     _DataSource.OverlayTicker.AddOverlayTickerRow(item.ToString(), name);
                     _DataSource.OverlayTicker.AcceptChanges();
                }
+
                 NotifySaveData();
             }
         }

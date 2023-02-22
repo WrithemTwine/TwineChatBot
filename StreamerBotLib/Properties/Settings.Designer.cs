@@ -1382,36 +1382,36 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MediaOverlayTickerMulti {
+        public bool MediaOverlayTickerRotate {
             get {
-                return ((bool)(this["MediaOverlayTickerMulti"]));
+                return ((bool)(this["MediaOverlayTickerRotate"]));
             }
             set {
-                this["MediaOverlayTickerMulti"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool MediaOverlayTickerHorizontal {
-            get {
-                return ((bool)(this["MediaOverlayTickerHorizontal"]));
-            }
-            set {
-                this["MediaOverlayTickerHorizontal"] = value;
+                this["MediaOverlayTickerRotate"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MediaOverlayTickerVertical {
+        public bool MediaOverlayTickerMarquee {
             get {
-                return ((bool)(this["MediaOverlayTickerVertical"]));
+                return ((bool)(this["MediaOverlayTickerMarquee"]));
             }
             set {
-                this["MediaOverlayTickerVertical"] = value;
+                this["MediaOverlayTickerMarquee"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerMulti {
+            get {
+                return ((bool)(this["MediaOverlayTickerMulti"]));
+            }
+            set {
+                this["MediaOverlayTickerMulti"] = value;
             }
         }
         
@@ -1424,6 +1424,18 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["MediaOverlayTickerSelected"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayTickerStatic {
+            get {
+                return ((bool)(this["MediaOverlayTickerStatic"]));
+            }
+            set {
+                this["MediaOverlayTickerStatic"] = value;
             }
         }
     }

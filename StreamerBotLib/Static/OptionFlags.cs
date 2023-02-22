@@ -495,13 +495,24 @@ namespace StreamerBotLib.Static
         /// Defines using the ticker in single pages for each ticker item
         /// </summary>
         public static bool MediaOverlayTickerSingle => Settings.Default.MediaOverlayTickerSingle;
-
         /// <summary>
-        /// Defines using a single output page to show all of the ticker items together
+        /// Defines using the ticker with multiple items visible
         /// </summary>
         public static bool MediaOverlayTickerMulti => Settings.Default.MediaOverlayTickerMulti;
-        public static bool MediaOverlayTickerHorizontal => Settings.Default.MediaOverlayTickerHorizontal;
-        public static bool MediaOverlayTickerVertical => Settings.Default.MediaOverlayTickerVertical;
+
+        /// <summary>
+        /// Defines a ticker where all elements stay in place
+        /// </summary>
+        public static bool MediaOverlayTickerStatic => Settings.Default.MediaOverlayTickerStatic;
+        /// <summary>
+        /// Defines rotating each ticker item in the same spot
+        /// </summary>
+        public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
+        /// <summary>
+        /// Defines a marquee ticker scroller
+        /// </summary>
+        public static bool MediaOverlayTickerMarquee => Settings.Default.MediaOverlayTickerMarquee;
+        public static bool MediaOverlayTickerVertical => Settings.Default.MediaOverlayTickerMulti;
 
         public static string[] MediaOverlayTickerSelected
         {

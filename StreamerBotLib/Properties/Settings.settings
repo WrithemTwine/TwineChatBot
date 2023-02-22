@@ -341,17 +341,20 @@
     <Setting Name="MediaOverlayTickerSingle" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="MediaOverlayTickerMulti" Type="System.Boolean" Scope="User">
+    <Setting Name="MediaOverlayTickerRotate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayTickerHorizontal" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="MediaOverlayTickerMarquee" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayTickerVertical" Type="System.Boolean" Scope="User">
+    <Setting Name="MediaOverlayTickerMulti" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="MediaOverlayTickerSelected" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MediaOverlayTickerStatic" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

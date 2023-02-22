@@ -10,8 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-using Size = System.Drawing.Size;
-
 namespace StreamerBotLib.Overlay.Communication
 {
     /// <summary>
@@ -89,12 +87,19 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static OverlayPage ProcessTicker(TickerItem tickerItem)
         {
+            string style =  $"\n" +
+                            $".maindiv {{\n" +
+                            $"/* style class for page div,  <body><div class=\" maindiv\" />...</body>   */\n" +
+                            $"  text-align: center;\n" +
+                            $"}}\n" +
+                            $"\n";
+
             return
                 new OverlayPage()
                 {
                     OverlayType = tickerItem.OverlayTickerItem.ToString(),
                     OverlayHyperText = ProcessPage(
-                        new OverlayStyle(tickerItem.OverlayTickerItem).OverlayStyleText,
+                        style + new OverlayStyle(tickerItem.OverlayTickerItem).OverlayStyleText,
                         ProcessTicker(tickerItem.OverlayTickerItem, tickerItem.UserName).ToString()
                         , 5)
                 };
@@ -109,15 +114,11 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems)
         {
-            string directionstyle = "display: ";
-            if (OptionFlags.MediaOverlayTickerHorizontal)
-            {
-                directionstyle += "inline-block;";
-            }
-            else
-            { //if(OptionFlags.MediaOverlayTickerVertical)
-                directionstyle += "block;";
-            }
+            string style = $"\n" +
+                            $".maindiv {{\n" +
+                            $"  /* style class for page div,  <body><div class=\" maindiv\" />...</body>   */\n" +
+                            $"  text-align: center;\n" +
+                            $"}}\n";
 
             return
                 new OverlayPage()
@@ -125,39 +126,171 @@ namespace StreamerBotLib.Overlay.Communication
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
                         // just send any item, the correct style returns
-                        new OverlayStyle(OverlayTickerItem.LastFollower).OverlayStyleText,
-                        new XElement("div", 
-                            new XAttribute("style", directionstyle),
-                            from TickerItem T in tickerItems
-                             select ProcessTicker(T.OverlayTickerItem, T.UserName)
-                        ).ToString(), 5)
+                        style + new OverlayStyle(OverlayTickerItem.LastFollower).OverlayStyleText,
+                           string.Join(" ",from TickerItem T in tickerItems
+                            let Elem = ProcessTicker(T.OverlayTickerItem, T.UserName)
+                            select Elem.ToString())
+                        , 5)
                 };
         }
 
         public static string DefaultTickerStyle(string TagClassName)
         {
-            string style;
-            if (TagClassName == "All")
+            string style = "/* Ticker Items */\n" +
+                            $"\n" +
+                            $"span {{" +
+                            $"  display: flex;" +
+                            $"  float: left;\n"+
+                            $"  padding: 10px;\n" +
+                            $"  font-size: 175%;\n" +
+                            $"  text-align: left;\n" +
+                            $" /* set width so the tags don't move for different name lengths */" +
+                            $"  width: 250px;"+
+                            $"}}\n";
+
+            /*
+https://www.w3docs.com/snippets/css/how-to-have-the-marquee-effect-without-using-the-marquee-tag-with-css-javascript-and-jquery.html
+      p {
+        -moz-animation: marquee 10s linear infinite;
+        -webkit-animation: marquee 10s linear infinite;
+        animation: marquee 10s linear infinite;
+      } 
+            
+      @-moz-keyframes marquee {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+      @-webkit-keyframes marquee {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+      @keyframes marquee {
+        0% {
+          -moz-transform: translateX(100%);
+          -webkit-transform: translateX(100%);
+          transform: translateX(100%)
+        }
+        100% {
+          -moz-transform: translateX(-100%);
+          -webkit-transform: translateX(-100%);
+          transform: translateX(-100%);
+        }
+      }
+
+
+
+https://isotropic.co/how-to-marquee-elements/
+            @import url("https://fonts.googleapis.com/css2?family=Corben:wght@700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.demo_marquee-wrap {
+  --demo-marquee_space: 2rem;
+  display: grid;
+  align-content: center;
+  overflow: hidden;
+  gap: var(--demo-marquee_space);
+  width: 100%;
+  font-family: "Corben", system-ui, sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.marquee {
+  --demo-marquee_duration: 60s;
+  --demo-marquee_gap: var(--demo-marquee_space);
+
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+  gap: var(--demo-marquee_gap);
+  transform: skewY(-3deg);
+}
+
+.marquee__group {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--demo-marquee_gap);
+  min-width: 100%;
+  animation: scroll var(--demo-marquee_duration) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__group {
+    animation-play-state: paused;
+  }
+}
+
+.marquee__group img {
+  max-width: clamp(10rem, 1rem + 28vmin, 20rem);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.marquee__group p {
+  color:#29303e;
+}
+
+.marquee--borders {
+  border-block: 3px solid #29303e;
+  padding-block: 0.75rem;
+}
+
+.marquee--reverse .marquee__group {
+  animation-direction: reverse;
+  animation-delay: calc(var(--demo-marquee_duration) / -2);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(calc(-100% - var(--demo-marquee_gap)));
+  }
+}
+
+
+
+        
+
+            */
+
+            if (TagClassName == "All Tickers")
             {
-                style = "/* Ticker Items */\n";
-                foreach(SelectedTickerItem S in TickerFormatter.selectedTickerItems)
+                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
                 {
                     style += TickerStyle(S.OverlayTickerItem);
                 }
-            } else
+            }
+            else
             {
-
-                style = $"/* Ticker Items */\n{TickerStyle(TagClassName)}";
+                style += $"{TickerStyle(TagClassName)}";
             }
 
             static string TickerStyle(string TagName)
             {
                 return $"\n" +
                     $".{TagName} {{\n" +
-                    $"background: black;\n" +
-                    $"color: white;\n" +
-                    $"text-align: center;\n" +
-                    $"padding: 10px;" +
+                    $"  color: red;\n" +
                     $"}}\n";
             }
 
