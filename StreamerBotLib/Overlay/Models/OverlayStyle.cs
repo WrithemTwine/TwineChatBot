@@ -1,10 +1,11 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Overlay.Communication;
-
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Interfaces;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -14,7 +15,7 @@ namespace StreamerBotLib.Overlay.Models
     /// Loads a style and saves to a file.
     /// </summary>
     [DebuggerDisplay("OverlayType = {OverlayType}")]
-    public class OverlayStyle : IOverlayStyle
+    public class OverlayStyle : IOverlayStyle, IEquatable<OverlayStyle>
     {
         private string FileNameStyle;
 
@@ -59,18 +60,33 @@ namespace StreamerBotLib.Overlay.Models
         {
             OverlayType = OptionFlags.MediaOverlayTickerMulti ? "All Tickers" : overlayTickerItem.ToString();
 
-            FileNameStyle = Path.Combine(PublicConstants.BaseTickerPath, $"{(OptionFlags.MediaOverlayTickerMulti ? PublicConstants.TickerStyle("ticker") : PublicConstants.TickerStyle(OverlayType))}");
+            FileNameStyle = Path.Combine(PublicConstants.BaseTickerPath, $"{(OptionFlags.MediaOverlayTickerMulti ? PublicConstants.TickerFile("ticker") : PublicConstants.TickerFile(OverlayType))}");
             
             if (File.Exists(FileNameStyle))
             {
-                using (StreamReader sr = new(FileNameStyle))
-                {
-                    OverlayStyleText = sr.ReadToEnd();
-                }
+                StreamReader sr = new(FileNameStyle);
+                OverlayStyleText = sr.ReadToEnd();
             }
             else
             {
                 OverlayStyleText = ProcessHyperText.DefaultTickerStyle(OverlayType);
+            }
+        }
+
+        internal OverlayStyle(TickerStyle tickerStyle, bool refresh = false)
+        {
+            OverlayType = tickerStyle.ToString();
+
+            FileNameStyle = Path.Combine(PublicConstants.BaseTickerPath, $"{PublicConstants.TickerFile(tickerStyle)}");
+
+            if (File.Exists(FileNameStyle) && !refresh)
+            {
+                StreamReader sr = new(FileNameStyle);
+                OverlayStyleText = sr.ReadToEnd();
+            }
+            else
+            {
+                OverlayStyleText = ProcessHyperText.DefaultTickerStyle(tickerStyle);
             }
         }
 
@@ -81,6 +97,11 @@ namespace StreamerBotLib.Overlay.Models
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FileNameStyle));
             File.WriteAllText(FileNameStyle, OverlayStyleText);
+        }
+
+        public bool Equals(OverlayStyle other)
+        {
+            return OverlayType == other.OverlayType;
         }
     }
 }

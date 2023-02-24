@@ -1,4 +1,6 @@
-﻿using StreamerBotLib.Enums;
+﻿using Microsoft.Extensions.Options;
+
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Control;
@@ -130,19 +132,32 @@ namespace StreamerBotLib.Overlay
                 GUIData.AddEditPage(Enum.GetNames(typeof(OverlayTypes)));
             }
 
-            if (OptionFlags.MediaOverlayTickerMulti)
+            if (!OptionFlags.MediaOverlayTickerMulti)
             {
-                // if multi, just send 1 item and the style is set
-                GUIData.AddEditPage(OverlayTickerItem.LastFollower);
+                GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
+                                                                select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
             }
             else
             {
-                GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
-                                        select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
+                // if multi, just send 1 item and the style is set
+                GUIData.AddEditPage(OverlayTickerItem.LastFollower);
 
+                if (OptionFlags.MediaOverlayTickerMarquee)
+                {
+                    GUIData.AddEditPage(TickerStyle.MultiMarquee);
+                }
+                else if (OptionFlags.MediaOverlayTickerRotate)
+                {
+                    GUIData.AddEditPage(TickerStyle.MultiRotate);
+                }
             }
 
-            TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
+            BuildStylePages();
+        }
+
+        private void BuildStylePages()
+        {
+           TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
             if (TabControl_OverlayStyles.Items.Count > 0)
             {
@@ -222,6 +237,20 @@ namespace StreamerBotLib.Overlay
         {
             Controller.UpdateTicker();
             UpdateLinks();
+        }
+
+        private void MarqueeTypeSecondsLostFocus(object sender, RoutedEventArgs e)
+        {
+            if (OptionFlags.MediaOverlayTickerMarquee)
+            {
+                GUIData.UpdateEditPage(TickerStyle.MultiMarquee);
+            }
+            else if (OptionFlags.MediaOverlayTickerRotate)
+            {
+                GUIData.UpdateEditPage(TickerStyle.MultiRotate);
+            }
+
+            BuildStylePages();
         }
     }
 }

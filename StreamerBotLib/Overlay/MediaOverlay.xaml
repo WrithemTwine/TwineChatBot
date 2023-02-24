@@ -94,13 +94,35 @@
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Header="Animation" Width="Auto">
-                                <GroupBox.ToolTip>
-                                    <TextBlock>CSS has all of these styles, the selection adds the chosen class attribute to html tag.</TextBlock>
-                                </GroupBox.ToolTip>
+                                <GroupBox.Resources>
+                                    <BitmapImage x:Key="ImageSeconds" UriSource="/StreamerBotLib;component/Overlay/img/seconds.png" />
+                                </GroupBox.Resources>
                                 <StackPanel>
                                     <RadioButton Content="Static" IsChecked="{Binding MediaOverlayTickerStatic}" Click="TickerSpecChanges" />
-                                    <RadioButton Content="Rotation Cycle" IsChecked="{Binding MediaOverlayTickerRotate}" Click="TickerSpecChanges" />
-                                    <RadioButton Content="Marquee Scroll" IsChecked="{Binding MediaOverlayTickerMarquee}" Click="TickerSpecChanges" />
+                                    <RadioButton IsChecked="{Binding MediaOverlayTickerRotate}" Click="TickerSpecChanges">
+                                        <RadioButton.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Padding="0,0,5,0">Rotation Cycle</TextBlock>
+                                                <TextBox Width="50" Text="{Binding MediaOverlayTickerRotateTime}" LostFocus="MarqueeTypeSecondsLostFocus">
+                                                    <TextBox.Background>
+                                                        <ImageBrush ImageSource="{StaticResource ImageSeconds}"/>
+                                                    </TextBox.Background>
+                                                </TextBox>
+                                            </StackPanel>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+                                    <RadioButton IsChecked="{Binding MediaOverlayTickerMarquee}" Click="TickerSpecChanges">
+                                        <RadioButton.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Padding="0,0,5,0">Marquee Scroll</TextBlock>
+                                                <TextBox Width="50" Text="{Binding MediaOverlayTickerMarqueeTime}" LostFocus="MarqueeTypeSecondsLostFocus">
+                                                    <TextBox.Background>
+                                                        <ImageBrush ImageSource="{StaticResource ImageSeconds}"/>
+                                                    </TextBox.Background>
+                                                </TextBox>
+                                            </StackPanel>
+                                        </RadioButton.Content>
+                                    </RadioButton>
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>

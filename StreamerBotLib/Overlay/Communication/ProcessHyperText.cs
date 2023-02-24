@@ -1,6 +1,7 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Control;
+using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
@@ -38,11 +39,11 @@ namespace StreamerBotLib.Overlay.Communication
             }
         }
 
-        public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false)
+        public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false, string script="", string bodyevent = "")
         {
             return $"<html>\n" +
-                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n<style>\n{OverlayStyle}\n</style>\n</head>\n" +
-                $"<body>\n<div class=\"maindiv\">{OverlayBody}</div>\n</body>\n" +
+                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n{(script=="" ? "" : script)}<style>\n{OverlayStyle}\n</style>\n</head>\n" +
+                $"<body {(bodyevent=="" ? "" : bodyevent)}>\n<div class=\"maindiv\">\n{OverlayBody}\n</div>\n</body>\n" +
                 $"</html>\n";
         }
 
@@ -114,24 +115,199 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems)
         {
+            string UpdaterEvents()
+            {
+                //$(""#LastSubscriber"").load(location.href + "" #LastSubscriber"");
+                string values = "";
+
+                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
+                {
+                    values += $"$(\"#{S.OverlayTickerItem}\").load(location.href + \" #{S.OverlayTickerItem}\")\n";
+                }
+
+                return values;
+            }
+
+            string script = @"
+<script src=""http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js""></script>
+<script type=""text/javascript"">
+
+function reloadelements()
+{
+    // commented out since jQuery requires http hosting, i.e. test in bot via webserver
+    
+    setInterval(
+    function (){" +
+    UpdaterEvents() +
+@"    }    
+    , 500);
+}
+</script>
+";
+
             string style = $"\n" +
                             $".maindiv {{\n" +
                             $"  /* style class for page div,  <body><div class=\" maindiv\" />...</body>   */\n" +
                             $"  text-align: center;\n" +
                             $"}}\n";
 
+            string marqueeStyle = "";
+
+            if (OptionFlags.MediaOverlayTickerRotate)
+            {
+                marqueeStyle = new OverlayStyle(TickerStyle.MultiRotate).OverlayStyleText;
+            }
+            else if (OptionFlags.MediaOverlayTickerMarquee)
+            {
+                marqueeStyle = new OverlayStyle(TickerStyle.MultiMarquee).OverlayStyleText;
+            }
+
+            List<XElement> spans = new(from TickerItem T in tickerItems
+                           select ProcessTicker(T.OverlayTickerItem, T.UserName));
+
+            string body = "";
+
+            if (OptionFlags.MediaOverlayTickerMulti)
+            {
+                if (OptionFlags.MediaOverlayTickerMarquee)
+                {
+                    body = new XElement("div", new XAttribute("class", "marquee"), spans.ToArray()).ToString();
+                }
+                else if (OptionFlags.MediaOverlayTickerRotate)
+                {
+                    body = new XElement("div", new XAttribute("class", "rotate"), spans.ToArray()).ToString();
+                }
+            }
+            else
+            {
+                foreach (XElement span in spans)
+                {
+                    body += span.ToString() + "\n";
+                }
+            }
+
             return
                 new OverlayPage()
                 {
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
-                        // just send any item, the correct style returns
-                        style + new OverlayStyle(OverlayTickerItem.LastFollower).OverlayStyleText,
-                           string.Join(" ",from TickerItem T in tickerItems
-                            let Elem = ProcessTicker(T.OverlayTickerItem, T.UserName)
-                            select Elem.ToString())
-                        , 5)
+                        style + new OverlayStyle(OverlayTickerItem.LastFollower).OverlayStyleText + marqueeStyle,
+                        body
+                        , 0,true, script, "onload=\"reloadelements();\"")
                 };
+        }
+
+        internal static string DefaultTickerStyle(TickerStyle tickerStyle)
+        {
+            string output = "";
+
+            switch (tickerStyle)
+            {
+                case TickerStyle.Single:
+                    {
+                        break;
+                    }
+                case TickerStyle.MultiMarquee:
+                    {
+                        output = @"
+    .marquee {
+        overflow: hidden;
+        -moz-transform: translateX(100%);
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+" +
+$"        -moz-animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear infinite;\n" +
+$"        -webkit-animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear infinite;\n" +
+$"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear infinite;\n" +
+@"    }
+
+    .marquee span {
+        width: auto;
+    }
+
+    @keyframes ticker {
+        0% {
+            opacity: 0%;
+            -moz-transform: translateX(100%);
+            -webkit-transform: translateX(100%);
+            transform: translateX(100%);
+        }
+
+        20% { opacity: 100%; }
+        50% { opacity: 100%; }
+
+        100% {
+            opacity: 0%;
+            -moz-transform: translateX(-100%);
+            -webkit-transform: translateX(-100%);
+            transform: translateX(-100%);
+        }
+    }
+
+    @-moz-keyframes ticker {
+        0% {
+            opacity: 0%;
+            -moz-transform: translateX(100%);
+        }
+
+        20% { opacity: 100%; }
+        50% { opacity: 100%; }
+
+        100% {
+            opacity: 0%;
+            -moz-transform: translateX(-100%);
+        }
+    }
+
+    @-webkit-keyframes ticker {
+        0% {
+            opacity: 0%;
+            -webkit-transform: translateX(100%);
+        }
+
+        20% { opacity: 100%; }
+        50% { opacity: 100%; }
+
+        100% {
+            opacity: 0%;
+            -webkit-transform: translateX(-100%);
+        }
+    }";
+                        break;
+                    }
+                case TickerStyle.MultiStatic:
+                    {
+                        break;
+                    }
+                case TickerStyle.MultiRotate:
+                    {
+                        int itemcount = TickerFormatter.selectedTickerItems.Count;
+
+                        output = "\n.rotate span {\n" +
+                            "position: absolute;\n" +
+                            "width: auto;" +
+                            $"animation: tickerrotate {OptionFlags.MediaOverlayTickerRotateTime * itemcount}s linear infinite;\n" +
+                            $"}}\n\n" +
+                            $"@keyframes tickerrotate {{\n" +
+                            $"  0% {{ opacity: 0%; }}\n" +
+                            $"  {System.Math.Round(100.00 / (itemcount+1), 2)}% {{ opacity: 100%; }}\n" +
+                            $"  {System.Math.Round(200.00 / (itemcount+1), 2)}% {{ opacity: 0%; }}\n" +
+                            $"}}\n\n";
+
+                        for (int x = 1; x <= itemcount; x++)
+                        {
+                            output += $".rotate span:nth-child({x}) {{" +
+                                 "  opacity: 0%;\n" +
+                                $"  animation-delay: {(x - 1) * OptionFlags.MediaOverlayTickerRotateTime}s;\n" +
+                                $"}}\n\n";
+                        }
+
+                        break;
+                    }
+            }
+
+
+            return output;
         }
 
         public static string DefaultTickerStyle(string TagClassName)
@@ -149,6 +325,14 @@ namespace StreamerBotLib.Overlay.Communication
                             $"}}\n";
 
             /*
+             * https://stackoverflow.com/questions/18490026/refresh-reload-the-content-in-div-using-jquery-ajax
+             * 
+             * https://stackoverflow.com/questions/16231359/animating-elements-sequentially-in-pure-css3-on-loop
+             * 
+             * https://blog.hubspot.com/website/scrolling-text-css
+             * 
+             * https://stackoverflow.com/questions/56639772/how-to-create-a-marquee-that-appears-infinite-using-css-or-javascript
+             * 
 https://www.w3docs.com/snippets/css/how-to-have-the-marquee-effect-without-using-the-marquee-tag-with-css-javascript-and-jquery.html
       p {
         -moz-animation: marquee 10s linear infinite;

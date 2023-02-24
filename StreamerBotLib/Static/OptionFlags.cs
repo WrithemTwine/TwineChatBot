@@ -508,10 +508,12 @@ namespace StreamerBotLib.Static
         /// Defines rotating each ticker item in the same spot
         /// </summary>
         public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
+        public static int MediaOverlayTickerRotateTime => Settings.Default.MediaOverlayTickerRotateTime;
         /// <summary>
         /// Defines a marquee ticker scroller
         /// </summary>
         public static bool MediaOverlayTickerMarquee => Settings.Default.MediaOverlayTickerMarquee;
+        public static int MediaOverlayTickerMarqueeTime => Settings.Default.MediaOverlayTickerMarqueeTime;
         public static bool MediaOverlayTickerVertical => Settings.Default.MediaOverlayTickerMulti;
 
         public static string[] MediaOverlayTickerSelected

@@ -1,4 +1,6 @@
-﻿using System.Windows.Navigation;
+﻿using StreamerBotLib.Overlay.Enums;
+
+using System.Collections.Generic;
 
 namespace StreamerBotLib.Overlay.Static
 {
@@ -10,6 +12,18 @@ namespace StreamerBotLib.Overlay.Static
         public static string OverlayStyle { get; } = "overlaystyle.css";
         public static string BaseOverlayPath { get; } = "Overlay";
         public static string BaseTickerPath { get; } = "ticker";
-        public static string TickerStyle(string FileName) => $"{FileName}.css";
+       
+        public static string TickerFile(string FileName) => $"{FileName}.css";
+        internal static string TickerFile(TickerStyle tickerStyle)
+        {
+            return TickerFile(TickerStyleMap[tickerStyle]);
+        }
+        internal static Dictionary<TickerStyle, string> TickerStyleMap = new()
+        {
+            {TickerStyle.Single, BaseTickerPath },
+            {TickerStyle.MultiStatic, "static" },
+            {TickerStyle.MultiRotate, "rotate" },
+            {TickerStyle.MultiMarquee, "marquee" }
+        };
     }
 }

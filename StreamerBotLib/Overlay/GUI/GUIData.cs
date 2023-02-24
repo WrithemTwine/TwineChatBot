@@ -122,6 +122,18 @@ namespace StreamerBotLib.Overlay.GUI
             }
         }
 
+        internal void AddEditPage(TickerStyle tickerStyle)
+        {
+            OverlayEditStyles.Add(new OverlayStyle(tickerStyle));
+            OnPropertyChanged(nameof(OverlayEditStyles));
+        }
+
+        internal void UpdateEditPage(TickerStyle tickerStyle)
+        {
+            OverlayEditStyles.Find((t) => t.OverlayType == tickerStyle.ToString()).OverlayStyleText = new OverlayStyle(tickerStyle, true).OverlayStyleText;
+            OnPropertyChanged(nameof(OverlayEditStyles));
+        }
+
         public void SaveEditPage()
         {
             foreach (OverlayStyle overlayEditStyle in OverlayEditStyles)
