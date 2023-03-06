@@ -853,7 +853,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
-            ActionSystem.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
         }
 
         public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)

@@ -62,15 +62,15 @@ namespace StreamerBotLib.Overlay.Control
             tickerFormatter.SetTickersSelected(items);
         }
 
-        public void SetTickerData(IEnumerable<TickerItem> data)
+        public void SetTickerData(IEnumerable<TickerItem> data, IEnumerable<OverlayStyle> overlayStyles)
         {
             tickerFormatter.SetTickerData(data);
-            UpdateTicker();
+            UpdateTicker(overlayStyles);
         }
 
-        public void UpdateTicker()
+        public void UpdateTicker(IEnumerable<OverlayStyle> overlayStyles)
         {
-            _httpServer.UpdateTicker(tickerFormatter.GetTickerPages());
+            _httpServer.UpdateTicker(tickerFormatter.GetTickerPages(overlayStyles));
         }
     }
 }

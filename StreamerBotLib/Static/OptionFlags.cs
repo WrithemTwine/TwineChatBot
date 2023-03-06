@@ -490,6 +490,7 @@ namespace StreamerBotLib.Static
 
         public static bool MediaOverlayUseSameStyle => Settings.Default.MediaOverlayUseSameStyle;
         public static bool MediaOverlayAutoStart => Settings.Default.MediaOverlayAutoStart;
+        public static bool MediaOverlayAutoServerStart => Settings.Default.MediaOverlayAutoServerStart;
 
         /// <summary>
         /// Defines using the ticker in single pages for each ticker item

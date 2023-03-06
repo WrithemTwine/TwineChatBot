@@ -7,6 +7,7 @@ using StreamerBotLib.Overlay.Control;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.GUI;
 using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
 using System;
@@ -49,7 +50,15 @@ namespace StreamerBotLib.Overlay
 
         public void ReceivedOverlayEvent(object sender, OverlayActionType e)
         {
-            Controller.SendAlert(new OverlayPage() { OverlayType = e.OverlayType.ToString(), OverlayHyperText = ProcessHyperText.ProcessOverlay(e) });
+            Controller.SendAlert(new OverlayPage() { 
+                OverlayType = e.OverlayType.ToString(), 
+                OverlayHyperText = ProcessHyperText.ProcessOverlay(
+                    e,
+                        GUIData.OverlayEditStyles.Find( (f)=>
+                            f.OverlayType == e.OverlayType.ToString() 
+                        || f.OverlayType == PublicConstants.OverlayAllActions
+                    ))
+            });
             GUIData.UpdateStat(e.OverlayType.ToString());
         }
 
@@ -60,7 +69,7 @@ namespace StreamerBotLib.Overlay
 
         public void TickerReceivedEvent(object sender, UpdatedTickerItemsEventArgs e)
         {
-            Controller.SetTickerData(e.TickerItems);
+            Controller.SetTickerData(e.TickerItems, GUIData.OverlayEditStyles);
         }
 
         public void CloseApp(bool Token = false)
@@ -72,7 +81,7 @@ namespace StreamerBotLib.Overlay
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (OptionFlags.MediaOverlayMediaPort != 0 && OptionFlags.MediaOverlayAutoStart)
+            if (OptionFlags.MediaOverlayMediaPort != 0 && OptionFlags.MediaOverlayAutoServerStart)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
@@ -222,7 +231,7 @@ namespace StreamerBotLib.Overlay
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             ((OverlayStyle)(sender as TextBox).DataContext).SaveFile();
-            Controller.UpdateTicker();
+            Controller.UpdateTicker(GUIData.OverlayEditStyles);
         }
 
         private void TickerSelections(object sender, RoutedEventArgs e)
@@ -235,7 +244,7 @@ namespace StreamerBotLib.Overlay
 
         private void TickerSpecChanges(object sender, RoutedEventArgs e)
         {
-            Controller.UpdateTicker();
+            Controller.UpdateTicker(GUIData.OverlayEditStyles);
             UpdateLinks();
         }
 

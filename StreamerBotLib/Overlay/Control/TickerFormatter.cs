@@ -41,7 +41,7 @@ namespace StreamerBotLib.Overlay.Control
             overlayTickerItemsData.AddRange(tickerItems);
         }
 
-        public IEnumerable<IOverlayPageReadOnly> GetTickerPages()
+        public IEnumerable<IOverlayPageReadOnly> GetTickerPages(IEnumerable<OverlayStyle> overlayStyles)
         {
             List<IOverlayPageReadOnly> pages = new();
             if (OptionFlags.MediaOverlayTickerSingle)
@@ -49,7 +49,7 @@ namespace StreamerBotLib.Overlay.Control
                 // convert a data collection in a collection of pages
                 foreach (TickerItem ticker in overlayTickerItemsData)
                 {
-                    pages.Add(ProcessHyperText.ProcessTicker(ticker));
+                    pages.Add(ProcessHyperText.ProcessTicker(ticker, overlayStyles));
                 }
             }
             else
@@ -68,7 +68,7 @@ namespace StreamerBotLib.Overlay.Control
                         ?? "-"
                     }
                     select newitem
-                    )));
+                    ), overlayStyles));
             }
 
             return pages;

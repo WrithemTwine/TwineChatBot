@@ -3,6 +3,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Control;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
 using System.Collections.Generic;
@@ -42,12 +43,14 @@ namespace StreamerBotLib.Overlay.Communication
         public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false, string script="", string bodyevent = "")
         {
             return $"<html>\n" +
-                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n{(script=="" ? "" : script)}<style>\n{OverlayStyle}\n</style>\n</head>\n" +
-                $"<body {(bodyevent=="" ? "" : bodyevent)}>\n<div class=\"maindiv\">\n{OverlayBody}\n</div>\n</body>\n" +
+                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n{(script=="" ? "" : script)}\n" +
+                $"<style>\n{OverlayStyle}\n</style>\n</head>\n" +
+                $"<body {(bodyevent=="" ? "" : bodyevent)}>\n" +
+                $"<div class=\"maindiv\">\n{OverlayBody}\n</div>\n</body>\n" +
                 $"</html>\n";
         }
 
-        public static string ProcessOverlay(OverlayActionType overlayActionType)
+        public static string ProcessOverlay(OverlayActionType overlayActionType, OverlayStyle overlayStyle)
         {
             string Img = "";
 
@@ -83,10 +86,10 @@ namespace StreamerBotLib.Overlay.Communication
 
             string Msg = $"<div class=\"message\">{overlayActionType.Message}</div>";
 
-            return ProcessPage(new OverlayStyle(overlayActionType.OverlayType.ToString()).OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
+            return ProcessPage(overlayStyle.OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
         }
 
-        public static OverlayPage ProcessTicker(TickerItem tickerItem)
+        public static OverlayPage ProcessTicker(TickerItem tickerItem, IEnumerable<OverlayStyle> overlayStyles)
         {
             string style =  $"\n" +
                             $".maindiv {{\n" +
@@ -100,7 +103,9 @@ namespace StreamerBotLib.Overlay.Communication
                 {
                     OverlayType = tickerItem.OverlayTickerItem.ToString(),
                     OverlayHyperText = ProcessPage(
-                        style + new OverlayStyle(tickerItem.OverlayTickerItem).OverlayStyleText,
+                        style + (from OverlayStyle O in overlayStyles
+                                 where O.OverlayType == tickerItem.OverlayTickerItem.ToString()
+                                 select O).First().OverlayStyleText,
                         ProcessTicker(tickerItem.OverlayTickerItem, tickerItem.UserName).ToString()
                         , 5)
                 };
@@ -113,53 +118,61 @@ namespace StreamerBotLib.Overlay.Communication
                             $"{tickerItem}: {UserName}");
         }
 
-        public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems)
+        public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems, IEnumerable<OverlayStyle> overlayStyles)
         {
-            string UpdaterEvents()
-            {
-                //$(""#LastSubscriber"").load(location.href + "" #LastSubscriber"");
-                string values = "";
+//            string UpdaterEvents()
+//            {
+//                //$(""#LastSubscriber"").load(location.href + "" #LastSubscriber"");
+//                string values = "";
 
-                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
-                {
-                    values += $"$(\"#{S.OverlayTickerItem}\").load(location.href + \" #{S.OverlayTickerItem}\")\n";
-                }
+//                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
+//                {
+//                    values += $"$(\"#{S.OverlayTickerItem}\").load(location.href + \" #{S.OverlayTickerItem}\")\n";
+//                }
 
-                return values;
-            }
+//                return values;
+//            }
 
-            string script = @"
-<script src=""http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js""></script>
-<script type=""text/javascript"">
+//            string script = @"
+//<script src=""http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js""></script>
+//<script type=""text/javascript"">
 
-function reloadelements()
-{
-    // commented out since jQuery requires http hosting, i.e. test in bot via webserver
+//function reloadelements()
+//{
+//    // commented out since jQuery requires http hosting, i.e. test in bot via webserver
     
-    setInterval(
-    function (){" +
-    UpdaterEvents() +
-@"    }    
-    , 500);
-}
-</script>
-";
+//    setInterval(
+//    function (){" +
+//    UpdaterEvents() +
+//@"    }    
+//    , 500);
+//}
+//</script>
+//";
 
             string style = $"\n" +
                             $".maindiv {{\n" +
                             $"  /* style class for page div,  <body><div class=\" maindiv\" />...</body>   */\n" +
-                            $"  text-align: center;\n" +
+                            $"  text-align: left;\n" +
                             $"}}\n";
 
             string marqueeStyle = "";
 
+            int reloadtime = 5;
+
             if (OptionFlags.MediaOverlayTickerRotate)
             {
-                marqueeStyle = new OverlayStyle(TickerStyle.MultiRotate).OverlayStyleText;
+                marqueeStyle = (from OverlayStyle O in overlayStyles
+                                where O.OverlayType == TickerStyle.MultiRotate.ToString()
+                                select O).First().OverlayStyleText;
+                reloadtime = (OptionFlags.MediaOverlayTickerRotateTime * tickerItems.Count());
             }
             else if (OptionFlags.MediaOverlayTickerMarquee)
             {
-                marqueeStyle = new OverlayStyle(TickerStyle.MultiMarquee).OverlayStyleText;
+                marqueeStyle = (from OverlayStyle O in overlayStyles
+                                where O.OverlayType == TickerStyle.MultiMarquee.ToString()
+                                select O).First().OverlayStyleText;
+                reloadtime = OptionFlags.MediaOverlayTickerMarqueeTime;
             }
 
             List<XElement> spans = new(from TickerItem T in tickerItems
@@ -191,9 +204,11 @@ function reloadelements()
                 {
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
-                        style + new OverlayStyle(OverlayTickerItem.LastFollower).OverlayStyleText + marqueeStyle,
+                        style + (from OverlayStyle O in overlayStyles
+                                 where O.OverlayType == PublicConstants.OverlayAllTickers
+                                 select O).First().OverlayStyleText + marqueeStyle,
                         body
-                        , 0,true, script, "onload=\"reloadelements();\"")
+                        , reloadtime,false, "", "")
                 };
         }
 
@@ -211,7 +226,9 @@ function reloadelements()
                     {
                         output = @"
     .marquee {
+        background-color: #949494;
         overflow: hidden;
+        display: inline-block;
         -moz-transform: translateX(100%);
         -webkit-transform: translateX(100%);
         transform: translateX(100%);
@@ -284,10 +301,12 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
                         int itemcount = TickerFormatter.selectedTickerItems.Count;
 
                         output = "\n.rotate span {\n" +
-                            "position: absolute;\n" +
-                            "width: auto;" +
-                            $"animation: tickerrotate {OptionFlags.MediaOverlayTickerRotateTime * itemcount}s linear infinite;\n" +
+                            $"  position: absolute;\n" +
+                            "   width: auto;\n" +
+                            $"  animation: tickerrotate {OptionFlags.MediaOverlayTickerRotateTime * itemcount}s linear infinite;\n" +
                             $"}}\n\n" +
+                            $".rotate {{" +
+                            $"  background-color: #949494;" +
                             $"@keyframes tickerrotate {{\n" +
                             $"  0% {{ opacity: 0%; }}\n" +
                             $"  {System.Math.Round(100.00 / (itemcount+1), 2)}% {{ opacity: 100%; }}\n" +
@@ -321,7 +340,7 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
                             $"  font-size: 175%;\n" +
                             $"  text-align: left;\n" +
                             $" /* set width so the tags don't move for different name lengths */" +
-                            $"  width: 250px;"+
+                            $"  width: 450px;"+
                             $"}}\n";
 
             /*
@@ -458,7 +477,7 @@ body {
 
             */
 
-            if (TagClassName == "All Tickers")
+            if (TagClassName == PublicConstants.OverlayAllTickers)
             {
                 foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
                 {
