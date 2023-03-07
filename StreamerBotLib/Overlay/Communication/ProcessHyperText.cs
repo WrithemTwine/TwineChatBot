@@ -306,7 +306,8 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
                             $"  animation: tickerrotate {OptionFlags.MediaOverlayTickerRotateTime * itemcount}s linear infinite;\n" +
                             $"}}\n\n" +
                             $".rotate {{" +
-                            $"  background-color: #949494;" +
+                            $"  background-color: #949494;\n" +
+                            $"}}\n" +
                             $"@keyframes tickerrotate {{\n" +
                             $"  0% {{ opacity: 0%; }}\n" +
                             $"  {System.Math.Round(100.00 / (itemcount+1), 2)}% {{ opacity: 100%; }}\n" +

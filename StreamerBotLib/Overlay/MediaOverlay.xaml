@@ -158,6 +158,7 @@
             </TabItem>
             <TabItem Header="Overlay Styles" >
                 <DockPanel Margin="3">
+                    <TextBlock DockPanel.Dock="Top" Text="The CSS styles below save when the style box loses focus." />
                     <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayHelpExpand}" DockPanel.Dock="Top">
                         <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <FlowDocument>

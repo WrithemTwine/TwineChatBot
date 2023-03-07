@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Control;
@@ -244,6 +242,7 @@ namespace StreamerBotLib.Overlay
 
         private void TickerSpecChanges(object sender, RoutedEventArgs e)
         {
+            AddEditPages();
             Controller.UpdateTicker(GUIData.OverlayEditStyles);
             UpdateLinks();
         }
