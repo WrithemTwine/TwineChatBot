@@ -11,8 +11,16 @@ using System.Linq;
 
 namespace StreamerBotLib.Overlay.Control
 {
+    /// <summary>
+    /// Class to manage which Ticker Items the user wants to include in overlay
+    /// display, and the data from primary bot to maintain in ticker activity. Responds to 
+    /// changes in the ticker style and rebuild current ticker.
+    /// </summary>
     internal class TickerFormatter
     {
+        /// <summary>
+        /// the current selected items the user wants to view for the ticker
+        /// </summary>
         public static readonly List<SelectedTickerItem> selectedTickerItems = new();
         private readonly List<TickerItem> overlayTickerItemsData;
 
@@ -41,6 +49,13 @@ namespace StreamerBotLib.Overlay.Control
             overlayTickerItemsData.AddRange(tickerItems);
         }
 
+        /// <summary>
+        /// Builds the ticker pages to show based on user selections and the provided user configured
+        /// styles.
+        /// </summary>
+        /// <param name="overlayStyles">The current ticker styles based on the user's option selection and
+        /// adjusted styles.</param>
+        /// <returns></returns>
         public IEnumerable<IOverlayPageReadOnly> GetTickerPages(IEnumerable<OverlayStyle> overlayStyles)
         {
             List<IOverlayPageReadOnly> pages = new();

@@ -267,7 +267,7 @@ namespace StreamerBotLib.BotClients
             IsStopped = true;
      
             SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
-            SendTickerToServer -= OverlayWindow.GetupdatedTickerReceivedHandler();
+            SendTickerToServer -= OverlayWindow?.GetupdatedTickerReceivedHandler();
 
             if (!WindowClosing)
             {

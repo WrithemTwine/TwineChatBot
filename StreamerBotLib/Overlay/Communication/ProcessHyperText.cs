@@ -302,6 +302,7 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
 
                         output = "\n.rotate span {\n" +
                             $"  position: absolute;\n" +
+                            $"  opacity: 100%;\n" +
                             "   width: auto;\n" +
                             $"  animation: tickerrotate {OptionFlags.MediaOverlayTickerRotateTime * itemcount}s linear infinite;\n" +
                             $"}}\n\n" +

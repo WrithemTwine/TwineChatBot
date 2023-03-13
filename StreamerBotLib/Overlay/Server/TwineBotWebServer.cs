@@ -191,9 +191,9 @@ namespace StreamerBotLib.Overlay.Server
                     output.Close();
                 }
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                //LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 
