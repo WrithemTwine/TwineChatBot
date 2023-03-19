@@ -14,6 +14,8 @@ using System.Xml.Linq;
 
 namespace StreamerBotLib.Overlay.Communication
 {
+    // TODO: fix null reference - see log from bot testing during stream for stack trace -can publish newer test version
+
     /// <summary>
     /// Provides HTML strings to supply via the HTTP server, includes building an Overlay media page based on provided image, audio, and/or video.
     /// </summary>

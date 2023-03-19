@@ -2,6 +2,7 @@
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Server;
+using StreamerBotLib.Static;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,10 +43,7 @@ namespace StreamerBotLib.Overlay.GUI
                 if (T != OverlayTypes.None.ToString())
                 {
                     OverlayStat item = new() { OverlayCount = 0, OverlayType = T };
-                    if (!OverlayStats.Contains(item))
-                    {
-                        OverlayStats.Add(item);
-                    }
+                    OverlayStats.UniqueAdd(item);
                 }
             }
         }

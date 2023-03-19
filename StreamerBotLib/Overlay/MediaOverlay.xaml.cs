@@ -17,6 +17,8 @@ using System.Windows.Data;
 
 namespace StreamerBotLib.Overlay
 {
+    // TODO: test new port number or add another server to mitigate pausing videoes
+
     /// <summary>
     /// Interaction logic for MediaOverlay.xaml
     /// </summary>
@@ -36,6 +38,13 @@ namespace StreamerBotLib.Overlay
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
             GUIData = (GUIData)Resources["GUIAppData"];
+            
+            // when overlay server is offline/not started, main bot queues alerts
+            // starting this bot then tries to process alerts without loading styles
+            // trying to set the alert html text lead to NULL exception when no style available
+            // to match the alert, so the bot crashed.
+            // UpdateLinks loads the styles in case alerts are waiting to be processed
+            UpdateLinks(); 
 
             UserHideWindow += HideWindow;
         }
