@@ -1262,12 +1262,12 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int MediaOverlayPort {
+        public int MediaOverlayActionPort {
             get {
-                return ((int)(this["MediaOverlayPort"]));
+                return ((int)(this["MediaOverlayActionPort"]));
             }
             set {
-                this["MediaOverlayPort"] = value;
+                this["MediaOverlayActionPort"] = value;
             }
         }
         
@@ -1460,6 +1460,18 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["MediaOverlayTickerMarqueeTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MediaOverlayTickerPort {
+            get {
+                return ((int)(this["MediaOverlayTickerPort"]));
+            }
+            set {
+                this["MediaOverlayTickerPort"] = value;
             }
         }
     }

@@ -435,7 +435,7 @@ namespace StreamerBotLib.BotIOController
                     f.FromUserName,
                     f.ToUserId,
                     f.ToUserName,
-                    new(f.FromUserName, Source, f.FromUserId)
+                    Source
                 );
             });
         }

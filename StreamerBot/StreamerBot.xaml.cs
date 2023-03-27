@@ -1007,7 +1007,6 @@ namespace StreamerBot
 
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            // TODO: Setup MultiLiveBot Context Menu Add/Edit records
             if (sender.GetType() == typeof(DataGrid))
             {
                 bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";

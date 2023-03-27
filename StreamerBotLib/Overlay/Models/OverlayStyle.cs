@@ -115,5 +115,10 @@ namespace StreamerBotLib.Overlay.Models
         {
             return Equals(obj as OverlayStyle);
         }
+
+        public override int GetHashCode()
+        {
+            return (OverlayType + OverlayStyleText).GetHashCode();
+        }
     }
 }

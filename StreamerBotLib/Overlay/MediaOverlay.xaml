@@ -64,12 +64,17 @@
                             <TextBlock>Enable the same Overlay style for every alert.</TextBlock>
                         </CheckBox>
                     </GroupBox>
-                    <GroupBox Header="Server Settings">
+                    <GroupBox Header="Server Port Number Settings">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                                <Label Content="Server Port Number: "/>
-                                <TextBox x:Name="TextBox_PortNumber" Height="18" Width="80" 
-                                         Text="{Binding MediaOverlayPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" LostFocus="Click_UpdateLinks" />
+                                <Label Content="Server Action Port: "/>
+                                <TextBox x:Name="TextBox_ActionPortNumber" Height="18" Width="80" 
+                                         Text="{Binding MediaOverlayActionPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" LostFocus="Click_UpdateLinks" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                <Label Content="Server Ticker Port: "/>
+                                <TextBox x:Name="TextBox_TickerPortNumber" Height="18" Width="80" 
+                                         Text="{Binding MediaOverlayTickerPort, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, StringFormat=\{0:F0\}, UpdateSourceTrigger=PropertyChanged}" LostFocus="Click_UpdateLinks" />
                             </StackPanel>
                             <TextBlock>
                                 Ports consist of 1-65535, the lower ports often have assigned services. <LineBreak />

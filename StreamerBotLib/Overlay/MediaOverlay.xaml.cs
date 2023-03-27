@@ -88,7 +88,7 @@ namespace StreamerBotLib.Overlay
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (OptionFlags.MediaOverlayMediaPort != 0 && OptionFlags.MediaOverlayAutoServerStart)
+            if (OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayAutoServerStart)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
@@ -118,14 +118,16 @@ namespace StreamerBotLib.Overlay
             {
                 RadioButton_OverlayServer_Start.IsEnabled = false;
                 RadioButton_OverlayServer_Stop.IsEnabled = true;
-                TextBox_PortNumber.IsEnabled = false;
+                TextBox_ActionPortNumber.IsEnabled = false;
+                TextBox_TickerPortNumber.IsEnabled = false;
                 CheckBox_OptionSamePage.IsEnabled = false;
             }
             else
             {
                 RadioButton_OverlayServer_Start.IsEnabled = true;
                 RadioButton_OverlayServer_Stop.IsEnabled = false;
-                TextBox_PortNumber.IsEnabled = true;
+                TextBox_ActionPortNumber.IsEnabled = true;
+                TextBox_TickerPortNumber.IsEnabled = true;
                 CheckBox_OptionSamePage.IsEnabled = true;
             }
         }

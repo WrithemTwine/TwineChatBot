@@ -60,19 +60,35 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchPubSub.OnLog += TwitchPubSub_OnLog;
                 TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
                 TwitchPubSub.OnPubSubServiceClosed += TwitchPubSub_OnPubSubServiceClosed;
-                TwitchPubSub.OnPubSubServiceError += TwitchPubSub_OnPubSubServiceError;
+                
                 IsConnected = false;
             }
         }
 
-        private void TwitchPubSub_OnPubSubServiceError(object sender, OnPubSubServiceErrorArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
         {
-            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender, new global::TwitchLib.Client.Events.OnLogArgs() { Data = $"PubSub {e.Data}", DateTime = DateTime.Now });
+            if (e.Data.ToLower().Contains("reconnect"))
+            {
+                ReconnectService();
+            }
+
+            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender, 
+                new global::TwitchLib.Client.Events.OnLogArgs() { 
+                    Data = $"PubSub {e.Data}", DateTime = DateTime.Now 
+                });
+        }
+
+        private void ReconnectService()
+        {
+            IsStarted = false;
+            IsStopped = true;
+            TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
+            TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
+            TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+            TwitchPubSub = null;
+
+            StartBot();
         }
 
         public override bool StartBot()

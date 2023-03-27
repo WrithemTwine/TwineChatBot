@@ -481,9 +481,14 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
-        public static int MediaOverlayMediaPort
+        public static int MediaOverlayMediaActionPort
         {
-            get => Settings.Default.MediaOverlayPort; set => Settings.Default.MediaOverlayPort = value;
+            get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
+        }
+
+        public static int MediaOverlayMediaTickerPort
+        {
+            get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
 
         public static bool MediaOverlayLogExceptions => Settings.Default.MediaOverlayLogExceptions;

@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Interfaces;
-using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System;
@@ -10,26 +9,35 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Reflection;
+using System.Threading.Tasks;
 
 namespace StreamerBotLib.Overlay.Server
 {
     public class TwineBotWebServer
     {
-        private HttpListener HTTPListenServer { get; set; } = new();
+        private static HttpListener HTTPListenServer { get; set; } = new();
+        private static Task ProcessPages = new(() => ServerSendAlerts());
 
-        private List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
-        private List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
+        private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
+        private static List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
 
         public TwineBotWebServer()
         {
-            if (OptionFlags.MediaOverlayMediaPort == 0)
+            static int Assign(int CheckPort)
             {
-                Random random = new();
-                int port = ValidatePort(random.Next(1024, 65536));
-
-                Settings.Default.MediaOverlayPort = port;
+                if (CheckPort == 0)
+                {
+                    Random random = new();
+                    return ValidatePort(random.Next(1024, 65536));
+                }
+                else
+                {
+                    return CheckPort;
+                }
             }
+
+            OptionFlags.MediaOverlayMediaActionPort = Assign(OptionFlags.MediaOverlayMediaActionPort);
+            OptionFlags.MediaOverlayMediaTickerPort = Assign(OptionFlags.MediaOverlayMediaTickerPort);
         }
 
         public static int ValidatePort(int port)
@@ -60,7 +68,7 @@ namespace StreamerBotLib.Overlay.Server
             }
             HTTPListenServer.Start();
 
-            ThreadManager.CreateThreadStart(() => ServerSendAlerts());
+            ProcessPages.Start();
         }
 
         public void SendAlert(IOverlayPageReadOnly overlayPage)
@@ -100,100 +108,101 @@ namespace StreamerBotLib.Overlay.Server
             }
         }
 
-        private void ServerSendAlerts()
+        private static void ServerSendAlerts()
         {
-            try
+
+            while (OptionFlags.ActiveToken && HTTPListenServer.IsListening)
             {
-                while (OptionFlags.ActiveToken && HTTPListenServer.IsListening)
+                _ = HTTPListenServer.BeginGetContext((result) =>
                 {
-                    HttpListenerContext context = HTTPListenServer.GetContext();
-                    HttpListenerRequest request = context.Request;
-                    // Obtain a response object.
-                    HttpListenerResponse response = context.Response;
-                    // Construct a response.
-
-                    byte[] buffer;
-
-                    if (request.RawUrl.Contains("ticker"))
+                    try
                     {
-                        string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+                        HttpListenerContext context = (result.AsyncState as HttpListener).EndGetContext(result);
+                        HttpListenerRequest request = context.Request;
+                        // Obtain a response object.
+                        HttpListenerResponse response = context.Response;
+                        // Construct a response.
 
-                        lock (TickerPages)
+                        byte[] buffer;
+
+                        if (request.RawUrl.Contains("ticker"))
                         {
-                            if (TickerPages.Count == 1)
+                            string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+
+                            lock (TickerPages)
                             {
-                                responseString = TickerPages[0].OverlayHyperText;
-                            } 
-                            else if(TickerPages.Count > 1)
-                            {
-                                foreach (var T in from T in TickerPages
-                                                  where request.RawUrl.Contains(T.OverlayType)
-                                                  select T)
+                                if (TickerPages.Count == 1)
                                 {
-                                    responseString = T.OverlayHyperText;
+                                    responseString = TickerPages[0].OverlayHyperText;
                                 }
-                            }
-                        }
-
-                        buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                    }
-                    else if (request.RawUrl.Contains("index.html"))
-                    {
-                        string RequestType = OverlayTypes.None.ToString();
-                        if (!OptionFlags.MediaOverlayUseSameStyle)
-                        {
-                            RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
-                        }
-
-                        string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
-
-                        lock (OverlayPages)
-                        {
-                            if (OverlayPages.Count > 0)
-                            {
-                                IOverlayPageReadOnly found = null;
-
-                                foreach (var page in OverlayPages)
+                                else if (TickerPages.Count > 1)
                                 {
-                                    if (page.OverlayType == RequestType || OptionFlags.MediaOverlayUseSameStyle)
+                                    foreach (var T in from T in TickerPages
+                                                      where request.RawUrl.Contains(T.OverlayType)
+                                                      select T)
                                     {
-                                        found = page;
+                                        responseString = T.OverlayHyperText;
                                     }
                                 }
+                            }
 
-                                if (found != null)
+                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                        }
+                        else if (request.RawUrl.Contains("index.html"))
+                        {
+                            string RequestType = OverlayTypes.None.ToString();
+                            if (!OptionFlags.MediaOverlayUseSameStyle)
+                            {
+                                RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
+                            }
+
+                            string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+
+                            lock (OverlayPages)
+                            {
+                                if (OverlayPages.Count > 0)
                                 {
-                                    OverlayPages.Remove(found);
-                                    responseString = found.OverlayHyperText;
+                                    IOverlayPageReadOnly found = null;
+
+                                    foreach (var page in OverlayPages)
+                                    {
+                                        if (page.OverlayType == RequestType || OptionFlags.MediaOverlayUseSameStyle)
+                                        {
+                                            found = page;
+                                        }
+                                    }
+
+                                    if (found != null)
+                                    {
+                                        OverlayPages.Remove(found);
+                                        responseString = found.OverlayHyperText;
+                                    }
                                 }
                             }
-                        }
-                        buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                    }
-                    else
-                    {
-                        if (File.Exists(request.RawUrl[1..]))
-                        {
-                            buffer = File.ReadAllBytes(request.RawUrl[1..]);
+                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                         }
                         else
                         {
-                            buffer = System.Text.Encoding.UTF8.GetBytes("");
+                            if (File.Exists(request.RawUrl[1..]))
+                            {
+                                buffer = File.ReadAllBytes(request.RawUrl[1..]);
+                            }
+                            else
+                            {
+                                buffer = System.Text.Encoding.UTF8.GetBytes("");
+                            }
                         }
+
+                        // Get a response stream and write the response to it.
+                        response.ContentLength64 = buffer.Length;
+
+                        Stream output = response.OutputStream;
+                        output.Write(buffer, 0, buffer.Length);
+                        // must close the output stream.
+                        output.Close();
                     }
-
-                    // Get a response stream and write the response to it.
-                    response.ContentLength64 = buffer.Length;
-
-                    Stream output = response.OutputStream;
-                    output.Write(buffer, 0, buffer.Length);
-                    // You must close the output stream.
-                    output.Close();
-                }
-            }
-            catch //(Exception ex)
-            {
-                //LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    catch { }
+                }, HTTPListenServer);
             }
         }
 
@@ -201,6 +210,7 @@ namespace StreamerBotLib.Overlay.Server
         {
             if (HTTPListenServer.IsListening)
             {
+
                 HTTPListenServer.Stop();
             }
         }
