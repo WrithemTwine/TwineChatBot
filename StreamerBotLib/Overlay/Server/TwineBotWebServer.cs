@@ -4,11 +4,13 @@ using StreamerBotLib.Overlay.Interfaces;
 using StreamerBotLib.Static;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StreamerBotLib.Overlay.Server
@@ -16,7 +18,7 @@ namespace StreamerBotLib.Overlay.Server
     public class TwineBotWebServer
     {
         private static HttpListener HTTPListenServer { get; set; } = new();
-        private static Task ProcessPages = new(() => ServerSendAlerts());
+        private static Task ProcessPages;
 
         private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
         private static List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
@@ -66,9 +68,13 @@ namespace StreamerBotLib.Overlay.Server
             {
                 HTTPListenServer.Prefixes.Add(P);
             }
-            HTTPListenServer.Start();
 
-            ProcessPages.Start();
+            ThreadManager.CreateThreadStart(() =>
+            {
+                HTTPListenServer.Start();
+                ProcessPages = new(() => ServerSendAlerts());
+                ProcessPages.Start();
+            });
         }
 
         public void SendAlert(IOverlayPageReadOnly overlayPage)
@@ -110,8 +116,12 @@ namespace StreamerBotLib.Overlay.Server
 
         private static void ServerSendAlerts()
         {
+            string Lock = "";
 
-            while (OptionFlags.ActiveToken && HTTPListenServer.IsListening)
+            ConcurrentQueue<Action> Listener = new();
+            int ResponseCount = 0;
+
+            Action ResponseListen = new(() =>
             {
                 _ = HTTPListenServer.BeginGetContext((result) =>
                 {
@@ -200,9 +210,36 @@ namespace StreamerBotLib.Overlay.Server
                         output.Write(buffer, 0, buffer.Length);
                         // must close the output stream.
                         output.Close();
+
+                        lock (Lock)
+                        {
+                            ResponseCount--;
+                        }
                     }
                     catch { }
                 }, HTTPListenServer);
+            });
+
+            while (OptionFlags.ActiveToken && HTTPListenServer.IsListening)
+            {
+                // add 1 more listener than the defined prefixes - handles responses for each URI
+                if (Listener.Count <= PrefixGenerator.LinkCount +5 )
+                {
+                    Listener.Enqueue(ResponseListen);
+                }
+
+                if (ResponseCount <= PrefixGenerator.LinkCount +5)
+                {
+                    if (Listener.TryDequeue(out var ListenAction))
+                    {
+                        lock (Lock)
+                        {
+                            ResponseCount++;
+                        }
+                        ThreadManager.CreateThreadStart(() => ListenAction.Invoke());
+                    }
+                }
+                Thread.Sleep(200);
             }
         }
 
@@ -210,8 +247,8 @@ namespace StreamerBotLib.Overlay.Server
         {
             if (HTTPListenServer.IsListening)
             {
-
                 HTTPListenServer.Stop();
+                ProcessPages.Wait();
             }
         }
 

@@ -19,6 +19,8 @@ namespace StreamerBotLib.Overlay.Server
         private static List<string> Prefixes { get; set; } = new();
         private static List<OverlayPage> Links { get; set; } = new();
 
+        public static int LinkCount { get { return Links.Count; } }
+
         public static List<string> GetPrefixes()
         {
             Prefixes.Clear();
