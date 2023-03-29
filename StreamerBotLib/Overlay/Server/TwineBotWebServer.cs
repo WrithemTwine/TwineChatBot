@@ -17,12 +17,27 @@ namespace StreamerBotLib.Overlay.Server
 {
     public class TwineBotWebServer
     {
+        /// <summary>
+        /// Server maintained in this class.
+        /// </summary>
         private static HttpListener HTTPListenServer { get; set; } = new();
+        /// <summary>
+        /// Holds a Task for all of the async listeners.
+        /// </summary>
         private static Task ProcessPages;
 
+        /// <summary>
+        /// The alert pages collection.
+        /// </summary>
         private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
+        /// <summary>
+        /// The ticker pages collection.
+        /// </summary>
         private static List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
 
+        /// <summary>
+        /// Instantiate and initialize a new object.
+        /// </summary>
         public TwineBotWebServer()
         {
             static int Assign(int CheckPort)
@@ -42,6 +57,11 @@ namespace StreamerBotLib.Overlay.Server
             OptionFlags.MediaOverlayMediaTickerPort = Assign(OptionFlags.MediaOverlayMediaTickerPort);
         }
 
+        /// <summary>
+        /// Checks if the specific port is free on the system. Can't conflict with existing port.
+        /// </summary>
+        /// <param name="port">The port to check.</param>
+        /// <returns>The provided port or next port determined availabe within the system.</returns>
         public static int ValidatePort(int port)
         {
             while (!IsFree(port))
@@ -52,6 +72,12 @@ namespace StreamerBotLib.Overlay.Server
             return port;
         }
 
+        /// <summary>
+        /// Reviews the existing ports, finds whether the provided port is already open.
+        /// Can't open a connection to a port already in use.
+        /// </summary>
+        /// <param name="port">The port to check within the system.</param>
+        /// <returns>False if the port is already in use, true if port is free.</returns>
         // ports: 1 - 65535
         private static bool IsFree(int port)
         {
@@ -61,6 +87,9 @@ namespace StreamerBotLib.Overlay.Server
             return openPorts.All(openPort => openPort != port);
         }
 
+        /// <summary>
+        /// Adds the port prefixes and starts the HTTP server.
+        /// </summary>
         public void StartServer()
         {
             HTTPListenServer.Prefixes.Clear();
@@ -76,7 +105,11 @@ namespace StreamerBotLib.Overlay.Server
                 ProcessPages.Start();
             });
         }
-
+        
+        /// <summary>
+        /// Adds an alert webpage to send out to any connected webpage.
+        /// </summary>
+        /// <param name="overlayPage">Contains the type of alert and the html text to send.</param>
         public void SendAlert(IOverlayPageReadOnly overlayPage)
         {
             if (HTTPListenServer.IsListening)
@@ -114,11 +147,19 @@ namespace StreamerBotLib.Overlay.Server
             }
         }
 
+        /// <summary>
+        /// Defines an async listener action for the http server, which then actually serves the content to any connected browsers. 
+        /// Also, determines if the URL is for the tickers or alerts, and uses the respective collections for the outgoing html text.
+        /// 
+        /// While the bot is still active and the server is 'listening' for requests, method spins a while loop to add listeners as they
+        /// get used from requests, and waits 200ms per spin.
+        /// 
+        /// The current listener count is: <see cref="PrefixGenerator.LinkCount"/> + 5 listeners.
+        /// </summary>
         private static void ServerSendAlerts()
         {
             string Lock = "";
 
-            ConcurrentQueue<Action> Listener = new();
             int ResponseCount = 0;
 
             Action ResponseListen = new(() =>
@@ -213,36 +254,32 @@ namespace StreamerBotLib.Overlay.Server
 
                         lock (Lock)
                         {
-                            ResponseCount--;
+                            ResponseCount--; // listener is finished, lower active listener count
                         }
                     }
                     catch { }
                 }, HTTPListenServer);
             });
 
+            // spin until application is stopped or the server is stopped
             while (OptionFlags.ActiveToken && HTTPListenServer.IsListening)
             {
-                // add 1 more listener than the defined prefixes - handles responses for each URI
-                if (Listener.Count <= PrefixGenerator.LinkCount +5 )
+                // keep adding listeners until there are 5 more than the served URLs, counting off base 0
+                if (ResponseCount < PrefixGenerator.LinkCount + 5)
                 {
-                    Listener.Enqueue(ResponseListen);
-                }
-
-                if (ResponseCount <= PrefixGenerator.LinkCount +5)
-                {
-                    if (Listener.TryDequeue(out var ListenAction))
+                    lock (Lock) // lock, cause the counter is across different threads
                     {
-                        lock (Lock)
-                        {
-                            ResponseCount++;
-                        }
-                        ThreadManager.CreateThreadStart(() => ListenAction.Invoke());
+                        ResponseCount++; // increase count for active listeners
                     }
+                    ThreadManager.CreateThreadStart(() => ResponseListen.Invoke());
                 }
                 Thread.Sleep(200);
             }
         }
 
+        /// <summary>
+        /// Looks like it stops the server. Then, waits for all of the server listeners to finish sending.
+        /// </summary>
         public void StopServer()
         {
             if (HTTPListenServer.IsListening)
