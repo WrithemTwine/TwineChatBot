@@ -291,10 +291,6 @@ namespace StreamerBotLib.Overlay.Server
                     LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - Adding more http server listening threads, now {ResponseCount}.");
 #endif
                 }
-
-#if LOG_OVERLAY
-                LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - Current http server listening threads, {ResponseCount}.");
-#endif
                 Thread.Sleep(200);
             }
         }
