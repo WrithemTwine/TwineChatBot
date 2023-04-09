@@ -173,6 +173,11 @@ namespace StreamerBotLib.Overlay
             BuildStylePages();
         }
 
+        /// <summary>
+        /// The GUI presents the overlay styles relevant to the current user selections.
+        /// This builds and rebuils those styles within a tabcontrol.
+        /// Reads the current collection, builds a textbox to edit the data, and adds as a tab to the GUI.
+        /// </summary>
         private void BuildStylePages()
         {
            TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
@@ -258,8 +263,15 @@ namespace StreamerBotLib.Overlay
             UpdateLinks();
         }
 
+        /// <summary>
+        /// Occurs when the user edits a ticker presentation style duration. We need to rebuild the style to 
+        /// use the new duration.
+        /// </summary>
+        /// <param name="sender">where the event came from -unused</param>
+        /// <param name="e">the info sent with the event -unused</param>
         private void MarqueeTypeSecondsLostFocus(object sender, RoutedEventArgs e)
         {
+            // choose which page to update depending on selected presentation
             if (OptionFlags.MediaOverlayTickerMarquee)
             {
                 GUIData.UpdateEditPage(TickerStyle.MultiMarquee);
@@ -269,6 +281,7 @@ namespace StreamerBotLib.Overlay
                 GUIData.UpdateEditPage(TickerStyle.MultiRotate);
             }
 
+            // refresh the styles presented in the GUI, due to the duration change
             BuildStylePages();
         }
     }

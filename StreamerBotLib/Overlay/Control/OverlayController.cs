@@ -8,8 +8,10 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Models;
 
 using StreamerBotLib.Overlay.Server;
+using StreamerBotLib.Static;
 
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace StreamerBotLib.Overlay.Control
 {
@@ -53,15 +55,23 @@ namespace StreamerBotLib.Overlay.Control
         public void SendAlert(OverlayPage overlayPage)
         {
             _httpServer.SendAlert(overlayPage);
+
+#if LOG_OVERLAY
+            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"Sending alert, {overlayPage.OverlayType}, for display." );
+#endif
         }
 #endif
 
-        /// <summary>
-        /// Starts the http server
-        /// </summary>
-        public void StartServer()
+            /// <summary>
+            /// Starts the http server
+            /// </summary>
+            public void StartServer()
         {
             _httpServer.StartServer();
+
+#if LOG_OVERLAY
+            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"Overlay http server started.");
+#endif
         }
 
         /// <summary>
@@ -70,6 +80,10 @@ namespace StreamerBotLib.Overlay.Control
         public void StopServer()
         {
             _httpServer.StopServer();
+
+#if LOG_OVERLAY
+            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"Overlay http server stopped.");
+#endif
         }
 
         /// <summary>

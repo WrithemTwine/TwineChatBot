@@ -14,6 +14,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace StreamerBotLib.BotClients
@@ -307,6 +308,11 @@ namespace StreamerBotLib.BotClients
         private void SendAlert(OverlayActionType overlayActionType)
         {
             SendOverlayToServer?.Invoke(this, overlayActionType);
+
+#if LOG_OVERLAY
+            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"BotOverlayServer - sending {overlayActionType.OverlayType} to the Overlay Server.");
+#endif
+
             Thread.Sleep(overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
         }
 

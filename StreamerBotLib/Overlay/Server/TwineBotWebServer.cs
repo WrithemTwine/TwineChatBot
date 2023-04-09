@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -117,6 +118,10 @@ namespace StreamerBotLib.Overlay.Server
                 lock (OverlayPages)
                 {
                     OverlayPages.Add(overlayPage);
+
+#if LOG_OVERLAY
+                    LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - Overlay alert, {overlayPage.OverlayType}, added and awaiting to be served.");
+#endif
                 }
             }
         }
@@ -173,6 +178,10 @@ namespace StreamerBotLib.Overlay.Server
                         // Obtain a response object.
                         HttpListenerResponse response = context.Response;
                         // Construct a response.
+
+#if LOG_OVERLAY
+                        LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - received request, {request.RawUrl}");
+#endif
 
                         byte[] buffer;
 
@@ -249,6 +258,11 @@ namespace StreamerBotLib.Overlay.Server
 
                         Stream output = response.OutputStream;
                         output.Write(buffer, 0, buffer.Length);
+
+#if LOG_OVERLAY
+                        LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - finished sending request.");
+#endif
+
                         // must close the output stream.
                         output.Close();
 
@@ -272,7 +286,15 @@ namespace StreamerBotLib.Overlay.Server
                         ResponseCount++; // increase count for active listeners
                     }
                     ThreadManager.CreateThreadStart(() => ResponseListen.Invoke());
+
+#if LOG_OVERLAY
+                    LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - Adding more http server listening threads, now {ResponseCount}.");
+#endif
                 }
+
+#if LOG_OVERLAY
+                LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - Current http server listening threads, {ResponseCount}.");
+#endif
                 Thread.Sleep(200);
             }
         }
@@ -284,6 +306,9 @@ namespace StreamerBotLib.Overlay.Server
         {
             if (HTTPListenServer.IsListening)
             {
+#if LOG_OVERLAY
+                LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"http server - Overlay http server stopping.");
+#endif
                 HTTPListenServer.Stop();
                 ProcessPages.Wait();
             }
