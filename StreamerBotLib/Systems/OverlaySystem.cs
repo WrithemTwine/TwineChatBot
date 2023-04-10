@@ -7,6 +7,7 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -103,6 +104,11 @@ namespace StreamerBotLib.Systems
 
             if (FoundAction != null)
             {
+
+#if LOG_OVERLAY
+                LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"OverlaySystem - found an action, {FoundAction.ActionValue} {FoundAction.OverlayType}, building a response alert.");
+#endif
+
                 CheckDiffMsg(ref FoundAction);
                 if (overlayType == OverlayTypes.Commands && Action == Enums.DefaultCommand.so.ToString())
                 {
