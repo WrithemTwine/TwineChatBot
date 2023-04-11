@@ -37,7 +37,7 @@ namespace StreamerBotLib.BotIOController
 
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
-        internal Collection<IBotTypes> BotsList { get; private set; } = new();
+        static internal Collection<IBotTypes> BotsList { get; private set; } = new();
         public List<Bots> StartedChatBots { get; private set; } = new();
         private bool ChatBotStopping;
 
@@ -728,6 +728,8 @@ namespace StreamerBotLib.BotIOController
         {
             try
             {
+                ManageBotsStreamStatusChanged(true);
+
                 bool Started = Systems.StreamOnline(StartedAt);
                 ActionSystem.ChannelName = ChannelName;
 
@@ -786,10 +788,25 @@ namespace StreamerBotLib.BotIOController
         {
             if (OptionFlags.IsStreamOnline)
             {
+                ManageBotsStreamStatusChanged(false);
+
                 DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
                 OptionFlags.TwitchOutRaidStarted = false;
+            }
+        }
+
+        /// <summary>
+        /// Call to manage other bots when a monitored stream is detected to be online.
+        /// </summary>
+        /// <param name="Start">True to start services for stream online, False to stop services for stream offline.</param>
+        public static void ManageBotsStreamStatusChanged(bool Start)
+        {
+            // loop the bots and send message to start or stop based on stream online or offline status
+            foreach(IBotTypes bots in BotsList)
+            { 
+                bots.ManageStreamOnlineOfflineStatus(Start);
             }
         }
 

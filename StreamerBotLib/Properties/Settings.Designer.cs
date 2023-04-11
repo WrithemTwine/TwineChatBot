@@ -1474,5 +1474,17 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayTickerPort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayStartWithStream {
+            get {
+                return ((bool)(this["MediaOverlayStartWithStream"]));
+            }
+            set {
+                this["MediaOverlayStartWithStream"] = value;
+            }
+        }
     }
 }

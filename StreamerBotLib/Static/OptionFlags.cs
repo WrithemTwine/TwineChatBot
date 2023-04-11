@@ -453,6 +453,11 @@ namespace StreamerBotLib.Static
         public static int ModeratorApprovalTimeout => Settings.Default.ModeratorApprovalTimeout;
 
         /// <summary>
+        /// Specifies whether the Overlay Server should start and stop when the user stream is online or offline.
+        /// </summary>
+        public static bool MediaOverlayStartWithStream => Settings.Default.MediaOverlayStartWithStream;
+
+        /// <summary>
         /// Enable the Media Overlay Services.
         /// </summary>
         public static bool MediaOverlayEnabled

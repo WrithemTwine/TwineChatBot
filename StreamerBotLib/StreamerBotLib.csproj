@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>1.2.7.6</Version>
+    <Version>1.2.7.7</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -15,13 +15,9 @@
     <Copyright>2023</Copyright>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);LOG_OVERLAY</DefineConstants>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);LOG_OVERLAY</DefineConstants>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
 
   <ItemGroup>
     <None Remove="Overlay\img\seconds.png" />

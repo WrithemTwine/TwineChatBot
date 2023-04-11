@@ -327,6 +327,15 @@
                                             <Label x:Name="Label_OverlayServer_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                 <TextBlock>The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
+                                            <GroupBox Width="Auto" Header="Activate Per Online Status">
+                                                <WrapPanel Orientation="Vertical">
+                                                    <CheckBox  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayStartWithStream}">
+                                                        <TextBlock>
+                                                            Start and Stop Overlay Server when stream is online or offline.
+                                                        </TextBlock>
+                                                    </CheckBox>
+                                                </WrapPanel>
+                                            </GroupBox>
                                         </WrapPanel>
                                     </GroupBox>
                                 </WrapPanel>

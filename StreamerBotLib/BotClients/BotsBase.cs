@@ -83,5 +83,10 @@ namespace StreamerBotLib.BotClients
         {
             throw new NotImplementedException();
         }
+
+        public virtual void ManageStreamOnlineOfflineStatus(bool Start)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

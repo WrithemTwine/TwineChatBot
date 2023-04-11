@@ -65,6 +65,53 @@ namespace StreamerBotLib.BotClients
 
         }
 
+        public override void ManageStreamOnlineOfflineStatus(bool Start)
+        {
+            if (Start)
+            {
+                if (OptionFlags.TwitchChatBotConnectOnline)
+                {
+                    TwitchBotChatClient.StartBot();
+                }
+
+                if (OptionFlags.TwitchPubSubOnlineMode)
+                {
+                    TwitchBotPubSub.StartBot();
+                }
+
+                if (OptionFlags.TwitchFollowerConnectOnline)
+                {
+                    TwitchFollower.StartBot();
+                }
+
+                if (OptionFlags.TwitchClipConnectOnline)
+                {
+                    TwitchBotClipSvc.StartBot();
+                }
+            }
+            else
+            {
+                if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
+                {
+                    TwitchBotChatClient.StopBot();
+                }
+
+                if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
+                {
+                    TwitchBotPubSub.StopBot();
+                }
+
+                if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
+                {
+                    TwitchBotClipSvc.StopBot();
+                }
+
+                if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
+                {
+                    TwitchFollower.StopBot();
+                }
+            }
+        }
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -441,26 +488,6 @@ namespace StreamerBotLib.BotClients
             }
             else
             {
-                if (OptionFlags.TwitchChatBotConnectOnline)
-                {
-                    TwitchBotChatClient.StartBot();
-                }
-
-                if (OptionFlags.TwitchPubSubOnlineMode)
-                {
-                    TwitchBotPubSub.StartBot();
-                }
-
-                if (OptionFlags.TwitchFollowerConnectOnline)
-                {
-                    TwitchFollower.StartBot();
-                }
-
-                if (OptionFlags.TwitchClipConnectOnline)
-                {
-                    TwitchBotClipSvc.StartBot();
-                }
-
                 InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
 
                 if (!OptionFlags.TwitchChatBotConnectOnline && TwitchBotChatClient.IsStarted)
@@ -482,26 +509,6 @@ namespace StreamerBotLib.BotClients
         {
             if (e.Channel == TwitchBotsBase.TwitchChannelName)
             {
-                if (OptionFlags.TwitchChatBotDisconnectOffline && TwitchBotChatClient.IsStarted)
-                {
-                    TwitchBotChatClient.StopBot();
-                }
-
-                if (OptionFlags.TwitchPubSubOnlineMode && TwitchBotPubSub.IsStarted)
-                {
-                    TwitchBotPubSub.StopBot();
-                }
-
-                if (OptionFlags.TwitchClipDisconnectOffline && TwitchBotClipSvc.IsStarted)
-                {
-                    TwitchBotClipSvc.StopBot();
-                }
-
-                if (OptionFlags.TwitchFollowerDisconnectOffline && TwitchFollower.IsStarted)
-                {
-                    TwitchFollower.StopBot();
-                }
-
                 if (OptionFlags.IsStreamOnline)
                 {
                     InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);

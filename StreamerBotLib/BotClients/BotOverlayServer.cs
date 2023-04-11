@@ -36,17 +36,44 @@ namespace StreamerBotLib.BotClients
     public class BotOverlayServer : IOModule, IBotTypes
     {
 #endif
-
+        /// <summary>
+        /// Interface handler, primarily for emitting events to BotController - this bot doesn't use.
+        /// </summary>
         public event EventHandler<BotEventArgs> BotEvent;
-
+        /// <summary>
+        /// Alerts a change in the overlay action queue collection.
+        /// </summary>
         public event EventHandler<EventArgs> ActionQueueChanged;
+        /// <summary>
+        /// Send overlay alert to the server.
+        /// </summary>
         public event EventHandler<OverlayActionType> SendOverlayToServer;
+        /// <summary>
+        /// Send ticker item updates to the server.
+        /// </summary>
         public event EventHandler<UpdatedTickerItemsEventArgs> SendTickerToServer;
+
+        /// <summary>
+        /// flag to pause alert processing
+        /// </summary>
         private bool PauseAlerts = false;
+        /// <summary>
+        /// flag to specify alert sending thread start status
+        /// </summary>
         private bool AlertsThreadStarted = false;
+        /// <summary>
+        /// tracks the open close status of the overlay server
+        /// </summary>
         private bool WindowClosing = false;
 
+        /// <summary>
+        /// Queue to pipeline the alerts in an orderly and timed fashion, don't send alerts until
+        /// ready (previous alert finishes).
+        /// </summary>
         private Queue<Thread> SendAlerts { get; set; } = new();
+        /// <summary>
+        /// The alert count.
+        /// </summary>
         public int MediaItems
         {
             get
@@ -220,6 +247,9 @@ namespace StreamerBotLib.BotClients
 #elif UseGUIDLL
         private MainWindow OverlayWindow;
 
+        /// <summary>
+        /// Build and initialize object.
+        /// </summary>
         public BotOverlayServer()
         {
             BotClientName = Bots.MediaOverlayServer;
@@ -230,6 +260,25 @@ namespace StreamerBotLib.BotClients
             BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty.ToString() });
         }
 
+        public void ManageStreamOnlineOfflineStatus(bool Start)
+        {
+            if (OptionFlags.MediaOverlayStartWithStream)
+            {
+                if (Start)
+                {
+                    _ = StartBot();
+                }
+                else
+                {
+                    _ = StopBot();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Probably starts the bot.
+        /// </summary>
+        /// <returns>True, the bot has started.</returns>
         public override bool StartBot()
         {
             WindowClosing = false;
@@ -254,6 +303,12 @@ namespace StreamerBotLib.BotClients
             return IsStarted;
         }
 
+        /// <summary>
+        /// Manages when user closes the Overlay Server window, notify & update GUI for the closed window
+        /// and turns off the bot.
+        /// </summary>
+        /// <param name="sender">Invoking object-unused.</param>
+        /// <param name="e">Payload data-unused.</param>
         private void OverlayWindow_UserHideWindow(object sender, EventArgs e)
         {
             WindowClosing = true;
@@ -262,6 +317,10 @@ namespace StreamerBotLib.BotClients
             StopBot();
         }
 
+        /// <summary>
+        /// Should stop the bot.
+        /// </summary>
+        /// <returns>True for bot stopped.</returns>
         public override bool StopBot()
         {
             IsStarted = false;
@@ -282,6 +341,12 @@ namespace StreamerBotLib.BotClients
         }
 
         #region Sending Msg mechansim
+       
+        /// <summary>
+        /// Handles a new overlay action alert, sets it up in a queue to send to overlay server in an orderly manner
+        /// </summary>
+        /// <param name="sender">Invoking member-unused.</param>
+        /// <param name="e">The data payload.</param>
         public void NewOverlayEventHandler(object sender, NewOverlayEventArgs e)
         {
             lock (SendAlerts)
@@ -291,11 +356,19 @@ namespace StreamerBotLib.BotClients
             }
         }
 
+        /// <summary>
+        /// Sends ticker information to the overlay server, mainly when there's an updated change.
+        /// </summary>
+        /// <param name="sender">The invoking object.</param>
+        /// <param name="e">The data payload to send.</param>
         public void UpdatedTickerEventHandler(object sender, UpdatedTickerItemsEventArgs e)
         {
             SendTickerToServer?.Invoke(sender, e);
         }
 
+        /// <summary>
+        /// Notify when the queue holding the alert actions has changed.
+        /// </summary>
         private void NotifyActionQueueChanged()
         {
             ActionQueueChanged?.Invoke(this, new());
@@ -321,6 +394,9 @@ namespace StreamerBotLib.BotClients
 
         #region Alerts
 
+        /// <summary>
+        /// Spins and sends alerts to the Overlay server, waits for alert to finish before sending another
+        /// </summary>
         private void ProcessAlerts()
         {
             AlertsThreadStarted = true; // flag, this loop has started
@@ -330,7 +406,10 @@ namespace StreamerBotLib.BotClients
                 {
                     if (SendAlerts.Count > 0)
                     {
-                        SendAlerts.Dequeue().Start(); // sleep inside thread action
+                        Thread Next = SendAlerts.Dequeue();
+                        Next.Start();
+                        Next.Join(); // sleep inside thread action, wait until it completes
+
                         NotifyActionQueueChanged();
                     }
                 }
@@ -346,11 +425,18 @@ namespace StreamerBotLib.BotClients
             AlertsThreadStarted = false;
         }
 
+        /// <summary>
+        /// User selects a pause to hold up alerts.
+        /// </summary>
+        /// <param name="Alert">true or false to hold alerts</param>
         public void SetPauseAlert(bool Alert)
         {
             PauseAlerts = Alert;
         }
 
+        /// <summary>
+        /// Clear any of the pending alerts.
+        /// </summary>
         public void SetClearAlerts()
         {
             lock (SendAlerts)
@@ -363,6 +449,9 @@ namespace StreamerBotLib.BotClients
 
         #region Stop Bots
 
+        /// <summary>
+        /// Most likely, this will stop the bot.
+        /// </summary>
         public void StopBots()
         {
             StopBot();
