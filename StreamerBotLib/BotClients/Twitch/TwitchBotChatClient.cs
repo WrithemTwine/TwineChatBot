@@ -165,7 +165,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsInitialized = true;
                 }
 
-                TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 ConnectedChannelName = TwitchChannelName;
                 TwitchChat.Connect();
              //   TwitchChat.JoinChannel(ConnectedChannelName);
@@ -187,7 +186,6 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
-                    RefreshSettings();
                     Connected = Connect();
                     if (Connected) // only connect if the joining channel name isn't null
                     {
@@ -225,7 +223,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     TwitchChat.Disconnect();
-                    RefreshSettings();
                     InvokeBotStopped();
                 }
                 Stopped = true;
@@ -255,7 +252,6 @@ namespace StreamerBotLib.BotClients.Twitch
             else
             {
                 TwitchChat.Initialize(credentials, TwitchChannelName);
-                //TwitchChat.OverrideBeingHostedCheck = TwitchChannelName != TwitchBotUserName;
                 TwitchChat.Connect();
                 isConnected = true;
             }

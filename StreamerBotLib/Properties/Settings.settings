@@ -311,7 +311,7 @@
     <Setting Name="MediaOverlayLogExceptions" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayPort" Type="System.Int32" Scope="User">
+    <Setting Name="MediaOverlayActionPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MediaOverlayUseSameStyle" Type="System.Boolean" Scope="User">
@@ -337,6 +337,36 @@
     </Setting>
     <Setting Name="GridTabifyStreamRaidsWidth" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">950</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerSingle" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerRotate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerMarquee" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerMulti" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerSelected" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MediaOverlayTickerStatic" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerRotateTime" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerMarqueeTime" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="MediaOverlayTickerPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="MediaOverlayStartWithStream" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

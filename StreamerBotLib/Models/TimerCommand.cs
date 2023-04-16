@@ -23,6 +23,11 @@ namespace StreamerBotLib.Models
         public DateTime NextRun { get; set; }
 
         /// <summary>
+        /// The DateTime of the last repeat timer run for this event. Initially set to DateTime.Now.
+        /// </summary>
+        public DateTime LastRun { get; set; }
+
+        /// <summary>
         /// The list of categories applying to this command, run command if category matches current stream or "All" category designation.
         /// </summary>
         public List<string> CategoryList { get; } = new();
@@ -32,6 +37,7 @@ namespace StreamerBotLib.Models
             Command = ComRepeat.Item1.ToLower();
             RepeatTime = ComRepeat.Item2;
             CategoryList.AddRange(ComRepeat.Item3);
+            LastRun = DateTime.Now;
             UpdateTime(TimeDilute);
         }
 
@@ -42,31 +48,64 @@ namespace StreamerBotLib.Models
         /// <param name="TimeDilute">The time factor to dilute the current amount of repeat time.</param>
         public void ModifyTime(int NewRepeatTime, double TimeDilute)
         {
-            if (NewRepeatTime < RepeatTime)
-            {
-                NextRun = NextRun.AddSeconds((NewRepeatTime - RepeatTime) * TimeDilute);
-            }
-            else if (NewRepeatTime > RepeatTime)
-            {
-                NextRun = NextRun.AddSeconds((RepeatTime - NewRepeatTime) * TimeDilute);
-            }
+            NextRun = LastRun.AddSeconds(NewRepeatTime * TimeDilute);
             RepeatTime = NewRepeatTime;
         }
 
         private readonly Random random = new();
 
-        public void SetNow() => NextRun = DateTime.Now.AddSeconds(random.Next(60, 1250)).ToLocalTime();
+        /// <summary>
+        /// Update the NextRun time to a random time between the next 30 seconds 
+        /// to 5 minutes. So many updated commands don't run all at once.
+        /// </summary>
+        public void SetNow()
+        {
+            NextRun = DateTime.Now.AddSeconds(random.Next(30, 300));
+            LastRun = NextRun;
+        }
 
-        public void UpdateTime(double TimeDilute) => NextRun = DateTime.Now.ToLocalTime().AddSeconds(RepeatTime * TimeDilute);
+        /// <summary>
+        /// Recompute the NextRun based on the LastRun plus (repeat_time * TimeDilute) seconds.
+        /// </summary>
+        /// <param name="TimeDilute">A factor to multiply to the repeat timer seconds to extend the NextRun time.</param>
+        public void UpdateTime(double TimeDilute)
+        {
+            NextRun = LastRun.AddSeconds(RepeatTime * TimeDilute);
+        }
 
-        public bool CheckFireTime() => DateTime.Now.ToLocalTime() > NextRun;
+        /// <summary>
+        /// Checks if the NextRun time is before the Now time. When Now is after NextRun time, the 
+        /// LastRun is reset to Now.
+        /// </summary>
+        /// <returns>Whether Now is after the NextRun time.</returns>
+        public bool CheckFireTime()
+        {
+            bool result = DateTime.Now > NextRun;
+            if (result)
+            {
+                LastRun = DateTime.Now;
+            }
+            return result;
+        }
 
-        public int CompareTo(TimerCommand obj) => this.Command.CompareTo(obj.Command);
+        public int CompareTo(TimerCommand obj)
+        {
+            return this.Command.CompareTo(obj.Command);
+        }
 
-        public bool Equals(TimerCommand other) => this.Command == other.Command;
+        public bool Equals(TimerCommand other)
+        {
+            return this.Command == other.Command;
+        }
 
-        public override bool Equals(object obj) => Equals(obj as TimerCommand);
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as TimerCommand);
+        }
 
-        public override int GetHashCode() => (this.Command + RepeatTime.ToString()).GetHashCode();
+        public override int GetHashCode()
+        {
+            return (this.Command + RepeatTime.ToString()).GetHashCode();
+        }
     }
 }

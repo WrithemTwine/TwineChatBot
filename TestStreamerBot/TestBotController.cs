@@ -192,7 +192,7 @@ namespace TestStreamerBot
                     $"{prefix}Follower{x}",
                     "9988776655",
                     TwitchBotsBase.TwitchBotUserName,
-                    new($"{prefix}Follower{x}", Platform.Default)
+                    Platform.Default
                 );
             }
 
@@ -239,7 +239,7 @@ namespace TestStreamerBot
                     fromUserId: "00112233",
                     toUserName: OptionFlags.TwitchChannelName, 
                     toUserId: "99887766",
-                    fromUser: new($"IFollow{datestring}{x}", Platform.Default))
+                    Source: Platform.Default)
                     );
             }
 

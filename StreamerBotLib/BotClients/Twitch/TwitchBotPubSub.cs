@@ -14,6 +14,9 @@ using TwitchLib.PubSub.Events;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
+    // TODO: separate log output file in GUI
+    // TODO: work on PubSub "Reconnect" not reconnecting
+
     public class TwitchBotPubSub : TwitchBotsBase
     {
         public TwitchPubSub TwitchPubSub { get; private set; }
@@ -57,13 +60,35 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchPubSub.OnLog += TwitchPubSub_OnLog;
                 TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
                 TwitchPubSub.OnPubSubServiceClosed += TwitchPubSub_OnPubSubServiceClosed;
+                
                 IsConnected = false;
             }
         }
 
+
         private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
         {
-            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender, new global::TwitchLib.Client.Events.OnLogArgs() { Data = $"PubSub {e.Data}", DateTime = DateTime.Now });
+            if (e.Data.ToLower().Contains("reconnect"))
+            {
+                ReconnectService();
+            }
+
+            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender, 
+                new global::TwitchLib.Client.Events.OnLogArgs() { 
+                    Data = $"PubSub {e.Data}", DateTime = DateTime.Now 
+                });
+        }
+
+        private void ReconnectService()
+        {
+            IsStarted = false;
+            IsStopped = true;
+            TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
+            TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
+            TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+            TwitchPubSub = null;
+
+            StartBot();
         }
 
         public override bool StartBot()

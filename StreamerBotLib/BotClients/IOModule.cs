@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Static;
 
 using System;
 
@@ -11,11 +12,6 @@ namespace StreamerBotLib.BotClients
     public abstract class IOModule : IIOModule
     {
         public Bots BotClientName { get; set; }
-
-        /// <summary>
-        /// Whether to display bot connection to channel.
-        /// </summary>
-        public static bool ShowConnectionMsg { get; set; }
 
         public bool IsStarted { get; set; }
         public bool HandlersAdded { get; set; }
