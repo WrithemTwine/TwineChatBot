@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.5.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -1262,12 +1262,12 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int MediaOverlayPort {
+        public int MediaOverlayActionPort {
             get {
-                return ((int)(this["MediaOverlayPort"]));
+                return ((int)(this["MediaOverlayActionPort"]));
             }
             set {
-                this["MediaOverlayPort"] = value;
+                this["MediaOverlayActionPort"] = value;
             }
         }
         
@@ -1364,6 +1364,126 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["GridTabifyStreamRaidsWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayTickerSingle {
+            get {
+                return ((bool)(this["MediaOverlayTickerSingle"]));
+            }
+            set {
+                this["MediaOverlayTickerSingle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerRotate {
+            get {
+                return ((bool)(this["MediaOverlayTickerRotate"]));
+            }
+            set {
+                this["MediaOverlayTickerRotate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerMarquee {
+            get {
+                return ((bool)(this["MediaOverlayTickerMarquee"]));
+            }
+            set {
+                this["MediaOverlayTickerMarquee"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerMulti {
+            get {
+                return ((bool)(this["MediaOverlayTickerMulti"]));
+            }
+            set {
+                this["MediaOverlayTickerMulti"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MediaOverlayTickerSelected {
+            get {
+                return ((string)(this["MediaOverlayTickerSelected"]));
+            }
+            set {
+                this["MediaOverlayTickerSelected"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayTickerStatic {
+            get {
+                return ((bool)(this["MediaOverlayTickerStatic"]));
+            }
+            set {
+                this["MediaOverlayTickerStatic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int MediaOverlayTickerRotateTime {
+            get {
+                return ((int)(this["MediaOverlayTickerRotateTime"]));
+            }
+            set {
+                this["MediaOverlayTickerRotateTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int MediaOverlayTickerMarqueeTime {
+            get {
+                return ((int)(this["MediaOverlayTickerMarqueeTime"]));
+            }
+            set {
+                this["MediaOverlayTickerMarqueeTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MediaOverlayTickerPort {
+            get {
+                return ((int)(this["MediaOverlayTickerPort"]));
+            }
+            set {
+                this["MediaOverlayTickerPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayStartWithStream {
+            get {
+                return ((bool)(this["MediaOverlayStartWithStream"]));
+            }
+            set {
+                this["MediaOverlayStartWithStream"] = value;
             }
         }
     }

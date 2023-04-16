@@ -35,6 +35,7 @@ namespace StreamerBotLib.Interfaces
         IEnumerable<string> GetKeys(string Table);
         IEnumerable<string> GetCommandList();
         string GetCommands();
+        int? GetTimerCommandTime(string Cmd);
 
         //  public bool CheckTable(string table);
         //  List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn);

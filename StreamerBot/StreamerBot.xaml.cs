@@ -1,4 +1,5 @@
-﻿
+﻿using Microsoft.Web.WebView2.Wpf;
+
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
@@ -16,7 +17,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -82,6 +82,8 @@ namespace StreamerBot
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
 
+            //LoaderDLLFolderPath = "./";
+
             InitializeComponent();
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
@@ -93,12 +95,12 @@ namespace StreamerBot
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
 
-            if (Assembly.GetEntryAssembly().GetName().Version.Revision != 0)
-            {
-                StatusBarItem_BetaLabel.Visibility = Visibility.Visible;
-            }
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
+            StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             ConstructEvents();
+
         }
 
         /// <summary>
@@ -164,6 +166,11 @@ namespace StreamerBot
                         _ => throw new NotImplementedException()
                     };
                     HelperStartBot(radio);
+
+                    if(e.BotName == Bots.MediaOverlayServer)
+                    {
+                        Controller.Systems.SendInitialTickerItems();
+                    }
                 }
             }), null);
         }
@@ -719,6 +726,15 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
+        #region GitHub webpage
+
+        private void WebView2Reload_Click(object sender, RoutedEventArgs e)
+        {
+            (((sender as Button).Parent as StackPanel).Children[1] as WebView2).Reload();
+        }
+
+        #endregion
+
         #region LiveStatus Online Indicator
 
         private void SetLiveStreamActive(bool Online = true)
@@ -991,7 +1007,6 @@ namespace StreamerBot
 
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            // TODO: Setup MultiLiveBot Context Menu Add/Edit records
             if (sender.GetType() == typeof(DataGrid))
             {
                 bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";

@@ -1,17 +1,19 @@
-﻿using System;
+﻿using StreamerBotLib.Enums;
+
+using System;
 
 namespace StreamerBotLib.Models
 {
     public record Follow
     {
-        public Follow(DateTime followedAt, string fromUserId, string fromUserName, string toUserId, string toUserName, LiveUser fromUser)
+        public Follow(DateTime followedAt, string fromUserId, string fromUserName, string toUserId, string toUserName, Platform Source)
         {
             FollowedAt = followedAt;
             FromUserId = fromUserId;
             FromUserName = fromUserName;
             ToUserId = toUserId;
             ToUserName = toUserName;
-            FromUser = fromUser;
+            FromUser = new(FromUserName,Source,fromUserId);
         }
 
         public DateTime FollowedAt { get; set; }

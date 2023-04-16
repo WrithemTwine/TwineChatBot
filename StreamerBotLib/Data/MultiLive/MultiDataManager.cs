@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Windows.Threading;
 using System.Xml;
 
 using static StreamerBotLib.Data.MultiLive.DataSource;
@@ -521,6 +520,11 @@ namespace StreamerBotLib.Data.MultiLive
         }
 
         public string GetCommands()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int? GetTimerCommandTime(string Cmd)
         {
             throw new NotImplementedException();
         }

@@ -233,6 +233,11 @@ namespace StreamerBotLib.Static
         /// Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
         /// </summary>
         public static bool PostMultiLive => Settings.Default.PostMultiLive;
+
+        /// <summary>
+        /// Whether to display the bot welcome message when connecting to the channel.
+        /// </summary>
+        public static bool MsgBotConnection => Settings.Default.MsgBotConnection;
         /// <summary>
         /// The social media message to use to notify the given channel is live.
         /// </summary>
@@ -448,6 +453,11 @@ namespace StreamerBotLib.Static
         public static int ModeratorApprovalTimeout => Settings.Default.ModeratorApprovalTimeout;
 
         /// <summary>
+        /// Specifies whether the Overlay Server should start and stop when the user stream is online or offline.
+        /// </summary>
+        public static bool MediaOverlayStartWithStream => Settings.Default.MediaOverlayStartWithStream;
+
+        /// <summary>
         /// Enable the Media Overlay Services.
         /// </summary>
         public static bool MediaOverlayEnabled
@@ -476,16 +486,52 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
-        public static int MediaOverlayMediaPort
+        public static int MediaOverlayMediaActionPort
         {
-            get => Settings.Default.MediaOverlayPort; set => Settings.Default.MediaOverlayPort = value;
+            get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
+        }
+
+        public static int MediaOverlayMediaTickerPort
+        {
+            get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
 
         public static bool MediaOverlayLogExceptions => Settings.Default.MediaOverlayLogExceptions;
 
         public static bool MediaOverlayUseSameStyle => Settings.Default.MediaOverlayUseSameStyle;
         public static bool MediaOverlayAutoStart => Settings.Default.MediaOverlayAutoStart;
+        public static bool MediaOverlayAutoServerStart => Settings.Default.MediaOverlayAutoServerStart;
 
+        /// <summary>
+        /// Defines using the ticker in single pages for each ticker item
+        /// </summary>
+        public static bool MediaOverlayTickerSingle => Settings.Default.MediaOverlayTickerSingle;
+        /// <summary>
+        /// Defines using the ticker with multiple items visible
+        /// </summary>
+        public static bool MediaOverlayTickerMulti => Settings.Default.MediaOverlayTickerMulti;
+
+        /// <summary>
+        /// Defines a ticker where all elements stay in place
+        /// </summary>
+        public static bool MediaOverlayTickerStatic => Settings.Default.MediaOverlayTickerStatic;
+        /// <summary>
+        /// Defines rotating each ticker item in the same spot
+        /// </summary>
+        public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
+        public static int MediaOverlayTickerRotateTime => Settings.Default.MediaOverlayTickerRotateTime;
+        /// <summary>
+        /// Defines a marquee ticker scroller
+        /// </summary>
+        public static bool MediaOverlayTickerMarquee => Settings.Default.MediaOverlayTickerMarquee;
+        public static int MediaOverlayTickerMarqueeTime => Settings.Default.MediaOverlayTickerMarqueeTime;
+        public static bool MediaOverlayTickerVertical => Settings.Default.MediaOverlayTickerMulti;
+
+        public static string[] MediaOverlayTickerSelected
+        {
+            get => (Settings.Default.MediaOverlayTickerSelected).Split('_');
+            set => Settings.Default.MediaOverlayTickerSelected = string.Join('_', value);
+        }
         /// <summary>
         /// Specifies whether user wants the UserData->User Follow tab to adjust its layout when the width changes
         /// </summary>

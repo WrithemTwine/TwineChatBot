@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>1.2.6.4</Version>
+    <Version>1.2.8.0</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -12,14 +12,23 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <UseWindowsForms>True</UseWindowsForms>
+    <Copyright>2023</Copyright>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+
+  <ItemGroup>
+    <None Remove="Overlay\img\seconds.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageReference Include="TwitchLib.Api" Version="3.8.0" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.8.0" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.9.0" />
     <PackageReference Include="TwitchLib.Api.Helix" Version="3.8.0" />
-    <PackageReference Include="TwitchLib.Client" Version="3.3.1" />
+    <PackageReference Include="TwitchLib.Client" Version="3.4.0-preview-b78278fa1c106621cfecac2c52cdbd2ddef19143" />
     <PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
   </ItemGroup>
 
@@ -85,6 +94,12 @@
 
   <ItemGroup>
     <Folder Include="MultiLive\Culture\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Overlay\img\seconds.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

@@ -93,7 +93,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         // ----------------------------------------------------------------------------
         // from TwitchLib: https://github.com/TwitchLib/TwitchLib.Api/blob/2ea61c70225c0c15d7def7a5808837191e33d778/TwitchLib.Api/Services/FollowerService.cs
-        // modified to fit into TwineStreamer bot code structure
+        // modified to fit into TwineStreamer bot code structure and handle internet disconnection related exceptions
 
         private readonly Dictionary<string, DateTime> _lastFollowerDates = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly bool _invokeEventsOnStartup;

@@ -37,7 +37,7 @@ namespace StreamerBotLib.BotIOController
 
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
-        internal Collection<IBotTypes> BotsList { get; private set; } = new();
+        static internal Collection<IBotTypes> BotsList { get; private set; } = new();
         public List<Bots> StartedChatBots { get; private set; } = new();
         private bool ChatBotStopping;
 
@@ -69,9 +69,7 @@ namespace StreamerBotLib.BotIOController
             ActionSystem.ChannelName = TwitchBotsBase.TwitchChannelName;
             OutputSentToBots += ActionSystem.OutputSentToBotsHandler;
 
-            //OverlayServerBot = new();
             SetNewOverlayEventHandler();
-            //SetGetChannelClipsHandler();
 
             BotsList.Add(TwitchBots);
             BotsList.Add(OverlayServerBot);
@@ -437,7 +435,7 @@ namespace StreamerBotLib.BotIOController
                     f.FromUserName,
                     f.ToUserId,
                     f.ToUserName,
-                    new(f.FromUserName, Source, f.FromUserId)
+                    Source
                 );
             });
         }
@@ -678,6 +676,14 @@ namespace StreamerBotLib.BotIOController
 
         #region Handle Bot Events
 
+        /// <summary>
+        /// Empty non-event just to satisfy the "BotEvent" handler through the bot interface - some bots don't call this event handler.
+        /// </summary>
+        public void HandleBotEventEmpty()
+        {
+            // I do nothing else.
+        }
+
         #region Followers
 
         public void HandleBotEventNewFollowers(List<Models.Follow> follows)
@@ -722,6 +728,8 @@ namespace StreamerBotLib.BotIOController
         {
             try
             {
+                ManageBotsStreamStatusChanged(true);
+
                 bool Started = Systems.StreamOnline(StartedAt);
                 ActionSystem.ChannelName = ChannelName;
 
@@ -780,10 +788,25 @@ namespace StreamerBotLib.BotIOController
         {
             if (OptionFlags.IsStreamOnline)
             {
+                ManageBotsStreamStatusChanged(false);
+
                 DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
                 OptionFlags.TwitchOutRaidStarted = false;
+            }
+        }
+
+        /// <summary>
+        /// Call to manage other bots when a monitored stream is detected to be online.
+        /// </summary>
+        /// <param name="Start">True to start services for stream online, False to stop services for stream offline.</param>
+        public static void ManageBotsStreamStatusChanged(bool Start)
+        {
+            // loop the bots and send message to start or stop based on stream online or offline status
+            foreach(IBotTypes bots in BotsList)
+            { 
+                bots.ManageStreamOnlineOfflineStatus(Start);
             }
         }
 
@@ -1101,18 +1124,11 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         private void SetNewOverlayEventHandler()
         {
-            Systems.SetNewOverlayEventHandler(OverlayServerBot.NewOverlayEventHandler);
+            Systems.SetNewOverlayEventHandler(
+                OverlayServerBot.NewOverlayEventHandler, 
+                OverlayServerBot.UpdatedTickerEventHandler
+                );
         }
-
-        //private void SetGetChannelClipsHandler()
-        //{
-        //    Systems.SetChannelClipsHandler(GetAllChannelClips);
-        //}
-
-        //private void GetAllChannelClips(object sender, GetChannelClipsEventArgs e)
-        //{
-        //    TwitchBots.GetChannelClips(e.ChannelName,e.CallBackResult);
-        //}
 
         #endregion
 

@@ -162,6 +162,8 @@ namespace StreamerBotLib.Systems
         public static void StopBulkFollowers()
         {
             DataManage.StopBulkFollows();
+
+            AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, DataManage.GetNewestFollower());
         }
 
         private delegate void ProcFollowDelegate();
@@ -368,7 +370,7 @@ namespace StreamerBotLib.Systems
                         SystemActions.StreamDataUpdate();
                     }), null);
 
-                    Thread.Sleep(SleepWait); // wait 10 seconds
+                    Thread.Sleep(SleepWait); // wait 6 seconds
                 }
             });
         }
@@ -556,7 +558,12 @@ namespace StreamerBotLib.Systems
             }
 
             ActionSystem.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
-            UpdatedStat(StreamStatType.TotalChats);
+
+            // TODO: review for detecting whether the bot sent message, and not including those chats in total chats (in terms of repeat timer chat thresholds)
+            if (User.UserName != OptionFlags.TwitchBotUserName)
+            {
+                UpdatedStat(StreamStatType.TotalChats);
+            }
 
             if (MsgReceived.IsSubscriber)
             {
@@ -642,9 +649,9 @@ namespace StreamerBotLib.Systems
             {
                 ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
             }
-            if (OptionFlags.ManageOverlayTicker)
-            {
-                DataManage.UpdateOverlayTicker(OverlayTickerItem.LastInRaid, User.UserName);
+            if (OptionFlags.ManageOverlayTicker) 
+            { 
+                AddNewOverlayTickerItem(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }
 
@@ -829,15 +836,16 @@ namespace StreamerBotLib.Systems
 
         #region Media Overlay Server
 
-        public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> eventHandler)
+        public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
         {
-            SystemActions.NewOverlayEvent += eventHandler;
+            SystemActions.NewOverlayEvent += NewOverlayeventHandler;
+            ActionSystem.UpdatedTickerItems += UpdatedTickerEventHandler;
         }
 
-        //public void SetChannelClipsHandler(EventHandler<GetChannelClipsEventArgs> eventHandler)
-        //{
-        //    Overlay.GetChannelClipsEvent += eventHandler;
-        //}
+        public void SendInitialTickerItems()
+        {
+            SystemActions.SendInitialTickerItems();
+        }
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {
@@ -848,11 +856,6 @@ namespace StreamerBotLib.Systems
         {
             SystemActions.SetChannelRewardList(RewardList);
         }
-
-        //public void CheckForOverlayEvent(object? sender, CheckOverlayEventArgs e)
-        //{
-        //    CheckForOverlayEvent(e.OverlayType, e.Action, e.UserName, e.UserMsg, e.ProvidedURL);
-        //}
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
@@ -866,10 +869,7 @@ namespace StreamerBotLib.Systems
 
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
-            if (OptionFlags.ManageOverlayTicker)
-            {
-                DataManage.UpdateOverlayTicker(item, UserName);
-            }
+            ActionSystem.AddNewOverlayTickerItem(item, UserName);
         }
 
         #endregion

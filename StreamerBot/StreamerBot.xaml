@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
         xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
@@ -35,7 +36,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
-            </ResourceDictionary.MergedDictionaries> 
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
@@ -80,9 +81,10 @@
                     <Setter Property="Orientation" Value="Horizontal" />
                 </Style>
             </StatusBar.Resources>
-            <StatusBarItem x:Name="StatusBarItem_BetaLabel" Visibility="Collapsed">
-                <StackPanel>
-                    <Label Content="Beta Version" Foreground="MediumVioletRed" FontSize="16" FontWeight="DemiBold" />
+            <StatusBarItem>
+                <StackPanel Orientation="Vertical">
+                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" Visibility="Collapsed" Content="Beta" Foreground="MediumVioletRed" FontSize="16" FontWeight="DemiBold" />
+                    <Label x:Name="StatusBar_Label_Version" Padding="0"/>
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
@@ -325,6 +327,15 @@
                                             <Label x:Name="Label_OverlayServer_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
                                                 <TextBlock>The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
+                                            <GroupBox Width="Auto" Header="Activate Per Online Status">
+                                                <WrapPanel Orientation="Vertical">
+                                                    <CheckBox  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayStartWithStream}">
+                                                        <TextBlock>
+                                                            Start and Stop Overlay Server when stream is online or offline.
+                                                        </TextBlock>
+                                                    </CheckBox>
+                                                </WrapPanel>
+                                            </GroupBox>
                                         </WrapPanel>
                                     </GroupBox>
                                 </WrapPanel>
@@ -641,19 +652,6 @@
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Bot Management - Output">
-                                        <StackPanel>
-                                            <CheckBox IsChecked="{Binding MsgBotConnection}">
-                                                <TextBlock>Enable bot welcome message when connected to stream channel.</TextBlock>
-                                            </CheckBox>
-                                            <CheckBox IsChecked="{Binding MsgCommandNotFound}">
-                                                <TextBlock>Enable "Command Not Found" output message.</TextBlock>
-                                            </CheckBox>
-                                            <CheckBox IsChecked="{Binding MsgSocialSeparate}" ToolTip="Using !socials, click to send each social message separately to chat.">
-                                                <TextBlock>Enable separate Social messages.</TextBlock>
-                                            </CheckBox>
-                                        </StackPanel>
-                                    </GroupBox>
                                     <GroupBox Header="Media Overlay">
                                         <StackPanel>
                                             <Label>
@@ -703,6 +701,19 @@
                                             <TextBlock Text="Customize Welcome Messages - Welcome New Viewer, Returning Viewer, and Followers/Subscribers" />
                                             <CheckBox IsChecked="{Binding WelcomeCustomMsg, Mode=TwoWay}">
                                                 <TextBlock Text="Enable" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Bot Management - Output">
+                                        <StackPanel>
+                                            <CheckBox IsChecked="{Binding MsgBotConnection}">
+                                                <TextBlock><Run Text="Enable bot welcome message when connected to stream channel."/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding MsgCommandNotFound}">
+                                                <TextBlock><Run Text="Enable &quot;Command Not Found&quot; output message."/></TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding MsgSocialSeparate}" ToolTip="Using !socials, click to send each social message separately to chat.">
+                                                <TextBlock><Run Text="Enable separate Social messages."/></TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
@@ -1337,7 +1348,9 @@
                             </TabControl>
                         </TabItem>
                         <TabItem x:Name="TabItem_Overlays" Header="Overlays" GotFocus="TabItem_Overlays_GotFocus" >
-                            <DockPanel>
+                            <TabControl>
+                                <TabItem Header="Events">
+                                    <DockPanel>
                                 <Expander DockPanel.Dock="Top" Header="Media Overlay Services!" DataContext="{Binding Source={x:Static s:Settings.Default}}" IsExpanded="{Binding MediaOverlayHelpExpand}">
                                     <TextBlock>
                                     Specify the duration in seconds,<LineBreak />
@@ -1366,6 +1379,16 @@
                                 </GroupBox>
                                 <DataGrid x:Name="DataGrid_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayService, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                             </DockPanel>
+                                </TabItem>
+                                <TabItem Header="Ticker">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
+                                        <TextBlock DockPanel.Dock="Top" Foreground="Red">Added this table and data recording feature a while ago in the background. If the data looks odd, delete it or update.</TextBlock>
+                                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding OverlayTicker, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+
+                                    </DockPanel>
+                                </TabItem>
+                            </TabControl>                            
                         </TabItem>
                         <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
                             <TabControl>
@@ -1483,7 +1506,7 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="Bot Chat" Height="30" Margin="-2,0,0,0" VerticalAlignment="Bottom">
+            <TabItem Header="Bot Chat">
                 <DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
                         <Grid>
@@ -1540,6 +1563,54 @@
                         </StackPanel>
                         <FlowDocumentScrollViewer DockPanel.Dock="Top" BorderThickness="1,1,1,1" x:Name="FlowDoc_ChatBox" ScrollViewer.CanContentScroll="True" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Document="{Binding ChatData, Mode=OneWay, NotifyOnSourceUpdated=True}" Foreground="#FFC5C3C3" />
                     </DockPanel>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="GitHub">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top">
+                        All StreamerBot Releases - Always backup data files!
+                    </TextBlock>
+                    <TabControl>
+                        <TabControl.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="BorderBrush" Value="Black" />
+                            </Style>
+                        </TabControl.Resources>
+                        <TabItem Header="Wiki Doc">
+                            <DockPanel>
+                                <Label DockPanel.Dock="Top" Content="The Wiki Documentation to help use the Bot" />
+                                <Border>
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left"  Width="50" Height="29" Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/wiki"/>
+                                    </DockPanel>
+                                </Border>
+                            </DockPanel>
+                        </TabItem>
+                        <TabItem Header="Stable">
+                            <DockPanel>
+                                <Label DockPanel.Dock="Top" Content="Latest stable release - may have unusual bugs, most are resolved" />
+                                <Border>
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Width="50" Height="29"  Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/releases/latest"/>
+                                    </DockPanel>
+                                </Border>
+                            </DockPanel>
+                        </TabItem>
+                        <TabItem Header="Latest">
+                            <DockPanel>
+                                <Label DockPanel.Dock="Top" Content="Latest development and stable releases - may have bugs while testing for next stable release" />
+                                <Border>
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left"  Width="50" Height="29"  Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/releases"/>
+                                    </DockPanel>
+                                </Border>
+                            </DockPanel>
+                        </TabItem>
+                    </TabControl>
                 </DockPanel>
             </TabItem>
         </TabControl>
