@@ -596,6 +596,24 @@
                     </Style>
                 </TabItem.Resources>
                 <TabControl DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                    <TabItem Header="Theme">
+                        <ScrollViewer>
+                            <DockPanel>
+                                <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
+                                    <GroupBox Header="Select App Theme">
+                                        <StackPanel Orientation="Vertical">
+                                            <RadioButton IsChecked="{Binding ThemeLight}">
+                                                <TextBlock>Light Theme</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding ThemeDark}">
+                                                <TextBlock>Dark Theme</TextBlock>
+                                            </RadioButton>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </WrapPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </TabItem>
                     <TabItem Header="Streamer Bot">
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <DockPanel Margin="10" ScrollViewer.CanContentScroll="True">

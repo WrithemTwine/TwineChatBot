@@ -543,6 +543,18 @@ namespace StreamerBotLib.Static
 
         public static int GridTabifyStreamRaidsWidth => Settings.Default.GridTabifyStreamRaidsWidth;
 
+        #region Themes
+        /// <summary>
+        /// Specifies to use the Light Theme within the app
+        /// </summary>
+        public static bool ThemeLight => Settings.Default.ThemeLight;
+
+        /// <summary>
+        /// Specifies to use the Darkl Theme within the app
+        /// </summary>
+        public static bool ThemeDark => Settings.Default.ThemeDark;
+ 
+        #endregion Themes
 
         /// <summary>
         /// Sets whether the "Join Party" list is started or not, and refreshes the settings.

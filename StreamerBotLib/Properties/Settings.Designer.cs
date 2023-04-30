@@ -1486,5 +1486,29 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayStartWithStream"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ThemeLight {
+            get {
+                return ((bool)(this["ThemeLight"]));
+            }
+            set {
+                this["ThemeLight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeDark {
+            get {
+                return ((bool)(this["ThemeDark"]));
+            }
+            set {
+                this["ThemeDark"] = value;
+            }
+        }
     }
 }
