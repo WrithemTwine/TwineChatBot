@@ -7,4 +7,14 @@
     <SolidColorBrush x:Key="ScrollViewerBackground" Color="#FF383838" />
     <SolidColorBrush x:Key="ScrollViewerForeground" Color="#FF5B5B5B" />
     <SolidColorBrush x:Key="TabControTabs" Color="#FF383838"  />
+
+    <SolidColorBrush x:Key="BrightGo" Color="LimeGreen" />
+    <SolidColorBrush x:Key="BrightStop" Color="Red" />
+    <SolidColorBrush x:Key="Go" Color="Green" />
+    <SolidColorBrush x:Key="Stop" Color="Maroon" />
+
+    <Color x:Key="BorderColor">#FFCCCCCC</Color>
+    <Color x:Key="TabItemControlLight">#FF5B5B5B</Color>
+    <Color x:Key="TabItemControlMedium">#FF383838</Color>
+
 </ResourceDictionary>
