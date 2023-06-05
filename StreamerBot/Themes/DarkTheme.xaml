@@ -9,9 +9,10 @@
     <SolidColorBrush x:Key="TabControTabs" Color="#FF383838"  />
 
     <SolidColorBrush x:Key="BrightGo" Color="LimeGreen" />
-    <SolidColorBrush x:Key="BrightStop" Color="Red" />
-    <SolidColorBrush x:Key="Go" Color="Green" />
-    <SolidColorBrush x:Key="Stop" Color="Maroon" />
+    <SolidColorBrush x:Key="BrightStop" Color="#FFEA3434" />
+    <SolidColorBrush x:Key="Go" Color="#FF16A502" />
+    <SolidColorBrush x:Key="Stop" Color="#FFEA3434" />
+    <SolidColorBrush x:Key="LabelBeta" Color="MediumVioletRed" />
 
     <Color x:Key="BorderColor">#FFCCCCCC</Color>
     <Color x:Key="TabItemControlLight">#FF5B5B5B</Color>

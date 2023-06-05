@@ -36,6 +36,8 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
+        // TODO: add buttons to start and stop all bots, based on current state (all start => bot 1 started->don't restart, bot 2 not started->start)
+
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -335,7 +337,7 @@ namespace StreamerBot
         {
             Dispatcher.Invoke(() =>
             {
-                TextBlock_CurrentCategory.Text = e.GameName;
+                TextBlock_CurrentCategory.Content = e.GameName;
                 Button_RefreshCategory.IsEnabled = true;
             });
         }
