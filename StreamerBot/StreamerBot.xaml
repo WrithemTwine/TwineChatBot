@@ -55,8 +55,50 @@
                 <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
             </Style>
 
+            <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToolTip">
+                            <Border Name="Border"
+                                BorderThickness="1"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="0,1">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStopCollection>
+                                                <GradientStop Color="{DynamicResource LighterColor}"
+                                Offset="0.0" />
+                                                <GradientStop Color="{DynamicResource MediumColor}"
+                                Offset="1.0" />
+                                            </GradientStopCollection>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="{DynamicResource MediumColor}" />
+                                </Border.BorderBrush>
+                                <ContentPresenter Margin="4"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="HasDropShadow" Value="true">
+                                    <Setter TargetName="Border" Property="CornerRadius" Value="4" />
+                                    <Setter TargetName="Border" Property="SnapsToDevicePixels" Value="true" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style TargetType="{x:Type TabControl}">
                 <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+                <Setter Property="Margin" Value="0,10" />
             </Style>
 
             <Style TargetType="{x:Type TabItem}">
@@ -84,15 +126,15 @@
                                     </VisualStateGroup>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
-                                        <VisualState x:Name="MouseOver">
-                                            <Storyboard>
+                                        <VisualState x:Name="MouseOver" >
+                                            <!--<Storyboard>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
                                                     <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
                                                 </ColorAnimationUsingKeyFrames>
                                                 <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)">
                                                     <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlLight}"/>
                                                 </ColorAnimationUsingKeyFrames>
-                                            </Storyboard>
+                                            </Storyboard>-->
                                         </VisualState>
                                         <VisualState x:Name="Disabled" />
                                     </VisualStateGroup>
@@ -102,10 +144,11 @@
                                         <SolidColorBrush Color="{DynamicResource BorderColor}" />
                                     </Border.BorderBrush>
 
-                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="12,2,12,2" RecognizesAccessKey="True" />
+                                    <ContentPresenter x:Name="ContentSite" 
+                                                      VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                      ContentSource="Header" Margin="12,2,12,2" RecognizesAccessKey="True" />
 
                                     <Border.Background>
-
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                             <LinearGradientBrush.GradientStops>
                                                 <GradientStopCollection>
@@ -120,7 +163,6 @@
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="True" >
-                                    <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
                                     <Setter Property="Panel.ZIndex" Value="100" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -128,16 +170,6 @@
                     </Setter.Value>
                 </Setter>
 
-            </Style>
-
-            <Style TargetType="{x:Type ListView}" >
-                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-            </Style>
-
-            <Style TargetType="{x:Type GridViewColumnHeader}">
-                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
             </Style>
 
             <Style TargetType="{x:Type Label}">
@@ -149,8 +181,27 @@
             </Style>
 
             <Style TargetType="{x:Type ScrollBar}">
-                <Setter Property="Background" Value="{DynamicResource ScrollViewerBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ScrollViewerForeground}" />
+                <Setter Property="Background" Value="{DynamicResource ScrollBarBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ScrollBarForeground}" />
+            </Style>
+            <Style TargetType="{x:Type RepeatButton}">
+                <Setter Property="Foreground" Value="{DynamicResource PartBackground}" />
+                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Border Margin="1" 
+                                    CornerRadius="2"
+                                    BorderThickness="1">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{DynamicResource ScrollBarRepeatButton}" />
+                                </Border.Background>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
             </Style>
 
             <Style TargetType="{x:Type DockPanel}">
@@ -164,14 +215,58 @@
             </Style>
 
             <Style TargetType="{x:Type Button}">
-                <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Background" Value="{DynamicResource PartBackground}" />
                         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
                     </Trigger>
                 </Style.Triggers>
+                <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border" CornerRadius="2" BorderThickness="1">
+                                <Border.BorderBrush>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStopCollection>
+                                                <GradientStop Color="{DynamicResource ButtonHoverControlLightColor}" Offset="0.0" />
+                                                <GradientStop Color="{DynamicResource ButtonHoverControlLightColor}" Offset="1.0" />
+                                            </GradientStopCollection>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+
+                                </Border.BorderBrush>
+                                <Border.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="{DynamicResource ButtonHoverControlMediumColor}" Offset="0" />
+                                        <GradientStop Color="{DynamicResource ButtonHoverControlMediumColor}" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition GeneratedDuration="0:0:0.5" />
+                                            <VisualTransition GeneratedDuration="0" To="Pressed" />
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="MouseOver">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                Storyboard.TargetName="Border">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ButtonHoverControlMediumColor}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <Style TargetType="{x:Type GroupBox}">
@@ -181,6 +276,13 @@
                 <Setter Property="Width" Value="230" />
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="BorderBrush" Value="#FF212D34" />
+            </Style>
+
+            <Style TargetType="{x:Type GridViewColumnHeader}">
+                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="Padding" Value="8,0" />
             </Style>
 
             <Style TargetType="{x:Type CheckBox}">
@@ -199,9 +301,13 @@
                 <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
             </Style>
 
+            <Style TargetType="{x:Type ListView}" >
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+            </Style>
+
             <Style TargetType="{x:Type DataGrid}">
                 <Setter Property="AlternationCount" Value="1" />
-                <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4"/>
                 <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
                 <Setter Property="AutoGenerateColumns" Value="True" />
                 <Setter Property="CanUserAddRows" Value="False" />
@@ -209,17 +315,37 @@
                 <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
                 <Setter Property="IsReadOnly" Value="True" />
 
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Setter Property="RowBackground" Value="{DynamicResource DataGridBackground}" />
+                <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternateColor}"/>
 
                 <Setter Property="ColumnHeaderStyle">
                     <Setter.Value>
                         <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                            <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
                             <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                            <Setter Property="Padding" Value="8,0" />
                         </Style>
                     </Setter.Value>
                 </Setter>
-                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+
+                <Setter Property="RowHeaderStyle">
+                    <Setter.Value>
+                        <Style TargetType="{x:Type DataGridRowHeader}">
+                            <Setter Property="Background" Value="{DynamicResource DataGridRowHeaderBackground}" />
+                            <Setter Property="Width" Value="5" />
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+
             </Style>
+
+            <Style TargetType="{x:Type ContextMenu}">
+                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            </Style>
+
         </DockPanel.Resources>
         <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
             <StatusBar.Resources>
@@ -266,7 +392,7 @@
                     <StackPanel Orientation="Vertical">
                         <Label Padding="3,0" HorizontalAlignment="Center">
                             <Label.ToolTip>
-                                <TextBlock>Click here to refresh now. Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow.</TextBlock>
+                                Click here to refresh now. Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow.
                             </Label.ToolTip>
                             Current Follows:
                         </Label>
@@ -820,6 +946,19 @@
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <DockPanel Margin="10" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
+                                    
+                                    <GroupBox Header="Bot Management - Debug Mode">
+                                        <StackPanel>
+                                            <TextBlock>Log the following functionality:</TextBlock>
+                                            <CheckBox IsChecked="{Binding EnableDebugLogOverlays}">
+                                                <TextBlock>Overlay Bot logging</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding EnableDebugTwitchPubSubBot}">
+                                                <TextBlock>Twitch Bot PubSub logging</TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    
                                     <GroupBox Header="Bot Management - App Interface">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding PostMultiLive}">
@@ -1242,14 +1381,16 @@
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">
-                            <ListView DockPanel.Dock="Right" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" ItemsSource="{Binding Collection}" >
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150" />
-                                        <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" />
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
+                            <DockPanel>
+                                <ListView DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" ItemsSource="{Binding Collection}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" >
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150" />
+                                            <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="650" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
                         </TabItem>
                         <TabItem Header="Discord">
                             <DockPanel LastChildFill="True">
@@ -1337,7 +1478,7 @@
                                         </DockPanel>
 
                                         <DockPanel x:Name="DockPanel_UserData_Followers" Grid.Row="0" Grid.Column="2">
-                                            <Label Content="Follower List" DockPanel.Dock="Top" />
+                                            <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
                                             <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                                         </DockPanel>
                                     </Grid>
@@ -1750,7 +1891,7 @@
                 </TabControl>
             </TabItem>
             <TabItem Header="Bot Chat">
-                <DockPanel>
+                <DockPanel LastChildFill="True">
                     <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
                         <Grid>
                             <Grid.RowDefinitions>

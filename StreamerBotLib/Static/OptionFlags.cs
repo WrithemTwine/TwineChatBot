@@ -315,6 +315,10 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.TwitchClipPostChat; set => Settings.Default.TwitchClipPostChat = value;
         }
+
+        /// <summary>
+        /// Manages the user specified frequency to check for clips.
+        /// </summary>
         public static double TwitchFrequencyClipTime => Settings.Default.TwitchFrequencyClipTime;
         /// <summary>
         /// Specifies whether to post a channel clip link to Discord, and Discord webhooks need a 'clips' link.
@@ -418,6 +422,9 @@ namespace StreamerBotLib.Static
             get => Settings.Default.TwitchAccessToken; set => Settings.Default.TwitchAccessToken = value;
         }
 
+        /// <summary>
+        /// Manages the Twitch Refresh Token.
+        /// </summary>
         public static string TwitchRefreshToken => Settings.Default.TwitchRefreshToken;
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account client ID, to perform the function call.
@@ -432,7 +439,13 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static DateTime TwitchStreamerTokenDate => Settings.Default.TwitchStreamerTokenDate;
 
+        /// <summary>
+        /// The user specified time frequency for when to check Twitch for new followers.
+        /// </summary>
         public static double TwitchFrequencyFollow => Settings.Default.TwitchFrequencyFollow;
+        /// <summary>
+        /// The user specified time frequency for when to check Twitch for streams appearing online.
+        /// </summary>
         public static double TwitchGoLiveFrequency => Settings.Default.TwitchGoLiveFrequency;
 
         /// <summary>
@@ -486,20 +499,38 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
+        /// <summary>
+        /// Manages the Overlay action media port serving Overlay alert content through the http server.
+        /// </summary>
         public static int MediaOverlayMediaActionPort
         {
             get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
         }
 
+        /// <summary>
+        /// Manages the Overlay ticker medition port server Overlay ticker item content through the http server.
+        /// </summary>
         public static int MediaOverlayMediaTickerPort
         {
             get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
 
+        /// <summary>
+        /// Manages option to log exceptions within the Media Overlay server - was separate when Overlay Server was its own package.
+        /// </summary>
         public static bool MediaOverlayLogExceptions => Settings.Default.MediaOverlayLogExceptions;
-
+    
+        /// <summary>
+        /// Manages if user wants action alerts to display with the same styling.
+        /// </summary>
         public static bool MediaOverlayUseSameStyle => Settings.Default.MediaOverlayUseSameStyle;
+        /// <summary>
+        /// Manages user preference to auto start the Overlay bot upon application start.
+        /// </summary>
         public static bool MediaOverlayAutoStart => Settings.Default.MediaOverlayAutoStart;
+        /// <summary>
+        /// Manages user preference whether the Overlay http server should start upon the Overlay bot start.
+        /// </summary>
         public static bool MediaOverlayAutoServerStart => Settings.Default.MediaOverlayAutoServerStart;
 
         /// <summary>
@@ -524,23 +555,38 @@ namespace StreamerBotLib.Static
         /// Defines a marquee ticker scroller
         /// </summary>
         public static bool MediaOverlayTickerMarquee => Settings.Default.MediaOverlayTickerMarquee;
+        /// <summary>
+        /// Manages the user preference for how fast the ticker scrolling occurs.
+        /// </summary>
         public static int MediaOverlayTickerMarqueeTime => Settings.Default.MediaOverlayTickerMarqueeTime;
-        public static bool MediaOverlayTickerVertical => Settings.Default.MediaOverlayTickerMulti;
 
+        /// <summary>
+        /// Saves the user's preference for what to show in the Overlay ticker
+        /// </summary>
         public static string[] MediaOverlayTickerSelected
         {
             get => (Settings.Default.MediaOverlayTickerSelected).Split('_');
             set => Settings.Default.MediaOverlayTickerSelected = string.Join('_', value);
         }
+
         /// <summary>
         /// Specifies whether user wants the UserData->User Follow tab to adjust its layout when the width changes
         /// </summary>
         public static bool GridTabifyUserFollow => Settings.Default.GridTabifyUserFollow;
 
+        /// <summary>
+        /// Specifies the user's 'User Follow tab' width threshold for when 'tabify' activates, this width or smaller.
+        /// </summary>
         public static int GridTabifyUserFollowWidth => Settings.Default.GridTabifyUserFollowWidth;
 
+        /// <summary>
+        /// Specifies whether the user wants the StreamData->Raids tab to adjust its layout when the width changes
+        /// </summary>
         public static bool GridTabifyStreamRaids => Settings.Default.GridTabifyStreamRaids;
 
+        /// <summary>
+        /// Specifies the user's 'Raid tab' width threshold for when 'tabify' activates, this width or smaller.
+        /// </summary>
         public static int GridTabifyStreamRaidsWidth => Settings.Default.GridTabifyStreamRaidsWidth;
 
         #region Themes
@@ -553,8 +599,44 @@ namespace StreamerBotLib.Static
         /// Specifies to use the Darkl Theme within the app
         /// </summary>
         public static bool ThemeDark => Settings.Default.ThemeDark;
- 
+
         #endregion Themes
+
+        #region DebugLogFlags
+
+        /// <summary>
+        /// Enables the Overlay actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugLogOverlays => Settings.Default.EnableDebugLogOverlays;
+        /// <summary>
+        /// Enables the DataManager actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugDataManager => Settings.Default.EnableDebugDataManager;
+        /// <summary>
+        /// Enables the Twitch Chat Bot related actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugTwitchChatBot => Settings.Default.EnableDebugTwitchChatBot;
+        /// <summary>
+        /// Enables the Twitch Clip Bot related actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugTwitchClipBot => Settings.Default.EnableDebugTwitchClipBot;
+        /// <summary>
+        /// Enables the Twitch Live Bot related actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugTwitchLiveBot => Settings.Default.EnableDebugTwitchLiveBot;
+        /// <summary>
+        /// Enables the Twitch Follow Bot related actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugTwitchFollowBot => Settings.Default.EnableDebugTwitchFollowBot;
+        /// <summary>
+        /// Enables the Twitch PubSub Bot related actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugTwitchPubSubBot => Settings.Default.EnableDebugTwitchPubSubBot;
+        /// <summary>
+        /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
+        #endregion
 
         /// <summary>
         /// Sets whether the "Join Party" list is started or not, and refreshes the settings.

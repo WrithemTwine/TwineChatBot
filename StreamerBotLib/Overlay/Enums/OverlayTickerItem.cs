@@ -1,4 +1,4 @@
-﻿namespace StreamerBotLib.Enums
+﻿namespace StreamerBotLib.Overlay.Enums
 {
     public enum OverlayTickerItem
     {

@@ -17,8 +17,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
+using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
@@ -424,17 +424,15 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         /// <param name="follows">The Twitch follows list to convert.</param>
         /// <returns>The follower list converted to the generic "Models.Follow" list.</returns>
-        private static List<Models.Follow> ConvertFollowers(List<Follow> follows, Platform Source)
+        private static List<Models.Follow> ConvertFollowers(List<ChannelFollower> follows, Platform Source)
         {
             return follows.ConvertAll((f) =>
             {
                 return new Models.Follow(
 
-                    f.FollowedAt.ToLocalTime(),
-                    f.FromUserId,
-                    f.FromUserName,
-                    f.ToUserId,
-                    f.ToUserName,
+                    DateTime.Parse(f.FollowedAt).ToLocalTime(),
+                    f.UserId,
+                    f.UserName,
                     Source
                 );
             });
@@ -668,6 +666,8 @@ namespace StreamerBotLib.BotIOController
         {
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
             // much more data exists in the resulting data output
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, $"Received Twitch Channel Point Reward {e.RewardRedeemed}. Now processing.");
 
             HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title, e.RewardRedeemed.Redemption.UserInput, Platform.Twitch);
         }
@@ -922,7 +922,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
+//            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
@@ -1040,6 +1040,8 @@ namespace StreamerBotLib.BotIOController
 
             if (approval != null)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, $"Custom reward {RewardTitle} requires approval.");
+
                 switch (Source)
                 {
                     case Platform.Twitch:
@@ -1057,6 +1059,8 @@ namespace StreamerBotLib.BotIOController
 
             if (OptionFlags.MediaOverlayChannelPoints)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay action.");
+
                 Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
             }
         }
@@ -1125,7 +1129,7 @@ namespace StreamerBotLib.BotIOController
         private void SetNewOverlayEventHandler()
         {
             Systems.SetNewOverlayEventHandler(
-                OverlayServerBot.NewOverlayEventHandler, 
+                OverlayServerBot.NewOverlayEventHandler,
                 OverlayServerBot.UpdatedTickerEventHandler
                 );
         }

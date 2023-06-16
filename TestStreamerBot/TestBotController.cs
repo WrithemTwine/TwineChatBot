@@ -190,8 +190,6 @@ namespace TestStreamerBot
                     getFollowedAt(),
                     "00112233",
                     $"{prefix}Follower{x}",
-                    "9988776655",
-                    TwitchBotsBase.TwitchBotUserName,
                     Platform.Default
                 );
             }
@@ -237,8 +235,6 @@ namespace TestStreamerBot
                     followedAt: DateTime.Now, 
                     fromUserName: $"IFollow{datestring}{x}",
                     fromUserId: "00112233",
-                    toUserName: OptionFlags.TwitchChannelName, 
-                    toUserId: "99887766",
                     Source: Platform.Default)
                     );
             }

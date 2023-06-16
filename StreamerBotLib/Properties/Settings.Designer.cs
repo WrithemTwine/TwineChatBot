@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.6.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -1508,6 +1508,102 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["ThemeDark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugLogOverlays {
+            get {
+                return ((bool)(this["EnableDebugLogOverlays"]));
+            }
+            set {
+                this["EnableDebugLogOverlays"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugDataManager {
+            get {
+                return ((bool)(this["EnableDebugDataManager"]));
+            }
+            set {
+                this["EnableDebugDataManager"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchChatBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchChatBot"]));
+            }
+            set {
+                this["EnableDebugTwitchChatBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchClipBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchClipBot"]));
+            }
+            set {
+                this["EnableDebugTwitchClipBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchLiveBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchLiveBot"]));
+            }
+            set {
+                this["EnableDebugTwitchLiveBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchFollowBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchFollowBot"]));
+            }
+            set {
+                this["EnableDebugTwitchFollowBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchPubSubBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchPubSubBot"]));
+            }
+            set {
+                this["EnableDebugTwitchPubSubBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugDiscordBot {
+            get {
+                return ((bool)(this["EnableDebugDiscordBot"]));
+            }
+            set {
+                this["EnableDebugDiscordBot"] = value;
             }
         }
     }
