@@ -107,6 +107,9 @@
       <CustomToolNamespace></CustomToolNamespace>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
+    <Page Update="Themes\DarkTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   
 

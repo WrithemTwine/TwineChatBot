@@ -1,10 +1,61 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="FullBackground" Color="#FF1E1E1E"/>
-    <SolidColorBrush x:Key="PartBackground" Color="#FF383838"/>
-    <SolidColorBrush x:Key="ForegroundText" Color="#FFCCCCCC"  />
-    <SolidColorBrush x:Key="Borders" Color="#FF383838"  />
-    <SolidColorBrush x:Key="ScrollViewerBackground" Color="#FF383838" />
-    <SolidColorBrush x:Key="ScrollViewerForeground" Color="#FF5B5B5B" />
-    <SolidColorBrush x:Key="TabControTabs" Color="#FF383838"  />
+
+    <!-- base colors -->
+    <Color x:Key="LighterColor">#FF5B5B5B</Color>
+    <Color x:Key="MediumColor">#FF383838</Color>
+    <Color x:Key="DarkerColor">#FF1E1E1E</Color>
+    <Color x:Key="ForegroundColor">#FFCCCCCC</Color>
+
+
+    <SolidColorBrush x:Key="FullBackground" Color="{DynamicResource DarkerColor}"/>
+    <SolidColorBrush x:Key="PartBackground" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ForegroundText" Color="{DynamicResource ForegroundColor}"  />
+
+
+    <!-- border colors -->
+    <SolidColorBrush x:Key="Borders" Color="{DynamicResource MediumColor}"  />
+    <Color x:Key="BorderColor">#FFCCCCCC</Color>
+
+    <!-- scrollbar colors -->
+    <SolidColorBrush x:Key="ScrollBarBackground" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="ScrollBarForeground" Color="{DynamicResource LighterColor}" />
+
+    <Color x:Key="ScrollBarRepeatButton">#FF1E1E1E</Color>
+
+    <!-- tab item colors -->
+    <SolidColorBrush x:Key="TabControTabs" Color="{DynamicResource MediumColor}"  />
+    <Color x:Key="TabItemControlLight">#FF5B5B5B</Color>
+    <Color x:Key="TabItemControlMedium">#FF383838</Color>
+    <Color x:Key="TabItemControlDark">#FF1E1E1E</Color>
+
+    <!-- activity colors -->
+    <SolidColorBrush x:Key="BrightGo" Color="LimeGreen" />
+    <SolidColorBrush x:Key="BrightStop" Color="#FFEA3434" />
+    <SolidColorBrush x:Key="Go" Color="#FF16A502" />
+    <SolidColorBrush x:Key="Stop" Color="#FFEA3434" />
+    <SolidColorBrush x:Key="LabelBeta" Color="MediumVioletRed" />
+
+    <!-- datagrid colors -->
+    <SolidColorBrush x:Key="DataGridAlternateColor" Color="{DynamicResource LighterColor}" />
+    <SolidColorBrush x:Key="DataGridBackground" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="DataGridRowHeaderBackground" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="DataGridColumnHeaderBackground" Color="{DynamicResource LighterColor}" />
+
+    <!-- contextmenu coloring -->
+    <SolidColorBrush x:Key="ContextMenuBackground" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ContextMenuForeground" Color="{DynamicResource ForegroundColor}"/>
+
+    <!-- button colors -->
+    <Color x:Key="ButtonHoverControlMediumColor">#FF383838</Color>
+    <Color x:Key="ButtonHoverControlLightColor">#FF5B5B5B</Color>
+    <SolidColorBrush x:Key="ButtonHoverControlMedium" Color="{DynamicResource ButtonHoverControlMediumColor}"  />
+
+    <!-- ListView colors -->
+    <Color x:Key="ListViewControlDarkColor">#FF1E1E1E</Color>
+    <Color x:Key="ListViewControlMediumColor">#FF383838</Color>
+    <Color x:Key="ListViewControlLightColor">#FF5B5B5B</Color>
+    <SolidColorBrush x:Key="ListViewControlMedium" Color="{DynamicResource ListViewControlMediumColor}"  />
+
+
 </ResourceDictionary>

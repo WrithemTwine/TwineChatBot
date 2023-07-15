@@ -145,12 +145,12 @@ namespace StreamerBotLib.GUI
             Currency = dataManager._DataSource.Currency.DefaultView;
             BuiltInCommands = new(dataManager._DataSource.Commands, $"{dataManager._DataSource.Commands.CmdNameColumn.ColumnName} IN (" + ComFilter() + ")", dataManager._DataSource.Commands.CmdNameColumn.ColumnName, DataViewRowState.CurrentRows);
             Commands = new(dataManager._DataSource.Commands, $"{dataManager._DataSource.Commands.CmdNameColumn.ColumnName} NOT IN (" + ComFilter() + ")", dataManager._DataSource.Commands.CmdNameColumn.ColumnName, DataViewRowState.CurrentRows);
-            StreamStats = dataManager._DataSource.StreamStats.DefaultView;
+            StreamStats = new(dataManager._DataSource.StreamStats, null, $"{dataManager._DataSource.StreamStats.StreamStartColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             ShoutOuts = dataManager._DataSource.ShoutOuts.DefaultView;
             Category = dataManager._DataSource.CategoryList.DefaultView;
             Clips = dataManager._DataSource.Clips.DefaultView;
-            InRaidData = dataManager._DataSource.InRaidData.DefaultView;
-            OutRaidData = dataManager._DataSource.OutRaidData.DefaultView;
+            InRaidData = new(dataManager._DataSource.InRaidData,null, $"{dataManager._DataSource.InRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
+            OutRaidData = new(dataManager._DataSource.OutRaidData, null, $"{dataManager._DataSource.OutRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             GiveawayUserData = dataManager._DataSource.GiveawayUserData.DefaultView;
             CustomWelcomeData = dataManager._DataSource.CustomWelcome.DefaultView;
             LearnMsgs = dataManager._DataSource.LearnMsgs.DefaultView;
@@ -208,8 +208,8 @@ namespace StreamerBotLib.GUI
                 }
             }
         }
-        /* */
 
+        /* */
         private void SetCommandCollection()
         {
             lock (GUIDataManagerLock.Lock)

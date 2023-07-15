@@ -18,7 +18,6 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 
 using static StreamerBotLib.Data.DataSetCommonMethods.DataSetStatic;
 using static StreamerBotLib.Data.DataSource;
@@ -37,6 +36,10 @@ namespace StreamerBotLib.Data
         #endregion DataSource
 
         private bool LearnMsgChanged = true; // always true to begin one learning cycle
+      
+        /// <summary>
+        /// When the follower bot begins a bulk follower update, this flag 'locks' the database Follower table from changes until bulk update concludes.
+        /// </summary>
         public bool UpdatingFollowers { get; set; }
 
         public DataManager() : base(DataFileXML)
@@ -1690,7 +1693,7 @@ switches:
         /// <param name="overlayType">The type of the overlay source. e.g. channel points, commands - StreamerBotLib.Enums.Overlay.Enums.OverlayTickerItem</param>
         /// <param name="overlayAction">The name of the overlay type action for the specific overlay to invoke.</param>
         /// <param name="username">A username if an overlay action is based on a certain user.</param>
-        /// <returns></returns>
+        /// <returns>A collection of found OverlayActions matching the parameter criteria.</returns>
         public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
         {
             lock (GUIDataManagerLock.Lock)
