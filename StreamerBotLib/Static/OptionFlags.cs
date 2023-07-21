@@ -590,6 +590,15 @@ namespace StreamerBotLib.Static
         public static int GridTabifyStreamRaidsWidth => Settings.Default.GridTabifyStreamRaidsWidth;
 
         #region Themes
+
+        // specify properties as "Theme[theme name]", e.g. "ThemeDark". reverse the name for the theme file, e.g. "DarkTheme.xaml"
+        // parsers use the properties here to reconstruct the file name to use for selecting the theme
+
+        /// <summary>
+        /// This prefix starts the name of all theme properties.
+        /// </summary>
+        public static string PrefixForThemes => "Theme";
+
         /// <summary>
         /// Specifies to use the Light Theme within the app
         /// </summary>

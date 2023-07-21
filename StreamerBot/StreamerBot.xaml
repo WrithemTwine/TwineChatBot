@@ -12,6 +12,7 @@
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="750" Width="1100"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        Background="{DynamicResource FullBackground}"
     >
     <Window.Resources>
         <ResourceDictionary>
@@ -23,6 +24,7 @@
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
+
             <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
                 <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
                 <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
@@ -35,319 +37,17 @@
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
             </ContextMenu>
 
+            <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
+                <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
+            </Style>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
-                <ResourceDictionary Source="Themes/DarkTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Window.Style>
-        <Style TargetType="Window">
-            <Setter Property="Background" Value="{DynamicResource FullBackground}" />
-            <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-        </Style>
-    </Window.Style>
-
     <DockPanel>
-        <DockPanel.Resources>
-            <Style TargetType="{x:Type StatusBar}">
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
-            </Style>
-
-            <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
-                <Setter Property="OverridesDefaultStyle" Value="true" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToolTip">
-                            <Border Name="Border"
-                                BorderThickness="1"
-                                Width="{TemplateBinding Width}"
-                                Height="{TemplateBinding Height}">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0"
-                                 EndPoint="0,1">
-                                        <LinearGradientBrush.GradientStops>
-                                            <GradientStopCollection>
-                                                <GradientStop Color="{DynamicResource LighterColor}"
-                                Offset="0.0" />
-                                                <GradientStop Color="{DynamicResource MediumColor}"
-                                Offset="1.0" />
-                                            </GradientStopCollection>
-                                        </LinearGradientBrush.GradientStops>
-                                    </LinearGradientBrush>
-
-                                </Border.Background>
-                                <Border.BorderBrush>
-                                    <SolidColorBrush Color="{DynamicResource MediumColor}" />
-                                </Border.BorderBrush>
-                                <ContentPresenter Margin="4"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="HasDropShadow" Value="true">
-                                    <Setter TargetName="Border" Property="CornerRadius" Value="4" />
-                                    <Setter TargetName="Border" Property="SnapsToDevicePixels" Value="true" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style TargetType="{x:Type TabControl}">
-                <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
-                <Setter Property="Margin" Value="0,10" />
-            </Style>
-
-            <Style TargetType="{x:Type TabItem}">
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="MinWidth" Value="50" />
-                <Setter Property="Height" Value="25" />
-
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type TabItem}">
-                            <Grid>
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="SelectionStates">
-                                        <VisualState x:Name="Unselected" />
-                                        <VisualState x:Name="Selected">
-                                            <Storyboard>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
-                                                </ColorAnimationUsingKeyFrames>
-                                                <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderThickness)" Storyboard.TargetName="Border">
-                                                    <EasingThicknessKeyFrame KeyTime="0" Value="1,1,1,0" />
-                                                </ThicknessAnimationUsingKeyFrames>
-                                            </Storyboard>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal" />
-                                        <VisualState x:Name="MouseOver" >
-                                            <!--<Storyboard>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
-                                                </ColorAnimationUsingKeyFrames>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlLight}"/>
-                                                </ColorAnimationUsingKeyFrames>
-                                            </Storyboard>-->
-                                        </VisualState>
-                                        <VisualState x:Name="Disabled" />
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
-                                <Border x:Name="Border" Margin="0" BorderThickness="1" CornerRadius="2,12,0,0">
-                                    <Border.BorderBrush>
-                                        <SolidColorBrush Color="{DynamicResource BorderColor}" />
-                                    </Border.BorderBrush>
-
-                                    <ContentPresenter x:Name="ContentSite" 
-                                                      VerticalAlignment="Center" HorizontalAlignment="Center" 
-                                                      ContentSource="Header" Margin="12,2,12,2" RecognizesAccessKey="True" />
-
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <LinearGradientBrush.GradientStops>
-                                                <GradientStopCollection>
-                                                    <GradientStop Color="{DynamicResource TabItemControlLight}" Offset="0.0" />
-                                                    <GradientStop Color="{DynamicResource TabItemControlMedium}" Offset="1.0" />
-                                                </GradientStopCollection>
-                                            </LinearGradientBrush.GradientStops>
-                                        </LinearGradientBrush>
-
-                                    </Border.Background>
-                                </Border>
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsSelected" Value="True" >
-                                    <Setter Property="Panel.ZIndex" Value="100" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-            </Style>
-
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-            </Style>
-
-            <Style TargetType="{x:Type Run}">
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-            </Style>
-
-            <Style TargetType="{x:Type ScrollBar}">
-                <Setter Property="Background" Value="{DynamicResource ScrollBarBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ScrollBarForeground}" />
-            </Style>
-            <Style TargetType="{x:Type RepeatButton}">
-                <Setter Property="Foreground" Value="{DynamicResource PartBackground}" />
-                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
-
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Border Margin="1" 
-                                    CornerRadius="2"
-                                    BorderThickness="1">
-                                <Border.Background>
-                                    <SolidColorBrush Color="{DynamicResource ScrollBarRepeatButton}" />
-                                </Border.Background>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-            </Style>
-
-            <Style TargetType="{x:Type DockPanel}">
-                <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
-                <Setter Property="Margin" Value="5" />
-            </Style>
-
-            <Style TargetType="{x:Type RadioButton}">
-                <Setter Property="Margin" Value="10,5,0,5" />
-                <Setter Property="VerticalContentAlignment" Value="Center" />
-            </Style>
-
-            <Style TargetType="{x:Type Button}">
-                <Style.Triggers>
-                    <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-                        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                    </Trigger>
-                </Style.Triggers>
-                <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="OverridesDefaultStyle" Value="true" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border" CornerRadius="2" BorderThickness="1">
-                                <Border.BorderBrush>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <LinearGradientBrush.GradientStops>
-                                            <GradientStopCollection>
-                                                <GradientStop Color="{DynamicResource ButtonHoverControlLightColor}" Offset="0.0" />
-                                                <GradientStop Color="{DynamicResource ButtonHoverControlLightColor}" Offset="1.0" />
-                                            </GradientStopCollection>
-                                        </LinearGradientBrush.GradientStops>
-                                    </LinearGradientBrush>
-
-                                </Border.BorderBrush>
-                                <Border.Background>
-                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                        <GradientStop Color="{DynamicResource ButtonHoverControlMediumColor}" Offset="0" />
-                                        <GradientStop Color="{DynamicResource ButtonHoverControlMediumColor}" Offset="1" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualStateGroup.Transitions>
-                                            <VisualTransition GeneratedDuration="0:0:0.5" />
-                                            <VisualTransition GeneratedDuration="0" To="Pressed" />
-                                        </VisualStateGroup.Transitions>
-                                        <VisualState x:Name="Normal" />
-                                        <VisualState x:Name="MouseOver">
-                                            <Storyboard>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
-                                                Storyboard.TargetName="Border">
-                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ButtonHoverControlMediumColor}" />
-                                                </ColorAnimationUsingKeyFrames>
-                                            </Storyboard>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
-                                <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style TargetType="{x:Type GroupBox}">
-                <Setter Property="BorderBrush" Value="{DynamicResource Borders}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="Margin" Value="5" />
-                <Setter Property="Width" Value="230" />
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="BorderBrush" Value="#FF212D34" />
-            </Style>
-
-            <Style TargetType="{x:Type GridViewColumnHeader}">
-                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="HorizontalContentAlignment" Value="Left" />
-                <Setter Property="Padding" Value="8,0" />
-            </Style>
-
-            <Style TargetType="{x:Type CheckBox}">
-                <Setter Property="Margin" Value="5" />
-            </Style>
-
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="TextWrapping" Value="Wrap" />
-                <Setter Property="Padding" Value="5,0" />
-            </Style>
-
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-            </Style>
-
-            <Style TargetType="{x:Type ListView}" >
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
-            </Style>
-
-            <Style TargetType="{x:Type DataGrid}">
-                <Setter Property="AlternationCount" Value="1" />
-                <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-                <Setter Property="AutoGenerateColumns" Value="True" />
-                <Setter Property="CanUserAddRows" Value="False" />
-                <Setter Property="CanUserDeleteRows" Value="True" />
-                <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
-                <Setter Property="IsReadOnly" Value="True" />
-
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-                <Setter Property="RowBackground" Value="{DynamicResource DataGridBackground}" />
-                <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternateColor}"/>
-
-                <Setter Property="ColumnHeaderStyle">
-                    <Setter.Value>
-                        <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
-                            <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                            <Setter Property="Padding" Value="8,0" />
-                        </Style>
-                    </Setter.Value>
-                </Setter>
-
-                <Setter Property="RowHeaderStyle">
-                    <Setter.Value>
-                        <Style TargetType="{x:Type DataGridRowHeader}">
-                            <Setter Property="Background" Value="{DynamicResource DataGridRowHeaderBackground}" />
-                            <Setter Property="Width" Value="5" />
-                        </Style>
-                    </Setter.Value>
-                </Setter>
-
-            </Style>
-
-            <Style TargetType="{x:Type ContextMenu}">
-                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-            </Style>
-
-        </DockPanel.Resources>
-        <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
+        <StatusBar DockPanel.Dock="Bottom" Height="55" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
             <StatusBar.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal" />
@@ -356,25 +56,36 @@
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
                     <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
-                           Visibility="Collapsed" Content="Beta" Foreground="{DynamicResource LabelBeta}" 
-                           FontSize="16" FontWeight="DemiBold" />
+                           Visibility="Collapsed"
+                           FontSize="16" FontWeight="DemiBold">
+                        <TextBlock Foreground="{DynamicResource LabelBeta}">Beta</TextBlock>
+                    </Label>
                     <Label x:Name="StatusBar_Label_Version" Content="Version Label" Padding="0"/>
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label Visibility="Visible" x:Name="Label_StreamStatusOff" FontWeight="ExtraBold" 
-                           Content="Stream Offline" Height="Auto" Width="110" 
-                           BorderThickness="3" Foreground="{DynamicResource BrightStop}" 
-                           HorizontalContentAlignment="Center" BorderBrush="{DynamicResource BrightStop}" />
-                    <Label Visibility="Collapsed" x:Name="Label_StreamStatusOn" 
-                           FontWeight="ExtraBold" Content="Stream Online" Height="Auto" Width="110" 
-                           BorderThickness="3" Foreground="{DynamicResource BrightGo}" 
-                           HorizontalContentAlignment="Center" BorderBrush="{DynamicResource BrightGo}" />
+                    <Label Visibility="Visible" x:Name="Label_StreamStatusOff"
+                           BorderThickness="3" HorizontalContentAlignment="Center"
+                           FontWeight="ExtraBold"
+                           Width="120"
+                           BorderBrush="{DynamicResource BrightStop}">
+                        <TextBlock Foreground="{DynamicResource BrightStop}">
+                            Stream Offline
+                        </TextBlock>
+                    </Label>
+                    <Label Visibility="Collapsed" x:Name="Label_StreamStatusOn"
+                           BorderThickness="3" HorizontalContentAlignment="Center"
+                           FontWeight="ExtraBold"
+                           Width="120"
+                           BorderBrush="{DynamicResource BrightGo}">
+                        <TextBlock Foreground="{DynamicResource BrightGo}">
+                            Stream Online
+                        </TextBlock>
+                    </Label>
                 </StackPanel>
             </StatusBarItem>
-
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
                     <Label Padding="3,0" HorizontalAlignment="Center">
@@ -386,7 +97,7 @@
                     </Label>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <Button Click="StatusBar_Button_UpdateFollows_Click" Background="{DynamicResource PartBackground}">
                     <StackPanel Orientation="Vertical">
@@ -397,12 +108,12 @@
                             Current Follows:
                         </Label>
                         <Label Padding="3,0" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding CurrFollowers, FallbackValue=0, StringFormat=\{0:N0\}}" Background="{DynamicResource PartBackground}"/>
+                            <TextBlock Text="{Binding CurrFollowers, FallbackValue=0, StringFormat=\{0:N0\}}" Background="{x:Null}"/>
                         </Label>
                     </StackPanel>
                 </Button>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -416,14 +127,14 @@
                     </StackPanel>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <StackPanel>
                     <Label ToolTip="The earliest token expiration date.">Token Exp:</Label>
                     <Label x:Name="StatusBarItem_TokenDate"  />
                 </StackPanel>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem Padding="0,0,0,0">
                 <Button Name="Button_RefreshCategory" Grid.Column="0" 
                         HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -930,10 +641,10 @@
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
                                     <GroupBox Header="Select App Theme">
                                         <StackPanel Orientation="Vertical">
-                                            <RadioButton IsChecked="{Binding ThemeLight}">
+                                            <RadioButton IsChecked="{Binding ThemeLight}" Checked="RadioButton_Theme_Checked">
                                                 <TextBlock>Light Theme</TextBlock>
                                             </RadioButton>
-                                            <RadioButton IsChecked="{Binding ThemeDark}">
+                                            <RadioButton IsChecked="{Binding ThemeDark}" Checked="RadioButton_Theme_Checked">
                                                 <TextBlock>Dark Theme</TextBlock>
                                             </RadioButton>
                                         </StackPanel>
@@ -946,7 +657,7 @@
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <DockPanel Margin="10" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
-                                    
+
                                     <GroupBox Header="Bot Management - Debug Mode">
                                         <StackPanel>
                                             <TextBlock>Log the following functionality:</TextBlock>
@@ -958,7 +669,7 @@
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    
+
                                     <GroupBox Header="Bot Management - App Interface">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding PostMultiLive}">
@@ -1467,7 +1178,7 @@
                                         <DockPanel x:Name="DockPanel_UserData_Users" Grid.Row="0" Grid.Column="0">
                                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                                                 <Label Content="User List"/>
-                                                <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="120" Margin="70,0,15,0" Click="Button_ClearNonFollowers_Click">
+                                                <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="130" Margin="70,0,15,0" Click="Button_ClearNonFollowers_Click">
                                                     <Button.ToolTip>
                                                         <TextBlock>Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</TextBlock>
                                                     </Button.ToolTip>
@@ -1542,7 +1253,7 @@
                                         <DockPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                                             <DockPanel.Resources>
                                                 <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
-                                                    <Setter Property="Width" Value="160" />
+                                                    <Setter Property="Width" Value="180" />
                                                 </Style>
                                                 <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="Width" Value="250"/>
@@ -1586,7 +1297,7 @@
                                                         <TextBlock>The ChatBot needs to be started for chatting Giveaway messages. PubSub Bot needs to be started for Channel Points redemption to be detected.</TextBlock>
                                                     </Button.ToolTip>
                                                 </Button>
-                                                <Button x:Name="Button_GiveawayEnd" Content="End Giveaway" Click="Button_GiveawayEnd_Click" IsEnabled="False" />
+                                                <Button Template="{DynamicResource ButtonTemplate1}" x:Name="Button_GiveawayEnd" Content="End Giveaway" Click="Button_GiveawayEnd_Click" IsEnabled="False" />
                                                 <Button x:Name="Button_GiveawayPickWinner" Content="Pick Winners" Click="Button_GiveawayPickWinner_Click" IsEnabled="False" />
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
@@ -1620,11 +1331,11 @@
                                             <ListView DockPanel.Dock="Top" x:Name="listView" Width="300" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayCollection}">
                                                 <ListView.View>
                                                     <GridView>
-                                                        <GridViewColumn Header="Order" Width="50" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                        <GridViewColumn Header="Order" Width="70" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, 
                                          AncestorType={x:Type ListViewItem}}, 
                                          Converter={StaticResource IndexConverter}}"
                                                                         />
-                                                        <GridViewColumn Header="Entrant" Width="220" DisplayMemberBinding="{Binding Mode=OneWay}" />
+                                                        <GridViewColumn Header="Entrant" Width="200" DisplayMemberBinding="{Binding Mode=OneWay}" />
                                                     </GridView>
                                                 </ListView.View>
                                             </ListView>
@@ -1841,7 +1552,7 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Visible" />
+                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Height="10" Visibility="Visible" />
                         <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Visible">
                             <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" />
                         </TabItem>
@@ -1862,8 +1573,8 @@
                                 <Setter Property="ContentTemplate" Value="{StaticResource AppStatTemplate}" />
                             </Style>
                         </TabItem.Resources>
-                        <ListView BorderBrush="#FF36373A" BorderThickness="2,2,1,2" Padding="5">
-                            <ListViewItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="#FF191717" />
+                        <ListView BorderBrush="{DynamicResource ForegroundText}" BorderThickness="2,2,1,2" Padding="5">
+                            <ListViewItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ForegroundText}" />
                             <ListViewItem Content="{Binding Path=Threads}" />
                             <ListViewItem Content="{Binding Path=ClosedThreads}" />
                             <ListViewItem Content="{Binding Path=Uptime}" />
@@ -1972,7 +1683,7 @@
                                 <Label DockPanel.Dock="Top" Content="The Wiki Documentation to help use the Bot" />
                                 <Border>
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left"  Width="50" Height="29" Click="WebView2Reload_Click" />
+                                        <Button DockPanel.Dock="Top" Content="Reload"  Width="59" Height="29" Click="WebView2Reload_Click" HorizontalAlignment="Left" />
                                         <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/wiki"/>
                                     </DockPanel>
                                 </Border>
