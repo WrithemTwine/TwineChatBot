@@ -36,8 +36,9 @@
             </ContextMenu>
 
             <ResourceDictionary.MergedDictionaries>
+                <!-- maintain this order of merged dictionaries (or update backend code) as "StreamerBotThemes.cs" refers to these merged dictionaries in array order -->
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
-                <ResourceDictionary Source="Themes/DarkTheme.xaml" />
+                <ResourceDictionary x:Name="ResourceThemeDictionary" Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -296,10 +297,7 @@
                 <Setter Property="Padding" Value="5,0" />
             </Style>
 
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-            </Style>
+
 
             <Style TargetType="{x:Type ListView}" >
                 <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
@@ -930,10 +928,10 @@
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
                                     <GroupBox Header="Select App Theme">
                                         <StackPanel Orientation="Vertical">
-                                            <RadioButton IsChecked="{Binding ThemeLight}">
+                                            <RadioButton IsChecked="{Binding ThemeLight}" Checked="RadioButton_Theme_Checked">
                                                 <TextBlock>Light Theme</TextBlock>
                                             </RadioButton>
-                                            <RadioButton IsChecked="{Binding ThemeDark}">
+                                            <RadioButton IsChecked="{Binding ThemeDark}" Checked="RadioButton_Theme_Checked">
                                                 <TextBlock>Dark Theme</TextBlock>
                                             </RadioButton>
                                         </StackPanel>

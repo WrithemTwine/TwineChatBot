@@ -8,13 +8,17 @@
         xmlns:M ="clr-namespace:StreamerBotLib.Overlay.Models"
         mc:Ignorable="d"
         Title="Media Overlay" 
-        Height="500" Width="500" 
+        Height="500" Width="750" 
         UseLayoutRounding="True" 
         SnapsToDevicePixels="True" 
         Closing="Window_Closing" 
         Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="ResourceThemeDictionary" Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
             <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
             <M:SelectedTickerItems x:Name="TickerSelectedItems" x:Key="TickerSelectedItems" />
             <DataTemplate x:Key="OverlayTypeStatTemplate">
@@ -34,6 +38,8 @@
                 </ListViewItem>
             </DataTemplate>
             <Style TargetType="{x:Type GroupBox}">
+                <Setter Property="BorderBrush" Value="{DynamicResource Borders}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
                 <Setter Property="Margin" Value="5" />
                 <Setter Property="Width" Value="230" />
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -41,16 +47,125 @@
             </Style>
             <Style TargetType="{x:Type CheckBox}">
                 <Setter Property="Margin" Value="5" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            </Style>
+            <Style TargetType="{x:Type ListView}" >
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+            </Style>
+            <Style TargetType="{x:Type ListBox}">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
             </Style>
             <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
                 <Setter Property="TextWrapping" Value="Wrap" />
                 <Setter Property="Padding" Value="5,0" />
             </Style>
+            <Style TargetType="{x:Type TextBox}">
+                <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            </Style>
             <Style TargetType="{x:Type RadioButton}">
                 <Setter Property="Margin" Value="10,5,0,5" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
+            <Style TargetType="{x:Type Run}">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            </Style>
+            <Style TargetType="{x:Type StatusBar}">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+            </Style>
+            <Style TargetType="{x:Type TabControl}">
+                <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+                <Setter Property="Margin" Value="0,10" />
+            </Style>
+
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="MinWidth" Value="50" />
+                <Setter Property="Height" Value="25" />
+
+                <Setter Property="Template" >
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabItem}">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="SelectionStates">
+                                        <VisualState x:Name="Unselected" />
+                                        <VisualState x:Name="Selected">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderThickness)" Storyboard.TargetName="Border">
+                                                    <EasingThicknessKeyFrame KeyTime="0" Value="1,1,1,0" />
+                                                </ThicknessAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="MouseOver" >
+                                            <!--<Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlLight}"/>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>-->
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border x:Name="Border" Margin="0" BorderThickness="1" CornerRadius="2,12,0,0">
+                                    <Border.BorderBrush>
+                                        <SolidColorBrush Color="{DynamicResource BorderColor}" />
+                                    </Border.BorderBrush>
+
+                                    <ContentPresenter x:Name="ContentSite" 
+                                                      VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                      ContentSource="Header" Margin="12,2,12,2" RecognizesAccessKey="True" />
+
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <LinearGradientBrush.GradientStops>
+                                                <GradientStopCollection>
+                                                    <GradientStop Color="{DynamicResource TabItemControlLight}" Offset="0.0" />
+                                                    <GradientStop Color="{DynamicResource TabItemControlMedium}" Offset="1.0" />
+                                                </GradientStopCollection>
+                                            </LinearGradientBrush.GradientStops>
+                                        </LinearGradientBrush>
+
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True" >
+                                    <Setter Property="Panel.ZIndex" Value="100" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
         </ResourceDictionary>
     </Window.Resources>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+        </Style>
+    </Window.Style>
+    
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" 
                    DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
@@ -85,17 +200,25 @@
                     </GroupBox>
                     <GroupBox Header="Overlay Media Server">
                         <StackPanel>
-                            <CheckBox IsChecked="{Binding MediaOverlayAutoServerStart}" Content="Enable Auto-Starting Server" />
-                            <RadioButton x:Name="RadioButton_OverlayServer_Start" Content="Start Server" Checked="RadioButton_OverlayServer_Start_Checked" />
-                            <RadioButton x:Name="RadioButton_OverlayServer_Stop" Content="Stop Server" Checked="RadioButton_OverlayServer_Stop_Checked" IsChecked="True" />
+                            <CheckBox IsChecked="{Binding MediaOverlayAutoServerStart}">
+                                <Label>Enable Auto-Starting Server</Label>
+                            </CheckBox> 
+                            <RadioButton x:Name="RadioButton_OverlayServer_Start" Checked="RadioButton_OverlayServer_Start_Checked" >
+                                <Label>Start Server</Label></RadioButton>
+                            <RadioButton x:Name="RadioButton_OverlayServer_Stop" Checked="RadioButton_OverlayServer_Stop_Checked" IsChecked="True" >
+                                <Label>Stop Server</Label></RadioButton>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Ticker Item Arrangement">
                         <StackPanel>
                             <GroupBox Header="Itemizations" Width="Auto">
                                 <StackPanel>
-                                    <RadioButton Content="Single Item Ticker Pages" IsChecked="{Binding MediaOverlayTickerSingle}" Click="TickerSpecChanges" />
-                                    <RadioButton Content="Show All Ticker Items" IsChecked="{Binding MediaOverlayTickerMulti}" Click="TickerSpecChanges" />
+                                    <RadioButton IsChecked="{Binding MediaOverlayTickerSingle}" Click="TickerSpecChanges">
+                                        <Label>Single Item Ticker Pages</Label>
+                                    </RadioButton>
+                                    <RadioButton IsChecked="{Binding MediaOverlayTickerMulti}" Click="TickerSpecChanges">
+                                        <Label>Show All Ticker Items</Label>
+                                    </RadioButton>
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Header="Animation" Width="Auto">
@@ -103,7 +226,9 @@
                                     <BitmapImage x:Key="ImageSeconds" UriSource="/StreamerBotLib;component/Overlay/img/seconds.png" />
                                 </GroupBox.Resources>
                                 <StackPanel>
-                                    <RadioButton Content="Static" IsChecked="{Binding MediaOverlayTickerStatic}" Click="TickerSpecChanges" />
+                                    <RadioButton IsChecked="{Binding MediaOverlayTickerStatic}" Click="TickerSpecChanges" >
+                                        <Label>Static</Label>
+                                    </RadioButton>
                                     <RadioButton IsChecked="{Binding MediaOverlayTickerRotate}" Click="TickerSpecChanges">
                                         <RadioButton.Content>
                                             <StackPanel Orientation="Horizontal">
@@ -142,8 +267,9 @@
                                         <StackPanel>
                                             <CheckBox Margin="1" 
                                                       IsChecked="{Binding IsSelected}" 
-                                                      Content="{Binding OverlayTickerItem}" 
-                                                      Click="TickerSelections" />
+                                                      Click="TickerSelections">
+                                                <Label Content="{Binding OverlayTickerItem}" />
+                                            </CheckBox>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -164,7 +290,10 @@
             <TabItem Header="Overlay Styles" >
                 <DockPanel Margin="3">
                     <TextBlock DockPanel.Dock="Top" Text="The CSS styles below save when the style box loses focus." />
-                    <Expander Header="CSS Help" DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayHelpExpand}" DockPanel.Dock="Top">
+                    <Expander DataContext="{x:Static Prop:Settings.Default}" IsExpanded="{Binding MediaOverlayHelpExpand}" DockPanel.Dock="Top">
+                        <Expander.Header>
+                            <Label>CSS Help</Label>
+                        </Expander.Header>
                         <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <FlowDocument>
                                 <Section>

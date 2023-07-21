@@ -88,6 +88,9 @@ namespace StreamerBot
 
             InitializeComponent();
 
+            // TODO: change default theme to 'light'
+            SetTheme(); // adjust the theme, if user selected a different theme.
+
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
@@ -102,7 +105,6 @@ namespace StreamerBot
             StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             ConstructEvents();
-
         }
 
         /// <summary>
