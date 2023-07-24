@@ -42,6 +42,7 @@
             </Style>
 
             <ResourceDictionary.MergedDictionaries>
+                <!-- maintain this order of merged dictionaries (or update backend code) as "StreamerBotThemes.cs" refers to these merged dictionaries in array order -->
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -17,6 +17,10 @@
         >
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="ResourceThemeDictionary" Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
             <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
             <M:SelectedTickerItems x:Name="TickerSelectedItems" x:Key="TickerSelectedItems" />
             <DataTemplate x:Key="OverlayTypeStatTemplate">
@@ -35,6 +39,78 @@
                     </StackPanel>
                 </ListViewItem>
             </DataTemplate>
+
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="MinWidth" Value="50" />
+                <Setter Property="Height" Value="25" />
+
+                <Setter Property="Template" >
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabItem}">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="SelectionStates">
+                                        <VisualState x:Name="Unselected" />
+                                        <VisualState x:Name="Selected">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderThickness)" Storyboard.TargetName="Border">
+                                                    <EasingThicknessKeyFrame KeyTime="0" Value="1,1,1,0" />
+                                                </ThicknessAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="MouseOver" >
+                                            <!--<Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlMedium}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource TabItemControlLight}"/>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>-->
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border x:Name="Border" Margin="0" BorderThickness="1" CornerRadius="2,12,0,0">
+                                    <Border.BorderBrush>
+                                        <SolidColorBrush Color="{DynamicResource BorderColor}" />
+                                    </Border.BorderBrush>
+
+                                    <ContentPresenter x:Name="ContentSite" 
+                                                      VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                      ContentSource="Header" Margin="12,2,12,2" RecognizesAccessKey="True" />
+
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <LinearGradientBrush.GradientStops>
+                                                <GradientStopCollection>
+                                                    <GradientStop Color="{DynamicResource TabItemControlLight}" Offset="0.0" />
+                                                    <GradientStop Color="{DynamicResource TabItemControlMedium}" Offset="1.0" />
+                                                </GradientStopCollection>
+                                            </LinearGradientBrush.GradientStops>
+                                        </LinearGradientBrush>
+
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True" >
+                                    <Setter Property="Panel.ZIndex" Value="100" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
         </ResourceDictionary>
     </Window.Resources>
 
