@@ -1298,7 +1298,7 @@
                                                         <TextBlock>The ChatBot needs to be started for chatting Giveaway messages. PubSub Bot needs to be started for Channel Points redemption to be detected.</TextBlock>
                                                     </Button.ToolTip>
                                                 </Button>
-                                                <Button Template="{DynamicResource ButtonTemplate1}" x:Name="Button_GiveawayEnd" Content="End Giveaway" Click="Button_GiveawayEnd_Click" IsEnabled="False" />
+                                                <Button x:Name="Button_GiveawayEnd" Content="End Giveaway" Click="Button_GiveawayEnd_Click" IsEnabled="False" />
                                                 <Button x:Name="Button_GiveawayPickWinner" Content="Pick Winners" Click="Button_GiveawayPickWinner_Click" IsEnabled="False" />
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">

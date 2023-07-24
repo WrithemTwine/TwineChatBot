@@ -10,7 +10,7 @@
 
                 <!-- pack://application:,,,/StreamerBotLib;component/ -->
                 <ResourceDictionary  x:Name="ResourceThemeDictionary" 
-                        Source="pack://application:,,,/StreamerBotLib;component/Themes/LightTheme.xaml" />
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
                 <ResourceDictionary x:Name="ResourceStyleDictionary" 
                         Source="pack://application:,,,/StreamerBotLib;component/Themes/BaseStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>

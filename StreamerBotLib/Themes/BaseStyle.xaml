@@ -662,12 +662,12 @@
 
 
     <Style TargetType="{x:Type Button}">
-        <Style.Triggers>
+        <!--<Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="{DynamicResource FullBackground}" />
                 <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
             </Trigger>
-        </Style.Triggers>
+        </Style.Triggers>-->
         <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
         <Setter Property="Template">
