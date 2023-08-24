@@ -11,8 +11,8 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 
+using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
@@ -452,11 +452,11 @@ namespace StreamerBotLib.BotClients
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
         {
-            List<Follow> newFollows = new();
+            List<ChannelFollower> newFollows = new();
 
-            foreach (Follow F in e.NewFollowers)
+            foreach (ChannelFollower F in e.NewFollowers)
             {
-                if (!DataManager.CheckFollower(F.FromUserName))
+                if (!DataManager.CheckFollower(F.UserName))
                 {
                     newFollows.Add(F);
                 }

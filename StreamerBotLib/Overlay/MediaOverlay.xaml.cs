@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
+﻿using StreamerBotLib.Events;
 using StreamerBotLib.Overlay.Communication;
 using StreamerBotLib.Overlay.Control;
 using StreamerBotLib.Overlay.Enums;
@@ -180,8 +179,6 @@ namespace StreamerBotLib.Overlay
         /// </summary>
         private void BuildStylePages()
         {
-           TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
-
             if (TabControl_OverlayStyles.Items.Count > 0)
             {
                 foreach (var item in TabControl_OverlayStyles.Items)

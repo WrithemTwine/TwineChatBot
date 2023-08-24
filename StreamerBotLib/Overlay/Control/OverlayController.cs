@@ -4,6 +4,7 @@
 #define UseGUIDLL
 #endif
 
+using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Models;
 
@@ -56,22 +57,20 @@ namespace StreamerBotLib.Overlay.Control
         {
             _httpServer.SendAlert(overlayPage);
 
-#if LOG_OVERLAY
-            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"Sending alert, {overlayPage.OverlayType}, for display." );
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Sending alert, {overlayPage.OverlayType}, for display.");
+
         }
 #endif
 
-            /// <summary>
-            /// Starts the http server
-            /// </summary>
-            public void StartServer()
+        /// <summary>
+        /// Starts the http server
+        /// </summary>
+        public void StartServer()
         {
             _httpServer.StartServer();
 
-#if LOG_OVERLAY
-            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"Overlay http server started.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server started.");
+
         }
 
         /// <summary>
@@ -81,9 +80,7 @@ namespace StreamerBotLib.Overlay.Control
         {
             _httpServer.StopServer();
 
-#if LOG_OVERLAY
-            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"Overlay http server stopped.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server stopped.");
         }
 
         /// <summary>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Version>1.2.8.0</Version>
+    <Version>1.2.9.0</Version>
     <PackageId>StreamerBotLib</PackageId>
     <AssemblyName>StreamerBotLib</AssemblyName>
     <Authors>WrithemTwine</Authors>
@@ -25,9 +25,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.8.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.9.0" />
     <PackageReference Include="TwitchLib.Api.Core" Version="3.9.0" />
-    <PackageReference Include="TwitchLib.Api.Helix" Version="3.8.0" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.9.0" />
     <PackageReference Include="TwitchLib.Client" Version="3.4.0-preview-b78278fa1c106621cfecac2c52cdbd2ddef19143" />
     <PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
   </ItemGroup>
@@ -106,6 +106,15 @@
     <Page Update="MultiLive\MultiLiveDataGrids.xaml">
       <CustomToolNamespace></CustomToolNamespace>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Update="Themes\BaseStyle.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\DarkTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\LightTheme.xaml">
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   

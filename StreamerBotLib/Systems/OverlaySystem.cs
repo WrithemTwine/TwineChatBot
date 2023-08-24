@@ -8,7 +8,6 @@ using StreamerBotLib.Static;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 /*
@@ -27,7 +26,13 @@ namespace StreamerBotLib.Systems
         /// A stream action caused an Overlay Event to occur, and should be displayed via the Media Overlay Server.
         /// </summary>
         public event EventHandler<NewOverlayEventArgs> NewOverlayEvent;
+        /// <summary>
+        /// Event to get the channel clips for a specific user name - regarding the overlay can include one of the user's stream clips
+        /// </summary>
         public event EventHandler<GetChannelClipsEventArgs> GetChannelClipsEvent;
+        /// <summary>
+        /// Event when a new ticker item occurs.
+        /// </summary>
         public static event EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerItems;
 
         /// <summary>
@@ -38,8 +43,12 @@ namespace StreamerBotLib.Systems
             {"Commands", "CmdName"},
             {"ChannelEvents", "Name" }
         };
-        private List<string> ChannelPointRewards = new();
+        private readonly List<string> ChannelPointRewards = new();
 
+        /// <summary>
+        /// Setup the channel points reward list, update the new information.
+        /// </summary>
+        /// <param name="RewardList">The list of rewards. Internal list updates for any new data.</param>
         public void SetChannelRewardList(List<string> RewardList)
         {
             ChannelPointRewards.UniqueAddRange(RewardList);
@@ -76,11 +85,16 @@ namespace StreamerBotLib.Systems
             {
                 data.MediaFile = ProvidedURL;
                 data.Duration = Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"The provided URL {ProvidedURL} and Duration {data.Duration} check out, and are added to data.");
+
             }
         }
 
         private void OnNewOverlayEvent(NewOverlayEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Building Overlay Event with action data, {e.OverlayAction.OverlayType} and {e.OverlayAction.ActionValue}.");
+
             NewOverlayEvent?.Invoke(this, e);
         }
 
@@ -92,6 +106,8 @@ namespace StreamerBotLib.Systems
             if (UserName != null && overlayActionTypes.Count > 0)
             {
                 FoundAction = overlayActionTypes.Find(x => x.UserName == UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Determined {FoundAction?.OverlayType} {FoundAction?.ActionValue} as the matching Overlay action.");
             }
 
             void CheckDiffMsg(ref OverlayActionType data)
@@ -104,16 +120,15 @@ namespace StreamerBotLib.Systems
 
             if (FoundAction != null)
             {
-
-#if LOG_OVERLAY
-                LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"OverlaySystem - found an action, {FoundAction.ActionValue} {FoundAction.OverlayType}, building a response alert.");
-#endif
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"OverlaySystem - found an action, {FoundAction.ActionValue} {FoundAction.OverlayType}, building a response alert.");
 
                 CheckDiffMsg(ref FoundAction);
-                if (overlayType == OverlayTypes.Commands && Action == Enums.DefaultCommand.so.ToString())
+                if (overlayType == OverlayTypes.Commands && Action == DefaultCommand.so.ToString())
                 {
                     if (OptionFlags.MediaOverlayShoutoutClips)
                     {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"OverlaySystem - action, {FoundAction.ActionValue} {FoundAction.OverlayType}, is a shoutout.");
+
                         ThreadManager.CreateThreadStart(() =>
                         {
                             ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
@@ -174,6 +189,11 @@ namespace StreamerBotLib.Systems
 
         }
 
+        /// <summary>
+        /// Add the new Ticker Item to the database, then send it to the Overlay server
+        /// </summary>
+        /// <param name="item">An object containing the overlay ticker item details for updating.</param>
+        /// <param name="UserName">The username specific to the ticker item.</param>
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
             if (OptionFlags.ManageOverlayTicker)
@@ -184,6 +204,9 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        /// <summary>
+        /// Initialize the Overlay Ticker Items when the server first starts, because the data is empty at the start (not persistent)
+        /// </summary>
         public void SendInitialTickerItems()
         {
             UpdatedTickerItems?.Invoke(this, new() { TickerItems = DataManage.GetTickerItems() });

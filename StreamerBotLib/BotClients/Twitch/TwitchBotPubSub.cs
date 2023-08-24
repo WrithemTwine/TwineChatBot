@@ -86,6 +86,7 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
             TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
             TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+            HandlersAdded = false;
             TwitchPubSub = null;
 
             StartBot();
@@ -155,6 +156,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
                             TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
                             TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+                            HandlersAdded = false;
                             TwitchPubSub = null;
                         }
                     }

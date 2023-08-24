@@ -1,9 +1,18 @@
 ﻿<Application x:Class="StreamerBot.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:StreamerBot"
              StartupUri="StreamerBot.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- maintain this order of merged dictionaries (or update backend code) as "StreamerBotThemes.cs" refers to these merged dictionaries in array order -->
+
+                <!-- pack://application:,,,/StreamerBotLib;component/ -->
+                <ResourceDictionary  x:Name="ResourceThemeDictionary" 
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
+                <ResourceDictionary x:Name="ResourceStyleDictionary" 
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/BaseStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
