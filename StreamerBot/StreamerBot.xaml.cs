@@ -438,6 +438,7 @@ namespace StreamerBot
             CheckMessageBoxes();
             CheckBox_ManageData_Click(sender, new());
             CheckBox_TabifySettings_Clicked(this, new());
+            SetVisibility(this, new());
 
             // TODO: research auto-refreshing token
         }
@@ -509,11 +510,12 @@ namespace StreamerBot
 
         private void SetVisibility(object sender, RoutedEventArgs e)
         {
-            if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null)
+            if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null && GroupBox_ManageDataOptions != null)
             {
                 Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
                 Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
                 Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+                GroupBox_ManageDataOptions.Visibility = OptionFlags.EnableManageDataOptions ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

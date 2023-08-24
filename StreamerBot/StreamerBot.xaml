@@ -195,7 +195,7 @@
                                                     <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" IsEnabled="False" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp">
                                                         <TextBlock>Start Bot</TextBlock>
                                                     </RadioButton>
-                                                    <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp">
+                                                    <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp">
                                                         <TextBlock>Stop Bot</TextBlock>
                                                     </RadioButton>
                                                 </WrapPanel>
@@ -686,7 +686,12 @@
                                                 </CheckBox.ToolTip>
                                                 <TextBlock>Enable 'Clear Data' buttons.</TextBlock>
                                             </CheckBox>
-
+                                            <CheckBox IsChecked="{Binding EnableManageDataOptions}" Checked="SetVisibility" Unchecked="SetVisibility">
+                                                <CheckBox.ToolTip>
+                                                    Shows or Hides "Data Management" options to prevent accidental clicking.
+                                                </CheckBox.ToolTip>
+                                                <TextBlock>Enable "Data Management" Options</TextBlock>
+                                            </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Bot Management - Tabs">
@@ -948,7 +953,7 @@
                                             </StackPanel>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Data Management">
+                                    <GroupBox x:Name="GroupBox_ManageDataOptions" Header="Data Management">
                                         <StackPanel>
                                             <Label>
                                                 <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>

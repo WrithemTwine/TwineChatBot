@@ -1021,13 +1021,34 @@ switches:
                 {
                     DateTime datenow = DateTime.Now;
                     List<FollowersRow> AllFollowers = new((FollowersRow[])GetRows(_DataSource.Followers));
-                    foreach (FollowersRow FR in from FollowersRow f in AllFollowers
-                                                where AllFollowers.FindAll(user => user.UserId == f.UserId).Count > 1
-                                                select f)
+                    foreach (var FR in from FollowersRow FR in
+                                           from FollowersRow f in AllFollowers
+                                           where AllFollowers.FindAll(user => user.UserId == f.UserId).Count > 1
+                                           select f
+                                       where DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate
+                                       select FR)
                     {
-                        if (DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate)
+                        FR.StatusChangeDate = datenow;
+                    }
+
+                    // TODO: verify bulk follower updates for unfollows - updating the dates
+                    foreach (var nonfollowers in from string UId in new List<string>((from FollowersRow U in new List<FollowersRow>(from FollowersRow f in AllFollowers
+                                                                                                                                    where f.IsFollower == false
+                                                                                                                                    orderby f.Id descending
+                                                                                                                                    select f
+                                                        )
+                                                                                      select U.UserId).ToList().Distinct())
+                                                 let nonfollowers = new List<FollowersRow>(from FollowersRow f in AllFollowers
+                                                                                           where f.IsFollower == false
+                                                                                           orderby f.Id descending
+                                                                                           select f
+                                                        ).FindAll((user) => user.UserId == UId)
+                                                 where nonfollowers.Count > 1
+                                                 select nonfollowers)
+                    {
+                        if (nonfollowers[0].StatusChangeDate == nonfollowers[1].StatusChangeDate)
                         {
-                            FR.StatusChangeDate = datenow;
+                            nonfollowers[0].StatusChangeDate = datenow;
                         }
                     }
                 }
@@ -1717,6 +1738,10 @@ switches:
             }
         }
 
+        /// <summary>
+        /// Retrieve all Ticker Items from the OverlayTicker table
+        /// </summary>
+        /// <returns>A list collection of ticker items.</returns>
         public List<TickerItem> GetTickerItems()
         {
             lock (GUIDataManagerLock.Lock)
@@ -1727,6 +1752,11 @@ switches:
             }
         }
 
+        /// <summary>
+        /// Post an update to an OverlayTicker item, either updates an existing data row or adds a new row if ticker data doesn't exist.
+        /// </summary>
+        /// <param name="item">The OverlayTickerItem enum name for the ticker to add or replace.</param>
+        /// <param name="name">The username to update for the ticker item.</param>
         public void UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
             lock (GUIDataManagerLock.Lock)

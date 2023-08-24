@@ -244,6 +244,10 @@ namespace StreamerBotLib.Static
         public static string MsgLive => Settings.Default.MsgLive;
 
         /// <summary>
+        /// Specifies actually hiding the "Manage Data" options section in the GUI to prevent accidental clicking.
+        /// </summary>
+        public static bool EnableManageDataOptions => Settings.Default.EnableManageDataOptions;
+        /// <summary>
         /// Specifies to save user data in the database.
         /// </summary>
         public static bool ManageUsers
