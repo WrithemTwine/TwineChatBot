@@ -648,4 +648,13 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="{x:Type Rectangle}">
+        <Setter Property="Fill" Value="{DynamicResource ForegroundText}" />
+        <Setter Property="Stroke" Value="{DynamicResource ForegroundText}" />
+    </Style>
+
+    <Style TargetType="{x:Type Expander}">
+        <Setter Property="BorderBrush" Value="{DynamicResource ForegroundText}" />
+    </Style>
+
 </ResourceDictionary>
