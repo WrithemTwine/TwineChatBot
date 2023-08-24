@@ -1,4 +1,0 @@
-5/17/2022 23:24:28 .ctor Build DataManager object.
-5/17/2022 23:24:28 LoadData Loading the database.
-5/17/2022 23:24:28 SaveData Saving the database, managed as multiple threads collected and saving only occurs every few seconds.
-5/17/2022 23:24:28 PerformSaveOp Managed database save data.
