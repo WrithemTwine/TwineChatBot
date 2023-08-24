@@ -1,6 +1,7 @@
 ﻿using StreamerBotLib.Enums;
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
@@ -15,6 +16,8 @@ namespace StreamerBotLib.Static
         private const string ExceptionLog = "ExceptionLog.txt";
         private const string DataActLog = "DataActionLog.txt";
         private const string OverlayLogFile = "OverlayLog.txt";
+
+        private const string DebugLogFile = "DebugLogFile.txt";
 
         /// <summary>
         /// Write output to a specific log.
@@ -84,6 +87,37 @@ namespace StreamerBotLib.Static
                 StreamWriter s = new(OverlayLogFile, true);
                 s.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {line}");
                 s.Close();
+            }
+        }
+
+        /// <summary>
+        /// Logs the debug output for bot functions. Enabled by Settings Flags.
+        /// </summary>
+        /// <param name="Method">The name of the method performing the current functionality.</param>
+        /// <param name="debugLogTypes">The type of the current function to log.</param>
+        /// <param name="line">The message to save to the log.</param>
+        internal static void DebugLog(string Method, DebugLogTypes debugLogTypes, string line)
+        {
+            string Output = debugLogTypes switch
+            {
+                DebugLogTypes.OverlayBot => OptionFlags.EnableDebugLogOverlays ? line : "",
+                DebugLogTypes.DataManager => OptionFlags.EnableDebugDataManager ? line : "",
+                DebugLogTypes.TwitchChatBot => OptionFlags.EnableDebugTwitchChatBot ? line : "",
+                DebugLogTypes.TwitchClipBot => OptionFlags.EnableDebugTwitchClipBot ? line : "",
+                DebugLogTypes.TwitchLiveBot => OptionFlags.EnableDebugTwitchLiveBot ? line : "",
+                DebugLogTypes.TwitchFollowBot => OptionFlags.EnableDebugTwitchFollowBot ? line : "",
+                DebugLogTypes.TwitchPubSubBot => OptionFlags.EnableDebugTwitchPubSubBot ? line : "",
+                DebugLogTypes.DiscordBot => OptionFlags.EnableDebugDiscordBot ? line : "",
+                _ => "",
+            };
+            if (Output != "")
+            {
+                lock (DebugLogFile)
+                {
+                    StreamWriter s = new(DebugLogFile, true);
+                    s.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {debugLogTypes} {Output}");
+                    s.Close();
+                }
             }
         }
     }

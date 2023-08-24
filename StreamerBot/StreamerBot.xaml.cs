@@ -36,6 +36,8 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
+        // TODO: add buttons to start and stop all bots, based on current state (all start => bot 1 started->don't restart, bot 2 not started->start)
+
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -86,6 +88,9 @@ namespace StreamerBot
 
             InitializeComponent();
 
+            // TODO: change default theme to 'light'
+            SetTheme(); // adjust the theme, if user selected a different theme.
+
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
@@ -100,7 +105,6 @@ namespace StreamerBot
             StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             ConstructEvents();
-
         }
 
         /// <summary>
@@ -335,7 +339,7 @@ namespace StreamerBot
         {
             Dispatcher.Invoke(() =>
             {
-                TextBlock_CurrentCategory.Text = e.GameName;
+                TextBlock_CurrentCategory.Content = e.GameName;
                 Button_RefreshCategory.IsEnabled = true;
             });
         }
@@ -434,6 +438,7 @@ namespace StreamerBot
             CheckMessageBoxes();
             CheckBox_ManageData_Click(sender, new());
             CheckBox_TabifySettings_Clicked(this, new());
+            SetVisibility(this, new());
 
             // TODO: research auto-refreshing token
         }
@@ -505,11 +510,12 @@ namespace StreamerBot
 
         private void SetVisibility(object sender, RoutedEventArgs e)
         {
-            if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null)
+            if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null && GroupBox_ManageDataOptions != null)
             {
                 Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
                 Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
                 Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
+                GroupBox_ManageDataOptions.Visibility = OptionFlags.EnableManageDataOptions ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

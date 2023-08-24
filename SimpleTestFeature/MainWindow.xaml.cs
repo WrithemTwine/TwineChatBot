@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows;
 
 namespace SimpleTestFeature
@@ -26,7 +25,7 @@ namespace SimpleTestFeature
         {
             InitializeComponent();
 
-            LogTest = Resources["TestLog"] as TestText;
+            LogTest = Resources["TestLog"] as TestText ?? new();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

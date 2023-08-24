@@ -842,6 +842,9 @@ namespace StreamerBotLib.Systems
             ActionSystem.UpdatedTickerItems += UpdatedTickerEventHandler;
         }
 
+        /// <summary>
+        /// Initialize the ticker items. Called when first starting the overlay server.
+        /// </summary>
         public void SendInitialTickerItems()
         {
             SystemActions.SendInitialTickerItems();

@@ -36,6 +36,10 @@ namespace StreamerBotLib.Data
         #endregion DataSource
 
         private bool LearnMsgChanged = true; // always true to begin one learning cycle
+      
+        /// <summary>
+        /// When the follower bot begins a bulk follower update, this flag 'locks' the database Follower table from changes until bulk update concludes.
+        /// </summary>
         public bool UpdatingFollowers { get; set; }
 
         public DataManager() : base(DataFileXML)
@@ -876,7 +880,7 @@ switches:
                         followers.FollowedDate = FollowedDate;
                     }
 
-                    if (DBNull.Value.Equals(followers["StatusChangeDate"]) || followers.StatusChangeDate != FollowedDate)
+                    if (DBNull.Value.Equals(followers["StatusChangeDate"]))
                     {
                         followers.StatusChangeDate = FollowedDate;
                     }
@@ -953,6 +957,9 @@ switches:
             return usersRow;
         }
 
+        /// <summary>
+        /// Call to prepare database for follower update operation, blocks new follower operations until the bulk operation completes.
+        /// </summary>
         public void StartBulkFollowers()
         {
 #if LogDataManager_Actions
@@ -962,19 +969,21 @@ switches:
             UpdatingFollowers = true;
             lock (GUIDataManagerLock.Lock)
             {
-                List<FollowersRow> temp = new();
-                temp.AddRange((FollowersRow[])GetRows(_DataSource.Followers));
-                temp.ForEach((f) => f.IsFollower = false);
+                SetDataTableFieldRows(_DataSource.Followers, _DataSource.Followers.IsFollowerColumn, false);
             }
             //NotifySaveData();
         }
 
+        /// <summary>
+        /// Performs the bulk follower update with the list of current followers. 
+        /// Because the streaming service doesn't/didn't support a user unfollowing the streamer, we need to regularly update the follower list in its entirety-retrieve all followers.
+        /// </summary>
+        /// <param name="follows">A list of current followers to add into the database.</param>
         public void UpdateFollowers(IEnumerable<Follow> follows)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update and add all followers in bulk.");
 #endif
-
             if (follows.Any())
             {
                 foreach (Follow f in follows)
@@ -986,18 +995,19 @@ switches:
             //NotifySaveData();
         }
 
+        /// <summary>
+        /// Call to conclude the bulk follower update and release the database.
+        /// </summary>
         public void StopBulkFollows()
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Stop bulk updating all followers.");
 #endif
-            List<FollowersRow> temp = new((FollowersRow[])GetRows(_DataSource.Followers));
-
             if (OptionFlags.TwitchPruneNonFollowers)
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-                    foreach (FollowersRow f in from FollowersRow f in temp
+                    foreach (FollowersRow f in from FollowersRow f in new List<FollowersRow>((FollowersRow[])GetRows(_DataSource.Followers))
                                                where !f.IsFollower
                                                select f)
                     {
@@ -1010,13 +1020,35 @@ switches:
                 lock (GUIDataManagerLock.Lock)
                 {
                     DateTime datenow = DateTime.Now;
-                    foreach (FollowersRow FR in from FollowersRow f in temp
-                                                where !f.IsFollower
-                                                select f)
+                    List<FollowersRow> AllFollowers = new((FollowersRow[])GetRows(_DataSource.Followers));
+                    foreach (var FR in from FollowersRow FR in
+                                           from FollowersRow f in AllFollowers
+                                           where AllFollowers.FindAll(user => user.UserId == f.UserId).Count > 1
+                                           select f
+                                       where DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate
+                                       select FR)
                     {
-                        if (DBNull.Value.Equals(FR["StatusChangeDate"]) || FR.StatusChangeDate <= FR.FollowedDate)
+                        FR.StatusChangeDate = datenow;
+                    }
+
+                    // TODO: verify bulk follower updates for unfollows - updating the dates
+                    foreach (var nonfollowers in from string UId in new List<string>((from FollowersRow U in new List<FollowersRow>(from FollowersRow f in AllFollowers
+                                                                                                                                    where f.IsFollower == false
+                                                                                                                                    orderby f.Id descending
+                                                                                                                                    select f
+                                                        )
+                                                                                      select U.UserId).ToList().Distinct())
+                                                 let nonfollowers = new List<FollowersRow>(from FollowersRow f in AllFollowers
+                                                                                           where f.IsFollower == false
+                                                                                           orderby f.Id descending
+                                                                                           select f
+                                                        ).FindAll((user) => user.UserId == UId)
+                                                 where nonfollowers.Count > 1
+                                                 select nonfollowers)
+                    {
+                        if (nonfollowers[0].StatusChangeDate == nonfollowers[1].StatusChangeDate)
                         {
-                            FR.StatusChangeDate = datenow;
+                            nonfollowers[0].StatusChangeDate = datenow;
                         }
                     }
                 }
@@ -1029,6 +1061,10 @@ switches:
             UpdatingFollowers = false;
         }
 
+        /// <summary>
+        /// Queries the Follower table for the most recent follower.
+        /// </summary>
+        /// <returns>Returns the most recent follower UserName from the Follower table.</returns>
         public string GetNewestFollower()
         {
             return ((FollowersRow)GetRows(_DataSource.Followers, null, $"{_DataSource.Followers.FollowedDateColumn.ColumnName} DESC").FirstOrDefault()).UserName;
@@ -1047,8 +1083,14 @@ switches:
             NotifySaveData();
         }
 
+        /// <summary>
+        /// Adds a user to the auto shout table.
+        /// </summary>
+        /// <param name="UserName">The username to add, duplicates are not added.</param>
         public void PostNewAutoShoutUser(string UserName)
         {
+
+        // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding user {UserName} to the auto shout-out listing.");
 #endif
@@ -1063,6 +1105,13 @@ switches:
             }
         }
 
+        /// <summary>
+        /// Combine two user names, in the case of a user visits the channel for awhile, changes their name, and they want to update their progress across user names.
+        /// </summary>
+        /// <param name="CurrUser">The user receiving all of the user data.</param>
+        /// <param name="SourceUser">The user containing all of the stats to migrate.</param>
+        /// <param name="platform">The source platform for these users, to distinguish unique user names per streaming platform.</param>
+        /// <returns></returns>
         public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
         {
             bool success = false;
@@ -1659,6 +1708,13 @@ switches:
 
         #region Media Overlay Service
 
+        /// <summary>
+        /// Retrieve any overlay actions saved to the database - as the streamer setup for use during a stream.
+        /// </summary>
+        /// <param name="overlayType">The type of the overlay source. e.g. channel points, commands - StreamerBotLib.Enums.Overlay.Enums.OverlayTickerItem</param>
+        /// <param name="overlayAction">The name of the overlay type action for the specific overlay to invoke.</param>
+        /// <param name="username">A username if an overlay action is based on a certain user.</param>
+        /// <returns>A collection of found OverlayActions matching the parameter criteria.</returns>
         public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
         {
             lock (GUIDataManagerLock.Lock)
@@ -1675,10 +1731,17 @@ switches:
                     }
                 }
 
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Found {result.Count} Overlay actions in the database matching the Type {overlayType} and Action {overlayAction}.");
+
+
                 return result;
             }
         }
 
+        /// <summary>
+        /// Retrieve all Ticker Items from the OverlayTicker table
+        /// </summary>
+        /// <returns>A list collection of ticker items.</returns>
         public List<TickerItem> GetTickerItems()
         {
             lock (GUIDataManagerLock.Lock)
@@ -1689,6 +1752,11 @@ switches:
             }
         }
 
+        /// <summary>
+        /// Post an update to an OverlayTicker item, either updates an existing data row or adds a new row if ticker data doesn't exist.
+        /// </summary>
+        /// <param name="item">The OverlayTickerItem enum name for the ticker to add or replace.</param>
+        /// <param name="name">The username to update for the ticker item.</param>
         public void UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
             lock (GUIDataManagerLock.Lock)

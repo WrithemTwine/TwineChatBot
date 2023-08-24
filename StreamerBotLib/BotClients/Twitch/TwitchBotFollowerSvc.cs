@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -96,7 +97,7 @@ namespace StreamerBotLib.BotClients.Twitch
             return await FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
         }
 
-        public async Task<List<Follow>> GetAllFollowersAsync()
+        public async Task<List<ChannelFollower>> GetAllFollowersAsync()
         {
             return await FollowerService.GetAllFollowersAsync(TwitchChannelName);
         }

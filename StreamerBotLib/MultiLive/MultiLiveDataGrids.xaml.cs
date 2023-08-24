@@ -81,7 +81,7 @@ namespace StreamerBotLib.MultiLive
             }
         }
 
-        private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        private void DG_MultiEdit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (sender.GetType() == typeof(DataGrid))
             {

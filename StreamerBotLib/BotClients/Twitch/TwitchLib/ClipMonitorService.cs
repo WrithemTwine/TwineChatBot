@@ -94,7 +94,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     }
                 }
 
-                if (latestClips.Count == 0) { continue; }
+                if (latestClips == null || latestClips.Count == 0) { continue; }
 
                 if (!KnownClips.TryGetValue(channel, out List<Clip> Clipsknown))
                 {

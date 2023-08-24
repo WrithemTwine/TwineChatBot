@@ -11,7 +11,9 @@
         xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="750" Width="1100"
-        Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True">
+        Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        Background="{DynamicResource FullBackground}"
+    >
     <Window.Resources>
         <ResourceDictionary>
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
@@ -22,6 +24,7 @@
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
+
             <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
                 <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
                 <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
@@ -34,48 +37,18 @@
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
             </ContextMenu>
 
+            <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
+                <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
+            </Style>
+
             <ResourceDictionary.MergedDictionaries>
+                <!-- maintain this order of merged dictionaries (or update backend code) as "StreamerBotThemes.cs" refers to these merged dictionaries in array order -->
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
-        <DockPanel.Resources>
-            <Style TargetType="{x:Type DockPanel}">
-                <Setter Property="Margin" Value="5" />
-            </Style>
-            <Style TargetType="{x:Type RadioButton}">
-                <Setter Property="Margin" Value="10,5,0,5" />
-            </Style>
-            <Style TargetType="{x:Type TabItem}">
-                <Setter Property="MinWidth" Value="50" />
-                <Setter Property="Height" Value="30" />
-            </Style>
-            <Style TargetType="{x:Type GroupBox}">
-                <Setter Property="Margin" Value="5" />
-                <Setter Property="Width" Value="230" />
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="BorderBrush" Value="#FF212D34" />
-            </Style>
-            <Style TargetType="{x:Type CheckBox}">
-                <Setter Property="Margin" Value="5" />
-            </Style>
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="TextWrapping" Value="Wrap" />
-                <Setter Property="Padding" Value="5,0" />
-            </Style>
-            <Style TargetType="{x:Type DataGrid}">
-                <Setter Property="AlternationCount" Value="1" />
-                <Setter Property="AlternatingRowBackground" Value="#FFDBFFF4"/>
-                <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-                <Setter Property="AutoGenerateColumns" Value="True" />
-                <Setter Property="CanUserAddRows" Value="False" />
-                <Setter Property="CanUserDeleteRows" Value="True" />
-                <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
-                <Setter Property="IsReadOnly" Value="True" />
-            </Style>
-        </DockPanel.Resources>
-        <StatusBar DockPanel.Dock="Bottom" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
+        <StatusBar DockPanel.Dock="Bottom" Height="55" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
             <StatusBar.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal" />
@@ -83,41 +56,65 @@
             </StatusBar.Resources>
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
-                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" Visibility="Collapsed" Content="Beta" Foreground="MediumVioletRed" FontSize="16" FontWeight="DemiBold" />
-                    <Label x:Name="StatusBar_Label_Version" Padding="0"/>
+                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
+                           Visibility="Collapsed"
+                           FontSize="16" FontWeight="DemiBold">
+                        <TextBlock Foreground="{DynamicResource LabelBeta}">Beta</TextBlock>
+                    </Label>
+                    <Label x:Name="StatusBar_Label_Version" Content="Version Label" Padding="0"/>
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
-                    <Label Visibility="Visible" x:Name="Label_StreamStatusOff" FontWeight="ExtraBold" Content="Stream Offline" Height="Auto" Width="110" 
-                       BorderThickness="3" Foreground="Red" HorizontalContentAlignment="Center" BorderBrush="Red" />
-                    <Label Visibility="Collapsed" x:Name="Label_StreamStatusOn" FontWeight="ExtraBold" Content="Stream Online" Height="Auto" Width="110" 
-                       BorderThickness="3" Foreground="LimeGreen" HorizontalContentAlignment="Center" BorderBrush="LimeGreen" />
+                    <Label Visibility="Visible" x:Name="Label_StreamStatusOff"
+                           BorderThickness="3" HorizontalContentAlignment="Center"
+                           FontWeight="ExtraBold"
+                           Width="120"
+                           BorderBrush="{DynamicResource BrightStop}">
+                        <TextBlock Foreground="{DynamicResource BrightStop}">
+                            Stream Offline
+                        </TextBlock>
+                    </Label>
+                    <Label Visibility="Collapsed" x:Name="Label_StreamStatusOn"
+                           BorderThickness="3" HorizontalContentAlignment="Center"
+                           FontWeight="ExtraBold"
+                           Width="120"
+                           BorderBrush="{DynamicResource BrightGo}">
+                        <TextBlock Foreground="{DynamicResource BrightGo}">
+                            Stream Online
+                        </TextBlock>
+                    </Label>
                 </StackPanel>
             </StatusBarItem>
-
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
-                    <Label Padding="3,0" HorizontalAlignment="Center" ToolTip="All Users who visited the stream while online.">All Viewers:</Label>
-                    <Label Padding="3,0" HorizontalAlignment="Center" Content="{Binding CurrUserCount, FallbackValue=0, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                    <Label Padding="3,0" HorizontalAlignment="Center">
+                        <Label.ToolTip>All Users who visited the stream while online.
+                        </Label.ToolTip> All Viewers:
+                    </Label>
+                    <Label Padding="3,0" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding CurrUserCount, FallbackValue=0, Mode=OneWay, StringFormat=\{0:N0\}}" />
+                    </Label>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
-                <Button Click="StatusBar_Button_UpdateFollows_Click">
+                <Button Click="StatusBar_Button_UpdateFollows_Click" Background="{DynamicResource PartBackground}">
                     <StackPanel Orientation="Vertical">
                         <Label Padding="3,0" HorizontalAlignment="Center">
                             <Label.ToolTip>
-                                <TextBlock>Click here to refresh now. Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow.</TextBlock>
+                                Click here to refresh now. Use 'Options' to manage followers, including regular updates, does not update immediately for unfollow.
                             </Label.ToolTip>
-                            <Label.Content>Current Follows:</Label.Content>
+                            Current Follows:
                         </Label>
-                        <Label Padding="3,0" HorizontalAlignment="Center" Content="{Binding CurrFollowers, FallbackValue=0, NotifyOnSourceUpdated=True, StringFormat=\{0:N\}}" />
+                        <Label Padding="3,0" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding CurrFollowers, FallbackValue=0, StringFormat=\{0:N0\}}" Background="{x:Null}"/>
+                        </Label>
                     </StackPanel>
                 </Button>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -131,21 +128,21 @@
                     </StackPanel>
                 </StackPanel>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem>
                 <StackPanel>
                     <Label ToolTip="The earliest token expiration date.">Token Exp:</Label>
                     <Label x:Name="StatusBarItem_TokenDate"  />
                 </StackPanel>
             </StatusBarItem>
-            <Separator Width="1" />
+            <Separator />
             <StatusBarItem Padding="0,0,0,0">
                 <Button Name="Button_RefreshCategory" Grid.Column="0" 
                         HorizontalAlignment="Left" VerticalAlignment="Center" 
-                        Padding="0" Click="Button_RefreshCategory_Click" ToolTip="Click to refresh" Background="#FFDEF4FF">
+                        Padding="0" Click="Button_RefreshCategory_Click" ToolTip="Click to refresh">
                     <StackPanel>
                         <Label>Current Category:</Label>
-                        <TextBlock x:Name="TextBlock_CurrentCategory" Grid.Column="2" VerticalAlignment="Center" TextWrapping="Wrap" Padding="0,0,5,0"/>
+                        <Label x:Name="TextBlock_CurrentCategory" Grid.Column="2" VerticalAlignment="Center" Padding="0,0,5,0"/>
                     </StackPanel>
                 </Button>
             </StatusBarItem>
@@ -168,50 +165,66 @@
                                     <GroupBox Header="LiveStream Monitor Service">
                                         <StackPanel Orientation="Vertical">
                                             <WrapPanel>
-                                                <Label x:Name="Label_TwitchMultiLive_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock>The Twitch LiveStream Monitor Client is started!</TextBlock>
+                                                <Label x:Name="Label_TwitchMultiLive_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">The Twitch LiveStream Monitor Client is started!</TextBlock>
                                                 </Label>
-                                                <Label x:Name="Label_TwitchMultiLive_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock>The Twitch LiveStream Monitor Client is stopped!</TextBlock>
+                                                <Label x:Name="Label_TwitchMultiLive_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Twitch LiveStream Monitor Client is stopped!</TextBlock>
                                                 </Label>
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
                                                     <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStart" Content="Start Live Monitor Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked"/>
-                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStop" Content="Stop Live Monitor Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked"/>
-                                                <Label x:Name="Label_TwitchMultiLive_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                    <TextBlock>The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked">
+                                                    <TextBlock>Start Live Monitor Bot</TextBlock>
+                                                </RadioButton>
+                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked">
+                                                    <TextBlock>Stop Live Monitor Bot</TextBlock>
+                                                </RadioButton>
+                                                <Label x:Name="Label_TwitchMultiLive_Error" Visibility="Collapsed" Height="Auto">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Twitch MultiLive Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                                 </Label>
                                             </WrapPanel>
                                             <GroupBox x:Name="GroupBox_Bots_Starts_MultiLive" Header="MultiLive Monitoring Bot" Width="Auto" Visibility="Collapsed">
                                                 <WrapPanel Orientation="Vertical">
-                                                    <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Foreground="Maroon" Visibility="Collapsed">
-                                                        <TextBlock>The MultiUserLiveBot is active, single channel activated.</TextBlock>
+                                                    <Label x:Name="Label_LiveStream_MultiLiveActiveMsg" Visibility="Collapsed">
+                                                        <TextBlock Foreground="{DynamicResource Stop}">The MultiUserLiveBot is active, single channel activated.</TextBlock>
                                                     </Label>
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchMultiLiveAutoStart}">
                                                         <TextBlock>Auto-start when LiveMonitor starts</TextBlock>
                                                     </CheckBox>
-                                                    <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" Content="Start Bot" IsEnabled="False" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp"/>
-                                                    <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" Content="Stop Bot"  IsChecked="True" IsEnabled="False" Width="70" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp"/>
+                                                    <RadioButton x:Name="Radio_MultiLiveTwitch_StartBot" IsEnabled="False" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp">
+                                                        <TextBlock>Start Bot</TextBlock>
+                                                    </RadioButton>
+                                                    <RadioButton x:Name="Radio_MultiLiveTwitch_StopBot" IsChecked="True" IsEnabled="False" HorizontalAlignment="Left" Checked="BC_MultiLiveTwitch_BotOp">
+                                                        <TextBlock>Stop Bot</TextBlock>
+                                                    </RadioButton>
                                                 </WrapPanel>
                                             </GroupBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Follower Service">
                                         <WrapPanel>
-                                            <Label x:Name="Label_TwitchFollow_Start" Foreground="Green" Visibility="Collapsed">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is started!"/></TextBlock>
+                                            <Label x:Name="Label_TwitchFollow_Start" Visibility="Collapsed">
+                                                <TextBlock Foreground="{DynamicResource Go}">The Twitch Follower Client is started!</TextBlock>
                                             </Label>
-                                            <Label x:Name="Label_TwitchFollow_Stop" Foreground="Maroon" Visibility="Visible">
-                                                <TextBlock TextWrapping="Wrap"><Run Text="The Twitch Follower Client is stopped!"/></TextBlock>
+                                            <Label x:Name="Label_TwitchFollow_Stop" Visibility="Visible">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Follower Client is stopped!</TextBlock>
                                             </Label>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerSvcAutoStart}">
                                                 <TextBlock TextWrapping="Wrap"><Run Text="Auto-start when application starts"/></TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStart" Content="Start Follower Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStop" Content="Stop Follower Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                            <Label x:Name="Label_TwitchFollow_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                <TextBlock>The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" >
+                                                <TextBlock>
+                                                    Start Follower Service Bot
+                                                </TextBlock>
+                                            </RadioButton>
+                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                                <TextBlock>
+                                                    Stop Follower Service Bot
+                                                </TextBlock>
+                                            </RadioButton>
+                                            <Label x:Name="Label_TwitchFollow_Error" Visibility="Collapsed" Height="Auto">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Follow Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
                                             <GroupBox Header="Activate Per Online Status" Width="Auto">
                                                 <StackPanel>
@@ -219,7 +232,7 @@
                                                         <TextBlock>Connect bot when stream is online</TextBlock>
                                                     </CheckBox>
                                                     <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchFollowerDisconnectOffline}">
-                                                        <TextBlock>Discconnect bot when stream is offline</TextBlock>
+                                                        <TextBlock>Disconnect bot when stream is offline</TextBlock>
                                                     </CheckBox>
                                                 </StackPanel>
                                             </GroupBox>
@@ -227,19 +240,23 @@
                                     </GroupBox>
                                     <GroupBox DockPanel.Dock="Top" x:Name="BC_T_groupBox" Header="ChatBot">
                                         <WrapPanel Orientation="Horizontal" >
-                                            <Label x:Name="Label_TwitchChat_Start" Foreground="Green" Visibility="Collapsed">
-                                                <TextBlock>The Twitch Chat Client is started!</TextBlock>
+                                            <Label x:Name="Label_TwitchChat_Start" Visibility="Collapsed">
+                                                <TextBlock Foreground="{DynamicResource Go}">The Twitch Chat Client is started!</TextBlock>
                                             </Label>
-                                            <Label x:Name="Label_TwitchChat_Stop" Foreground="Maroon" Visibility="Visible">
-                                                <TextBlock>The Twitch Chat Client is stopped!</TextBlock>
+                                            <Label x:Name="Label_TwitchChat_Stop" Visibility="Visible">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Chat Client is stopped!</TextBlock>
                                             </Label>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StartBot" Content="Start Chat Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown"  />
-                                            <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StopBot" Content="Stop Chat Service Bot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                            <Label x:Name="Label_TwitchChat_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                <TextBlock>The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                            <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StartBot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" >
+                                                <TextBlock>Start Chat Service Bot</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StopBot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" >
+                                                <TextBlock>Stop Chat Service Bot</TextBlock>
+                                            </RadioButton>
+                                            <Label x:Name="Label_TwitchChat_Error" Visibility="Collapsed" Height="Auto">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Chat Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
                                             <GroupBox Header="Activate Per Online Status" Width="Auto">
                                                 <StackPanel>
@@ -255,19 +272,23 @@
                                     </GroupBox>
                                     <GroupBox Header="Clip Service">
                                         <WrapPanel>
-                                            <Label x:Name="Label_TwitchClip_Start" Foreground="Green" Visibility="Collapsed">
-                                                <TextBlock>The Twitch Clip Client is started!</TextBlock>
+                                            <Label x:Name="Label_TwitchClip_Start" Visibility="Collapsed">
+                                                <TextBlock Foreground="{DynamicResource Go}">The Twitch Clip Client is started!</TextBlock>
                                             </Label>
-                                            <Label x:Name="Label_TwitchClip_Stop" Foreground="Maroon" Visibility="Visible">
-                                                <TextBlock>The Twitch Clip Client is stopped!</TextBlock>
+                                            <Label x:Name="Label_TwitchClip_Stop" Visibility="Visible">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Clip Client is stopped!</TextBlock>
                                             </Label>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStart" Content="Start Clip Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStop" Content="Stop Clip Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                            <Label x:Name="Label_TwitchClip_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                <TextBlock>The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown">
+                                                <TextBlock>Start Clip Service Bot</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                                <TextBlock>Stop Clip Service Bot</TextBlock>
+                                            </RadioButton>
+                                            <Label x:Name="Label_TwitchClip_Error" Visibility="Collapsed" Height="Auto">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
                                             <GroupBox Header="Activate Per Online Status" Width="Auto">
                                                 <StackPanel>
@@ -287,17 +308,21 @@
                                                 <WrapPanel.ToolTip>
                                                     <TextBlock>The Twitch PubSub client establishes a constant connection with the server. For this reason, this service should be started and stopped only when it is needed.</TextBlock>
                                                 </WrapPanel.ToolTip>
-                                                <Label x:Name="Label_TwitchPubSub_Start" Foreground="Green" Visibility="Collapsed">
-                                                    <TextBlock>The Twitch PubSub Client is started!</TextBlock>
+                                                <Label x:Name="Label_TwitchPubSub_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">The Twitch PubSub Client is started!</TextBlock>
                                                 </Label>
-                                                <Label x:Name="Label_TwitchPubSub_Stop" Foreground="Maroon" Visibility="Visible">
-                                                    <TextBlock>The Twitch PubSub Client is stopped!</TextBlock>
+                                                <Label x:Name="Label_TwitchPubSub_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Twitch PubSub Client is stopped!</TextBlock>
                                                 </Label>
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchPubSubOnlineMode}" >
                                                     <TextBlock>Enable PubSub to start when Stream is Live and stop when Stream is not Live.</TextBlock>
                                                 </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" Content="Start PubSub Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" Content="Stop PubSub Service Bot"  IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
+                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown">
+                                                    <TextBlock>Start PubSub Service Bot</TextBlock>
+                                                </RadioButton>
+                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                                    <TextBlock>Stop PubSub Service Bot</TextBlock>
+                                                </RadioButton>
                                             </WrapPanel>
                                             <GroupBox Width="Auto" Header="Services">
                                                 <WrapPanel Orientation="Vertical">
@@ -313,19 +338,23 @@
                                     </GroupBox>
                                     <GroupBox Header="Media Overlay Service">
                                         <WrapPanel>
-                                            <Label x:Name="Label_OverlayService_Start" Foreground="Green" Visibility="Collapsed">
-                                                <TextBlock>The Media Overlay Service is started!</TextBlock>
+                                            <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
+                                                <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
                                             </Label>
-                                            <Label x:Name="Label_OverlayService_Stop" Foreground="Maroon" Visibility="Visible">
-                                                <TextBlock>The Media Overlay Service is stopped!</TextBlock>
+                                            <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
                                             </Label>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStart" Content="Start Overlay Service Bot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" />
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStop" Content="Stop Overlay Service Bot" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" />
-                                            <Label x:Name="Label_OverlayServer_Error" Foreground="Maroon" Visibility="Collapsed" Height="Auto">
-                                                <TextBlock>The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown">
+                                                <TextBlock>Start Overlay Service Bot</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                                <TextBlock>Stop Overlay Service Bot</TextBlock>
+                                            </RadioButton>
+                                            <Label x:Name="Label_OverlayServer_Error" Visibility="Collapsed" Height="Auto">
+                                                <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
                                             </Label>
                                             <GroupBox Width="Auto" Header="Activate Per Online Status">
                                                 <WrapPanel Orientation="Vertical">
@@ -344,10 +373,10 @@
                     </TabItem>
                     <TabItem  Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
                         <TabItem.Resources>
-                            <Style TargetType="Label">
+                            <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
                                 <Setter Property="Width" Value="120" />
                             </Style>
-                            <Style TargetType="TextBox">
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                                 <Setter Property="Width" Value="250" />
                                 <Setter Property="Height" Value="Auto" />
                                 <Setter Property="TextWrapping" Value="Wrap" />
@@ -357,7 +386,10 @@
 
                             <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
 
-                            <Expander  DockPanel.Dock="Top" Header="{DynamicResource CredentialsHeader}" IsExpanded="{Binding CredentialsHelpExpanded, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200" BorderBrush="Black" >
+                            <Expander DockPanel.Dock="Top" IsExpanded="{Binding CredentialsHelpExpanded, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
+                                <Expander.Header>
+                                    <TextBlock Text="{DynamicResource CredentialsHeader}"/>
+                                </Expander.Header>
                                 <FlowDocumentScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                                     <FlowDocument FontSize="12" PagePadding="5" >
                                         <Section>
@@ -438,7 +470,7 @@
                                                             <Paragraph>
                                                                 <Run Text="{DynamicResource CredentialsTwitchPasteScopes}"/>
                                                                 <LineBreak />
-                                                                <Rectangle Fill="Black" Width="400" Height="3" HorizontalAlignment="Center" />
+                                                                <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
                                                                 <InlineUIContainer>
                                                                     <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot">
                                                                         <Label Width="Auto">Bot account not equal to Streamer Channel - Bot Token Scopes</Label>
@@ -458,7 +490,7 @@
                                                                                  Text="{DynamicResource CredentialsTwitchScopesOauthSame}"/>
                                                                     </StackPanel>
                                                                 </InlineUIContainer>
-                                                                <Rectangle Fill="Black" Width="400" Height="3" HorizontalAlignment="Center" />
+                                                                <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
                                                                 <LineBreak />
                                                                 <Run Text="{DynamicResource CredentialsTwitchScopesExplained}"/>
                                                             </Paragraph>
@@ -500,7 +532,10 @@
                                                 <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
                                                 <Label x:Name="Label_Twitch_RefreshDate" Width="Auto" Content="{Binding TwitchRefreshDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}"  />
                                             </StackPanel>
-                                            <Expander x:Name="Expander_Credentials" Header="Credentials (Click me)" ExpandDirection="Down" IsExpanded="False">
+                                            <Expander x:Name="Expander_Credentials" ExpandDirection="Down" IsExpanded="False">
+                                                <Expander.Header>
+                                                    <TextBlock Text="Credentials (Click me)" />
+                                                </Expander.Header>
                                                 <StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Client Id" />
@@ -534,7 +569,12 @@
                                             </StackPanel>
                                             <TextBlock>Current Bot Features requiring same {Bot and Streamer} Client ID</TextBlock>
                                             <ListView ItemsSource="{DynamicResource CredentialsTwitchStreamerFeatures}" />
-                                            <Expander Header="Streamer Channel Specific Credentials (Click Me)">
+                                            <Expander>
+                                                <Expander.Header>
+                                                    <TextBlock>
+                                                        Streamer Channel Specific Credentials (Click Me)
+                                                    </TextBlock>
+                                                </Expander.Header>
                                                 <StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Client Id:"/>
@@ -596,10 +636,41 @@
                     </Style>
                 </TabItem.Resources>
                 <TabControl DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                    <TabItem Header="Theme">
+                        <ScrollViewer>
+                            <DockPanel>
+                                <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
+                                    <GroupBox Header="Select App Theme">
+                                        <StackPanel Orientation="Vertical">
+                                            <RadioButton IsChecked="{Binding ThemeLight}" Checked="RadioButton_Theme_Checked">
+                                                <TextBlock>Light Theme</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding ThemeDark}" Checked="RadioButton_Theme_Checked">
+                                                <TextBlock>Dark Theme</TextBlock>
+                                            </RadioButton>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </WrapPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </TabItem>
                     <TabItem Header="Streamer Bot">
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <DockPanel Margin="10" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
+
+                                    <GroupBox Header="Bot Management - Debug Mode">
+                                        <StackPanel>
+                                            <TextBlock>Log the following functionality:</TextBlock>
+                                            <CheckBox IsChecked="{Binding EnableDebugLogOverlays}">
+                                                <TextBlock>Overlay Bot logging</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding EnableDebugTwitchPubSubBot}">
+                                                <TextBlock>Twitch Bot PubSub logging</TextBlock>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+
                                     <GroupBox Header="Bot Management - App Interface">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding PostMultiLive}">
@@ -615,7 +686,12 @@
                                                 </CheckBox.ToolTip>
                                                 <TextBlock>Enable 'Clear Data' buttons.</TextBlock>
                                             </CheckBox>
-
+                                            <CheckBox IsChecked="{Binding EnableManageDataOptions}" Checked="SetVisibility" Unchecked="SetVisibility">
+                                                <CheckBox.ToolTip>
+                                                    Shows or Hides "Data Management" options to prevent accidental clicking.
+                                                </CheckBox.ToolTip>
+                                                <TextBlock>Enable "Data Management" Options</TextBlock>
+                                            </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Bot Management - Tabs">
@@ -877,7 +953,7 @@
                                             </StackPanel>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Data Management">
+                                    <GroupBox x:Name="GroupBox_ManageDataOptions" Header="Data Management">
                                         <StackPanel>
                                             <Label>
                                                 <TextBlock Foreground="Red">*Unchecking will remove data from database.*</TextBlock>
@@ -922,9 +998,15 @@
                                     <GroupBox Header="Twitch - Format Bot messages">
                                         <StackPanel>
                                             <Label Content="/me changes message to all italics" />
-                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}" Content="{DynamicResource Disabled}" />
-                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}" Content="Enable /me for all commands" />
-                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}" Content="Enable /me per command" />
+                                            <RadioButton x:Uid="Disabled" IsChecked="{Binding MsgNoMe, Mode=TwoWay}">
+                                                <Label  Content="{DynamicResource Disabled}" />
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding MsgInsertMe, Mode=TwoWay}">
+                                                <Label Content="Enable /me for all commands" />
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding MsgPerComMe, Mode=TwoWay}">
+                                                <Label Content="Enable /me per command" />
+                                            </RadioButton>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Follow Options">
@@ -936,13 +1018,15 @@
                                                 <TextBlock TextWrapping="Wrap">Enable action to remove non-followers from the Follower list when bot starts.</TextBlock>
                                             </CheckBox>
 
-                                            <CheckBox x:Name="CheckBox_TwitchFollower_LimitMsgs" IsChecked="{Binding TwitchFollowerEnableMsgLimit}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">Enable Limited Follower Messages</CheckBox>
+                                            <CheckBox x:Name="CheckBox_TwitchFollower_LimitMsgs" IsChecked="{Binding TwitchFollowerEnableMsgLimit}" Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
+                                                <TextBlock>Enable Limited Follower Messages</TextBlock>
+                                            </CheckBox>
 
                                             <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count" Orientation="Vertical" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
                                                 <TextBlock>Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</TextBlock>
 
                                                 <StackPanel Orientation="Horizontal">
-                                                    <Label>Choose (1 to 100):</Label>
+                                                    <TextBlock>Choose (1 to 100):</TextBlock>
                                                     <TextBox Width="40" Height="18" Text="{Binding TwitchFollowerMsgLimit, Mode=TwoWay}" HorizontalContentAlignment="Center" 
                                                              LostFocus="TextBox_Follower_LostFocus" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
                                                               />
@@ -1014,14 +1098,16 @@
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">
-                            <ListView DockPanel.Dock="Right" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" ItemsSource="{Binding Collection}" >
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" />
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
+                            <DockPanel>
+                                <ListView DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" ItemsSource="{Binding Collection}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" >
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150" />
+                                            <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="650" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
                         </TabItem>
                         <TabItem Header="Discord">
                             <DockPanel LastChildFill="True">
@@ -1098,7 +1184,7 @@
                                         <DockPanel x:Name="DockPanel_UserData_Users" Grid.Row="0" Grid.Column="0">
                                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                                                 <Label Content="User List"/>
-                                                <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="120" Margin="70,0,15,0" Click="Button_ClearNonFollowers_Click">
+                                                <Button x:Name="Button_ClearNonFollowers" Content="Clear Non-Followers" Height="20" Width="130" Margin="70,0,15,0" Click="Button_ClearNonFollowers_Click">
                                                     <Button.ToolTip>
                                                         <TextBlock>Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</TextBlock>
                                                     </Button.ToolTip>
@@ -1109,7 +1195,7 @@
                                         </DockPanel>
 
                                         <DockPanel x:Name="DockPanel_UserData_Followers" Grid.Row="0" Grid.Column="2">
-                                            <Label Content="Follower List" DockPanel.Dock="Top" />
+                                            <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
                                             <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                                         </DockPanel>
                                     </Grid>
@@ -1172,10 +1258,10 @@
 
                                         <DockPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}">
                                             <DockPanel.Resources>
-                                                <Style TargetType="Label">
-                                                    <Setter Property="Width" Value="160" />
+                                                <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                                                    <Setter Property="Width" Value="180" />
                                                 </Style>
-                                                <Style TargetType="TextBox">
+                                                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="Width" Value="250"/>
                                                     <Setter Property="Height" Value="18" />
                                                 </Style>
@@ -1199,8 +1285,10 @@
                                                 </StackPanel>
                                             </GroupBox>
                                             <StackPanel DockPanel.Dock="Top" Margin="5" Orientation="Horizontal">
-                                                <CheckBox  Content="Allow more than 1 entry" IsChecked="{Binding GiveawayMultiUser}" />
-                                                <Label Margin="50,0,0,0" Width="Auto" Content="Max Entries" />
+                                                <CheckBox IsChecked="{Binding GiveawayMultiUser}" >
+                                                    <Label Content="Allow more than 1 entry" />
+                                                </CheckBox>
+                                                <Label Margin="50,0,0,0" VerticalAlignment="Center" Width="Auto" Content="Max Entries" />
                                                 <TextBox Width="40" Text="{Binding GiveawayMaxEntries}" ToolTip="Can be changed during giveaway, lowered will remove excess entrants." HorizontalContentAlignment="Center"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -1249,11 +1337,11 @@
                                             <ListView DockPanel.Dock="Top" x:Name="listView" Width="300" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayCollection}">
                                                 <ListView.View>
                                                     <GridView>
-                                                        <GridViewColumn Header="Order" Width="50" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                        <GridViewColumn Header="Order" Width="70" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, 
                                          AncestorType={x:Type ListViewItem}}, 
                                          Converter={StaticResource IndexConverter}}"
                                                                         />
-                                                        <GridViewColumn Header="Entrant" Width="220" DisplayMemberBinding="{Binding Mode=OneWay}" />
+                                                        <GridViewColumn Header="Entrant" Width="200" DisplayMemberBinding="{Binding Mode=OneWay}" />
                                                     </GridView>
                                                 </ListView.View>
                                             </ListView>
@@ -1295,7 +1383,7 @@
                                 <TabItem Header="Help">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock><Run Text="The 'BuiltInCommands' are those established within the bot."/><LineBreak /><Run Text="The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. &quot;Visit me on Twitter at: http://wwww.twitter.com/myuser&quot;. The command will show all socials except messages that are blank or the default 'Social media url here'."/><LineBreak /><LineBreak /><Run Text="The variables within message to format a custom response:"/><LineBreak /><Run Text="#user: the user specific to the command; either 'command invoker' user or parameter to the command"/><LineBreak /><Run Text="#url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command"/><LineBreak /><Run Text="#fieldvalue: placeholder for the value from a table lookup"/><LineBreak /><Run Text="#currencyname: placeholder for the currency name - extracted from table"/><LineBreak /><Run Text="#currencyvalue: the value of a currency"/><LineBreak /><LineBreak /><Run Text="#date: the current date"/><LineBreak /><Run Text="#time: the current time"/><LineBreak /></TextBlock>
-                                        <Rectangle Width="800" Fill="Black" Stretch="Fill" Stroke="Black" Height="1" />
+                                        <Rectangle Width="800" Stretch="Fill" Height="1" />
                                         <StackPanel Orientation="Horizontal">
                                             <Label Content="Viewer Type Values: " />
                                             <TextBlock Text="{Binding ViewerTypesValues, Mode=OneWay, Source={StaticResource ViewerTypesString}}" FlowDirection="LeftToRight" ToolTip="ViewerTypes for Command access rights" VerticalAlignment="Center" />
@@ -1351,8 +1439,11 @@
                             <TabControl>
                                 <TabItem Header="Events">
                                     <DockPanel>
-                                <Expander DockPanel.Dock="Top" Header="Media Overlay Services!" DataContext="{Binding Source={x:Static s:Settings.Default}}" IsExpanded="{Binding MediaOverlayHelpExpand}">
-                                    <TextBlock>
+                                        <Expander DockPanel.Dock="Top" DataContext="{Binding Source={x:Static s:Settings.Default}}" IsExpanded="{Binding MediaOverlayHelpExpand}">
+                                            <Expander.Header>
+                                                <TextBlock>Media Overlay Services!</TextBlock>
+                                            </Expander.Header>
+                                            <TextBlock>
                                     Specify the duration in seconds,<LineBreak />
                                     Specify type: Channel Events (new Follows, Subs, etc), Commands (!sunrise, to show a sunrise picture/video, etc), Channel Points redeemed;<LineBreak />
                                     Specify the actual Action: Channel Events-Follow, Subscription, Gift Subscription, etc;<LineBreak />
@@ -1363,22 +1454,24 @@
                                         Supported video: .mp4, .webm, .ogg<LineBreak />
                                     <LineBreak />
                                     If you expect Channel Point Rewards and none are loaded, Twitch requires the streamer's credentials to access the channel point rewards list.
-                                    </TextBlock>
-                                </Expander>
-                                <GroupBox DockPanel.Dock="Top" Margin="4" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <CheckBox Content="Pause Alert Queue" Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                                            <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" />
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Label Content="{Binding MediaOverlayServer.MediaItems, Source={StaticResource AppServices}}" />
-                                            <Label Content=" Action items" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                </GroupBox>
-                                <DataGrid x:Name="DataGrid_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayService, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
-                            </DockPanel>
+                                            </TextBlock>
+                                        </Expander>
+                                        <GroupBox DockPanel.Dock="Top" Margin="4" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <CheckBox Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                                        <TextBlock>Pause Alert Queue</TextBlock>
+                                                    </CheckBox>
+                                                    <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <Label Content="{Binding MediaOverlayServer.MediaItems, Source={StaticResource AppServices}}" />
+                                                    <Label Content=" Action items" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <DataGrid x:Name="DataGrid_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayService, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                    </DockPanel>
                                 </TabItem>
                                 <TabItem Header="Ticker">
                                     <DockPanel>
@@ -1388,7 +1481,7 @@
 
                                     </DockPanel>
                                 </TabItem>
-                            </TabControl>                            
+                            </TabControl>
                         </TabItem>
                         <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
                             <TabControl>
@@ -1465,7 +1558,7 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Visibility="Visible" />
+                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Height="10" Visibility="Visible" />
                         <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Visible">
                             <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" />
                         </TabItem>
@@ -1486,8 +1579,8 @@
                                 <Setter Property="ContentTemplate" Value="{StaticResource AppStatTemplate}" />
                             </Style>
                         </TabItem.Resources>
-                        <ListView BorderBrush="#FF36373A" BorderThickness="2,2,1,2" Padding="5">
-                            <ListViewItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="#FF191717" />
+                        <ListView BorderBrush="{DynamicResource ForegroundText}" BorderThickness="2,2,1,2" Padding="5">
+                            <ListViewItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ForegroundText}" />
                             <ListViewItem Content="{Binding Path=Threads}" />
                             <ListViewItem Content="{Binding Path=ClosedThreads}" />
                             <ListViewItem Content="{Binding Path=Uptime}" />
@@ -1497,17 +1590,25 @@
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Width="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" DataContext="{Binding Source={x:Static s:Settings.Default}}">
-                                    <CheckBox IsChecked="{Binding LogBotStatus}" Content="Enable Bot Status Logging" Margin="3" ToolTip="Save this log - 'StatusLog.txt'"/>
-                                    <CheckBox IsChecked="{Binding LogExceptions}" Content="Enable TwineBot Exception Logging" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'"/>
+                                    <CheckBox IsChecked="{Binding LogBotStatus}" Margin="3" ToolTip="Save this log - 'StatusLog.txt'">
+                                        <TextBlock>
+                                            Enable Bot Status Logging
+                                        </TextBlock>
+                                    </CheckBox>
+                                    <CheckBox IsChecked="{Binding LogExceptions}" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'">
+                                        <TextBlock>
+                                            Enable TwineBot Exception Logging
+                                        </TextBlock>
+                                    </CheckBox>
                                 </StackPanel>
-                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Width="Auto" Background="#FFEEEEEE" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
+                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Width="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                             </DockPanel>
                         </GroupBox>
                     </TabItem>
                 </TabControl>
             </TabItem>
             <TabItem Header="Bot Chat">
-                <DockPanel>
+                <DockPanel LastChildFill="True">
                     <DockPanel LastChildFill="True" DockPanel.Dock="Left" Margin="0,0,10,0">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -1520,8 +1621,14 @@
                             <Label Grid.Row="1" Content="Click the 'remove' box next to the user name to remove from this list." HorizontalContentAlignment="Center" Grid.RowSpan="3" />
                             <GroupBox Grid.Row="2" Padding="10" Header="Join List Status"  >
                                 <StackPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
-                                    <RadioButton IsChecked="{Binding UserPartyStart, Mode=TwoWay}" >Start Join List</RadioButton>
-                                    <RadioButton IsChecked="{Binding UserPartyStop, Mode=TwoWay}" >Stop Join List</RadioButton>
+                                    <RadioButton IsChecked="{Binding UserPartyStart, Mode=TwoWay}" >
+                                        <TextBlock>Start Join List</TextBlock>
+                                    </RadioButton>
+                                    <RadioButton IsChecked="{Binding UserPartyStop, Mode=TwoWay}" >
+                                        <TextBlock>
+                                        Stop Join List
+                                        </TextBlock>
+                                    </RadioButton>
                                 </StackPanel>
                             </GroupBox>
                             <ListView Grid.Row="3" x:Name="LV_JoinList" MaxWidth="500" DataContext="{Binding Source={StaticResource DataViews}}"
@@ -1550,7 +1657,7 @@
                         </ListView>
                     </DockPanel>
                     <DockPanel LastChildFill="True" DockPanel.Dock="Right"  Background="#FF2B2929" >
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Background="White" Width="410">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5" Width="410">
                             <Button Padding="10,4" Margin="10" Content="Pop-Out Chat Box" Click="PopOutChatButton_Click" Height="26" Opacity="1" IsEnabled="False" />
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Label Padding="0" Content="Pop-out Opacity"/>
@@ -1582,7 +1689,7 @@
                                 <Label DockPanel.Dock="Top" Content="The Wiki Documentation to help use the Bot" />
                                 <Border>
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left"  Width="50" Height="29" Click="WebView2Reload_Click" />
+                                        <Button DockPanel.Dock="Top" Content="Reload"  Width="59" Height="29" Click="WebView2Reload_Click" HorizontalAlignment="Left" />
                                         <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/wiki"/>
                                     </DockPanel>
                                 </Border>

@@ -1,5 +1,6 @@
 ﻿#if UsePipes
 #define UtilizePipeIPC // use the NamedPipe Server/Client mechanism
+using System.Reflection;
 #else
 #define UseGUIDLL
 #endif
@@ -14,7 +15,6 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 
 namespace StreamerBotLib.BotClients
