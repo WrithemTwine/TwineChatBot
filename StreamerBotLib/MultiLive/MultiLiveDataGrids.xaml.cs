@@ -88,19 +88,19 @@ namespace StreamerBotLib.MultiLive
                 bool FoundAddEdit = ((DataGrid)sender).Name == "DG_Multi_WebHooks" || (((DataGrid)sender).Name == "DG_Multi_ChannelNames" && MultiLiveData.GetMonitorChannelCount() < MaxChannelCount);
                 bool FoundIsEnabled = MultiLiveData.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName, "IsEnabled");
 
-                foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
+                foreach (var M in ((ContextMenu)Resources["DataGrid_Multi_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
                     {
                         switch (((MenuItem)M).Name)
                         {
-                            case "DataGridContextMenu_AddItem":
+                            case "DataGridContextMenu_Multi_AddItem":
                                 ((MenuItem)M).IsEnabled = FoundAddEdit;
                                 break;
-                            case "DataGridContextMenu_DeleteItem":
+                            case "DataGridContextMenu_Multi_DeleteItem":
                                 ((MenuItem)M).IsEnabled = true;
                                 break;
-                            case "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems":
+                            case "DataGridContextMenu_Multi_EnableItems" or "DataGridContextMenu_Multi_DisableItems":
                                 ((MenuItem)M).IsEnabled = FoundIsEnabled;
                                 break;
                         }

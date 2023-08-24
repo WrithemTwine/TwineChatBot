@@ -314,7 +314,7 @@ namespace StreamerBotLib.Systems
         {
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
-            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
+            OnProcessCommand( result, multi);
         }
 
         /// <summary>
@@ -635,6 +635,17 @@ namespace StreamerBotLib.Systems
             {
                 AutoShoutUsers();
             }
+            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
+            {
+                if (arglist.Count != 1)
+                {
+                    result = cmdrow.Usage;
+                }
+                else
+                {
+                    GamePlayBlackJack(cmdrow, User, Convert.ToInt32(arglist[0]));
+                }
+            }
             else
             {
                 string paramvalue = cmdrow.AllowParam
@@ -823,7 +834,10 @@ namespace StreamerBotLib.Systems
                         {
                             output = FormatData.FormatTimes((DateTime)querydata);
                         }
-                        else if (querydata.GetType() == typeof(int))
+                        else if (querydata.GetType() == typeof(int) || querydata.GetType() == typeof(double))
+                        {
+                            output = ((double)querydata).ToString("N2");
+                        } else
                         {
                             output = querydata.ToString();
                         }

@@ -133,7 +133,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
             }
 
-            StatusLog += $@"{e.DateTime.ToString(CultureInfo.CurrentCulture)} {e.Data}
+            StatusLog += $@"{e.DateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {e.Data}
 ";
 
             if (OptionFlags.LogBotStatus)

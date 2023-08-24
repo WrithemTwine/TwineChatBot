@@ -97,6 +97,123 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to blackjack.
+        /// </summary>
+        internal static string blackjack {
+            get {
+                return ResourceManager.GetString("blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You made BlackJack 21!.
+        /// </summary>
+        internal static string BlackJack21Win {
+            get {
+                return ResourceManager.GetString("BlackJack21Win", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops, you went over 21!.
+        /// </summary>
+        internal static string BlackJackBust {
+            get {
+                return ResourceManager.GetString("BlackJackBust", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to you have #cards, totaling #value..
+        /// </summary>
+        internal static string BlackJackCardMessage {
+            get {
+                return ResourceManager.GetString("BlackJackCardMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to hit (another card) ? type &apos;#hit&apos; or &apos;#stay&apos;.
+        /// </summary>
+        internal static string BlackJackHit {
+            get {
+                return ResourceManager.GetString("BlackJackHit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House busts over 21..
+        /// </summary>
+        internal static string BlackJackHouseBusts {
+            get {
+                return ResourceManager.GetString("BlackJackHouseBusts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House has #cards, totaling #value..
+        /// </summary>
+        internal static string BlackJackHouseCardMsg {
+            get {
+                return ResourceManager.GetString("BlackJackHouseCardMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House has 21..
+        /// </summary>
+        internal static string BlackJackHouseHits21 {
+            get {
+                return ResourceManager.GetString("BlackJackHouseHits21", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House stands..
+        /// </summary>
+        internal static string BlackJackHouseStands {
+            get {
+                return ResourceManager.GetString("BlackJackHouseStands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The house wins..
+        /// </summary>
+        internal static string BlackJackHouseWin {
+            get {
+                return ResourceManager.GetString("BlackJackHouseWin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player not registered..
+        /// </summary>
+        internal static string BlackJackNoPlayer {
+            get {
+                return ResourceManager.GetString("BlackJackNoPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The payout is #payout..
+        /// </summary>
+        internal static string BlackJackPayout {
+            get {
+                return ResourceManager.GetString("BlackJackPayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You beat the house!.
+        /// </summary>
+        internal static string BlackJackWinOverHouse {
+            get {
+                return ResourceManager.GetString("BlackJackWinOverHouse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to bot.
         /// </summary>
         internal static string bot {
@@ -592,6 +709,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to hit.
+        /// </summary>
+        internal static string hit {
+            get {
+                return ResourceManager.GetString("hit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hosting.
         /// </summary>
         internal static string host {
@@ -723,6 +849,15 @@ namespace StreamerBotLib.Culture {
         internal static string MsgBits {
             get {
                 return ResourceManager.GetString("MsgBits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user started a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join the game and wager currency! The House stands at #housestand or higher. The House #ties all ties. Then a check if the House hit 21, then ask each player if you want to &apos;#hit&apos; for a card, or &apos;#stay&apos;. No answer means a &apos;#stay&apos;. Player&apos;s turn ends at no answer, 21, or busted. Payouts at the end of the game..
+        /// </summary>
+        internal static string Msgblackjack {
+            get {
+                return ResourceManager.GetString("Msgblackjack", resourceCulture);
             }
         }
         
@@ -1240,11 +1375,20 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -p:Mod -use:!approval &lt;item number&gt;.
+        ///   Looks up a localized string similar to -p:Mod -use:!approve &lt;item number&gt;.
         /// </summary>
         internal static string Paramapprove {
             get {
                 return ResourceManager.GetString("Paramapprove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -param:true -t:Currency -use:!blackjack &lt;wager&gt;, to start or enter the game!.
+        /// </summary>
+        internal static string Paramblackjack {
+            get {
+                return ResourceManager.GetString("Paramblackjack", resourceCulture);
             }
         }
         
@@ -1528,6 +1672,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to payout.
+        /// </summary>
+        internal static string payout {
+            get {
+                return ResourceManager.GetString("payout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to bit, bits.
         /// </summary>
         internal static string Pluralbits {
@@ -1722,6 +1875,15 @@ namespace StreamerBotLib.Culture {
         internal static string socials {
             get {
                 return ResourceManager.GetString("socials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to stay.
+        /// </summary>
+        internal static string stay {
+            get {
+                return ResourceManager.GetString("stay", resourceCulture);
             }
         }
         

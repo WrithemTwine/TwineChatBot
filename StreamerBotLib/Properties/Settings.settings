@@ -401,5 +401,23 @@
     <Setting Name="EnableManageDataOptions" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="GameBlackJackHouseStands" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">17</Value>
+    </Setting>
+    <Setting Name="GameBlackJackHouseWinsTie" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutDealt21" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutReach21" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">150</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutUnder21" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutMessage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">You won #value currency!</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

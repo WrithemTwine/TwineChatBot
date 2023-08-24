@@ -470,7 +470,11 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(LiveUser User)
         {
-            if ((User.UserName.ToLower(CultureInfo.CurrentCulture) != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture) && (User.UserName.ToLower(CultureInfo.CurrentCulture) != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
+             if ((User.UserName.ToLower(CultureInfo.CurrentCulture) 
+                != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture) 
+                && (User.UserName.ToLower(CultureInfo.CurrentCulture) 
+                != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture))) 
+                || OptionFlags.MsgWelcomeStreamer)
             {
                 string msg = SystemActions.CheckWelcomeUser(User.UserName);
 
@@ -611,6 +615,16 @@ namespace StreamerBotLib.Systems
             {
                 UserWelcomeMessage(User);
             }
+
+            #region Currency Games
+
+            if(SystemActions.BlackJackActive)
+            {
+                SystemActions.GameCheckBlackJackResponse(User, MsgReceived.Message);
+            }
+
+            #endregion
+
         }
 
         private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)

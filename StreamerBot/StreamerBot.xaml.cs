@@ -438,6 +438,7 @@ namespace StreamerBot
             CheckMessageBoxes();
             CheckBox_ManageData_Click(sender, new());
             CheckBox_TabifySettings_Clicked(this, new());
+            CheckDebug(this, new());
             SetVisibility(this, new());
 
             // TODO: research auto-refreshing token
@@ -1146,7 +1147,7 @@ namespace StreamerBot
             {
                 DebugStreamStarted = DateTime.Now.ToLocalTime();
 
-                string User = "";
+                string User = OptionFlags.TwitchChannelName;
                 string Category = "Microsoft Flight Simulator";
                 string ID = "7193";
                 string Title = "Testing a debug stream";

@@ -517,7 +517,12 @@ namespace StreamerBotLib.GUI.Windows
                 dataout.IsEnabled = !dataColumn.ReadOnly;
             }
 
-            if (LockedTable && (dataColumn.ColumnName is "Id" or "CmdName" or "AllowParam" or "Usage" or "lookupdata" or "table" or "key_field" or "data_field" or "currency_field" or "unit" or "action" or "top" or "Name"))
+            if (LockedTable && (dataColumn.ColumnName is
+                "Id" or "CmdName" or "AllowParam" 
+                or "Usage" or "lookupdata" or "table" 
+                or "key_field" or "data_field" 
+                or "unit" or "action" 
+                or "top" or "Name"))
             {
                 dataout.IsEnabled = false;
             }

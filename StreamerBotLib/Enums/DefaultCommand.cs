@@ -26,6 +26,7 @@
         raid, cancelraid,
         approve,
         mergeaccounts,
-        accountage
+        accountage,
+        blackjack
     }
 }

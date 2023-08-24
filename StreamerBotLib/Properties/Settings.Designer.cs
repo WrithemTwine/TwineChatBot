@@ -1618,5 +1618,77 @@ namespace StreamerBotLib.Properties {
                 this["EnableManageDataOptions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("17")]
+        public int GameBlackJackHouseStands {
+            get {
+                return ((int)(this["GameBlackJackHouseStands"]));
+            }
+            set {
+                this["GameBlackJackHouseStands"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool GameBlackJackHouseWinsTie {
+            get {
+                return ((bool)(this["GameBlackJackHouseWinsTie"]));
+            }
+            set {
+                this["GameBlackJackHouseWinsTie"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public int GameBlackJackPayoutDealt21 {
+            get {
+                return ((int)(this["GameBlackJackPayoutDealt21"]));
+            }
+            set {
+                this["GameBlackJackPayoutDealt21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("150")]
+        public int GameBlackJackPayoutReach21 {
+            get {
+                return ((int)(this["GameBlackJackPayoutReach21"]));
+            }
+            set {
+                this["GameBlackJackPayoutReach21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int GameBlackJackPayoutUnder21 {
+            get {
+                return ((int)(this["GameBlackJackPayoutUnder21"]));
+            }
+            set {
+                this["GameBlackJackPayoutUnder21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("You won #value currency!")]
+        public string GameBlackJackPayoutMessage {
+            get {
+                return ((string)(this["GameBlackJackPayoutMessage"]));
+            }
+            set {
+                this["GameBlackJackPayoutMessage"] = value;
+            }
+        }
     }
 }

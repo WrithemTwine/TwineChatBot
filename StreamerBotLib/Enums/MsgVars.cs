@@ -38,6 +38,13 @@
         Pluralminute,
         or,
         list,
-        usage
+        usage,
+        cards,
+        value,
+        ties,
+        housestand,
+        hit,
+        stay,
+        payout
     }
 }

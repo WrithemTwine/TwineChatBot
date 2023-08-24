@@ -344,7 +344,13 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                DataRow result = GetRows(_DataSource.Tables[row.Table], $"{row.Key_field}='{ParamValue}'").FirstOrDefault();
+                string Currency = "";
+                if(row.Table == _DataSource.Currency.TableName)
+                {
+                    Currency = $" AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{row.Currency_field}'";
+                }
+
+                DataRow result = GetRows(_DataSource.Tables[row.Table], $"{row.Key_field}='{ParamValue}'{Currency}").FirstOrDefault();
 
                 if (result == null)
                 {
@@ -372,11 +378,16 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the multi object query for command {row.CmdName}.");
 #endif
+            string Currency = "";
+            if (row.Table == _DataSource.Currency.TableName)
+            {
+                Currency = $" {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{row.Currency_field}'";
+            }
 
             List<Tuple<object, object>> outlist = null;
             lock (GUIDataManagerLock.Lock)
             {
-                outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
+                outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Filter: Currency, Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
                               select new Tuple<object, object>(d[row.Key_field], d[row.Data_field]));
             }
 
@@ -1285,6 +1296,25 @@ switches:
                             _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
                         }
                     }
+                }
+            }
+        }
+
+        public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
+        {
+            CurrencyRow currencyRow = (CurrencyRow) GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            return currencyRow.Value >= value;
+        }
+
+        public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
+        {
+            CurrencyRow currencyRow = (CurrencyRow)GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            CurrencyTypeRow currencyTypeRow = (CurrencyTypeRow)GetRow(_DataSource.CurrencyType, $"{_DataSource.CurrencyType.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            if (currencyRow != null && currencyTypeRow != null)
+            {
+                lock (_DataSource)
+                {
+                    currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + value, 2), currencyTypeRow.MaxValue);
                 }
             }
         }

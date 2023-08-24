@@ -20,6 +20,7 @@ namespace StreamerBotLib.Models
         public string Table { get; }
         public string Key_field { get; }
         public string Data_field { get; }
+        public string Currency_field { get; }
         public string Sort { get; }
 
         public CommandData(CommandsRow row)
@@ -42,6 +43,7 @@ namespace StreamerBotLib.Models
                     Table = ColHelper<string>(row.table);
                     Key_field = ColHelper<string>(row.key_field);
                     Data_field = ColHelper<string>(row.data_field);
+                    Currency_field = ColHelper<string>(row.currency_field);
                     Sort = ColHelper<string>(row.sort);
                 }
             }

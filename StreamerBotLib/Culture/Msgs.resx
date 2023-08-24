@@ -132,6 +132,57 @@
     <value>auto-hosting</value>
     <comment>MsgVar variable value</comment>
   </data>
+  <data name="blackjack" xml:space="preserve">
+    <value>blackjack</value>
+  </data>
+  <data name="BlackJack21Win" xml:space="preserve">
+    <value>You made BlackJack 21!</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackBust" xml:space="preserve">
+    <value>Oops, you went over 21!</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackCardMessage" xml:space="preserve">
+    <value>you have #cards, totaling #value.</value>
+    <comment>can be translated, leave "#cards" and "#value" within the message</comment>
+  </data>
+  <data name="BlackJackHit" xml:space="preserve">
+    <value>Do you want to hit (another card) ? type '#hit' or '#stay'</value>
+    <comment>can be translated, except '#hit' or '#stand' </comment>
+  </data>
+  <data name="BlackJackHouseBusts" xml:space="preserve">
+    <value>The House busts over 21.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackHouseCardMsg" xml:space="preserve">
+    <value>The House has #cards, totaling #value.</value>
+    <comment>can be translated, leave "#cards" and "#value" within the message</comment>
+  </data>
+  <data name="BlackJackHouseHits21" xml:space="preserve">
+    <value>The House has 21.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackHouseStands" xml:space="preserve">
+    <value>The House stands.</value>
+    <comment>can be translated, leave "#cards" and "#value" within the message</comment>
+  </data>
+  <data name="BlackJackHouseWin" xml:space="preserve">
+    <value>The house wins.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackNoPlayer" xml:space="preserve">
+    <value>Player not registered.</value>
+    <comment>can be translated.</comment>
+  </data>
+  <data name="BlackJackPayout" xml:space="preserve">
+    <value>The payout is #payout.</value>
+    <comment>can be translated, leave #payout</comment>
+  </data>
+  <data name="BlackJackWinOverHouse" xml:space="preserve">
+    <value>You beat the house!</value>
+    <comment>can be translated</comment>
+  </data>
   <data name="bot" xml:space="preserve">
     <value>bot</value>
     <comment>default command, can be translated</comment>
@@ -308,6 +359,9 @@
   <data name="Helpwinner" xml:space="preserve">
     <value>display winner of Giveaway event</value>
   </data>
+  <data name="hit" xml:space="preserve">
+    <value>hit</value>
+  </data>
   <data name="host" xml:space="preserve">
     <value>hosting</value>
   </data>
@@ -363,6 +417,9 @@
   <data name="MsgBits" xml:space="preserve">
     <value>Thanks #user for giving #bits!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="Msgblackjack" xml:space="preserve">
+    <value>#user started a game of BlackJack-21! For the next 1 minute, use "!blackjack &lt;amount&gt;" to join the game and wager currency! The House stands at #housestand or higher. The House #ties all ties. Then a check if the House hit 21, then ask each player if you want to '#hit' for a card, or '#stay'. No answer means a '#stay'. Player's turn ends at no answer, 21, or busted. Payouts at the end of the game.</value>
   </data>
   <data name="Msgbot" xml:space="preserve">
     <value>Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
@@ -558,7 +615,10 @@
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramapprove" xml:space="preserve">
-    <value>-p:Mod -use:!approval &lt;item number&gt;</value>
+    <value>-p:Mod -use:!approve &lt;item number&gt;</value>
+  </data>
+  <data name="Paramblackjack" xml:space="preserve">
+    <value>-param:true -t:Currency -use:!blackjack &lt;wager&gt;, to start or enter the game!</value>
   </data>
   <data name="Parambot" xml:space="preserve">
     <value>-use:!bot</value>
@@ -679,6 +739,9 @@
     <value>-use:!worklurk</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="payout" xml:space="preserve">
+    <value>payout</value>
+  </data>
   <data name="Pluralbits" xml:space="preserve">
     <value>bit, bits</value>
     <comment>comma separated 'single, plural'</comment>
@@ -760,6 +823,9 @@
   <data name="socials" xml:space="preserve">
     <value>socials</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="stay" xml:space="preserve">
+    <value>stay</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>total</value>

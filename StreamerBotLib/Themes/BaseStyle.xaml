@@ -53,6 +53,14 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type List}">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+    </Style>
+
+    <Style TargetType="{x:Type ListItem}">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+    </Style>
+    
     <Style TargetType="{x:Type Run}">
         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
     </Style>
@@ -124,6 +132,8 @@
         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
         <Setter Property="Background" Value="{DynamicResource FullBackground}" />
     </Style>
+
+
 
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="Background" Value="{DynamicResource PartBackground}" />

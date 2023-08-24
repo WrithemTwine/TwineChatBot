@@ -336,6 +336,8 @@ namespace StreamerBotLib.Static
         /// Specifies whether the clip bot disconnects when the stream is detected offline.
         /// </summary>
         public static bool TwitchClipDisconnectOffline => Settings.Default.TwitchClipDisconnectOffline;
+
+        #region Currency
         /// <summary>
         /// Specifies starting currency accruals.
         /// </summary>
@@ -344,6 +346,33 @@ namespace StreamerBotLib.Static
         /// Specifies whether currency accrual should only occur when stream is live (online), for testing purposes.
         /// </summary>
         public static bool CurrencyOnline => Settings.Default.CurrencyOnline;
+
+        /// <summary>
+        /// Specifies the value where the House stands.
+        /// </summary>
+        public static int GameBlackJackHouseStands => Settings.Default.GameBlackJackHouseStands;
+        /// <summary>
+        /// Specifies whether the House wins in a tie.
+        /// </summary>
+        public static bool GameBlackJackHouseWinsTie => Settings.Default.GameBlackJackHouseWinsTie;
+        /// <summary>
+        /// Specifies the payout for a player dealt 21.
+        /// </summary>
+        public static int GameBlackJackPayoutDealt21 => Settings.Default.GameBlackJackPayoutDealt21;
+        /// <summary>
+        /// Specifies the payout for a player reaching 21.
+        /// </summary>
+        public static int GameBlackJackPayoutReach21 => Settings.Default.GameBlackJackPayoutReach21;
+        /// <summary>
+        /// Specifies the payout for a player stopping under 21.
+        /// </summary>
+        public static int GameBlackJackPayoutUnder21 => Settings.Default.GameBlackJackPayoutUnder21;
+        /// <summary>
+        /// Specifies the payout message when a player wins.
+        /// </summary>
+        public static string GameBlackJackPayoutMessage => Settings.Default.GameBlackJackPayoutMessage;
+
+        #endregion Currency
 
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
@@ -523,7 +552,7 @@ namespace StreamerBotLib.Static
         /// Manages option to log exceptions within the Media Overlay server - was separate when Overlay Server was its own package.
         /// </summary>
         public static bool MediaOverlayLogExceptions => Settings.Default.MediaOverlayLogExceptions;
-    
+
         /// <summary>
         /// Manages if user wants action alerts to display with the same styling.
         /// </summary>
