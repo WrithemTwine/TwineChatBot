@@ -133,7 +133,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
         /// <returns><code>true</code> the House has 21; <code>false</code> the House is under 21.</returns>
         internal bool CheckHouseWin()
         {
-            return HouseCards.CardCount == BlackJackWin && OptionFlags.GameBlackJackHouseWinsTie;
+            return HouseCards.CardCount == BlackJackWin;
         }
 
         /// <summary>
@@ -174,9 +174,17 @@ namespace StreamerBotLib.Systems.CurrencyGames
                 {
                     U.ResultMessage = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust);
                 }
-                else if ((U.CardCount == HouseCards.CardCount && OptionFlags.GameBlackJackHouseWinsTie) || (U.CardCount < HouseCards.CardCount && HouseCards.CardCount <= BlackJackWin))
-                {
-                    U.ResultMessage = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackHouseWin);
+                else if (HouseCards.CardCount <= BlackJackWin && U.CardCount <= HouseCards.CardCount) 
+                {               
+                    if (U.CardCount == HouseCards.CardCount)
+                    {
+                        U.ResultMessage = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackDraw);
+                        U.Payout = U.Wager;
+                    }
+                    else if (U.CardCount < HouseCards.CardCount)
+                    {
+                        U.ResultMessage = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackHouseWin);
+                    }
                 }
                 else
                 {
@@ -200,8 +208,8 @@ namespace StreamerBotLib.Systems.CurrencyGames
                         U.Payout = U.Wager + U.Wager * (OptionFlags.GameBlackJackPayoutUnder21 / 100.0);
                     }
                 }
-                string Pay = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackPayout), 
-                    VariableParser.BuildDictionary( new Tuple<MsgVars, string>[]
+                string Pay = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackPayout),
+                    VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.payout, U.Payout.ToString("N0"))
                     }));

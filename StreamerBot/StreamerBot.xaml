@@ -1264,10 +1264,6 @@
                                                             <TextBlock>House Stands at:</TextBlock>
                                                             <TextBox Text="{Binding GameBlackJackHouseStands}" />
                                                         </StackPanel>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock>House Wins Tie:</TextBlock>
-                                                            <CheckBox IsChecked="{Binding GameBlackJackHouseWinsTie}"/>
-                                                        </StackPanel>
                                                         <TextBlock />
                                                         <TextBlock TextDecorations="Underline">Player payouts:</TextBlock>
                                                         <StackPanel Orientation="Horizontal">

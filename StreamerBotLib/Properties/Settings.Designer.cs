@@ -1633,18 +1633,6 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool GameBlackJackHouseWinsTie {
-            get {
-                return ((bool)(this["GameBlackJackHouseWinsTie"]));
-            }
-            set {
-                this["GameBlackJackHouseWinsTie"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("200")]
         public int GameBlackJackPayoutDealt21 {
             get {

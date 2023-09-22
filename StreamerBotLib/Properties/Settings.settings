@@ -404,9 +404,6 @@
     <Setting Name="GameBlackJackHouseStands" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">17</Value>
     </Setting>
-    <Setting Name="GameBlackJackHouseWinsTie" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="GameBlackJackPayoutDealt21" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">200</Value>
     </Setting>

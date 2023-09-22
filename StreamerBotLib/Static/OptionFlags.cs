@@ -352,10 +352,6 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static int GameBlackJackHouseStands => Settings.Default.GameBlackJackHouseStands;
         /// <summary>
-        /// Specifies whether the House wins in a tie.
-        /// </summary>
-        public static bool GameBlackJackHouseWinsTie => Settings.Default.GameBlackJackHouseWinsTie;
-        /// <summary>
         /// Specifies the payout for a player dealt 21.
         /// </summary>
         public static int GameBlackJackPayoutDealt21 => Settings.Default.GameBlackJackPayoutDealt21;
@@ -576,7 +572,7 @@ namespace StreamerBotLib.Static
         public static bool MediaOverlayTickerMulti => Settings.Default.MediaOverlayTickerMulti;
 
         /// <summary>
-        /// Defines a ticker where all elements stay in place
+        /// Defines a ticker where all elements stand in place
         /// </summary>
         public static bool MediaOverlayTickerStatic => Settings.Default.MediaOverlayTickerStatic;
         /// <summary>

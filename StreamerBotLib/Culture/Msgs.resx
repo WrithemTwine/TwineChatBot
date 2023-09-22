@@ -147,8 +147,11 @@
     <value>you have #cards, totaling #value.</value>
     <comment>can be translated, leave "#cards" and "#value" within the message</comment>
   </data>
+  <data name="BlackJackDraw" xml:space="preserve">
+    <value>You and the House both have the same points, ending in a draw.</value>
+  </data>
   <data name="BlackJackHit" xml:space="preserve">
-    <value>Do you want to hit (another card) ? type '#hit' or '#stay'</value>
+    <value>Do you want to #hit (another card) or #stand (no card)?</value>
     <comment>can be translated, except '#hit' or '#stand' </comment>
   </data>
   <data name="BlackJackHouseBusts" xml:space="preserve">
@@ -171,13 +174,29 @@
     <value>The house wins.</value>
     <comment>can be translated</comment>
   </data>
+  <data name="BlackJackNoCurrency" xml:space="preserve">
+    <value>Currency is not setup in Built-In Command !blackJack, 'currencyfield' value.</value>
+  </data>
+  <data name="BlackJackNoJoin" xml:space="preserve">
+    <value>BlackJack no longer accepting new players. Try next round.</value>
+    <comment>can be translated</comment>
+  </data>
   <data name="BlackJackNoPlayer" xml:space="preserve">
     <value>Player not registered.</value>
     <comment>can be translated.</comment>
   </data>
   <data name="BlackJackPayout" xml:space="preserve">
-    <value>The payout is #payout.</value>
+    <value>Your payout is #payout.</value>
     <comment>can be translated, leave #payout</comment>
+  </data>
+  <data name="BlackJackPlayerJoined" xml:space="preserve">
+    <value>#user is sitting at the BlackJack table.</value>
+  </data>
+  <data name="BlackJackPlayerNoMoney" xml:space="preserve">
+    <value>#user does not have enough currency to play.</value>
+  </data>
+  <data name="BlackJackStart" xml:space="preserve">
+    <value>Now dealing to each player.  When it's your turn, you have 30 seconds to type words or phrases containing '#hit' or '#stand'-(normal viewers can be prevented from typing the same phrase in a short time)</value>
   </data>
   <data name="BlackJackWinOverHouse" xml:space="preserve">
     <value>You beat the house!</value>
@@ -419,7 +438,7 @@
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgblackjack" xml:space="preserve">
-    <value>#user started a game of BlackJack-21! For the next 1 minute, use "!blackjack &lt;amount&gt;" to join the game and wager currency! The House stands at #housestand or higher. The House #ties all ties. Then a check if the House hit 21, then ask each player if you want to '#hit' for a card, or '#stay'. No answer means a '#stay'. Player's turn ends at no answer, 21, or busted. Payouts at the end of the game.</value>
+    <value>#user started a game of BlackJack-21! For the next 1 minute, use "!blackjack &lt;amount&gt;" to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to '#hit' for a card, or '#stand'. No answer means a '#stand'. Payouts at the end of the game.</value>
   </data>
   <data name="Msgbot" xml:space="preserve">
     <value>Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
@@ -618,7 +637,7 @@
     <value>-p:Mod -use:!approve &lt;item number&gt;</value>
   </data>
   <data name="Paramblackjack" xml:space="preserve">
-    <value>-param:true -t:Currency -use:!blackjack &lt;wager&gt;, to start or enter the game!</value>
+    <value>-param:true -t:Currency -use:!blackjack &lt;wager&gt; (number), to start or enter the game!</value>
   </data>
   <data name="Parambot" xml:space="preserve">
     <value>-use:!bot</value>
@@ -824,8 +843,8 @@
     <value>socials</value>
     <comment>default command, can be translated</comment>
   </data>
-  <data name="stay" xml:space="preserve">
-    <value>stay</value>
+  <data name="stand" xml:space="preserve">
+    <value>stand</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>total</value>

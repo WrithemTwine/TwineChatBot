@@ -13,6 +13,12 @@
         BlackJackHouseHits21,
         BlackJackHouseBusts,
         BlackJackHouseStands,
-        BlackJackPayout
+        BlackJackPayout,
+        BlackJackPlayerJoined,
+        BlackJackPlayerNoMoney,
+        BlackJackDraw,
+        BlackJackStart,
+        BlackJackNoJoin,
+        BlackJackNoCurrency
     }
 }

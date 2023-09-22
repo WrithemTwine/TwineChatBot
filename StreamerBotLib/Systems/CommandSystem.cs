@@ -637,13 +637,15 @@ namespace StreamerBotLib.Systems
             }
             else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
             {
-                if (arglist.Count != 1)
+                bool TryConvertInt = int.TryParse(arglist[0], out int Wager);
+
+                if (arglist.Count != 1 || !TryConvertInt)
                 {
                     result = cmdrow.Usage;
                 }
                 else
                 {
-                    GamePlayBlackJack(cmdrow, User, Convert.ToInt32(arglist[0]));
+                    GamePlayBlackJack(cmdrow, User, Wager);
                 }
             }
             else

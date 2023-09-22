@@ -640,7 +640,7 @@ namespace StreamerBotLib.BotIOController
             HandleChatCommandReceived(new()
             {
                 CommandArguments = e.Command.ArgumentsAsList,
-                CommandText = e.Command.CommandText,
+                CommandText = e.Command.CommandText.ToLower(),
                 DisplayName = e.Command.ChatMessage.DisplayName,
                 Channel = e.Command.ChatMessage.Channel,
                 IsBroadcaster = e.Command.ChatMessage.IsBroadcaster,

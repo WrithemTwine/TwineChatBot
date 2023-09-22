@@ -133,7 +133,16 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to hit (another card) ? type &apos;#hit&apos; or &apos;#stay&apos;.
+        ///   Looks up a localized string similar to You and the House both have the same points, ending in a draw..
+        /// </summary>
+        internal static string BlackJackDraw {
+            get {
+                return ResourceManager.GetString("BlackJackDraw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to #hit (another card) or #stand (no card)?.
         /// </summary>
         internal static string BlackJackHit {
             get {
@@ -187,6 +196,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Currency is not setup in Built-In Command !blackJack, &apos;currencyfield&apos; value..
+        /// </summary>
+        internal static string BlackJackNoCurrency {
+            get {
+                return ResourceManager.GetString("BlackJackNoCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BlackJack no longer accepting new players. Try next round..
+        /// </summary>
+        internal static string BlackJackNoJoin {
+            get {
+                return ResourceManager.GetString("BlackJackNoJoin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Player not registered..
         /// </summary>
         internal static string BlackJackNoPlayer {
@@ -196,11 +223,38 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The payout is #payout..
+        ///   Looks up a localized string similar to Your payout is #payout..
         /// </summary>
         internal static string BlackJackPayout {
             get {
                 return ResourceManager.GetString("BlackJackPayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user is sitting at the BlackJack table..
+        /// </summary>
+        internal static string BlackJackPlayerJoined {
+            get {
+                return ResourceManager.GetString("BlackJackPlayerJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user does not have enough currency to play..
+        /// </summary>
+        internal static string BlackJackPlayerNoMoney {
+            get {
+                return ResourceManager.GetString("BlackJackPlayerNoMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Now dealing to each player.  When it&apos;s your turn, you have 30 seconds to type words or phrases containing &apos;#hit&apos; or &apos;#stand&apos;-(normal viewers can be prevented from typing the same phrase in a short time).
+        /// </summary>
+        internal static string BlackJackStart {
+            get {
+                return ResourceManager.GetString("BlackJackStart", resourceCulture);
             }
         }
         
@@ -853,7 +907,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #user started a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join the game and wager currency! The House stands at #housestand or higher. The House #ties all ties. Then a check if the House hit 21, then ask each player if you want to &apos;#hit&apos; for a card, or &apos;#stay&apos;. No answer means a &apos;#stay&apos;. Player&apos;s turn ends at no answer, 21, or busted. Payouts at the end of the game..
+        ///   Looks up a localized string similar to #user started a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to &apos;#hit&apos; for a card, or &apos;#stand&apos;. No answer means a &apos;#stand&apos;. Payouts at the end of the game..
         /// </summary>
         internal static string Msgblackjack {
             get {
@@ -1384,7 +1438,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -param:true -t:Currency -use:!blackjack &lt;wager&gt;, to start or enter the game!.
+        ///   Looks up a localized string similar to -param:true -t:Currency -use:!blackjack &lt;wager&gt; (number), to start or enter the game!.
         /// </summary>
         internal static string Paramblackjack {
             get {
@@ -1879,11 +1933,11 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to stay.
+        ///   Looks up a localized string similar to stand.
         /// </summary>
-        internal static string stay {
+        internal static string stand {
             get {
-                return ResourceManager.GetString("stay", resourceCulture);
+                return ResourceManager.GetString("stand", resourceCulture);
             }
         }
         

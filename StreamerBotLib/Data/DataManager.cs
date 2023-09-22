@@ -1043,23 +1043,40 @@ switches:
                     }
 
                     // TODO: verify bulk follower updates for unfollows - updating the dates
-                    foreach (var nonfollowers in from string UId in new List<string>((from FollowersRow U in new List<FollowersRow>(from FollowersRow f in AllFollowers
-                                                                                                                                    where f.IsFollower == false
-                                                                                                                                    orderby f.Id descending
-                                                                                                                                    select f
-                                                        )
-                                                                                      select U.UserId).ToList().Distinct())
-                                                 let nonfollowers = new List<FollowersRow>(from FollowersRow f in AllFollowers
-                                                                                           where f.IsFollower == false
-                                                                                           orderby f.Id descending
-                                                                                           select f
-                                                        ).FindAll((user) => user.UserId == UId)
-                                                 where nonfollowers.Count > 1
-                                                 select nonfollowers)
+                    foreach (var nonfollowers in
+                            from string UId in new List<string>
+                            (
+                                (
+                                    from FollowersRow U in new List<FollowersRow>
+                                    (
+                                        from FollowersRow f in AllFollowers
+                                        where f.IsFollower == false
+                                        orderby f.Id descending
+                                        select f
+                                    )
+                                    select U.UserId).ToList().Distinct())
+                            let nonfollowers = new List<FollowersRow>(from FollowersRow f in AllFollowers
+                                                                      where f.IsFollower == false
+                                                                      orderby f.Id descending
+                                                                      select f
+                                                                    ).FindAll((user) => user.UserId == UId
+                            )
+                            select nonfollowers
+                    )
                     {
-                        if (nonfollowers[0].StatusChangeDate == nonfollowers[1].StatusChangeDate)
+                        if (nonfollowers.Count > 1)
                         {
-                            nonfollowers[0].StatusChangeDate = datenow;
+                            if (nonfollowers[0].StatusChangeDate == nonfollowers[1].StatusChangeDate)
+                            {
+                                nonfollowers[0].StatusChangeDate = datenow;
+                            }
+                        }
+                        else
+                        {
+                            if (nonfollowers[0].StatusChangeDate == nonfollowers[0].FollowedDate)
+                            {
+                                nonfollowers[0].StatusChangeDate = datenow;
+                            }
                         }
                     }
                 }
@@ -1303,6 +1320,7 @@ switches:
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
             CurrencyRow currencyRow = (CurrencyRow) GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            _DataSource.Currency.AcceptChanges();
             return currencyRow.Value >= value;
         }
 
@@ -1315,6 +1333,7 @@ switches:
                 lock (_DataSource)
                 {
                     currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + value, 2), currencyTypeRow.MaxValue);
+                    _DataSource.Currency.AcceptChanges();
                 }
             }
         }

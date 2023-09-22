@@ -99,8 +99,9 @@ namespace StreamerBotLib.Systems
                         new Tuple<MsgVars, string>[]
                         {
                             new(MsgVars.user, CurrUser.UserName ),
-                            new(MsgVars.ties, OptionFlags.GameBlackJackHouseWinsTie ? "wins" : "loses"),
-                            new(MsgVars.housestand, OptionFlags.GameBlackJackHouseStands.ToString())
+                            new(MsgVars.housestand, OptionFlags.GameBlackJackHouseStands.ToString()),
+                            new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
+                            new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
                         }
                         )), cmdrow.SendMsgCount, cmdrow);
 
@@ -108,11 +109,20 @@ namespace StreamerBotLib.Systems
                     GameCurrBlackJack = new();
 
                     GameBlackJackCurrency = cmdrow.Currency_field;
+                    lock (GameCurrBlackJackAnswer)
+                    {
+                        GameCurrBlackJackAnswer.Clear();
+                    }
                 }
                 GameBlackJackAddUser(CurrUser, Wager, GameBlackJackCurrency);
-            } else
+            }
+            else if (BlackJackPlay)
             {
-                OnProcessCommand("Currency is not setup in Built-In Command !blackJack, 'currencyfield' value.", 0);
+                OnProcessCommand(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackNoJoin));
+            }
+            else
+            {
+                OnProcessCommand(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackNoCurrency));
             }
         }
 
@@ -127,6 +137,19 @@ namespace StreamerBotLib.Systems
                     GameBlackJackPlayers.Add(CurrUser);
                     DataManage.PostCurrencyUpdate(CurrUser, -Wager, GameBlackJackCurrency);
 
+                    OnProcessCommand(VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackPlayerJoined),
+                        VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                        {
+                            new(MsgVars.user,CurrUser.UserName)
+                        })));
+                } 
+                else
+                {
+                    OnProcessCommand(VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackPlayerNoMoney),
+                        VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                        {
+                            new(MsgVars.user,CurrUser.UserName)
+                        })));
                 }
             }
         }
@@ -134,69 +157,79 @@ namespace StreamerBotLib.Systems
         private void GameBlackJackStart()
         {
             BlackJackActive = true;
-            Thread.Sleep(1000 *60 *1); // 1000ms=1s, 1s *60s/min*2min/s = 1m time in seconds
+            Thread.Sleep(1000 *60 *1); // 1000ms=1s, 1s *60s/min*1min/s = 1m time in seconds
             BlackJackPlay = true;
             GameCurrBlackJack.BuildDeck();
 
-            if (GameCurrBlackJack.CheckHouseWin())
+            if (!GameCurrBlackJack.CheckHouseWin()) // if House has 21, only way anyone else can win is with 21, all other players lose
             {
-                OnProcessCommand(GameCurrBlackJack.HousePlay(), 0);
-            }
-            else
-            {
-                int WaitTime = 20000; // 20 seconds in miliseconds
+                OnProcessCommand(VariableParser.ParseReplace( LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackStart),
+                    VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                        new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
+                        new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
+                    })));
+
+                int WaitTime = 30000; // 30 seconds in milliseconds
 
                 foreach (LiveUser user in GameBlackJackPlayers)
                 {
                     GameCurrBlackJackPlayer = user;
                     int CurrCardCount = GameCurrBlackJack.GetUserCardValue(user);
 
-                    while (CurrCardCount < BlackJack.BlackJackWin)
+                    if (CurrCardCount == BlackJack.BlackJackWin)
                     {
-                        OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} " + VariableParser.ParseReplace(
-                                LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackHit),
-                                VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                {
+                        OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}");
+                    }
+                    else
+                    {
+                        while (CurrCardCount < BlackJack.BlackJackWin)
+                        {
+                            OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} " + VariableParser.ParseReplace(
+                                    LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackHit),
+                                    VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                    {
                                     new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
-                                    new(MsgVars.stay, LocalizedMsgSystem.GetVar(MsgVars.stay))
-                                }
-                            )), 0);
-                        int ThreadWait = 0;
-                        while (ThreadWait < WaitTime && GameCurrBlackJackAnswer.Count == 0)
-                        {
-                            Thread.Sleep(1000);
-                            ThreadWait += 1000;
-                        }
-
-                        if (GameCurrBlackJackAnswer.Count == 1)
-                        {
-                            lock (GameCurrBlackJackAnswer)
+                                    new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
+                                    }
+                                )));
+                            int ThreadWait = 0;
+                            while (ThreadWait < WaitTime && GameCurrBlackJackAnswer.Count == 0)
                             {
-                                var Response = GameCurrBlackJackAnswer.Pop();
-                                if (Response.Item2 == LocalizedMsgSystem.GetVar(MsgVars.hit))
-                                {
-                                    GameCurrBlackJack.UserWantsCard(user);
-                                }
-                                else if (Response.Item2 == LocalizedMsgSystem.GetVar(MsgVars.stay))
-                                {
-                                    break;
-                                }
-                                GameCurrBlackJackAnswer.Clear();
+                                Thread.Sleep(1000);
+                                ThreadWait += 1000;
                             }
-                            CurrCardCount = GameCurrBlackJack.GetUserCardValue(user);
-                        }
-                        else if (ThreadWait == WaitTime || GameCurrBlackJackAnswer.Count == 0)
-                        {
-                            break;
-                        }
 
-                        if (CurrCardCount == BlackJack.BlackJackWin)
-                        {
-                            OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}", 0);
-                        }
-                        else if (CurrCardCount > BlackJack.BlackJackWin)
-                        {
-                            OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}", 0);
+                            if (GameCurrBlackJackAnswer.Count == 1)
+                            {
+                                lock (GameCurrBlackJackAnswer)
+                                {
+                                    var Response = GameCurrBlackJackAnswer.Pop();
+                                    if (Response.Item2.Contains(LocalizedMsgSystem.GetVar(MsgVars.hit)))
+                                    {
+                                        GameCurrBlackJack.UserWantsCard(user);
+                                    }
+                                    else if (Response.Item2.Contains(LocalizedMsgSystem.GetVar(MsgVars.stand)))
+                                    {
+                                        break;
+                                    }
+                                    GameCurrBlackJackAnswer.Clear();
+                                }
+                                CurrCardCount = GameCurrBlackJack.GetUserCardValue(user);
+                            }
+                            else if (ThreadWait == WaitTime || GameCurrBlackJackAnswer.Count == 0)
+                            {
+                                break;
+                            }
+
+                            if (CurrCardCount == BlackJack.BlackJackWin)
+                            {
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}");
+                            }
+                            else if (CurrCardCount > BlackJack.BlackJackWin)
+                            {
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}");
+                            }
                         }
                     }
                 }
@@ -208,7 +241,7 @@ namespace StreamerBotLib.Systems
             {
                 if (U != null)
                 {
-                    OnProcessCommand(U.ResultMessage,0);
+                    OnProcessCommand(U.ResultMessage);
                     DataManage.PostCurrencyUpdate(U.Player, U.Payout, GameBlackJackCurrency);
                 }
             }
@@ -226,7 +259,7 @@ namespace StreamerBotLib.Systems
                 {
                     if (GameCurrBlackJackAnswer.Count == 0)
                     {
-                        GameCurrBlackJackAnswer.Push(new(CurrUser, Response));
+                        GameCurrBlackJackAnswer.Push(new(CurrUser, Response.ToLower()));
                     }
                 }
             }

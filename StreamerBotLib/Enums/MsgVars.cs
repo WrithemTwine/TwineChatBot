@@ -44,7 +44,7 @@
         ties,
         housestand,
         hit,
-        stay,
+        stand,
         payout
     }
 }
