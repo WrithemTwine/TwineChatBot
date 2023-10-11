@@ -27,6 +27,8 @@
         approve,
         mergeaccounts,
         accountage,
-        blackjack
+        blackjack,
+        dead,
+        resetdead
     }
 }

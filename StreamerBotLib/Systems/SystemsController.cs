@@ -378,6 +378,11 @@ namespace StreamerBotLib.Systems
         public static void StreamOffline(DateTime CurrTime)
         {
             ActionSystem.StreamOffline(CurrTime);
+
+            // reset category to empty, so next time stream starts, the "streamed category" counter
+            // updates - a streamer may have consecutive streams with same category,
+            // not doing this locks the counter from incrementing each stream
+            CurrCategory = new("", "");
         }
 
         public static void SetCategory(string GameId, string GameName)

@@ -126,45 +126,52 @@ namespace StreamerBotLib.GUI.Windows
         /// <param name="e"></param>
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
-            Dictionary<string, string> SaveData = new();
-
-            foreach (StackPanel data in ListBox_DataList.Items)
+            try
             {
-                string name = ((Label)data.Children[0]).Content.ToString();
-                string result = ConvertBack(data.Children[1]);
+                Dictionary<string, string> SaveData = new();
 
-                SaveData.Add(name, result);
+                foreach (StackPanel data in ListBox_DataList.Items)
+                {
+                    string name = ((Label)data.Children[0]).Content.ToString();
+                    string result = ConvertBack(data.Children[1]);
+
+                    SaveData.Add(name, result);
+                }
+
+                lock (SaveDataRow)
+                {
+                    if (SaveDataRow.Table.TableName == "OverlayServices")
+                    {
+                        try
+                        {
+                            SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["MediaFile"].DefaultValue;
+                            SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["ImageFile"].DefaultValue;
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        }
+                    }
+
+                    foreach (DataColumn dataColumn in SaveDataRow.Table.Columns)
+                    {
+                        if (!dataColumn.ReadOnly)
+                        {
+                            SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
+                        }
+                    }
+                    if (IsNewRow) // if this row is new, we have to add it to the DataTable, and not just modify it.
+                    {
+                        SaveDataRow.Table.Rows.Add(SaveDataRow);
+                    }
+                }
+
+                UpdatedDataRow?.Invoke(this, new() { RowChanged = true });
             }
-
-            lock (SaveDataRow)
+            catch (Exception ex)
             {
-                if (SaveDataRow.Table.TableName == "OverlayServices")
-                {
-                    try
-                    {
-                        SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["MediaFile"].DefaultValue;
-                        SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]) ?? (string)SaveDataRow.Table.Columns["ImageFile"].DefaultValue;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    }
-                }
-
-                foreach (DataColumn dataColumn in SaveDataRow.Table.Columns)
-                {
-                    if (!dataColumn.ReadOnly)
-                    {
-                        SaveDataRow[dataColumn] = SaveData[dataColumn.ColumnName];
-                    }
-                }
-                if (IsNewRow) // if this row is new, we have to add it to the DataTable, and not just modify it.
-                {
-                    SaveDataRow.Table.Rows.Add(SaveDataRow);
-                }
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
-
-            UpdatedDataRow?.Invoke(this, new() { RowChanged = true });
             Close();
         }
 

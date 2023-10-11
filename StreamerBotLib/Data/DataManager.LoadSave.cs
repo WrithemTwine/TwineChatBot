@@ -8,7 +8,6 @@ using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-
 using System;
 using System.Collections.Generic;
 using System.Data;

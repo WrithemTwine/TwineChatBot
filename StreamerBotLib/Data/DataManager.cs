@@ -11,7 +11,6 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -318,7 +317,8 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True");
+                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True", $"ASC {_DataSource.Commands.CmdNameColumn.ColumnName}");
+
                 for (int i = 0; i < commandsRows.Length; i++)
                 {
                     result += (i != 0 ? ", " : "") + "!" + commandsRows[i].CmdName;
@@ -1476,6 +1476,54 @@ switches:
         #endregion Discord and Webhooks
 
         #region Category
+
+        #region Death Counter Data
+
+        /// <summary>
+        /// Updates the death counter for the specified category.
+        /// </summary>
+        /// <param name="currCategory">The category to update.</param>
+        /// <param name="Reset"><code>true</code>: changes value to specified value, <code>false</code>: increments the counter by <paramref name="Value"/></param>
+        /// <param name="Value">The value to reset, when <paramref name="Reset"/> is <code>true</code>. Otherwise, default increment by 1.</param>
+        /// <returns>The updated value of the current category death counter.</returns>
+        public int PostDeathCounterUpdate(string currCategory, bool Reset=false, int updateValue=1)
+        {
+            int returnValue = 0;
+            lock (GUIDataManagerLock.Lock)
+            {
+                GameDeadCounterRow deadCounterRow = (GameDeadCounterRow)GetRow(_DataSource.GameDeadCounter, $"{_DataSource.GameDeadCounter.CategoryColumn.ColumnName}='{currCategory}'");
+
+                if (deadCounterRow != null) // check if row exists
+                {
+                    if (Reset)
+                    {
+                        deadCounterRow.Counter = updateValue;
+                    }
+                    else
+                    {
+                        deadCounterRow.Counter += updateValue;
+                    }
+                    returnValue = deadCounterRow.Counter;
+                }
+                else // create row, only if category is found
+                {
+                    // we should find category, because it should be added when bot starts and stream starts
+                    CategoryListRow currCategoryRow = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{currCategory}'");
+
+                    if (currCategoryRow != null) // category is already added into database, in case it might not be...
+                    {
+                        _DataSource.GameDeadCounter.AddGameDeadCounterRow(currCategoryRow, updateValue);
+                        returnValue = updateValue;
+                    }
+                }
+
+                _DataSource.GameDeadCounter.AcceptChanges();
+            }
+
+            return returnValue;
+        }
+
+        #endregion
 
         /// <summary>
         /// Checks for the supplied category in the category list, adds if it isn't already saved.

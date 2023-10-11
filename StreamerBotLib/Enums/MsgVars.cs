@@ -41,10 +41,10 @@
         usage,
         cards,
         value,
-        ties,
         housestand,
         hit,
         stand,
-        payout
+        payout,
+        Pluraltime
     }
 }

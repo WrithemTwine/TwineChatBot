@@ -214,6 +214,9 @@
     <value>commands</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="dead" xml:space="preserve">
+    <value>dead</value>
+  </data>
   <data name="dequeue" xml:space="preserve">
     <value>dequeue</value>
     <comment>leave the player queue</comment>
@@ -266,8 +269,11 @@
   <data name="HelpBeingHosted" xml:space="preserve">
     <value>The message displayed when a user hosts the channel. Currently only supported when the bot's user name is the same as the streamer's user name.</value>
   </data>
-  <data name="HelpBits" xml:space="preserve">
+  <data name="Helpbits" xml:space="preserve">
     <value>The thank you message when a user donates bits to the channel.</value>
+  </data>
+  <data name="Helpcards" xml:space="preserve">
+    <value>Blackjack message showing current cards</value>
   </data>
   <data name="Helpcategory" xml:space="preserve">
     <value>current category, can be used for current channel or referencing a viewer (as command parameter)</value>
@@ -297,6 +303,12 @@
   <data name="HelpGiftSub" xml:space="preserve">
     <value>Thank you message for someone gifting subscription(s) to a user</value>
   </data>
+  <data name="Helphit" xml:space="preserve">
+    <value>Blackjack message name for "hit" asking for another card</value>
+  </data>
+  <data name="Helphousestand" xml:space="preserve">
+    <value>Blackjack message about what value the House stands (takes no more cards)</value>
+  </data>
   <data name="HelpJoinChannel" xml:space="preserve">
     <value>Currently not used.</value>
   </data>
@@ -311,6 +323,9 @@
   </data>
   <data name="Helpmonths" xml:space="preserve">
     <value>how many months subscribed this time</value>
+  </data>
+  <data name="Helppayout" xml:space="preserve">
+    <value>Blackjack message to show how much currency the player won</value>
   </data>
   <data name="Helpquery" xml:space="preserve">
     <value>The results of the command query will go here.</value>
@@ -332,6 +347,9 @@
   </data>
   <data name="HelpReturnUserJoined" xml:space="preserve">
     <value>Message to provide when a user/viewer is returning to the stream.</value>
+  </data>
+  <data name="Helpstand" xml:space="preserve">
+    <value>Blackjack message name for "stand" to not take another card</value>
   </data>
   <data name="Helpstreak" xml:space="preserve">
     <value>current sub streak months, depends on user preference to share</value>
@@ -367,10 +385,13 @@
     <value>shows the message usage</value>
   </data>
   <data name="Helpuser" xml:space="preserve">
-    <value>display name of the user sending action</value>
+    <value>display name of the user sending action, some contexts - the streamer</value>
   </data>
   <data name="HelpUserJoined" xml:space="preserve">
     <value>The message the bot uses to welcome users to the channel. See options for "no welcome", "welcome when joined", or "welcome when user chats".</value>
+  </data>
+  <data name="Helpvalue" xml:space="preserve">
+    <value>Blackjack message for card value **or** a general number value in some contexts</value>
   </data>
   <data name="Helpviewers" xml:space="preserve">
     <value>display the number of viewers</value>
@@ -470,6 +491,9 @@
   <data name="MsgDataNotFound" xml:space="preserve">
     <value>data not found.</value>
   </data>
+  <data name="Msgdead" xml:space="preserve">
+    <value>#user has now died #value while playing #category.</value>
+  </data>
   <data name="Msgdefaultcommand" xml:space="preserve">
     <value>Default command, not changed.</value>
   </data>
@@ -565,6 +589,9 @@
   <data name="Msgremovecommand" xml:space="preserve">
     <value>Command removed</value>
   </data>
+  <data name="Msgresetdead" xml:space="preserve">
+    <value>The game #category death counter reset to #value.</value>
+  </data>
   <data name="MsgResubscribe" xml:space="preserve">
     <value>Thanks #user for re-subscribing!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
@@ -651,6 +678,9 @@
     <value>-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramdead" xml:space="preserve">
+    <value>-use:!dead {uses current category}</value>
+  </data>
   <data name="Paramdequeue" xml:space="preserve">
     <value>-use:!dequeue</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -717,6 +747,9 @@
     <value>-p:Mod -param:true -use:!removecommand command. Does not remove default commands.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramresetdead" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!resetdead &lt;number&gt; {uses current category, reset to 0 or &lt;number&gt;}</value>
+  </data>
   <data name="Paramsetcategory" xml:space="preserve">
     <value>-use:!setcategory -p:Mod -param:true</value>
   </data>
@@ -782,6 +815,9 @@
     <value>subscription, subscriptions</value>
     <comment>comma separated 'single, plural'</comment>
   </data>
+  <data name="Pluraltime" xml:space="preserve">
+    <value>time, times</value>
+  </data>
   <data name="Pluralviewers" xml:space="preserve">
     <value>viewer, viewers</value>
     <comment>comma separated 'single, plural'</comment>
@@ -816,6 +852,9 @@
     <value>removecommand</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="resetdead" xml:space="preserve">
+    <value>resetdead</value>
+  </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>
   </data>
@@ -845,6 +884,11 @@
   </data>
   <data name="stand" xml:space="preserve">
     <value>stand</value>
+    <comment>MsgVar variable value</comment>
+  </data>
+  <data name="streamer" xml:space="preserve">
+    <value>streamer</value>
+    <comment>MsgVar variable value</comment>
   </data>
   <data name="Total" xml:space="preserve">
     <value>total</value>

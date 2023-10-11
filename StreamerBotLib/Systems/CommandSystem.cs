@@ -635,7 +635,7 @@ namespace StreamerBotLib.Systems
             {
                 AutoShoutUsers();
             }
-            else if(command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
             {
                 bool TryConvertInt = int.TryParse(arglist[0], out int Wager);
 
@@ -647,6 +647,28 @@ namespace StreamerBotLib.Systems
                 {
                     GamePlayBlackJack(cmdrow, User, Wager);
                 }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.dead))
+            {
+                int counter = AddDeathCounter();
+
+                if (counter != -1)
+                {
+                    result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
+                        new(MsgVars.user, ChannelName),
+                        new(MsgVars.value, FormatData.Plurality(counter,MsgVars.Pluraltime)),
+                        new(MsgVars.category, Category)
+                    }));
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.resetdead))
+            {
+                int counter = ResetDeathCounter(arglist.Count != 0 ? Convert.ToInt32(arglist[0]) : 0 );
+
+                result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
+                        new(MsgVars.value, FormatData.Plurality(counter,MsgVars.Pluraltime)),
+                        new(MsgVars.category, Category)
+                    }));
             }
             else
             {

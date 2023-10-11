@@ -4,11 +4,14 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem
     {
+        private bool UpdateDeathCounter;
+
         /// <summary>
         /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock < - currency is (should be) earned when online.
         /// </summary>
@@ -358,5 +361,44 @@ namespace StreamerBotLib.Systems
             }
         }
         #endregion
+
+        #region death counter
+
+        /// <summary>
+        /// Only works when stream is online. Increases death count for the current category.
+        /// Has a built-in 30 second delay to prevent multi-counting the same death.
+        /// </summary>
+        /// <returns><code>-1</code>: if no update, <code>int value</code>: if counter updated</returns>
+        internal int AddDeathCounter()
+        {
+            int result = -1;
+            if (!UpdateDeathCounter)
+            {
+                UpdateDeathCounter = true;
+                result = DataManage.PostDeathCounterUpdate(Category);
+
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    Thread.Sleep(30 * 1000); // wait 30 seconds
+                    UpdateDeathCounter = false; // reset flag for next update
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Resets the game death counter for the current counter. Can work offline. Typically moderator+ invoked, so likely safe
+        /// against getting called multiple times in a short time period
+        /// </summary>
+        /// <param name="Counter">The value to update the death counter for the current category.</param>
+        /// <returns>Current value of the counter after reset.</returns>
+        internal int ResetDeathCounter(int Counter)
+        {
+            return DataManage.PostDeathCounterUpdate(Category,true,Counter);
+        }
+
+        #endregion
+
     }
 }

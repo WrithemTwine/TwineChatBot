@@ -973,6 +973,15 @@ namespace StreamerBot
                         }
                     }
                     break;
+                case "DG_DeathCounter":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if(dc.Header.ToString() is not "Category" and not "Counter")
+                        {
+                            Collapse(dc);
+                        }
+                    }
+                    break;
                 case "DG_Webhooks":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
