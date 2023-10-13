@@ -311,13 +311,11 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get a list of all commands.");
 #endif
-
-
             string result = "";
 
             lock (GUIDataManagerLock.Lock)
             {
-                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True", $"ASC {_DataSource.Commands.CmdNameColumn.ColumnName}");
+                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True", $"{_DataSource.Commands.CmdNameColumn.ColumnName} ASC");
 
                 for (int i = 0; i < commandsRows.Length; i++)
                 {
@@ -1521,6 +1519,27 @@ switches:
             }
 
             return returnValue;
+        }
+
+        /// <summary>
+        /// Retrieve the death counter for a specific category.
+        /// </summary>
+        /// <param name="currCategory">Category to retrieve the current death counter.</param>
+        /// <returns>The death counter for the category, or <code>-1</code>: if counter doesn't exist.</returns>
+        public int GetDeathCounter(string currCategory)
+        {
+            int result = -1;
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                GameDeadCounterRow deadCounterRow = (GameDeadCounterRow)GetRow(_DataSource.GameDeadCounter, $"{_DataSource.GameDeadCounter.CategoryColumn.ColumnName}='{currCategory}'");
+                if (deadCounterRow != null)
+                {
+                    result = deadCounterRow.Counter;
+                }
+            }
+
+            return result;
         }
 
         #endregion

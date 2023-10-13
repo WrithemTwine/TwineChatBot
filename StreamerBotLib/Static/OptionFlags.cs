@@ -676,6 +676,31 @@ namespace StreamerBotLib.Static
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
         #endregion
 
+        #region GitHub links
+
+        /// <summary>
+        /// Specifies the GitHub link found for the latest stable package version, for this application
+        /// </summary>
+        public static string GitHubCheckStable
+        {
+            get => Settings.Default.GitHubCheckStable;
+            set => Settings.Default.GitHubCheckStable = value;
+        }
+        /// <summary>
+        /// Specifies the GitHub link to the stable application version.
+        /// </summary>
+        public static string GitHubStableLink => Settings.Default.GitHubStableLink;
+        /// <summary>
+        /// Specifies the GitHub link to the latest application version.
+        /// </summary>
+        public static string GitHubLatestLink => Settings.Default.GitHubLatestLink;
+        /// <summary>
+        /// Specifies the GitHub link to the application Wiki
+        /// </summary>
+        public static string GitHubWikiLink => Settings.Default.GitHubWikiLink;
+
+        #endregion
+
         /// <summary>
         /// Sets whether the "Join Party" list is started or not, and refreshes the settings.
         /// </summary>

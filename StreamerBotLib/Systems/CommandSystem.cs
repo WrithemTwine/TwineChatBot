@@ -12,6 +12,7 @@ using StreamerBotLib.Static;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -314,7 +315,7 @@ namespace StreamerBotLib.Systems
         {
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
-            OnProcessCommand( result, multi);
+            OnProcessCommand(result, multi);
         }
 
         /// <summary>
@@ -648,7 +649,7 @@ namespace StreamerBotLib.Systems
                     GamePlayBlackJack(cmdrow, User, Wager);
                 }
             }
-            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.dead))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.death))
             {
                 int counter = AddDeathCounter();
 
@@ -661,12 +662,22 @@ namespace StreamerBotLib.Systems
                     }));
                 }
             }
-            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.resetdead))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.resetdeath))
             {
-                int counter = ResetDeathCounter(arglist.Count != 0 ? Convert.ToInt32(arglist[0]) : 0 );
+                int counter = ResetDeathCounter(arglist.Count != 0 ? Convert.ToInt32(arglist[0]) : 0);
 
                 result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
                         new(MsgVars.value, FormatData.Plurality(counter,MsgVars.Pluraltime)),
+                        new(MsgVars.category, Category)
+                    }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.viewdeath))
+            {
+                int counter = DataManage.GetDeathCounter(FormatData.AddEscapeFormat(Category));
+
+                result = VariableParser.ParseReplace(counter != -1 ? cmdrow.Message : LocalizedMsgSystem.GetVar(Msg.MsgNoDeathCounter), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
+                        new(MsgVars.user, ChannelName),
+                        new(MsgVars.value, FormatData.Plurality( counter ,MsgVars.Pluraltime)),
                         new(MsgVars.category, Category)
                     }));
             }
@@ -861,7 +872,8 @@ namespace StreamerBotLib.Systems
                         else if (querydata.GetType() == typeof(int) || querydata.GetType() == typeof(double))
                         {
                             output = ((double)querydata).ToString("N2");
-                        } else
+                        }
+                        else
                         {
                             output = querydata.ToString();
                         }

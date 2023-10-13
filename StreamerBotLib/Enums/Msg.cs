@@ -12,6 +12,7 @@
         MsgModApproved,
         MsgModApproveNotFound,
         MsgMergeSuccessful,
-        MsgMergeFailed
+        MsgMergeFailed,
+        MsgNoDeathCounter
     }
 }

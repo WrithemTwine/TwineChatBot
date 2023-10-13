@@ -28,7 +28,8 @@
         mergeaccounts,
         accountage,
         blackjack,
-        dead,
-        resetdead
+        death,
+        resetdeath,
+        viewdeath
     }
 }

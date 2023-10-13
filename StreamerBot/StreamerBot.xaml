@@ -53,6 +53,22 @@
                     <Setter Property="Orientation" Value="Horizontal" />
                 </Style>
             </StatusBar.Resources>
+            <StatusBarItem x:Name="StatusBarItem_NewStableVersion" Visibility="Collapsed">
+                <StackPanel Height="35">
+                    <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
+                                  Visibility="Collapsed" 
+                                  DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}" 
+                                  NavigationCompleted="WebView2_GitHub_StableVersion_NavigationCompleted"/>
+
+                    <TextBlock Foreground="{DynamicResource BrightGo}" Text="New Release Version!" TextWrapping="Wrap" Width="80" TextAlignment="Center" >
+                        <TextBlock.ToolTip>
+                            <TextBlock>
+                            New Release version available! Download from "GitHub->Stable" tab.
+                            </TextBlock>
+                        </TextBlock.ToolTip>
+                </TextBlock>
+                </StackPanel>
+            </StatusBarItem>
             <StatusBarItem>
                 <StackPanel Orientation="Vertical">
                     <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
@@ -1749,7 +1765,7 @@
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload"  Width="59" Height="29" Click="WebView2Reload_Click" HorizontalAlignment="Left" />
-                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/wiki"/>
+                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubWikiLink}" />
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1759,8 +1775,8 @@
                                 <Label DockPanel.Dock="Top" Content="Latest stable release - may have unusual bugs, most are resolved" />
                                 <Border>
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Width="50" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/releases/latest"/>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1770,8 +1786,8 @@
                                 <Label DockPanel.Dock="Top" Content="Latest development and stable releases - may have bugs while testing for next stable release" />
                                 <Border>
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left"  Width="50" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/releases"/>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubLatestLink}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>

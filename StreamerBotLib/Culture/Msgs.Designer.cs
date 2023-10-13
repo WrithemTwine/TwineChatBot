@@ -232,7 +232,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #user is sitting at the BlackJack table..
+        ///   Looks up a localized string similar to #user now sits at the BlackJack table..
         /// </summary>
         internal static string BlackJackPlayerJoined {
             get {
@@ -295,11 +295,11 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to dead.
+        ///   Looks up a localized string similar to death.
         /// </summary>
-        internal static string dead {
+        internal static string death {
             get {
-                return ResourceManager.GetString("dead", resourceCulture);
+                return ResourceManager.GetString("death", resourceCulture);
             }
         }
         
@@ -1062,9 +1062,9 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to #user has now died #value while playing #category..
         /// </summary>
-        internal static string Msgdead {
+        internal static string Msgdeath {
             get {
-                return ResourceManager.GetString("Msgdead", resourceCulture);
+                return ResourceManager.GetString("Msgdeath", resourceCulture);
             }
         }
         
@@ -1231,6 +1231,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The death counter is not established..
+        /// </summary>
+        internal static string MsgNoDeathCounter {
+            get {
+                return ResourceManager.GetString("MsgNoDeathCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command did not perform successfully..
         /// </summary>
         internal static string MsgNoSuccess {
@@ -1332,9 +1341,9 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to The game #category death counter reset to #value..
         /// </summary>
-        internal static string Msgresetdead {
+        internal static string Msgresetdeath {
             get {
-                return ResourceManager.GetString("Msgresetdead", resourceCulture);
+                return ResourceManager.GetString("Msgresetdeath", resourceCulture);
             }
         }
         
@@ -1465,6 +1474,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #user has died #value playing #category..
+        /// </summary>
+        internal static string Msgviewdeath {
+            get {
+                return ResourceManager.GetString("Msgviewdeath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #user has watched a total of #query..
         /// </summary>
         internal static string Msgwatchtime {
@@ -1557,9 +1575,9 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to -use:!dead {uses current category}.
         /// </summary>
-        internal static string Paramdead {
+        internal static string Paramdeath {
             get {
-                return ResourceManager.GetString("Paramdead", resourceCulture);
+                return ResourceManager.GetString("Paramdeath", resourceCulture);
             }
         }
         
@@ -1719,9 +1737,9 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to -p:Mod -param:true -use:!resetdead &lt;number&gt; {uses current category, reset to 0 or &lt;number&gt;}.
         /// </summary>
-        internal static string Paramresetdead {
+        internal static string Paramresetdeath {
             get {
-                return ResourceManager.GetString("Paramresetdead", resourceCulture);
+                return ResourceManager.GetString("Paramresetdeath", resourceCulture);
             }
         }
         
@@ -1803,6 +1821,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramusage {
             get {
                 return ResourceManager.GetString("Paramusage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!viewdeath.
+        /// </summary>
+        internal static string Paramviewdeath {
+            get {
+                return ResourceManager.GetString("Paramviewdeath", resourceCulture);
             }
         }
         
@@ -1978,11 +2005,11 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to resetdead.
+        ///   Looks up a localized string similar to resetdeath.
         /// </summary>
-        internal static string resetdead {
+        internal static string resetdeath {
             get {
-                return ResourceManager.GetString("resetdead", resourceCulture);
+                return ResourceManager.GetString("resetdeath", resourceCulture);
             }
         }
         
@@ -2109,6 +2136,15 @@ namespace StreamerBotLib.Culture {
         internal static string usage {
             get {
                 return ResourceManager.GetString("usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to viewdeath.
+        /// </summary>
+        internal static string viewdeath {
+            get {
+                return ResourceManager.GetString("viewdeath", resourceCulture);
             }
         }
         

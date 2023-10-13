@@ -333,6 +333,8 @@ namespace StreamerBotLib.BotClients.Twitch
             throw new();
         }
 
+        private readonly List<string> newSendMsg = new();
+
         /// <summary>
         /// Send a message to the connected channels.
         /// Note: When Twitch gets busy/unstable, there are many exceptions from unaccepted responses. Twitchlib throws the http handler exceptions, which we 
@@ -344,7 +346,28 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             try
             {
-                SendData(s);
+                newSendMsg.Clear();
+                string tempSend = s;
+
+                string prefix = (s.StartsWith("/me ") ? "/me " : "");
+
+                while (tempSend.Length > 500)
+                {
+                    string temp = tempSend[..500];
+                    string AddSend = temp[..(temp.LastIndexOf(' ')-1)];
+                    newSendMsg.Add(AddSend);
+                    tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
+                }
+
+                if (tempSend.Length > 0)
+                {
+                    newSendMsg.Add(tempSend);
+                }
+
+                foreach (string D in newSendMsg)
+                {
+                    SendData(D);
+                }
             }
             catch (Exception ex)
             {
@@ -353,7 +376,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 //CreateClient();
                 //StartBot();
                 //SendData(s);
-                BackOffSend(s); // if exception, perform backoff send
+                BackOffSend(); // if exception, perform backoff send
             }
             return true;
 
@@ -369,19 +392,22 @@ namespace StreamerBotLib.BotClients.Twitch
             }
 
             // need recursive call to send data while unable to send message (returning exceptions from Twitch)
-            void BackOffSend(string ToSend, int BackOff = 1)
+            void BackOffSend(int BackOff = 1)
             {
                 Thread.Sleep(BackOff * 1000); // block thread and wait for exponential time each loop while continuing to throw exceptions
 
                 try
                 {
-                    SendData(ToSend);
+                    foreach (string D in newSendMsg)
+                    {
+                        SendData(D);
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
 
-                    BackOffSend(ToSend, BackOff * 2);
+                    BackOffSend(BackOff * 2);
                 }
             }
 

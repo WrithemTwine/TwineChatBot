@@ -375,7 +375,7 @@ namespace StreamerBotLib.Systems
             if (!UpdateDeathCounter)
             {
                 UpdateDeathCounter = true;
-                result = DataManage.PostDeathCounterUpdate(Category);
+                result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
 
                 ThreadManager.CreateThreadStart(() =>
                 {
@@ -395,7 +395,7 @@ namespace StreamerBotLib.Systems
         /// <returns>Current value of the counter after reset.</returns>
         internal int ResetDeathCounter(int Counter)
         {
-            return DataManage.PostDeathCounterUpdate(Category,true,Counter);
+            return DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category), true, Counter);
         }
 
         #endregion

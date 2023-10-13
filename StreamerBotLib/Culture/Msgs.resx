@@ -190,7 +190,7 @@
     <comment>can be translated, leave #payout</comment>
   </data>
   <data name="BlackJackPlayerJoined" xml:space="preserve">
-    <value>#user is sitting at the BlackJack table.</value>
+    <value>#user now sits at the BlackJack table.</value>
   </data>
   <data name="BlackJackPlayerNoMoney" xml:space="preserve">
     <value>#user does not have enough currency to play.</value>
@@ -214,8 +214,8 @@
     <value>commands</value>
     <comment>default command, can be translated</comment>
   </data>
-  <data name="dead" xml:space="preserve">
-    <value>dead</value>
+  <data name="death" xml:space="preserve">
+    <value>death</value>
   </data>
   <data name="dequeue" xml:space="preserve">
     <value>dequeue</value>
@@ -491,7 +491,7 @@
   <data name="MsgDataNotFound" xml:space="preserve">
     <value>data not found.</value>
   </data>
-  <data name="Msgdead" xml:space="preserve">
+  <data name="Msgdeath" xml:space="preserve">
     <value>#user has now died #value while playing #category.</value>
   </data>
   <data name="Msgdefaultcommand" xml:space="preserve">
@@ -555,6 +555,9 @@
     <value>No Category</value>
     <comment>When user has no category</comment>
   </data>
+  <data name="MsgNoDeathCounter" xml:space="preserve">
+    <value>The death counter is not established.</value>
+  </data>
   <data name="MsgNoSuccess" xml:space="preserve">
     <value>The command did not perform successfully.</value>
   </data>
@@ -589,7 +592,7 @@
   <data name="Msgremovecommand" xml:space="preserve">
     <value>Command removed</value>
   </data>
-  <data name="Msgresetdead" xml:space="preserve">
+  <data name="Msgresetdeath" xml:space="preserve">
     <value>The game #category death counter reset to #value.</value>
   </data>
   <data name="MsgResubscribe" xml:space="preserve">
@@ -642,6 +645,9 @@
     <value>Thanks #user for stopping by the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgviewdeath" xml:space="preserve">
+    <value>#user has died #value playing #category.</value>
+  </data>
   <data name="Msgwatchtime" xml:space="preserve">
     <value>#user has watched a total of #query.</value>
   </data>
@@ -678,7 +684,7 @@
     <value>-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
-  <data name="Paramdead" xml:space="preserve">
+  <data name="Paramdeath" xml:space="preserve">
     <value>-use:!dead {uses current category}</value>
   </data>
   <data name="Paramdequeue" xml:space="preserve">
@@ -747,7 +753,7 @@
     <value>-p:Mod -param:true -use:!removecommand command. Does not remove default commands.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
-  <data name="Paramresetdead" xml:space="preserve">
+  <data name="Paramresetdeath" xml:space="preserve">
     <value>-p:Mod -param:true -use:!resetdead &lt;number&gt; {uses current category, reset to 0 or &lt;number&gt;}</value>
   </data>
   <data name="Paramsetcategory" xml:space="preserve">
@@ -782,6 +788,9 @@
   <data name="Paramusage" xml:space="preserve">
     <value>-t:Commands -f:Usage -param:true -use:!usage &lt;command&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramviewdeath" xml:space="preserve">
+    <value>-use:!viewdeath</value>
   </data>
   <data name="Paramwatchtime" xml:space="preserve">
     <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
@@ -852,8 +861,8 @@
     <value>removecommand</value>
     <comment>default command, can be translated</comment>
   </data>
-  <data name="resetdead" xml:space="preserve">
-    <value>resetdead</value>
+  <data name="resetdeath" xml:space="preserve">
+    <value>resetdeath</value>
   </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>
@@ -909,6 +918,9 @@
   <data name="usage" xml:space="preserve">
     <value>usage</value>
     <comment>get command usage</comment>
+  </data>
+  <data name="viewdeath" xml:space="preserve">
+    <value>viewdeath</value>
   </data>
   <data name="watchtime" xml:space="preserve">
     <value>watchtime</value>

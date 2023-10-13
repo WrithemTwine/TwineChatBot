@@ -55,6 +55,8 @@ namespace StreamerBot
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
 
+        private event EventHandler NewAppVersionFound;
+
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
         private delegate void BotOperation();
@@ -140,6 +142,25 @@ namespace StreamerBot
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+
+            NewAppVersionFound += StreamerBotWindow_NewAppVersionFound;
+        }
+
+        private void StreamerBotWindow_NewAppVersionFound(object sender, EventArgs e)
+        {
+            StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
+        }
+
+        private void WebView2_GitHub_StableVersion_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        {
+            if (WebView2_GitHub_StableVersion.Source.ToString() != OptionFlags.GitHubCheckStable)
+            {
+                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink)
+                {
+                    NewAppVersionFound?.Invoke(this, new EventArgs());
+                }
+                OptionFlags.GitHubCheckStable = WebView2_GitHub_StableVersion.Source.ToString();
+            }
         }
 
         #region Bot_Ops
