@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -54,8 +55,6 @@ namespace StreamerBot
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
-
-        private event EventHandler NewAppVersionFound;
 
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
@@ -112,7 +111,7 @@ namespace StreamerBot
         /// <summary>
         /// Get the application current working directory
         /// </summary>
-        /// <returns>The user's local application data path to store application save data.</returns>
+        /// <returns>The user'AppVersion local application data path to store application save data.</returns>
         private static string GetAppDataCWD()
         {
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
@@ -142,24 +141,31 @@ namespace StreamerBot
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
-
-            NewAppVersionFound += StreamerBotWindow_NewAppVersionFound;
         }
 
-        private void StreamerBotWindow_NewAppVersionFound(object sender, EventArgs e)
-        {
-            StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
-        }
-
+        /// <summary>
+        /// Handles a WebView GUI control navigation, when it completes. The GitHub link resolves to a 
+        /// link to a stable release link. Using this result, we can determine if a new stable version
+        /// is available to the user.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void WebView2_GitHub_StableVersion_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            if (WebView2_GitHub_StableVersion.Source.ToString() != OptionFlags.GitHubCheckStable)
+            string NewVersionLink = WebView2_GitHub_StableVersion.Source.ToString();
+
+            if (NewVersionLink != OptionFlags.GitHubCheckStable)
             {
-                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink)
+                Version version = Assembly.GetEntryAssembly().GetName().Version;
+                string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+
+                // check if the saved link is the default, also check if the found link doesn't have the current version
+                   // true=> link not default and the stable version link doesn't have the current app version in it
+                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion) )
                 {
-                    NewAppVersionFound?.Invoke(this, new EventArgs());
+                    StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
                 }
-                OptionFlags.GitHubCheckStable = WebView2_GitHub_StableVersion.Source.ToString();
+                OptionFlags.GitHubCheckStable = NewVersionLink;
             }
         }
 
@@ -497,7 +503,7 @@ namespace StreamerBot
                 Settings.Default.AppCurrWorkingPopup = false;
                 string SaveCWDPath = GetAppDataCWD();
 
-                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application's current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
 
                 if (boxResult == MessageBoxResult.Yes)
                 {
@@ -530,6 +536,12 @@ namespace StreamerBot
             }
         }
 
+        /// <summary>
+        /// Manage GUI element visibility based on user selection. The intent is to add friendly protection
+        /// to prevent accidentally clicking buttons and deleting, often unrecoverable, data-or the latest backup at the least.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SetVisibility(object sender, RoutedEventArgs e)
         {
             if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null && GroupBox_ManageDataOptions != null)

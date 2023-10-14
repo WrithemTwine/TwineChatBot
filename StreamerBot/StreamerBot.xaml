@@ -53,31 +53,36 @@
                     <Setter Property="Orientation" Value="Horizontal" />
                 </Style>
             </StatusBar.Resources>
-            <StatusBarItem x:Name="StatusBarItem_NewStableVersion" Visibility="Collapsed">
-                <StackPanel Height="35">
-                    <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
+            <StatusBarItem>
+                <Grid>
+                    <StackPanel x:Name="StatusBarItem_NewStableVersion" Height="35" Panel.ZIndex="5" Visibility="Collapsed">
+                        <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
                                   Visibility="Collapsed" 
                                   DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}" 
                                   NavigationCompleted="WebView2_GitHub_StableVersion_NavigationCompleted"/>
 
-                    <TextBlock Foreground="{DynamicResource BrightGo}" Text="New Release Version!" TextWrapping="Wrap" Width="80" TextAlignment="Center" >
-                        <TextBlock.ToolTip>
-                            <TextBlock>
+                        <TextBlock 
+                            FontWeight="ExtraBold"
+                            Foreground="{DynamicResource BrightGo}" 
+                            Text="New Release Version!" 
+                            TextWrapping="Wrap" Width="90" 
+                            TextAlignment="Center" >
+                            <TextBlock.ToolTip>
+                                <TextBlock>
                             New Release version available! Download from "GitHub->Stable" tab.
-                            </TextBlock>
-                        </TextBlock.ToolTip>
-                </TextBlock>
-                </StackPanel>
-            </StatusBarItem>
-            <StatusBarItem>
-                <StackPanel Orientation="Vertical">
-                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
-                           Visibility="Collapsed"
-                           FontSize="16" FontWeight="DemiBold">
-                        <TextBlock Foreground="{DynamicResource LabelBeta}">Beta</TextBlock>
-                    </Label>
-                    <Label x:Name="StatusBar_Label_Version" Content="Version Label" Padding="0"/>
-                </StackPanel>
+                                </TextBlock>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Panel.ZIndex="1" >
+                        <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
+                               Visibility="Collapsed"
+                               FontSize="16" FontWeight="DemiBold">
+                            <TextBlock Foreground="{DynamicResource LabelBeta}">Beta</TextBlock>
+                        </Label>
+                        <Label x:Name="StatusBar_Label_Version" Content="Version Label" Padding="0"/>
+                    </StackPanel>
+                </Grid>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
