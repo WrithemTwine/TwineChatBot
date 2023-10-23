@@ -963,9 +963,9 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
-        internal static string MsgAllCateogry {
+        internal static string MsgAllCategory {
             get {
-                return ResourceManager.GetString("MsgAllCateogry", resourceCulture);
+                return ResourceManager.GetString("MsgAllCategory", resourceCulture);
             }
         }
         

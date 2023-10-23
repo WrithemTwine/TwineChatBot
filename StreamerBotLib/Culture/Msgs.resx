@@ -451,7 +451,7 @@
   <data name="Msgaddquote" xml:space="preserve">
     <value>Thank you for adding quote #quotenum.</value>
   </data>
-  <data name="MsgAllCateogry" xml:space="preserve">
+  <data name="MsgAllCategory" xml:space="preserve">
     <value>All</value>
     <comment>The default gaming category a command applies, actual categories will get added this is default 'all' categories.</comment>
   </data>
