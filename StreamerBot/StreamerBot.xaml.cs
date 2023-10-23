@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -160,8 +159,8 @@ namespace StreamerBot
                 string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
 
                 // check if the saved link is the default, also check if the found link doesn't have the current version
-                   // true=> link not default and the stable version link doesn't have the current app version in it
-                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion) )
+                // true=> link not default and the stable version link doesn't have the current app version in it
+                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
                 {
                     StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
                 }
@@ -198,7 +197,7 @@ namespace StreamerBot
                     };
                     HelperStartBot(radio);
 
-                    if(e.BotName == Bots.MediaOverlayServer)
+                    if (e.BotName == Bots.MediaOverlayServer)
                     {
                         Controller.Systems.SendInitialTickerItems();
                     }
@@ -1009,7 +1008,7 @@ namespace StreamerBot
                 case "DG_DeathCounter":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if(dc.Header.ToString() is not "Category" and not "Counter")
+                        if (dc.Header.ToString() is not "Category" and not "Counter")
                         {
                             Collapse(dc);
                         }

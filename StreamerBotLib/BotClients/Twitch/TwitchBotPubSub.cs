@@ -60,7 +60,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchPubSub.OnLog += TwitchPubSub_OnLog;
                 TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
                 TwitchPubSub.OnPubSubServiceClosed += TwitchPubSub_OnPubSubServiceClosed;
-                
+
                 IsConnected = false;
             }
         }
@@ -78,9 +78,11 @@ namespace StreamerBotLib.BotClients.Twitch
                 ReconnectService();
             }
 
-            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender, 
-                new global::TwitchLib.Client.Events.OnLogArgs() { 
-                    Data = $"PubSub {Clean(e.Data)}", DateTime = DateTime.Now 
+            BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender,
+                new global::TwitchLib.Client.Events.OnLogArgs()
+                {
+                    Data = $"PubSub {Clean(e.Data)}",
+                    DateTime = DateTime.Now
                 });
         }
 

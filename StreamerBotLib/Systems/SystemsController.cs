@@ -475,11 +475,11 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(LiveUser User)
         {
-             if ((User.UserName.ToLower(CultureInfo.CurrentCulture) 
-                != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture) 
-                && (User.UserName.ToLower(CultureInfo.CurrentCulture) 
-                != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture))) 
-                || OptionFlags.MsgWelcomeStreamer)
+            if ((User.UserName.ToLower(CultureInfo.CurrentCulture)
+               != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture)
+               && (User.UserName.ToLower(CultureInfo.CurrentCulture)
+               != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture)))
+               || OptionFlags.MsgWelcomeStreamer)
             {
                 string msg = SystemActions.CheckWelcomeUser(User.UserName);
 
@@ -623,7 +623,7 @@ namespace StreamerBotLib.Systems
 
             #region Currency Games
 
-            if(SystemActions.BlackJackActive)
+            if (SystemActions.BlackJackActive)
             {
                 SystemActions.GameCheckBlackJackResponse(User, MsgReceived.Message);
             }
@@ -668,8 +668,8 @@ namespace StreamerBotLib.Systems
             {
                 ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
             }
-            if (OptionFlags.ManageOverlayTicker) 
-            { 
+            if (OptionFlags.ManageOverlayTicker)
+            {
                 AddNewOverlayTickerItem(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }

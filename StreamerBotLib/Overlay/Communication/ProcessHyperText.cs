@@ -41,12 +41,12 @@ namespace StreamerBotLib.Overlay.Communication
             }
         }
 
-        public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false, string script="", string bodyevent = "")
+        public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false, string script = "", string bodyevent = "")
         {
             return $"<html>\n" +
-                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n{(script=="" ? "" : script)}\n" +
+                $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n{(script == "" ? "" : script)}\n" +
                 $"<style>\n{OverlayStyle}\n</style>\n</head>\n" +
-                $"<body {(bodyevent=="" ? "" : bodyevent)}>\n" +
+                $"<body {(bodyevent == "" ? "" : bodyevent)}>\n" +
                 $"<div class=\"maindiv\">\n{OverlayBody}\n</div>\n</body>\n" +
                 $"</html>\n";
         }
@@ -92,7 +92,7 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static OverlayPage ProcessTicker(TickerItem tickerItem, IEnumerable<OverlayStyle> overlayStyles)
         {
-            string style =  $"\n" +
+            string style = $"\n" +
                             $".maindiv {{\n" +
                             $"/* style class for page div,  <body><div class=\" maindiv\" />...</body>   */\n" +
                             $"  text-align: center;\n" +
@@ -121,35 +121,35 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems, IEnumerable<OverlayStyle> overlayStyles)
         {
-//            string UpdaterEvents()
-//            {
-//                //$(""#LastSubscriber"").load(location.href + "" #LastSubscriber"");
-//                string values = "";
+            //            string UpdaterEvents()
+            //            {
+            //                //$(""#LastSubscriber"").load(location.href + "" #LastSubscriber"");
+            //                string values = "";
 
-//                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
-//                {
-//                    values += $"$(\"#{S.OverlayTickerItem}\").load(location.href + \" #{S.OverlayTickerItem}\")\n";
-//                }
+            //                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
+            //                {
+            //                    values += $"$(\"#{S.OverlayTickerItem}\").load(location.href + \" #{S.OverlayTickerItem}\")\n";
+            //                }
 
-//                return values;
-//            }
+            //                return values;
+            //            }
 
-//            string script = @"
-//<script src=""http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js""></script>
-//<script type=""text/javascript"">
+            //            string script = @"
+            //<script src=""http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js""></script>
+            //<script type=""text/javascript"">
 
-//function reloadelements()
-//{
-//    // commented out since jQuery requires http hosting, i.e. test in bot via webserver
-    
-//    setInterval(
-//    function (){" +
-//    UpdaterEvents() +
-//@"    }    
-//    , 500);
-//}
-//</script>
-//";
+            //function reloadelements()
+            //{
+            //    // commented out since jQuery requires http hosting, i.e. test in bot via webserver
+
+            //    setInterval(
+            //    function (){" +
+            //    UpdaterEvents() +
+            //@"    }    
+            //    , 500);
+            //}
+            //</script>
+            //";
 
             string style = $"\n" +
                             $".maindiv {{\n" +
@@ -177,7 +177,7 @@ namespace StreamerBotLib.Overlay.Communication
             }
 
             List<XElement> spans = new(from TickerItem T in tickerItems
-                           select ProcessTicker(T.OverlayTickerItem, T.UserName));
+                                       select ProcessTicker(T.OverlayTickerItem, T.UserName));
 
             string body = "";
 
@@ -209,7 +209,7 @@ namespace StreamerBotLib.Overlay.Communication
                                  where O.OverlayType == PublicConstants.OverlayAllTickers
                                  select O).First().OverlayStyleText + marqueeStyle,
                         body
-                        , reloadtime,false, "", "")
+                        , reloadtime, false, "", "")
                 };
         }
 
@@ -312,8 +312,8 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
                             $"}}\n" +
                             $"@keyframes tickerrotate {{\n" +
                             $"  0% {{ opacity: 0%; }}\n" +
-                            $"  {System.Math.Round(100.00 / (itemcount+1), 2)}% {{ opacity: 100%; }}\n" +
-                            $"  {System.Math.Round(200.00 / (itemcount+1), 2)}% {{ opacity: 0%; }}\n" +
+                            $"  {System.Math.Round(100.00 / (itemcount + 1), 2)}% {{ opacity: 100%; }}\n" +
+                            $"  {System.Math.Round(200.00 / (itemcount + 1), 2)}% {{ opacity: 0%; }}\n" +
                             $"}}\n\n";
 
                         for (int x = 1; x <= itemcount; x++)
@@ -338,12 +338,12 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
                             $"\n" +
                             $"span {{" +
                             $"  display: flex;" +
-                            $"  float: left;\n"+
+                            $"  float: left;\n" +
                             $"  padding: 10px;\n" +
                             $"  font-size: 175%;\n" +
                             $"  text-align: left;\n" +
                             $" /* set width so the tags don't move for different name lengths */" +
-                            $"  width: 450px;"+
+                            $"  width: 450px;" +
                             $"}}\n";
 
             /*

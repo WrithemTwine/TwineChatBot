@@ -100,20 +100,21 @@ namespace StreamerBotLib.Systems.CurrencyGames
             {
                 int TotalValue = 0;
                 List<PlayingCard<PlayingCardFrench, PlayingCardSuit>> hasAce = new();
-                foreach(var C in cards)
+                foreach (var C in cards)
                 {
-                    if(C.PlayingCardValue == PlayingCardFrench.A)
+                    if (C.PlayingCardValue == PlayingCardFrench.A)
                     {
                         hasAce.Add(C);
-                    } else
+                    }
+                    else
                     {
                         TotalValue += GetCardValue(TotalValue, C);
                     }
                 }
 
-                foreach(var A in hasAce)
+                foreach (var A in hasAce)
                 {
-                    TotalValue += GetCardValue(TotalValue+hasAce.Count-1, A);
+                    TotalValue += GetCardValue(TotalValue + hasAce.Count - 1, A);
                 }
 
                 return TotalValue;
@@ -161,7 +162,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
                 Message = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackHouseBusts);
             }
 
-             CalculatePayout();
+            CalculatePayout();
 
             return $"{GetUserCard()} {Message}";
         }
@@ -174,8 +175,8 @@ namespace StreamerBotLib.Systems.CurrencyGames
                 {
                     U.ResultMessage = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust);
                 }
-                else if (HouseCards.CardCount <= BlackJackWin && U.CardCount <= HouseCards.CardCount) 
-                {               
+                else if (HouseCards.CardCount <= BlackJackWin && U.CardCount <= HouseCards.CardCount)
+                {
                     if (U.CardCount == HouseCards.CardCount)
                     {
                         U.ResultMessage = LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackDraw);

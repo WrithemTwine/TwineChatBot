@@ -106,7 +106,7 @@ namespace StreamerBotLib.Overlay.Server
                 ProcessPages.Start();
             });
         }
-        
+
         /// <summary>
         /// Adds an alert webpage to send out to any connected webpage.
         /// </summary>

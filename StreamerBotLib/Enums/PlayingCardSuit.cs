@@ -3,7 +3,7 @@
     internal enum PlayingCardSuit
     {
         Spade,
-        Club, 
+        Club,
         Heart,
         Diamond
     }

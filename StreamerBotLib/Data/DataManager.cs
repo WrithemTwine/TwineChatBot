@@ -11,6 +11,7 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -35,7 +36,7 @@ namespace StreamerBotLib.Data
         #endregion DataSource
 
         private bool LearnMsgChanged = true; // always true to begin one learning cycle
-      
+
         /// <summary>
         /// When the follower bot begins a bulk follower update, this flag 'locks' the database Follower table from changes until bulk update concludes.
         /// </summary>
@@ -343,7 +344,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 string Currency = "";
-                if(row.Table == _DataSource.Currency.TableName)
+                if (row.Table == _DataSource.Currency.TableName)
                 {
                     Currency = $" AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{row.Currency_field}'";
                 }
@@ -1116,7 +1117,7 @@ switches:
         public void PostNewAutoShoutUser(string UserName)
         {
 
-        // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
+            // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding user {UserName} to the auto shout-out listing.");
 #endif
@@ -1405,7 +1406,7 @@ switches:
 
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
-            CurrencyRow currencyRow = (CurrencyRow) GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            CurrencyRow currencyRow = (CurrencyRow)GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
             _DataSource.Currency.AcceptChanges();
             return currencyRow.Value >= value;
         }
@@ -1572,7 +1573,7 @@ switches:
         /// <param name="Reset"><code>true</code>: changes value to specified value, <code>false</code>: increments the counter by <paramref name="Value"/></param>
         /// <param name="Value">The value to reset, when <paramref name="Reset"/> is <code>true</code>. Otherwise, default increment by 1.</param>
         /// <returns>The updated value of the current category death counter.</returns>
-        public int PostDeathCounterUpdate(string currCategory, bool Reset=false, int updateValue=1)
+        public int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1)
         {
             int returnValue = 0;
             lock (GUIDataManagerLock.Lock)
@@ -1951,8 +1952,8 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 return new(from OverlayTickerRow row in GetRows(_DataSource.OverlayTicker)
-                       let ticker = new TickerItem() { OverlayTickerItem = (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), row.TickerName), UserName = row.UserName }
-                       select ticker);
+                           let ticker = new TickerItem() { OverlayTickerItem = (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), row.TickerName), UserName = row.UserName }
+                           select ticker);
             }
         }
 
@@ -1973,7 +1974,7 @@ switches:
                 {
                     _DataSource.OverlayTicker.AddOverlayTickerRow(item.ToString(), name);
                     _DataSource.OverlayTicker.AcceptChanges();
-               }
+                }
 
                 NotifySaveData();
             }

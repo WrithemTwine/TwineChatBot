@@ -142,7 +142,7 @@ namespace StreamerBotLib.Systems
                         {
                             new(MsgVars.user,CurrUser.UserName)
                         })));
-                } 
+                }
                 else
                 {
                     OnProcessCommand(VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackPlayerNoMoney),
@@ -157,13 +157,13 @@ namespace StreamerBotLib.Systems
         private void GameBlackJackStart()
         {
             BlackJackActive = true;
-            Thread.Sleep(1000 *60 *1); // 1000ms=1s, 1s *60s/min*1min/s = 1m time in seconds
+            Thread.Sleep(1000 * 60 * 1); // 1000ms=1s, 1s *60s/min*1min/s = 1m time in seconds
             BlackJackPlay = true;
             GameCurrBlackJack.BuildDeck();
 
             if (!GameCurrBlackJack.CheckHouseWin()) // if House has 21, only way anyone else can win is with 21, all other players lose
             {
-                OnProcessCommand(VariableParser.ParseReplace( LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackStart),
+                OnProcessCommand(VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackStart),
                     VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
@@ -237,7 +237,7 @@ namespace StreamerBotLib.Systems
 
             OnProcessCommand(GameCurrBlackJack.HousePlay(), 0);
 
-            foreach(var U in GameCurrBlackJack.PayoutPlayers())
+            foreach (var U in GameCurrBlackJack.PayoutPlayers())
             {
                 if (U != null)
                 {
@@ -253,7 +253,7 @@ namespace StreamerBotLib.Systems
 
         public void GameCheckBlackJackResponse(LiveUser CurrUser, string Response)
         {
-            if(CurrUser == GameCurrBlackJackPlayer)
+            if (CurrUser == GameCurrBlackJackPlayer)
             {
                 lock (GameCurrBlackJackAnswer)
                 {

@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
+
 using System.Collections.Generic;
 
 namespace StreamerBotLib.Static

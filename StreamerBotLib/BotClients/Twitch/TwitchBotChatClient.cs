@@ -354,7 +354,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 while (tempSend.Length > 500)
                 {
                     string temp = tempSend[..500];
-                    string AddSend = temp[..(temp.LastIndexOf(' ')-1)];
+                    string AddSend = temp[..(temp.LastIndexOf(' ') - 1)];
                     newSendMsg.Add(AddSend);
                     tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
                 }
