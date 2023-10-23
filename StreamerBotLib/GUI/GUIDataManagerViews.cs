@@ -98,6 +98,8 @@ namespace StreamerBotLib.GUI
         public DataView ModeratorApprove { get; private set; }
         public DataView GameDeadCounter { get; private set; }
 
+        public DataView Quotes { get; private set; }
+
         #endregion
 
         public GUIDataManagerViews()
@@ -165,6 +167,7 @@ namespace StreamerBotLib.GUI
             OverlayTicker = dataManager._DataSource.OverlayTicker.DefaultView;
             ModeratorApprove = dataManager._DataSource.ModeratorApprove.DefaultView;
             GameDeadCounter = dataManager._DataSource.GameDeadCounter.DefaultView;
+            Quotes = dataManager._DataSource.Quotes.DefaultView;
 
             /**/
             ChannelEvents.ListChanged += DataView_ListChanged;
@@ -190,6 +193,7 @@ namespace StreamerBotLib.GUI
             OverlayTicker.ListChanged += DataView_ListChanged;
             ModeratorApprove.ListChanged += DataView_ListChanged;
             GameDeadCounter.ListChanged += DataView_ListChanged;
+            Quotes.ListChanged += DataView_ListChanged;
             /**/
 
             SetCommandCollection();

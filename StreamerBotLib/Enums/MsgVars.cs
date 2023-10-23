@@ -45,6 +45,9 @@
         hit,
         stand,
         payout,
-        Pluraltime
+        Pluraltime,
+        quotenum,
+        quote,
+        Pluralquote
     }
 }

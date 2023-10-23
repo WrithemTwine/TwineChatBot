@@ -125,6 +125,9 @@
     <value>addcommand</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="addquote" xml:space="preserve">
+    <value>addquote</value>
+  </data>
   <data name="approve" xml:space="preserve">
     <value>approve</value>
   </data>
@@ -330,6 +333,12 @@
   <data name="Helpquery" xml:space="preserve">
     <value>The results of the command query will go here.</value>
   </data>
+  <data name="Helpquote" xml:space="preserve">
+    <value>Returns the requested quote message.</value>
+  </data>
+  <data name="Helpquotenum" xml:space="preserve">
+    <value>Returns the quote number per the Quotes data table.</value>
+  </data>
   <data name="HelpRaid" xml:space="preserve">
     <value>The welcome and thank you message when a user raids the channel</value>
   </data>
@@ -439,6 +448,9 @@
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
+  <data name="Msgaddquote" xml:space="preserve">
+    <value>Thank you for adding quote #quotenum.</value>
+  </data>
   <data name="MsgAllCateogry" xml:space="preserve">
     <value>All</value>
     <comment>The default gaming category a command applies, actual categories will get added this is default 'all' categories.</comment>
@@ -496,6 +508,9 @@
   </data>
   <data name="Msgdefaultcommand" xml:space="preserve">
     <value>Default command, not changed.</value>
+  </data>
+  <data name="MsgDefaultQuote" xml:space="preserve">
+    <value>Quote not found.</value>
   </data>
   <data name="Msgdequeue" xml:space="preserve">
     <value>Also with leave, user leaves the play list</value>
@@ -585,12 +600,21 @@
   <data name="Msgqueue" xml:space="preserve">
     <value>The details of the queue, list who is in it</value>
   </data>
+  <data name="Msgquote" xml:space="preserve">
+    <value>#quote</value>
+  </data>
+  <data name="MsgQuoteNumber" xml:space="preserve">
+    <value>There are #quotenum.</value>
+  </data>
   <data name="MsgRaid" xml:space="preserve">
     <value>Thanks #user for bringing #viewers and raiding the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgremovecommand" xml:space="preserve">
     <value>Command removed</value>
+  </data>
+  <data name="Msgremovequote" xml:space="preserve">
+    <value>Successfully removed #quotenum.</value>
   </data>
   <data name="Msgresetdeath" xml:space="preserve">
     <value>The game #category death counter reset to #value.</value>
@@ -665,6 +689,9 @@
   <data name="Paramaddcommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramaddquote" xml:space="preserve">
+    <value>-param:true -use:!addquote {text}</value>
   </data>
   <data name="Paramapprove" xml:space="preserve">
     <value>-p:Mod -use:!approve &lt;item number&gt;</value>
@@ -745,6 +772,9 @@
     <value>-p:Mod -use:!queue mods only</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramquote" xml:space="preserve">
+    <value>-param:true -use:!quote | or !quote {quote number}</value>
+  </data>
   <data name="Paramraid" xml:space="preserve">
     <value>-use:!raid &lt;user&gt; Mod only -param:true -p:Mod</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -752,6 +782,9 @@
   <data name="Paramremovecommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!removecommand command. Does not remove default commands.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramremovequote" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!removequote {quote number}</value>
   </data>
   <data name="Paramresetdeath" xml:space="preserve">
     <value>-p:Mod -param:true -use:!resetdead &lt;number&gt; {uses current category, reset to 0 or &lt;number&gt;}</value>
@@ -820,6 +853,9 @@
     <value>month, months</value>
     <comment>comma separated 'single, plural'</comment>
   </data>
+  <data name="Pluralquote" xml:space="preserve">
+    <value>quote, quotes</value>
+  </data>
   <data name="Pluralsub" xml:space="preserve">
     <value>subscription, subscriptions</value>
     <comment>comma separated 'single, plural'</comment>
@@ -850,6 +886,9 @@
     <value>queue</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="quote" xml:space="preserve">
+    <value>quote</value>
+  </data>
   <data name="raid" xml:space="preserve">
     <value>raid</value>
     <comment>default command, can be translated</comment>
@@ -860,6 +899,9 @@
   <data name="removecommand" xml:space="preserve">
     <value>removecommand</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="removequote" xml:space="preserve">
+    <value>removequote</value>
   </data>
   <data name="resetdeath" xml:space="preserve">
     <value>resetdeath</value>

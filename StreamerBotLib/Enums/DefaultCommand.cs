@@ -30,6 +30,9 @@
         blackjack,
         death,
         resetdeath,
-        viewdeath
+        viewdeath,
+        addquote,
+        quote,
+        removequote
     }
 }

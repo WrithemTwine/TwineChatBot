@@ -79,6 +79,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to addquote.
+        /// </summary>
+        internal static string addquote {
+            get {
+                return ResourceManager.GetString("addquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to approve.
         /// </summary>
         internal static string approve {
@@ -619,6 +628,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Returns the requested quote message..
+        /// </summary>
+        internal static string Helpquote {
+            get {
+                return ResourceManager.GetString("Helpquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Returns the quote number per the Quotes data table..
+        /// </summary>
+        internal static string Helpquotenum {
+            get {
+                return ResourceManager.GetString("Helpquotenum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The welcome and thank you message when a user raids the channel.
         /// </summary>
         internal static string HelpRaid {
@@ -925,6 +952,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Thank you for adding quote #quotenum..
+        /// </summary>
+        internal static string Msgaddquote {
+            get {
+                return ResourceManager.GetString("Msgaddquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         internal static string MsgAllCateogry {
@@ -1074,6 +1110,15 @@ namespace StreamerBotLib.Culture {
         internal static string Msgdefaultcommand {
             get {
                 return ResourceManager.GetString("Msgdefaultcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quote not found..
+        /// </summary>
+        internal static string MsgDefaultQuote {
+            get {
+                return ResourceManager.GetString("MsgDefaultQuote", resourceCulture);
             }
         }
         
@@ -1321,6 +1366,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #quote.
+        /// </summary>
+        internal static string Msgquote {
+            get {
+                return ResourceManager.GetString("Msgquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are #quotenum..
+        /// </summary>
+        internal static string MsgQuoteNumber {
+            get {
+                return ResourceManager.GetString("MsgQuoteNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thanks #user for bringing #viewers and raiding the channel!.
         /// </summary>
         internal static string MsgRaid {
@@ -1335,6 +1398,15 @@ namespace StreamerBotLib.Culture {
         internal static string Msgremovecommand {
             get {
                 return ResourceManager.GetString("Msgremovecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully removed #quotenum..
+        /// </summary>
+        internal static string Msgremovequote {
+            get {
+                return ResourceManager.GetString("Msgremovequote", resourceCulture);
             }
         }
         
@@ -1528,6 +1600,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -param:true -use:!addquote {text}.
+        /// </summary>
+        internal static string Paramaddquote {
+            get {
+                return ResourceManager.GetString("Paramaddquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -p:Mod -use:!approve &lt;item number&gt;.
         /// </summary>
         internal static string Paramapprove {
@@ -1717,6 +1798,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -param:true -use:!quote | or !quote {quote number}.
+        /// </summary>
+        internal static string Paramquote {
+            get {
+                return ResourceManager.GetString("Paramquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -use:!raid &lt;user&gt; Mod only -param:true -p:Mod.
         /// </summary>
         internal static string Paramraid {
@@ -1731,6 +1821,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramremovecommand {
             get {
                 return ResourceManager.GetString("Paramremovecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!removequote {quote number}.
+        /// </summary>
+        internal static string Paramremovequote {
+            get {
+                return ResourceManager.GetString("Paramremovequote", resourceCulture);
             }
         }
         
@@ -1906,6 +2005,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to quote, quotes.
+        /// </summary>
+        internal static string Pluralquote {
+            get {
+                return ResourceManager.GetString("Pluralquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to subscription, subscriptions.
         /// </summary>
         internal static string Pluralsub {
@@ -1978,6 +2086,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to quote.
+        /// </summary>
+        internal static string quote {
+            get {
+                return ResourceManager.GetString("quote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to raid.
         /// </summary>
         internal static string raid {
@@ -2001,6 +2118,15 @@ namespace StreamerBotLib.Culture {
         internal static string removecommand {
             get {
                 return ResourceManager.GetString("removecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to removequote.
+        /// </summary>
+        internal static string removequote {
+            get {
+                return ResourceManager.GetString("removequote", resourceCulture);
             }
         }
         

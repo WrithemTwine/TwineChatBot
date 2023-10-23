@@ -1209,6 +1209,94 @@ switches:
 
         #endregion
 
+        #region Quotes
+
+        /// <summary>
+        /// Add a new quote to the 'Quotes' Table. First, this finds the minimum unused quote number-to recycle the numbers- or uses the 
+        /// next available number. Then, with this number adds the new quote to the table.
+        /// </summary>
+        /// <param name="Text">The quote text to add to the table.</param>
+        /// <returns>The quote number for the newly added quote.</returns>
+        public int PostQuote(string Text)
+        {
+            // get the quotes, sorted by ascending quote number
+            List<QuotesRow> quotes = new((QuotesRow[])GetRows(_DataSource.Quotes, Sort: $"{_DataSource.Quotes.NumberColumn.ColumnName} ASC"));
+
+            int newNumber = -1; // set a check number.
+
+            if (quotes.Last().Number != quotes.Count) // if list is full, there are no empty numbers
+            {
+                // find the missing quote number in the existing quote listing
+                for (int x = 1; x <= quotes.Count; x++)
+                {
+                    if (quotes.FindIndex((m) => m.Number == x) == -1) // -1 is the number is 'not found' 
+                    {
+                        newNumber = x;
+                    }
+                }
+            }
+
+            if (newNumber == -1) // should the quote list lookup have all the numbers
+            {
+                newNumber = quotes.Count + 1; // pick next number
+            }
+
+            lock (GUIDataManagerLock.Lock)
+            {// add the quote
+                _DataSource.Quotes.AddQuotesRow(newNumber, Text);
+                _DataSource.Quotes.AcceptChanges();
+            }
+
+            // return the quote number
+            return newNumber;
+        }
+
+        /// <summary>
+        /// Get a specific quote from the data table per the <paramref name="QuoteNum"/>
+        /// </summary>
+        /// <param name="QuoteNum">The quote number to provide.</param>
+        /// <returns>The quote number and quote from the quote table.</returns>
+        public string GetQuote(int QuoteNum)
+        {
+            return $"{QuoteNum} {((QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'"))?.Quote}";
+        }
+
+        /// <summary>
+        /// Find the highest quote number from the quote table.
+        /// </summary>
+        /// <returns>The maximum quote number (where deleted quotes leave empty numbers somewhere in the middle)</returns>
+        public int GetQuoteCount()
+        {
+            return ((QuotesRow[])GetRows(_DataSource.Quotes, Sort: $"{_DataSource.Quotes.NumberColumn.ColumnName} ASC")).Last().Number;
+        }
+
+        /// <summary>
+        /// Delete a quote from the quote table, per the specified <paramref name="QuoteNum"/>
+        /// </summary>
+        /// <param name="QuoteNum">The quote number to delete.</param>
+        /// <returns><c>true</c> if the quote successfully delete; otherwise <c>false</c>.</returns>
+        public bool RemoveQuote(int QuoteNum)
+        {
+            bool task = false;
+
+            // get the quote row, test if it's found
+            QuotesRow row = (QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'");
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                if (row != null)
+                {
+                    row.Delete(); // row exists, delete it
+                    _DataSource.Quotes.AcceptChanges(); // accept the change
+                    task = true;
+                }
+            }
+
+            return task;
+        }
+
+        #endregion
+
         #region Currency
 
         public void UpdateCurrency(List<string> Users, DateTime dateTime)

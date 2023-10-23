@@ -88,7 +88,7 @@ namespace StreamerBotLib.Systems
                 {
                     diluteTime = CheckDilute();
                     foreach (var item in from Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands()
-                                         where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry))
+                                         where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))
                                          let item = new TimerCommand(Timers, diluteTime)
                                          select item)
                     {
@@ -125,7 +125,7 @@ namespace StreamerBotLib.Systems
         private bool ComputeRerunLoop(List<string> CategoryList)
         {
             return ComputeRerunLoop()
-                    && (CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                    && (CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)));
         }
 
         private bool ComputeRepeat()
@@ -680,6 +680,50 @@ namespace StreamerBotLib.Systems
                         new(MsgVars.value, FormatData.Plurality( counter ,MsgVars.Pluraltime)),
                         new(MsgVars.category, Category)
                     }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addquote))
+            {
+                if (arglist.Count == 0)
+                {
+                    result = cmdrow.Usage;
+                }
+                else
+                {
+                    int quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
+
+                    result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                        new(MsgVars.quotenum, quoteNum.ToString())
+                    }));
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.quote))
+            {
+                if (arglist.Count > 1)
+                {
+                    result = cmdrow.Usage;
+                }
+                else if (arglist.Count == 0)
+                {
+                    result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                       {
+                            new(MsgVars.quotenum, DataManage.GetQuoteCount().ToString())
+                       }));
+                }
+                else
+                {
+                    result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                        {
+                            new(MsgVars.quote, DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
+                        }));
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removequote))
+            {
+                result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                       {
+                            new(MsgVars.quotenum, DataManage.RemoveQuote(Convert.ToInt32(arglist[0])) ? arglist[0] : LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
+                       }));
             }
             else
             {
