@@ -1224,7 +1224,7 @@ switches:
 
             int newNumber = -1; // set a check number.
 
-            if (quotes.Last().Number != quotes.Count) // if list is full, there are no empty numbers
+            if (quotes.Count > 0 && quotes.Last().Number != quotes.Count) // if list is full, there are no empty numbers
             {
                 // find the missing quote number in the existing quote listing
                 for (int x = 1; x <= quotes.Count; x++)

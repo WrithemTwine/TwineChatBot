@@ -707,7 +707,7 @@ namespace StreamerBotLib.Systems
                 {
                     result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                        {
-                            new(MsgVars.quotenum, DataManage.GetQuoteCount().ToString())
+                            new(MsgVars.quotenum, FormatData.Plurality(DataManage.GetQuoteCount(), MsgVars.Pluralquote))
                        }));
                 }
                 else
