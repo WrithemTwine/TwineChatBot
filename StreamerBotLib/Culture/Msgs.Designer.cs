@@ -1375,7 +1375,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are #quotenum..
+        ///   Looks up a localized string similar to There #be #quotenum..
         /// </summary>
         internal static string MsgQuoteNumber {
             get {
@@ -1956,6 +1956,15 @@ namespace StreamerBotLib.Culture {
         internal static string payout {
             get {
                 return ResourceManager.GetString("payout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to is, are.
+        /// </summary>
+        internal static string Pluralbe {
+            get {
+                return ResourceManager.GetString("Pluralbe", resourceCulture);
             }
         }
         

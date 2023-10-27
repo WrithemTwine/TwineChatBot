@@ -626,12 +626,12 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CredentialsHelpExpanded {
+        public bool ExpanderCredentialsHelp {
             get {
-                return ((bool)(this["CredentialsHelpExpanded"]));
+                return ((bool)(this["ExpanderCredentialsHelp"]));
             }
             set {
-                this["CredentialsHelpExpanded"] = value;
+                this["ExpanderCredentialsHelp"] = value;
             }
         }
         
@@ -1724,6 +1724,18 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["GitHubWikiLink"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExpanderBotUsageInfo {
+            get {
+                return ((bool)(this["ExpanderBotUsageInfo"]));
+            }
+            set {
+                this["ExpanderBotUsageInfo"] = value;
             }
         }
     }

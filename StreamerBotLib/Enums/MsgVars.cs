@@ -48,6 +48,8 @@
         Pluraltime,
         quotenum,
         quote,
-        Pluralquote
+        Pluralquote,
+        Pluralbe,
+        be
     }
 }

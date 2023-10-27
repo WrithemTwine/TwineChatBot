@@ -32,10 +32,16 @@ namespace StreamerBotLib.Data
         /// </summary>
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
+        /// <summary>
+        /// The database structured data, with supporting data typing code calls.
+        /// </summary>
         internal readonly DataSource _DataSource;
         #endregion DataSource
 
-        private bool LearnMsgChanged = true; // always true to begin one learning cycle
+        /// <summary>
+        /// always true to begin one learning cycle
+        /// </summary>
+        private bool LearnMsgChanged = true;
 
         /// <summary>
         /// When the follower bot begins a bulk follower update, this flag 'locks' the database Follower table from changes until bulk update concludes.
@@ -1256,10 +1262,23 @@ switches:
         /// Get a specific quote from the data table per the <paramref name="QuoteNum"/>
         /// </summary>
         /// <param name="QuoteNum">The quote number to provide.</param>
-        /// <returns>The quote number and quote from the quote table.</returns>
+        /// <returns>The quote number and quote from the quote table -or- null if there is no quote.</returns>
         public string GetQuote(int QuoteNum)
         {
-            return $"{QuoteNum} {((QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'"))?.Quote}";
+            string quotedata = "";
+
+            QuotesRow FindQuote = ((QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'"));
+
+            if (FindQuote != null)
+            {
+                quotedata = $"{QuoteNum} {FindQuote.Quote}";
+            }
+            else
+            {
+                quotedata = null;
+            }
+
+            return quotedata;
         }
 
         /// <summary>

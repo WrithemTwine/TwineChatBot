@@ -172,14 +172,20 @@
                 <TabControl>
                     <TabItem Header="Start Bots">
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Top">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />
+                            <Expander DockPanel.Dock="Top" Header="Bot Usage Info" IsExpanded="{Binding ExpanderBotUsageInfo, Mode=OneWay}">
+                               <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />
                                 The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />
                                 stops when the separate "MultiUserLiveBot" process starts.<LineBreak />
                                 For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.<LineBreak />
                                 Changing the Twitch password can invalidate the access token.<LineBreak /><LineBreak />
                                 Start and Stop certain bots when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the<LineBreak />
                                 stream is detected online is when the specific bots would start.
-                            </TextBlock>
+                            </TextBlock> 
+                            </Expander>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
+                                <Button Content="Start All Bots" Click="GUIStartBots_Click" Margin="15,5" />
+                                <Button Content="Stop All Bots" Click="GUIStopBots_Click" Margin="15,5" />
+                            </StackPanel>
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <WrapPanel HorizontalAlignment="Center">
                                     <GroupBox Header="LiveStream Monitor Service">
@@ -406,7 +412,7 @@
 
                             <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
 
-                            <Expander DockPanel.Dock="Top" IsExpanded="{Binding CredentialsHelpExpanded, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
+                            <Expander DockPanel.Dock="Top" IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
                                 <Expander.Header>
                                     <TextBlock Text="{DynamicResource CredentialsHeader}"/>
                                 </Expander.Header>
@@ -588,7 +594,7 @@
                                                 <Label x:Name="Label_Twitch_StreamerRefreshDate" Width="Auto" Content="{Binding TwitchStreamerTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
                                             </StackPanel>
                                             <TextBlock>Current Bot Features requiring same {Bot and Streamer} Client ID</TextBlock>
-                                            <ListView ItemsSource="{DynamicResource CredentialsTwitchStreamerFeatures}" />
+                                            <ListBox ItemsSource="{DynamicResource CredentialsTwitchStreamerFeatures}" />
                                             <Expander>
                                                 <Expander.Header>
                                                     <TextBlock>
@@ -1042,7 +1048,7 @@
                                                 <TextBlock>Enable Limited Follower Messages</TextBlock>
                                             </CheckBox>
 
-                                            <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count" Orientation="Vertical" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
+                                            <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count" Orientation="Vertical" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility">
                                                 <TextBlock>Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</TextBlock>
 
                                                 <StackPanel Orientation="Horizontal">
@@ -1114,7 +1120,7 @@
                                             </GroupBox>
                                             -->
             </TabItem>
-            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
+            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Margin="-2,2,0,-2" VerticalAlignment="Stretch" d:LayoutOverrides="Height">
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">

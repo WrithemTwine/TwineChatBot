@@ -604,7 +604,7 @@
     <value>#quote</value>
   </data>
   <data name="MsgQuoteNumber" xml:space="preserve">
-    <value>There are #quotenum.</value>
+    <value>There #be #quotenum.</value>
   </data>
   <data name="MsgRaid" xml:space="preserve">
     <value>Thanks #user for bringing #viewers and raiding the channel!</value>
@@ -835,6 +835,9 @@
   </data>
   <data name="payout" xml:space="preserve">
     <value>payout</value>
+  </data>
+  <data name="Pluralbe" xml:space="preserve">
+    <value>is, are</value>
   </data>
   <data name="Pluralbits" xml:space="preserve">
     <value>bit, bits</value>

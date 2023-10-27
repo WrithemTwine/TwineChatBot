@@ -152,7 +152,7 @@
     <Setting Name="FirstUserJoinedMsg" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="CredentialsHelpExpanded" Type="System.Boolean" Scope="User">
+    <Setting Name="ExpanderCredentialsHelp" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DebugLiveStream" Type="System.Boolean" Scope="User">
@@ -427,6 +427,9 @@
     </Setting>
     <Setting Name="GitHubWikiLink" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/wiki</Value>
+    </Setting>
+    <Setting Name="ExpanderBotUsageInfo" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

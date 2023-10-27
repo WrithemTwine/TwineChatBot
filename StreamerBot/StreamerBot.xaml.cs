@@ -36,8 +36,6 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
-        // TODO: add buttons to start and stop all bots, based on current state (all start => bot 1 started->don't restart, bot 2 not started->start)
-
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -54,6 +52,11 @@ namespace StreamerBot
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
+
+        /// <summary>
+        /// A collection of options and RadioButton pairs for each bot, to start and stop.
+        /// </summary>
+        private List<Tuple<bool, RadioButton>> BotOps { get; }
 
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
@@ -86,9 +89,19 @@ namespace StreamerBot
 
             //LoaderDLLFolderPath = "./";
 
+
             InitializeComponent();
 
-            // TODO: change default theme to 'light'
+            BotOps = new()
+            {
+                new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
+                new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
+                new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
+                new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
+                new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
+                new(OptionFlags.TwitchPubSubOnlineMode, Radio_Twitch_PubSubBotStart)
+            };
+
             SetTheme(); // adjust the theme, if user selected a different theme.
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
@@ -229,6 +242,43 @@ namespace StreamerBot
 
         #endregion
 
+        /// <summary>
+        /// Will force start all bots currently not started, regardless of "start if Live" setting is selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStartBots_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var B in BotOps)
+            {
+                _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    (B.Item2.DataContext as IOModule)?.StartBot();
+                }), null);
+            }
+        }
+
+        /// <summary>
+        /// Will stop all bots currently not stopped, regardless of "stop when offline" setting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStopBots_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var B in BotOps)
+            {
+                _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    (B.Item2.DataContext as IOModule)?.StopBot();
+                }), null);
+            }
+        }
+
+        /// <summary>
+        /// Manages the GUI updates for when bots are started. Hides and enables buttons 
+        /// to set the GUI for bots started and allows the user to Stop Bots.
+        /// </summary>
+        /// <param name="rb">The radio button of the started bot.</param>
         private static void HelperStartBot(RadioButton rb)
         {
             rb.IsChecked = true;
@@ -254,6 +304,11 @@ namespace StreamerBot
             }
         }
 
+        /// <summary>
+        /// Manages the GUI updates for when bots are stopped. Hides and enables buttons
+        /// to set the GUI for bots stopped and allows the user to Start Bots.
+        /// </summary>
+        /// <param name="rb">The radio button of the stopped bot.</param>
         private static void HelperStopBot(RadioButton rb)
         {
             rb.IsChecked = true;
@@ -440,14 +495,7 @@ namespace StreamerBot
             CheckFocus();
             if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
             {
-                List<Tuple<bool, RadioButton>> BotOps = new()
-                {
-                    new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
-                    new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
-                    new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
-                    new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart)
-                };
+
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
@@ -487,6 +535,9 @@ namespace StreamerBot
             PropertyChanged?.Invoke(this, new(propname));
         }
 
+        /// <summary>
+        /// Perform showing MessageBoxes based on certain settings flags. Gives users details about certain settings.
+        /// </summary>
         private void CheckMessageBoxes()
         {
             if (OptionFlags.ManageDataArchiveMsg)
