@@ -1265,13 +1265,13 @@ switches:
         /// <returns>The quote number and quote from the quote table -or- null if there is no quote.</returns>
         public string GetQuote(int QuoteNum)
         {
-            string quotedata = "";
+            string quotedata;
 
             QuotesRow FindQuote = ((QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'"));
 
             if (FindQuote != null)
             {
-                quotedata = $"{QuoteNum} {FindQuote.Quote}";
+                quotedata = $"{QuoteNum}: \"{FindQuote.Quote}\"";
             }
             else
             {

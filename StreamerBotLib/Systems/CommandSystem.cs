@@ -716,7 +716,8 @@ namespace StreamerBotLib.Systems
                 {
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
-                            new(MsgVars.quote, DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
+                            new(MsgVars.quote,
+                            $"{LocalizedMsgSystem.GetVar(DefaultCommand.quote)} {DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote)}" )
                         }));
                 }
             }
