@@ -11,10 +11,13 @@
     <DockPanel LastChildFill="True" Margin="1,0,-1,0">
         <StackPanel DockPanel.Dock="Top">
             <TextBlock TextWrapping="Wrap" Margin="5,0,0,0">
-                This feature is currently in testing. Please report any complications.<LineBreak />
-                Ensure dates are formatted properly, the way presented.<LineBreak />
-                A red box means the date isn't formatted properly.<LineBreak />
-                When specifying media files, *DO NOT* exceed 2GB limit per file.
+                - This feature is currently in testing. Please report any complications.<LineBreak />
+                - Ensure dates are formatted properly, the way presented.<LineBreak />
+                - A red box means the date isn't formatted properly.<LineBreak />
+                - When specifying media files, *DO NOT* exceed 2GB limit per file.<LineBreak />
+                - Currently, a single message response fits within 500 characters (including<LineBreak />
+                  4-character '/me ' which causes <Italic>italic response</Italic>). The data field name <LineBreak />
+                on the left shows character count for text fields.
             </TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,8">

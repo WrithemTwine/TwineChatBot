@@ -155,7 +155,7 @@ namespace StreamerBotLib.Data
             lock (GUIDataManagerLock.Lock)
             {
                 return new(from DataTable table in _DataSource.Tables
-                                         select table.TableName);
+                           select table.TableName);
             }
         }
         #endregion

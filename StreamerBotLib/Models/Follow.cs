@@ -11,7 +11,7 @@ namespace StreamerBotLib.Models
             FollowedAt = followedAt;
             FromUserId = fromUserId;
             FromUserName = fromUserName;
-            FromUser = new(FromUserName,Source,fromUserId);
+            FromUser = new(FromUserName, Source, fromUserId);
         }
 
         public DateTime FollowedAt { get; set; }

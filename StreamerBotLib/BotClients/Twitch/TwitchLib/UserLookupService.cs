@@ -20,6 +20,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public class UserLookupService : ApiService
     {
+        // TODO: consider adding code to determine if the internet or Twitch servers are not available (throws exception); and backoff trying to perform action; maybe add a revisit task to try again after a certain amount of time
+
         public UserLookupService(ITwitchAPI api, int checkIntervalInSeconds = 60) : base(api, checkIntervalInSeconds)
         {
         }

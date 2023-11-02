@@ -12,7 +12,6 @@ using StreamerBotLib.Static;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -640,13 +639,13 @@ namespace StreamerBotLib.Systems
             {
                 bool TryConvertInt = int.TryParse(arglist[0], out int Wager);
 
-                if (arglist.Count != 1 || !TryConvertInt)
+                if (arglist.Count == 1 && TryConvertInt)
                 {
-                    result = cmdrow.Usage;
+                    GamePlayBlackJack(cmdrow, User, Wager);
                 }
                 else
                 {
-                    GamePlayBlackJack(cmdrow, User, Wager);
+                    result = cmdrow.Usage;
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.death))
@@ -705,16 +704,20 @@ namespace StreamerBotLib.Systems
                 }
                 else if (arglist.Count == 0)
                 {
+                    int QuoteCount = DataManage.GetQuoteCount();
+
                     result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                        {
-                            new(MsgVars.quotenum, FormatData.Plurality(DataManage.GetQuoteCount(), MsgVars.Pluralquote))
+                            new(MsgVars.quotenum, FormatData.Plurality(QuoteCount, MsgVars.Pluralquote)),  // determine plurality of "quote/quotes" based on quote count
+                            new(MsgVars.be, FormatData.PluralityOnlyWord(QuoteCount, MsgVars.Pluralbe))     // convert 'be' to singular "is" or plural "are" per QuoteCount
                        }));
                 }
                 else
                 {
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
-                            new(MsgVars.quote, DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
+                            new(MsgVars.quote,
+                            $"{LocalizedMsgSystem.GetVar(DefaultCommand.quote)} {DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote)}" )
                         }));
                 }
             }

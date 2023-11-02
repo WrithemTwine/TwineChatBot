@@ -5,7 +5,7 @@
         /// <summary>
         /// Represents once the cards are dealt in a single round, the full deck is restored for the next deal.
         /// </summary>
-        SingleDeal, 
+        SingleDeal,
         /// <summary>
         /// Represents cards are dealt from the same stack until used completely, then reshuffled.
         /// </summary>

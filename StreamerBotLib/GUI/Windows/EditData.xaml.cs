@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using LogWriter = StreamerBotLib.Static.LogWriter;
 
@@ -34,7 +35,7 @@ namespace StreamerBotLib.GUI.Windows
         private bool IsNewRow { get; set; }
         private List<EditPopupTime> DateList { get; set; } = new();
 
-        private ListView CategoryListView;
+        private ListBox CategoryListView;
         private CheckBox CurrCheckedItem = null;
         private ComboBox TableElement;
         private ComboBox KeyFieldElement;
@@ -69,6 +70,8 @@ namespace StreamerBotLib.GUI.Windows
             DataManage = dataManageReadOnly;
         }
 
+        private bool AddedStringEvent;
+
         /// <summary>
         /// Supply the data to populate into the Popup Window.
         /// </summary>
@@ -98,13 +101,27 @@ namespace StreamerBotLib.GUI.Windows
                 }
             }
 
-
             foreach (DataColumn dataColumn in dataTable.Columns)
             {
-                UIElement dataname = new Label() { Content = dataColumn.ColumnName, Width = NameWidth };
+                AddedStringEvent = false;
+
+                UIElement dataname = new StackPanel() { Orientation = Orientation.Vertical };
+                ((StackPanel)dataname).Children.Add(new Label() { Content = dataColumn.ColumnName, Width = NameWidth });
+
                 object datavalue = DBNull.Value.Equals(SaveDataRow[dataColumn]) ? "" : SaveDataRow[dataColumn];
 
                 UIElement dataout = Convert(datavalue, dataColumn, CheckLockTable);
+
+                // Check after adding "dataout" via Convert() whether we added the string counting event - add labels to hold the string count value
+                if (AddedStringEvent)
+                {
+                    StackPanel CountRows = new() { Orientation = Orientation.Horizontal };
+                    CountRows.Children.Add(new Label() { Content = "Current Chars: " });
+                    CountRows.Children.Add(new Label());
+
+                    ((StackPanel)dataname).Children.Add(CountRows);
+                }
+
                 UIElement datatable = new Label() { Content = dataTable.TableName, Visibility = Visibility.Collapsed };
 
                 StackPanel row = new() { Orientation = Orientation.Horizontal };
@@ -295,7 +312,8 @@ namespace StreamerBotLib.GUI.Windows
                             { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
                             { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
                             { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
-                            { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) }
+                            { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) },
+                            {"Platform", Enum.GetValues(typeof(Platform)) }
                         };
 
                     foreach (var E in ColEnums[dataColumn.ColumnName])
@@ -392,14 +410,14 @@ namespace StreamerBotLib.GUI.Windows
                                         item
                                     );
                             }
-                            dataout = new ListView()
+                            dataout = new ListBox()
                             {
                                 Width = ValueWidth,
                                 VerticalAlignment = VerticalAlignment.Center,
                                 ItemsSource = CBcombocollection,
                                 MaxHeight = 200
                             };
-                            CategoryListView = (ListView)dataout;
+                            CategoryListView = (ListBox)dataout;
                         }
                         else if (dataColumn.ColumnName == "table")
                         {
@@ -516,6 +534,13 @@ namespace StreamerBotLib.GUI.Windows
                         Width = ValueWidth,
                         TextWrapping = TextWrapping.Wrap
                     };
+
+                    if (!dataColumn.ReadOnly)
+                    {
+                        ((TextBox)dataout).TextChanged += EditData_TextChanged_TextBoxLen;
+                        ((TextBox)dataout).Loaded += EditData_Loaded_TextBoxLen;
+                        AddedStringEvent = true;
+                    }
                     break;
             }
 
@@ -525,10 +550,10 @@ namespace StreamerBotLib.GUI.Windows
             }
 
             if (LockedTable && (dataColumn.ColumnName is
-                "Id" or "CmdName" or "AllowParam" 
-                or "Usage" or "lookupdata" or "table" 
-                or "key_field" or "data_field" 
-                or "unit" or "action" 
+                "Id" or "CmdName" or "AllowParam"
+                or "Usage" or "lookupdata" or "table"
+                or "key_field" or "data_field"
+                or "unit" or "action"
                 or "top" or "Name"))
             {
                 dataout.IsEnabled = false;
@@ -539,6 +564,35 @@ namespace StreamerBotLib.GUI.Windows
             }
 
             return dataout;
+        }
+
+        private void EditData_Loaded_TextBoxLen(object sender, RoutedEventArgs e)
+        {
+            CalculateTextBoxTextLength(sender);
+        }
+
+        private static void CalculateTextBoxTextLength(object sender)
+        {
+            StackPanel CurrRow = (StackPanel)VisualTreeHelper.GetParent((DependencyObject)sender);
+
+            /*
+             UIElement dataname
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="Data Name Value" />
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Current Chars: " />
+                            <Label />
+                        </StackPanel>
+                    </StackPanel> 
+             */
+
+            Label CountLable = (Label)((StackPanel)((StackPanel)CurrRow.Children[0]).Children[1]).Children[1];
+            CountLable.Content = ((TextBox)sender).Text.Length;
+        }
+
+        private void EditData_TextChanged_TextBoxLen(object sender, TextChangedEventArgs e)
+        {
+            CalculateTextBoxTextLength(sender);
         }
 
         private void OverlayTypeElement_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -612,7 +666,7 @@ namespace StreamerBotLib.GUI.Windows
             {
                 CheckBox CurrBox = sender as CheckBox;
                 CurrCheckedItem = CurrBox;
-                ListView CatList = CategoryListView;
+                ListBox CatList = CategoryListView;
 
                 bool? SelectAll = null;
 
@@ -672,7 +726,7 @@ namespace StreamerBotLib.GUI.Windows
                 case "IsFollower" or "AddMe" or "IsEnabled" or "AllowParam" or "AddEveryone" or "lookupdata" or "UseChatMsg":
                     return PopupEditTableDataType.databool;
                 case "Permission" or "Kind" or "action" or "sort" or "MsgType" or "ModAction" or "ViewerTypes"
-                or "BanReason" or "OverlayType" or "ModActionType" or "ModPerformType" or "TickerName":
+                or "BanReason" or "OverlayType" or "ModActionType" or "ModPerformType" or "TickerName" or "Platform":
                     return PopupEditTableDataType.comboenum;
                 case "ModActionName" or "ModPerformAction":
                     return PopupEditTableDataType.combolist;

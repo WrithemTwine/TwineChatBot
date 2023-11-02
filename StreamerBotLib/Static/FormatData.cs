@@ -1,6 +1,7 @@
 ﻿
 using StreamerBotLib.Enums;
 using StreamerBotLib.Systems;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,6 +12,45 @@ namespace StreamerBotLib.Static
     // specific partial class for the common messages processes
     public static class FormatData
     {
+        /// <summary>
+        /// Provide a plurality-enabled version of a word based on a certain number. Such as 
+        /// "there 'is' 1 bag." "there 'are' 2 bags."
+        /// </summary>
+        /// <param name="src">Contains the number as a string to generate the context-sensitive word.</param>
+        /// <param name="msgVars">A plural word pair defined value ["singular", "plural"] to find in Msgs.resx.</param>
+        /// <returns>The plural context of the provided words based on number.</returns>
+        public static string PluralityOnlyWord(string src, MsgVars msgVars)
+        {
+            return PluralityOnlyWord(Convert.ToInt32(src), msgVars);
+        }
+
+        /// <summary>
+        /// Provide a plurality-enabled version of a word based on a certain number. Such as 
+        /// "there 'is' 1 bag." "there 'are' 2 bags."
+        /// </summary>
+        /// <param name="src">Contains the number as an int to generate the context-sensitive word.</param>
+        /// <param name="msgVars">A plural word pair defined value ["singular", "plural"] to find in Msgs.resx.</param>
+        /// <returns>The plural context of the provided words based on number.</returns>
+        public static string PluralityOnlyWord(int src, MsgVars msgVars)
+        {
+
+            return PluralityOnlyWord(src, msgVars);
+        }
+
+        /// <summary>
+        /// Provide a plurality-enabled version of a word based on a certain number. Such as 
+        /// "there 'is' 1 bag." "there 'are' 2 bags."
+        /// </summary>
+        /// <param name="src">Contains the number as a double to generate the context-sensitive word.</param>
+        /// <param name="msgVars">A plural word pair defined value ["singular", "plural"] to find in Msgs.resx.</param>
+        /// <returns>The plural context of the provided words based on number.</returns>
+        public static string PluralityOnlyWord(double src, MsgVars msgVars)
+        {
+            string[] Plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
+
+            return Plural[src == 1.0 ? 0 : 1];
+        }
+
         /// <summary>
         /// Takes the incoming string integer and determines plurality >1 and returns the appropriate word, e.g. 1 viewers [sic] => 1 viewer.
         /// </summary>
@@ -53,7 +93,7 @@ namespace StreamerBotLib.Static
 
             if (Prefix != null)
             {
-                sb = sb.Append(Prefix);
+                sb = sb.Append(' ' + Prefix);
             }
 
             sb = sb.Append(' ');

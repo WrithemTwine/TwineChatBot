@@ -156,7 +156,7 @@ namespace StreamerBotLib.GUI
             ShoutOuts = dataManager._DataSource.ShoutOuts.DefaultView;
             Category = dataManager._DataSource.CategoryList.DefaultView;
             Clips = dataManager._DataSource.Clips.DefaultView;
-            InRaidData = new(dataManager._DataSource.InRaidData,null, $"{dataManager._DataSource.InRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
+            InRaidData = new(dataManager._DataSource.InRaidData, null, $"{dataManager._DataSource.InRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             OutRaidData = new(dataManager._DataSource.OutRaidData, null, $"{dataManager._DataSource.OutRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             GiveawayUserData = dataManager._DataSource.GiveawayUserData.DefaultView;
             CustomWelcomeData = dataManager._DataSource.CustomWelcome.DefaultView;

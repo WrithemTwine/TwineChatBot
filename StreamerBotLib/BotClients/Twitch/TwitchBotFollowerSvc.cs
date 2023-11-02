@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
-using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 
 namespace StreamerBotLib.BotClients.Twitch
 {

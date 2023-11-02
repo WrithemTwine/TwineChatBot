@@ -37,13 +37,13 @@ namespace StreamerBotLib.Overlay
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
             GUIData = (GUIData)Resources["GUIAppData"];
-            
+
             // when overlay server is offline/not started, main bot queues alerts
             // starting this bot then tries to process alerts without loading styles
             // trying to set the alert html text lead to NULL exception when no style available
             // to match the alert, so the bot crashed.
             // UpdateLinks loads the styles in case alerts are waiting to be processed
-            UpdateLinks(); 
+            UpdateLinks();
 
             UserHideWindow += HideWindow;
         }
@@ -56,12 +56,13 @@ namespace StreamerBotLib.Overlay
 
         public void ReceivedOverlayEvent(object sender, OverlayActionType e)
         {
-            Controller.SendAlert(new OverlayPage() { 
-                OverlayType = e.OverlayType.ToString(), 
+            Controller.SendAlert(new OverlayPage()
+            {
+                OverlayType = e.OverlayType.ToString(),
                 OverlayHyperText = ProcessHyperText.ProcessOverlay(
                     e,
-                        GUIData.OverlayEditStyles.Find( (f)=>
-                            f.OverlayType == e.OverlayType.ToString() 
+                        GUIData.OverlayEditStyles.Find((f) =>
+                            f.OverlayType == e.OverlayType.ToString()
                         || f.OverlayType == PublicConstants.OverlayAllActions
                     ))
             });
@@ -79,7 +80,7 @@ namespace StreamerBotLib.Overlay
         }
 
         public void CloseApp(bool Token = false)
-        {            
+        {
             Close();
         }
 
