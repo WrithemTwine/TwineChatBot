@@ -99,7 +99,7 @@ namespace StreamerBot
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
                 new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
-                new(OptionFlags.TwitchPubSubOnlineMode, Radio_Twitch_PubSubBotStart)
+                new(false, Radio_Twitch_PubSubBotStart)
             };
 
             SetTheme(); // adjust the theme, if user selected a different theme.
@@ -168,16 +168,16 @@ namespace StreamerBot
 
             if (NewVersionLink != OptionFlags.GitHubCheckStable)
             {
-                Version version = Assembly.GetEntryAssembly().GetName().Version;
-                string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
-
-                // check if the saved link is the default, also check if the found link doesn't have the current version
-                // true=> link not default and the stable version link doesn't have the current app version in it
-                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
-                {
-                    StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
-                }
                 OptionFlags.GitHubCheckStable = NewVersionLink;
+            }
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+
+            // check if the saved link is the default, also check if the found link doesn't have the current version
+            // true=> link not default and the stable version link doesn't have the current app version in it
+            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
+            {
+                StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
             }
         }
 
