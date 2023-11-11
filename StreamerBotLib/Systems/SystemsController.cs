@@ -156,7 +156,7 @@ namespace StreamerBotLib.Systems
 
         public static void UpdateFollowers(IEnumerable<Follow> Follows)
         {
-            DataManage.UpdateFollowers(Follows);
+            DataManage.UpdateFollowers(Follows, CurrCategory.Item2);
         }
 
         public static void StopBulkFollowers()
@@ -209,7 +209,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime(), CurrCategory.Item2)))
                 {
                     if (OptionFlags.ManageFollowers)
                     {

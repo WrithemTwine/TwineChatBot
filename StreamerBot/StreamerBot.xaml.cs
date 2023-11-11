@@ -1006,7 +1006,7 @@ namespace StreamerBot
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate" and not "Category")
                         {
                             Collapse(dc);
                         }

@@ -149,7 +149,7 @@ namespace StreamerBotLib.GUI.Windows
 
                 foreach (StackPanel data in ListBox_DataList.Items)
                 {
-                    string name = ((Label)data.Children[0]).Content.ToString();
+                    string name = ((Label)((StackPanel)data.Children[0]).Children[0]).Content.ToString();
                     string result = ConvertBack(data.Children[1]);
 
                     SaveData.Add(name, result);
@@ -763,14 +763,14 @@ namespace StreamerBotLib.GUI.Windows
             {
                 result = (string)((ComboBox)dataElement).SelectedValue;
             }
+            //else if (dataElement.GetType() == typeof(ListBox))
+            //{
+            //    result = ((string[])((ListBox)dataElement).SelectedValue).ToString();
+            //}
             else if (dataElement.GetType() == typeof(ListBox))
             {
-                result = ((string[])((ListBox)dataElement).SelectedValue).ToString();
-            }
-            else if (dataElement.GetType() == typeof(ListView))
-            {
                 List<string> selections = new();
-                foreach (CheckBox c in ((ListView)dataElement).ItemsSource)
+                foreach (CheckBox c in ((ListBox)dataElement).ItemsSource)
                 {
                     if (c.IsChecked == true)
                     {
