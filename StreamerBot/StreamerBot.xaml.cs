@@ -816,6 +816,20 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
+        private void Slider_TwitchTokenFlow_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (e.NewValue == 0)
+            {
+                StackPanel_TwitchImplicitTokenFlow.Visibility = Visibility.Visible;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
+            }
+            else if (e.NewValue == 1)
+            {
+                StackPanel_TwitchImplicitTokenFlow.Visibility = Visibility.Collapsed;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Visible;
+            }
+        }
+
         #region GitHub webpage
 
         private void WebView2Reload_Click(object sender, RoutedEventArgs e)

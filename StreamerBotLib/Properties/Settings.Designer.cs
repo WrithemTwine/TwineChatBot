@@ -1738,5 +1738,29 @@ namespace StreamerBotLib.Properties {
                 this["ExpanderBotUsageInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerOauthRefreshToken {
+            get {
+                return ((string)(this["TwitchStreamerOauthRefreshToken"]));
+            }
+            set {
+                this["TwitchStreamerOauthRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TwitchTokenUseImplicit {
+            get {
+                return ((int)(this["TwitchTokenUseImplicit"]));
+            }
+            set {
+                this["TwitchTokenUseImplicit"] = value;
+            }
+        }
     }
 }

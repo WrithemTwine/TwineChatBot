@@ -22,7 +22,7 @@ namespace StreamerBotLib.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace StreamerBotLib.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StreamerBotLib.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace StreamerBotLib.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,16 +63,43 @@ namespace StreamerBotLib.Properties {
         /// <summary>
         ///   Looks up a localized string similar to WrithemTwine.
         /// </summary>
-        internal static string AuthorTwitch {
+        public static string AuthorTwitch {
             get {
                 return ResourceManager.GetString("AuthorTwitch", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers.
+        /// </summary>
+        public static string CredentialsTwitchScopesDiffOauthBot {
+            get {
+                return ResourceManager.GetString("CredentialsTwitchScopesDiffOauthBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to channel:read:redemptions channel:manage:broadcast channel:manage:raids.
+        /// </summary>
+        public static string CredentialsTwitchScopesDiffOauthChannel {
+            get {
+                return ResourceManager.GetString("CredentialsTwitchScopesDiffOauthChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids.
+        /// </summary>
+        public static string CredentialsTwitchScopesOauthSame {
+            get {
+                return ResourceManager.GetString("CredentialsTwitchScopesOauthSame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://twitch.tv/.
         /// </summary>
-        internal static string TwitchHomepage {
+        public static string TwitchHomepage {
             get {
                 return ResourceManager.GetString("TwitchHomepage", resourceCulture);
             }
