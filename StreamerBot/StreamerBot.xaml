@@ -173,14 +173,14 @@
                     <TabItem Header="Start Bots">
                         <DockPanel>
                             <Expander DockPanel.Dock="Top" Header="Bot Usage Info" IsExpanded="{Binding ExpanderBotUsageInfo, Mode=OneWay}">
-                               <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />
+                                <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />
                                 The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />
                                 stops when the separate "MultiUserLiveBot" process starts.<LineBreak />
                                 For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.<LineBreak />
                                 Changing the Twitch password can invalidate the access token.<LineBreak /><LineBreak />
                                 Start and Stop certain bots when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the<LineBreak />
                                 stream is detected online is when the specific bots would start.
-                            </TextBlock> 
+                                </TextBlock>
                             </Expander>
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
                                 <Button Content="Start All Bots" Click="GUIStartBots_Click" Margin="15,5" />
@@ -410,135 +410,140 @@
                         </TabItem.Resources>
                         <DockPanel LastChildFill="False">
 
-                            <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
+                                    <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
 
-                            <Expander DockPanel.Dock="Top" IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
-                                <Expander.Header>
-                                    <TextBlock Text="{DynamicResource CredentialsHeader}"/>
-                                </Expander.Header>
-                                <FlowDocumentScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
-                                    <FlowDocument FontSize="12" PagePadding="5" >
-                                        <Section>
-                                            <Paragraph>
-                                                <Run Text="{DynamicResource CredentialsIntro}"/>
-                                                <LineBreak/>
-                                                <LineBreak/>
-                                                <Run Text="{DynamicResource CredentialsSettings}"/>
-                                            </Paragraph>
-                                            <Paragraph>
-                                                <Run Text="{DynamicResource CredentialsOAuth}"/>
-                                                <LineBreak />
-                                                <LineBreak />
-                                                <Run Text="{DynamicResource CredentialsOAuthManual}"/>
-                                            </Paragraph>
-                                        </Section>
-                                        <Section>
-                                            <List>
-                                                <ListItem>
+                                    <Expander DockPanel.Dock="Top" IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
+                                        <Expander.Header>
+                                            <TextBlock Text="{DynamicResource CredentialsHeader}"/>
+                                        </Expander.Header>
+                                        <FlowDocumentScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                                            <FlowDocument FontSize="12" PagePadding="5" >
+                                                <Section>
                                                     <Paragraph>
-                                                        <Run Text="{DynamicResource CredentialsBotAccount}" />
+                                                        <Run Text="{DynamicResource CredentialsIntro}"/>
+                                                        <LineBreak/>
+                                                        <LineBreak/>
+                                                        <Run Text="{DynamicResource CredentialsSettings}"/>
                                                     </Paragraph>
-                                                </ListItem>
-                                                <ListItem>
                                                     <Paragraph>
-                                                        <Run Text="{DynamicResource CredentialsVisit}"/>
-                                                        <InlineUIContainer>
-                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
-                                                        </InlineUIContainer>
-                                                        <Run Text="{DynamicResource CredentialsTwitchAppRegister}"/>
+                                                        <Run Text="{DynamicResource CredentialsOAuth}"/>
+                                                        <LineBreak />
+                                                        <LineBreak />
+                                                        <Run Text="{DynamicResource CredentialsOAuthManual}"/>
                                                     </Paragraph>
+                                                </Section>
+                                                <Section>
                                                     <List>
                                                         <ListItem>
                                                             <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchAppName}"/>
+                                                                <Run Text="{DynamicResource CredentialsBotAccount}" />
                                                             </Paragraph>
                                                         </ListItem>
                                                         <ListItem>
                                                             <Paragraph>
-                                                                <Run Text="Add:"/>
-                                                                <LineBreak />
+                                                                <Run Text="{DynamicResource CredentialsVisit}"/>
+                                                                <InlineUIContainer>
+                                                                    <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
+                                                                </InlineUIContainer>
+                                                                <Run Text="{DynamicResource CredentialsTwitchAppRegister}"/>
+                                                            </Paragraph>
+                                                            <List>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchAppName}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="Add:"/>
+                                                                        <LineBreak />
+                                                                        <InlineUIContainer>
+                                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
+                                                                        </InlineUIContainer>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchAcctOAuthRedirect}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchAppCreate}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchClientId}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                            </List>
+                                                        </ListItem>
+                                                        <ListItem>
+                                                            <Paragraph>
+                                                                <Run Text="{DynamicResource CredentialsAccessTokens}"/>
                                                                 <InlineUIContainer>
                                                                     <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
                                                                 </InlineUIContainer>
-                                                                <Run Text="{DynamicResource CredentialsTwitchAcctOAuthRedirect}"/>
                                                             </Paragraph>
-                                                        </ListItem>
-                                                        <ListItem>
-                                                            <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchAppCreate}"/>
-                                                            </Paragraph>
-                                                        </ListItem>
-                                                        <ListItem>
-                                                            <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchClientId}"/>
-                                                            </Paragraph>
-                                                        </ListItem>
-                                                    </List>
-                                                </ListItem>
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        <Run Text="{DynamicResource CredentialsAccessTokens}"/>
-                                                        <InlineUIContainer>
-                                                            <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchTokenGen}"/>
-                                                        </InlineUIContainer>
-                                                    </Paragraph>
-                                                    <List>
-                                                        <ListItem>
-                                                            <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchPasteClientId}"/>
-                                                                <Italic>
-                                                                    <Run Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
-                                                                </Italic>
-                                                                <Run Text=" ."/>
-                                                            </Paragraph>
-                                                        </ListItem>
-                                                        <ListItem>
-                                                            <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchPasteScopes}"/>
-                                                                <LineBreak />
-                                                                <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
-                                                                <InlineUIContainer>
-                                                                    <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot">
-                                                                        <Label Width="Auto">Bot account not equal to Streamer Channel - Bot Token Scopes</Label>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsTwitchScopesDiffOauthBot}"/>
-                                                                    </StackPanel>
-                                                                </InlineUIContainer>
-                                                                <InlineUIContainer>
-                                                                    <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Streamer">
-                                                                        <Label Width="Auto">Bot account not equal to Streamer Channel - Streamer Token Scopes</Label>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsTwitchScopesDiffOauthChannel}"/>
-                                                                    </StackPanel>
-                                                                </InlineUIContainer>
-                                                                <InlineUIContainer>
-                                                                    <StackPanel x:Name="Help_TwitchBot_SameAuthScopes">
-                                                                        <Label Width="Auto">Bot account and Streamer Channel account the same - Token Scopes</Label>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
-                                                                                 Text="{DynamicResource CredentialsTwitchScopesOauthSame}"/>
-                                                                    </StackPanel>
-                                                                </InlineUIContainer>
-                                                                <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
-                                                                <LineBreak />
-                                                                <Run Text="{DynamicResource CredentialsTwitchScopesExplained}"/>
-                                                            </Paragraph>
-                                                        </ListItem>
-                                                        <ListItem>
-                                                            <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchAcctConnectClientIds}"/>
-                                                            </Paragraph>
-                                                        </ListItem>
-                                                        <ListItem>
-                                                            <Paragraph>
-                                                                <Run Text="{DynamicResource CredentialsTwitchRefreshDate}"/>
-                                                            </Paragraph>
+                                                            <List>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchPasteClientId}"/>
+                                                                        <Italic>
+                                                                            <Run Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
+                                                                        </Italic>
+                                                                        <Run Text=" ."/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchPasteScopes}"/>
+                                                                        <LineBreak />
+                                                                        <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
+                                                                        <InlineUIContainer>
+                                                                            <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot">
+                                                                                <Label Width="Auto">Bot account not equal to Streamer Channel - Bot Token Scopes</Label>
+                                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
+                                                                            DataContext="{Binding Source={x:Static s:Settings.Default}}" 
+                                                                            Text="{Binding CredentialsTwitchScopesDiffOauthBot}"/>
+                                                                            </StackPanel>
+                                                                        </InlineUIContainer>
+                                                                        <InlineUIContainer>
+                                                                            <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Streamer">
+                                                                                <Label Width="Auto">Bot account not equal to Streamer Channel - Streamer Token Scopes</Label>
+                                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
+                                                                            DataContext="{Binding Source={x:Static s:Settings.Default}}" 
+                                                                            Text="{Binding CredentialsTwitchScopesDiffOauthChannel}"/>
+                                                                            </StackPanel>
+                                                                        </InlineUIContainer>
+                                                                        <InlineUIContainer>
+                                                                            <StackPanel x:Name="Help_TwitchBot_SameAuthScopes">
+                                                                                <Label Width="Auto">Bot account and Streamer Channel account the same - Token Scopes</Label>
+                                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
+                                                                            DataContext="{Binding Source={x:Static s:Settings.Default}}"
+                                                                            Text="{Binding CredentialsTwitchScopesOauthSame}"/>
+                                                                            </StackPanel>
+                                                                        </InlineUIContainer>
+                                                                        <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
+                                                                        <LineBreak />
+                                                                        <Run Text="{DynamicResource CredentialsTwitchScopesExplained}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchAcctConnectClientIds}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                                <ListItem>
+                                                                    <Paragraph>
+                                                                        <Run Text="{DynamicResource CredentialsTwitchRefreshDate}"/>
+                                                                    </Paragraph>
+                                                                </ListItem>
+                                                            </List>
                                                         </ListItem>
                                                     </List>
-                                                </ListItem>
-                                            </List>
-                                        </Section>
-                                    </FlowDocument>
-                                </FlowDocumentScrollViewer>
+                                                </Section>
+                                            </FlowDocument>
+                                        </FlowDocumentScrollViewer>
 
-                            </Expander>
+                                    </Expander>
 
                             <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                                 <WrapPanel Orientation="Vertical">
@@ -569,8 +574,8 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10,0">
                                                         <Label Content="Token Scope" />
-                                                        <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" Text="{DynamicResource CredentialsTwitchScopesDiffOauthBot}" />
-                                                        <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" Text="{DynamicResource CredentialsTwitchScopesOauthSame}" />
+                                                        <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{Binding CredentialsTwitchScopesDiffOauthBot}" />
+                                                        <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated"  DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{Binding CredentialsTwitchScopesOauthSame}" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Access OAuth Token" />
@@ -608,7 +613,9 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Token Scope" />
-                                                        <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsTwitchScopesDiffOauthChannel}" />
+                                                        <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
+                                                                 DataContext="{Binding Source={x:Static s:Settings.Default}}"  
+                                                                 Text="{Binding CredentialsTwitchScopesDiffOauthChannel}" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Access OAuth Token"/>
@@ -652,6 +659,7 @@
                                 </WrapPanel>
                             </ScrollViewer>
                         </DockPanel>
+
                     </TabItem>
                 </TabControl>
             </TabItem>

@@ -1738,5 +1738,68 @@ namespace StreamerBotLib.Properties {
                 this["ExpanderBotUsageInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users mode" +
+            "rator:read:followers")]
+        public string CredentialsTwitchScopesDiffOauthBot {
+            get {
+                return ((string)(this["CredentialsTwitchScopesDiffOauthBot"]));
+            }
+            set {
+                this["CredentialsTwitchScopesDiffOauthBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("channel:read:redemptions channel:manage:broadcast channel:manage:raids")]
+        public string CredentialsTwitchScopesDiffOauthChannel {
+            get {
+                return ((string)(this["CredentialsTwitchScopesDiffOauthChannel"]));
+            }
+            set {
+                this["CredentialsTwitchScopesDiffOauthChannel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users mode" +
+            "rator:read:followers channel:read:redemptions channel:manage:broadcast channel:m" +
+            "anage:raids")]
+        public string CredentialsTwitchScopesOauthSame {
+            get {
+                return ((string)(this["CredentialsTwitchScopesOauthSame"]));
+            }
+            set {
+                this["CredentialsTwitchScopesOauthSame"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerOauthRefreshToken {
+            get {
+                return ((string)(this["TwitchStreamerOauthRefreshToken"]));
+            }
+            set {
+                this["TwitchStreamerOauthRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TwitchTokenUseImplicit {
+            get {
+                return ((int)(this["TwitchTokenUseImplicit"]));
+            }
+            set {
+                this["TwitchTokenUseImplicit"] = value;
+            }
+        }
     }
 }
