@@ -1289,8 +1289,10 @@ namespace StreamerBot
             }
         }
 
-        private void Button_Giveaway_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
+        private void Button_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
         {
+            Button_Giveaway_RefreshChannelPoints.IsEnabled = false;
+            Button_ChannelPts_Refresh.IsEnabled = false;
             ChannelPtRetrievalDate = DateTime.MinValue; // reset the retrieve date to force retrieval
             BeginGiveawayChannelPtsUpdate();
         }
@@ -1316,7 +1318,9 @@ namespace StreamerBot
         private void UpdateGiveawayList(List<string> ChannelPointNames)
         {
             ComboBox_Giveaway_ChanPts.ItemsSource = ChannelPointNames;
+            ComboBox_ChannelPoints.ItemsSource = ChannelPointNames;
             Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
+            Button_ChannelPts_Refresh.IsEnabled = true;
         }
 
         private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)
