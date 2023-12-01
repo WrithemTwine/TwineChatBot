@@ -431,15 +431,6 @@
     <Setting Name="ExpanderBotUsageInfo" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="CredentialsTwitchScopesDiffOauthBot" Type="System.String" Scope="User">
-      <Value Profile="(Default)">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers</Value>
-    </Setting>
-    <Setting Name="CredentialsTwitchScopesDiffOauthChannel" Type="System.String" Scope="User">
-      <Value Profile="(Default)">channel:read:redemptions channel:manage:broadcast channel:manage:raids</Value>
-    </Setting>
-    <Setting Name="CredentialsTwitchScopesOauthSame" Type="System.String" Scope="User">
-      <Value Profile="(Default)">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids</Value>
-    </Setting>
     <Setting Name="TwitchStreamerOauthRefreshToken" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
