@@ -13,7 +13,7 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
 		<SignAssembly>false</SignAssembly>
-		<Version>1.2.9.4</Version>
+		<Version>1.2.10.0</Version>
 		<Copyright>2023</Copyright>
 		<PackageReleaseNotes>Added channel point data to the overlay tab to show and refresh the available items. Updated and fixed for bugs.</PackageReleaseNotes>
 		<Authors>WrithemTwine</Authors>
