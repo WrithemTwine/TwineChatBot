@@ -8,7 +8,7 @@
         xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
-        xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
+        xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="750" Width="1100"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True"
@@ -20,7 +20,7 @@
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <GUI:GUIAppStats x:Name="AppStats" x:Key="AppStats" />
             <GUI:GUIAppServices x:Name="AppServices" x:Key="AppServices" />
-            <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
+            <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
@@ -510,22 +510,25 @@
                                                                                 <InlineUIContainer>
                                                                                     <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot">
                                                                                         <Label Width="Auto">Bot account not equal to Streamer Channel - Bot Token Scopes</Label>
-                                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
-                                                                            Text="{x:Static s:Resources.CredentialsTwitchScopesDiffOauthBot}"/>
+                                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 DataContext=""
+                                                                            Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}"/>
                                                                                     </StackPanel>
                                                                                 </InlineUIContainer>
                                                                                 <InlineUIContainer>
                                                                                     <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Streamer">
                                                                                         <Label Width="Auto">Bot account not equal to Streamer Channel - Streamer Token Scopes</Label>
-                                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
-                                                                            Text="{x:Static s:Resources.CredentialsTwitchScopesDiffOauthChannel}"/>
+                                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
+                                                                                 DataContext=""
+                                                                                 Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}}"/>
                                                                                     </StackPanel>
                                                                                 </InlineUIContainer>
                                                                                 <InlineUIContainer>
                                                                                     <StackPanel x:Name="Help_TwitchBot_SameAuthScopes">
                                                                                         <Label Width="Auto">Bot account and Streamer Channel account the same - Token Scopes</Label>
-                                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
-                                                                            Text="{x:Static s:Resources.CredentialsTwitchScopesOauthSame}"/>
+                                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 DataContext=""
+                                                                            Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}"/>
                                                                                     </StackPanel>
                                                                                 </InlineUIContainer>
                                                                                 <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
