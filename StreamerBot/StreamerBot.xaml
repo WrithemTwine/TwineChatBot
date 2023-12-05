@@ -8,7 +8,7 @@
         xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
-        xmlns:Static="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
+        xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" Height="750" Width="1100"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True"
@@ -20,7 +20,7 @@
             <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <GUI:GUIAppStats x:Name="AppStats" x:Key="AppStats" />
             <GUI:GUIAppServices x:Name="AppServices" x:Key="AppServices" />
-            <Static:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
+            <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
             <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
@@ -42,7 +42,6 @@
             </Style>
 
             <ResourceDictionary.MergedDictionaries>
-                <!-- maintain this order of merged dictionaries (or update backend code) as "StreamerBotThemes.cs" refers to these merged dictionaries in array order -->
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -55,14 +54,35 @@
                 </Style>
             </StatusBar.Resources>
             <StatusBarItem>
-                <StackPanel Orientation="Vertical">
-                    <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
-                           Visibility="Collapsed"
-                           FontSize="16" FontWeight="DemiBold">
-                        <TextBlock Foreground="{DynamicResource LabelBeta}">Beta</TextBlock>
-                    </Label>
-                    <Label x:Name="StatusBar_Label_Version" Content="Version Label" Padding="0"/>
-                </StackPanel>
+                <Grid>
+                    <StackPanel x:Name="StatusBarItem_NewStableVersion" Height="35" Panel.ZIndex="5" Visibility="Collapsed">
+                        <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
+                                  Visibility="Collapsed" 
+                                  DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}" 
+                                  NavigationCompleted="WebView2_GitHub_StableVersion_NavigationCompleted"/>
+
+                        <TextBlock 
+                            FontWeight="ExtraBold"
+                            Foreground="{DynamicResource BrightGo}" 
+                            Text="New Release Version!" 
+                            TextWrapping="Wrap" Width="90" 
+                            TextAlignment="Center" >
+                            <TextBlock.ToolTip>
+                                <TextBlock>
+                            New Release version available! Download from "GitHub->Stable" tab.
+                                </TextBlock>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Panel.ZIndex="1" >
+                        <Label x:Name="StatusBarItem_BetaLabel" HorizontalContentAlignment="Center" Padding="0" 
+                               Visibility="Collapsed"
+                               FontSize="16" FontWeight="DemiBold">
+                            <TextBlock Foreground="{DynamicResource LabelBeta}">Beta</TextBlock>
+                        </Label>
+                        <Label x:Name="StatusBar_Label_Version" Content="Version Label" Padding="0"/>
+                    </StackPanel>
+                </Grid>
             </StatusBarItem>
             <StatusBarItem>
                 <StackPanel>
@@ -152,14 +172,20 @@
                 <TabControl>
                     <TabItem Header="Start Bots">
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Top">The bot credentials form needs to be completed with at least client id and access token.<LineBreak />
+                            <Expander DockPanel.Dock="Top" Header="Bot Usage Info" IsExpanded="{Binding ExpanderBotUsageInfo, Mode=OneWay}">
+                                <TextBlock>The bot credentials form needs to be completed with at least client id and access token.<LineBreak />
                                 The LiveStreamMonitor Service will allow monitoring multiple channels if the &quot;MultiUserLiveBot&quot; is running or started, but functionality <LineBreak />
                                 stops when the separate "MultiUserLiveBot" process starts.<LineBreak />
                                 For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.<LineBreak />
                                 Changing the Twitch password can invalidate the access token.<LineBreak /><LineBreak />
                                 Start and Stop certain bots when stream goes online! Depends on Live Monitor Bot being active and the detection time - when the<LineBreak />
                                 stream is detected online is when the specific bots would start.
-                            </TextBlock>
+                                </TextBlock>
+                            </Expander>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
+                                <Button Content="Start All Bots" Click="GUIStartBots_Click" Margin="15,5" />
+                                <Button Content="Stop All Bots" Click="GUIStopBots_Click" Margin="15,5" />
+                            </StackPanel>
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <WrapPanel HorizontalAlignment="Center">
                                     <GroupBox Header="LiveStream Monitor Service">
@@ -386,7 +412,7 @@
 
                             <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
 
-                            <Expander DockPanel.Dock="Top" IsExpanded="{Binding CredentialsHelpExpanded, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
+                            <Expander DockPanel.Dock="Top" IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
                                 <Expander.Header>
                                     <TextBlock Text="{DynamicResource CredentialsHeader}"/>
                                 </Expander.Header>
@@ -410,7 +436,7 @@
                                             <List>
                                                 <ListItem>
                                                     <Paragraph>
-                                                        <Run Text="{DynamicResource CredentialsBotAccount}"/>
+                                                        <Run Text="{DynamicResource CredentialsBotAccount}" />
                                                     </Paragraph>
                                                 </ListItem>
                                                 <ListItem>
@@ -474,20 +500,25 @@
                                                                 <InlineUIContainer>
                                                                     <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot">
                                                                         <Label Width="Auto">Bot account not equal to Streamer Channel - Bot Token Scopes</Label>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsTwitchScopesDiffOauthBot}"/>
+                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 DataContext=""
+                                                                            Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}"/>
                                                                     </StackPanel>
                                                                 </InlineUIContainer>
                                                                 <InlineUIContainer>
                                                                     <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Streamer">
                                                                         <Label Width="Auto">Bot account not equal to Streamer Channel - Streamer Token Scopes</Label>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsTwitchScopesDiffOauthChannel}"/>
+                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
+                                                                                 DataContext=""
+                                                                                 Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}}"/>
                                                                     </StackPanel>
                                                                 </InlineUIContainer>
                                                                 <InlineUIContainer>
                                                                     <StackPanel x:Name="Help_TwitchBot_SameAuthScopes">
                                                                         <Label Width="Auto">Bot account and Streamer Channel account the same - Token Scopes</Label>
-                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
-                                                                                 Text="{DynamicResource CredentialsTwitchScopesOauthSame}"/>
+                                                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 DataContext=""
+                                                                            Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}"/>
                                                                     </StackPanel>
                                                                 </InlineUIContainer>
                                                                 <Rectangle Width="400" Height="3" HorizontalAlignment="Center" />
@@ -543,8 +574,8 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10,0">
                                                         <Label Content="Token Scope" />
-                                                        <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" Text="{DynamicResource CredentialsTwitchScopesDiffOauthBot}" />
-                                                        <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" Text="{DynamicResource CredentialsTwitchScopesOauthSame}" />
+                                                        <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" DataContext="" Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}" />
+                                                        <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" DataContext="" Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Access OAuth Token" />
@@ -568,7 +599,7 @@
                                                 <Label x:Name="Label_Twitch_StreamerRefreshDate" Width="Auto" Content="{Binding TwitchStreamerTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
                                             </StackPanel>
                                             <TextBlock>Current Bot Features requiring same {Bot and Streamer} Client ID</TextBlock>
-                                            <ListView ItemsSource="{DynamicResource CredentialsTwitchStreamerFeatures}" />
+                                            <ListBox ItemsSource="{DynamicResource CredentialsTwitchStreamerFeatures}" />
                                             <Expander>
                                                 <Expander.Header>
                                                     <TextBlock>
@@ -582,7 +613,8 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Token Scope" />
-                                                        <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsTwitchScopesDiffOauthChannel}" />
+                                                        <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
+                                                                 DataContext="" Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}}" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Access OAuth Token"/>
@@ -626,6 +658,7 @@
                                 </WrapPanel>
                             </ScrollViewer>
                         </DockPanel>
+
                     </TabItem>
                 </TabControl>
             </TabItem>
@@ -1022,7 +1055,7 @@
                                                 <TextBlock>Enable Limited Follower Messages</TextBlock>
                                             </CheckBox>
 
-                                            <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count" Orientation="Vertical" Visibility="Hidden" Loaded="CheckBox_Checked_PanelVisibility">
+                                            <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count" Orientation="Vertical" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility">
                                                 <TextBlock>Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</TextBlock>
 
                                                 <StackPanel Orientation="Horizontal">
@@ -1099,14 +1132,18 @@
                     <TabControl>
                         <TabItem Header="Variables">
                             <DockPanel>
-                                <ListView DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" ItemsSource="{Binding Collection}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" >
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn DisplayMemberBinding="{Binding Parameter}" Header="Parameter" Width="150" />
-                                            <GridViewColumn DisplayMemberBinding="{Binding Value}" Header="Value" Width="650" />
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
+                                <ListBox DockPanel.Dock="Left" DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}" 
+                                         ItemsSource="{Binding Collection}" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" >
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Parameter}" Width="150" />
+                                                <TextBlock Text="{Binding Value}" Width="650" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                             </DockPanel>
                         </TabItem>
                         <TabItem Header="Discord">
@@ -1160,7 +1197,7 @@
                             </TabControl>
                         </TabItem>
                         <TabItem Header="User Data" x:Name="TabItem_Users">
-                            <TabControl>
+                            <TabControl TabStripPlacement="Left">
                                 <TabItem Header="User Follow">
                                     <Grid x:Name="Grid_UserData_UserFollow">
                                         <Grid.RowDefinitions>
@@ -1199,7 +1236,6 @@
                                             <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                                         </DockPanel>
                                     </Grid>
-
                                 </TabItem>
                                 <TabItem Header="Auto-SO">
                                     <Grid>
@@ -1225,24 +1261,73 @@
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Currency" x:Name="TabItem_CurrencyAccrual">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="65" />
-                                            <RowDefinition Height="*" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="320"/>
-                                            <ColumnDefinition Width="5"/>
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
+                                    <TabControl>
+                                        <TabItem Header="Data">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="65" />
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="400"/>
+                                                    <ColumnDefinition Width="5"/>
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
 
-                                        <Label Grid.Row="0" Grid.ColumnSpan="3">
-                                            <TextBlock Width="744">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
-                                        </Label>
-                                        <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
-                                        <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
-                                        <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
-                                    </Grid>
+                                                <Label Grid.Row="0" Grid.ColumnSpan="3">
+                                                    <TextBlock Width="744">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
+                                                </Label>
+                                                <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
+                                                <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                                <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" Grid.Row="1" Grid.Column="2" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Games">
+                                            <WrapPanel DataContext="{Binding Source={x:Static s:Settings.Default}}">
+                                                <GroupBox Header="Cards - Blackjack 21" Padding="5">
+                                                    <GroupBox.Resources>
+                                                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                            <Setter Property="Height" Value="19" />
+                                                            <Setter Property="Width" Value="30" />
+                                                        </Style>
+                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                            <Setter Property="Width" Value="100" />
+                                                        </Style>
+                                                        <Style TargetType="{x:Type StackPanel}">
+                                                            <Setter Property="Margin" Value="0,2" />
+                                                        </Style>
+                                                    </GroupBox.Resources>
+                                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>House Stands at:</TextBlock>
+                                                            <TextBox Text="{Binding GameBlackJackHouseStands}" />
+                                                        </StackPanel>
+                                                        <TextBlock />
+                                                        <TextBlock TextDecorations="Underline">Player payouts:</TextBlock>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>Dealt 21:</TextBlock>
+                                                            <TextBox Text="{Binding GameBlackJackPayoutDealt21}" />
+                                                            <TextBlock Width="20">%</TextBlock>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>Reaches 21:</TextBlock>
+                                                            <TextBox Text="{Binding GameBlackJackPayoutReach21}" />
+                                                            <TextBlock Width="20">%</TextBlock>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>Under 21 Stop:</TextBlock>
+                                                            <TextBox Text="{Binding GameBlackJackPayoutUnder21}" />
+                                                            <TextBlock Width="20">%</TextBlock>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Vertical">
+                                                            <TextBlock Width="180">Payout Message (use #value):</TextBlock>
+                                                            <TextBox Width="180" Text="{Binding GameBlackJackPayoutMessage}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </GroupBox>
+                                            </WrapPanel>
+                                        </TabItem>
+                                    </TabControl>
                                 </TabItem>
                                 <TabItem Header="Giveaways" x:Name="TabItem_Giveaways" Loaded="TabItem_Giveaways_Loaded">
                                     <Grid>
@@ -1276,11 +1361,11 @@
                                                         </StackPanel>
                                                     </RadioButton>
                                                     <RadioButton x:Name="RadioButton_GiveawayCustomRewards" VerticalContentAlignment="Center">
-                                                        <StackPanel Orientation="Horizontal">
+                                                        <WrapPanel Orientation="Horizontal">
                                                             <Label Width="100">Channel Points</Label>
                                                             <ComboBox x:Name="ComboBox_Giveaway_ChanPts" MinWidth="200" PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
-                                                            <Button x:Name="Button_Giveaway_RefreshChannelPoints" Margin="5,0" Height="21" Padding="5,2" Content="Refresh" Click="Button_Giveaway_RefreshChannelPoints_Click" />
-                                                        </StackPanel>
+                                                            <Button x:Name="Button_Giveaway_RefreshChannelPoints" Margin="5,0" Height="21" Padding="5,2" Content="Refresh" Click="Button_RefreshChannelPoints_Click" />
+                                                        </WrapPanel>
                                                     </RadioButton>
                                                 </StackPanel>
                                             </GroupBox>
@@ -1350,6 +1435,14 @@
 
                                         <TextBlock Grid.Row="0" Grid.Column="1">Results of prior Giveaways recorded here! <LineBreak /> Data management is enabled or disabled in the Options tab.</TextBlock>
                                         <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Quotes">
+                                    <Grid>
+                                        <DockPanel Grid.Row="0" Grid.Column="0">
+                                            <Label Content="User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" DockPanel.Dock="Top" />
+                                            <DataGrid ItemsSource="{Binding Quotes, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                        </DockPanel>
                                     </Grid>
                                 </TabItem>
                             </TabControl>
@@ -1456,20 +1549,28 @@
                                     If you expect Channel Point Rewards and none are loaded, Twitch requires the streamer's credentials to access the channel point rewards list.
                                             </TextBlock>
                                         </Expander>
-                                        <GroupBox DockPanel.Dock="Top" Margin="4" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
-                                            <StackPanel>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <CheckBox Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center">
-                                                        <TextBlock>Pause Alert Queue</TextBlock>
-                                                    </CheckBox>
-                                                    <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" />
+                                        <WrapPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
+                                            <GroupBox Margin="7" Padding="8" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <CheckBox Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                                            <TextBlock>Pause Alert Queue</TextBlock>
+                                                        </CheckBox>
+                                                        <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" />
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Label Content="{Binding MediaOverlayServer.MediaItems, Source={StaticResource AppServices}}" />
+                                                        <Label Content=" Action items" />
+                                                    </StackPanel>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <Label Content="{Binding MediaOverlayServer.MediaItems, Source={StaticResource AppServices}}" />
-                                                    <Label Content=" Action items" />
+                                            </GroupBox>
+                                            <GroupBox Header="Available Channel Points Redemptions">
+                                                <StackPanel>
+                                                    <Button x:Name="Button_ChannelPts_Refresh" Content="Refresh Channel Points" Width="140" Margin="0,10"  Click="Button_RefreshChannelPoints_Click" />
+                                                    <ComboBox x:Name="ComboBox_ChannelPoints" Height="21" Width="180" SelectedIndex="0" PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
                                                 </StackPanel>
-                                            </StackPanel>
-                                        </GroupBox>
+                                            </GroupBox>
+                                        </WrapPanel>
                                         <DataGrid x:Name="DataGrid_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayService, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                                     </DockPanel>
                                 </TabItem>
@@ -1484,7 +1585,7 @@
                             </TabControl>
                         </TabItem>
                         <TabItem Header="Stream Data" x:Name="TabItem_StreamData">
-                            <TabControl>
+                            <TabControl TabStripPlacement="Left">
                                 <TabItem x:Name="TabItem_StreamData_Stats" Header="Stats">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -1532,15 +1633,23 @@
                                 <TabItem Header="Categories" x:Name="TabItem_Category">
                                     <Grid>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="25" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="450"/>
+                                            <ColumnDefinition Width="410"/>
                                             <ColumnDefinition Width="5"/>
-                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <DataGrid x:Name="DG_CategoryList_Clips" ItemsSource="{Binding Category, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                        <Label Grid.Row="0" Grid.Column="0">
+                                            <TextBlock>Streaming Categories</TextBlock>
+                                        </Label>
+                                        <Label Grid.Row="0" Grid.Column="2">
+                                            <TextBlock>Death Counter per Category</TextBlock>
+                                        </Label>
+                                        <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Category, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
+                                        <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding GameDeadCounter, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Clips" x:Name="TabItem_Clips">
@@ -1632,7 +1741,7 @@
                                 </StackPanel>
                             </GroupBox>
                             <ListView Grid.Row="3" x:Name="LV_JoinList" MaxWidth="500" DataContext="{Binding Source={StaticResource DataViews}}"
-                                      ItemsSource="{Binding JoinCollection, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" SelectionMode="Single" Margin="0,0,0,10">
+                                      ItemsSource="{Binding JoinCollection, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" SelectionMode="Single" Margin="0,0,0,10" d:ItemsSource="{d:SampleData ItemCount=5}">
                                 <ListView.Resources>
                                     <DataTemplate x:Key="GridColCheck">
                                         <CheckBox IsChecked="{Binding Remove, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Checked="JoinCollectionCheckBox_Checked" AutomationProperties.IsRowHeader="False" />
@@ -1650,7 +1759,7 @@
                     </DockPanel>
                     <DockPanel>
                         <Label Content="Current User List" DockPanel.Dock="Top" />
-                        <ListView DataContext="{DynamicResource DataViews}" ItemsSource="{Binding CurrUserList}" Width="200" DockPanel.Dock="Top" ScrollViewer.CanContentScroll="True">
+                        <ListView DataContext="{DynamicResource DataViews}" ItemsSource="{Binding CurrUserList}" Width="200" DockPanel.Dock="Top" ScrollViewer.CanContentScroll="True" d:ItemsSource="{d:SampleData ItemCount=5}">
                             <ListView.ToolTip>
                                 <TextBlock TextWrapping="Wrap" Width="80">Currently, the API doesn't support identifying joining users with their viewer type (broadcaster, moderator etc).</TextBlock>
                             </ListView.ToolTip>
@@ -1690,7 +1799,7 @@
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload"  Width="59" Height="29" Click="WebView2Reload_Click" HorizontalAlignment="Left" />
-                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/wiki"/>
+                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubWikiLink}" />
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1700,8 +1809,8 @@
                                 <Label DockPanel.Dock="Top" Content="Latest stable release - may have unusual bugs, most are resolved" />
                                 <Border>
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Width="50" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/releases/latest"/>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1711,8 +1820,8 @@
                                 <Label DockPanel.Dock="Top" Content="Latest development and stable releases - may have bugs while testing for next stable release" />
                                 <Border>
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left"  Width="50" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 Source="https://github.com/WrithemTwine/TwineChatBot/releases"/>
+                                        <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
+                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubLatestLink}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>

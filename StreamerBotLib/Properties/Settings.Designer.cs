@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.8.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -626,12 +626,12 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CredentialsHelpExpanded {
+        public bool ExpanderCredentialsHelp {
             get {
-                return ((bool)(this["CredentialsHelpExpanded"]));
+                return ((bool)(this["ExpanderCredentialsHelp"]));
             }
             set {
-                this["CredentialsHelpExpanded"] = value;
+                this["ExpanderCredentialsHelp"] = value;
             }
         }
         
@@ -1616,6 +1616,150 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["EnableManageDataOptions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("17")]
+        public int GameBlackJackHouseStands {
+            get {
+                return ((int)(this["GameBlackJackHouseStands"]));
+            }
+            set {
+                this["GameBlackJackHouseStands"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public int GameBlackJackPayoutDealt21 {
+            get {
+                return ((int)(this["GameBlackJackPayoutDealt21"]));
+            }
+            set {
+                this["GameBlackJackPayoutDealt21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("150")]
+        public int GameBlackJackPayoutReach21 {
+            get {
+                return ((int)(this["GameBlackJackPayoutReach21"]));
+            }
+            set {
+                this["GameBlackJackPayoutReach21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int GameBlackJackPayoutUnder21 {
+            get {
+                return ((int)(this["GameBlackJackPayoutUnder21"]));
+            }
+            set {
+                this["GameBlackJackPayoutUnder21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("You won #value currency!")]
+        public string GameBlackJackPayoutMessage {
+            get {
+                return ((string)(this["GameBlackJackPayoutMessage"]));
+            }
+            set {
+                this["GameBlackJackPayoutMessage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/releases/latest")]
+        public string GitHubCheckStable {
+            get {
+                return ((string)(this["GitHubCheckStable"]));
+            }
+            set {
+                this["GitHubCheckStable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/releases/latest")]
+        public string GitHubStableLink {
+            get {
+                return ((string)(this["GitHubStableLink"]));
+            }
+            set {
+                this["GitHubStableLink"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/releases/")]
+        public string GitHubLatestLink {
+            get {
+                return ((string)(this["GitHubLatestLink"]));
+            }
+            set {
+                this["GitHubLatestLink"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/wiki")]
+        public string GitHubWikiLink {
+            get {
+                return ((string)(this["GitHubWikiLink"]));
+            }
+            set {
+                this["GitHubWikiLink"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExpanderBotUsageInfo {
+            get {
+                return ((bool)(this["ExpanderBotUsageInfo"]));
+            }
+            set {
+                this["ExpanderBotUsageInfo"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerOauthRefreshToken {
+            get {
+                return ((string)(this["TwitchStreamerOauthRefreshToken"]));
+            }
+            set {
+                this["TwitchStreamerOauthRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TwitchTokenUseImplicit {
+            get {
+                return ((int)(this["TwitchTokenUseImplicit"]));
+            }
+            set {
+                this["TwitchTokenUseImplicit"] = value;
             }
         }
     }

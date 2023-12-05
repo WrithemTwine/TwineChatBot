@@ -120,6 +120,15 @@
   <data name="AuthorTwitch" xml:space="preserve">
     <value>WrithemTwine</value>
   </data>
+  <data name="CredentialsTwitchScopesDiffOauthBot" xml:space="preserve">
+    <value>bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers</value>
+  </data>
+  <data name="CredentialsTwitchScopesDiffOauthChannel" xml:space="preserve">
+    <value>channel:read:redemptions channel:manage:broadcast channel:manage:raids</value>
+  </data>
+  <data name="CredentialsTwitchScopesOauthSame" xml:space="preserve">
+    <value>bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids</value>
+  </data>
   <data name="TwitchHomepage" xml:space="preserve">
     <value>https://twitch.tv/</value>
   </data>

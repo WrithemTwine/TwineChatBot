@@ -38,6 +38,18 @@
         Pluralminute,
         or,
         list,
-        usage
+        usage,
+        cards,
+        value,
+        housestand,
+        hit,
+        stand,
+        payout,
+        Pluraltime,
+        quotenum,
+        quote,
+        Pluralquote,
+        Pluralbe,
+        be
     }
 }

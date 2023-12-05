@@ -156,7 +156,7 @@ namespace StreamerBotLib.Systems
 
         public static void UpdateFollowers(IEnumerable<Follow> Follows)
         {
-            DataManage.UpdateFollowers(Follows);
+            DataManage.UpdateFollowers(Follows, CurrCategory.Item2);
         }
 
         public static void StopBulkFollowers()
@@ -209,7 +209,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = new();
 
-                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime())))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime(), CurrCategory.Item2)))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -378,6 +378,11 @@ namespace StreamerBotLib.Systems
         public static void StreamOffline(DateTime CurrTime)
         {
             ActionSystem.StreamOffline(CurrTime);
+
+            // reset category to empty, so next time stream starts, the "streamed category" counter
+            // updates - a streamer may have consecutive streams with same category,
+            // not doing this locks the counter from incrementing each stream
+            CurrCategory = new("", "");
         }
 
         public static void SetCategory(string GameId, string GameName)
@@ -470,7 +475,11 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(LiveUser User)
         {
-            if ((User.UserName.ToLower(CultureInfo.CurrentCulture) != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture) && (User.UserName.ToLower(CultureInfo.CurrentCulture) != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture))) || OptionFlags.MsgWelcomeStreamer)
+            if ((User.UserName.ToLower(CultureInfo.CurrentCulture)
+               != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture)
+               && (User.UserName.ToLower(CultureInfo.CurrentCulture)
+               != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture)))
+               || OptionFlags.MsgWelcomeStreamer)
             {
                 string msg = SystemActions.CheckWelcomeUser(User.UserName);
 
@@ -611,6 +620,16 @@ namespace StreamerBotLib.Systems
             {
                 UserWelcomeMessage(User);
             }
+
+            #region Currency Games
+
+            if (SystemActions.BlackJackActive)
+            {
+                SystemActions.GameCheckBlackJackResponse(User, MsgReceived.Message);
+            }
+
+            #endregion
+
         }
 
         private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
@@ -649,8 +668,8 @@ namespace StreamerBotLib.Systems
             {
                 ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
             }
-            if (OptionFlags.ManageOverlayTicker) 
-            { 
+            if (OptionFlags.ManageOverlayTicker)
+            {
                 AddNewOverlayTickerItem(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }

@@ -152,7 +152,7 @@
     <Setting Name="FirstUserJoinedMsg" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="CredentialsHelpExpanded" Type="System.Boolean" Scope="User">
+    <Setting Name="ExpanderCredentialsHelp" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DebugLiveStream" Type="System.Boolean" Scope="User">
@@ -400,6 +400,42 @@
     </Setting>
     <Setting Name="EnableManageDataOptions" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GameBlackJackHouseStands" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">17</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutDealt21" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutReach21" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">150</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutUnder21" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="GameBlackJackPayoutMessage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">You won #value currency!</Value>
+    </Setting>
+    <Setting Name="GitHubCheckStable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/releases/latest</Value>
+    </Setting>
+    <Setting Name="GitHubStableLink" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/releases/latest</Value>
+    </Setting>
+    <Setting Name="GitHubLatestLink" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/releases/</Value>
+    </Setting>
+    <Setting Name="GitHubWikiLink" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/wiki</Value>
+    </Setting>
+    <Setting Name="ExpanderBotUsageInfo" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="TwitchStreamerOauthRefreshToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TwitchTokenUseImplicit" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

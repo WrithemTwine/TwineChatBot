@@ -30,7 +30,7 @@ namespace StreamerBotLib.Models
         public bool IsEnabled { get; set; } = false;
         public bool AddMe { get; set; } = false;
         public bool Empty { get; set; } = false;
-        public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
+        public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
 
         public static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
 

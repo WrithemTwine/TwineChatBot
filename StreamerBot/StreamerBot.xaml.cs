@@ -36,8 +36,6 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
-        // TODO: add buttons to start and stop all bots, based on current state (all start => bot 1 started->don't restart, bot 2 not started->start)
-
         internal static BotController Controller { get; private set; }
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -54,6 +52,11 @@ namespace StreamerBot
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
+
+        /// <summary>
+        /// A collection of options and RadioButton pairs for each bot, to start and stop.
+        /// </summary>
+        private List<Tuple<bool, RadioButton>> BotOps { get; }
 
         #region delegates
         private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
@@ -86,9 +89,19 @@ namespace StreamerBot
 
             //LoaderDLLFolderPath = "./";
 
+
             InitializeComponent();
 
-            // TODO: change default theme to 'light'
+            BotOps = new()
+            {
+                new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
+                new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
+                new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
+                new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
+                new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
+                new(false, Radio_Twitch_PubSubBotStart)
+            };
+
             SetTheme(); // adjust the theme, if user selected a different theme.
 
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
@@ -110,7 +123,7 @@ namespace StreamerBot
         /// <summary>
         /// Get the application current working directory
         /// </summary>
-        /// <returns>The user's local application data path to store application save data.</returns>
+        /// <returns>The user'AppVersion local application data path to store application save data.</returns>
         private static string GetAppDataCWD()
         {
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
@@ -142,6 +155,32 @@ namespace StreamerBot
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
         }
 
+        /// <summary>
+        /// Handles a WebView GUI control navigation, when it completes. The GitHub link resolves to a 
+        /// link to a stable release link. Using this result, we can determine if a new stable version
+        /// is available to the user.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WebView2_GitHub_StableVersion_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        {
+            string NewVersionLink = WebView2_GitHub_StableVersion.Source.ToString();
+
+            if (NewVersionLink != OptionFlags.GitHubCheckStable)
+            {
+                OptionFlags.GitHubCheckStable = NewVersionLink;
+            }
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+
+            // check if the saved link is the default, also check if the found link doesn't have the current version
+            // true=> link not default and the stable version link doesn't have the current app version in it
+            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
+            {
+                StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
+            }
+        }
+
         #region Bot_Ops
         #region Controller Events
 
@@ -171,7 +210,7 @@ namespace StreamerBot
                     };
                     HelperStartBot(radio);
 
-                    if(e.BotName == Bots.MediaOverlayServer)
+                    if (e.BotName == Bots.MediaOverlayServer)
                     {
                         Controller.Systems.SendInitialTickerItems();
                     }
@@ -203,6 +242,43 @@ namespace StreamerBot
 
         #endregion
 
+        /// <summary>
+        /// Will force start all bots currently not started, regardless of "start if Live" setting is selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStartBots_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var B in BotOps)
+            {
+                _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    (B.Item2.DataContext as IOModule)?.StartBot();
+                }), null);
+            }
+        }
+
+        /// <summary>
+        /// Will stop all bots currently not stopped, regardless of "stop when offline" setting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStopBots_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var B in BotOps)
+            {
+                _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+                {
+                    (B.Item2.DataContext as IOModule)?.StopBot();
+                }), null);
+            }
+        }
+
+        /// <summary>
+        /// Manages the GUI updates for when bots are started. Hides and enables buttons 
+        /// to set the GUI for bots started and allows the user to Stop Bots.
+        /// </summary>
+        /// <param name="rb">The radio button of the started bot.</param>
         private static void HelperStartBot(RadioButton rb)
         {
             rb.IsChecked = true;
@@ -228,6 +304,11 @@ namespace StreamerBot
             }
         }
 
+        /// <summary>
+        /// Manages the GUI updates for when bots are stopped. Hides and enables buttons
+        /// to set the GUI for bots stopped and allows the user to Start Bots.
+        /// </summary>
+        /// <param name="rb">The radio button of the stopped bot.</param>
         private static void HelperStopBot(RadioButton rb)
         {
             rb.IsChecked = true;
@@ -414,14 +495,7 @@ namespace StreamerBot
             CheckFocus();
             if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
             {
-                List<Tuple<bool, RadioButton>> BotOps = new()
-                {
-                    new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
-                    new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
-                    new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
-                    new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
-                    new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart)
-                };
+
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
@@ -438,6 +512,7 @@ namespace StreamerBot
             CheckMessageBoxes();
             CheckBox_ManageData_Click(sender, new());
             CheckBox_TabifySettings_Clicked(this, new());
+            CheckDebug(this, new());
             SetVisibility(this, new());
 
             // TODO: research auto-refreshing token
@@ -460,6 +535,9 @@ namespace StreamerBot
             PropertyChanged?.Invoke(this, new(propname));
         }
 
+        /// <summary>
+        /// Perform showing MessageBoxes based on certain settings flags. Gives users details about certain settings.
+        /// </summary>
         private void CheckMessageBoxes()
         {
             if (OptionFlags.ManageDataArchiveMsg)
@@ -475,7 +553,7 @@ namespace StreamerBot
                 Settings.Default.AppCurrWorkingPopup = false;
                 string SaveCWDPath = GetAppDataCWD();
 
-                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application's current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
 
                 if (boxResult == MessageBoxResult.Yes)
                 {
@@ -508,6 +586,12 @@ namespace StreamerBot
             }
         }
 
+        /// <summary>
+        /// Manage GUI element visibility based on user selection. The intent is to add friendly protection
+        /// to prevent accidentally clicking buttons and deleting, often unrecoverable, data-or the latest backup at the least.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SetVisibility(object sender, RoutedEventArgs e)
         {
             if (Button_ClearCurrencyAccrlValues != null && Button_ClearCurrencyAccrlValues != null && Button_ClearWatchTime != null && GroupBox_ManageDataOptions != null)
@@ -922,7 +1006,7 @@ namespace StreamerBot
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate" and not "Category")
                         {
                             Collapse(dc);
                         }
@@ -967,6 +1051,15 @@ namespace StreamerBot
                     foreach (DataGridColumn dc in dg.Columns)
                     {
                         if (dc.Header.ToString() is not "Category" and not "CategoryId" and not "StreamCount")
+                        {
+                            Collapse(dc);
+                        }
+                    }
+                    break;
+                case "DG_DeathCounter":
+                    foreach (DataGridColumn dc in dg.Columns)
+                    {
+                        if (dc.Header.ToString() is not "Category" and not "Counter")
                         {
                             Collapse(dc);
                         }
@@ -1146,7 +1239,7 @@ namespace StreamerBot
             {
                 DebugStreamStarted = DateTime.Now.ToLocalTime();
 
-                string User = "";
+                string User = OptionFlags.TwitchChannelName;
                 string Category = "Microsoft Flight Simulator";
                 string ID = "7193";
                 string Title = "Testing a debug stream";
@@ -1196,8 +1289,10 @@ namespace StreamerBot
             }
         }
 
-        private void Button_Giveaway_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
+        private void Button_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
         {
+            Button_Giveaway_RefreshChannelPoints.IsEnabled = false;
+            Button_ChannelPts_Refresh.IsEnabled = false;
             ChannelPtRetrievalDate = DateTime.MinValue; // reset the retrieve date to force retrieval
             BeginGiveawayChannelPtsUpdate();
         }
@@ -1223,7 +1318,9 @@ namespace StreamerBot
         private void UpdateGiveawayList(List<string> ChannelPointNames)
         {
             ComboBox_Giveaway_ChanPts.ItemsSource = ChannelPointNames;
+            ComboBox_ChannelPoints.ItemsSource = ChannelPointNames;
             Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
+            Button_ChannelPts_Refresh.IsEnabled = true;
         }
 
         private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)

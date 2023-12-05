@@ -72,7 +72,7 @@ namespace StreamerBot
                 tabifyRecord.TargetTabControl.Visibility = Visibility.Visible;
 
                 int x = 0;
-                foreach(UIElement element in tabifyRecord.SourceGrid.Children)
+                foreach (UIElement element in tabifyRecord.SourceGrid.Children)
                 {
                     if (element.GetType() == typeof(DockPanel))
                     {
@@ -81,7 +81,7 @@ namespace StreamerBot
                     }
                 }
 
-                for(int y = 0; y < 2; y++)
+                for (int y = 0; y < 2; y++)
                 {
                     tabifyRecord.SourceGrid.Children.Remove((UIElement)((TabItem)tabifyRecord.TargetTabControl.Items[y]).Content);
                 }
@@ -91,7 +91,7 @@ namespace StreamerBot
                 tabifyRecord.TargetTabControl.Visibility = Visibility.Collapsed;
 
                 for (int y = 0; y < 2; y++)
-                { 
+                {
                     UIElement dockpanelitem = (UIElement)((TabItem)tabifyRecord.TargetTabControl.Items[y]).Content;
                     ((TabItem)tabifyRecord.TargetTabControl.Items[y]).Content = null;
                     tabifyRecord.SourceGrid.Children.Add(dockpanelitem);

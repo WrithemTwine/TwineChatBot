@@ -79,6 +79,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to addquote.
+        /// </summary>
+        internal static string addquote {
+            get {
+                return ResourceManager.GetString("addquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to approve.
         /// </summary>
         internal static string approve {
@@ -93,6 +102,177 @@ namespace StreamerBotLib.Culture {
         internal static string autohost {
             get {
                 return ResourceManager.GetString("autohost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to blackjack.
+        /// </summary>
+        internal static string blackjack {
+            get {
+                return ResourceManager.GetString("blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You made BlackJack 21!.
+        /// </summary>
+        internal static string BlackJack21Win {
+            get {
+                return ResourceManager.GetString("BlackJack21Win", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops, you went over 21!.
+        /// </summary>
+        internal static string BlackJackBust {
+            get {
+                return ResourceManager.GetString("BlackJackBust", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to you have #cards, totaling #value..
+        /// </summary>
+        internal static string BlackJackCardMessage {
+            get {
+                return ResourceManager.GetString("BlackJackCardMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You and the House both have the same points, ending in a draw..
+        /// </summary>
+        internal static string BlackJackDraw {
+            get {
+                return ResourceManager.GetString("BlackJackDraw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to #hit (another card) or #stand (no card)?.
+        /// </summary>
+        internal static string BlackJackHit {
+            get {
+                return ResourceManager.GetString("BlackJackHit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House busts over 21..
+        /// </summary>
+        internal static string BlackJackHouseBusts {
+            get {
+                return ResourceManager.GetString("BlackJackHouseBusts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House has #cards, totaling #value..
+        /// </summary>
+        internal static string BlackJackHouseCardMsg {
+            get {
+                return ResourceManager.GetString("BlackJackHouseCardMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House has 21..
+        /// </summary>
+        internal static string BlackJackHouseHits21 {
+            get {
+                return ResourceManager.GetString("BlackJackHouseHits21", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The House stands..
+        /// </summary>
+        internal static string BlackJackHouseStands {
+            get {
+                return ResourceManager.GetString("BlackJackHouseStands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The house wins..
+        /// </summary>
+        internal static string BlackJackHouseWin {
+            get {
+                return ResourceManager.GetString("BlackJackHouseWin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currency is not setup in Built-In Command !blackJack, &apos;currencyfield&apos; value..
+        /// </summary>
+        internal static string BlackJackNoCurrency {
+            get {
+                return ResourceManager.GetString("BlackJackNoCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BlackJack no longer accepting new players. Try next round..
+        /// </summary>
+        internal static string BlackJackNoJoin {
+            get {
+                return ResourceManager.GetString("BlackJackNoJoin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player not registered..
+        /// </summary>
+        internal static string BlackJackNoPlayer {
+            get {
+                return ResourceManager.GetString("BlackJackNoPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your payout is #payout..
+        /// </summary>
+        internal static string BlackJackPayout {
+            get {
+                return ResourceManager.GetString("BlackJackPayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user now sits at the BlackJack table..
+        /// </summary>
+        internal static string BlackJackPlayerJoined {
+            get {
+                return ResourceManager.GetString("BlackJackPlayerJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user does not have enough currency to play..
+        /// </summary>
+        internal static string BlackJackPlayerNoMoney {
+            get {
+                return ResourceManager.GetString("BlackJackPlayerNoMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Now dealing to each player.  When it&apos;s your turn, you have 30 seconds to type words or phrases containing &apos;#hit&apos; or &apos;#stand&apos;-(normal viewers can be prevented from typing the same phrase in a short time).
+        /// </summary>
+        internal static string BlackJackStart {
+            get {
+                return ResourceManager.GetString("BlackJackStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You beat the house!.
+        /// </summary>
+        internal static string BlackJackWinOverHouse {
+            get {
+                return ResourceManager.GetString("BlackJackWinOverHouse", resourceCulture);
             }
         }
         
@@ -120,6 +300,15 @@ namespace StreamerBotLib.Culture {
         internal static string commands {
             get {
                 return ResourceManager.GetString("commands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to death.
+        /// </summary>
+        internal static string death {
+            get {
+                return ResourceManager.GetString("death", resourceCulture);
             }
         }
         
@@ -261,9 +450,18 @@ namespace StreamerBotLib.Culture {
         /// <summary>
         ///   Looks up a localized string similar to The thank you message when a user donates bits to the channel..
         /// </summary>
-        internal static string HelpBits {
+        internal static string Helpbits {
             get {
-                return ResourceManager.GetString("HelpBits", resourceCulture);
+                return ResourceManager.GetString("Helpbits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack message showing current cards.
+        /// </summary>
+        internal static string Helpcards {
+            get {
+                return ResourceManager.GetString("Helpcards", resourceCulture);
             }
         }
         
@@ -349,6 +547,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Blackjack message name for &quot;hit&quot; asking for another card.
+        /// </summary>
+        internal static string Helphit {
+            get {
+                return ResourceManager.GetString("Helphit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack message about what value the House stands (takes no more cards).
+        /// </summary>
+        internal static string Helphousestand {
+            get {
+                return ResourceManager.GetString("Helphousestand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Currently not used..
         /// </summary>
         internal static string HelpJoinChannel {
@@ -394,11 +610,38 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Blackjack message to show how much currency the player won.
+        /// </summary>
+        internal static string Helppayout {
+            get {
+                return ResourceManager.GetString("Helppayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The results of the command query will go here..
         /// </summary>
         internal static string Helpquery {
             get {
                 return ResourceManager.GetString("Helpquery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Returns the requested quote message..
+        /// </summary>
+        internal static string Helpquote {
+            get {
+                return ResourceManager.GetString("Helpquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Returns the quote number per the Quotes data table..
+        /// </summary>
+        internal static string Helpquotenum {
+            get {
+                return ResourceManager.GetString("Helpquotenum", resourceCulture);
             }
         }
         
@@ -453,6 +696,15 @@ namespace StreamerBotLib.Culture {
         internal static string HelpReturnUserJoined {
             get {
                 return ResourceManager.GetString("HelpReturnUserJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack message name for &quot;stand&quot; to not take another card.
+        /// </summary>
+        internal static string Helpstand {
+            get {
+                return ResourceManager.GetString("Helpstand", resourceCulture);
             }
         }
         
@@ -556,7 +808,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to display name of the user sending action.
+        ///   Looks up a localized string similar to display name of the user sending action, some contexts - the streamer.
         /// </summary>
         internal static string Helpuser {
             get {
@@ -570,6 +822,15 @@ namespace StreamerBotLib.Culture {
         internal static string HelpUserJoined {
             get {
                 return ResourceManager.GetString("HelpUserJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack message for card value **or** a general number value in some contexts.
+        /// </summary>
+        internal static string Helpvalue {
+            get {
+                return ResourceManager.GetString("Helpvalue", resourceCulture);
             }
         }
         
@@ -588,6 +849,15 @@ namespace StreamerBotLib.Culture {
         internal static string Helpwinner {
             get {
                 return ResourceManager.GetString("Helpwinner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hit.
+        /// </summary>
+        internal static string hit {
+            get {
+                return ResourceManager.GetString("hit", resourceCulture);
             }
         }
         
@@ -682,11 +952,20 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Thank you for adding quote #quotenum..
+        /// </summary>
+        internal static string Msgaddquote {
+            get {
+                return ResourceManager.GetString("Msgaddquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
-        internal static string MsgAllCateogry {
+        internal static string MsgAllCategory {
             get {
-                return ResourceManager.GetString("MsgAllCateogry", resourceCulture);
+                return ResourceManager.GetString("MsgAllCategory", resourceCulture);
             }
         }
         
@@ -723,6 +1002,15 @@ namespace StreamerBotLib.Culture {
         internal static string MsgBits {
             get {
                 return ResourceManager.GetString("MsgBits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user started a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to &apos;#hit&apos; for a card, or &apos;#stand&apos;. No answer means a &apos;#stand&apos;. Payouts at the end of the game..
+        /// </summary>
+        internal static string Msgblackjack {
+            get {
+                return ResourceManager.GetString("Msgblackjack", resourceCulture);
             }
         }
         
@@ -808,11 +1096,29 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #user has now died #value while playing #category..
+        /// </summary>
+        internal static string Msgdeath {
+            get {
+                return ResourceManager.GetString("Msgdeath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default command, not changed..
         /// </summary>
         internal static string Msgdefaultcommand {
             get {
                 return ResourceManager.GetString("Msgdefaultcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quote not found..
+        /// </summary>
+        internal static string MsgDefaultQuote {
+            get {
+                return ResourceManager.GetString("MsgDefaultQuote", resourceCulture);
             }
         }
         
@@ -970,6 +1276,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The death counter is not established..
+        /// </summary>
+        internal static string MsgNoDeathCounter {
+            get {
+                return ResourceManager.GetString("MsgNoDeathCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command did not perform successfully..
         /// </summary>
         internal static string MsgNoSuccess {
@@ -1051,6 +1366,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #quote.
+        /// </summary>
+        internal static string Msgquote {
+            get {
+                return ResourceManager.GetString("Msgquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There #be #quotenum..
+        /// </summary>
+        internal static string MsgQuoteNumber {
+            get {
+                return ResourceManager.GetString("MsgQuoteNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thanks #user for bringing #viewers and raiding the channel!.
         /// </summary>
         internal static string MsgRaid {
@@ -1065,6 +1398,24 @@ namespace StreamerBotLib.Culture {
         internal static string Msgremovecommand {
             get {
                 return ResourceManager.GetString("Msgremovecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully removed #quotenum..
+        /// </summary>
+        internal static string Msgremovequote {
+            get {
+                return ResourceManager.GetString("Msgremovequote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The game #category death counter reset to #value..
+        /// </summary>
+        internal static string Msgresetdeath {
+            get {
+                return ResourceManager.GetString("Msgresetdeath", resourceCulture);
             }
         }
         
@@ -1195,6 +1546,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #user has died #value playing #category..
+        /// </summary>
+        internal static string Msgviewdeath {
+            get {
+                return ResourceManager.GetString("Msgviewdeath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #user has watched a total of #query..
         /// </summary>
         internal static string Msgwatchtime {
@@ -1240,11 +1600,29 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -p:Mod -use:!approval &lt;item number&gt;.
+        ///   Looks up a localized string similar to -param:true -use:!addquote {text}.
+        /// </summary>
+        internal static string Paramaddquote {
+            get {
+                return ResourceManager.GetString("Paramaddquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -use:!approve &lt;item number&gt;.
         /// </summary>
         internal static string Paramapprove {
             get {
                 return ResourceManager.GetString("Paramapprove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -param:true -t:Currency -use:!blackjack &lt;wager&gt; (number), to start or enter the game!.
+        /// </summary>
+        internal static string Paramblackjack {
+            get {
+                return ResourceManager.GetString("Paramblackjack", resourceCulture);
             }
         }
         
@@ -1272,6 +1650,15 @@ namespace StreamerBotLib.Culture {
         internal static string Paramcommands {
             get {
                 return ResourceManager.GetString("Paramcommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!dead {uses current category}.
+        /// </summary>
+        internal static string Paramdeath {
+            get {
+                return ResourceManager.GetString("Paramdeath", resourceCulture);
             }
         }
         
@@ -1411,6 +1798,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -param:true -use:!quote | or !quote {quote number}.
+        /// </summary>
+        internal static string Paramquote {
+            get {
+                return ResourceManager.GetString("Paramquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -use:!raid &lt;user&gt; Mod only -param:true -p:Mod.
         /// </summary>
         internal static string Paramraid {
@@ -1425,6 +1821,24 @@ namespace StreamerBotLib.Culture {
         internal static string Paramremovecommand {
             get {
                 return ResourceManager.GetString("Paramremovecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!removequote {quote number}.
+        /// </summary>
+        internal static string Paramremovequote {
+            get {
+                return ResourceManager.GetString("Paramremovequote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!resetdead &lt;number&gt; {uses current category, reset to 0 or &lt;number&gt;}.
+        /// </summary>
+        internal static string Paramresetdeath {
+            get {
+                return ResourceManager.GetString("Paramresetdeath", resourceCulture);
             }
         }
         
@@ -1510,6 +1924,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -use:!viewdeath.
+        /// </summary>
+        internal static string Paramviewdeath {
+            get {
+                return ResourceManager.GetString("Paramviewdeath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;.
         /// </summary>
         internal static string Paramwatchtime {
@@ -1524,6 +1947,24 @@ namespace StreamerBotLib.Culture {
         internal static string Paramworklurk {
             get {
                 return ResourceManager.GetString("Paramworklurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to payout.
+        /// </summary>
+        internal static string payout {
+            get {
+                return ResourceManager.GetString("payout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to is, are.
+        /// </summary>
+        internal static string Pluralbe {
+            get {
+                return ResourceManager.GetString("Pluralbe", resourceCulture);
             }
         }
         
@@ -1573,11 +2014,29 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to quote, quotes.
+        /// </summary>
+        internal static string Pluralquote {
+            get {
+                return ResourceManager.GetString("Pluralquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to subscription, subscriptions.
         /// </summary>
         internal static string Pluralsub {
             get {
                 return ResourceManager.GetString("Pluralsub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to time, times.
+        /// </summary>
+        internal static string Pluraltime {
+            get {
+                return ResourceManager.GetString("Pluraltime", resourceCulture);
             }
         }
         
@@ -1636,6 +2095,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to quote.
+        /// </summary>
+        internal static string quote {
+            get {
+                return ResourceManager.GetString("quote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to raid.
         /// </summary>
         internal static string raid {
@@ -1659,6 +2127,24 @@ namespace StreamerBotLib.Culture {
         internal static string removecommand {
             get {
                 return ResourceManager.GetString("removecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to removequote.
+        /// </summary>
+        internal static string removequote {
+            get {
+                return ResourceManager.GetString("removequote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to resetdeath.
+        /// </summary>
+        internal static string resetdeath {
+            get {
+                return ResourceManager.GetString("resetdeath", resourceCulture);
             }
         }
         
@@ -1726,6 +2212,24 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to stand.
+        /// </summary>
+        internal static string stand {
+            get {
+                return ResourceManager.GetString("stand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to streamer.
+        /// </summary>
+        internal static string streamer {
+            get {
+                return ResourceManager.GetString("streamer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to total.
         /// </summary>
         internal static string Total {
@@ -1767,6 +2271,15 @@ namespace StreamerBotLib.Culture {
         internal static string usage {
             get {
                 return ResourceManager.GetString("usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to viewdeath.
+        /// </summary>
+        internal static string viewdeath {
+            get {
+                return ResourceManager.GetString("viewdeath", resourceCulture);
             }
         }
         

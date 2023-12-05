@@ -3,7 +3,7 @@
     public enum Msg
     {
         Msgstreamoffline,
-        MsgAllCateogry,
+        MsgAllCategory,
         MsgNotFollower,
         MsgNoUsage,
         MsgDataNotFound,
@@ -12,6 +12,9 @@
         MsgModApproved,
         MsgModApproveNotFound,
         MsgMergeSuccessful,
-        MsgMergeFailed
+        MsgMergeFailed,
+        MsgNoDeathCounter,
+        MsgDefaultQuote,
+        MsgQuoteNumber
     }
 }

@@ -32,11 +32,17 @@ namespace StreamerBotLib.Data
         /// </summary>
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
+        /// <summary>
+        /// The database structured data, with supporting data typing code calls.
+        /// </summary>
         internal readonly DataSource _DataSource;
         #endregion DataSource
 
-        private bool LearnMsgChanged = true; // always true to begin one learning cycle
-      
+        /// <summary>
+        /// always true to begin one learning cycle
+        /// </summary>
+        private bool LearnMsgChanged = true;
+
         /// <summary>
         /// When the follower bot begins a bulk follower update, this flag 'locks' the database Follower table from changes until bulk update concludes.
         /// </summary>
@@ -312,13 +318,12 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get a list of all commands.");
 #endif
-
-
             string result = "";
 
             lock (GUIDataManagerLock.Lock)
             {
-                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True");
+                CommandsRow[] commandsRows = (CommandsRow[])GetRows(_DataSource.Commands, $"{_DataSource.Commands.MessageColumn.ColumnName} <>'{DefaulSocialMsg}' AND {_DataSource.Commands.IsEnabledColumn.ColumnName}=True", $"{_DataSource.Commands.CmdNameColumn.ColumnName} ASC");
+
                 for (int i = 0; i < commandsRows.Length; i++)
                 {
                     result += (i != 0 ? ", " : "") + "!" + commandsRows[i].CmdName;
@@ -344,7 +349,13 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                DataRow result = GetRows(_DataSource.Tables[row.Table], $"{row.Key_field}='{ParamValue}'").FirstOrDefault();
+                string Currency = "";
+                if (row.Table == _DataSource.Currency.TableName)
+                {
+                    Currency = $" AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{row.Currency_field}'";
+                }
+
+                DataRow result = GetRows(_DataSource.Tables[row.Table], $"{row.Key_field}='{ParamValue}'{Currency}").FirstOrDefault();
 
                 if (result == null)
                 {
@@ -372,11 +383,16 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the multi object query for command {row.CmdName}.");
 #endif
+            string Currency = "";
+            if (row.Table == _DataSource.Currency.TableName)
+            {
+                Currency = $" {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{row.Currency_field}'";
+            }
 
             List<Tuple<object, object>> outlist = null;
             lock (GUIDataManagerLock.Lock)
             {
-                outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
+                outlist = new(from DataRow d in GetRows(_DataSource.Tables[row.Table], Filter: Currency, Sort: Top < 0 ? null : row.Key_field + " " + row.Sort)
                               select new Tuple<object, object>(d[row.Key_field], d[row.Data_field]));
             }
 
@@ -849,13 +865,16 @@ switches:
             }
         }
 
+// TODO: validate adding follower category, carry forward category when follower changes viewer name
+
         /// <summary>
         /// Add a new follower to the data table.
         /// </summary>
         /// <param name="User">The Username of the new Follow</param>
         /// <param name="FollowedDate">The date of the Follow.</param>
+        /// <param name="Category">Stream category-shows streamer under which category the viewer followed</param>
         /// <returns>True if the follower is the first time. False if already followed.</returns>
-        public bool PostFollower(LiveUser User, DateTime FollowedDate)
+        public bool PostFollower(LiveUser User, DateTime FollowedDate, string Category)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add user {User} as a new follower at {FollowedDate}.");
@@ -895,11 +914,25 @@ switches:
                         followers.Platform = User.Source.ToString();
                         update = true;
                     }
+                    if (followers.IsCategoryNull() || followers.Category == string.Empty )
+                    {
+                        followers.Category = Category;
+                    }
                 }
                 else
                 {
                     newfollow = true;
-                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate);
+
+                    string GameCategory = Category;
+
+                    FollowersRow ExistingUserFollow = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserIdColumn.ColumnName}='{User.UserId}' AND {_DataSource.Followers.CategoryColumn.ColumnName} is NOT NULL");
+
+                    if(ExistingUserFollow != null)
+                    {
+                        GameCategory = ExistingUserFollow.Category;
+                    }
+
+                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate, Category);
                     update = true;
                 }
                 if (update)
@@ -979,7 +1012,7 @@ switches:
         /// Because the streaming service doesn't/didn't support a user unfollowing the streamer, we need to regularly update the follower list in its entirety-retrieve all followers.
         /// </summary>
         /// <param name="follows">A list of current followers to add into the database.</param>
-        public void UpdateFollowers(IEnumerable<Follow> follows)
+        public void UpdateFollowers(IEnumerable<Follow> follows, string Category)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update and add all followers in bulk.");
@@ -988,7 +1021,7 @@ switches:
             {
                 foreach (Follow f in follows)
                 {
-                    _ = PostFollower(f.FromUser, f.FollowedAt);
+                    _ = PostFollower(f.FromUser, f.FollowedAt, Category);
                 }
             }
 
@@ -1032,23 +1065,40 @@ switches:
                     }
 
                     // TODO: verify bulk follower updates for unfollows - updating the dates
-                    foreach (var nonfollowers in from string UId in new List<string>((from FollowersRow U in new List<FollowersRow>(from FollowersRow f in AllFollowers
-                                                                                                                                    where f.IsFollower == false
-                                                                                                                                    orderby f.Id descending
-                                                                                                                                    select f
-                                                        )
-                                                                                      select U.UserId).ToList().Distinct())
-                                                 let nonfollowers = new List<FollowersRow>(from FollowersRow f in AllFollowers
-                                                                                           where f.IsFollower == false
-                                                                                           orderby f.Id descending
-                                                                                           select f
-                                                        ).FindAll((user) => user.UserId == UId)
-                                                 where nonfollowers.Count > 1
-                                                 select nonfollowers)
+                    foreach (var nonfollowers in
+                            from string UId in new List<string>
+                            (
+                                (
+                                    from FollowersRow U in new List<FollowersRow>
+                                    (
+                                        from FollowersRow f in AllFollowers
+                                        where f.IsFollower == false
+                                        orderby f.Id descending
+                                        select f
+                                    )
+                                    select U.UserId).ToList().Distinct())
+                            let nonfollowers = new List<FollowersRow>(from FollowersRow f in AllFollowers
+                                                                      where f.IsFollower == false
+                                                                      orderby f.Id descending
+                                                                      select f
+                                                                    ).FindAll((user) => user.UserId == UId
+                            )
+                            select nonfollowers
+                    )
                     {
-                        if (nonfollowers[0].StatusChangeDate == nonfollowers[1].StatusChangeDate)
+                        if (nonfollowers.Count > 1)
                         {
-                            nonfollowers[0].StatusChangeDate = datenow;
+                            if (nonfollowers[0].StatusChangeDate == nonfollowers[1].StatusChangeDate)
+                            {
+                                nonfollowers[0].StatusChangeDate = datenow;
+                            }
+                        }
+                        else
+                        {
+                            if (nonfollowers[0].StatusChangeDate == nonfollowers[0].FollowedDate)
+                            {
+                                nonfollowers[0].StatusChangeDate = datenow;
+                            }
                         }
                     }
                 }
@@ -1090,7 +1140,7 @@ switches:
         public void PostNewAutoShoutUser(string UserName)
         {
 
-        // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
+            // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding user {UserName} to the auto shout-out listing.");
 #endif
@@ -1179,6 +1229,107 @@ switches:
                 _DataSource.GiveawayUserData.AcceptChanges();
             }
             NotifySaveData();
+        }
+
+        #endregion
+
+        #region Quotes
+
+        /// <summary>
+        /// Add a new quote to the 'Quotes' Table. First, this finds the minimum unused quote number-to recycle the numbers- or uses the 
+        /// next available number. Then, with this number adds the new quote to the table.
+        /// </summary>
+        /// <param name="Text">The quote text to add to the table.</param>
+        /// <returns>The quote number for the newly added quote.</returns>
+        public int PostQuote(string Text)
+        {
+            // get the quotes, sorted by ascending quote number
+            List<QuotesRow> quotes = new((QuotesRow[])GetRows(_DataSource.Quotes, Sort: $"{_DataSource.Quotes.NumberColumn.ColumnName} ASC"));
+
+            int newNumber = -1; // set a check number.
+
+            if (quotes.Count > 0 && quotes.Last().Number != quotes.Count) // if list is full, there are no empty numbers
+            {
+                // find the missing quote number in the existing quote listing
+                for (int x = 1; x <= quotes.Count; x++)
+                {
+                    if (quotes.FindIndex((m) => m.Number == x) == -1) // -1 is the number is 'not found' 
+                    {
+                        newNumber = x;
+                    }
+                }
+            }
+
+            if (newNumber == -1) // should the quote list lookup have all the numbers
+            {
+                newNumber = quotes.Count + 1; // pick next number
+            }
+
+            lock (GUIDataManagerLock.Lock)
+            {// add the quote
+                _DataSource.Quotes.AddQuotesRow(newNumber, Text);
+                _DataSource.Quotes.AcceptChanges();
+            }
+
+            // return the quote number
+            return newNumber;
+        }
+
+        /// <summary>
+        /// Get a specific quote from the data table per the <paramref name="QuoteNum"/>
+        /// </summary>
+        /// <param name="QuoteNum">The quote number to provide.</param>
+        /// <returns>The quote number and quote from the quote table -or- null if there is no quote.</returns>
+        public string GetQuote(int QuoteNum)
+        {
+            string quotedata;
+
+            QuotesRow FindQuote = ((QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'"));
+
+            if (FindQuote != null)
+            {
+                quotedata = $"{QuoteNum}: \"{FindQuote.Quote}\"";
+            }
+            else
+            {
+                quotedata = null;
+            }
+
+            return quotedata;
+        }
+
+        /// <summary>
+        /// Find the highest quote number from the quote table.
+        /// </summary>
+        /// <returns>The maximum quote number (where deleted quotes leave empty numbers somewhere in the middle)</returns>
+        public int GetQuoteCount()
+        {
+            return ((QuotesRow[])GetRows(_DataSource.Quotes, Sort: $"{_DataSource.Quotes.NumberColumn.ColumnName} ASC")).Last().Number;
+        }
+
+        /// <summary>
+        /// Delete a quote from the quote table, per the specified <paramref name="QuoteNum"/>
+        /// </summary>
+        /// <param name="QuoteNum">The quote number to delete.</param>
+        /// <returns><c>true</c> if the quote successfully delete; otherwise <c>false</c>.</returns>
+        public bool RemoveQuote(int QuoteNum)
+        {
+            bool task = false;
+
+            // get the quote row, test if it's found
+            QuotesRow row = (QuotesRow)GetRow(_DataSource.Quotes, $"{_DataSource.Quotes.NumberColumn.ColumnName}='{QuoteNum}'");
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                if (row != null)
+                {
+                    row.Delete(); // row exists, delete it
+                    _DataSource.Quotes.AcceptChanges(); // accept the change
+                    task = true;
+                }
+            }
+
+            return task;
         }
 
         #endregion
@@ -1285,6 +1436,27 @@ switches:
                             _DataSource.Currency.AddCurrencyRow(usersRow.Id, usersRow, typeRow, 0);
                         }
                     }
+                }
+            }
+        }
+
+        public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
+        {
+            CurrencyRow currencyRow = (CurrencyRow)GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            _DataSource.Currency.AcceptChanges();
+            return currencyRow.Value >= value;
+        }
+
+        public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
+        {
+            CurrencyRow currencyRow = (CurrencyRow)GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            CurrencyTypeRow currencyTypeRow = (CurrencyTypeRow)GetRow(_DataSource.CurrencyType, $"{_DataSource.CurrencyType.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+            if (currencyRow != null && currencyTypeRow != null)
+            {
+                lock (_DataSource)
+                {
+                    currencyRow.Value = Math.Min(Math.Round(currencyRow.Value + value, 2), currencyTypeRow.MaxValue);
+                    _DataSource.Currency.AcceptChanges();
                 }
             }
         }
@@ -1428,6 +1600,75 @@ switches:
 
         #region Category
 
+        #region Death Counter Data
+
+        /// <summary>
+        /// Updates the death counter for the specified category.
+        /// </summary>
+        /// <param name="currCategory">The category to update.</param>
+        /// <param name="Reset"><code>true</code>: changes value to specified value, <code>false</code>: increments the counter by <paramref name="Value"/></param>
+        /// <param name="Value">The value to reset, when <paramref name="Reset"/> is <code>true</code>. Otherwise, default increment by 1.</param>
+        /// <returns>The updated value of the current category death counter.</returns>
+        public int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1)
+        {
+            int returnValue = 0;
+            lock (GUIDataManagerLock.Lock)
+            {
+                GameDeadCounterRow deadCounterRow = (GameDeadCounterRow)GetRow(_DataSource.GameDeadCounter, $"{_DataSource.GameDeadCounter.CategoryColumn.ColumnName}='{currCategory}'");
+
+                if (deadCounterRow != null) // check if row exists
+                {
+                    if (Reset)
+                    {
+                        deadCounterRow.Counter = updateValue;
+                    }
+                    else
+                    {
+                        deadCounterRow.Counter += updateValue;
+                    }
+                    returnValue = deadCounterRow.Counter;
+                }
+                else // create row, only if category is found
+                {
+                    // we should find category, because it should be added when bot starts and stream starts
+                    CategoryListRow currCategoryRow = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{currCategory}'");
+
+                    if (currCategoryRow != null) // category is already added into database, in case it might not be...
+                    {
+                        _DataSource.GameDeadCounter.AddGameDeadCounterRow(currCategoryRow, updateValue);
+                        returnValue = updateValue;
+                    }
+                }
+
+                _DataSource.GameDeadCounter.AcceptChanges();
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Retrieve the death counter for a specific category.
+        /// </summary>
+        /// <param name="currCategory">Category to retrieve the current death counter.</param>
+        /// <returns>The death counter for the category, or <code>-1</code>: if counter doesn't exist.</returns>
+        public int GetDeathCounter(string currCategory)
+        {
+            int result = -1;
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                GameDeadCounterRow deadCounterRow = (GameDeadCounterRow)GetRow(_DataSource.GameDeadCounter, $"{_DataSource.GameDeadCounter.CategoryColumn.ColumnName}='{currCategory}'");
+                if (deadCounterRow != null)
+                {
+                    result = deadCounterRow.Counter;
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
         /// <summary>
         /// Checks for the supplied category in the category list, adds if it isn't already saved.
         /// </summary>
@@ -1439,43 +1680,49 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add and update the {newCategory} category.");
 #endif
-
-            lock (GUIDataManagerLock.Lock)
+            if (CategoryId != "" && newCategory != "")
             {
-                CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
-                bool found = false;
-                if (categoryList == null)
+                lock (GUIDataManagerLock.Lock)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
-                    found = true;
-                }
-                else
-                {
-                    if (categoryList.CategoryId == null)
+                    CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
+                    bool found = false;
+                    if (categoryList == null)
                     {
-                        categoryList.CategoryId = CategoryId;
+                        _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
                         found = true;
                     }
-                    if (categoryList.Category == null)
+                    else
                     {
-                        categoryList.Category = newCategory;
-                        found = true;
+                        if (categoryList.CategoryId == null)
+                        {
+                            categoryList.CategoryId = CategoryId;
+                            found = true;
+                        }
+                        if (categoryList.Category == null)
+                        {
+                            categoryList.Category = newCategory;
+                            found = true;
+                        }
+
+                        if (OptionFlags.IsStreamOnline)
+                        {
+                            categoryList.StreamCount++;
+                            found = true;
+                        }
                     }
 
-                    if (OptionFlags.IsStreamOnline)
+                    if (found)
                     {
-                        categoryList.StreamCount++;
-                        found = true;
+                        _DataSource.CategoryList.AcceptChanges();
+                        NotifySaveData();
                     }
-                }
 
-                if (found)
-                {
-                    _DataSource.CategoryList.AcceptChanges();
-                    NotifySaveData();
+                    return categoryList != null;
                 }
-
-                return categoryList != null;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -1747,8 +1994,8 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 return new(from OverlayTickerRow row in GetRows(_DataSource.OverlayTicker)
-                       let ticker = new TickerItem() { OverlayTickerItem = (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), row.TickerName), UserName = row.UserName }
-                       select ticker);
+                           let ticker = new TickerItem() { OverlayTickerItem = (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), row.TickerName), UserName = row.UserName }
+                           select ticker);
             }
         }
 
@@ -1769,7 +2016,7 @@ switches:
                 {
                     _DataSource.OverlayTicker.AddOverlayTickerRow(item.ToString(), name);
                     _DataSource.OverlayTicker.AcceptChanges();
-               }
+                }
 
                 NotifySaveData();
             }

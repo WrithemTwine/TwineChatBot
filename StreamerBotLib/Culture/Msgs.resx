@@ -125,12 +125,85 @@
     <value>addcommand</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="addquote" xml:space="preserve">
+    <value>addquote</value>
+  </data>
   <data name="approve" xml:space="preserve">
     <value>approve</value>
   </data>
   <data name="autohost" xml:space="preserve">
     <value>auto-hosting</value>
     <comment>MsgVar variable value</comment>
+  </data>
+  <data name="blackjack" xml:space="preserve">
+    <value>blackjack</value>
+  </data>
+  <data name="BlackJack21Win" xml:space="preserve">
+    <value>You made BlackJack 21!</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackBust" xml:space="preserve">
+    <value>Oops, you went over 21!</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackCardMessage" xml:space="preserve">
+    <value>you have #cards, totaling #value.</value>
+    <comment>can be translated, leave "#cards" and "#value" within the message</comment>
+  </data>
+  <data name="BlackJackDraw" xml:space="preserve">
+    <value>You and the House both have the same points, ending in a draw.</value>
+  </data>
+  <data name="BlackJackHit" xml:space="preserve">
+    <value>Do you want to #hit (another card) or #stand (no card)?</value>
+    <comment>can be translated, except '#hit' or '#stand' </comment>
+  </data>
+  <data name="BlackJackHouseBusts" xml:space="preserve">
+    <value>The House busts over 21.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackHouseCardMsg" xml:space="preserve">
+    <value>The House has #cards, totaling #value.</value>
+    <comment>can be translated, leave "#cards" and "#value" within the message</comment>
+  </data>
+  <data name="BlackJackHouseHits21" xml:space="preserve">
+    <value>The House has 21.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackHouseStands" xml:space="preserve">
+    <value>The House stands.</value>
+    <comment>can be translated, leave "#cards" and "#value" within the message</comment>
+  </data>
+  <data name="BlackJackHouseWin" xml:space="preserve">
+    <value>The house wins.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackNoCurrency" xml:space="preserve">
+    <value>Currency is not setup in Built-In Command !blackJack, 'currencyfield' value.</value>
+  </data>
+  <data name="BlackJackNoJoin" xml:space="preserve">
+    <value>BlackJack no longer accepting new players. Try next round.</value>
+    <comment>can be translated</comment>
+  </data>
+  <data name="BlackJackNoPlayer" xml:space="preserve">
+    <value>Player not registered.</value>
+    <comment>can be translated.</comment>
+  </data>
+  <data name="BlackJackPayout" xml:space="preserve">
+    <value>Your payout is #payout.</value>
+    <comment>can be translated, leave #payout</comment>
+  </data>
+  <data name="BlackJackPlayerJoined" xml:space="preserve">
+    <value>#user now sits at the BlackJack table.</value>
+  </data>
+  <data name="BlackJackPlayerNoMoney" xml:space="preserve">
+    <value>#user does not have enough currency to play.</value>
+  </data>
+  <data name="BlackJackStart" xml:space="preserve">
+    <value>Now dealing to each player.  When it's your turn, you have 30 seconds to type words or phrases containing '#hit' or '#stand'-(normal viewers can be prevented from typing the same phrase in a short time)</value>
+  </data>
+  <data name="BlackJackWinOverHouse" xml:space="preserve">
+    <value>You beat the house!</value>
+    <comment>can be translated</comment>
   </data>
   <data name="bot" xml:space="preserve">
     <value>bot</value>
@@ -143,6 +216,9 @@
   <data name="commands" xml:space="preserve">
     <value>commands</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="death" xml:space="preserve">
+    <value>death</value>
   </data>
   <data name="dequeue" xml:space="preserve">
     <value>dequeue</value>
@@ -196,8 +272,11 @@
   <data name="HelpBeingHosted" xml:space="preserve">
     <value>The message displayed when a user hosts the channel. Currently only supported when the bot's user name is the same as the streamer's user name.</value>
   </data>
-  <data name="HelpBits" xml:space="preserve">
+  <data name="Helpbits" xml:space="preserve">
     <value>The thank you message when a user donates bits to the channel.</value>
+  </data>
+  <data name="Helpcards" xml:space="preserve">
+    <value>Blackjack message showing current cards</value>
   </data>
   <data name="Helpcategory" xml:space="preserve">
     <value>current category, can be used for current channel or referencing a viewer (as command parameter)</value>
@@ -227,6 +306,12 @@
   <data name="HelpGiftSub" xml:space="preserve">
     <value>Thank you message for someone gifting subscription(s) to a user</value>
   </data>
+  <data name="Helphit" xml:space="preserve">
+    <value>Blackjack message name for "hit" asking for another card</value>
+  </data>
+  <data name="Helphousestand" xml:space="preserve">
+    <value>Blackjack message about what value the House stands (takes no more cards)</value>
+  </data>
   <data name="HelpJoinChannel" xml:space="preserve">
     <value>Currently not used.</value>
   </data>
@@ -242,8 +327,17 @@
   <data name="Helpmonths" xml:space="preserve">
     <value>how many months subscribed this time</value>
   </data>
+  <data name="Helppayout" xml:space="preserve">
+    <value>Blackjack message to show how much currency the player won</value>
+  </data>
   <data name="Helpquery" xml:space="preserve">
     <value>The results of the command query will go here.</value>
+  </data>
+  <data name="Helpquote" xml:space="preserve">
+    <value>Returns the requested quote message.</value>
+  </data>
+  <data name="Helpquotenum" xml:space="preserve">
+    <value>Returns the quote number per the Quotes data table.</value>
   </data>
   <data name="HelpRaid" xml:space="preserve">
     <value>The welcome and thank you message when a user raids the channel</value>
@@ -262,6 +356,9 @@
   </data>
   <data name="HelpReturnUserJoined" xml:space="preserve">
     <value>Message to provide when a user/viewer is returning to the stream.</value>
+  </data>
+  <data name="Helpstand" xml:space="preserve">
+    <value>Blackjack message name for "stand" to not take another card</value>
   </data>
   <data name="Helpstreak" xml:space="preserve">
     <value>current sub streak months, depends on user preference to share</value>
@@ -297,16 +394,22 @@
     <value>shows the message usage</value>
   </data>
   <data name="Helpuser" xml:space="preserve">
-    <value>display name of the user sending action</value>
+    <value>display name of the user sending action, some contexts - the streamer</value>
   </data>
   <data name="HelpUserJoined" xml:space="preserve">
     <value>The message the bot uses to welcome users to the channel. See options for "no welcome", "welcome when joined", or "welcome when user chats".</value>
+  </data>
+  <data name="Helpvalue" xml:space="preserve">
+    <value>Blackjack message for card value **or** a general number value in some contexts</value>
   </data>
   <data name="Helpviewers" xml:space="preserve">
     <value>display the number of viewers</value>
   </data>
   <data name="Helpwinner" xml:space="preserve">
     <value>display winner of Giveaway event</value>
+  </data>
+  <data name="hit" xml:space="preserve">
+    <value>hit</value>
   </data>
   <data name="host" xml:space="preserve">
     <value>hosting</value>
@@ -345,7 +448,10 @@
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
-  <data name="MsgAllCateogry" xml:space="preserve">
+  <data name="Msgaddquote" xml:space="preserve">
+    <value>Thank you for adding quote #quotenum.</value>
+  </data>
+  <data name="MsgAllCategory" xml:space="preserve">
     <value>All</value>
     <comment>The default gaming category a command applies, actual categories will get added this is default 'all' categories.</comment>
   </data>
@@ -363,6 +469,9 @@
   <data name="MsgBits" xml:space="preserve">
     <value>Thanks #user for giving #bits!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="Msgblackjack" xml:space="preserve">
+    <value>#user started a game of BlackJack-21! For the next 1 minute, use "!blackjack &lt;amount&gt;" to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to '#hit' for a card, or '#stand'. No answer means a '#stand'. Payouts at the end of the game.</value>
   </data>
   <data name="Msgbot" xml:space="preserve">
     <value>Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
@@ -394,8 +503,14 @@
   <data name="MsgDataNotFound" xml:space="preserve">
     <value>data not found.</value>
   </data>
+  <data name="Msgdeath" xml:space="preserve">
+    <value>#user has now died #value while playing #category.</value>
+  </data>
   <data name="Msgdefaultcommand" xml:space="preserve">
     <value>Default command, not changed.</value>
+  </data>
+  <data name="MsgDefaultQuote" xml:space="preserve">
+    <value>Quote not found.</value>
   </data>
   <data name="Msgdequeue" xml:space="preserve">
     <value>Also with leave, user leaves the play list</value>
@@ -455,6 +570,9 @@
     <value>No Category</value>
     <comment>When user has no category</comment>
   </data>
+  <data name="MsgNoDeathCounter" xml:space="preserve">
+    <value>The death counter is not established.</value>
+  </data>
   <data name="MsgNoSuccess" xml:space="preserve">
     <value>The command did not perform successfully.</value>
   </data>
@@ -482,12 +600,24 @@
   <data name="Msgqueue" xml:space="preserve">
     <value>The details of the queue, list who is in it</value>
   </data>
+  <data name="Msgquote" xml:space="preserve">
+    <value>#quote</value>
+  </data>
+  <data name="MsgQuoteNumber" xml:space="preserve">
+    <value>There #be #quotenum.</value>
+  </data>
   <data name="MsgRaid" xml:space="preserve">
     <value>Thanks #user for bringing #viewers and raiding the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="Msgremovecommand" xml:space="preserve">
     <value>Command removed</value>
+  </data>
+  <data name="Msgremovequote" xml:space="preserve">
+    <value>Successfully removed #quotenum.</value>
+  </data>
+  <data name="Msgresetdeath" xml:space="preserve">
+    <value>The game #category death counter reset to #value.</value>
   </data>
   <data name="MsgResubscribe" xml:space="preserve">
     <value>Thanks #user for re-subscribing!</value>
@@ -539,6 +669,9 @@
     <value>Thanks #user for stopping by the channel!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgviewdeath" xml:space="preserve">
+    <value>#user has died #value playing #category.</value>
+  </data>
   <data name="Msgwatchtime" xml:space="preserve">
     <value>#user has watched a total of #query.</value>
   </data>
@@ -557,8 +690,14 @@
     <value>-p:Mod -param:true -use:!addcommand command &lt;switches-optional&gt; &lt;message&gt;. See documentation for &lt;switches&gt;.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramaddquote" xml:space="preserve">
+    <value>-param:true -use:!addquote {text}</value>
+  </data>
   <data name="Paramapprove" xml:space="preserve">
-    <value>-p:Mod -use:!approval &lt;item number&gt;</value>
+    <value>-p:Mod -use:!approve &lt;item number&gt;</value>
+  </data>
+  <data name="Paramblackjack" xml:space="preserve">
+    <value>-param:true -t:Currency -use:!blackjack &lt;wager&gt; (number), to start or enter the game!</value>
   </data>
   <data name="Parambot" xml:space="preserve">
     <value>-use:!bot</value>
@@ -571,6 +710,9 @@
   <data name="Paramcommands" xml:space="preserve">
     <value>-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramdeath" xml:space="preserve">
+    <value>-use:!dead {uses current category}</value>
   </data>
   <data name="Paramdequeue" xml:space="preserve">
     <value>-use:!dequeue</value>
@@ -630,6 +772,9 @@
     <value>-p:Mod -use:!queue mods only</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramquote" xml:space="preserve">
+    <value>-param:true -use:!quote | or !quote {quote number}</value>
+  </data>
   <data name="Paramraid" xml:space="preserve">
     <value>-use:!raid &lt;user&gt; Mod only -param:true -p:Mod</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -637,6 +782,12 @@
   <data name="Paramremovecommand" xml:space="preserve">
     <value>-p:Mod -param:true -use:!removecommand command. Does not remove default commands.</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramremovequote" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!removequote {quote number}</value>
+  </data>
+  <data name="Paramresetdeath" xml:space="preserve">
+    <value>-p:Mod -param:true -use:!resetdead &lt;number&gt; {uses current category, reset to 0 or &lt;number&gt;}</value>
   </data>
   <data name="Paramsetcategory" xml:space="preserve">
     <value>-use:!setcategory -p:Mod -param:true</value>
@@ -671,6 +822,9 @@
     <value>-t:Commands -f:Usage -param:true -use:!usage &lt;command&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramviewdeath" xml:space="preserve">
+    <value>-use:!viewdeath</value>
+  </data>
   <data name="Paramwatchtime" xml:space="preserve">
     <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -678,6 +832,12 @@
   <data name="Paramworklurk" xml:space="preserve">
     <value>-use:!worklurk</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="payout" xml:space="preserve">
+    <value>payout</value>
+  </data>
+  <data name="Pluralbe" xml:space="preserve">
+    <value>is, are</value>
   </data>
   <data name="Pluralbits" xml:space="preserve">
     <value>bit, bits</value>
@@ -696,9 +856,15 @@
     <value>month, months</value>
     <comment>comma separated 'single, plural'</comment>
   </data>
+  <data name="Pluralquote" xml:space="preserve">
+    <value>quote, quotes</value>
+  </data>
   <data name="Pluralsub" xml:space="preserve">
     <value>subscription, subscriptions</value>
     <comment>comma separated 'single, plural'</comment>
+  </data>
+  <data name="Pluraltime" xml:space="preserve">
+    <value>time, times</value>
   </data>
   <data name="Pluralviewers" xml:space="preserve">
     <value>viewer, viewers</value>
@@ -723,6 +889,9 @@
     <value>queue</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="quote" xml:space="preserve">
+    <value>quote</value>
+  </data>
   <data name="raid" xml:space="preserve">
     <value>raid</value>
     <comment>default command, can be translated</comment>
@@ -733,6 +902,12 @@
   <data name="removecommand" xml:space="preserve">
     <value>removecommand</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="removequote" xml:space="preserve">
+    <value>removequote</value>
+  </data>
+  <data name="resetdeath" xml:space="preserve">
+    <value>resetdeath</value>
   </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>
@@ -761,6 +936,14 @@
     <value>socials</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="stand" xml:space="preserve">
+    <value>stand</value>
+    <comment>MsgVar variable value</comment>
+  </data>
+  <data name="streamer" xml:space="preserve">
+    <value>streamer</value>
+    <comment>MsgVar variable value</comment>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>total</value>
     <comment>MsgVar variable value</comment>
@@ -780,6 +963,9 @@
   <data name="usage" xml:space="preserve">
     <value>usage</value>
     <comment>get command usage</comment>
+  </data>
+  <data name="viewdeath" xml:space="preserve">
+    <value>viewdeath</value>
   </data>
   <data name="watchtime" xml:space="preserve">
     <value>watchtime</value>

@@ -1,62 +1,63 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <AssemblyName>TwineStreamerBot</AssemblyName>
-    <Description>A chat, clip, live, follow bot for Twitch using the C# TwitchLib library. https://twitch.tv/WrithemTwine</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
-    <SignAssembly>false</SignAssembly>
-    <Version>1.2.9.0</Version>    
-    <Copyright>2023</Copyright>
-    <PackageReleaseNotes>Updated repeating command process</PackageReleaseNotes>
-    <Authors>WrithemTwine</Authors>
-    <Company>TwineStreamerBot</Company>
-    <ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>TwineStreamerBot</AssemblyName>
+		<Description>A chat, clip, live, follow bot for Twitch using the C# TwitchLib library. https://twitch.tv/WrithemTwine</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
+		<SignAssembly>false</SignAssembly>
+		<Version>1.2.10.0</Version>
+		<Copyright>2023</Copyright>
+		<PackageReleaseNotes>Added channel point data to the overlay tab to show and refresh the available items. Updated and fixed for bugs.</PackageReleaseNotes>
+		<Authors>WrithemTwine</Authors>
+		<Company>TwineStreamerBot</Company>
+		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<IncludeNativeLibrariesForSelfExtract>True</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
-  </PropertyGroup>
+	<PropertyGroup>
+		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <NoWarn>1701;1702;8002</NoWarn>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<NoWarn>1701;1702;8002</NoWarn>
+		<Optimize>false</Optimize>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="img\SplashScreen1.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
-  </ItemGroup>
-	
-  <PropertyGroup Label="Globals">
-    <WebView2LoaderPreference>Static</WebView2LoaderPreference>
-  </PropertyGroup>
-  
 	<ItemGroup>
-    <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
-  </ItemGroup>
+		<None Remove="img\SplashScreen1.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <SplashScreen Include="img\SplashScreen1.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2151.40" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Culture\GUI_Msgs.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+	<PropertyGroup Label="Globals">
+		<WebView2LoaderPreference>Static</WebView2LoaderPreference>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SplashScreen Include="img\SplashScreen1.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Culture\GUI_Msgs.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
 
 </Project>

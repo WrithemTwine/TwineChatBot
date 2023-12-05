@@ -244,8 +244,8 @@ namespace StreamerBotLib.Data.MultiLive
                          ThroughDate = dates.Max()
                      }
                      )
-                                                          let summaryrow = (SummaryLiveStreamRow)DataSetStatic.GetRow(_DataSource.SummaryLiveStream, $"{_DataSource.SummaryLiveStream.ChannelNameColumn.ColumnName}='{SumNameRows.Name}'")
-                                                          select (SumNameRows, summaryrow)
+                                                                                              let summaryrow = (SummaryLiveStreamRow)DataSetStatic.GetRow(_DataSource.SummaryLiveStream, $"{_DataSource.SummaryLiveStream.ChannelNameColumn.ColumnName}='{SumNameRows.Name}'")
+                                                                                              select (SumNameRows, summaryrow)
                  )
                 {
                     if (summaryrow == null)
@@ -408,7 +408,7 @@ namespace StreamerBotLib.Data.MultiLive
             {
                 return GetTableNames().Contains(dataTable) && CheckField(dataTable, dataColumn)
                     ? (from DataRow row in _DataSource.Tables[dataTable].Rows
-                            select row[dataColumn]).ToList()
+                       select row[dataColumn]).ToList()
                     : (new());
             }
         }

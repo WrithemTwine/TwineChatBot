@@ -60,7 +60,9 @@
     <Color x:Key="ListViewControlFullColor">#FFFFFFFF</Color>
     <Color x:Key="ListViewControlMediumColor">#FFDCDCDC</Color>
     <Color x:Key="ListViewControlLightColor">#FFBBBBBB</Color>
+    <SolidColorBrush x:Key="ListViewControlFull" Color="{DynamicResource ListViewControlFullColor}"  />
     <SolidColorBrush x:Key="ListViewControlMedium" Color="{DynamicResource ListViewControlMediumColor}"  />
+    <SolidColorBrush x:Key="ListViewControlLight" Color="{DynamicResource ListViewControlLightColor}" />
 
     <!-- ComboBox colors -->
     <SolidColorBrush x:Key="TextBox.Static.Background" Color="{DynamicResource MediumColor}"/>
@@ -277,9 +279,9 @@
                             <Setter Property="BorderBrush" Value="{DynamicResource LightBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+                            <Setter Property="Background" Value="{DynamicResource LightBackground}"/>
                             <Setter Property="BorderBrush" Value="{DynamicResource LightBackground}"/>
-                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource LightBackground}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource PartBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

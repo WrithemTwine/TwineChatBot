@@ -14,6 +14,7 @@ namespace StreamerBotLib.Static
             Collection = LocalizedMsgSystem.GetCommandHelp();
 
             Collection.Sort(Compare);
+            Collection.Insert(0, new() { Parameter = "Parameter", Value = "Value" });
         }
 
         public int Compare(Command x, Command y)

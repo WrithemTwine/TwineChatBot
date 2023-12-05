@@ -70,6 +70,33 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers.
+        /// </summary>
+        internal static string CredentialsTwitchScopesDiffOauthBot {
+            get {
+                return ResourceManager.GetString("CredentialsTwitchScopesDiffOauthBot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to channel:read:redemptions channel:manage:broadcast channel:manage:raids.
+        /// </summary>
+        internal static string CredentialsTwitchScopesDiffOauthChannel {
+            get {
+                return ResourceManager.GetString("CredentialsTwitchScopesDiffOauthChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids.
+        /// </summary>
+        internal static string CredentialsTwitchScopesOauthSame {
+            get {
+                return ResourceManager.GetString("CredentialsTwitchScopesOauthSame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://twitch.tv/.
         /// </summary>
         internal static string TwitchHomepage {

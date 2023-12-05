@@ -640,7 +640,7 @@ namespace StreamerBotLib.BotIOController
             HandleChatCommandReceived(new()
             {
                 CommandArguments = e.Command.ArgumentsAsList,
-                CommandText = e.Command.CommandText,
+                CommandText = e.Command.CommandText.ToLower(),
                 DisplayName = e.Command.ChatMessage.DisplayName,
                 Channel = e.Command.ChatMessage.Channel,
                 IsBroadcaster = e.Command.ChatMessage.IsBroadcaster,
@@ -804,8 +804,8 @@ namespace StreamerBotLib.BotIOController
         public static void ManageBotsStreamStatusChanged(bool Start)
         {
             // loop the bots and send message to start or stop based on stream online or offline status
-            foreach(IBotTypes bots in BotsList)
-            { 
+            foreach (IBotTypes bots in BotsList)
+            {
                 bots.ManageStreamOnlineOfflineStatus(Start);
             }
         }
@@ -922,7 +922,7 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
             SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
-//            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
+            //            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
 
         public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)

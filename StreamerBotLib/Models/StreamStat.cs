@@ -29,6 +29,11 @@ namespace StreamerBotLib.Models
         public int ChannelChallenge { get; set; } = 0;
         public int MaxUsers { get; set; } = 0;
 
+        /// <summary>
+        /// Maintain current active category of the stream
+        /// </summary>
+        public string CurrentCategory { get; set; }
+
         public void Clear()
         {
             StreamStart = DateTime.MinValue;

@@ -87,7 +87,7 @@ namespace StreamerBotLib.Systems
                 {
                     diluteTime = CheckDilute();
                     foreach (var item in from Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands()
-                                         where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry))
+                                         where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))
                                          let item = new TimerCommand(Timers, diluteTime)
                                          select item)
                     {
@@ -124,7 +124,7 @@ namespace StreamerBotLib.Systems
         private bool ComputeRerunLoop(List<string> CategoryList)
         {
             return ComputeRerunLoop()
-                    && (CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)));
+                    && (CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)));
         }
 
         private bool ComputeRepeat()
@@ -314,7 +314,7 @@ namespace StreamerBotLib.Systems
         {
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
-            ProcessedCommand?.Invoke(this, new() { Msg = result, RepeatMsg = multi });
+            OnProcessCommand(result, multi);
         }
 
         /// <summary>
@@ -635,6 +635,99 @@ namespace StreamerBotLib.Systems
             {
                 AutoShoutUsers();
             }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
+            {
+                bool TryConvertInt = int.TryParse(arglist[0], out int Wager);
+
+                if (arglist.Count == 1 && TryConvertInt)
+                {
+                    GamePlayBlackJack(cmdrow, User, Wager);
+                }
+                else
+                {
+                    result = cmdrow.Usage;
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.death))
+            {
+                int counter = AddDeathCounter();
+
+                if (counter != -1)
+                {
+                    result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
+                        new(MsgVars.user, ChannelName),
+                        new(MsgVars.value, FormatData.Plurality(counter,MsgVars.Pluraltime)),
+                        new(MsgVars.category, Category)
+                    }));
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.resetdeath))
+            {
+                int counter = ResetDeathCounter(arglist.Count != 0 ? Convert.ToInt32(arglist[0]) : 0);
+
+                result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
+                        new(MsgVars.value, FormatData.Plurality(counter,MsgVars.Pluraltime)),
+                        new(MsgVars.category, Category)
+                    }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.viewdeath))
+            {
+                int counter = DataManage.GetDeathCounter(FormatData.AddEscapeFormat(Category));
+
+                result = VariableParser.ParseReplace(counter != -1 ? cmdrow.Message : LocalizedMsgSystem.GetVar(Msg.MsgNoDeathCounter), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
+                        new(MsgVars.user, ChannelName),
+                        new(MsgVars.value, FormatData.Plurality( counter ,MsgVars.Pluraltime)),
+                        new(MsgVars.category, Category)
+                    }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addquote))
+            {
+                if (arglist.Count == 0)
+                {
+                    result = cmdrow.Usage;
+                }
+                else
+                {
+                    int quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
+
+                    result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                        new(MsgVars.quotenum, quoteNum.ToString())
+                    }));
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.quote))
+            {
+                if (arglist.Count > 1)
+                {
+                    result = cmdrow.Usage;
+                }
+                else if (arglist.Count == 0)
+                {
+                    int QuoteCount = DataManage.GetQuoteCount();
+
+                    result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                       {
+                            new(MsgVars.quotenum, FormatData.Plurality(QuoteCount, MsgVars.Pluralquote)),  // determine plurality of "quote/quotes" based on quote count
+                            new(MsgVars.be, FormatData.PluralityOnlyWord(QuoteCount, MsgVars.Pluralbe))     // convert 'be' to singular "is" or plural "are" per QuoteCount
+                       }));
+                }
+                else
+                {
+                    result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                        {
+                            new(MsgVars.quote,
+                            $"{LocalizedMsgSystem.GetVar(DefaultCommand.quote)} {DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote)}" )
+                        }));
+                }
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removequote))
+            {
+                result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                       {
+                            new(MsgVars.quotenum, DataManage.RemoveQuote(Convert.ToInt32(arglist[0])) ? arglist[0] : LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
+                       }));
+            }
             else
             {
                 string paramvalue = cmdrow.AllowParam
@@ -823,7 +916,11 @@ namespace StreamerBotLib.Systems
                         {
                             output = FormatData.FormatTimes((DateTime)querydata);
                         }
-                        else if (querydata.GetType() == typeof(int))
+                        else if (querydata.GetType() == typeof(int) || querydata.GetType() == typeof(double))
+                        {
+                            output = ((double)querydata).ToString("N2");
+                        }
+                        else
                         {
                             output = querydata.ToString();
                         }

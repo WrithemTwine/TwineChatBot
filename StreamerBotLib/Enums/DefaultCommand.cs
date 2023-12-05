@@ -26,6 +26,13 @@
         raid, cancelraid,
         approve,
         mergeaccounts,
-        accountage
+        accountage,
+        blackjack,
+        death,
+        resetdeath,
+        viewdeath,
+        addquote,
+        quote,
+        removequote
     }
 }

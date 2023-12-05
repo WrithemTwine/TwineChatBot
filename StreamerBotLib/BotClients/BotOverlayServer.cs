@@ -325,7 +325,7 @@ namespace StreamerBotLib.BotClients
         {
             IsStarted = false;
             IsStopped = true;
-     
+
             SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
             SendTickerToServer -= OverlayWindow?.GetupdatedTickerReceivedHandler();
 
@@ -341,7 +341,7 @@ namespace StreamerBotLib.BotClients
         }
 
         #region Sending Msg mechansim
-       
+
         /// <summary>
         /// Handles a new overlay action alert, sets it up in a queue to send to overlay server in an orderly manner
         /// </summary>

@@ -134,9 +134,9 @@ namespace StreamerBotLib.Data
 
             lock (GUIDataManagerLock.Lock)
             {
-                if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry)}'").Length == 0)
+                if (_DataSource.CategoryList.Select($"Category='{LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)}'").Length == 0)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry), 0);
+                    _DataSource.CategoryList.AddCategoryListRow(null, LocalizedMsgSystem.GetVar(Msg.MsgAllCategory), 0);
                     _DataSource.CategoryList.AcceptChanges();
                 }
 
@@ -147,7 +147,7 @@ namespace StreamerBotLib.Data
                     {
                         if (datarow.Category == string.Empty)
                         {
-                            datarow.Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCateogry);
+                            datarow.Category = LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
                         }
                         if (DBNull.Value.Equals(datarow["SendMsgCount"]))
                         {

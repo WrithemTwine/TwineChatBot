@@ -54,7 +54,9 @@
     <Color x:Key="ListViewControlFullColor">#FF1E1E1E</Color>
     <Color x:Key="ListViewControlMediumColor">#FF383838</Color>
     <Color x:Key="ListViewControlLightColor">#FF5B5B5B</Color>
+    <SolidColorBrush x:Key="ListViewControlFull" Color="{DynamicResource ListViewControlFullColor}"  />
     <SolidColorBrush x:Key="ListViewControlMedium" Color="{DynamicResource ListViewControlMediumColor}"  />
+    <SolidColorBrush x:Key="ListViewControlLight" Color="{DynamicResource ListViewControlLightColor}" />
 
     <!-- ComboBox colors -->
     <SolidColorBrush x:Key="TextBox.Static.Background" Color="{DynamicResource MediumColor}"/>
@@ -217,8 +219,8 @@
     <Style TargetType="{x:Type Button}">
         <!--<Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{DynamicResource FullBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Background" Value="{DynamicResource LightBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource PartBackground}" />
             </Trigger>
         </Style.Triggers>-->
         <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
@@ -275,9 +277,9 @@
                             <Setter Property="BorderBrush" Value="{DynamicResource LightBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+                            <Setter Property="Background" Value="{DynamicResource LightBackground}"/>
                             <Setter Property="BorderBrush" Value="{DynamicResource LightBackground}"/>
-                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource LightBackground}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource PartBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

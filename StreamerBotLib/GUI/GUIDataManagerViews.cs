@@ -96,6 +96,9 @@ namespace StreamerBotLib.GUI
         public DataView OverlayService { get; private set; }
         public DataView OverlayTicker { get; private set; }
         public DataView ModeratorApprove { get; private set; }
+        public DataView GameDeadCounter { get; private set; }
+
+        public DataView Quotes { get; private set; }
 
         #endregion
 
@@ -110,6 +113,10 @@ namespace StreamerBotLib.GUI
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Notifies a property changed for the GUI to refresh.
+        /// </summary>
+        /// <param name="propertyName">Name of the property which updated values.</param>
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -149,7 +156,7 @@ namespace StreamerBotLib.GUI
             ShoutOuts = dataManager._DataSource.ShoutOuts.DefaultView;
             Category = dataManager._DataSource.CategoryList.DefaultView;
             Clips = dataManager._DataSource.Clips.DefaultView;
-            InRaidData = new(dataManager._DataSource.InRaidData,null, $"{dataManager._DataSource.InRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
+            InRaidData = new(dataManager._DataSource.InRaidData, null, $"{dataManager._DataSource.InRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             OutRaidData = new(dataManager._DataSource.OutRaidData, null, $"{dataManager._DataSource.OutRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
             GiveawayUserData = dataManager._DataSource.GiveawayUserData.DefaultView;
             CustomWelcomeData = dataManager._DataSource.CustomWelcome.DefaultView;
@@ -159,6 +166,8 @@ namespace StreamerBotLib.GUI
             OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
             OverlayTicker = dataManager._DataSource.OverlayTicker.DefaultView;
             ModeratorApprove = dataManager._DataSource.ModeratorApprove.DefaultView;
+            GameDeadCounter = dataManager._DataSource.GameDeadCounter.DefaultView;
+            Quotes = dataManager._DataSource.Quotes.DefaultView;
 
             /**/
             ChannelEvents.ListChanged += DataView_ListChanged;
@@ -183,12 +192,18 @@ namespace StreamerBotLib.GUI
             OverlayService.ListChanged += DataView_ListChanged;
             OverlayTicker.ListChanged += DataView_ListChanged;
             ModeratorApprove.ListChanged += DataView_ListChanged;
+            GameDeadCounter.ListChanged += DataView_ListChanged;
+            Quotes.ListChanged += DataView_ListChanged;
             /**/
 
             SetCommandCollection();
         }
 
-        /**/
+        /// <summary>
+        /// Handles when a data table view changes, to update the GUI and refresh the status bar item counts.
+        /// </summary>
+        /// <param name="sender">Object invoking the event.</param>
+        /// <param name="e">The parameters sent with the event.</param>
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             lock (GUIDataManagerLock.Lock)
@@ -209,7 +224,9 @@ namespace StreamerBotLib.GUI
             }
         }
 
-        /* */
+        /// <summary>
+        /// Builds the list of commands to update the number of commands within the GUI
+        /// </summary>
         private void SetCommandCollection()
         {
             lock (GUIDataManagerLock.Lock)
