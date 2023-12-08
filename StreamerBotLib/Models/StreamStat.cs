@@ -3,6 +3,9 @@ using System.Diagnostics;
 
 namespace StreamerBotLib.Models
 {
+    /// <summary>
+    /// Properties of a live stream
+    /// </summary>
     [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
     public class StreamStat
     {

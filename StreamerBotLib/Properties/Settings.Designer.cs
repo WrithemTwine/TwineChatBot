@@ -1693,42 +1693,6 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/releases/latest")]
-        public string GitHubStableLink {
-            get {
-                return ((string)(this["GitHubStableLink"]));
-            }
-            set {
-                this["GitHubStableLink"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/releases/")]
-        public string GitHubLatestLink {
-            get {
-                return ((string)(this["GitHubLatestLink"]));
-            }
-            set {
-                this["GitHubLatestLink"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/WrithemTwine/TwineChatBot/wiki")]
-        public string GitHubWikiLink {
-            get {
-                return ((string)(this["GitHubWikiLink"]));
-            }
-            set {
-                this["GitHubWikiLink"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ExpanderBotUsageInfo {
             get {

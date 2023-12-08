@@ -153,7 +153,23 @@ namespace StreamerBot
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+            VerifyNewVersion += StreamerBotWindow_VerifyNewVersion;
         }
+
+        /// <summary>
+        /// A running watcher thread checks for elapsed time, and raises an event when current time exceeds the 
+        /// time to check for another version; and not just when the application starts - the user can have the 
+        /// application open for weeks and would know of a new version without restarting it.
+        /// Handles the event when it's time to check for a new version.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StreamerBotWindow_VerifyNewVersion(object sender, EventArgs e)
+        {
+            // navigate to the predefined stable link.
+            WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+        }
+
 
         /// <summary>
         /// Handles a WebView GUI control navigation, when it completes. The GitHub link resolves to a 

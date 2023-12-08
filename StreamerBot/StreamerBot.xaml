@@ -58,7 +58,7 @@
                     <StackPanel x:Name="StatusBarItem_NewStableVersion" Height="35" Panel.ZIndex="5" Visibility="Collapsed">
                         <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
                                   Visibility="Collapsed" 
-                                  DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}" 
+                                  DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubStableLink}}" 
                                   NavigationCompleted="WebView2_GitHub_StableVersion_NavigationCompleted"/>
 
                         <TextBlock 
@@ -1799,7 +1799,7 @@
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload"  Width="59" Height="29" Click="WebView2Reload_Click" HorizontalAlignment="Left" />
-                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubWikiLink}" />
+                                        <wv2:WebView2 DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubWikiLink}}" />
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1810,7 +1810,7 @@
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}"/>
+                                        <wv2:WebView2 DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubStableLink}}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1821,7 +1821,7 @@
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubLatestLink}"/>
+                                        <wv2:WebView2 DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubLatestLink}}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>

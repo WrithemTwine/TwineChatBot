@@ -574,8 +574,11 @@ switches:
                     // can't use a simple method to duplicate this because "ref" can't be used with boxing
                     foreach (PropertyInfo property in streamStat.GetType().GetProperties())
                     {
-                        // use properties from 'StreamStat' since StreamStatRow has additional properties
-                        property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                        if (streamStatsRow.GetType().GetProperties().Contains(property))
+                        {
+                            // use properties from 'StreamStat' since StreamStatRow has additional properties
+                            property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                        }
                     }
                 }
 

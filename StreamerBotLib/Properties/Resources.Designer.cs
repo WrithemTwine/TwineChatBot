@@ -97,6 +97,33 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/releases/.
+        /// </summary>
+        internal static string GitHubLatestLink {
+            get {
+                return ResourceManager.GetString("GitHubLatestLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/releases/latest.
+        /// </summary>
+        internal static string GitHubStableLink {
+            get {
+                return ResourceManager.GetString("GitHubStableLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/wiki.
+        /// </summary>
+        internal static string GitHubWikiLink {
+            get {
+                return ResourceManager.GetString("GitHubWikiLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://twitch.tv/.
         /// </summary>
         internal static string TwitchHomepage {
