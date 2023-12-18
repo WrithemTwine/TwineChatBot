@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
     public class ExtFollowerService : ExtApiService<GetChannelFollowersResponse>
     {
         public event EventHandler<OnNewFollowersDetectedArgs> OnBulkFollowsUpdate;
+        public event EventHandler AccessTokenUnauthorized;
 
         private void BulkFollowsUpdate(string ChannelName, IEnumerable<ChannelFollower> follows)
         {
@@ -47,6 +49,13 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     followsResponse = await followers.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
                     BulkFollowsUpdate(ChannelName, followsResponse.Data);
                     Thread.Sleep(1000);
+                }
+            }
+            catch (HttpRequestException hrEx)
+            {
+                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    AccessTokenUnauthorized?.Invoke(this, new());
                 }
             }
             catch (Exception ex)
@@ -83,6 +92,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     Thread.Sleep(2000);
                 }
             }
+            catch (HttpRequestException hrEx)
+            {
+                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    AccessTokenUnauthorized?.Invoke(this, new());
+                }
+                return null;
+            }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
@@ -95,7 +112,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         // from TwitchLib: https://github.com/TwitchLib/TwitchLib.Api/blob/2ea61c70225c0c15d7def7a5808837191e33d778/TwitchLib.Api/Services/FollowerService.cs
         // modified to fit into TwineStreamer bot code structure and handle internet disconnection related exceptions
 
-        private readonly Dictionary<string, DateTime> _lastFollowerDates = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, DateTime> _lastFollowerDates = new(StringComparer.OrdinalIgnoreCase);
         private readonly bool _invokeEventsOnStartup;
 
         /// <summary>
@@ -232,6 +249,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             {
                 var resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Channels.GetChannelFollowersAsync(first: (int)param[0], broadcasterId: c), channel, QueryCountPerRequest);
                 return resultset.Data.Reverse().ToList();
+            }
+            catch (HttpRequestException hrEx)
+            {
+                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    AccessTokenUnauthorized?.Invoke(this, new());
+                }
+                return null;
             }
             catch (Exception ex)
             {

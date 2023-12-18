@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.8.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -1753,13 +1753,145 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int TwitchTokenUseImplicit {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchTokenUseAuth {
             get {
-                return ((int)(this["TwitchTokenUseImplicit"]));
+                return ((bool)(this["TwitchTokenUseAuth"]));
             }
             set {
-                this["TwitchTokenUseImplicit"] = value;
+                this["TwitchTokenUseAuth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthBotAccessToken {
+            get {
+                return ((string)(this["TwitchAuthBotAccessToken"]));
+            }
+            set {
+                this["TwitchAuthBotAccessToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthBotRefreshToken {
+            get {
+                return ((string)(this["TwitchAuthBotRefreshToken"]));
+            }
+            set {
+                this["TwitchAuthBotRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthBotClientSecret {
+            get {
+                return ((string)(this["TwitchAuthBotClientSecret"]));
+            }
+            set {
+                this["TwitchAuthBotClientSecret"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerAccessToken {
+            get {
+                return ((string)(this["TwitchAuthStreamerAccessToken"]));
+            }
+            set {
+                this["TwitchAuthStreamerAccessToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerRefreshToken {
+            get {
+                return ((string)(this["TwitchAuthStreamerRefreshToken"]));
+            }
+            set {
+                this["TwitchAuthStreamerRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerClientSecret {
+            get {
+                return ((string)(this["TwitchAuthStreamerClientSecret"]));
+            }
+            set {
+                this["TwitchAuthStreamerClientSecret"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerRefreshToken {
+            get {
+                return ((string)(this["TwitchStreamerRefreshToken"]));
+            }
+            set {
+                this["TwitchStreamerRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthBotAuthCode {
+            get {
+                return ((string)(this["TwitchAuthBotAuthCode"]));
+            }
+            set {
+                this["TwitchAuthBotAuthCode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerAuthCode {
+            get {
+                return ((string)(this["TwitchAuthStreamerAuthCode"]));
+            }
+            set {
+                this["TwitchAuthStreamerAuthCode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:3000")]
+        public string TwitchAuthRedirectURL {
+            get {
+                return ((string)(this["TwitchAuthRedirectURL"]));
+            }
+            set {
+                this["TwitchAuthRedirectURL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TwitchAuthNewScopeRefresh {
+            get {
+                return ((bool)(this["TwitchAuthNewScopeRefresh"]));
+            }
+            set {
+                this["TwitchAuthNewScopeRefresh"] = value;
             }
         }
     }

@@ -72,6 +72,7 @@ namespace StreamerBot
             {
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
+                Settings.Default.TwitchAuthNewScopeRefresh = true; // requires user to reauthorize app when access token scopes change
                 Settings.Default.Save();
             }
 
@@ -88,6 +89,8 @@ namespace StreamerBot
             Controller.SetDispatcher(AppDispatcher);
 
             //LoaderDLLFolderPath = "./";
+
+            // TODO: implement control path when user is using the 'authorization code flow' for access tokens, and implement an event handler when the auth code expires and requires user to start auth code process all over again
 
 
             InitializeComponent();
@@ -816,17 +819,17 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
-        private void Slider_TwitchTokenFlow_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
         {
-            if (e.NewValue == 0)
+            if (OptionFlags.TwitchTokenUseAuth)
             {
-                StackPanel_TwitchImplicitTokenFlow.Visibility = Visibility.Visible;
-                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
-            }
-            else if (e.NewValue == 1)
-            {
-                StackPanel_TwitchImplicitTokenFlow.Visibility = Visibility.Collapsed;
+                StackPanel_TwitchTokenFlow.Visibility = Visibility.Collapsed;
                 StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPanel_TwitchTokenFlow.Visibility = Visibility.Visible;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -961,16 +964,18 @@ namespace StreamerBot
             TextBox_BotChat.Text = "";
         }
 
+        private const int TwitchTokenRefreshDays = 53;
+
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(53);
+            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
-            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(53);
+            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
