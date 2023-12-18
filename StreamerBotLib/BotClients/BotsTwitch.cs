@@ -2,6 +2,7 @@
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -22,7 +23,6 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
-
         // TODO: fix condition where OAuth token expires or becomes invalid (if account password changes), yet bot continues to try to run and should otherwise stop if date expires
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; } = new();
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = new();
@@ -30,6 +30,8 @@ namespace StreamerBotLib.BotClients
         public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } = new();
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = new();
         public static TwitchBotPubSub TwitchBotPubSub { get; private set; } = new();
+
+        internal static TwitchTokenBot TwitchTokenBot { get; private set; }
 
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
@@ -63,6 +65,17 @@ namespace StreamerBotLib.BotClients
 
             DataManager = SystemsController.DataManage;
 
+            // set token bot and assign to every bot
+            TwitchTokenBot = new();
+
+            foreach(TwitchBotsBase bot in BotsList)
+            {
+                bot.SetTokenBot(TwitchTokenBot);
+            }
+
+            TwitchBotUserSvc.SetTokenBot(TwitchTokenBot);
+
+            AddBot(TwitchTokenBot);
         }
 
         public override void ManageStreamOnlineOfflineStatus(bool Start)
@@ -447,7 +460,11 @@ namespace StreamerBotLib.BotClients
         {
             RegisterHandlers();
 
-            GetAllFollowers();
+            if (!TwitchFollower.RestartRefreshAccessToken) // avoid the bulk follower call due to access token refresh
+            {
+                // otherwise, update all followers per the user's action to restart the bot
+                GetAllFollowers();
+            }
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)

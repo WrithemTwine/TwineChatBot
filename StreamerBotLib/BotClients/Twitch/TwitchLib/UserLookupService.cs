@@ -39,7 +39,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return null;
         }
 
-        public async Task<string> GetUserId(string UserName)
+        internal async Task<string> GetUserId(string UserName)
         {
             string result = null;
             int loop = 0;
@@ -59,12 +59,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return result;
         }
 
-        public async Task<DateTime> GetUserCreatedAt(string UserName = null, string UserId = null)
+        internal async Task<DateTime> GetUserCreatedAt(string UserName = null, string UserId = null)
         {
             return (await GetUsersAsync(UserName: UserName, Id: UserId))?.Users.FirstOrDefault().CreatedAt ?? DateTime.MinValue;
         }
 
-        public async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
+        internal async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
             if (UserId != null || UserName != null)
             {
@@ -74,7 +74,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return null;
         }
 
-        public async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
+        internal async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
             if (UserId != null || UserName != null)
             {
@@ -83,7 +83,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return null;
         }
 
-        public async Task<BanUserResponse> BanUser(string UserId = null, string UserName = null, int forDuration = 0, BanReasons banReason = BanReasons.UnsolicitedSpam)
+        internal async Task<BanUserResponse> BanUser(string UserId = null, string UserName = null, int forDuration = 0, BanReasons banReason = BanReasons.UnsolicitedSpam)
         {
             BanUserRequest userRequest = new() { UserId = UserId ?? await GetUserId(UserName), Duration = forDuration, Reason = banReason.ToString() };
 
@@ -94,7 +94,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return await _api.Helix.Moderation.BanUserAsync(TwitchBotsBase.TwitchChannelId, TwitchBotsBase.TwitchBotUserId, userRequest);
         }
 
-        public async Task ModifyChannelInformation(string UserId, string GameId = null, string BroadcasterLanguage = null, string Title = null, int Delay = -1)
+        internal async Task ModifyChannelInformation(string UserId, string GameId = null, string BroadcasterLanguage = null, string Title = null, int Delay = -1)
         {
             ModifyChannelInformationRequest request = new();
 
@@ -118,12 +118,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             await _api.Helix.Channels.ModifyChannelInformationAsync(UserId, request);
         }
 
-        public async Task<GetGamesResponse> GetGameId(List<string> GameId = null, List<string> GameName = null)
+        internal async Task<GetGamesResponse> GetGameId(List<string> GameId = null, List<string> GameName = null)
         {
             return await _api.Helix.Games.GetGamesAsync(GameId, GameName);
         }
 
-        public async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
+        internal async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
         {
             if (ToUserId != null || ToUserName != null)
             {
@@ -132,12 +132,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return null;
         }
 
-        public async Task CancelRaid(string FromId)
+        internal async Task CancelRaid(string FromId)
         {
             await _api.Helix.Raids.CancelRaidAsync(FromId);
         }
 
-        public async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
+        internal async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
         {
             if (UserId != null || UserName != null)
             {

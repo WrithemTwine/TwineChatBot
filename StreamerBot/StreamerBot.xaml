@@ -411,15 +411,21 @@
 
                         <DockPanel LastChildFill="False">
                             <StackPanel DockPanel.Dock="Top">
-                                <Slider Width="90" IsSnapToTickEnabled="True" Maximum="1" SmallChange="1" SelectionStart="0" DataContext="{Binding Source={x:Static s:Settings.Default}}"  Value="{Binding TwitchTokenUseImplicit}" Interval="1" SelectionEnd="1" ValueChanged="Slider_TwitchTokenFlow_ValueChanged"/>
+                                <!--IsChecked="{Binding TwitchTokenUseAuth}"-->
+                                <ToggleButton Width="100" Height="36" 
+                                              DataContext="{Binding Source={x:Static s:Settings.Default}}" 
+                                    Click="ToggleButton_ChooseTwitchAuth_Click" ClickMode="Press" Style="{StaticResource ToggleButtonTwitchTokenSelecter}"/>
                             </StackPanel>
 
                             <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                                 <WrapPanel Orientation="Vertical">
 
-                                    <StackPanel x:Name="StackPanel_TwitchImplicitTokenFlow">
+                                    <StackPanel x:Name="StackPanel_TwitchTokenFlow">
                                         <DockPanel LastChildFill="False">
 
+                                            <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">
+                                                If you used the automatic refresh token (other page), you will need to re-enter tokens on this page.
+                                            </TextBlock>
                                             <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">Please provide feedback if you have any ideas how better to present this page.</TextBlock>
 
                                             <Expander DockPanel.Dock="Top" IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" ScrollViewer.CanContentScroll="True" MinWidth="300" Width="Auto" MaxHeight="200">
@@ -583,8 +589,8 @@
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10,0">
                                                                 <Label Content="Token Scope" />
-                                                                <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" Text="{x:Static s:Resources.CredentialsTwitchScopesDiffOauthBot}" />
-                                                                <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" Text="{x:Static s:Resources.CredentialsTwitchScopesOauthSame}" />
+                                                                <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}" />
+                                                                <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Access OAuth Token" />
@@ -623,7 +629,7 @@
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Token Scope" />
                                                                 <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"                                                                   
-                                                                 Text="{x:Static s:Resources.CredentialsTwitchScopesDiffOauthChannel}" />
+                                                                 Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Access OAuth Token"/>
@@ -674,7 +680,7 @@
                                     </GroupBox>
                                 </WrapPanel>
                             </ScrollViewer>
-                            
+
                         </DockPanel>
                     </TabItem>
                 </TabControl>
