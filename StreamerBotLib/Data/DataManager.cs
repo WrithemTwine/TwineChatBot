@@ -897,7 +897,7 @@ switches:
                     newfollow = false;
                     followers.IsFollower = true;
 
-                    if (DBNull.Value.Equals(followers["FollowedDate"]))
+                    if (DBNull.Value.Equals(followers["FollowedDate"]) || followers.FollowedDate != FollowedDate)
                     {
                         followers.FollowedDate = FollowedDate;
                     }
