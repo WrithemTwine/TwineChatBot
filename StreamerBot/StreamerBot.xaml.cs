@@ -31,6 +31,10 @@ using System.Windows.Threading;
 
 namespace StreamerBot
 {
+    // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment
+    // TODO: add "shoutout" user option to invoke Twitch's chat level shoutout option
+    // TODO: look at using "localhost" for the clip's referback URL to grab a clip to send to overlay-reconnect into Overlay
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
