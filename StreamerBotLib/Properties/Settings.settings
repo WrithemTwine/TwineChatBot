@@ -470,5 +470,14 @@
     <Setting Name="TwitchAuthNewScopeRefresh" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="TwitchAuthClientId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">From Twitch for registered application</Value>
+    </Setting>
+    <Setting Name="TwitchAuthStreamerClientId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">From Twitch for registered application</Value>
+    </Setting>
+    <Setting Name="TwitchAuthUseInternalBrowser" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

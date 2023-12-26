@@ -34,6 +34,7 @@ namespace StreamerBotLib.BotIOController
     {
         public event EventHandler<PostChannelMessageEventArgs> OutputSentToBots;
         public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
+        public event EventHandler<InvalidAccessTokenEventArgs> InvalidAuthorizationToken;
 
         private Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
@@ -73,6 +74,18 @@ namespace StreamerBotLib.BotIOController
 
             BotsList.Add(TwitchBots);
             BotsList.Add(OverlayServerBot);
+
+            TwitchBots.InvalidTwitchAccess += TwitchBots_InvalidTwitchAccess;
+        }
+
+        /// <summary>
+        /// Notify when authorized bots fail and access/refresh tokens are now invalid and can't be renewed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TwitchBots_InvalidTwitchAccess(object sender, InvalidAccessTokenEventArgs e)
+        {
+            InvalidAuthorizationToken?.Invoke(this, e);
         }
 
         /// <summary>
@@ -378,6 +391,11 @@ namespace StreamerBotLib.BotIOController
                     }
                 });
             }
+        }
+
+        public void TwitchTokenAuthCodeAuthorize(string clientId, Action<string> action, Action AuthenticationFinished)
+        {
+            TwitchBots.TwitchActivateAuthCode(clientId, action, AuthenticationFinished);
         }
 
         #endregion

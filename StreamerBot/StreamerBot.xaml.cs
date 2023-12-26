@@ -70,9 +70,14 @@ namespace StreamerBot
 
             if (Settings.Default.UpgradeRequired)
             {
+                // TODO: before issuing a new code release with changed access scope, change the scope refresh to true
+                // save the setting in the new settings version about refreshing the authentication
+                bool RefreshToken = Settings.Default.TwitchAuthNewScopeRefresh;
+
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
-                Settings.Default.TwitchAuthNewScopeRefresh = true; // requires user to reauthorize app when access token scopes change
+
+                Settings.Default.TwitchAuthNewScopeRefresh = RefreshToken;
                 Settings.Default.Save();
             }
 
@@ -152,6 +157,7 @@ namespace StreamerBot
             guiAppServices.OnBotStopped += GUI_OnBotStopped;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
+            Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
 
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
@@ -256,7 +262,10 @@ namespace StreamerBot
             {
                 _ = Dispatcher.BeginInvoke(new BotOperation(() =>
                 {
-                    (B.Item2.DataContext as IOModule)?.StartBot();
+                    if (B.Item2.IsEnabled) // is enabled is a check the credentials are added to the bot
+                    {
+                        (B.Item2.DataContext as IOModule)?.StartBot();
+                    }
                 }), null);
             }
         }
@@ -496,9 +505,35 @@ namespace StreamerBot
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             CheckFocus();
-            if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
-            {
+            StartAutoBots();
 
+            CheckMessageBoxes();
+            CheckBox_ManageData_Click(sender, new());
+            CheckBox_TabifySettings_Clicked(this, new());
+            CheckDebug(this, new());
+            SetVisibility(this, new());
+
+            ToggleButton_ChooseTwitchAuth_Click(this, null);
+        }
+
+        /// <summary>
+        /// Check each bot if it's enabled-the credentials are proper- and start any bot the user selected to start when the app is loaded.
+        /// Also, when the Twitch authentication token method changes, need to restart any bots if the tokens are available.
+        /// </summary>
+        private void StartAutoBots()
+        {
+            // need checks to keep from using tokens in the app mode where tokens may have been available but no longer available
+
+            if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate
+                && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
+            ||
+                (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
+                    // check the bot token is assigned
+                && ((!string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken) && !OptionFlags.TwitchStreamerUseToken)
+                    // check the streamer token is assigned
+                    || (OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)) ))
+            )
+            {
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
@@ -511,14 +546,6 @@ namespace StreamerBot
 
                 BeginUpdateCategory();
             }
-
-            CheckMessageBoxes();
-            CheckBox_ManageData_Click(sender, new());
-            CheckBox_TabifySettings_Clicked(this, new());
-            CheckDebug(this, new());
-            SetVisibility(this, new());
-
-            // TODO: research auto-refreshing token
         }
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
@@ -646,30 +673,42 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
-            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
-
-            void SetButtons(bool value)
+            if (!OptionFlags.TwitchTokenUseAuth)
             {
-                foreach (RadioButton rb in radioButtons)
-                {
-                    rb.IsEnabled = value;
-                }
-            }
-
-            if (TB_Twitch_Channel.Text.Length != 0
-                && TB_Twitch_BotUser.Text.Length != 0
-                && TB_Twitch_ClientID.Text.Length != 0
-                && TB_Twitch_AccessToken.Text.Length != 0
-                && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
-            {
-                SetButtons(true);
+                SetBotRadioButtons(
+                                       TB_Twitch_Channel.Text.Length != 0
+                                    && TB_Twitch_BotUser.Text.Length != 0
+                                    && TB_Twitch_ClientID.Text.Length != 0
+                                    && TB_Twitch_AccessToken.Text.Length != 0
+                                    && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0)
+                                , Platform.Twitch);
             }
             else
             {
-                SetButtons(false);
+                SetBotRadioButtons(
+                    OptionFlags.TwitchAuthBotRefreshToken != "" 
+                    && OptionFlags.TwitchAuthBotAuthCode != "" 
+                    && OptionFlags.TwitchAuthBotAuthCode != ""
+                    , Platform.Twitch);
             }
 
-            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken : OptionFlags.TwitchBotAccessToken != "";
+            // Check if credentials are empty and we still need to allow the user to authenticate the application, but block it when successfully authenticated
+            // The authentication code bot checking clears out the auth code when there's a failure, so this checks it's enabled when
+            // both the user adds client Id & secret are available and auth code is not available (not authenticated)
+            Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = OptionFlags.TwitchAuthClientId != "" 
+                                                            && OptionFlags.TwitchChannelName != "" 
+                                                            && OptionFlags.TwitchAuthBotClientSecret != "" 
+                                                            && OptionFlags.TwitchBotUserName != "" 
+                                                            && OptionFlags.TwitchAuthBotAuthCode == "";
+
+            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchAuthStreamerClientId != "" 
+                                                                    && OptionFlags.TwitchChannelName != "" 
+                                                                    && OptionFlags.TwitchAuthStreamerClientSecret != "" 
+                                                                    && OptionFlags.TwitchAuthStreamerAuthCode == ""; 
+
+            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ? 
+                                                    (OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken) 
+                                                    : OptionFlags.TwitchBotAccessToken != "";
 
             // Twitch
 
@@ -681,6 +720,8 @@ namespace StreamerBot
                 Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
                 Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
+
+                Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Visible;
             }
             else
             {
@@ -690,13 +731,27 @@ namespace StreamerBot
                 Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Collapsed;
                 Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Collapsed;
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
+
+                Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Collapsed;
             }
 
             // set earliest token expiration date
 
             List<DateTime> RefreshTokenDateExpiry = new() { OptionFlags.TwitchRefreshDate, OptionFlags.TwitchStreamerTokenDate };
             RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
-            StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
+            StatusBarItem_TokenDate.Content = OptionFlags.TwitchTokenUseAuth ? "Auth Code Refresh" : RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
+        }
+
+        private void SetBotRadioButtons(bool value, Platform platform)
+        {
+            foreach (RadioButton rb in
+                                        from A in BotOps
+                                        where A.Item2.Name.Contains(platform.ToString())
+                                        select A.Item2
+                                        )
+            {
+                rb.IsEnabled = value;
+            }
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -819,19 +874,6 @@ namespace StreamerBot
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
 
-        private void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
-        {
-            if (OptionFlags.TwitchTokenUseAuth)
-            {
-                StackPanel_TwitchTokenFlow.Visibility = Visibility.Collapsed;
-                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                StackPanel_TwitchTokenFlow.Visibility = Visibility.Visible;
-                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
-            }
-        }
 
         #region GitHub webpage
 
@@ -944,6 +986,11 @@ namespace StreamerBot
             (sender as TextBox).ScrollToEnd();
         }
 
+        /// <summary>
+        /// Every time a text box changes, relative to access credentials, call the CheckFocus method, which checks the data entry for whether buttons can be enabled so the user can click them
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             CheckFocus();

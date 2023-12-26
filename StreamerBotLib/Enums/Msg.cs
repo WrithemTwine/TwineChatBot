@@ -15,6 +15,7 @@
         MsgMergeFailed,
         MsgNoDeathCounter,
         MsgDefaultQuote,
-        MsgQuoteNumber
+        MsgQuoteNumber,
+        MsgTwitchAuthFailedAuthentication
     }
 }

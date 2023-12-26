@@ -411,8 +411,7 @@
 
                         <DockPanel LastChildFill="False">
                             <StackPanel DockPanel.Dock="Top">
-                                <!--IsChecked="{Binding TwitchTokenUseAuth}"-->
-                                <ToggleButton Width="100" Height="36" 
+                                <ToggleButton Width="100" Height="36" IsChecked="{Binding TwitchTokenUseAuth}"
                                               DataContext="{Binding Source={x:Static s:Settings.Default}}" 
                                     Click="ToggleButton_ChooseTwitchAuth_Click" ClickMode="Press" Style="{StaticResource ToggleButtonTwitchTokenSelecter}"/>
                             </StackPanel>
@@ -420,7 +419,7 @@
                             <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                                 <WrapPanel Orientation="Vertical">
 
-                                    <StackPanel x:Name="StackPanel_TwitchTokenFlow">
+                                    <StackPanel x:Name="StackPanel_TwitchTokenFlow" Visibility="Visible">
                                         <DockPanel LastChildFill="False">
 
                                             <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">
@@ -567,12 +566,12 @@
                                                     <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Channel Name" />
-                                                        <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
+                                                        <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
                                                     </StackPanel>
                                                     <TextBlock Width="300" Text="* This Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Bot User Name" />
-                                                        <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
+                                                        <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" TargetUpdated="TextBox_SourceUpdated"  />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
@@ -585,20 +584,20 @@
                                                         <StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Client Id" />
-                                                                <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" ToolTip="The client ID for the bot user account." PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
+                                                                <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" ToolTip="The client ID for the bot user account." PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10,0">
                                                                 <Label Content="Token Scope" />
-                                                                <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}" />
-                                                                <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}" />
+                                                                <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" TargetUpdated="TextBox_SourceUpdated"  Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}" />
+                                                                <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Access OAuth Token" />
-                                                                <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
+                                                                <TextBox x:Name="TB_Twitch_AccessToken" Text="{Binding TwitchAccessToken, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Refresh Token"  />
-                                                                <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
+                                                                <TextBox x:Name="TB_Twitch_RefreshToken" Text="{Binding TwitchRefreshToken, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
                                                             </StackPanel>
 
                                                         </StackPanel>
@@ -628,8 +627,7 @@
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Token Scope" />
-                                                                <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"                                                                   
-                                                                 Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}" />
+                                                                <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"                                                                        Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Access OAuth Token"/>
@@ -643,8 +641,136 @@
                                         </DockPanel>
                                     </StackPanel>
 
-                                    <StackPanel x:Name="StackPanel_TwitchAuthCodeFlow">
+                                    <StackPanel x:Name="StackPanel_TwitchAuthCodeFlow" Visibility="Collapsed">
+                                        <DockPanel LastChildFill="False" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+<Expander IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" DockPanel.Dock="Left" MinWidth="300" Width="Auto" ScrollViewer.CanContentScroll="True">
+                                                <Expander.Header>
+                                                    <TextBlock>Authorization Code Token Flow</TextBlock>
+                                                </Expander.Header>
+                                                <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                                    <FlowDocument>
+                                                        <Paragraph>
+                                                            This bot performs tasks on behalf of the streamer. A 
+moderator level bot account can perform many tasks for the 
+streamer, including chat message responses. It is possible 
+to have a bot account perform most of 
+the tasks, and also utilize streamer account access 
+credentials to perform the additional tasks.
+                                                        </Paragraph>
+                                                        <Paragraph>
+                                                            Before continuing, consider whether to attach this bot to 
+the streamer account or use a (recommended) separate bot account.
+                                                            <LineBreak/>
+                                                            For using a separate bot account, type the streamer account 
+name in the "Channel Name" box, and the bot account name in the 
+"Bot User Name" box.
+                                                        </Paragraph>
+                                                        <Paragraph>
+                                                            This token flow for accessing Twitch is more simplified than 
+the user method. This flow requires registering the bot, <LineBreak />at
+                                                            
+                                                            <InlineUIContainer>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
+                                                            </InlineUIContainer>
+                                                            <LineBreak /> ,
+for a Client Id and Client Secret, with
+                                                            <LineBreak />
+                                                            this "Redirect URL":
+                                                            <InlineUIContainer>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{DynamicResource TwitchAuthRedirectURL}"/>
+                                                            </InlineUIContainer>
+                                                            <LineBreak />
+                                                            and approving the 
+application for an authorization code. The bot then 
+uses the code to obtain a refresh token, and continually 
+retrieves a new access token, once the access token 
+expires. This occurs for the bot account and also a 
+streamer account, if you choose to seaparate the accesses.
+                                                        </Paragraph>
+                                                        <Paragraph>
+                                                            <Run Foreground="{StaticResource BrightStop}">Filling in the client Ids and client secrets in both boxes, then authorizing may show a warning box the other account isn't authorized. It's okay to continue authorizing one account then the other.</Run>
+                                                        </Paragraph>
+                                                        <Paragraph>
+                                                            Note: The tokens expire for the associated account, if:
+                                                        </Paragraph>
+                                                        <List>
+                                                            <ListItem>
+                                                                <Paragraph>The user changes the password, or</Paragraph>
+                                                            </ListItem>
+                                                            <ListItem>
+                                                                <Paragraph>Disconnects the app connection, via Twitch settings.</Paragraph>
+                                                            </ListItem>
+                                                        </List>
 
+                                                    </FlowDocument>
+                                                </FlowDocumentScrollViewer>
+                                            </Expander>
+
+                                            <WrapPanel DockPanel.Dock="Left" Orientation="Vertical">
+                                            <GroupBox Header="Channel Information" Width="410">
+                                                <StackPanel Orientation="Vertical" Margin="10">
+                                                    <StackPanel Orientation="Horizontal" Margin="10">
+                                                        <TextBlock Width="100">Channel Name:</TextBlock>
+                                                            <TextBox Text="{Binding TwitchChannelName}" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" Margin="10">
+                                                        <TextBlock Width="100">Bot User Name:</TextBlock>
+                                                            <TextBox Text="{Binding TwitchBotUserName}" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </GroupBox>
+                                            <GroupBox Header="Bot Account Info" Width="410">
+                                                <Expander x:Name="Expander_CredentialsAuthBot" ExpandDirection="Down" IsExpanded="False">
+                                                    <Expander.Header>
+                                                        <TextBlock>Hidden for privacy</TextBlock>
+                                                    </Expander.Header>
+                                                    <StackPanel Orientation="Vertical" Margin="10">
+                                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                                            <TextBlock Width="90">Client Id:</TextBlock>
+                                                                <TextBox Text="{Binding TwitchAuthClientId}" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                                            <TextBlock Width="90">Client Secret:</TextBlock>
+                                                                <TextBox Text="{Binding TwitchAuthBotClientSecret}" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                        </StackPanel>
+                                                        <CheckBox IsChecked="{Binding TwitchAuthUseInternalBrowser}">
+                                                            <CheckBox.ToolTip>
+                                                                <TextBlock>Checking this box will use this application's web browser (MSEdge), or unchecked will open your default browser.</TextBlock>
+                                                            </CheckBox.ToolTip>
+                                                            <TextBlock>Use App web browser for authentication.</TextBlock>
+                                                        </CheckBox>
+                                                        <Button x:Name="Twitch_AuthCode_Button_AuthorizeBot" Content="Authorize Bot Token" Width="160" Margin="5"
+                                                            Click="Button_TwitchAuthCode_ApproveBotURL" />
+                                                    </StackPanel>
+                                                </Expander>
+                                            </GroupBox>
+                                            <GroupBox x:Name="Twitch_AuthCode_GroupBox_StreamerInfo" Header="Streamer Account Info"                              Width="410">
+                                                <Expander x:Name="Expander_CredentialsAuthStreamer" ExpandDirection="Down" IsExpanded="False">
+                                                    <Expander.Header>
+                                                        <TextBlock>Hidden for privacy</TextBlock>
+                                                    </Expander.Header>
+                                                    <StackPanel Orientation="Vertical" Margin="10">
+                                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                                            <TextBlock Width="90">Client Id:</TextBlock>
+                                                                <TextBox Text="{Binding TwitchAuthStreamerClientId}" SourceUpdated="TextBox_SourceUpdated" TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="10">
+                                                            <TextBlock Width="90">Client Secret:</TextBlock>
+                                                                <TextBox Text="{Binding TwitchAuthStreamerClientSecret}" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                        </StackPanel>
+                                                        <CheckBox IsChecked="{Binding TwitchAuthUseInternalBrowser}">
+                                                            <CheckBox.ToolTip>
+                                                                <TextBlock>Checking this box will use this application's web browser (MSEdge), or unchecked will open your default browser.</TextBlock>
+                                                            </CheckBox.ToolTip>
+                                                            <TextBlock>Use App web browser for authentication.</TextBlock>
+                                                        </CheckBox>
+                                                        <Button x:Name="Twitch_AuthCode_Button_AuthorizeStreamer" Content="Authorize Streamer Token" Width="160" Margin="5"
+                                                             Click="Button_TwitchAuthCode_ApproveStreamerURL" />
+                                                    </StackPanel>
+                                                </Expander>
+                                            </GroupBox>
+                                        </WrapPanel>
+                                        </DockPanel>
                                     </StackPanel>
 
                                     <GroupBox Header="Settings" Width="320" Height="Auto">
@@ -1150,7 +1276,7 @@
                                             </GroupBox>
                                             -->
             </TabItem>
-            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Margin="-2,2,0,-2" VerticalAlignment="Stretch" d:LayoutOverrides="Height">
+            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">

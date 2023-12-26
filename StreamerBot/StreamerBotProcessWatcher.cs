@@ -47,7 +47,7 @@ namespace StreamerBot
                         IsMultiProcActive = processes.Length > 0;
                     }
 
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
+                    if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }

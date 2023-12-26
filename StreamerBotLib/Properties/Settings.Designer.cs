@@ -1894,5 +1894,41 @@ namespace StreamerBotLib.Properties {
                 this["TwitchAuthNewScopeRefresh"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("From Twitch for registered application")]
+        public string TwitchAuthClientId {
+            get {
+                return ((string)(this["TwitchAuthClientId"]));
+            }
+            set {
+                this["TwitchAuthClientId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("From Twitch for registered application")]
+        public string TwitchAuthStreamerClientId {
+            get {
+                return ((string)(this["TwitchAuthStreamerClientId"]));
+            }
+            set {
+                this["TwitchAuthStreamerClientId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TwitchAuthUseInternalBrowser {
+            get {
+                return ((bool)(this["TwitchAuthUseInternalBrowser"]));
+            }
+            set {
+                this["TwitchAuthUseInternalBrowser"] = value;
+            }
+        }
     }
 }

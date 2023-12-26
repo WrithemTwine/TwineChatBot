@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web;
 
 using TwitchLib.Api.Auth;
+using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.Interfaces;
 
@@ -44,6 +46,44 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                    $"scope={scopesStr}&" +
                    $"state={state}&" +
                    $"force_verify={forceVerify.ToString().ToLower()}";
+        }
+
+        /// <summary>
+        ///     <para>[ASYNC] Uses an authorization code to generate an access token</para>
+        ///     <para>ATTENTION: Client Secret required. Never expose it to consumers!</para>
+        ///     <para>Throws a BadRequest Exception if the request fails due to a bad code token</para>
+        /// </summary>
+        /// <param name="code">The OAuth 2.0 authorization code is a 30-character, randomly generated string. Used in the request made to the token endpoint in exchange for an access token.</param>
+        /// <param name="clientSecret">Required for API access.</param>
+        /// <param name="redirectUri">The URI the user was redirected to. This URI must be registered with your twitch app or extension.</param>
+        /// <param name="clientId">The client ID of your app or extension.</param>
+        /// <returns>A RefreshResponse object that holds your new auth and refresh token and the list of scopes for that token</returns>
+        public Task<AuthCodeResponse> GetAccessTokenFromCodeAsync(string code, string clientSecret, string redirectUri, string clientId = null)
+        {
+            var internalClientId = clientId ?? Settings.ClientId;
+
+            if (string.IsNullOrWhiteSpace(code))
+                throw new BadParameterException("The code is not valid. It is not allowed to be null, empty or filled with whitespaces.");
+
+            if (string.IsNullOrWhiteSpace(clientSecret))
+                throw new BadParameterException("The client secret is not valid. It is not allowed to be null, empty or filled with whitespaces.");
+
+            if (string.IsNullOrWhiteSpace(redirectUri))
+                throw new BadParameterException("The redirectUri is not valid. It is not allowed to be null, empty or filled with whitespaces.");
+
+            if (string.IsNullOrWhiteSpace(internalClientId))
+                throw new BadParameterException("The clientId is not valid. It is not allowed to be null, empty or filled with whitespaces.");
+
+            var getParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                new KeyValuePair<string, string>("code", code),
+                new KeyValuePair<string, string>("client_id", internalClientId),
+                new KeyValuePair<string, string>("client_secret", clientSecret),
+                new KeyValuePair<string, string>("redirect_uri", redirectUri)
+            };
+
+            return TwitchPostGenericAsync<AuthCodeResponse>("/token", ApiVersion.Auth, null, getParams, null, internalClientId);
         }
     }
 }
