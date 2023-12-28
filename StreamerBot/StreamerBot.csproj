@@ -34,7 +34,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="img\SplashScreen1.png" />
+		<None Remove="img\BotStartupLogo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -51,7 +51,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<SplashScreen Include="img\SplashScreen1.png" />
+		<SplashScreen Include="img\BotStartupLogo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
