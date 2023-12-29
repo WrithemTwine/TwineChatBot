@@ -194,8 +194,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>If token is still valid, returns Tuple {"","",0}; otherwise, Tuple {access token, refresh token, expires in}</returns>
         private Tuple<string, string, int> ProcessToken(string authcode, string clientId, string clientsecret, string refreshtoken, string accesstoken)
         {
-            // TODO: reconfigure this process - no credentials at all, a client Id/client secret but no authcode; a client id/secret/authcode but no refresh token; id/secret/authcode/refresh token & expired access token needs refreshing
-
             string AccessToken = "";
             string RefreshToken = "";
             int ExpiresIn = 0;

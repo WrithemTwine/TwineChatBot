@@ -8,7 +8,6 @@ using StreamerBotLib.Systems;
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace StreamerBot
@@ -60,6 +59,7 @@ namespace StreamerBot
                 {
                     try
                     {
+                        // use the user's choice - internal app browser
                         if (OptionFlags.TwitchAuthUseInternalBrowser)
                         {
                             AuthWebBrowser authWebBrowser = new();
@@ -67,7 +67,7 @@ namespace StreamerBot
                             authWebBrowser.NavigateToURL(URL);
                         }
                         else
-                        {
+                        { // use User's default browser
                             Process startBrowser = new();
                             startBrowser.StartInfo.UseShellExecute = true;
                             startBrowser.StartInfo.FileName = $"\"{URL}\"";
