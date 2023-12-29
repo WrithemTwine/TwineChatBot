@@ -87,9 +87,9 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (IsStopped || !IsStarted)
                 {
                     IsInitialStart = true;
-                    IsStarted = true;
 
                     ConnectFollowerService();
+                    IsStarted = true;
                     FollowerService?.Start();
                     RestartRefreshAccessToken = true; // record reason is from refreshing token
                     IsStopped = false;

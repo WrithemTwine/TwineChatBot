@@ -75,13 +75,13 @@ namespace StreamerBotLib.BotClients.Twitch
             if (OptionFlags.TwitchStreamerUseToken && UseStreamToken)
             {
                 SettingsClientId = "TwitchStreamClientId";
-                ClientId = OptionFlags.TwitchStreamClientId;
+                ClientId = TwitchStreamClientId;
                 OauthToken = TwitchStreamerAccessToken;
             }
             else
             {
                 SettingsClientId = "TwitchClientID";
-                ClientId = OptionFlags.TwitchBotClientId;
+                ClientId = TwitchClientID;
                 OauthToken = TwitchAccessToken;
             }
 

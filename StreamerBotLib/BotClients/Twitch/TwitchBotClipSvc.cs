@@ -83,8 +83,8 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (IsStopped || !IsStarted)
                 {
                     IsInitialStart = true;
-                    IsStarted = true;
                     ConnectClipService();
+                    IsStarted = true;
                     ClipMonitorService?.Start();
                     IsStopped = false;
                     InvokeBotStarted();

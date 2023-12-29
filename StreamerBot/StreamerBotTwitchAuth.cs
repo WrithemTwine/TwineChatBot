@@ -90,6 +90,7 @@ namespace StreamerBot
         {
             Dispatcher.BeginInvoke(() =>
             {
+                CheckFocus();
                 StartAutoBots();
             });
         }

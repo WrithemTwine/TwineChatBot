@@ -1,16 +1,18 @@
-﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
+﻿
+using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Events;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 
 using TwitchLib.Api.Auth;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
+using TwitchLib.Api.Core.HttpCallHandlers;
+using TwitchLib.Api.Core.RateLimiter;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -54,9 +56,9 @@ namespace StreamerBotLib.BotClients.Twitch
             AbortRenewToken = false;
 
             ApiSettings apiSettings = new();
-            AuthBot = new(apiSettings, null, null);
+            AuthBot = new(apiSettings, new BypassLimiter(), new TwitchHttpClient(null));
 
-            CheckToken();
+            //CheckToken();
         }
 
         public override bool StartBot()
@@ -128,16 +130,13 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (IsStarted) // only calculate if bot is started, meaning the User is using this operation mode.
             {
-                ApiSettings apiBotSettings = new() { ClientId=TwitchClientID, Secret=OptionFlags.TwitchAuthBotClientSecret };
-                AuthBot = new(apiBotSettings, null, null);
-
                 // try to refresh Bot token
                 Tuple<string, string, int> Botresponse = ProcessToken(
                     OptionFlags.TwitchAuthBotAuthCode,
-                    TwitchClientID,
+                    OptionFlags.TwitchAuthClientId,
                     OptionFlags.TwitchAuthBotClientSecret,
-                    TwitchRefreshToken,
-                    TwitchAccessToken);
+                    OptionFlags.TwitchAuthBotRefreshToken,
+                    OptionFlags.TwitchAuthBotAccessToken);
 
                 // with a good response, set the token data
                 if (Botresponse.Item1 != "" && Botresponse.Item2 != "" && Botresponse.Item3 != 0)
@@ -151,16 +150,13 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 if (OptionFlags.TwitchStreamerUseToken)
                 {
-                    ApiSettings apiStreamerSettings = new() { ClientId = TwitchStreamClientId, Secret = OptionFlags.TwitchAuthStreamerClientSecret };
-                    AuthBot = new(apiStreamerSettings, null, null);
-
                     // try to refresh streamer token
                     Tuple<string, string, int> Streamerresponse = ProcessToken(
                         OptionFlags.TwitchAuthStreamerAuthCode,
-                        TwitchStreamClientId,
+                        OptionFlags.TwitchAuthStreamerClientId,
                         OptionFlags.TwitchAuthStreamerClientSecret,
-                        TwitchStreamerRefreshToken,
-                        TwitchStreamerAccessToken);
+                        OptionFlags.TwitchAuthStreamerRefreshToken,
+                        OptionFlags.TwitchAuthStreamerAccessToken);
 
                     // with a good response, set the token data
                     if (Streamerresponse.Item1 != "" && Streamerresponse.Item2 != "" && Streamerresponse.Item3 != 0)
@@ -197,6 +193,8 @@ namespace StreamerBotLib.BotClients.Twitch
             string AccessToken = "";
             string RefreshToken = "";
             int ExpiresIn = 0;
+
+            //ValidateAccessTokenResponse validToken = accesstoken != null ? AuthBot.ValidateAccessTokenAsync(accesstoken).Result : null;
 
             // only proceed if the clientId & client secret is valid
             if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(clientsecret))
@@ -237,6 +235,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             // successful API call, we get a refresh token and access token
                             RefreshToken = BotAuthRefresh.RefreshToken;
                             AccessToken = BotAuthRefresh.AccessToken;
+                            ExpiresIn = BotAuthRefresh.ExpiresIn;
                         }
                         catch (BadRequestException AuthCodEx)
                         {
@@ -254,8 +253,10 @@ namespace StreamerBotLib.BotClients.Twitch
                     }
                     else // if we already have a refresh token, try to refresh the access token; failure means user needs to reauthorize app
                     {
-                        if (string.IsNullOrEmpty(accesstoken) || AuthBot.ValidateAccessTokenAsync(accesstoken).Result == null)
-                        { // only try to refresh the access token if it's empty or invalid, otherwise, don't need to do anything
+                        // if we're here, we had a badrequesttokenexception 
+
+                        //if (string.IsNullOrEmpty(accesstoken) || validToken == null)
+                        //{ // only try to refresh the access token if it's empty or invalid, otherwise, don't need to do anything
                             try
                             {
                                 // get the new access/refresh tokens
@@ -285,7 +286,7 @@ namespace StreamerBotLib.BotClients.Twitch
                                     StreamerAcctAuthCodeExpired?.Invoke(this, null);
                                 }
                             }
-                        }
+                        //}
                     }
                 }
             }
