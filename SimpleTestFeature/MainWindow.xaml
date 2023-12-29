@@ -40,7 +40,7 @@
                 <TextBlock x:Name="TBaccessscope" />
             </StackPanel>
             <StackPanel>
-                <Button Content="Get Refress &amp; Access Tokens" Padding="10,0" Margin="15,0" Width="175" Click="Button_GetTokens_Click" />
+                <Button Content="Get Refresh &amp; Access Tokens" Padding="10,0" Margin="15,0" Width="175" Click="Button_GetTokens_Click" />
             </StackPanel>
             <StackPanel>
                 <Label>Refresh Token:</Label>
