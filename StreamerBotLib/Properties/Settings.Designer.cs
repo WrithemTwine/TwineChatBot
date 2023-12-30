@@ -1930,5 +1930,17 @@ namespace StreamerBotLib.Properties {
                 this["TwitchAuthUseInternalBrowser"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchTokenBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchTokenBot"]));
+            }
+            set {
+                this["EnableDebugTwitchTokenBot"] = value;
+            }
+        }
     }
 }

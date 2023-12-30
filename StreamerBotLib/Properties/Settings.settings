@@ -479,5 +479,8 @@
     <Setting Name="TwitchAuthUseInternalBrowser" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="EnableDebugTwitchTokenBot" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -18,10 +18,12 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     internal class TwitchTokenBot : TwitchBotsBase
     {
-        private ExtAuth AuthBot;
+        private readonly ExtAuth AuthBot;
 
         private bool TokenRenewalStarted;
         private bool AbortRenewToken;
+
+        private string TokenLock = "lock";
 
         /// <summary>
         /// The upcoming expiration date of the token. This token is for accessing Twitch through the bot account.
@@ -130,42 +132,58 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (IsStarted) // only calculate if bot is started, meaning the User is using this operation mode.
             {
-                // try to refresh Bot token
-                Tuple<string, string, int> Botresponse = ProcessToken(
-                    OptionFlags.TwitchAuthBotAuthCode,
-                    OptionFlags.TwitchAuthClientId,
-                    OptionFlags.TwitchAuthBotClientSecret,
-                    OptionFlags.TwitchAuthBotRefreshToken,
-                    OptionFlags.TwitchAuthBotAccessToken);
-
-                // with a good response, set the token data
-                if (Botresponse.Item1 != "" && Botresponse.Item2 != "" && Botresponse.Item3 != 0)
+                lock (TokenLock)
                 {
-                    TwitchAccessToken = Botresponse.Item1;
-                    TwitchRefreshToken = Botresponse.Item2;
-                    BotAccessTokenExpireDate = DateTime.Now.AddSeconds(Botresponse.Item3);
-                    BotAccessTokenLastCheckedDate = DateTime.Now;
-                    result = true;
-                }
-
-                if (OptionFlags.TwitchStreamerUseToken)
-                {
-                    // try to refresh streamer token
-                    Tuple<string, string, int> Streamerresponse = ProcessToken(
-                        OptionFlags.TwitchAuthStreamerAuthCode,
-                        OptionFlags.TwitchAuthStreamerClientId,
-                        OptionFlags.TwitchAuthStreamerClientSecret,
-                        OptionFlags.TwitchAuthStreamerRefreshToken,
-                        OptionFlags.TwitchAuthStreamerAccessToken);
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"Now checking Bot token.");
+                    // try to refresh Bot token
+                    Tuple<string, string, int> Botresponse = ProcessToken(
+                        OptionFlags.TwitchAuthBotAuthCode,
+                        OptionFlags.TwitchAuthClientId,
+                        OptionFlags.TwitchAuthBotClientSecret,
+                        OptionFlags.TwitchAuthBotRefreshToken,
+                        OptionFlags.TwitchAuthBotAccessToken);
 
                     // with a good response, set the token data
-                    if (Streamerresponse.Item1 != "" && Streamerresponse.Item2 != "" && Streamerresponse.Item3 != 0)
+                    if (Botresponse.Item1 != "" && Botresponse.Item2 != "" && Botresponse.Item3 != 0)
                     {
-                        TwitchStreamerAccessToken = Streamerresponse.Item1;
-                        TwitchStreamerRefreshToken = Streamerresponse.Item2;
-                        StreamerAccessTokenExpireDate = DateTime.Now.AddSeconds(Streamerresponse.Item3);
-                        StreamerAccessTokenLastCheckedDate = DateTime.Now;
+                        TwitchAccessToken = Botresponse.Item1;
+                        TwitchRefreshToken = Botresponse.Item2;
+                        BotAccessTokenExpireDate = DateTime.Now.AddSeconds(Botresponse.Item3);
+                        BotAccessTokenLastCheckedDate = DateTime.Now;
                         result = true;
+
+                        BotAccessTokenChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        BotAccessTokenUnChanged?.Invoke(this, EventArgs.Empty);
+                    }
+
+                    if (OptionFlags.TwitchStreamerUseToken)
+                    {
+                        // try to refresh streamer token
+                        Tuple<string, string, int> Streamerresponse = ProcessToken(
+                            OptionFlags.TwitchAuthStreamerAuthCode,
+                            OptionFlags.TwitchAuthStreamerClientId,
+                            OptionFlags.TwitchAuthStreamerClientSecret,
+                            OptionFlags.TwitchAuthStreamerRefreshToken,
+                            OptionFlags.TwitchAuthStreamerAccessToken);
+
+                        // with a good response, set the token data
+                        if (Streamerresponse.Item1 != "" && Streamerresponse.Item2 != "" && Streamerresponse.Item3 != 0)
+                        {
+                            TwitchStreamerAccessToken = Streamerresponse.Item1;
+                            TwitchStreamerRefreshToken = Streamerresponse.Item2;
+                            StreamerAccessTokenExpireDate = DateTime.Now.AddSeconds(Streamerresponse.Item3);
+                            StreamerAccessTokenLastCheckedDate = DateTime.Now;
+                            result = true;
+
+                            StreamerAccessTokenChanged?.Invoke(this, EventArgs.Empty);
+                        }
+                        else
+                        {
+                            StreamerAccessTokenUnChanged?.Invoke(this, EventArgs.Empty);
+                        }
                     }
                 }
             }
@@ -199,9 +217,12 @@ namespace StreamerBotLib.BotClients.Twitch
             // only proceed if the clientId & client secret is valid
             if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(clientsecret))
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"clientId and clientsecret are not null.");
                 // when trying to start the app but need to refresh the token due to a change in scopes, clear the auth codes to force a reset
                 if (OptionFlags.TwitchAuthNewScopeRefresh)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"Resetting auth codes because the authorization scopes changed.");
+
                     // clear out Auth code
                     OptionFlags.TwitchAuthBotAuthCode = "";
                     OptionFlags.TwitchAuthStreamerAuthCode = "";
@@ -214,21 +235,27 @@ namespace StreamerBotLib.BotClients.Twitch
                 // if we have no auth code, tell the GUI user to authorize the app - since we have client ID & secret
                 if (string.IsNullOrEmpty(authcode))
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"auth code is null or empty.");
+
                     // notify GUI if user needs to reauthenticate
                     if (clientId == OptionFlags.TwitchAuthClientId)
                     {
-                        BotAcctAuthCodeExpired?.Invoke(this, new() { BotType = "Bot Account"});
+                        BotAcctAuthCodeExpired?.Invoke(this, new() { BotType = "Bot Account" });
                     }
-                    else if(OptionFlags.TwitchStreamerUseToken)
+                    else if (OptionFlags.TwitchStreamerUseToken)
                     {
-                        StreamerAcctAuthCodeExpired?.Invoke(this, new() { BotType = "Streamer Account"});
+                        StreamerAcctAuthCodeExpired?.Invoke(this, new() { BotType = "Streamer Account" });
                     }
                 }
                 else // we have an authcode, try to get the first refresh token & access token
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"auth code is available.");
+
                     // clientId_!null, clientsecret_!null, authcode_!null, refreshtoken_null-try to get one
                     if (string.IsNullOrEmpty(refreshtoken))
                     {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"refresh token is null or empty.");
+
                         try
                         {
                             AuthCodeResponse BotAuthRefresh = AuthBot.GetAccessTokenFromCodeAsync(authcode, clientsecret, OptionFlags.TwitchAuthRedirectURL, clientId).Result;
@@ -236,6 +263,9 @@ namespace StreamerBotLib.BotClients.Twitch
                             RefreshToken = BotAuthRefresh.RefreshToken;
                             AccessToken = BotAuthRefresh.AccessToken;
                             ExpiresIn = BotAuthRefresh.ExpiresIn;
+
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"Twitch provided updated access & refresh tokens.");
+
                         }
                         catch (BadRequestException AuthCodEx)
                         {
@@ -253,39 +283,45 @@ namespace StreamerBotLib.BotClients.Twitch
                     }
                     else // if we already have a refresh token, try to refresh the access token; failure means user needs to reauthorize app
                     {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"Access token is no longer valid, refreshing the access token.");
+
                         // if we're here, we had a badrequesttokenexception 
 
                         //if (string.IsNullOrEmpty(accesstoken) || validToken == null)
                         //{ // only try to refresh the access token if it's empty or invalid, otherwise, don't need to do anything
-                            try
+                        try
+                        {
+                            // get the new access/refresh tokens
+                            RefreshResponse BotTokenResponse = AuthBot.RefreshAuthTokenAsync(refreshtoken, clientsecret, clientId).Result;
+
+                            RefreshToken = BotTokenResponse.RefreshToken;
+                            AccessToken = BotTokenResponse.AccessToken;
+                            ExpiresIn = BotTokenResponse.ExpiresIn;
+
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"Twitch gave us a new fresh access token.");
+                        }
+                        catch (BadRequestException ReqEx)
+                        {  // the refresh token has failed, clear it all out and tell the user to reauthorize the app
+                            LogWriter.LogException(ReqEx, MethodBase.GetCurrentMethod().Name);
+
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchTokenBot, $"Twitch rejected the refresh token. User must reauthorize the application.");
+
+                            // if we're here, the tokens are expired and need to start over with the authorization process
+                            if (clientId == OptionFlags.TwitchBotClientId) // determine if the client Id is the bot client
                             {
-                                // get the new access/refresh tokens
-                                RefreshResponse BotTokenResponse = AuthBot.RefreshAuthTokenAsync(refreshtoken, clientsecret, clientId).Result;
-
-                                RefreshToken = BotTokenResponse.RefreshToken;
-                                AccessToken = BotTokenResponse.AccessToken;
-                                ExpiresIn = BotTokenResponse.ExpiresIn;
+                                OptionFlags.TwitchAuthBotRefreshToken = "";
+                                OptionFlags.TwitchAuthBotAccessToken = "";
+                                OptionFlags.TwitchAuthBotAuthCode = "";
+                                BotAcctAuthCodeExpired?.Invoke(this, null);
                             }
-                            catch (BadRequestException ReqEx)
-                            {  // the refresh token has failed, clear it all out and tell the user to reauthorize the app
-                                LogWriter.LogException(ReqEx, MethodBase.GetCurrentMethod().Name);
-
-                                // if we're here, the tokens are expired and need to start over with the authorization process
-                                if (clientId == OptionFlags.TwitchBotClientId) // determine if the client Id is the bot client
-                                {
-                                    OptionFlags.TwitchAuthBotRefreshToken = "";
-                                    OptionFlags.TwitchAuthBotAccessToken = "";
-                                    OptionFlags.TwitchAuthBotAuthCode = "";
-                                    BotAcctAuthCodeExpired?.Invoke(this, null);
-                                }
-                                else
-                                {
-                                    OptionFlags.TwitchAuthStreamerAccessToken = "";
-                                    OptionFlags.TwitchAuthStreamerAuthCode = "";
-                                    OptionFlags.TwitchAuthStreamerRefreshToken = "";
-                                    StreamerAcctAuthCodeExpired?.Invoke(this, null);
-                                }
+                            else
+                            {
+                                OptionFlags.TwitchAuthStreamerAccessToken = "";
+                                OptionFlags.TwitchAuthStreamerAuthCode = "";
+                                OptionFlags.TwitchAuthStreamerRefreshToken = "";
+                                StreamerAcctAuthCodeExpired?.Invoke(this, null);
                             }
+                        }
                         //}
                     }
                 }
@@ -296,13 +332,13 @@ namespace StreamerBotLib.BotClients.Twitch
 
         internal void GenerateAuthCodeURL(string clientId, Action<string> action = null, Action AuthenticationFinished = null)
         {
-            string seedvalue = (clientId + DateTime.Now.ToLongDateString()).Replace(" ","");
+            string seedvalue = (clientId + DateTime.Now.ToLongDateString()).Replace(" ", "");
             string[] splitseed = seedvalue.Split(new char[] { 'a', 'b', 'e', 'j', 'm', 'w', 'g' });
             Random random = new();
 
             string buildstring = "";
             // reorder the substring segments
-            for(int i = 0; i < splitseed.Length; i++ )
+            for (int i = 0; i < splitseed.Length; i++)
             {
                 buildstring += splitseed[random.Next(splitseed.Length)];
             }

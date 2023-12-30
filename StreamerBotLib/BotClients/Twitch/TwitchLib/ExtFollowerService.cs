@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.HttpCallHandlers;
 using TwitchLib.Api.Core.RateLimiter;
 using TwitchLib.Api.Helix;
@@ -250,17 +251,17 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 var resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Channels.GetChannelFollowersAsync(first: (int)param[0], broadcasterId: c), channel, QueryCountPerRequest);
                 return resultset.Data.Reverse().ToList();
             }
-            catch (HttpRequestException hrEx)
+            catch (BadRequestException hrEx)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    AccessTokenUnauthorized?.Invoke(this, new());
-                }
+                LogWriter.LogException(hrEx, MethodBase.GetCurrentMethod().Name);
+                AccessTokenUnauthorized?.Invoke(this, new());
                 return null;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                AccessTokenUnauthorized?.Invoke(this, new());
+
                 return new();
             }
 

@@ -14,7 +14,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         public static string TwitchClientID
         {
-            get => OptionFlags.TwitchTokenUseAuth ? OptionFlags.TwitchAuthClientId : OptionFlags.TwitchBotClientId; 
+            get => OptionFlags.TwitchTokenUseAuth ? OptionFlags.TwitchAuthClientId : OptionFlags.TwitchBotClientId;
             set => OptionFlags.TwitchBotClientId = value;
         }
 
@@ -95,7 +95,8 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (OptionFlags.TwitchTokenUseAuth)
                 {
                     OptionFlags.TwitchAuthStreamerAccessToken = value;
-                } else
+                }
+                else
                 {
                     OptionFlags.TwitchStreamOauthToken = value;
                 }

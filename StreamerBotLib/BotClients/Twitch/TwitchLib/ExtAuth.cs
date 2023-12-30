@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Web;
 
 using TwitchLib.Api.Auth;
-using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.Interfaces;
 

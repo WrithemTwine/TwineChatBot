@@ -9,6 +9,7 @@
         TwitchLiveBot,
         TwitchFollowBot,
         TwitchPubSubBot,
-        DiscordBot
+        DiscordBot,
+        TwitchTokenBot
     }
 }

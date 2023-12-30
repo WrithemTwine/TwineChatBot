@@ -107,7 +107,7 @@ namespace StreamerBot
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
                 new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
-                new(OptionFlags.TwitchPubSubOnlineMode, Radio_Twitch_PubSubBotStart)
+                new(false, Radio_Twitch_PubSubBotStart)
             };
 
             SetTheme(); // adjust the theme, if user selected a different theme.
@@ -528,10 +528,13 @@ namespace StreamerBot
                 && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
             ||
                 (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
-                    // check the bot token is assigned
-                && ((!string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken) && !OptionFlags.TwitchStreamerUseToken)
-                    // check the streamer token is assigned
-                    || (OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)) ))
+                                                // check the bot/streamer tokens are available assigned
+                && (!OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
+                 || (OptionFlags.TwitchStreamerUseToken
+                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken))
+                   )
+                )
             )
             {
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
@@ -686,8 +689,8 @@ namespace StreamerBot
             else
             {
                 SetBotRadioButtons(
-                    OptionFlags.TwitchAuthBotRefreshToken != "" 
-                    && OptionFlags.TwitchAuthBotAuthCode != "" 
+                    OptionFlags.TwitchAuthBotRefreshToken != ""
+                    && OptionFlags.TwitchAuthBotAuthCode != ""
                     && OptionFlags.TwitchAuthBotAuthCode != ""
                     , Platform.Twitch);
             }
@@ -695,19 +698,19 @@ namespace StreamerBot
             // Check if credentials are empty and we still need to allow the user to authenticate the application, but block it when successfully authenticated
             // The authentication code bot checking clears out the auth code when there's a failure, so this checks it's enabled when
             // both the user adds client Id & secret are available and auth code is not available (not authenticated)
-            Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = OptionFlags.TwitchAuthClientId != "" 
-                                                            && OptionFlags.TwitchChannelName != "" 
-                                                            && OptionFlags.TwitchAuthBotClientSecret != "" 
-                                                            && OptionFlags.TwitchBotUserName != "" 
+            Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = OptionFlags.TwitchAuthClientId != ""
+                                                            && OptionFlags.TwitchChannelName != ""
+                                                            && OptionFlags.TwitchAuthBotClientSecret != ""
+                                                            && OptionFlags.TwitchBotUserName != ""
                                                             && OptionFlags.TwitchAuthBotAuthCode == "";
 
-            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchAuthStreamerClientId != "" 
-                                                                    && OptionFlags.TwitchChannelName != "" 
-                                                                    && OptionFlags.TwitchAuthStreamerClientSecret != "" 
-                                                                    && OptionFlags.TwitchAuthStreamerAuthCode == ""; 
+            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchAuthStreamerClientId != ""
+                                                                    && OptionFlags.TwitchChannelName != ""
+                                                                    && OptionFlags.TwitchAuthStreamerClientSecret != ""
+                                                                    && OptionFlags.TwitchAuthStreamerAuthCode == "";
 
-            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ? 
-                                                    (OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken) 
+            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ?
+                                                    (OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken)
                                                     : OptionFlags.TwitchBotAccessToken != "";
 
             // Twitch

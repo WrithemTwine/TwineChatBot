@@ -4,12 +4,12 @@ using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -49,7 +49,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 StopBot(); // stop current activity
                 StartBot(); // rebuild and start the service
-           }
+            }
         }
 
         /// <summary>
@@ -97,12 +97,9 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
-            catch (HttpRequestException hrEx)
+            catch (BadRequestException hrEx)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    twitchTokenBot.CheckToken();
-                }
+                twitchTokenBot.CheckToken();
                 return false;
             }
             catch (Exception ex)

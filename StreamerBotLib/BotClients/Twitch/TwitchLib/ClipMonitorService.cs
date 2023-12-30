@@ -157,13 +157,13 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             {
                 try
                 {
-                    return after == null ? 
-                        await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c), Channel, new object[] { queryCount }) 
+                    return after == null ?
+                        await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c), Channel, new object[] { queryCount })
                         : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]), Channel, new object[] { queryCount, after });
                 }
                 catch (HttpRequestException hrEx)
                 {
-                    if(hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {
                         AccessTokenUnauthorized?.Invoke(this, new());
                     }

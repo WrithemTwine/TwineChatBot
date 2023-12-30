@@ -78,6 +78,10 @@ namespace StreamerBotLib.BotClients
         {
             throw new NotImplementedException();
         }
+        public virtual void GetAllFollowers(bool OverrideUpdateFollowers = false)
+        {
+            throw new NotImplementedException();
+        }
 
         public virtual void SetIds()
         {

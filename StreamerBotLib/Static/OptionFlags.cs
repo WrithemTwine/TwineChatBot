@@ -512,7 +512,7 @@ namespace StreamerBotLib.Static
         public static DateTime TwitchStreamerTokenDate => Settings.Default.TwitchStreamerTokenDate;
 
         #region Twitch Authorization code flow
-        
+
         /// <summary>
         /// Setting to reauthorize the application because the bot requires additional access scopes and needs the user to re-authorize the app.
         /// </summary>
@@ -807,6 +807,7 @@ namespace StreamerBotLib.Static
         /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
+        public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
         #endregion
 
         #region GitHub links

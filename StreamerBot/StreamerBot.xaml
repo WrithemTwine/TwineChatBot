@@ -416,10 +416,10 @@
                                     Click="ToggleButton_ChooseTwitchAuth_Click" ClickMode="Press" Style="{StaticResource ToggleButtonTwitchTokenSelecter}"/>
                             </StackPanel>
 
-                            <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                            <ScrollViewer DockPanel.Dock="Left" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                                 <WrapPanel Orientation="Vertical">
 
-                                    <StackPanel x:Name="StackPanel_TwitchTokenFlow" Visibility="Visible">
+                                    <StackPanel x:Name="StackPanel_TwitchTokenFlow" Visibility="Collapsed">
                                         <DockPanel LastChildFill="False">
 
                                             <TextBlock DockPanel.Dock="Top" Foreground="Red" HorizontalAlignment="Center">
@@ -641,7 +641,7 @@
                                         </DockPanel>
                                     </StackPanel>
 
-                                    <StackPanel x:Name="StackPanel_TwitchAuthCodeFlow" Visibility="Collapsed">
+                                    <StackPanel x:Name="StackPanel_TwitchAuthCodeFlow" Visibility="Visible">
                                         <DockPanel LastChildFill="False" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
 <Expander IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" DockPanel.Dock="Left" MinWidth="300" Width="Auto" ScrollViewer.CanContentScroll="True">
                                                 <Expander.Header>
@@ -677,7 +677,7 @@ for a Client Id and Client Secret, with
                                                             <LineBreak />
                                                             this "Redirect URL":
                                                             <InlineUIContainer>
-                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" DataContext="{Binding Source={x:Static s:Settings.Default}}" Text="{DynamicResource TwitchAuthRedirectURL}"/>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  Text="{DynamicResource TwitchAuthRedirectURL}"/>
                                                             </InlineUIContainer>
                                                             <LineBreak />
                                                             and approving the 
@@ -773,7 +773,11 @@ streamer account, if you choose to seaparate the accesses.
                                         </DockPanel>
                                     </StackPanel>
 
-                                    <GroupBox Header="Settings" Width="320" Height="Auto">
+                                </WrapPanel>
+                            </ScrollViewer>
+                     
+                            
+                            <GroupBox Header="Settings" Width="320" Height="Auto" DockPanel.Dock="Right">
                                         <StackPanel HorizontalAlignment="Left">
                                             <GroupBox Header="Setup Follower Operations" Width="Auto">
                                                 <StackPanel>
@@ -804,8 +808,6 @@ streamer account, if you choose to seaparate the accesses.
                                             </GroupBox>
                                         </StackPanel>
                                     </GroupBox>
-                                </WrapPanel>
-                            </ScrollViewer>
 
                         </DockPanel>
                     </TabItem>
@@ -849,6 +851,9 @@ streamer account, if you choose to seaparate the accesses.
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding EnableDebugTwitchPubSubBot}">
                                                 <TextBlock>Twitch Bot PubSub logging</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding EnableDebugTokenBot}">
+                                                <TextBlock>Twitch Token Bot Token Update</TextBlock>
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>

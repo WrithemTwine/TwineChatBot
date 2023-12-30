@@ -116,7 +116,7 @@ namespace ConvertDataSourceFile
                         Found = true;
                     }
 
-                    if(line.Contains("</CategoryList>"))
+                    if (line.Contains("</CategoryList>"))
                     {
                         if (!Found)
                         {

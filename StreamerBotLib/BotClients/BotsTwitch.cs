@@ -74,7 +74,7 @@ namespace StreamerBotLib.BotClients
             DataManager = SystemsController.DataManage;
 
             // assign token bot to every bot for shared access and refresh token sync
-            foreach(TwitchBotsBase bot in BotsList)
+            foreach (TwitchBotsBase bot in BotsList)
             {
                 bot.SetTokenBot(TwitchTokenBot);
             }
@@ -600,7 +600,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region Twitch Token Bot
-        
+
         public void TwitchActivateAuthCode(string clientId, Action<string> action, Action AuthenticationFinished)
         {
             ThreadManager.CreateThreadStart(() =>
@@ -661,10 +661,10 @@ namespace StreamerBotLib.BotClients
 
                 // call the provided method to give user the web based app authorization URL
                 e.CallAction(e.AuthURL);
-            } 
+            }
             else
             {
-                foreach(IIOModule bot in BotsList)
+                foreach (IIOModule bot in BotsList)
                 {
                     bot.StopBot();
                 }
@@ -741,7 +741,12 @@ namespace StreamerBotLib.BotClients
 
         public override void GetAllFollowers()
         {
-            if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
+            GetAllFollowers(false);
+        }
+
+        public override void GetAllFollowers(bool OverrideUpdateFollowers = false)
+        {
+            if (OptionFlags.ManageFollowers && (OptionFlags.TwitchAddFollowersStart || OverrideUpdateFollowers) && TwitchFollower.IsStarted)
             {
                 BulkLoadFollows = ThreadManager.CreateThread(() =>
                 {

@@ -8,7 +8,6 @@ using StreamerBotLib.Static;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 
 using TwitchLib.PubSub;
 using TwitchLib.PubSub.Events;

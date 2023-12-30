@@ -97,7 +97,7 @@ namespace StreamerBot
 
         private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
         {
-            Controller.TwitchStartUpdateAllFollowers();
+            Controller.TwitchStartUpdateAllFollowers(true);
         }
 
         #endregion 

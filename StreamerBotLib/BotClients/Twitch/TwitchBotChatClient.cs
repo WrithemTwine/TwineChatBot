@@ -408,87 +408,86 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>True when message is sent.</returns>
         public override bool Send(string s)
         {
-            twitchTokenBot.CheckToken();
+            try
+            {
+                newSendMsg.Clear();
+                string tempSend = s;
 
-            Task chat = new(() =>
+                string prefix = (s.StartsWith("/me ") ? "/me " : "");
+
+                while (tempSend.Length > 500)
                 {
-                    try
+                    string temp = tempSend[..500];
+                    string AddSend = temp[..(temp.LastIndexOf(' ') - 1)];
+                    newSendMsg.Add(AddSend);
+                    tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
+                }
+
+                if (tempSend.Length > 0)
+                {
+                    newSendMsg.Add(tempSend);
+                }
+
+                foreach (string D in newSendMsg)
+                {
+                    SendData(D);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                // if we get an exception sending, need to check if unauthorized; queue the chat message for when the bot restarts
+                if (OptionFlags.TwitchTokenUseAuth)
+                {
+                    lock (TaskSend)
                     {
-                        newSendMsg.Clear();
-                        string tempSend = s;
-
-                        string prefix = (s.StartsWith("/me ") ? "/me " : "");
-
-                        while (tempSend.Length > 500)
-                        {
-                            string temp = tempSend[..500];
-                            string AddSend = temp[..(temp.LastIndexOf(' ') - 1)];
-                            newSendMsg.Add(AddSend);
-                            tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
-                        }
-
-                        if (tempSend.Length > 0)
-                        {
-                            newSendMsg.Add(tempSend);
-                        }
-
-                        foreach (string D in newSendMsg)
-                        {
-                            SendData(D);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-
-                        //CreateClient();
-                        //StartBot();
-                        //SendData(s);
-                        BackOffSend(); // if exception, perform backoff send
-                    }
-
-                    void SendData(string s)
-                    {
-                        if (IsStarted)
-                        {
-                            foreach (JoinedChannel j in TwitchChat.JoinedChannels)
-                            {
-                                TwitchChat.SendMessage(j, s);
-                            }
-                        }
-                    }
-
-                    // need recursive call to send data while unable to send message (returning exceptions from Twitch)
-                    void BackOffSend(int BackOff = 1)
-                    {
-                        Thread.Sleep(BackOff * 1000); // block thread and wait for exponential time each loop while continuing to throw exceptions
-
-                        try
+                        TaskSend.Enqueue(new(() =>
                         {
                             foreach (string D in newSendMsg)
                             {
                                 SendData(D);
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-
-                            BackOffSend(BackOff * 2);
-                        }
+                        }));
                     }
-                });
+                }
 
-            if (OptionFlags.TwitchTokenUseAuth)
+                twitchTokenBot.CheckToken();
+                //CreateClient();
+                //StartBot();
+                //SendData(s);
+                BackOffSend(); // if exception, perform backoff send
+            }
+
+            void SendData(string s)
             {
-                lock (TaskSend)
+                if (IsStarted)
                 {
-                    TaskSend.Enqueue(chat);
+                    foreach (JoinedChannel j in TwitchChat.JoinedChannels)
+                    {
+                        TwitchChat.SendMessage(j, s);
+                    }
                 }
             }
-            else
+
+            // need recursive call to send data while unable to send message (returning exceptions from Twitch)
+            void BackOffSend(int BackOff = 1)
             {
-                chat.Start();
+                Thread.Sleep(BackOff * 1000); // block thread and wait for exponential time each loop while continuing to throw exceptions
+
+                try
+                {
+                    foreach (string D in newSendMsg)
+                    {
+                        SendData(D);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                    BackOffSend(BackOff * 2);
+                }
             }
 
             return true;

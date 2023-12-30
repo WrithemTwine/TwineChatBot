@@ -427,9 +427,9 @@ namespace StreamerBotLib.BotIOController
             BotsTwitch.LiveMonitorSvc.UpdateChannels();
         }
 
-        public void TwitchStartUpdateAllFollowers()
+        public void TwitchStartUpdateAllFollowers(bool OverrideUpdateFollows = false)
         {
-            TwitchBots.GetAllFollowers();
+            TwitchBots.GetAllFollowers(OverrideUpdateFollows);
         }
 
         public void TwitchPostNewFollowers(OnNewFollowersDetectedArgs Follower)

@@ -67,7 +67,7 @@ http://localhost:3000/
 
                 var QueryValues = HttpUtility.ParseQueryString(uridata.Query);
 
-                if (!QueryValues.AllKeys.Contains("error") )
+                if (!QueryValues.AllKeys.Contains("error"))
                 {
                     Dispatcher.BeginInvoke(() =>
                     {
@@ -97,7 +97,7 @@ http://localhost:3000/
 
             Process process = new Process();
             process.StartInfo.UseShellExecute = true;
-            process.StartInfo.FileName = $"\"{ Url}\"";
+            process.StartInfo.FileName = $"\"{Url}\"";
             process.Start();
         }
 

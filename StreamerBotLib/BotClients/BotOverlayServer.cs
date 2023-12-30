@@ -470,6 +470,10 @@ namespace StreamerBotLib.BotClients
         {
         }
 
+        public void GetAllFollowers(bool OverrideFollowers)
+        {
+        }
+
         public void SetIds()
         {
         }

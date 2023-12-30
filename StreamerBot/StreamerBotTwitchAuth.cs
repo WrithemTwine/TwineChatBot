@@ -102,7 +102,7 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void Controller_InvalidAuthorizationToken(object sender, InvalidAccessTokenEventArgs e)
         {
-            Dispatcher.BeginInvoke(() => 
+            Dispatcher.BeginInvoke(() =>
             {
                 MessageBox.Show($"Invalid Token - {e.BotType}", $"The authorization for {e.Platform} has failed. The bot(s) have stopped due to no access. Please re-authorize the application access.");
             });

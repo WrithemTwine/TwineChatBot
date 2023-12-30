@@ -28,12 +28,12 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Notifies whether the multilive channels are part of the live stream monitored channels.
         /// </summary>
         public bool IsMultiLiveBotActive { get; set; }
-  
+
         /// <summary>
         /// Notifies if the multilive channels are monitored for changes and will update the monitored channel list. 
         /// </summary>
         public bool IsMultiConnected { get; set; }
- 
+
         /// <summary>
         /// Database connection to the other channels the streamer is monitoring to determine if the user went live.
         /// </summary>
