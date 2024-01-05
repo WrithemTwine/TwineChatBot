@@ -611,7 +611,7 @@ namespace StreamerBotLib.BotClients
 
         private void TwitchTokenBot_StreamerAcctAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
         {
-            if (e.CallAction != null)
+            if (e?.CallAction != null)
             {
                 // start an http listener to receive auth code
                 ThreadManager.CreateThreadStart(() =>

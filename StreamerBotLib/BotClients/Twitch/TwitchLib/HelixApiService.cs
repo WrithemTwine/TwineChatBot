@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.HttpCallHandlers;
 using TwitchLib.Api.Core.Interfaces;
 using TwitchLib.Api.Core.RateLimiter;
@@ -23,6 +24,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public class HelixApiService
     {
+        public event EventHandler UnauthorizedToken;
+
         // TODO: consider adding code to determine if the internet or Twitch servers are not available (throws exception); and backoff trying to perform action; maybe add a revisit task to try again after a certain amount of time
 
         // Streamer Id-Token API
@@ -91,6 +94,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 try
                 {
                     result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
+                }
+                catch (BadRequestException)
+                {
+                    UnauthorizedToken?.Invoke(this, new());
+                }
+                catch (BadScopeException)
+                {
+                    UnauthorizedToken?.Invoke(this, new());
                 }
                 catch
                 {

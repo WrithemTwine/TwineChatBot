@@ -504,6 +504,8 @@ namespace StreamerBot
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ToggleButton_ChooseTwitchAuth_Click(this, null);
+
             CheckFocus();
             StartAutoBots();
 
@@ -512,8 +514,7 @@ namespace StreamerBot
             CheckBox_TabifySettings_Clicked(this, new());
             CheckDebug(this, new());
             SetVisibility(this, new());
-
-            ToggleButton_ChooseTwitchAuth_Click(this, null);
+            CheckFocus();
         }
 
         /// <summary>
@@ -651,7 +652,7 @@ namespace StreamerBot
             if (CheckBox_ManageFollowers.IsChecked == true)
             {
                 CheckBox_ManageUsers.IsEnabled = false;
-                if (Settings.Default.TwitchFollowerSvcAutoStart)
+                if (Settings.Default.TwitchFollowerSvcAutoStart && Radio_Twitch_FollowBotStart.IsChecked == true)
                 {
                     Dispatcher.BeginInvoke(new BotOperation(() =>
                     {
@@ -771,11 +772,15 @@ namespace StreamerBot
             TB_Twitch_AccessToken.IsEnabled = setvalue;
             TB_Twitch_BotUser.IsEnabled = setvalue;
             TB_Twitch_Channel.IsEnabled = setvalue;
+
             TB_Twitch_ClientID.IsEnabled = setvalue;
             Btn_Twitch_RefreshDate.IsEnabled = setvalue;
             Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
             Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
             Slider_TimeClipPollSeconds.IsEnabled = setvalue;
+
+            //TODO: add more textboxes to block when the bots are enabled - to prevent changes
+            //ToggleButton_TwitchToken.IsEnabled = setvalue;
         }
 
         private void TabItem_GotFocus(object sender, RoutedEventArgs e)

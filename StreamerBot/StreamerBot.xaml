@@ -150,9 +150,9 @@
             </StatusBarItem>
             <Separator />
             <StatusBarItem>
-                <StackPanel>
-                    <Label ToolTip="The earliest token expiration date.">Token Exp:</Label>
-                    <Label x:Name="StatusBarItem_TokenDate"  />
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                    <Label ToolTip="The earliest token expiration date." Padding="0">Token Exp:</Label>
+                    <Label x:Name="StatusBarItem_TokenDate" Padding="0"/>
                 </StackPanel>
             </StatusBarItem>
             <Separator />
@@ -160,9 +160,9 @@
                 <Button Name="Button_RefreshCategory" Grid.Column="0" 
                         HorizontalAlignment="Left" VerticalAlignment="Center" 
                         Padding="0" Click="Button_RefreshCategory_Click" ToolTip="Click to refresh">
-                    <StackPanel>
-                        <Label>Current Category:</Label>
-                        <Label x:Name="TextBlock_CurrentCategory" Grid.Column="2" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                        <Label Padding="5,5,5,0">Current Category:</Label>
+                        <Label x:Name="TextBlock_CurrentCategory" Grid.Column="2" VerticalAlignment="Center" Padding="5,0,5,5"/>
                     </StackPanel>
                 </Button>
             </StatusBarItem>
@@ -411,7 +411,7 @@
 
                         <DockPanel LastChildFill="False">
                             <StackPanel DockPanel.Dock="Top">
-                                <ToggleButton Width="100" Height="36" IsChecked="{Binding TwitchTokenUseAuth}"
+                                <ToggleButton x:Name="ToggleButton_TwitchToken" Width="100" Height="36" IsChecked="{Binding TwitchTokenUseAuth}"
                                               DataContext="{Binding Source={x:Static s:Settings.Default}}" 
                                     Click="ToggleButton_ChooseTwitchAuth_Click" ClickMode="Press" Style="{StaticResource ToggleButtonTwitchTokenSelecter}"/>
                             </StackPanel>
@@ -852,7 +852,7 @@ streamer account, if you choose to seaparate the accesses.
                                             <CheckBox IsChecked="{Binding EnableDebugTwitchPubSubBot}">
                                                 <TextBlock>Twitch Bot PubSub logging</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding EnableDebugTokenBot}">
+                                            <CheckBox IsChecked="{Binding EnableDebugTwitchTokenBot}">
                                                 <TextBlock>Twitch Token Bot Token Update</TextBlock>
                                             </CheckBox>
                                         </StackPanel>

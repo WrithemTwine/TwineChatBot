@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 
-using TwitchLib.Api.Auth;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.Interfaces;
 
+using ApiAuth = TwitchLib.Api.Auth;
+
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
-    internal class ExtAuth : Auth
+    internal class ExtAuth : ApiAuth.Auth
     {
         // derived from:
         // https://github.com/TwitchLib/TwitchLib.Api/blob/master/TwitchLib.Api/Auth/Auth.cs
@@ -29,21 +30,18 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <exception cref="BadParameterException">Thrown when any of the required parameters are not valid.</exception>
         public string GetAuthorizationCodeUrl(string redirectUri, IEnumerable<string> scopes, bool forceVerify = false, string state = null, string clientId = null)
         {
-            var internalClientId = clientId ?? Settings.ClientId;
-
-            string scopesStr = null;
-            scopesStr = string.Join("+", scopes);
-
-            if (string.IsNullOrWhiteSpace(internalClientId))
+            if (string.IsNullOrWhiteSpace(clientId ?? Settings.ClientId))
                 throw new BadParameterException("The clientId is not valid. It is not allowed to be null, empty or filled with whitespaces.");
 
-            return "https://id.twitch.tv/oauth2/authorize?" +
-                   $"client_id={internalClientId}&" +
-                   $"redirect_uri={HttpUtility.UrlEncode(redirectUri)}&" +
-                   "response_type=code&" +
-                   $"scope={scopesStr}&" +
-                   $"state={state}&" +
-                   $"force_verify={forceVerify.ToString().ToLower()}";
+            return $"https://id.twitch.tv/oauth2/authorize?{Helpers.BuildQueryString(new()
+            {
+                { "client_id", clientId ?? Settings.ClientId },
+                { "redirect_uri", HttpUtility.UrlEncode(redirectUri) },
+                { "response_type", "code" },
+                { "scope", string.Join("+", scopes) },
+                { "state", state },
+                { "force_verify", $"{forceVerify}" }
+            })}";
         }
     }
 }

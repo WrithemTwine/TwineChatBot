@@ -134,8 +134,14 @@ namespace StreamerBotLib.BotClients.Twitch
                        || !OptionFlags.TwitchStreamerUseToken))
                 {
                     HelixApiCalls = new(BotApiSettings, StreamerApiSettings);
+                    HelixApiCalls.UnauthorizedToken += HelixApiCalls_UnauthorizedToken;
                 }
             }
+        }
+
+        private void HelixApiCalls_UnauthorizedToken(object sender, EventArgs e)
+        {
+            twitchTokenBot.CheckToken();
         }
 
         public void SetIds(string StreamerChannelId = null, string BotChannelId = null)

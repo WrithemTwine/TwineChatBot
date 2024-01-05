@@ -97,7 +97,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
-            catch (BadRequestException hrEx)
+            catch (BadRequestException)
             {
                 twitchTokenBot.CheckToken();
                 return false;

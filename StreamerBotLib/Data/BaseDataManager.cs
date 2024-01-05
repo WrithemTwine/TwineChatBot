@@ -41,7 +41,7 @@ namespace StreamerBotLib.Data
             return
 #if DEBUG
             // add specific directory location for debug purposes, ignore for release
-            Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows",
+            Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net7.0-windows7.0",
 #endif
                 fileName
 #if DEBUG
