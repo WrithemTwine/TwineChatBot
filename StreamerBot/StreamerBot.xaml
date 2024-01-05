@@ -58,7 +58,7 @@
                     <StackPanel x:Name="StatusBarItem_NewStableVersion" Height="35" Panel.ZIndex="5" Visibility="Collapsed">
                         <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
                                   Visibility="Collapsed" 
-                                  DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}" 
+                                  DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubStableLink}}" 
                                   NavigationCompleted="WebView2_GitHub_StableVersion_NavigationCompleted"/>
 
                         <TextBlock 
@@ -443,6 +443,7 @@
                                                             <Paragraph>
                                                                 <Run Text="{DynamicResource CredentialsOAuth}"/>
                                                                 <LineBreak />
+
                                                                 <LineBreak />
                                                                 <Run Text="{DynamicResource CredentialsOAuthManual}"/>
                                                             </Paragraph>
@@ -565,8 +566,18 @@
                                                 <StackPanel>
                                                     <TextBlock x:Uid="ExpiredToken" x:Name="TextBlock_ExpiredCredentialsMsg" Foreground="#FFF71553" FontSize="18" HorizontalAlignment="Center" MaxWidth="550" TextAlignment="Center" Visibility="Collapsed" Text="{DynamicResource ExpiredToken}" />
                                                     <StackPanel Orientation="Horizontal" Margin="10">
+
                                                         <Label Content="Channel Name" />
                                                         <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
+
+                                                        <Label Content="Client Id" />
+                                                        <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" ToolTip="The client ID for the bot user account." PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" Margin="10,0">
+                                                        <Label Content="Token Scope" />
+                                                        <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" DataContext="" Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}" />
+                                                        <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" DataContext="" Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}" />
+
                                                     </StackPanel>
                                                     <TextBlock Width="300" Text="* This Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
                                                     <StackPanel Orientation="Horizontal" Margin="10">
@@ -710,8 +721,14 @@ streamer account, if you choose to seaparate the accesses.
                                             <GroupBox Header="Channel Information" Width="410">
                                                 <StackPanel Orientation="Vertical" Margin="10">
                                                     <StackPanel Orientation="Horizontal" Margin="10">
+
                                                         <TextBlock Width="100">Channel Name:</TextBlock>
                                                             <TextBox Text="{Binding TwitchChannelName}" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+
+                                                        <Label Content="Token Scope" />
+                                                        <TextBox BorderBrush="Blue" BorderThickness="1" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  
+                                                                 DataContext="" Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}}" />
+
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <TextBlock Width="100">Bot User Name:</TextBlock>
@@ -810,6 +827,7 @@ streamer account, if you choose to seaparate the accesses.
                                     </GroupBox>
 
                         </DockPanel>
+
                     </TabItem>
                 </TabControl>
             </TabItem>
@@ -1515,11 +1533,11 @@ streamer account, if you choose to seaparate the accesses.
                                                         </StackPanel>
                                                     </RadioButton>
                                                     <RadioButton x:Name="RadioButton_GiveawayCustomRewards" VerticalContentAlignment="Center">
-                                                        <StackPanel Orientation="Horizontal">
+                                                        <WrapPanel Orientation="Horizontal">
                                                             <Label Width="100">Channel Points</Label>
                                                             <ComboBox x:Name="ComboBox_Giveaway_ChanPts" MinWidth="200" PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
-                                                            <Button x:Name="Button_Giveaway_RefreshChannelPoints" Margin="5,0" Height="21" Padding="5,2" Content="Refresh" Click="Button_Giveaway_RefreshChannelPoints_Click" />
-                                                        </StackPanel>
+                                                            <Button x:Name="Button_Giveaway_RefreshChannelPoints" Margin="5,0" Height="21" Padding="5,2" Content="Refresh" Click="Button_RefreshChannelPoints_Click" />
+                                                        </WrapPanel>
                                                     </RadioButton>
                                                 </StackPanel>
                                             </GroupBox>
@@ -1703,20 +1721,28 @@ streamer account, if you choose to seaparate the accesses.
                                     If you expect Channel Point Rewards and none are loaded, Twitch requires the streamer's credentials to access the channel point rewards list.
                                             </TextBlock>
                                         </Expander>
-                                        <GroupBox DockPanel.Dock="Top" Margin="7" Padding="8" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
-                                            <StackPanel>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <CheckBox Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center">
-                                                        <TextBlock>Pause Alert Queue</TextBlock>
-                                                    </CheckBox>
-                                                    <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" />
+                                        <WrapPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
+                                            <GroupBox Margin="7" Padding="8" HorizontalAlignment="Center" Header="Manage Overlay Alerts Queue" Width="Auto">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <CheckBox Padding="4,2" Margin="0,0,40,0" Click="Button_Overlay_PauseAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" ClickMode="Press" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                                            <TextBlock>Pause Alert Queue</TextBlock>
+                                                        </CheckBox>
+                                                        <Button Content="Clear Alert Queue" Padding="4,2" Click="Button_Overlay_ClearAlerts_Click" DataContext="{Binding MediaOverlayServer, Source={StaticResource AppServices}}" />
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Label Content="{Binding MediaOverlayServer.MediaItems, Source={StaticResource AppServices}}" />
+                                                        <Label Content=" Action items" />
+                                                    </StackPanel>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <Label Content="{Binding MediaOverlayServer.MediaItems, Source={StaticResource AppServices}}" />
-                                                    <Label Content=" Action items" />
+                                            </GroupBox>
+                                            <GroupBox Header="Available Channel Points Redemptions">
+                                                <StackPanel>
+                                                    <Button x:Name="Button_ChannelPts_Refresh" Content="Refresh Channel Points" Width="140" Margin="0,10"  Click="Button_RefreshChannelPoints_Click" />
+                                                    <ComboBox x:Name="ComboBox_ChannelPoints" Height="21" Width="180" SelectedIndex="0" PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
                                                 </StackPanel>
-                                            </StackPanel>
-                                        </GroupBox>
+                                            </GroupBox>
+                                        </WrapPanel>
                                         <DataGrid x:Name="DataGrid_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayService, Mode=OneWay}" AutoGeneratedColumns="DG_AutoGeneratedColumns" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" MouseDoubleClick="DG_MouseDoubleClick" />
                                     </DockPanel>
                                 </TabItem>
@@ -1945,7 +1971,7 @@ streamer account, if you choose to seaparate the accesses.
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload"  Width="59" Height="29" Click="WebView2Reload_Click" HorizontalAlignment="Left" />
-                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubWikiLink}" />
+                                        <wv2:WebView2 DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubWikiLink}}" />
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1956,7 +1982,7 @@ streamer account, if you choose to seaparate the accesses.
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubStableLink}"/>
+                                        <wv2:WebView2 DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubStableLink}}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>
@@ -1967,7 +1993,7 @@ streamer account, if you choose to seaparate the accesses.
                                 <Border>
                                     <DockPanel>
                                         <Button DockPanel.Dock="Top" Content="Reload" HorizontalAlignment="Left" Height="29"  Click="WebView2Reload_Click" />
-                                        <wv2:WebView2 DataContext="{x:Static s:Settings.Default}" Source="{Binding GitHubLatestLink}"/>
+                                        <wv2:WebView2 DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubLatestLink}}"/>
                                     </DockPanel>
                                 </Border>
                             </DockPanel>

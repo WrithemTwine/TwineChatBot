@@ -75,13 +75,10 @@ namespace StreamerBotLib.Properties {
         public static string CredentialsTwitchPriorFullScope {
             get {
                 return ResourceManager.GetString("CredentialsTwitchPriorFullScope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
+
         ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers.
         /// </summary>
-        public static string CredentialsTwitchScopesDiffOauthBot {
+        internal static string CredentialsTwitchScopesDiffOauthBot {
             get {
                 return ResourceManager.GetString("CredentialsTwitchScopesDiffOauthBot", resourceCulture);
             }
@@ -90,7 +87,7 @@ namespace StreamerBotLib.Properties {
         /// <summary>
         ///   Looks up a localized string similar to channel:read:redemptions channel:manage:broadcast channel:manage:raids.
         /// </summary>
-        public static string CredentialsTwitchScopesDiffOauthChannel {
+        internal static string CredentialsTwitchScopesDiffOauthChannel {
             get {
                 return ResourceManager.GetString("CredentialsTwitchScopesDiffOauthChannel", resourceCulture);
             }
@@ -99,9 +96,33 @@ namespace StreamerBotLib.Properties {
         /// <summary>
         ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids.
         /// </summary>
-        public static string CredentialsTwitchScopesOauthSame {
+        internal static string CredentialsTwitchScopesOauthSame {
             get {
                 return ResourceManager.GetString("CredentialsTwitchScopesOauthSame", resourceCulture);
+            }
+        }
+        
+        ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/releases/.
+        /// </summary>
+        internal static string GitHubLatestLink {
+            get {
+                return ResourceManager.GetString("GitHubLatestLink", resourceCulture);
+            }
+        }
+        
+        ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/releases/latest.
+        /// </summary>
+        internal static string GitHubStableLink {
+            get {
+                return ResourceManager.GetString("GitHubStableLink", resourceCulture);
+            }
+        }
+        
+        ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/wiki.
+        /// </summary>
+        internal static string GitHubWikiLink {
+            get {
+                return ResourceManager.GetString("GitHubWikiLink", resourceCulture);
             }
         }
         

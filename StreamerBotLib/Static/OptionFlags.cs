@@ -48,7 +48,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchTokenUseAuth => Settings.Default.TwitchTokenUseAuth;
 
-        #region Twitch Credential Scopes
+      #region Twitch Credential Scopes
 
         /// <summary>
         /// Retrieves the Twitch Credential Scope Resource for when using a bot account different than streamer account - this is the bot access token scope listing
@@ -823,15 +823,15 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies the GitHub link to the stable application version.
         /// </summary>
-        public static string GitHubStableLink => Settings.Default.GitHubStableLink;
+        public static string GitHubStableLink => Resources.GitHubStableLink;
         /// <summary>
         /// Specifies the GitHub link to the latest application version.
         /// </summary>
-        public static string GitHubLatestLink => Settings.Default.GitHubLatestLink;
+        public static string GitHubLatestLink => Resources.GitHubLatestLink;
         /// <summary>
         /// Specifies the GitHub link to the application Wiki
         /// </summary>
-        public static string GitHubWikiLink => Settings.Default.GitHubWikiLink;
+        public static string GitHubWikiLink => Resources.GitHubWikiLink;
 
         #endregion
 

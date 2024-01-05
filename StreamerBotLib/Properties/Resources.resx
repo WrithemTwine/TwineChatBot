@@ -132,6 +132,15 @@
   <data name="CredentialsTwitchScopesOauthSame" xml:space="preserve">
     <value>bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids</value>
   </data>
+  <data name="GitHubLatestLink" xml:space="preserve">
+    <value>https://github.com/WrithemTwine/TwineChatBot/releases/</value>
+  </data>
+  <data name="GitHubStableLink" xml:space="preserve">
+    <value>https://github.com/WrithemTwine/TwineChatBot/releases/latest</value>
+  </data>
+  <data name="GitHubWikiLink" xml:space="preserve">
+    <value>https://github.com/WrithemTwine/TwineChatBot/wiki</value>
+  </data>
   <data name="TwitchHomepage" xml:space="preserve">
     <value>https://twitch.tv/</value>
   </data>

@@ -574,8 +574,11 @@ switches:
                     // can't use a simple method to duplicate this because "ref" can't be used with boxing
                     foreach (PropertyInfo property in streamStat.GetType().GetProperties())
                     {
-                        // use properties from 'StreamStat' since StreamStatRow has additional properties
-                        property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                        if (streamStatsRow.GetType().GetProperties().Contains(property))
+                        {
+                            // use properties from 'StreamStat' since StreamStatRow has additional properties
+                            property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
+                        }
                     }
                 }
 
@@ -865,13 +868,16 @@ switches:
             }
         }
 
+// TODO: validate adding follower category, carry forward category when follower changes viewer name
+
         /// <summary>
         /// Add a new follower to the data table.
         /// </summary>
         /// <param name="User">The Username of the new Follow</param>
         /// <param name="FollowedDate">The date of the Follow.</param>
+        /// <param name="Category">Stream category-shows streamer under which category the viewer followed</param>
         /// <returns>True if the follower is the first time. False if already followed.</returns>
-        public bool PostFollower(LiveUser User, DateTime FollowedDate)
+        public bool PostFollower(LiveUser User, DateTime FollowedDate, string Category)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add user {User} as a new follower at {FollowedDate}.");
@@ -891,7 +897,7 @@ switches:
                     newfollow = false;
                     followers.IsFollower = true;
 
-                    if (DBNull.Value.Equals(followers["FollowedDate"]))
+                    if (DBNull.Value.Equals(followers["FollowedDate"]) || followers.FollowedDate != FollowedDate)
                     {
                         followers.FollowedDate = FollowedDate;
                     }
@@ -911,11 +917,25 @@ switches:
                         followers.Platform = User.Source.ToString();
                         update = true;
                     }
+                    if (followers.IsCategoryNull() || followers.Category == string.Empty )
+                    {
+                        followers.Category = Category;
+                    }
                 }
                 else
                 {
                     newfollow = true;
-                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate);
+
+                    string GameCategory = Category;
+
+                    FollowersRow ExistingUserFollow = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserIdColumn.ColumnName}='{User.UserId}' AND {_DataSource.Followers.CategoryColumn.ColumnName} is NOT NULL");
+
+                    if(ExistingUserFollow != null)
+                    {
+                        GameCategory = ExistingUserFollow.Category;
+                    }
+
+                    _DataSource.Followers.AddFollowersRow(users, users.UserName, true, FollowedDate, User.UserId, User.Source.ToString(), FollowedDate, Category);
                     update = true;
                 }
                 if (update)
@@ -995,7 +1015,7 @@ switches:
         /// Because the streaming service doesn't/didn't support a user unfollowing the streamer, we need to regularly update the follower list in its entirety-retrieve all followers.
         /// </summary>
         /// <param name="follows">A list of current followers to add into the database.</param>
-        public void UpdateFollowers(IEnumerable<Follow> follows)
+        public void UpdateFollowers(IEnumerable<Follow> follows, string Category)
         {
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update and add all followers in bulk.");
@@ -1004,7 +1024,7 @@ switches:
             {
                 foreach (Follow f in follows)
                 {
-                    _ = PostFollower(f.FromUser, f.FollowedAt);
+                    _ = PostFollower(f.FromUser, f.FollowedAt, Category);
                 }
             }
 
@@ -1663,43 +1683,49 @@ switches:
 #if LogDataManager_Actions
             LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add and update the {newCategory} category.");
 #endif
-
-            lock (GUIDataManagerLock.Lock)
+            if (CategoryId != "" && newCategory != "")
             {
-                CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
-                bool found = false;
-                if (categoryList == null)
+                lock (GUIDataManagerLock.Lock)
                 {
-                    _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
-                    found = true;
-                }
-                else
-                {
-                    if (categoryList.CategoryId == null)
+                    CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
+                    bool found = false;
+                    if (categoryList == null)
                     {
-                        categoryList.CategoryId = CategoryId;
+                        _DataSource.CategoryList.AddCategoryListRow(CategoryId, newCategory, 1);
                         found = true;
                     }
-                    if (categoryList.Category == null)
+                    else
                     {
-                        categoryList.Category = newCategory;
-                        found = true;
+                        if (categoryList.CategoryId == null)
+                        {
+                            categoryList.CategoryId = CategoryId;
+                            found = true;
+                        }
+                        if (categoryList.Category == null)
+                        {
+                            categoryList.Category = newCategory;
+                            found = true;
+                        }
+
+                        if (OptionFlags.IsStreamOnline)
+                        {
+                            categoryList.StreamCount++;
+                            found = true;
+                        }
                     }
 
-                    if (OptionFlags.IsStreamOnline)
+                    if (found)
                     {
-                        categoryList.StreamCount++;
-                        found = true;
+                        _DataSource.CategoryList.AcceptChanges();
+                        NotifySaveData();
                     }
-                }
 
-                if (found)
-                {
-                    _DataSource.CategoryList.AcceptChanges();
-                    NotifySaveData();
+                    return categoryList != null;
                 }
-
-                return categoryList != null;
+            }
+            else
+            {
+                return false;
             }
         }
 

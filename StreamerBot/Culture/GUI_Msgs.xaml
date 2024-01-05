@@ -2,13 +2,13 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     
-    <!-- Begin- Manage Scopes-->
+    <!-- Begin- Manage Scopes--><!--
 
     <system:String x:Key="CredentialsTwitchScopesDiffOauthBot">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers</system:String>
     <system:String x:Key="CredentialsTwitchScopesDiffOauthChannel">channel:read:redemptions channel:manage:broadcast channel:manage:raids</system:String>
     <system:String x:Key="CredentialsTwitchScopesOauthSame">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids</system:String>
 
-    <!-- End-Manage Scopes-->
+    --><!-- End-Manage Scopes-->
     
     
     <system:String x:Key="Disabled">Disabled</system:String>
@@ -67,7 +67,7 @@
 
     <system:String x:Key="CredentialsTwitchAcctConnectClientIds">Click 'Connect' (to connect with Twitch Account) and copy the resulting "Access Token". You can save it to your local files and paste it to the left credential box.</system:String>
 
-    <system:String x:Key="CredentialsTwitchRefreshDate">Be sure to click "Refresh Date" here in the credentials which will give you the 60-day date from now in which you need to refresh the 'access token'. You would only need to perform the new 'access token' to get another token.</system:String>
+    <system:String x:Key="CredentialsTwitchRefreshDate">Be sure to click "Refresh Date" here in the credentials which will give you the 60-day (53-days as it appears 'Follow' calls to Twitch only work with the token less than 60-days) date from now in which you need to refresh the 'access token'. You would only need to perform the new 'access token' to get another token.</system:String>
     
 </ResourceDictionary>
 

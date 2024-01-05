@@ -14,8 +14,6 @@ using TwitchLib.PubSub.Events;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
-    // TODO: separate log output file in GUI
-
     public class TwitchBotPubSub : TwitchBotsBase
     {
         private static TwitchTokenBot twitchTokenBot;

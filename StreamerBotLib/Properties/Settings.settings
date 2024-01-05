@@ -419,15 +419,6 @@
     <Setting Name="GitHubCheckStable" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/releases/latest</Value>
     </Setting>
-    <Setting Name="GitHubStableLink" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/releases/latest</Value>
-    </Setting>
-    <Setting Name="GitHubLatestLink" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/releases/</Value>
-    </Setting>
-    <Setting Name="GitHubWikiLink" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://github.com/WrithemTwine/TwineChatBot/wiki</Value>
-    </Setting>
     <Setting Name="ExpanderBotUsageInfo" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

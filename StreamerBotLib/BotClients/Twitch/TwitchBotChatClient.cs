@@ -43,6 +43,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
+        private const int SingleChatLength = 500;
 
         private readonly Queue<Task> TaskSend = new();
 
@@ -415,9 +416,9 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 string prefix = (s.StartsWith("/me ") ? "/me " : "");
 
-                while (tempSend.Length > 500)
+                while (tempSend.Length > SingleChatLength)
                 {
-                    string temp = tempSend[..500];
+                    string temp = tempSend[..SingleChatLength];
                     string AddSend = temp[..(temp.LastIndexOf(' ') - 1)];
                     newSendMsg.Add(AddSend);
                     tempSend = prefix + tempSend.Replace(AddSend, "").Trim();

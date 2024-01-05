@@ -10,8 +10,6 @@ using System.Threading;
 namespace StreamerBotLib.BotClients
 {
 
-
-
 #if BrokenCode
       public static class DiscordWebhook
     {
@@ -320,7 +318,7 @@ namespace StreamerBotLib.BotClients
     {
         //private const int max_embeds = 10;
 
-        public string content { get; private set; }
+        public string content { get; private set; } // max 2000 characters
         public string username { get; private set; }
         public string avatar_url { get; private set; }
         public bool tts { get; private set; }
@@ -333,7 +331,7 @@ namespace StreamerBotLib.BotClients
         public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username = null, string Avatar_Url = null, bool TTS = false,
             string Payload_Json = null)
         {
-            content = Content;
+            content = Content[..Math.Min(2000,Content.Length)];
             allowed_mentions = Allowed_Mentions;
             username = Username;
             avatar_url = Avatar_Url;

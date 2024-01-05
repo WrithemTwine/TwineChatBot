@@ -3,6 +3,9 @@ using System.Diagnostics;
 
 namespace StreamerBotLib.Models
 {
+    /// <summary>
+    /// Properties of a live stream
+    /// </summary>
     [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
     public class StreamStat
     {
@@ -28,6 +31,11 @@ namespace StreamerBotLib.Models
         public int ChannelPtCount { get; set; } = 0;
         public int ChannelChallenge { get; set; } = 0;
         public int MaxUsers { get; set; } = 0;
+
+        /// <summary>
+        /// Maintain current active category of the stream
+        /// </summary>
+        public string CurrentCategory { get; set; }
 
         public void Clear()
         {

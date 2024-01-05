@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-
-  <PropertyGroup>
+   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
@@ -58,5 +57,6 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
+
 
 </Project>

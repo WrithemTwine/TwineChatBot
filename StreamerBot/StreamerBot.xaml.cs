@@ -31,6 +31,10 @@ using System.Windows.Threading;
 
 namespace StreamerBot
 {
+    // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment
+    // TODO: add "shoutout" user option to invoke Twitch's chat level shoutout option
+    // TODO: look at using "localhost" for the clip's referback URL to grab a clip to send to overlay-reconnect into Overlay
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -162,7 +166,23 @@ namespace StreamerBot
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+            VerifyNewVersion += StreamerBotWindow_VerifyNewVersion;
         }
+
+        /// <summary>
+        /// A running watcher thread checks for elapsed time, and raises an event when current time exceeds the 
+        /// time to check for another version; and not just when the application starts - the user can have the 
+        /// application open for weeks and would know of a new version without restarting it.
+        /// Handles the event when it's time to check for a new version.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StreamerBotWindow_VerifyNewVersion(object sender, EventArgs e)
+        {
+            // navigate to the predefined stable link.
+            WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+        }
+
 
         /// <summary>
         /// Handles a WebView GUI control navigation, when it completes. The GitHub link resolves to a 
@@ -177,16 +197,16 @@ namespace StreamerBot
 
             if (NewVersionLink != OptionFlags.GitHubCheckStable)
             {
-                Version version = Assembly.GetEntryAssembly().GetName().Version;
-                string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
-
-                // check if the saved link is the default, also check if the found link doesn't have the current version
-                // true=> link not default and the stable version link doesn't have the current app version in it
-                if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
-                {
-                    StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
-                }
                 OptionFlags.GitHubCheckStable = NewVersionLink;
+            }
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+
+            // check if the saved link is the default, also check if the found link doesn't have the current version
+            // true=> link not default and the stable version link doesn't have the current app version in it
+            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
+            {
+                StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
             }
         }
 
@@ -1080,7 +1100,7 @@ namespace StreamerBot
                 case "DG_Followers":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "IsFollower" and not "FollowedDate" and not "UserId" and not "Platform" and not "StatusChangeDate" and not "Category")
                         {
                             Collapse(dc);
                         }
@@ -1363,8 +1383,10 @@ namespace StreamerBot
             }
         }
 
-        private void Button_Giveaway_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
+        private void Button_RefreshChannelPoints_Click(object sender, RoutedEventArgs e)
         {
+            Button_Giveaway_RefreshChannelPoints.IsEnabled = false;
+            Button_ChannelPts_Refresh.IsEnabled = false;
             ChannelPtRetrievalDate = DateTime.MinValue; // reset the retrieve date to force retrieval
             BeginGiveawayChannelPtsUpdate();
         }
@@ -1390,7 +1412,9 @@ namespace StreamerBot
         private void UpdateGiveawayList(List<string> ChannelPointNames)
         {
             ComboBox_Giveaway_ChanPts.ItemsSource = ChannelPointNames;
+            ComboBox_ChannelPoints.ItemsSource = ChannelPointNames;
             Button_Giveaway_RefreshChannelPoints.IsEnabled = true;
+            Button_ChannelPts_Refresh.IsEnabled = true;
         }
 
         private void Button_GiveawayBegin_Click(object sender, RoutedEventArgs e)

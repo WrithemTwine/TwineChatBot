@@ -20,6 +20,8 @@ namespace StreamerBot
         /// </summary>
         public event EventHandler NotifyExpiredCredentials;
 
+        public event EventHandler VerifyNewVersion;
+
         /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
@@ -29,11 +31,14 @@ namespace StreamerBot
 
         private void UpdateProc(bool IsActive)
         {
-            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
+            _ = AppDispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
         }
 
         private void ProcessWatcher()
         {
+            const int NewVersionIntervalHours = 18;
+            DateTime VersionCheckDate = DateTime.Now.AddHours(NewVersionIntervalHours);
+
             const int sleep = 2000;
 
             try
@@ -56,6 +61,13 @@ namespace StreamerBot
                     {
                         Controller.TwitchStartUpdateAllFollowers();
                         TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
+                    }
+
+                    if(DateTime.Now >= VersionCheckDate)
+                    {
+                        VersionCheckDate.AddHours(NewVersionIntervalHours);
+
+                        VerifyNewVersion?.Invoke(this, new());
                     }
 
                     UpdateAppTime();

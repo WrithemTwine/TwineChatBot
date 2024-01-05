@@ -206,18 +206,18 @@ namespace TestStreamerBot
 
             BotController.HandleBotEventStartBulkFollowers();
             botController.HandleBotEventNewFollowers(regularfollower);
-            Assert.True(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
+            Assert.True(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt, GetRandomGameIdName().GameName));
 
             BotController.HandleBotEventBulkPostFollowers(bulkfollows);
             BotController.HandleBotEventStopBulkFollowers();
 
             foreach (Follow f in bulkfollows)
             {
-                Assert.False(dataManager.PostFollower(f.FromUser, f.FollowedAt));
+                Assert.False(dataManager.PostFollower(f.FromUser, f.FollowedAt, GetRandomGameIdName().GameName));
             }
 
             Thread.Sleep(5000); // wait enough time for the regular followers to add into the database
-            Assert.False(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt));
+            Assert.False(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt, GetRandomGameIdName().GameName));
         }
 
         [Fact]
