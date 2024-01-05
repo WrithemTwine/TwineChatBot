@@ -354,5 +354,281 @@
         </Setter>
     </Style>
 
+    
+    
+    <Color x:Key="WindowColor">#FFE8EDF9</Color>
+    <Color x:Key="ContentAreaColorLight">#FFC5CBF9</Color>
+    <Color x:Key="ContentAreaColorDark">#FF7381F9</Color>
+
+    <Color x:Key="DisabledControlLightColor">#FFE8EDF9</Color>
+    <Color x:Key="DisabledControlDarkColor">#FFC5CBF9</Color>
+    <Color x:Key="DisabledForegroundColor">#FF888888</Color>
+
+    <Color x:Key="SelectedBackgroundColor">#FFC5CBF9</Color>
+    <Color x:Key="SelectedUnfocusedColor">#FFDDDDDD</Color>
+
+    <Color x:Key="ControlLightColor">White</Color>
+    <Color x:Key="ControlMediumColor">#FF7381F9</Color>
+    <Color x:Key="ControlDarkColor">#FF211AA9</Color>
+
+    <Color x:Key="ControlMouseOverColor">#FF3843C4</Color>
+    <Color x:Key="ControlPressedColor">#FF211AA9</Color>
+
+
+    <Color x:Key="GlyphColor">#FF444444</Color>
+    <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
+
+    <!--Border colors-->
+    <Color x:Key="BorderLightColor">#FFCCCCCC</Color>
+    <Color x:Key="BorderMediumColor">#FF888888</Color>
+    <Color x:Key="BorderDarkColor">#FF444444</Color>
+
+    <Color x:Key="PressedBorderLightColor">#FF888888</Color>
+    <Color x:Key="PressedBorderDarkColor">#FF444444</Color>
+
+    <Color x:Key="DisabledBorderLightColor">#FFAAAAAA</Color>
+    <Color x:Key="DisabledBorderDarkColor">#FF888888</Color>
+
+    <Color x:Key="DefaultBorderBrushDarkColor">Black</Color>
+
+    <!--Control-specific resources.-->
+    <Color x:Key="HeaderTopColor">#FFC5CBF9</Color>
+    <Color x:Key="DatagridCurrentCellBorderColor">Black</Color>
+    <Color x:Key="SliderTrackDarkColor">#FFC5CBF9</Color>
+
+    <Color x:Key="NavButtonFrameColor">#FF3843C4</Color>
+
+    <LinearGradientBrush x:Key="MenuPopupBrush"
+                     EndPoint="0.5,1"
+                     StartPoint="0.5,0">
+        <GradientStop Color="{DynamicResource ControlLightColor}"
+                Offset="0" />
+        <GradientStop Color="{DynamicResource ControlMediumColor}"
+                Offset="0.5" />
+        <GradientStop Color="{DynamicResource ControlLightColor}"
+                Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill"
+                     StartPoint="0,0"
+                     EndPoint="1,0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#000000FF"                    Offset="0" />
+                <GradientStop Color="#600000FF"                    Offset="0.4" />
+                <GradientStop Color="#600000FF"                    Offset="0.6" />
+                <GradientStop Color="#000000FF"                    Offset="1" />
+            </GradientStopCollection>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+   
+    <Style x:Key="ToggleButtonTwitchTokenSelecter" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Background" Value="{StaticResource PartBackground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).
+                                                                                              (GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                                              Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                                                                         Value="{StaticResource FullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).
+                                                                                              (GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                                              Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                                                                         Value="{StaticResource DisabledControlDarkColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).
+                                                                                              (SolidColorBrush.Color)"
+                                                                                              Storyboard.TargetName="Arrow">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                                                                         Value="{StaticResource DisabledForegroundColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).
+                                                                                              (GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                                              Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0"
+                                                                                         Value="{StaticResource DisabledBorderDarkColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard Duration="0:0:1">
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).
+(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{StaticResource FullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+
+                                        <PointAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoiceEllipse"
+                                                        Storyboard.TargetProperty="Center" Duration="0:0:1" From="18,18" To="81,18" />
+
+
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient1"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="0" To="1" />
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient2"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="1" To="0" />
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Manual"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="1" To="0"/>
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Auth"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="0" To="1" />
+
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard Duration="0:0:1">
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).
+(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{StaticResource FullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+
+                                        <PointAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoiceEllipse"
+                                                        Storyboard.TargetProperty="Center" Duration="0:0:1" From="81,18" To="18,18" />
+
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient1"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="1" To="0" />
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient2"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="0" To="1" />
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Manual"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="0" To="1" />
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Auth"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="1" To="0" />
+
+                                    </Storyboard>
+
+                                </VisualState>
+                                <VisualState x:Name="Indeterminate" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="Border"
+                                                        Grid.ColumnSpan="2"
+                                                        CornerRadius="15"
+                                                        BorderThickness="1">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush EndPoint="0,1"
+                                                                             StartPoint="0,0">
+                                    <GradientStop Color="{DynamicResource BorderLightColor}"
+                                                                          Offset="0" />
+                                    <GradientStop Color="{DynamicResource BorderDarkColor}"
+                                                                          Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <Border.Background>
+
+                                <LinearGradientBrush StartPoint="0,0"
+                                                                             EndPoint="0,1">
+                                    <LinearGradientBrush.GradientStops>
+                                        <GradientStopCollection>
+                                            <GradientStop Color="{DynamicResource MediumColor}" />
+                                            <GradientStop Color="{DynamicResource LighterColor}"
+                                                                                  Offset="1.0" />
+                                        </GradientStopCollection>
+                                    </LinearGradientBrush.GradientStops>
+                                </LinearGradientBrush>
+
+                            </Border.Background>
+                        </Border>
+
+                        <Path Name="ToggleButton_TwitchAuthText_ChoicePath" Height="35">
+                            <Path.Data>
+                                <EllipseGeometry x:Name="ToggleButton_TwitchAuthText_ChoiceEllipse" 
+                                                 Center="18,18" RadiusX="14" RadiusY="14" />
+                            </Path.Data>
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                                    <GradientStop x:Name="ToggleButton_TwitchAuthText_ChoicePath_Gradient1" Color="{DynamicResource FullColor}" Offset="0"/>
+                                    <GradientStop x:Name="ToggleButton_TwitchAuthText_ChoicePath_Gradient2" Color="{DynamicResource ForegroundColor}" Offset="1" />
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+
+                        <TextBlock Name="ToggleButton_TwitchAuthText_Manual" 
+                            HorizontalAlignment="Right" VerticalAlignment="Center" 
+                            FontSize="10px" Width="60" TextWrapping="Wrap" Opacity="0.0" Text="Manual Token" />
+
+                        <TextBlock Name="ToggleButton_TwitchAuthText_Auth"  
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                   FontSize="10px" Width="60" TextWrapping="Wrap" 
+                                   Margin="2,0,0,0" Opacity="1.0" Text="Auth Code Token" />
+
+
+                        <!--<StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+                                                    <Ellipse Margin="5,0"
+                                                             Height="25"
+                                                             Width="30">
+                                                        <Ellipse.Fill>
+                                                            <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                                                                <GradientStop Color="{DynamicResource FullColor}" Offset="0"/>
+                                                                <GradientStop Color="{DynamicResource ForegroundColor}" Offset="1" />
+                                                            </LinearGradientBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                    <TextBlock
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="10px"
+                                                                Width="60"
+                                                                TextWrapping="Wrap">
+                                                        Manual Token
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Visibility="Collapsed">
+                                                    <TextBlock
+                                                               HorizontalAlignment="Center" 
+                                                               VerticalAlignment="Center"
+                                                               FontSize="10px"
+                                                        Width="60"
+                                                                TextWrapping="Wrap"
+                                                                Margin="2,0,0,0">
+                                                        Auth Code Token
+                                                    </TextBlock>
+                                                    <Ellipse
+                                                         HorizontalAlignment="Right"
+                                                        Margin="4"
+                                                         Height="25"
+                                                         Width="30">
+                                                        <Ellipse.Fill>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                                <GradientStop Color="{DynamicResource FullColor}" Offset="0"/>
+                                                                <GradientStop Color="{DynamicResource ForegroundColor}" Offset="1" />
+                                                            </LinearGradientBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                </StackPanel>-->
+
+                    </Grid>
+                </ControlTemplate>
+
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 </ResourceDictionary>

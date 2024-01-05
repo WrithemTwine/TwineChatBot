@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
 
-using Xunit;
-
 namespace TestStreamerBot
 {
     public class TestBotsTwitch

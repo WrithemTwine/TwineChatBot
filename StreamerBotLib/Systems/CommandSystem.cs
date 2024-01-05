@@ -42,11 +42,18 @@ namespace StreamerBotLib.Systems
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
 
+        /// <summary>
+        /// Informs the GUI of updated info.
+        /// </summary>
+        /// <param name="ParamName"></param>
         public void NotifyPropertyChanged(string ParamName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
+        /// <summary>
+        /// Starts up the repeat timer thread.
+        /// </summary>
         public void StartElapsedTimerThread()
         {
             // don't start another thread if the current is still active
@@ -58,6 +65,9 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        /// <summary>
+        /// Stops repeat commands thread; for bot shutdown purposes.
+        /// </summary>
         public void StopElapsedTimerThread()
         {
             ChatBotStarted = false;
@@ -71,7 +81,6 @@ namespace StreamerBotLib.Systems
         private void ElapsedCommandTimers()
         {
             // TODO: consider some AI bot chat when channel is slower
-            // TODO: repeat command still performs when command not enabled
 
             List<TimerCommand> RepeatList = new();
             DateTime now = DateTime.Now;
@@ -271,6 +280,11 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        /// <summary>
+        /// Evaluate a command, and perform if calling user is allowed. Uses event pattern to provide output message response.
+        /// </summary>
+        /// <param name="cmdMessage">The whole message bundle from the calling user.</param>
+        /// <param name="source">The platform of the call, for performing any API calls to that platform.</param>
         public void EvalCommand(CmdMessage cmdMessage, Platform source)
         {
             string result;
@@ -321,7 +335,7 @@ namespace StreamerBotLib.Systems
         /// Call to check all users in the stream, and shout them.
         /// </summary>
         /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
-        public void AutoShoutUsers()
+        private void AutoShoutUsers()
         {
 
             List<LiveUser> CurrActiveUsers;
@@ -382,12 +396,17 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        /// <summary>
+        /// Checks for a user welcome message.
+        /// </summary>
+        /// <param name="User">The user to check.</param>
+        /// <returns>The user's welcome message, or empty string if it's not found.</returns>
         public string CheckWelcomeUser(string User)
         {
             return DataManage.CheckWelcomeUser(User);
         }
 
-        public string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
+        private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
         {
             string result = "";
             string tempHTMLResponse = "";

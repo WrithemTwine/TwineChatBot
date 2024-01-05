@@ -12,6 +12,7 @@ namespace StreamerBotLib.BotClients
     {
         public Bots BotClientName { get; set; }
 
+        public bool IsInitialStart { get; set; }
         public bool IsStarted { get; set; }
         public bool HandlersAdded { get; set; }
         public bool IsStopped { get; set; } = true;

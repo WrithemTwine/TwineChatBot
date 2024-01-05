@@ -12,9 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -29,6 +31,8 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotChatClient : TwitchBotsBase, INotifyPropertyChanged
     {
+        private static TwitchTokenBot twitchTokenBot;
+
         /// <summary>
         /// The client connection to the server.
         /// </summary>
@@ -40,6 +44,8 @@ namespace StreamerBotLib.BotClients.Twitch
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
         private const int SingleChatLength = 500;
+
+        private readonly Queue<Task> TaskSend = new();
 
 #if !TwitchLib_ConnectProblem
         private bool IsInitialized = false;
@@ -91,6 +97,44 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         /// <summary>
+        /// Sets the Twitch Token bot used for the automatic refreshing access token.
+        /// </summary>
+        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
+        internal override void SetTokenBot(TwitchTokenBot tokenBot)
+        {
+            twitchTokenBot = tokenBot;
+            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            twitchTokenBot.BotAccessTokenUnChanged += TwitchTokenBot_BotAccessTokenUnChanged;
+        }
+
+        private void TwitchTokenBot_BotAccessTokenUnChanged(object sender, EventArgs e)
+        {
+            SendChatMessages();
+        }
+
+        private void SendChatMessages()
+        {
+            lock (TaskSend)
+            {
+                while (TaskSend.Count > 0)
+                {
+                    TaskSend.Dequeue().Start();
+                }
+            }
+        }
+
+        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
+        {
+            if (IsInitialStart && IsStarted)
+            {
+                StopBot();
+                StartBot();
+
+                SendChatMessages();
+            }
+        }
+
+        /// <summary>
         /// Create the initial client and connect events.
         /// </summary>
         private void CreateClient()
@@ -115,6 +159,18 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchChat.OnLog += TwitchChat_OnLog;
             TwitchChat.OnDisconnected += TwitchChat_OnDisconnected;
             TwitchChat.AutoReListenOnException = true;
+
+            TwitchChat.OnError += TwitchChat_OnError;
+        }
+
+
+        // TODO: work with this exception regarding 401 authorization invalid HTTP error return - review other bots for handling httpresponseexception for unauthorized access tokens - account for bots already started or not started
+        private void TwitchChat_OnError(object sender, OnErrorEventArgs e)
+        {
+            if (e.Exception.Message.Contains("Unauthorized"))
+            {
+                twitchTokenBot.CheckToken();
+            }
         }
 
         /// <summary>
@@ -272,14 +328,22 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
+                    IsInitialStart = true;
+                    IsStarted = true;
                     CreateClient();
                     Connected = Connect();
                     if (Connected)
                     {
-                        IsStarted = true;
                         IsStopped = false;
                         InvokeBotStarted();
                     }
+                }
+            }
+            catch (HttpRequestException hrEx)
+            {
+                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    twitchTokenBot.CheckToken();
                 }
             }
             catch (Exception ex)
@@ -374,12 +438,27 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
 
+                // if we get an exception sending, need to check if unauthorized; queue the chat message for when the bot restarts
+                if (OptionFlags.TwitchTokenUseAuth)
+                {
+                    lock (TaskSend)
+                    {
+                        TaskSend.Enqueue(new(() =>
+                        {
+                            foreach (string D in newSendMsg)
+                            {
+                                SendData(D);
+                            }
+                        }));
+                    }
+                }
+
+                twitchTokenBot.CheckToken();
                 //CreateClient();
                 //StartBot();
                 //SendData(s);
                 BackOffSend(); // if exception, perform backoff send
             }
-            return true;
 
             void SendData(string s)
             {
@@ -412,6 +491,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
             }
 
+            return true;
         }
 
         /// <summary>

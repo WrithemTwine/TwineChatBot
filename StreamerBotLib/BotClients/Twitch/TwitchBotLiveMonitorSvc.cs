@@ -1,28 +1,42 @@
-﻿using StreamerBotLib.Data.MultiLive;
+﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
+using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
 using System.Reflection;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
-using TwitchLib.Api.Services;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
+        private static TwitchTokenBot twitchTokenBot;
+
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
-        public LiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
+        public ExtLiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
+        /// <summary>
+        /// Notifies whether the multilive channels are part of the live stream monitored channels.
+        /// </summary>
         public bool IsMultiLiveBotActive { get; set; }
+
+        /// <summary>
+        /// Notifies if the multilive channels are monitored for changes and will update the monitored channel list. 
+        /// </summary>
         public bool IsMultiConnected { get; set; }
+
+        /// <summary>
+        /// Database connection to the other channels the streamer is monitoring to determine if the user went live.
+        /// </summary>
         public MultiDataManager MultiLiveDataManager { get; private set; }
 
         public TwitchBotLiveMonitorSvc()
@@ -33,6 +47,43 @@ namespace StreamerBotLib.BotClients.Twitch
 
         }
 
+        /// <summary>
+        /// Sets the Twitch Token bot used for the automatic refreshing access token.
+        /// </summary>
+        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
+        internal override void SetTokenBot(TwitchTokenBot tokenBot)
+        {
+            twitchTokenBot = tokenBot;
+            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+        }
+
+        /// <summary>
+        /// Handles when we find the access token changed. We need to restart the bot.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
+        {
+            bool Multi = IsMultiLiveBotActive; // record current activity state
+
+            if (IsInitialStart && IsStarted)
+            {
+                StopBot();
+                StartBot();
+
+                if (Multi) // restore multi functionality if it was already enabled.
+                {
+                    StartMultiLive();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update monitored channels when the user changes the channel list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MultiLiveDataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
         {
             if (LiveStreamMonitor != null)
@@ -41,7 +92,10 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
-        public void ConnectLiveMonitorService()
+        /// <summary>
+        /// Build the live service with the client ID and access token.
+        /// </summary>
+        private void ConnectLiveMonitorService()
         {
             if (IsStarted)
             {
@@ -49,7 +103,15 @@ namespace StreamerBotLib.BotClients.Twitch
             }
 
             ApiSettings apilive = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
-            LiveStreamMonitor = new LiveStreamMonitorService(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+            LiveStreamMonitor = new(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+
+            // check if there is an unauthorized http access exception; we have an expired token
+            LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;
+        }
+
+        private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)
+        {
+            twitchTokenBot.CheckToken();
         }
 
         /// <summary>
@@ -86,12 +148,13 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
+                    IsInitialStart = true;
+                    IsStarted = true;
                     if (LiveStreamMonitor == null)
                     {
                         ConnectLiveMonitorService();
                     }
 
-                    IsStarted = true;
                     IsStopped = false;
 
                     SetLiveMonitorChannels(new());
@@ -101,6 +164,14 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
+            catch (HttpRequestException hrEx)
+            {
+                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    twitchTokenBot.CheckToken();
+                }
+                return false;
+            }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
@@ -109,7 +180,7 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         /// <summary>
-        /// Stop the LiveMonitor Service
+        /// Stop the LiveMonitor Service, including a watch on other channels.
         /// </summary>
         public override bool StopBot()
         {
@@ -134,6 +205,10 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        /// <summary>
+        /// Stops the bot and prepares to exit.
+        /// </summary>
+        /// <returns>true when the bot is stopped.</returns>
         public override bool ExitBot()
         {
             if (IsStarted)
@@ -146,6 +221,9 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region MultiLive Bot
 
+        /// <summary>
+        /// manages the multilive monitored channels; build the client
+        /// </summary>
         public void MultiConnect()
         {
             if (MultiLiveDataManager == null)
@@ -158,12 +236,18 @@ namespace StreamerBotLib.BotClients.Twitch
             IsMultiConnected = true;
         }
 
+        /// <summary>
+        /// Disconnect the multiple channel monitoring for live stream.
+        /// </summary>
         public void MultiDisconnect()
         {
             StopMultiLive();
             IsMultiConnected = false;
         }
 
+        /// <summary>
+        /// Update the channels from the GUI per the user's choices, save to multilive database.
+        /// </summary>
         public void UpdateChannels()
         {
             if (IsMultiLiveBotActive)
@@ -179,6 +263,9 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        /// <summary>
+        /// Add the additional channels to monitor for livestream status, per the user's choice
+        /// </summary>
         public void StartMultiLive()
         {
             if (IsMultiConnected && !IsMultiLiveBotActive)
@@ -188,6 +275,9 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        /// <summary>
+        /// Stop monitoring the additional channels if they went live.
+        /// </summary>
         public void StopMultiLive()
         {
             if (IsMultiConnected && IsMultiLiveBotActive)
@@ -201,6 +291,10 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        /// <summary>
+        /// Send notification messages based on stream went live.
+        /// </summary>
+        /// <param name="e"></param>
         public void SendMultiLiveMsg(OnStreamOnlineArgs e)
         {
             if (IsMultiLiveBotActive)

@@ -107,6 +107,7 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.TwitchFollowBot => OptionFlags.EnableDebugTwitchFollowBot ? line : "",
                 DebugLogTypes.TwitchPubSubBot => OptionFlags.EnableDebugTwitchPubSubBot ? line : "",
                 DebugLogTypes.DiscordBot => OptionFlags.EnableDebugDiscordBot ? line : "",
+                DebugLogTypes.TwitchTokenBot => OptionFlags.EnableDebugTwitchTokenBot ? line : "",
                 _ => "",
             };
             if (Output != "")

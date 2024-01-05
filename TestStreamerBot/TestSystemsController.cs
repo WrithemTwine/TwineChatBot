@@ -2,11 +2,6 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System;
-using System.IO;
-
-using Xunit;
-
 namespace TestStreamerBot
 {
     public class TestSystemsController
@@ -54,7 +49,7 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { new("DarkStreamPhantom" , Platform.Twitch)});
+            systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
             Assert.Empty(result);
         }
 
@@ -66,10 +61,10 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { new( "DarkStreamPhantom", Platform.Twitch) });
+            systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
 
             result = string.Empty;
-            
+
             systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
             Assert.Empty(result);
         }

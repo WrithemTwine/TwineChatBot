@@ -655,6 +655,9 @@
     <value>Thanks #user for supporting the channel and welcome back to stream!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="MsgTwitchAuthFailedAuthentication" xml:space="preserve">
+    <value>Failed to refresh the access token. This can result from any of the following: the application access scopes changed; the application isn't yet approved; the account password changed; or the account's Twitch website setting disconnected the application. Please authorize the application to (re)gain access to Twitch.</value>
+  </data>
   <data name="Msgunlurk" xml:space="preserve">
     <value>#user has returned. Welcome back!</value>
   </data>

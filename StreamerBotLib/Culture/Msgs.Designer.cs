@@ -1510,6 +1510,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to refresh the access token. This can result from any of the following: the application access scopes changed; the application isn&apos;t yet approved; the account password changed; or the account&apos;s Twitch website setting disconnected the application. Please authorize the application to (re)gain access to Twitch..
+        /// </summary>
+        internal static string MsgTwitchAuthFailedAuthentication {
+            get {
+                return ResourceManager.GetString("MsgTwitchAuthFailedAuthentication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #user has returned. Welcome back!.
         /// </summary>
         internal static string Msgunlurk {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,6 +36,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         public int CacheSize { get; }
 
         public event EventHandler<OnNewClipsDetectedArgs> OnNewClipFound;
+        public event EventHandler AccessTokenUnauthorized;
 
         public ClipMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 1000) : base(api, checkIntervalInSeconds)
         {
@@ -87,10 +89,19 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     {
                         latestClips = await GetLatestClipsAsync(channel);
                     }
+                    catch (HttpRequestException hrEx)
+                    {
+                        if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            AccessTokenUnauthorized?.Invoke(this, new());
+                            break;
+                        }
+                    }
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                         loop++;
+                        Thread.Sleep(400);
                     }
                 }
 
@@ -146,9 +157,17 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             {
                 try
                 {
-                    return after == null ? await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
-                    Channel, new object[] { queryCount }) : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]),
-                    Channel, new object[] { queryCount, after });
+                    return after == null ?
+                        await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c), Channel, new object[] { queryCount })
+                        : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]), Channel, new object[] { queryCount, after });
+                }
+                catch (HttpRequestException hrEx)
+                {
+                    if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        AccessTokenUnauthorized?.Invoke(this, new());
+                    }
+                    return null;
                 }
                 catch (Exception ex)
                 {

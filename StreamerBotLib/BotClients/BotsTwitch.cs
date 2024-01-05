@@ -1,15 +1,20 @@
 ﻿using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+using StreamerBotLib.Culture;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Web;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
@@ -22,7 +27,6 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
-
         // TODO: fix condition where OAuth token expires or becomes invalid (if account password changes), yet bot continues to try to run and should otherwise stop if date expires
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; } = new();
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = new();
@@ -31,12 +35,15 @@ namespace StreamerBotLib.BotClients
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = new();
         public static TwitchBotPubSub TwitchBotPubSub { get; private set; } = new();
 
+        internal static TwitchTokenBot TwitchTokenBot { get; private set; } = new();
+
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
 
         private const int BulkFollowSkipCount = 1000;
 
         public static event EventHandler<EventArgs> RaidCompleted;
+        public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
 
         public BotsTwitch()
         {
@@ -61,9 +68,22 @@ namespace StreamerBotLib.BotClients
             TwitchBotUserSvc.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
 
+            TwitchTokenBot.BotAcctAuthCodeExpired += TwitchTokenBot_BotAcctAuthCodeExpired;
+            TwitchTokenBot.StreamerAcctAuthCodeExpired += TwitchTokenBot_StreamerAcctAuthCodeExpired;
+
             DataManager = SystemsController.DataManage;
 
+            // assign token bot to every bot for shared access and refresh token sync
+            foreach (TwitchBotsBase bot in BotsList)
+            {
+                bot.SetTokenBot(TwitchTokenBot);
+            }
+
+            TwitchBotUserSvc.SetTokenBot(TwitchTokenBot);
+
+            AddBot(TwitchTokenBot);
         }
+
 
         public override void ManageStreamOnlineOfflineStatus(bool Start)
         {
@@ -447,7 +467,11 @@ namespace StreamerBotLib.BotClients
         {
             RegisterHandlers();
 
-            GetAllFollowers();
+            if (!TwitchFollower.RestartRefreshAccessToken) // avoid the bulk follower call due to access token refresh
+            {
+                // otherwise, update all followers per the user's action to restart the bot
+                GetAllFollowers();
+            }
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
@@ -575,11 +599,154 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
+        #region Twitch Token Bot
+
+        public void TwitchActivateAuthCode(string clientId, Action<string> action, Action AuthenticationFinished)
+        {
+            ThreadManager.CreateThreadStart(() =>
+            {
+                TwitchTokenBot.GenerateAuthCodeURL(clientId, action, AuthenticationFinished);
+            });
+        }
+
+        private void TwitchTokenBot_StreamerAcctAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
+        {
+            if (e?.CallAction != null)
+            {
+                // start an http listener to receive auth code
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    HttpListener httpListener = new();
+                    httpListener.Prefixes.Add(OptionFlags.TwitchAuthRedirectURL.EndsWith('/') ? OptionFlags.TwitchAuthRedirectURL : $"{OptionFlags.TwitchAuthRedirectURL}/");
+
+                    httpListener.Start();
+                    HttpListenerRequest request = httpListener.GetContext().Request;
+
+                    Uri uridata = request.Url;
+                    httpListener.Close();
+
+                    /*
+                     * from: https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow
+                     * expected return, affirm or deny, when attempting to authorize the application
+                     * 
+                     If the user authorized your app by clicking Authorize, the server sends the authorization code to your redirect URI (see the code query parameter):
+
+    http://localhost:3000/
+        ?code=gulfwdmys5lsm6qyz4xiz9q32l10
+        &scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls
+        &state=c3ab8aa609ea11e793ae92361f002671
+
+    If the user didn’t authorize your app, the server sends the error code and description to your redirect URI (see the error and error_description query parameters):
+
+    http://localhost:3000/
+        ?error=access_denied
+        &error_description=The+user+denied+you+access
+        &state=c3ab8aa609ea11e793ae92361f002671
+
+                     */
+
+                    var QueryValues = HttpUtility.ParseQueryString(uridata.Query);
+
+                    if (!QueryValues.AllKeys.Contains("error") && QueryValues["state"] == e.State)
+                    {
+                        OptionFlags.TwitchAuthStreamerAuthCode = QueryValues["code"];
+                        TwitchTokenBot.CheckToken(); // proceed with getting a refresh token and access token
+                    }
+                    else
+                    {
+                        e.CallAction(Msgs.MsgTwitchAuthFailedAuthentication);
+                        OptionFlags.TwitchAuthStreamerAuthCode = null;
+                    }
+                });
+
+                // call the provided method to give user the web based app authorization URL
+                e.CallAction(e.AuthURL);
+            }
+            else
+            {
+                foreach (IIOModule bot in BotsList)
+                {
+                    bot.StopBot();
+                }
+                InvalidTwitchAccess?.Invoke(this, new(Platform.Twitch, e.BotType));
+            }
+        }
+
+        private void TwitchTokenBot_BotAcctAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
+        {
+            if (e.CallAction != null)
+            {
+                // start an http listener to receive auth code
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    HttpListener httpListener = new();
+                    httpListener.Prefixes.Add(OptionFlags.TwitchAuthRedirectURL.EndsWith('/') ? OptionFlags.TwitchAuthRedirectURL : $"{OptionFlags.TwitchAuthRedirectURL}/");
+
+                    httpListener.Start();
+                    HttpListenerRequest request = httpListener.GetContext().Request;
+
+                    Uri uridata = request.Url;
+                    httpListener.Close();
+
+                    /*
+                     * from: https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow
+                     * expected return, affirm or deny, when attempting to authorize the application
+                     * 
+                     If the user authorized your app by clicking Authorize, the server sends the authorization code to your redirect URI (see the code query parameter):
+
+    http://localhost:3000/
+        ?code=gulfwdmys5lsm6qyz4xiz9q32l10
+        &scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls
+        &state=c3ab8aa609ea11e793ae92361f002671
+
+    If the user didn’t authorize your app, the server sends the error code and description to your redirect URI (see the error and error_description query parameters):
+
+    http://localhost:3000/
+        ?error=access_denied
+        &error_description=The+user+denied+you+access
+        &state=c3ab8aa609ea11e793ae92361f002671
+
+                     */
+
+                    var QueryValues = HttpUtility.ParseQueryString(uridata.Query);
+
+                    if (!QueryValues.AllKeys.Contains("error") && QueryValues["state"] == e.State)
+                    {
+                        OptionFlags.TwitchAuthBotAuthCode = QueryValues["code"];
+                        TwitchTokenBot.CheckToken(); // proceed with getting a refresh token and access token
+                    }
+                    else
+                    {
+                        e.CallAction(Msgs.MsgTwitchAuthFailedAuthentication);
+                        OptionFlags.TwitchAuthBotAuthCode = null;
+                    }
+                });
+
+                // call the provided method to give user the web based app authorization URL
+                e.CallAction(e.AuthURL);
+            }
+            else
+            {
+                foreach (IIOModule bot in BotsList)
+                {
+                    bot.StopBot();
+                }
+                InvalidTwitchAccess?.Invoke(this, new(Platform.Twitch, e.BotType));
+            }
+        }
+
+        #endregion
+
         #region Threaded Ops
 
         public override void GetAllFollowers()
         {
-            if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart && TwitchFollower.IsStarted)
+            GetAllFollowers(false);
+        }
+
+        public override void GetAllFollowers(bool OverrideUpdateFollowers = false)
+        {
+            if (OptionFlags.ManageFollowers && (OptionFlags.TwitchAddFollowersStart || OverrideUpdateFollowers) && TwitchFollower.IsStarted)
             {
                 BulkLoadFollows = ThreadManager.CreateThread(() =>
                 {

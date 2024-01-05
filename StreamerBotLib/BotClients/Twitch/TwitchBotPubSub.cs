@@ -16,6 +16,8 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotPubSub : TwitchBotsBase
     {
+        private static TwitchTokenBot twitchTokenBot;
+
         public TwitchPubSub TwitchPubSub { get; private set; }
         private Logger<TwitchPubSub> LogData { get; set; }
 
@@ -48,6 +50,51 @@ namespace StreamerBotLib.BotClients.Twitch
             BuildPubSubClient();
         }
 
+        /// <summary>
+        /// Sets the Twitch Token bot used for the automatic refreshing access token.
+        /// </summary>
+        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
+        internal override void SetTokenBot(TwitchTokenBot tokenBot)
+        {
+            twitchTokenBot = tokenBot;
+            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
+        }
+
+        /// <summary>
+        /// When the Streamer Access Token is refreshed, we have to restart the PubSub bot using the new token.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TwitchTokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
+        {
+            if (IsInitialStart && IsStarted)
+            {
+                if (OptionFlags.TwitchStreamerUseToken)
+                {
+                    StopBot(); // stop the PubSub bot
+                    StartBot(); // restart the PubSub bot
+                }
+            }
+        }
+
+        /// <summary>
+        /// When the Bot Access Token is refreshed, we have to restart the PubSub bot using the new token.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
+        {
+            if (IsInitialStart && IsStarted)
+            {
+                if (!OptionFlags.TwitchStreamerUseToken)
+                {
+                    StopBot(); // stop the PubSub bot
+                    StartBot(); // restart the PubSub bot
+                }
+            }
+        }
+
         private void BuildPubSubClient()
         {
             if (TwitchPubSub == null)
@@ -57,11 +104,21 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchPubSub.OnLog += TwitchPubSub_OnLog;
                 TwitchPubSub.OnPubSubServiceConnected += TwitchPubSub_OnPubSubServiceConnected;
                 TwitchPubSub.OnPubSubServiceClosed += TwitchPubSub_OnPubSubServiceClosed;
+                TwitchPubSub.OnPubSubServiceError += TwitchPubSub_OnPubSubServiceError;
 
                 IsConnected = false;
             }
         }
 
+        /// <summary>
+        /// The likely error we guess is an unauthorized token. Call and refresh the token.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TwitchPubSub_OnPubSubServiceError(object sender, OnPubSubServiceErrorArgs e)
+        {
+            twitchTokenBot.CheckToken();
+        }
 
         private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
         {
@@ -90,6 +147,7 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
             TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
             TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+            TwitchPubSub.OnPubSubServiceError -= TwitchPubSub_OnPubSubServiceError;
             HandlersAdded = false;
             TwitchPubSub = null;
 
@@ -108,6 +166,8 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         if (IsStopped || !IsStarted)
                         {
+                            IsInitialStart = true;
+                            IsStarted = true;
                             BuildPubSubClient();
 
                             UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(TwitchChannelName);
@@ -118,10 +178,8 @@ namespace StreamerBotLib.BotClients.Twitch
                                 TwitchPubSub.ListenToChannelPoints(UserId);
                             }
 
-
                             TwitchPubSub.Connect();
                             Connected = true;
-                            IsStarted = true;
                             IsStopped = false;
                         }
                         else
@@ -183,7 +241,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (!IsConnected && IsStarted)
             {
-                Token = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamOauthToken : OptionFlags.TwitchBotAccessToken;
+                Token = OptionFlags.TwitchStreamerUseToken ? TwitchStreamerAccessToken : TwitchAccessToken;
                 if (Token != null)
                 {
                     // send the topics to listen

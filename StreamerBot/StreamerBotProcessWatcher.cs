@@ -52,7 +52,7 @@ namespace StreamerBot
                         IsMultiProcActive = processes.Length > 0;
                     }
 
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
+                    if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }
@@ -109,7 +109,7 @@ namespace StreamerBot
 
         private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
         {
-            Controller.TwitchStartUpdateAllFollowers();
+            Controller.TwitchStartUpdateAllFollowers(true);
         }
 
         #endregion 

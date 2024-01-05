@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
@@ -19,7 +18,11 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotUserSvc : TwitchBotsBase
     {
-        private UserLookupService userLookupService;
+        private bool UpdatingStreamToken;
+        private bool UpdatingBotToken;
+
+        private static TwitchTokenBot twitchTokenBot;
+        private HelixApiService HelixApiCalls;
 
         /// <summary>
         /// Reports Game Category Name from querying a channel
@@ -33,38 +36,112 @@ namespace StreamerBotLib.BotClients.Twitch
         public TwitchBotUserSvc()
         {
             BotClientName = Bots.TwitchUserBot;
+
+            UpdatingBotToken = false;
+            UpdatingStreamToken = false;
         }
+
+        #region Token Bot ops
+        /// <summary>
+        /// Sets the Twitch Token bot used for the automatic refreshing access token.
+        /// </summary>
+        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
+        internal override void SetTokenBot(TwitchTokenBot tokenBot)
+        {
+            twitchTokenBot = tokenBot;
+            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
+        }
+
+        private void TwitchTokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
+        {
+            UpdatingStreamToken = true;
+
+            if (HelixApiCalls != null)
+            {
+                ApiSettings apiSettings = new()
+                {
+                    AccessToken = OptionFlags.TwitchStreamerUseToken ? TwitchStreamerAccessToken : TwitchAccessToken,
+                    ClientId = OptionFlags.TwitchStreamerUseToken ? TwitchStreamClientId : TwitchClientID
+                };
+                HelixApiCalls.SetStreamerApiSettings(apiSettings);
+            }
+            else
+            {
+                ChooseConnectUserService();
+            }
+            UpdatingStreamToken = false;
+        }
+
+        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
+        {
+            UpdatingBotToken = true;
+
+            if (HelixApiCalls != null)
+            {
+                ApiSettings apiSettings = new()
+                {
+                    AccessToken = TwitchAccessToken,
+                    ClientId = TwitchClientID
+                };
+                HelixApiCalls.SetBotApiSettings(apiSettings);
+            }
+            else
+            {
+                ChooseConnectUserService();
+            }
+
+            UpdatingBotToken = false;
+        }
+
+        #endregion
 
         /// <summary>
         /// Aware of whether to use the bot user client Id or streamer client Id, due to API calls requiring the client Id of the streaming channel to retrieve the data.
         /// </summary>
         /// <param name="UseStreamToken">Specify whether the Streamer's Token is required to access Channel Data</param>
-        private void ChooseConnectUserService(bool UseStreamToken = false)
+        private void ChooseConnectUserService()
         {
-            string SettingsClientId;
-            string ClientId;
-            string OauthToken;
-
-            if (OptionFlags.TwitchStreamerUseToken && UseStreamToken)
+            if (HelixApiCalls == null)
             {
-                SettingsClientId = "TwitchStreamClientId";
-                ClientId = OptionFlags.TwitchStreamClientId;
-                OauthToken = OptionFlags.TwitchStreamOauthToken;
-            }
-            else
-            {
-                SettingsClientId = "TwitchClientID";
-                ClientId = OptionFlags.TwitchBotClientId;
-                OauthToken = OptionFlags.TwitchBotAccessToken;
-            }
+                ApiSettings BotApiSettings = null;
+                ApiSettings StreamerApiSettings = null;
 
-            if (!OptionFlags.CheckSettingIsDefault(SettingsClientId, ClientId))
-            {
-                userLookupService = null;
+                string ClientId;
+                string OauthToken;
 
-                ApiSettings api = new() { AccessToken = OauthToken, ClientId = ClientId };
-                userLookupService = new(new TwitchAPI(null, null, api, null));
+                // verify and, if necessary, refresh the access tokens
+
+                if (OptionFlags.TwitchStreamerUseToken)
+                {
+                    ClientId = TwitchStreamClientId;
+                    OauthToken = TwitchStreamerAccessToken;
+                    if (ClientId != null && OauthToken != null)
+                    {
+                        StreamerApiSettings = new() { AccessToken = OauthToken, ClientId = ClientId };
+                    }
+                }
+
+                ClientId = TwitchClientID;
+                OauthToken = TwitchAccessToken;
+                if (ClientId != null && OauthToken != null)
+                {
+                    BotApiSettings = new() { ClientId = ClientId, AccessToken = OauthToken };
+                }
+
+                if (BotApiSettings != null
+                    && ((OptionFlags.TwitchStreamerUseToken && StreamerApiSettings != null)
+                       || !OptionFlags.TwitchStreamerUseToken))
+                {
+                    HelixApiCalls = new(BotApiSettings, StreamerApiSettings);
+                    HelixApiCalls.UnauthorizedToken += HelixApiCalls_UnauthorizedToken;
+                }
             }
+        }
+
+        private void HelixApiCalls_UnauthorizedToken(object sender, EventArgs e)
+        {
+            twitchTokenBot.CheckToken();
         }
 
         public void SetIds(string StreamerChannelId = null, string BotChannelId = null)
@@ -84,16 +161,29 @@ namespace StreamerBotLib.BotClients.Twitch
                 TwitchBotUserId = GetUserId(TwitchBotUserName);
                 TwitchChannelId = GetUserId(TwitchChannelName);
             }
-
         }
 
         #region ClientId can be different between Bot and Channel
 
         public void BanUser(string BannedUserName, BanReasons banReason, int Duration = 0)
         {
-            ChooseConnectUserService();
-            SetIds();
-            _ = userLookupService.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
+            try
+            {
+                ChooseConnectUserService();
+                SetIds();
+                _ = HelixApiCalls.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingBotToken) { }
+
+                SetIds();
+                _ = HelixApiCalls.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
+            }
         }
 
         /// <summary>
@@ -118,35 +208,104 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public GetChannelInformationResponse GetUserInfo(string UserId = null, string UserName = null)
         {
-            ChooseConnectUserService();
-            GetChannelInformationResponse user = userLookupService.GetChannelInformationAsync(UserId: UserId, UserName: UserName)?.Result;
-            return user;
+            try
+            {
+                ChooseConnectUserService();
+                GetChannelInformationResponse user = HelixApiCalls.GetChannelInformationAsync(UserId: UserId, UserName: UserName)?.Result;
+                return user;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingBotToken) { }
+
+                GetChannelInformationResponse user = HelixApiCalls.GetChannelInformationAsync(UserId: UserId, UserName: UserName)?.Result;
+                return user;
+
+            }
         }
 
         public string GetUserId(string UserName)
         {
-            ChooseConnectUserService();
-            string result = userLookupService.GetUserId(UserName)?.Result;
-            return result;
+            try
+            {
+                ChooseConnectUserService();
+                string result = HelixApiCalls.GetUserId(UserName)?.Result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+                while (UpdatingBotToken) { }
+
+                string result = HelixApiCalls.GetUserId(UserName)?.Result;
+                return result;
+            }
         }
 
         public string GetGameId(string GameName)
         {
-            return userLookupService.GetGameId(GameName: new() { GameName }).Result.Games[0].Id;
+            try
+            {
+                ChooseConnectUserService();
+                return HelixApiCalls.GetGameId(GameName: new() { GameName }).Result.Games[0].Id;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingBotToken) { }
+                return HelixApiCalls.GetGameId(GameName: new() { GameName }).Result.Games[0].Id;
+            }
         }
 
         public void GetViewerCount(string UserName)
         {
-            ChooseConnectUserService();
-            GetStreamsResponse getStreamsResponse = userLookupService.GetStreams(UserName: UserName).Result;
-            GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
+            try
+            {
+                ChooseConnectUserService();
+                GetStreamsResponse getStreamsResponse = HelixApiCalls.GetStreams(UserName: UserName).Result;
+                GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
+
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingBotToken) { }
+                GetStreamsResponse getStreamsResponse = HelixApiCalls.GetStreams(UserName: UserName).Result;
+                GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
+            }
         }
 
         public DateTime GetUserCreatedAt(string UserName = null, string UserId = null)
         {
-            ChooseConnectUserService();
-            DateTime result = userLookupService.GetUserCreatedAt(UserName, UserId).Result;
-            return result;
+            try
+            {
+                ChooseConnectUserService();
+                DateTime result = HelixApiCalls.GetUserCreatedAt(UserName, UserId).Result;
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingBotToken) { }
+                DateTime result = HelixApiCalls.GetUserCreatedAt(UserName, UserId).Result;
+                return result;
+            }
         }
 
         #endregion
@@ -155,16 +314,20 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public GetCustomRewardsResponse GetCustomRewardsId(string UserId = null, string UserName = null)
         {
-            ChooseConnectUserService(true);
-
             GetCustomRewardsResponse points = null;
             try
             {
-                points = userLookupService?.GetChannelPointInformationAsync(UserId: UserId, UserName: UserName).Result;
+                ChooseConnectUserService();
+                points = HelixApiCalls?.GetChannelPointInformationAsync(UserId: UserId, UserName: UserName).Result;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingStreamToken) { }
+                points = HelixApiCalls?.GetChannelPointInformationAsync(UserId: UserId, UserName: UserName).Result;
             }
 
             return points;
@@ -193,16 +356,21 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool result;
 
-            ChooseConnectUserService(true);
             try
             {
-                _ = userLookupService?.ModifyChannelInformation(TwitchChannelId, Title: Title);
+                ChooseConnectUserService();
+                _ = HelixApiCalls?.ModifyChannelInformation(TwitchChannelId, Title: Title);
                 result = true;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                result = false;
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingStreamToken) { }
+                _ = HelixApiCalls?.ModifyChannelInformation(TwitchChannelId, Title: Title);
+                result = true;
             }
 
             return result;
@@ -212,29 +380,31 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool result;
 
-            ChooseConnectUserService(true);
-
             if (CategoryId == null)
             {
                 CategoryId = GetGameId(CategoryName);
             }
             try
             {
-                _ = userLookupService?.ModifyChannelInformation(TwitchChannelId, GameId: CategoryId);
+                ChooseConnectUserService();
+                _ = HelixApiCalls?.ModifyChannelInformation(TwitchChannelId, GameId: CategoryId);
                 result = true;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                result = false;
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingStreamToken) { }
+                _ = HelixApiCalls?.ModifyChannelInformation(TwitchChannelId, GameId: CategoryId);
+                result = true;
             }
             return result;
         }
 
         public void RaidChannel(string ToChannelName)
         {
-            ChooseConnectUserService(true);
-
             if (ToChannelName == null)
             {
                 return;
@@ -243,8 +413,9 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 try
                 {
+                    ChooseConnectUserService();
                     OptionFlags.TwitchOutRaidStarted = true;
-                    StartRaidResponse response = userLookupService?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
+                    StartRaidResponse response = HelixApiCalls?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
                     if (response != null)
                     {
                         StartRaidEventResponse?.Invoke(this, new()
@@ -258,21 +429,42 @@ namespace StreamerBotLib.BotClients.Twitch
                 catch (Exception ex)
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                    twitchTokenBot.CheckToken();
+
+                    while (UpdatingStreamToken) { }
+                    OptionFlags.TwitchOutRaidStarted = true;
+                    StartRaidResponse response = HelixApiCalls?.StartRaid(TwitchChannelId, ToUserName: ToChannelName).Result;
+                    if (response != null)
+                    {
+                        StartRaidEventResponse?.Invoke(this, new()
+                        {
+                            ToChannel = ToChannelName,
+                            CreatedAt = response.Data[0].CreatedAt,
+                            IsMature = response.Data[0].IsMature
+                        });
+                    }
                 }
             }
         }
 
         public void CancelRaidChannel()
         {
-            ChooseConnectUserService(true);
             try
             {
-                userLookupService?.CancelRaid(TwitchChannelId);
+                ChooseConnectUserService();
+                HelixApiCalls?.CancelRaid(TwitchChannelId);
                 CancelRaidEvent?.Invoke(this, new());
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                twitchTokenBot.CheckToken();
+
+                while (UpdatingStreamToken) { }
+                HelixApiCalls?.CancelRaid(TwitchChannelId);
+                CancelRaidEvent?.Invoke(this, new());
             }
         }
 

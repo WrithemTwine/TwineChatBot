@@ -42,7 +42,13 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchStreamerUseToken => Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
 
-        #region Twitch Credential Scopes
+        /// <summary>
+        /// User specified in the GUI, the user selects whether they want to use the "Twitch Implicit grant flow"
+        /// to automatically get access tokens as the token expires.
+        /// </summary>
+        public static bool TwitchTokenUseAuth => Settings.Default.TwitchTokenUseAuth;
+
+      #region Twitch Credential Scopes
 
         /// <summary>
         /// Retrieves the Twitch Credential Scope Resource for when using a bot account different than streamer account - this is the bot access token scope listing
@@ -472,7 +478,12 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Twitch Refresh Token.
         /// </summary>
-        public static string TwitchRefreshToken => Settings.Default.TwitchRefreshToken;
+        public static string TwitchRefreshToken
+        {
+            get => Settings.Default.TwitchRefreshToken;
+            set => Settings.Default.TwitchRefreshToken = value;
+        }
+
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account client ID, to perform the function call.
         /// </summary>
@@ -480,11 +491,115 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account access token, to perform the function call.
         /// </summary>
-        public static string TwitchStreamOauthToken => Settings.Default.TwitchStreamOauthToken;
+        public static string TwitchStreamOauthToken
+        {
+            get => Settings.Default.TwitchStreamOauthToken;
+            set => Settings.Default.TwitchStreamOauthToken = value;
+        }
+
+        /// <summary>
+        /// Manages the Twitch Streamer based Refresh Token
+        /// </summary>
+        public static string TwitchStreamRefreshToken
+        {
+            get => Settings.Default.TwitchStreamerRefreshToken;
+            set => Settings.Default.TwitchStreamerRefreshToken = value;
+        }
+
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account access token expiration date.
         /// </summary>
         public static DateTime TwitchStreamerTokenDate => Settings.Default.TwitchStreamerTokenDate;
+
+        #region Twitch Authorization code flow
+
+        /// <summary>
+        /// Setting to reauthorize the application because the bot requires additional access scopes and needs the user to re-authorize the app.
+        /// </summary>
+        public static bool TwitchAuthNewScopeRefresh
+        {
+            get => Settings.Default.TwitchAuthNewScopeRefresh;
+            set => Settings.Default.TwitchAuthNewScopeRefresh = value;
+        }
+        /// <summary>
+        /// Retrieve the URL used to retrieve the Auth Code, through the auth code grant flow
+        /// </summary>
+        public static string TwitchAuthRedirectURL => Settings.Default.TwitchAuthRedirectURL;
+        /// <summary>
+        /// Refers to the bot client Id, from app registration.
+        /// </summary>
+        public static string TwitchAuthClientId => Settings.Default.TwitchAuthClientId;
+        /// <summary>
+        /// Holds the bot account access token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthBotAccessToken
+        {
+            get => Settings.Default.TwitchAuthBotAccessToken;
+            set => Settings.Default.TwitchAuthBotAccessToken = value;
+        }
+        /// <summary>
+        /// Holds the bot account refresh token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthBotRefreshToken
+        {
+            get => Settings.Default.TwitchAuthBotRefreshToken;
+            set => Settings.Default.TwitchAuthBotRefreshToken = value;
+        }
+        /// <summary>
+        /// Holds the bot account user authorized code obtained in the 'authorization code flow' method
+        /// </summary>
+        public static string TwitchAuthBotAuthCode
+        {
+            get => Settings.Default.TwitchAuthBotAuthCode;
+            set => Settings.Default.TwitchAuthBotAuthCode = value;
+        }
+        /// <summary>
+        /// Holds the bot account client secret obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthBotClientSecret => Settings.Default.TwitchAuthBotClientSecret;
+        /// <summary>
+        /// Refers to the streamer account based client Id, from app registration.
+        /// </summary>
+        public static string TwitchAuthStreamerClientId => Settings.Default.TwitchAuthStreamerClientId;
+        /// <summary>
+        /// Holds the streamer account access token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthStreamerAccessToken
+        {
+            get => Settings.Default.TwitchAuthStreamerAccessToken;
+            set => Settings.Default.TwitchAuthStreamerAccessToken = value;
+        }
+        /// <summary>
+        /// Holds the streamer account refresh token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthStreamerRefreshToken
+        {
+            get
+            {
+                return Settings.Default.TwitchAuthStreamerRefreshToken;
+            }
+            set
+            {
+                Settings.Default.TwitchAuthStreamerRefreshToken = value;
+            }
+        }
+        /// <summary>
+        /// Holds the streamer account auth code obtained in the 'authorization code flow' method to receive an access token
+        /// </summary>
+        public static string TwitchAuthStreamerAuthCode
+        {
+            get => Settings.Default.TwitchAuthStreamerAuthCode;
+            set => Settings.Default.TwitchAuthStreamerAuthCode = value;
+        }
+        /// <summary>
+        /// Holds the streamer account client secret obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthStreamerClientSecret => Settings.Default.TwitchAuthStreamerClientSecret;
+        /// <summary>
+        /// Flag on whether to use the internal web browser for the authentication code process
+        /// </summary>
+        public static bool TwitchAuthUseInternalBrowser => Settings.Default.TwitchAuthUseInternalBrowser;
+        #endregion
 
         /// <summary>
         /// The user specified time frequency for when to check Twitch for new followers.
@@ -692,6 +807,7 @@ namespace StreamerBotLib.Static
         /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
+        public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
         #endregion
 
         #region GitHub links
