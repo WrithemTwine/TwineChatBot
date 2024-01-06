@@ -4,8 +4,6 @@ using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
 
-using System;
-
 namespace StreamerBotLib.GUI
 {
     public class GUITwitchBots : GUIBotBase

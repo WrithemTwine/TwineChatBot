@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.Events
+﻿namespace StreamerBotLib.Events
 {
     /// <summary>
     /// Event response when the Twitch Authentication Code expired or is unavailable 

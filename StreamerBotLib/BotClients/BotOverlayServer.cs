@@ -13,10 +13,6 @@ using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace StreamerBotLib.BotClients
 {
     /*

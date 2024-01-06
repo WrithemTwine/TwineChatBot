@@ -3,9 +3,6 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 using TwitchLib.Api.Core;

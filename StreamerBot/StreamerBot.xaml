@@ -569,9 +569,6 @@
 
                                                         <Label Content="Channel Name" />
                                                         <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
-
-                                                        <Label Content="Client Id" />
-                                                        <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" ToolTip="The client ID for the bot user account." PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10,0">
                                                         <Label Content="Token Scope" />
@@ -596,11 +593,6 @@
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Client Id" />
                                                                 <TextBox x:Name="TB_Twitch_ClientID" Text="{Binding TwitchClientID, Mode=TwoWay}" ToolTip="The client ID for the bot user account." PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" />
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal" Margin="10,0">
-                                                                <Label Content="Token Scope" />
-                                                                <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated" TargetUpdated="TextBox_SourceUpdated"  Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}" />
-                                                                <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_SourceUpdated" Text="{x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="10">
                                                                 <Label Content="Access OAuth Token" />

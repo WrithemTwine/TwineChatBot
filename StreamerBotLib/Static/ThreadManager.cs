@@ -2,12 +2,6 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace StreamerBotLib.Static
 {
     public static class ThreadManager

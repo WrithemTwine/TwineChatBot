@@ -1,14 +1,9 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Interfaces;

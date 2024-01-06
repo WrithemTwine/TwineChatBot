@@ -3,10 +3,8 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 
-using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Threading;
 
 namespace StreamerBotLib.BotClients
 {

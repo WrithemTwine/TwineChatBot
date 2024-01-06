@@ -1,9 +1,7 @@
 ﻿using StreamerBotLib.Static;
 
-using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -63,7 +61,7 @@ namespace StreamerBot
                         TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
                     }
 
-                    if(DateTime.Now >= VersionCheckDate)
+                    if (DateTime.Now >= VersionCheckDate)
                     {
                         VersionCheckDate.AddHours(NewVersionIntervalHours);
 

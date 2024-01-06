@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Overlay.Enums;
 
-using System;
-
 namespace StreamerBotLib.Models
 {
     public class TickerItem : IEquatable<TickerItem>

@@ -1,9 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Properties;
 
-using System;
-using System.Collections.Generic;
-
 namespace StreamerBotLib.Static
 {
     /// <summary>

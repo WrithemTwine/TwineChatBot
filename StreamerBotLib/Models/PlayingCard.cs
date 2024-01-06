@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 
-using System;
-
 namespace StreamerBotLib.Models
 {
     internal class PlayingCard<T, S>

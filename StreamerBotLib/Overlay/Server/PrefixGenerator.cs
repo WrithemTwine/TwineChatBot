@@ -4,9 +4,6 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-
 namespace StreamerBotLib.Overlay.Server
 {
     public static class PrefixGenerator

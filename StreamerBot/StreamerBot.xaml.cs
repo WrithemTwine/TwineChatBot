@@ -12,15 +12,11 @@ using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -96,11 +92,6 @@ namespace StreamerBot
 
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
-
-            //LoaderDLLFolderPath = "./";
-
-            // TODO: implement control path when user is using the 'authorization code flow' for access tokens, and implement an event handler when the auth code expires and requires user to start auth code process all over again
-
 
             InitializeComponent();
 
@@ -195,16 +186,21 @@ namespace StreamerBot
         {
             string NewVersionLink = WebView2_GitHub_StableVersion.Source.ToString();
 
+            // "https://github.com/WrithemTwine/TwineChatBot/releases/tag/v.1.2.10.0"
             if (NewVersionLink != OptionFlags.GitHubCheckStable)
             {
                 OptionFlags.GitHubCheckStable = NewVersionLink;
             }
+
+            string newversion = (from s in NewVersionLink.Split('/')
+                                 select s).Last();
+
             Version version = Assembly.GetEntryAssembly().GetName().Version;
-            string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+            string AppVersion = $"v.{version.Major}.{version.Minor}.{version.Build}";
 
             // check if the saved link is the default, also check if the found link doesn't have the current version
             // true=> link not default and the stable version link doesn't have the current app version in it
-            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
+            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && AppVersion.CompareTo(newversion) < 0)
             {
                 StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
             }

@@ -19,7 +19,7 @@ namespace SimpleTestFeature
     public partial class MainWindow : Window
     {
         private List<AuthScopes> scopes = new();
-        private Auth AuthBot { get; set; }
+        private Auth? AuthBot { get; set; }
         private string RedirectURL = "http://localhost:3000";
 
         public MainWindow()

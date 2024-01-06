@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StreamerBotLib.Events
+﻿namespace StreamerBotLib.Events
 {
     public class OnDataUpdatedEventArgs : EventArgs
     {

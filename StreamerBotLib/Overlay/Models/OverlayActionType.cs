@@ -1,8 +1,5 @@
 ﻿using StreamerBotLib.Overlay.Enums;
 
-using System;
-using System.Collections.Generic;
-
 namespace StreamerBotLib.Overlay.Models
 {
     /// <summary>

@@ -2,10 +2,7 @@
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;

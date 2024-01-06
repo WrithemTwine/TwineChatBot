@@ -1,123 +1,63 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0-windows7.0</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <Version>1.3.0.0</Version>
-    <PackageId>StreamerBotLib</PackageId>
-    <AssemblyName>StreamerBotLib</AssemblyName>
-    <Authors>WrithemTwine</Authors>
-    <Company>TwineStreamerBotLib</Company>
-    <Product>TwineStreamerBotLib</Product>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <UseWindowsForms>True</UseWindowsForms>
-    <Copyright>2024</Copyright>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>1.3.0.0</Version>
+		<PackageId>StreamerBotLib</PackageId>
+		<AssemblyName>StreamerBotLib</AssemblyName>
+		<Authors>WrithemTwine</Authors>
+		<Company>TwineStreamerBotLib</Company>
+		<Product>TwineStreamerBotLib</Product>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<Copyright>2024</Copyright>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
+	<ItemGroup>
+		<Folder Include="MultiLive\Culture\" />
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+	<ItemGroup>
+		<None Include="Properties\PublishProfiles\ClickOnceProfile.pubxml.user" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Overlay\img\seconds.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+		<PackageReference Include="TwitchLib.Api" Version="3.9.0" />
+		<PackageReference Include="TwitchLib.Api.Core" Version="3.9.0" />
+		<PackageReference Include="TwitchLib.Api.Helix" Version="3.9.0" />
+		<PackageReference Include="TwitchLib.Client" Version="3.3.1" />
+		<PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.9.0" />
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.9.0" />
-    <PackageReference Include="TwitchLib.Api.Helix" Version="3.9.0" />
-    <PackageReference Include="TwitchLib.Client" Version="3.4.0-preview-b78278fa1c106621cfecac2c52cdbd2ddef19143" />
-    <PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Data\DataSource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>DataSource.xsd</DependentUpon>
+		</Compile>
+		<Compile Update="Data\MultiLive\MultiDataSource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>MultiDataSource.xsd</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="BotClients\Twitch\TwitchLib\Core\ServiceTimer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Culture\Msgs.Designer.cs">
-      <DependentUpon>Msgs.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Data\DataSource.Designer.cs">
-      <DependentUpon>DataSource.xsd</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Data\MultiLive\MultiDataSource.Designer.cs">
-      <DependentUpon>MultiDataSource.xsd</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Overlay\MediaOverlay.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Culture\Msgs.resx">
-      <LastGenOutput>Msgs.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\DataSource.xsd">
-      <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
-      <Generator>MSDataSetGenerator</Generator>
-    </None>
-    <None Update="Data\MultiLive\MultiDataSource.xsd">
-      <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
-      <Generator>MSDataSetGenerator</Generator>
-    </None>
-    <None Update="Properties\Settings.settings">
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-      <Generator>PublicSettingsSingleFileGenerator</Generator>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="MultiLive\Culture\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Overlay\img\seconds.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="MultiLive\MultiLiveDataGrids.xaml">
-      <CustomToolNamespace></CustomToolNamespace>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
-    <Page Update="Themes\BaseStyle.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Themes\DarkTheme.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Themes\LightTheme.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  
-
+	<ItemGroup>
+		<None Update="Data\DataSource.xsd">
+			<Generator>MSDataSetGenerator</Generator>
+			<LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+		</None>
+		<None Update="Data\MultiLive\MultiDataSource.xsd">
+			<Generator>MSDataSetGenerator</Generator>
+			<LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 
 </Project>

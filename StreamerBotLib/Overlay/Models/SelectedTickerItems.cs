@@ -1,10 +1,6 @@
 ﻿using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace StreamerBotLib.Overlay.Models
 {
     public class SelectedTickerItem

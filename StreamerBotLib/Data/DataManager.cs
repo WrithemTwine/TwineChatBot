@@ -12,11 +12,8 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 
 using static StreamerBotLib.Data.DataSetCommonMethods.DataSetStatic;
@@ -868,7 +865,7 @@ switches:
             }
         }
 
-// TODO: validate adding follower category, carry forward category when follower changes viewer name
+        // TODO: validate adding follower category, carry forward category when follower changes viewer name
 
         /// <summary>
         /// Add a new follower to the data table.
@@ -917,7 +914,7 @@ switches:
                         followers.Platform = User.Source.ToString();
                         update = true;
                     }
-                    if (followers.IsCategoryNull() || followers.Category == string.Empty )
+                    if (followers.IsCategoryNull() || followers.Category == string.Empty)
                     {
                         followers.Category = Category;
                     }
@@ -930,7 +927,7 @@ switches:
 
                     FollowersRow ExistingUserFollow = (FollowersRow)GetRow(_DataSource.Followers, $"{_DataSource.Followers.UserIdColumn.ColumnName}='{User.UserId}' AND {_DataSource.Followers.CategoryColumn.ColumnName} is NOT NULL");
 
-                    if(ExistingUserFollow != null)
+                    if (ExistingUserFollow != null)
                     {
                         GameCategory = ExistingUserFollow.Category;
                     }

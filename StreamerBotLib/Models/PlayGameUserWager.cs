@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
     /// <summary>
     /// Holds the data for each player in the game.

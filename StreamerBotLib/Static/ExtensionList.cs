@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace StreamerBotLib.Static
+﻿namespace StreamerBotLib.Static
 {
     public static class ExtensionList
     {

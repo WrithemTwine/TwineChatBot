@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Overlay.Models;
 
-using System;
-
 namespace StreamerBotLib.Events
 {
     /// <summary>

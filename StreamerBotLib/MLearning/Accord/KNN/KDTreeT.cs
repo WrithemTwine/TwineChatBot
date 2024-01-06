@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MachineLearning.Accord.KNN
 {
     /// <summary>
     ///   K-dimensional tree.

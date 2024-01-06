@@ -4,15 +4,10 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Interfaces;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.Overlay.Server
 {

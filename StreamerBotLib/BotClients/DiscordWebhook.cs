@@ -1,11 +1,8 @@
 ﻿
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading;
 
 namespace StreamerBotLib.BotClients
 {
@@ -331,7 +328,7 @@ namespace StreamerBotLib.BotClients
         public WebhookJSON(string Content, AllowedMentions Allowed_Mentions, string Username = null, string Avatar_Url = null, bool TTS = false,
             string Payload_Json = null)
         {
-            content = Content[..Math.Min(2000,Content.Length)];
+            content = Content[..Math.Min(2000, Content.Length)];
             allowed_mentions = Allowed_Mentions;
             username = Username;
             avatar_url = Avatar_Url;

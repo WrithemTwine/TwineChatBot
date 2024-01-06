@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System;
-
 namespace StreamerBotLib.BotClients.Twitch
 {
     /// <summary>

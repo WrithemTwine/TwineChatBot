@@ -5,10 +5,8 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace StreamerBotLib.Overlay.Communication

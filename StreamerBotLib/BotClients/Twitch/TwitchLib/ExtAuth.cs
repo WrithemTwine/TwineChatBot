@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using StreamerBotLib.Static;
+
 using System.Web;
 
 using TwitchLib.Api.Core.Exceptions;

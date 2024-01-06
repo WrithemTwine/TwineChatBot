@@ -3,12 +3,6 @@ using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem

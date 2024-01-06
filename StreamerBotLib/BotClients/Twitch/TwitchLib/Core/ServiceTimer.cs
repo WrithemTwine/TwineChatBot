@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Timers;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib.Core
 {
-    public class ServiceTimer : Timer
+    public class ServiceTimer : System.Timers.Timer
     {
         public int IntervalInSeconds { get; }
 

@@ -5,10 +5,7 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 
 /*
  * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 

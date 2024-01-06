@@ -1,10 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.HttpCallHandlers;

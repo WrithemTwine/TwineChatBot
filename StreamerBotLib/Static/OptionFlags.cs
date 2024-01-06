@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.Properties;
 
-using System;
 using System.Configuration;
-using System.Linq;
 using System.Reflection;
 
 namespace StreamerBotLib.Static
@@ -48,7 +46,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchTokenUseAuth => Settings.Default.TwitchTokenUseAuth;
 
-      #region Twitch Credential Scopes
+        #region Twitch Credential Scopes
 
         /// <summary>
         /// Retrieves the Twitch Credential Scope Resource for when using a bot account different than streamer account - this is the bot access token scope listing

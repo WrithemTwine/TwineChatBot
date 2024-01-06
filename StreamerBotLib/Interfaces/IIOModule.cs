@@ -1,8 +1,6 @@
 ﻿
 using StreamerBotLib.Enums;
 
-using System;
-
 namespace StreamerBotLib.Interfaces
 {
     public interface IIOModule

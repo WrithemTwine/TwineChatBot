@@ -5,8 +5,6 @@ using Microsoft.Extensions.Options;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 using TwitchLib.PubSub;

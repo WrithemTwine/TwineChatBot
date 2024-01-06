@@ -8,15 +8,11 @@ using Microsoft.Extensions.Options;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;

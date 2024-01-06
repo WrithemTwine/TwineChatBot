@@ -5,8 +5,6 @@ using StreamerBotLib.MachineLearning.Accord.KNN;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace StreamerBotLib.MLearning

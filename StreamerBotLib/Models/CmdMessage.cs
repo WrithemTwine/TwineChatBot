@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 
-using System.Collections.Generic;
-
 namespace StreamerBotLib.Models
 {
     public record CmdMessage

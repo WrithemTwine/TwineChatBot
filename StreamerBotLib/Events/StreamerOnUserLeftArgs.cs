@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.Events
+﻿namespace StreamerBotLib.Events
 {
     public class StreamerOnUserLeftArgs : EventArgs
     {

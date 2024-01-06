@@ -3,7 +3,6 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Server;
 using StreamerBotLib.Static;
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 

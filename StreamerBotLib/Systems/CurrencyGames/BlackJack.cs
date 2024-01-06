@@ -2,9 +2,6 @@
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-
 namespace StreamerBotLib.Systems.CurrencyGames
 {
     /// <summary>
@@ -47,10 +44,10 @@ namespace StreamerBotLib.Systems.CurrencyGames
             SetupCard(); // deal round 2
         }
 
-        internal string GetUserCard(LiveUser CurrUser = null)
+        internal string GetUserCard(LiveUser? CurrUser = null)
         {
             string Message;
-            PlayGameUserWager<PlayingCardFrench, PlayingCardSuit> CurrCards = CurrUser == null ? HouseCards : GameUsers.Find((s) => s.Player == CurrUser);
+            PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>? CurrCards = CurrUser == null ? HouseCards : GameUsers.Find((s) => s.Player == CurrUser);
 
             if (CurrCards == null)
             {
@@ -76,7 +73,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
 
         internal int GetUserCardValue(LiveUser CurrUser)
         {
-            return GameUsers.Find((s) => s.Player == CurrUser).CardCount;
+            return (GameUsers.Find((s) => s.Player == CurrUser).CardCount);
         }
 
         private static int GetCardValue(int CardCount, PlayingCard<PlayingCardFrench, PlayingCardSuit> card)

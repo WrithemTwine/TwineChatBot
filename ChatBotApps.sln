@@ -4,16 +4,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiUserLiveBot", "MultiUserLiveBot\MultiUserLiveBot.csproj", "{BC756E65-DBF5-4AFB-9100-9528BE698765}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBot", "StreamerBot\StreamerBot.csproj", "{C807A207-AC56-4AA4-BFF1-F3D4853F817C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestStreamerBot", "TestStreamerBot\TestStreamerBot.csproj", "{5BBA6290-982F-423B-B92F-AA02702527A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib", "StreamerBotLib\StreamerBotLib.csproj", "{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertDataSourceFile", "ConvertDataSourceFile\ConvertDataSourceFile.csproj", "{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTestFeature", "SimpleTestFeature\SimpleTestFeature.csproj", "{F735F8FE-6259-4FB7-A980-FF9250CD4650}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,9 +1,6 @@
 ﻿
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Core;
 
-using System;
-using System.Collections.Generic;
-
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
 

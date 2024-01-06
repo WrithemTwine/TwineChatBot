@@ -2,10 +2,6 @@
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem

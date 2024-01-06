@@ -1,6 +1,4 @@
-﻿using System;
-
-using static StreamerBotLib.Data.DataSource;
+﻿using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Models
 {

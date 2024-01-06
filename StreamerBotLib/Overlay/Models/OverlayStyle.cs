@@ -4,7 +4,6 @@ using StreamerBotLib.Overlay.Interfaces;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
-using System;
 using System.Diagnostics;
 using System.IO;
 

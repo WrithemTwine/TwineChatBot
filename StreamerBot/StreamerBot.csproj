@@ -1,62 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows7.0</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <AssemblyName>TwineStreamerBot</AssemblyName>
-    <Description>A chat, clip, live, follow bot for Twitch using the C# TwitchLib library. https://twitch.tv/WrithemTwine</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
-    <SignAssembly>false</SignAssembly>
-    <Version>1.3.0.0</Version>    
-    <Copyright>2024</Copyright>
-    <PackageReleaseNotes>Added built-in refresh token</PackageReleaseNotes>
-    <Authors>WrithemTwine</Authors>
-    <Company>TwineStreamerBot</Company>
-    <ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<AssemblyName>TwineStreamerBot</AssemblyName>
+		<Description>A chat, clip, live, follow bot for Twitch using the C# TwitchLib library. https://twitch.tv/WrithemTwine</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/WrithemTwine/TwineChatBot</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/WrithemTwine/TwineChatBot</RepositoryUrl>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
+		<SignAssembly>false</SignAssembly>
+		<Version>1.3.0.0</Version>
+		<Copyright>2024</Copyright>
+		<PackageReleaseNotes>Added built-in refresh token</PackageReleaseNotes>
+		<Authors>WrithemTwine</Authors>
+		<Company>TwineStreamerBot</Company>
+		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
-  </PropertyGroup>
+	<PropertyGroup>
+		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <NoWarn>1701;1702;8002</NoWarn>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="img\BotStartupLogo.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
-  </ItemGroup>
-	
-  <PropertyGroup Label="Globals">
-    <WebView2LoaderPreference>Static</WebView2LoaderPreference>
-  </PropertyGroup>
-  
 	<ItemGroup>
-    <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
-  </ItemGroup>
-  
+	  <None Remove="img\BotStartupLogo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
+	</ItemGroup>
+
 	<ItemGroup>
 	  <SplashScreen Include="img\BotStartupLogo.png" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Culture\GUI_Msgs.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
-
 
 </Project>

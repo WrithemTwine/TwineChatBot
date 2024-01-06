@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 
-using System;
-
 namespace StreamerBotLib.Events
 {
     public class InvalidAccessTokenEventArgs : EventArgs

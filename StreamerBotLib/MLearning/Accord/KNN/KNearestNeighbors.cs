@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MachineLearning.Accord.KNN
 {
     // Accord Machine Learning Library
     // The Accord.NET Framework

@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Events;
 
-using System;
-
 namespace StreamerBotLib.Interfaces
 {
     /// <summary>

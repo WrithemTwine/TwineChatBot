@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
 using System.Windows;
 using System.Windows.Controls;
 

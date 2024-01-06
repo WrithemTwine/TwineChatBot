@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
 
-using System;
-
 namespace StreamerBotLib.BotClients
 {
     /// <summary>

@@ -3,8 +3,6 @@ using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Reflection;

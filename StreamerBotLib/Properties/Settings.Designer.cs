@@ -1726,19 +1726,7 @@ namespace StreamerBotLib.Properties {
                 this["TwitchTokenUseImplicit"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string TwitchStreamerOauthRefreshToken {
-            get {
-                return ((string)(this["TwitchStreamerOauthRefreshToken"]));
-            }
-            set {
-                this["TwitchStreamerOauthRefreshToken"] = value;
-            }
-        }
-        
+                
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]

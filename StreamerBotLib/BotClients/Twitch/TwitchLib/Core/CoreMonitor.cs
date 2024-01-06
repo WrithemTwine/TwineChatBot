@@ -1,7 +1,4 @@
-﻿
-using System.Threading.Tasks;
-
-using TwitchLib.Api.Interfaces;
+﻿using TwitchLib.Api.Interfaces;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib.Core
 {

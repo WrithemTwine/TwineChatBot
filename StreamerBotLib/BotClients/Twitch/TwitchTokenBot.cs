@@ -4,13 +4,11 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
-using System;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 using TwitchLib.Api.Auth;
 using TwitchLib.Api.Core;
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Core.HttpCallHandlers;
 using TwitchLib.Api.Core.RateLimiter;
 

@@ -1,9 +1,7 @@
 ﻿using StreamerBotLib.Static;
 
-using System;
 using System.Net.Http;
 using System.Reflection;
-using System.Threading.Tasks;
 
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services;
