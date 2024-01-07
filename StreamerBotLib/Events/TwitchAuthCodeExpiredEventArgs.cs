@@ -1,4 +1,6 @@
-﻿namespace StreamerBotLib.Events
+﻿using StreamerBotLib.Enums;
+
+namespace StreamerBotLib.Events
 {
     /// <summary>
     /// Event response when the Twitch Authentication Code expired or is unavailable 
@@ -30,7 +32,7 @@
         /// </summary>
         internal string State { get; set; }
 
-        public string BotType { get; set; }
+        public BotType BotType { get; set; }
 
         public Action<string> CallAction { get; set; }
 

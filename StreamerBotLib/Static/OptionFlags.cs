@@ -512,14 +512,6 @@ namespace StreamerBotLib.Static
         #region Twitch Authorization code flow
 
         /// <summary>
-        /// Setting to reauthorize the application because the bot requires additional access scopes and needs the user to re-authorize the app.
-        /// </summary>
-        public static bool TwitchAuthNewScopeRefresh
-        {
-            get => Settings.Default.TwitchAuthNewScopeRefresh;
-            set => Settings.Default.TwitchAuthNewScopeRefresh = value;
-        }
-        /// <summary>
         /// Retrieve the URL used to retrieve the Auth Code, through the auth code grant flow
         /// </summary>
         public static string TwitchAuthRedirectURL => Settings.Default.TwitchAuthRedirectURL;

@@ -38,11 +38,19 @@ namespace StreamerBot
         private void Button_TwitchAuthCode_ApproveBotURL(object sender, RoutedEventArgs e)
         {
             Controller.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            Dispatcher.BeginInvoke(() =>
+            {
+                StatusBar_TwitchAuth_BotAuthCodeInvalid.Visibility = Visibility.Collapsed;
+            });
         }
 
         private void Button_TwitchAuthCode_ApproveStreamerURL(object sender, RoutedEventArgs e)
         {
             Controller.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            Dispatcher.BeginInvoke(() =>
+            {
+                StatusBar_TwitchAuth_StreamerAuthCodeInvalid.Visibility = Visibility.Collapsed;
+            });
         }
 
         private void TwitchAuth_PopupURLAuth(string URL)
@@ -103,7 +111,22 @@ namespace StreamerBot
         {
             Dispatcher.BeginInvoke(() =>
             {
-                MessageBox.Show($"Invalid Token - {e.BotType}", $"The authorization for {e.Platform} has failed. The bot(s) have stopped due to no access. Please re-authorize the application access.");
+                switch (e.Platform)
+                {
+                    case Platform.Default:
+                        break;
+                    case Platform.Twitch:
+                        switch (e.BotType)
+                        {
+                            case BotType.BotAccount:
+                                StatusBar_TwitchAuth_BotAuthCodeInvalid.Visibility = Visibility.Visible;
+                                break;
+                            case BotType.StreamerAccount:
+                                StatusBar_TwitchAuth_StreamerAuthCodeInvalid.Visibility = Visibility.Visible;
+                                break;
+                        }
+                        break;
+                }
             });
         }
     }

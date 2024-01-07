@@ -458,9 +458,6 @@
     <Setting Name="TwitchAuthRedirectURL" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://localhost:3000</Value>
     </Setting>
-    <Setting Name="TwitchAuthNewScopeRefresh" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="TwitchAuthClientId" Type="System.String" Scope="User">
       <Value Profile="(Default)">From Twitch for registered application</Value>
     </Setting>

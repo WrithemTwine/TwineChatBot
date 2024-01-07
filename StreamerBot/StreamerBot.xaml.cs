@@ -70,14 +70,8 @@ namespace StreamerBot
 
             if (Settings.Default.UpgradeRequired)
             {
-                // TODO: before issuing a new code release with changed access scope, change the scope refresh to true
-                // save the setting in the new settings version about refreshing the authentication
-                bool RefreshToken = Settings.Default.TwitchAuthNewScopeRefresh;
-
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
-
-                Settings.Default.TwitchAuthNewScopeRefresh = RefreshToken;
                 Settings.Default.Save();
             }
 
@@ -95,15 +89,15 @@ namespace StreamerBot
 
             InitializeComponent();
 
-            BotOps = new()
-            {
+            BotOps =
+            [
                 new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
                 new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
                 new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
                 new(false, Radio_Twitch_PubSubBotStart)
-            };
+            ];
 
             SetTheme(); // adjust the theme, if user selected a different theme.
 
@@ -170,8 +164,11 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void StreamerBotWindow_VerifyNewVersion(object sender, EventArgs e)
         {
-            // navigate to the predefined stable link.
-            WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+            Dispatcher.BeginInvoke(() =>
+            {
+                // navigate to the predefined stable link.
+                WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+            });
         }
 
 

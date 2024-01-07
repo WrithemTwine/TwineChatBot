@@ -578,52 +578,6 @@ Storyboard.TargetName="Border">
                                    HorizontalAlignment="Left" VerticalAlignment="Center" 
                                    FontSize="10px" Width="60" TextWrapping="Wrap" 
                                    Margin="2,0,0,0" Opacity="1.0" Text="Auth Code Token" />
-
-
-                        <!--<StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
-                                                    <Ellipse Margin="5,0"
-                                                             Height="25"
-                                                             Width="30">
-                                                        <Ellipse.Fill>
-                                                            <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
-                                                                <GradientStop Color="{DynamicResource FullColor}" Offset="0"/>
-                                                                <GradientStop Color="{DynamicResource ForegroundColor}" Offset="1" />
-                                                            </LinearGradientBrush>
-                                                        </Ellipse.Fill>
-                                                    </Ellipse>
-                                                    <TextBlock
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               FontSize="10px"
-                                                                Width="60"
-                                                                TextWrapping="Wrap">
-                                                        Manual Token
-                                                    </TextBlock>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Visibility="Collapsed">
-                                                    <TextBlock
-                                                               HorizontalAlignment="Center" 
-                                                               VerticalAlignment="Center"
-                                                               FontSize="10px"
-                                                        Width="60"
-                                                                TextWrapping="Wrap"
-                                                                Margin="2,0,0,0">
-                                                        Auth Code Token
-                                                    </TextBlock>
-                                                    <Ellipse
-                                                         HorizontalAlignment="Right"
-                                                        Margin="4"
-                                                         Height="25"
-                                                         Width="30">
-                                                        <Ellipse.Fill>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                                <GradientStop Color="{DynamicResource FullColor}" Offset="0"/>
-                                                                <GradientStop Color="{DynamicResource ForegroundColor}" Offset="1" />
-                                                            </LinearGradientBrush>
-                                                        </Ellipse.Fill>
-                                                    </Ellipse>
-                                                </StackPanel>-->
-
                     </Grid>
                 </ControlTemplate>
 

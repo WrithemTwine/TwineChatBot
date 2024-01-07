@@ -47,6 +47,16 @@
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom" Visibility="Collapsed" x:Name="StatusBar_TwitchAuth_BotAuthCodeInvalid">
+            <StatusBarItem Padding="0" Margin="0">
+                <TextBlock Foreground="{StaticResource BrightStop}" Text="The Twitch-Bot Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
+            </StatusBarItem>
+        </StatusBar>
+        <StatusBar DockPanel.Dock="Bottom" Visibility="Collapsed" x:Name="StatusBar_TwitchAuth_StreamerAuthCodeInvalid">
+            <StatusBarItem Padding="0" Margin="0">
+                <TextBlock Foreground="{StaticResource BrightStop}" Text="The Twitch-Streamer Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
+            </StatusBarItem>
+        </StatusBar>
         <StatusBar DockPanel.Dock="Bottom" Height="55" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
             <StatusBar.Resources>
                 <Style TargetType="StackPanel">
@@ -680,7 +690,7 @@ for a Client Id and Client Secret, with
                                                             <LineBreak />
                                                             this "Redirect URL":
                                                             <InlineUIContainer>
-                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  Text="{DynamicResource TwitchAuthRedirectURL}"/>
+                                                                <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"  Text="{x:Static StaticLib:OptionFlags.TwitchAuthRedirectURL}"/>
                                                             </InlineUIContainer>
                                                             <LineBreak />
                                                             and approving the 

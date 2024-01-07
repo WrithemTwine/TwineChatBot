@@ -15,6 +15,8 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
+        // TODO: add mechanism to check the multilive listing to ensure those channels exist on Twitch. now with UserIds, convert their name & refer to their ID instead for user online checking
+
         private static TwitchTokenBot twitchTokenBot;
 
         /// <summary>

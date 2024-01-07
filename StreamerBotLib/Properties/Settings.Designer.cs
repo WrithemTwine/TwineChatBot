@@ -1717,18 +1717,6 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int TwitchTokenUseImplicit {
-            get {
-                return ((int)(this["TwitchTokenUseImplicit"]));
-            }
-            set {
-                this["TwitchTokenUseImplicit"] = value;
-            }
-        }
-                
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool TwitchTokenUseAuth {
             get {
@@ -1856,18 +1844,6 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["TwitchAuthRedirectURL"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool TwitchAuthNewScopeRefresh {
-            get {
-                return ((bool)(this["TwitchAuthNewScopeRefresh"]));
-            }
-            set {
-                this["TwitchAuthNewScopeRefresh"] = value;
             }
         }
         

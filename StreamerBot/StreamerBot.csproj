@@ -25,7 +25,7 @@
 	<PropertyGroup>
 		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
 	</PropertyGroup>
-
+	
 	<ItemGroup>
 	  <None Remove="img\BotStartupLogo.png" />
 	</ItemGroup>
@@ -34,6 +34,14 @@
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
 	</ItemGroup>
 
+	<PropertyGroup Label="Globals">
+	  <WV2WinRTWrapWebViewTypes>True</WV2WinRTWrapWebViewTypes>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<WebView2LoaderPreference>Static</WebView2LoaderPreference>
+	</PropertyGroup>
+	
 	<ItemGroup>
 	  <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
 	</ItemGroup>

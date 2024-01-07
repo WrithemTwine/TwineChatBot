@@ -70,15 +70,6 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids.
-        /// </summary>
-        public static string CredentialsTwitchPriorFullScope {
-            get {
-                return ResourceManager.GetString("CredentialsTwitchPriorFullScope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers.
         /// </summary>
         public static string CredentialsTwitchScopesDiffOauthBot {
