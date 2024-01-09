@@ -612,12 +612,16 @@ namespace StreamerBotLib.Systems
                 {
                     int DeltaViewers = Convert.ToInt32(arglist[0]) - LastLiveViewerCount;
 
-                    result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime)) : LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ? 
+                        (DataManage.GetCommand(command).Message ?? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.uptime)) : 
+                        LocalizedMsgSystem.GetVar(Msg.Msgstreamoffline), 
+                    VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                     new( MsgVars.user, ChannelName ),
                     new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
                     new( MsgVars.viewers, FormatData.Plurality(arglist.Count > 0 ? arglist[0] : "", MsgVars.Pluralviewers) ),
-                    new( MsgVars.deltaviewers, $"{(DeltaViewers>0?'+':"")}{DeltaViewers}" )
+                    new( MsgVars.deltaviewers, $"{(DeltaViewers>0?'+':"")}{DeltaViewers}" ),
+                    new( MsgVars.viewrate, arglist.Count > 0 ? (Convert.ToDouble(arglist[0])/(DataManage.GetFollowerCount() ?? 1)).ToString("{P2}") : "0")
                     }));
 
                     LastLiveViewerCount = Convert.ToInt32(arglist[0]);

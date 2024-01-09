@@ -17,6 +17,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Overlay\img\seconds.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Folder Include="MultiLive\Culture\" />
 	</ItemGroup>
 
@@ -34,6 +38,10 @@
 		<PackageReference Include="TwitchLib.Api.Helix" Version="3.9.0" />
 		<PackageReference Include="TwitchLib.Client" Version="3.3.1" />
 		<PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Overlay\img\seconds.png" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -723,9 +723,10 @@ namespace StreamerBot
                                                                     && OptionFlags.TwitchAuthStreamerClientSecret != ""
                                                                     && OptionFlags.TwitchAuthStreamerAuthCode == "";
 
-            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ?
-                                                    (OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken)
-                                                    : OptionFlags.TwitchBotAccessToken != "";
+            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchTokenUseAuth ?
+                (OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerAccessToken != "" : OptionFlags.TwitchAuthBotAccessToken != "") :
+                OptionFlags.TwitchStreamerUseToken ?
+                                                    (OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken) : OptionFlags.TwitchBotAccessToken != "";
 
             // Twitch
 

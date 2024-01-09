@@ -1121,6 +1121,15 @@ switches:
         }
 
         /// <summary>
+        /// Query the Follower table to count the current active channel followers.
+        /// </summary>
+        /// <returns>The count of the current follower list.</returns>
+        public int? GetFollowerCount()
+        {
+            return (GetRows(_DataSource.Followers, $"{_DataSource.Followers.IsFollowerColumn}='true'"))?.Length ?? null;
+        }
+
+        /// <summary>
         /// Clear all user watchtimes
         /// </summary>
         public void ClearWatchTime()
