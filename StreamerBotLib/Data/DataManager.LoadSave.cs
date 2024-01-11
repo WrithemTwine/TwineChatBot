@@ -1,6 +1,4 @@
-﻿#if DEBUG
-#define noLogDataManager_Actions
-#endif
+﻿
 
 using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
@@ -11,6 +9,7 @@ using StreamerBotLib.Systems;
 
 using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 
 using static StreamerBotLib.Data.DataSource;
@@ -32,9 +31,7 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void LoadData()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Loading the database.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Loading the database.");
 
             void LoadFile(string filename)
             {
@@ -67,9 +64,7 @@ namespace StreamerBotLib.Data
 
         public void NotifySaveData()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Notify the database is saved.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Notify to save database.");
 
             OnSaveData?.Invoke(this, new());
         }
@@ -79,18 +74,15 @@ namespace StreamerBotLib.Data
         /// </summary>
         public void SaveData(object sender, EventArgs e)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Saving the database, managed as multiple threads collected and saving only occurs every few seconds.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Saving the database, managed as multiple threads collected and saving only occurs every few seconds.");
 
             if (OptionFlags.DataLoaded)
             {
                 if (!UpdatingFollowers) // block saving data until the follower updating is completed
                 {
-
                     SaveData(
-                        (stream, xmlwrite) => _DataSource.WriteXml(stream, xmlwrite),
-                        (filename, xmlwrite) => _DataSource.WriteXml(filename, xmlwrite),
+                        _DataSource.WriteXml,
+                        _DataSource.WriteXml,
                         GUIDataManagerLock.Lock,
                         (SaveDataMemoryStream) =>
                         {
@@ -107,9 +99,7 @@ namespace StreamerBotLib.Data
 
         public void Initialize()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Initializing the database.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Initializing the database.");
 
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
@@ -125,9 +115,7 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void SetDefaultCommandsTable()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Setting up and checking default commands, adding missing commands.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -193,9 +181,7 @@ namespace StreamerBotLib.Data
         /// </summary>
         private void SetDefaultChannelEventsTable()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Setting default channel events, adding any missing events.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting default channel events, adding any missing events.");
 
             bool CheckName(string criteria)
             {
@@ -215,55 +201,55 @@ namespace StreamerBotLib.Data
             {
                 {
                     ChannelEventActions.BeingHosted,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.autohost, MsgVars.viewers }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.autohost, MsgVars.viewers]))
                 },
                 {
                     ChannelEventActions.Bits,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.bits }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.bits]))
                 },
                 {
                     ChannelEventActions.CommunitySubs,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.count, MsgVars.subplan }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.count, MsgVars.subplan]))
                 },
                 {
                     ChannelEventActions.NewFollow,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
                 },
                 {
                     ChannelEventActions.GiftSub,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname]))
                 },
                 {
                     ChannelEventActions.Live,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone]))
                 },
                 {
                     ChannelEventActions.Raid,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.viewers }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.viewers]))
                 },
                 {
                     ChannelEventActions.Resubscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak]))
                 },
                 {
                     ChannelEventActions.Subscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname]))
                 },
                 {
                     ChannelEventActions.UserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
                 },
                 {
                     ChannelEventActions.ReturnUserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
                 },
                 {
                     ChannelEventActions.SupporterJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
                 },
                 {
                     ChannelEventActions.BannedUser,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars(new[] { MsgVars.user }))
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
                 }
             };
             lock (GUIDataManagerLock.Lock)
@@ -289,22 +275,19 @@ namespace StreamerBotLib.Data
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach (UsersRow UR in _DataSource.Users.Select())
+                foreach (var UR in from UsersRow UR in _DataSource.Users.Select()
+                                   where DBNull.Value.Equals(UR["Platform"])
+                                   select UR)
                 {
-                    if (DBNull.Value.Equals(UR["Platform"]))
-                    {
-                        UR.Platform = Platform.Twitch.ToString();
-                    }
+                    UR.Platform = Platform.Twitch.ToString();
                 }
 
                 _DataSource.Users.AcceptChanges();
-
-                foreach (FollowersRow FR in _DataSource.Followers.Select())
+                foreach (var FR in from FollowersRow FR in _DataSource.Followers.Select()
+                                   where DBNull.Value.Equals(FR["Platform"])
+                                   select FR)
                 {
-                    if (DBNull.Value.Equals(FR["Platform"]))
-                    {
-                        FR.Platform = Platform.Twitch.ToString();
-                    }
+                    FR.Platform = Platform.Twitch.ToString();
                 }
 
                 _DataSource.Followers.AcceptChanges();

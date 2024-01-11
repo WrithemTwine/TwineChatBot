@@ -1,7 +1,7 @@
 ﻿#define UPDATELEARN
 
 using StreamerBotLib.Enums;
-using StreamerBotLib.MachineLearning.Accord.KNN;
+using StreamerBotLib.MLearning.Accord.KNN;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 

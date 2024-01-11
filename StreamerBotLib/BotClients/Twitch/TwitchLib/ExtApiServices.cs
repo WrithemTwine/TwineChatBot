@@ -45,7 +45,5 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             _monitor = NameBasedMonitor;
         }
 
-
-
     }
 }

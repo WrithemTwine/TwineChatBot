@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Core Library
     // The Accord.NET Framework

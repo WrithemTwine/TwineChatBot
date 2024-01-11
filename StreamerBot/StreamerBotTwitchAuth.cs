@@ -1,4 +1,5 @@
-﻿using StreamerBot.Web;
+﻿
+using StreamerBot.Web;
 
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
@@ -16,6 +17,25 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow
     {
+        /// <summary>
+        /// Once user sets the Twitch Channel Name and Bot account name, check and get the user Ids for the Streamer/Bot account(s)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBox_TwitchChannelBotNames_TargetUpdated(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(OptionFlags.TwitchChannelName) && !string.IsNullOrEmpty(OptionFlags.TwitchBotUserName))
+            {
+                Controller.CheckTwitchChannelBotIds();
+            }
+        }
+
+        private void Button_TwitchAuthToken_ReAuthorize(object sender, RoutedEventArgs e)
+        {
+            Controller.ForceTwitchAuthReauthorization();
+            CheckFocus();
+        }
+
         private void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
         {
             GUIStopBots_Click(this, new()); // stop the bots to use the new tokens
@@ -37,7 +57,7 @@ namespace StreamerBot
 
         private void Button_TwitchAuthCode_ApproveBotURL(object sender, RoutedEventArgs e)
         {
-            Controller.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_BotAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -46,7 +66,7 @@ namespace StreamerBot
 
         private void Button_TwitchAuthCode_ApproveStreamerURL(object sender, RoutedEventArgs e)
         {
-            Controller.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_StreamerAuthCodeInvalid.Visibility = Visibility.Collapsed;

@@ -27,7 +27,11 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// User Id of the Bot Account
         /// </summary>
-        public static string TwitchBotUserId { get; set; }
+        public static string TwitchBotUserId
+        {
+            get => OptionFlags.TwitchBotUserId;
+            set => OptionFlags.TwitchBotUserId = value;
+        }
 
         /// <summary>
         /// Channel name used in the connection
@@ -40,7 +44,11 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// UserId of the Channel Name
         /// </summary>
-        public static string TwitchChannelId { get; set; }
+        public static string TwitchChannelId
+        {
+            get => OptionFlags.TwitchStreamerUserId;
+            set => OptionFlags.TwitchStreamerUserId = value;
+        }
 
         /// <summary>
         /// Token used for the connection.
@@ -126,6 +134,13 @@ namespace StreamerBotLib.BotClients.Twitch
         /// The poll time in seconds to check the channel for new clips
         /// </summary>
         public static double TwitchFrequencyClipTime => OptionFlags.TwitchFrequencyClipTime;
+
+        /// <summary>
+        /// Flag to specify if the current operation mode is 'Reset the Token', intended for use to circumvent notifications to the overall bot code for start/stop the bot
+        /// <code>true</code> - when mode is enabled
+        /// <code>false</code> - when mode is disabled
+        /// </summary>
+        protected bool ResetTokenMode { get; set; } = false;
 
         internal virtual void SetTokenBot(TwitchTokenBot tokenBot)
         {

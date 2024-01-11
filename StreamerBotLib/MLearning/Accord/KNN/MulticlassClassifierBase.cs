@@ -1,4 +1,4 @@
-﻿namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Statistics Library
     // The Accord.NET Framework
@@ -156,17 +156,17 @@
 
         bool[][] IClassifier<TInput, bool[]>.Decide(TInput[] input, bool[][] result)
         {
-            return Jagged.OneHot<bool>(Decide(input), result);
+            return Jagged.OneHot(Decide(input), result);
         }
 
         int[][] IClassifier<TInput, int[]>.Decide(TInput[] input, int[][] result)
         {
-            return Jagged.OneHot<int>(Decide(input), result);
+            return Jagged.OneHot(Decide(input), result);
         }
 
         double[][] IClassifier<TInput, double[]>.Decide(TInput[] input, double[][] result)
         {
-            return Jagged.OneHot<double>(Decide(input), result);
+            return Jagged.OneHot(Decide(input), result);
         }
 
 

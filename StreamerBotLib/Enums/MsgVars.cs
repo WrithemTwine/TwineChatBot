@@ -51,6 +51,7 @@
         Pluralquote,
         Pluralbe,
         be,
-        viewrate
+        viewrate,
+        username
     }
 }

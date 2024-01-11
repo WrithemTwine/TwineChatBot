@@ -1,7 +1,4 @@
-﻿#if DEBUG
-#define noLogDataManager_Actions
-#endif
-
+﻿
 using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
@@ -47,9 +44,7 @@ namespace StreamerBotLib.Data
 
         public DataManager() : base(DataFileXML)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Build DataManager object.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, "Build DataManager object.");
             _DataSource = new();
             _DataSource.BeginInit();
             LoadData();
@@ -69,9 +64,7 @@ namespace StreamerBotLib.Data
         /// <returns>Null for no value or the first row found using the <i>rowcriteria</i></returns>
         public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get event row data for {rowcriteria}.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get event row data for {rowcriteria}.");
 
             string Msg = "";
 
@@ -131,9 +124,7 @@ switches:
         /// <exception cref="InvalidOperationException">The command is not found.</exception>
         public bool CheckPermission(string cmd, ViewerTypes permission)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check permission for {cmd}.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check permission for {cmd}.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -158,9 +149,9 @@ switches:
         /// <remarks>Thread-safe</remarks>
         public bool CheckShoutName(string UserName)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if {UserName} is in the Shout list.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if {UserName} is in the Shout list.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") != null;
@@ -169,9 +160,9 @@ switches:
 
         public string PostCommand(string cmd, CommandParams Params)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new command called {cmd}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add a new command called {cmd}.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -185,9 +176,9 @@ switches:
 
         public string EditCommand(string cmd, List<string> Arglist)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Editing command {cmd}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Editing command {cmd}.");
+
 
             string result = "";
 
@@ -222,9 +213,9 @@ switches:
         /// <returns><c>True</c> with successful removal, <c>False</c> with command not found.</returns>
         public bool RemoveCommand(string command)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing command {command}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Removing command {command}.");
+
 
             return DeleteDataRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{command}'");
         }
@@ -260,9 +251,9 @@ switches:
         /// <returns>Searches each social message and combines each social message which isn't the default message.</returns>
         public string GetSocials()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, "Getting the socials listing.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, "Getting the socials listing.");
+
 
             string filter = "";
 
@@ -290,18 +281,18 @@ switches:
 
         public string GetUsage(string command)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the usage information for {command}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get the usage information for {command}.");
+
 
             return GetCommand(command)?.Usage ?? LocalizedMsgSystem.GetVar(Msg.MsgNoUsage);
         }
 
         public CommandData GetCommand(string cmd)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the command row for {cmd}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get the command row for {cmd}.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 CommandsRow comrow = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
@@ -312,9 +303,9 @@ switches:
 
         public string GetCommands()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get a list of all commands.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get a list of all commands.");
+
             string result = "";
 
             lock (GUIDataManagerLock.Lock)
@@ -337,9 +328,9 @@ switches:
 
         public object PerformQuery(CommandData row, string ParamValue)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the query for command {row.CmdName}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Perform the query for command {row.CmdName}.");
+
 
             object output;
             //CommandParams query = CommandParams.Parse(row.Params);
@@ -377,9 +368,9 @@ switches:
 
         public object[] PerformQuery(CommandData row, int Top = 0)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Perform the multi object query for command {row.CmdName}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Perform the multi object query for command {row.CmdName}.");
+
             string Currency = "";
             if (row.Table == _DataSource.Currency.TableName)
             {
@@ -409,9 +400,9 @@ switches:
         /// <returns>The list of commands and the seconds to repeat the command.</returns>
         public List<Tuple<string, int, string[]>> GetTimerCommands()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the timer commands.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get all the timer commands.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return new(from CommandsRow row in (CommandsRow[])GetRows(_DataSource.Commands, "RepeatTimer>0 AND IsEnabled=True") select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
@@ -420,9 +411,9 @@ switches:
 
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get timer command {Cmd}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get timer command {Cmd}.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -438,9 +429,9 @@ switches:
 
         public void SetSystemEventsEnabled(bool Enabled)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Set the enable as {Enabled} for all the system events.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Set the enable as {Enabled} for all the system events.");
+
 
             SetDataTableFieldRows(_DataSource.ChannelEvents, _DataSource.ChannelEvents.IsEnabledColumn, Enabled);
             NotifySaveData();
@@ -448,9 +439,9 @@ switches:
 
         private static string ComFilter()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the list of default commands and socials, to filter out user-defined commands.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get the list of default commands and socials, to filter out user-defined commands.");
+
 
             string filter = string.Empty;
 
@@ -469,9 +460,9 @@ switches:
 
         public void SetBuiltInCommandsEnabled(bool Enabled)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Set the enable as {Enabled} for all the built-in commands.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Set the enable as {Enabled} for all the built-in commands.");
+
 
             SetDataTableFieldRows(_DataSource.Commands, _DataSource.Commands.IsEnabledColumn, Enabled, "CmdName IN (" + ComFilter() + ")");
             NotifySaveData();
@@ -479,9 +470,9 @@ switches:
 
         public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Set the enable as {Enabled} for all the user-defined commands.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Set the enable as {Enabled} for all the user-defined commands.");
+
 
             SetDataTableFieldRows(_DataSource.Commands, _DataSource.Commands.IsEnabledColumn, Enabled, "CmdName NOT IN (" + ComFilter() + ")");
             NotifySaveData();
@@ -489,9 +480,9 @@ switches:
 
         public void SetDiscordWebhooksEnabled(bool Enabled)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Set the enable as {Enabled} for all the Discord webhooks.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Set the enable as {Enabled} for all the Discord webhooks.");
+
 
             SetDataTableFieldRows(_DataSource.Discord, _DataSource.Discord.IsEnabledColumn, Enabled);
             NotifySaveData();
@@ -516,9 +507,9 @@ switches:
 
         public List<string> GetCurrencyNames()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all of the currency names.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get all of the currency names.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return DataSetStatic.GetRowsDataColumn(_DataSource.CurrencyType, _DataSource.CurrencyType.CurrencyNameColumn).ConvertAll((value) => value.ToString());
@@ -532,9 +523,9 @@ switches:
 
         private StreamStatsRow[] GetAllStreamData()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all stream data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get all stream data.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return (StreamStatsRow[])GetRows(_DataSource.StreamStats);
@@ -543,9 +534,9 @@ switches:
 
         private StreamStatsRow GetAllStreamData(DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Find stream data for the {dateTime} date time.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Find stream data for the {dateTime} date time.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -557,9 +548,9 @@ switches:
 
         public StreamStat GetStreamData(DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the content stats for a particular stream dated {dateTime}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get the content stats for a particular stream dated {dateTime}.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -585,9 +576,9 @@ switches:
 
         public bool CheckMultiStreams(DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if there are multiple streams for {dateTime}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if there are multiple streams for {dateTime}.");
+
 
             return (from StreamStatsRow row in GetAllStreamData()
                     where row.StreamStart.ToShortDateString() == dateTime.ToShortDateString()
@@ -596,9 +587,7 @@ switches:
 
         public bool PostStream(DateTime StreamStart)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new stream for {StreamStart}, checking if one already exists.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add a new stream for {StreamStart}, checking if one already exists.");
 
             bool returnvalue;
 
@@ -623,9 +612,12 @@ switches:
 
         public void PostStreamStat(StreamStat streamStat)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update stream stats for {streamStat.StreamStart} stream.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Update stream stats for {streamStat.StreamStart} stream.");
+
+            if (streamStat.StreamStart != streamStat.StreamEnd)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Livestream ended at {streamStat.StreamEnd}.");
+            }
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -638,7 +630,6 @@ switches:
                 else
                 {
                     // can't use a simple method to duplicate this because "ref" can't be used with boxing
-
                     foreach (PropertyInfo srcprop in CurrStreamStatRow.GetType().GetProperties())
                     {
                         bool found = (from PropertyInfo trgtprop in typeof(StreamStat).GetProperties()
@@ -664,9 +655,9 @@ switches:
         /// <returns><code>true</code>: the stream already has a data entry; <code>false</code>: the stream has no data entry</returns>
         public bool CheckStreamTime(DateTime CurrTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if there already is a stream for {CurrTime}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if there already is a stream for {CurrTime}.");
+
 
             return GetAllStreamData(CurrTime) != null;
         }
@@ -676,9 +667,9 @@ switches:
         /// </summary>
         public void RemoveAllStreamStats()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Remove all stream data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Remove all stream data.");
+
 
             DataSetStatic.DeleteDataRows(GetRows(_DataSource.StreamStats));
             NotifySaveData();
@@ -702,9 +693,9 @@ switches:
 
         public void UserJoined(LiveUser User, DateTime NowSeen)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update for a user joined, user {User} at {NowSeen}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Update for a user joined, user {User} at {NowSeen}.");
+
 
             static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
 
@@ -725,9 +716,9 @@ switches:
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
         public string CheckWelcomeUser(string User)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check for a custom user welcome message for user {User}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check for a custom user welcome message for user {User}.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return ((CustomWelcomeRow)GetRow(_DataSource.CustomWelcome, Filter: $"{_DataSource.CustomWelcome.UserNameColumn.ColumnName}='{User}'"))?.Message ?? "";
@@ -746,9 +737,7 @@ switches:
 
         public void UserLeft(LiveUser User, DateTime LastSeen)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update the user {User} has left, at {LastSeen}.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Update the user {User} has left, at {LastSeen}.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -802,9 +791,9 @@ switches:
         /// <returns><c>true</c> if the user has arrived prior to DateTime.MaxValue, <c>false</c> otherwise.</returns>
         public bool CheckUser(LiveUser User)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if user {User} has already been in the channel.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if user {User} has already been in the channel.");
+
 
             return CheckUser(User, DateTime.MaxValue);
         }
@@ -817,13 +806,13 @@ switches:
         /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
         public bool CheckUser(LiveUser User, DateTime ToDateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if user {User} has arrived before {ToDateTime}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if user {User} has arrived before {ToDateTime}.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
-                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}' AND ({_DataSource.Users.PlatformColumn.ColumnName}='{User.Source.ToString()}' OR {_DataSource.Users.PlatformColumn.ColumnName} is NULL)");
+                UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}' AND ({_DataSource.Users.PlatformColumn.ColumnName}='{User.Source}' OR {_DataSource.Users.PlatformColumn.ColumnName} is NULL)");
 
                 return user != null && user.FirstDateSeen <= ToDateTime;
             }
@@ -836,9 +825,9 @@ switches:
         /// <returns>Returns <c>true</c> if the <paramref name="User"/> is a follower prior to DateTime.MaxValue.</returns>
         public bool CheckFollower(string User)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if {User} is a current follower.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if {User} is a current follower.");
+
 
             return CheckFollower(User, DateTime.MaxValue);
         }
@@ -851,9 +840,9 @@ switches:
         /// <returns></returns>
         public bool CheckFollower(string User, DateTime ToDateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if user {User} followed prior to {ToDateTime}, for the follower welcome back notice.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if user {User} followed prior to {ToDateTime}, for the follower welcome back notice.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -876,9 +865,9 @@ switches:
         /// <returns>True if the follower is the first time. False if already followed.</returns>
         public bool PostFollower(LiveUser User, DateTime FollowedDate, string Category)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add user {User} as a new follower at {FollowedDate}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add user {User} as a new follower at {FollowedDate}.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -952,9 +941,9 @@ switches:
         /// <returns>True if the user is added, else false if the user already existed.</returns>
         private UsersRow PostNewUser(LiveUser User, DateTime FirstSeen)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new user {User}, first seen at {FirstSeen}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add a new user {User}, first seen at {FirstSeen}.");
+
 
             UsersRow usersRow = null;
             lock (GUIDataManagerLock.Lock)
@@ -995,9 +984,9 @@ switches:
         /// </summary>
         public void StartBulkFollowers()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Start updating followers in bulk, set all as false to then mark as a follower.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Start updating followers in bulk, set all as false to then mark as a follower.");
+
 
             UpdatingFollowers = true;
             lock (GUIDataManagerLock.Lock)
@@ -1014,9 +1003,9 @@ switches:
         /// <param name="follows">A list of current followers to add into the database.</param>
         public void UpdateFollowers(IEnumerable<Follow> follows, string Category)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update and add all followers in bulk.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Update and add all followers in bulk.");
+
             if (follows.Any())
             {
                 foreach (Follow f in follows)
@@ -1033,9 +1022,9 @@ switches:
         /// </summary>
         public void StopBulkFollows()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Stop bulk updating all followers.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Stop bulk updating all followers.");
+
             if (OptionFlags.TwitchPruneNonFollowers)
             {
                 lock (GUIDataManagerLock.Lock)
@@ -1134,9 +1123,9 @@ switches:
         /// </summary>
         public void ClearWatchTime()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Clear all watch time.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Clear all watch time.");
+
 
             SetDataTableFieldRows(_DataSource.Users, _DataSource.Users.WatchTimeColumn, new TimeSpan(0));
             NotifySaveData();
@@ -1145,14 +1134,14 @@ switches:
         /// <summary>
         /// Adds a user to the auto shout table.
         /// </summary>
-        /// <param name="UserName">The username to add, duplicates are not added.</param>
+        /// <param name="UserName">The Username to add, duplicates are not added.</param>
         public void PostNewAutoShoutUser(string UserName)
         {
 
             // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding user {UserName} to the auto shout-out listing.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Adding user {UserName} to the auto shout-out listing.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
@@ -1228,9 +1217,9 @@ switches:
         #region Giveaways
         public void PostGiveawayData(string DisplayName, DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Posting the giveaway data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Posting the giveaway data.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1366,9 +1355,9 @@ switches:
         /// <param name="dateTime">The time to base the currency calculation.</param>
         private void UpdateCurrency(string User, DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Update currency for user {User}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Update currency for user {User}.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 UsersRow user = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User}'");
@@ -1383,9 +1372,9 @@ switches:
         /// <param name="CurrTime">The time to update and accrue the currency.</param>
         private void UpdateCurrency(ref UsersRow User, DateTime CurrTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Realize the currency accruals for user {User.UserName}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Realize the currency accruals for user {User.UserName}.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1421,9 +1410,9 @@ switches:
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
         public void PostCurrencyRows(ref UsersRow usersRow)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add all currency rows for user {usersRow.UserName}.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add all currency rows for user {usersRow.UserName}.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
@@ -1475,9 +1464,9 @@ switches:
         /// </summary>
         public void PostCurrencyRows()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add currency for all users.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add currency for all users.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 UsersRow[] UserRows = (UsersRow[])GetRows(_DataSource.Users);
@@ -1497,9 +1486,9 @@ switches:
         /// </summary>
         public void ClearUsersNotFollowers()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Clear users who are not followers.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Clear users who are not followers.");
+
             List<string> RemoveIds = new();
 
             lock (GUIDataManagerLock.Lock)
@@ -1523,9 +1512,9 @@ switches:
         /// </summary>
         public void ClearAllCurrencyValues()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Clear all currency values.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Clear all currency values.");
+
 
             SetDataTableFieldRows(_DataSource.Currency, _DataSource.Currency.ValueColumn, 0);
             NotifySaveData();
@@ -1536,9 +1525,9 @@ switches:
         #region Raid Data
         public void PostInRaidData(string user, DateTime time, string viewers, string gamename)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Post incoming raid data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Post incoming raid data.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1550,9 +1539,9 @@ switches:
 
         public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Test the incoming raid data, code testing if raid data was added.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Test the incoming raid data, code testing if raid data was added.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1564,9 +1553,9 @@ switches:
 
         public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Test the outgoing raid data, code testing if raid data was added.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Test the outgoing raid data, code testing if raid data was added.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1577,9 +1566,9 @@ switches:
 
         public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Post the outgoing raid data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Post the outgoing raid data.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1598,9 +1587,9 @@ switches:
         /// <returns></returns>
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get all the available Discord webhooks, for the {webhooks} type.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get all the available Discord webhooks, for the {webhooks} type.");
+
 
             return new(((DiscordRow[])GetRows(_DataSource.Discord, $"{_DataSource.Discord.KindColumn.ColumnName}='{webhooks}' AND {_DataSource.Discord.IsEnabledColumn.ColumnName}=True")).Select(d => new Tuple<bool, Uri>(d.AddEveryone, new Uri(d.Webhook))));
         }
@@ -1686,9 +1675,9 @@ switches:
         /// <returns>True if category OR game ID are found; False if no category nor game ID is found.</returns>
         public bool PostCategory(string CategoryId, string newCategory)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add and update the {newCategory} category.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add and update the {newCategory} category.");
+
             if (CategoryId != "" && newCategory != "")
             {
                 lock (GUIDataManagerLock.Lock)
@@ -1741,9 +1730,9 @@ switches:
         /// <returns>Returns a list of <code>Tuple<string GameId, string GameName></code> objects.</returns>
         public List<Tuple<string, string>> GetGameCategories()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get a list of all categories.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get a list of all categories.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return new(from CategoryListRow c in GetRows(_DataSource.CategoryList)
@@ -1770,9 +1759,9 @@ switches:
         /// <returns><c>true</c> when clip added to database, <c>false</c> when clip is already added.</returns>
         public bool PostClip(string ClipId, string CreatedAt, float Duration, string GameId, string Language, string Title, string Url)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Add a new clip.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add a new clip.");
+
 
             bool result = false;
             lock (GUIDataManagerLock.Lock)
@@ -1798,9 +1787,9 @@ switches:
 
         private void SetLearnedMessages()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, setting learned messages.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1852,36 +1841,36 @@ switches:
 
         private void LearnMsgs_LearnMsgsRowDeleted(object sender, LearnMsgsRowChangeEvent e)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, whether learned message rows are deleted.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are deleted.");
+
 
             LearnMsgChanged = true;
         }
 
         //        private void LearnMsgs_LearnMsgsRowChanged(object sender, LearnMsgsRowChangeEvent e)
         //        {
-        //#if LogDataManager_Actions
-        //            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, whether learned message rows are changed.");
-        //#endif
+        //
+        //            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are changed.");
+        //
 
         //            LearnMsgChanged = true;
         //        }
 
         private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, whether adding a new learned message.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether adding a new learned message.");
+
 
             LearnMsgChanged = true;
         }
 
         public List<LearnMsgRecord> UpdateLearnedMsgs()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, get all the learned messages to update training model.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, get all the learned messages to update training model.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1901,9 +1890,9 @@ switches:
 
         public void PostLearnMsgsRow(string Message, MsgTypes MsgType)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Adding a new learned message row.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Adding a new learned message row.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 bool found = (from LearnMsgsRow learnMsgsRow in GetRows(_DataSource.LearnMsgs, $"{_DataSource.LearnMsgs.TeachingMsgColumn.ColumnName}='{FormatData.AddEscapeFormat(Message)}'")
@@ -1920,9 +1909,9 @@ switches:
 
         public Tuple<ModActions, BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Machine learning, find the remedy to the found message determination.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, find the remedy to the found message determination.");
+
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1969,7 +1958,7 @@ switches:
         /// </summary>
         /// <param name="overlayType">The type of the overlay source. e.g. channel points, commands - StreamerBotLib.Enums.Overlay.Enums.OverlayTickerItem</param>
         /// <param name="overlayAction">The name of the overlay type action for the specific overlay to invoke.</param>
-        /// <param name="username">A username if an overlay action is based on a certain user.</param>
+        /// <param name="username">A Username if an overlay action is based on a certain user.</param>
         /// <returns>A collection of found OverlayActions matching the parameter criteria.</returns>
         public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
         {
@@ -2012,7 +2001,7 @@ switches:
         /// Post an update to an OverlayTicker item, either updates an existing data row or adds a new row if ticker data doesn't exist.
         /// </summary>
         /// <param name="item">The OverlayTickerItem enum name for the ticker to add or replace.</param>
-        /// <param name="name">The username to update for the ticker item.</param>
+        /// <param name="name">The Username to update for the ticker item.</param>
         public void UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
             lock (GUIDataManagerLock.Lock)
@@ -2039,9 +2028,9 @@ switches:
         /// </summary>
         public void RemoveAllUsers()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all users.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Removing all users.");
+
 
             DataSetStatic.DeleteDataRows(GetRows(_DataSource.Users));
             NotifySaveData();
@@ -2052,9 +2041,9 @@ switches:
         /// </summary>
         public void RemoveAllFollowers()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all followers.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Removing all followers.");
+
 
             DataSetStatic.DeleteDataRows(GetRows(_DataSource.Followers));
             NotifySaveData();
@@ -2065,9 +2054,9 @@ switches:
         /// </summary>
         public void RemoveAllInRaidData()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all incoming raid data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Removing all incoming raid data.");
+
 
             DataSetStatic.DeleteDataRows(GetRows(_DataSource.InRaidData));
             NotifySaveData();
@@ -2078,9 +2067,9 @@ switches:
         /// </summary>
         public void RemoveAllOutRaidData()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all outgoing raid data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Removing all outgoing raid data.");
+
 
             DataSetStatic.DeleteDataRows(GetRows(_DataSource.OutRaidData));
             NotifySaveData();
@@ -2091,9 +2080,9 @@ switches:
         /// </summary>
         public void RemoveAllGiveawayData()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Removing all giveaway data.");
-#endif
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Removing all giveaway data.");
+
 
             DataSetStatic.DeleteDataRows(GetRows(_DataSource.GiveawayUserData));
             NotifySaveData();

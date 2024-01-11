@@ -20,7 +20,7 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
     /// <summary>
     ///   Matrix major order. The default is to use C-style Row-Major order.
@@ -81,7 +81,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             int s = GetLength(matrix, dimension);
             var values = new T[s];
             var indices = new int[s];
-            Max(matrix, dimension, indices, values);
+            matrix.Max(dimension, indices, values);
             return indices;
         }
 
@@ -204,7 +204,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
         /// 
         public static T[,] Reshape<T>(this T[] array, int rows, int cols, MatrixOrder order = MatrixOrder.Default)
         {
-            return Reshape(array, rows, cols, new T[rows, cols], order);
+            return array.Reshape(rows, cols, new T[rows, cols], order);
         }
 
         /// <summary>
@@ -371,10 +371,10 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             if (count > values.Length)
                 return Range(0, values.Length);
 
-            T[] work = (inPlace) ? values : (T[])values.Clone();
+            T[] work = inPlace ? values : (T[])values.Clone();
             int[] idx = Range(values.Length);
             work.NthElement(idx, 0, work.Length, count, asc: true);
-            StreamerBotLib.MachineLearning.Accord.KNN.Sort.Insertion(work, idx, 0, count, asc: true);
+            Sort.Insertion(work, idx, 0, count, asc: true);
             return idx.First(count);
         }
 
@@ -414,9 +414,9 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
         ///
         public static int[] Range(int n)
         {
-            int[] r = new int[(int)n];
+            int[] r = new int[n];
             for (int i = 0; i < r.Length; i++)
-                r[i] = (int)i;
+                r[i] = i;
             return r;
         }
 
@@ -449,15 +449,15 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
 
             if (b > a)
             {
-                r = new int[(int)(b - a)];
+                r = new int[(b - a)];
                 for (int i = 0; i < r.Length; i++)
-                    r[i] = (int)(a++);
+                    r[i] = a++;
             }
             else
             {
-                r = new int[(int)(a - b)];
+                r = new int[(a - b)];
                 for (int i = 0; i < r.Length; i++)
-                    r[i] = (int)(a--);
+                    r[i] = a--;
             }
 
             return r;

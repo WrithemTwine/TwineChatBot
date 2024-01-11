@@ -8,15 +8,11 @@ using TwitchLib.Api.Services;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
-    public class ExtLiveStreamMonitorService : LiveStreamMonitorService
+    public class ExtLiveStreamMonitorService(ITwitchAPI api,
+                                       int checkIntervalInSeconds = 60,
+                                       int maxStreamRequestCountPerRequest = 100) : LiveStreamMonitorService(api, checkIntervalInSeconds, maxStreamRequestCountPerRequest)
     {
         public event EventHandler AccessTokenUnauthorized;
-
-        public ExtLiveStreamMonitorService(ITwitchAPI api,
-                                           int checkIntervalInSeconds = 60,
-                                           int maxStreamRequestCountPerRequest = 100) : base(api, checkIntervalInSeconds, maxStreamRequestCountPerRequest)
-        {
-        }
 
         protected override async Task OnServiceTimerTick()
         {
@@ -38,6 +34,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
         }
 
+        public void UpdateToken(string accesstoken)
+        {
+            _api.Settings.AccessToken = accesstoken;
+        }
 
     }
 }

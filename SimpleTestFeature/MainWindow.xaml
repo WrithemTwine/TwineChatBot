@@ -5,51 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleTestFeature"
         mc:Ignorable="d"
-        Title="Get Auth Code and Access Token" Height="450" Width="800">
+        Title="Test Get Chatters" Height="450" Width="800">
+    <Window.Resources>
+        <local:Chatters x:Name="ChatListing" x:Key="ChatListing" />
+    </Window.Resources>
 
     <DockPanel>
-        <DockPanel.Resources>
-            <Style TargetType="{x:Type StackPanel}">
-                <Setter Property="Margin" Value="5" />
-                <Setter Property="Orientation" Value="Horizontal" />
-            </Style>
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="Width" Value="200" />
-            </Style>
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Width" Value="300" />
-                <Setter Property="Height" Value="25" />
-            </Style>
-        </DockPanel.Resources>
-        <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
-            <StackPanel>
-                <Label>Client Id:</Label>
-                <TextBox x:Name="TBclientId" />
-            </StackPanel>
-            <StackPanel>
-                <Label>Client Secret:</Label>
-                <TextBox x:Name="TBclientsecret" />
-            </StackPanel>
-            <StackPanel>
-                <Label>Auth Code:</Label>
-                <TextBox x:Name="TBauthcode" />
-                <Button Content="Get Auth Code" Margin="15,0" Padding="10,0" Click="Button_Authorize_Click" />
-            </StackPanel>
-            <StackPanel>
-                <Label>Access Scope:</Label>
-                <TextBlock x:Name="TBaccessscope" />
-            </StackPanel>
-            <StackPanel>
-                <Button Content="Get Refresh &amp; Access Tokens" Padding="10,0" Margin="15,0" Width="175" Click="Button_GetTokens_Click" />
-            </StackPanel>
-            <StackPanel>
-                <Label>Refresh Token:</Label>
-                <TextBox x:Name="TBrefreshtoken" />
-            </StackPanel>
-            <StackPanel>
-                <Label>Access Token:</Label>
-                <TextBox x:Name="TBaccesstoken" />
-            </StackPanel>
-        </StackPanel>
+        <ListBox x:Name="ListBox_ChattersList" DataContext="{StaticResource ChatListing}" ItemsSource="{Binding ChatList}" />
     </DockPanel>
 </Window>

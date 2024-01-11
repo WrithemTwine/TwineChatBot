@@ -42,11 +42,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
         {
-            if (IsInitialStart && IsStarted) // determine if bot already started when access token changed
-            {
-                StopBot(); // stop current activity
-                StartBot(); // rebuild and start the service
-            }
+            FollowerService?.UpdateAccessToken(TwitchAccessToken);
         }
 
         /// <summary>
@@ -56,17 +52,21 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="TwitchToken">Override the Twitch Bot token used and to connect to the <para>ClientName</para> channel with a specific token just for changing followers.</param>
         private void ConnectFollowerService(string ClientName = null, string TwitchToken = null)
         {
-            if (IsStarted)
+            if (FollowerService == null)
             {
-                FollowerService.Stop();
+                FollowerService = new ExtFollowerService(
+                    new TwitchAPI(null, null, new ApiSettings() { ClientId = TwitchClientID, AccessToken = TwitchAccessToken }, null),
+                    (int)Math.Round(TwitchFrequencyFollowerTime, 0));
+
+                FollowerService.SetChannelsByName([ClientName ?? TwitchChannelName]);
+
+                // check if http access unauthorized exception; usually means expired access token
+                FollowerService.AccessTokenUnauthorized += FollowerService_AccessTokenUnauthorized;
             }
-
-            ApiSettings apifollow = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
-            FollowerService = new ExtFollowerService(new TwitchAPI(null, null, apifollow, null), (int)Math.Round(TwitchFrequencyFollowerTime, 0));
-            FollowerService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
-
-            // check if http access unauthorized exception; usually means expired access token
-            FollowerService.AccessTokenUnauthorized += FollowerService_AccessTokenUnauthorized;
+            else
+            {
+                FollowerService.UpdateAccessToken(TwitchAccessToken);
+            }
         }
 
         private void FollowerService_AccessTokenUnauthorized(object sender, EventArgs e)
@@ -83,8 +83,6 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
-                    IsInitialStart = true;
-
                     ConnectFollowerService();
                     IsStarted = true;
                     FollowerService?.Start();
@@ -123,7 +121,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     FollowerService = null;
-                    HandlersAdded = false;
                 }
                 return true;
             }

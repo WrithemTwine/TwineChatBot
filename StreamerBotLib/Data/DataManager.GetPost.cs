@@ -1,12 +1,12 @@
-﻿#if DEBUG
-#define noLogDataManager_Actions
-#endif
-
+﻿
 using StreamerBotLib.Data.DataSetCommonMethods;
+using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Static;
 
 using System.Data;
+using System.Reflection;
 
 namespace StreamerBotLib.Data
 {
@@ -23,9 +23,8 @@ namespace StreamerBotLib.Data
         /// <param name="RowChanged">True or False based on whether data changed.</param>
         public void PostUpdatedDataRow(bool RowChanged)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Notify if the row changed, {RowChanged}.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Notify if the row changed, {RowChanged}.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 if (RowChanged)
@@ -54,9 +53,7 @@ namespace StreamerBotLib.Data
         /// <returns><i>true</i> - if database contains the supplied table, <i>false</i> - if database doesn't contain the supplied table.</returns>
         private bool CheckTable(string table)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if table {table} is in the database.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if table {table} is in the database.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -77,9 +74,7 @@ namespace StreamerBotLib.Data
         /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
         public bool CheckField(string table, string field)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check if field {field} is in table {table}.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if field {field} is in table {table}.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -110,9 +105,7 @@ namespace StreamerBotLib.Data
         /// <exception cref="ArgumentException">Occurs if either the table, column, or both names are invalid and not found in the database.</exception>
         public IEnumerable<string> GetKeys(string Table)
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Check table {Table} and get the keys.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check table {Table} and get the keys.");
 
             // TODO: better error check this method, espeically for null key fields or multiple key fields
             List<string> keys = new();
@@ -146,9 +139,8 @@ namespace StreamerBotLib.Data
 
         public List<string> GetTableNames()
         {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Get the names of all database tables.");
-#endif
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get the names of all database tables.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return new(from DataTable table in _DataSource.Tables

@@ -21,8 +21,6 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        // TODO: fix - "stream started and live, user clicks 'enable repeat timers', 'repeat timers' should restart"
-
         public static DataManager DataManage { get; private set; } = new();
 
         private Thread HoldNewFollowsForBulkAdd;
@@ -197,7 +195,7 @@ namespace StreamerBotLib.Systems
                 {
                     // TODO: FIX - because users will be banned just for bot retrieving data
                     //RequestBanUser(Bots.TwitchChatBot, F.FromUserName, BanReasons.FollowBot);
-                    LogWriter.WriteLog(Enums.LogType.LogBotStatus, $"TwineBot would have banned {F.FromUserName}, testing experimental feature.");
+                    LogWriter.WriteLog($"TwineBot would have banned {F.FromUserName}, testing experimental feature.");
                 }
             }
             else
@@ -362,7 +360,7 @@ namespace StreamerBotLib.Systems
                 {
                     AppDispatcher.BeginInvoke(new BotOperation(() =>
                     {
-                        SystemActions.StreamDataUpdate();
+                        ActionSystem.StreamDataUpdate();
                     }), null);
 
                     Thread.Sleep(SleepWait); // wait 6 seconds
@@ -476,7 +474,7 @@ namespace StreamerBotLib.Systems
                != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture)))
                || OptionFlags.MsgWelcomeStreamer)
             {
-                string msg = SystemActions.CheckWelcomeUser(User.UserName);
+                string msg = ActionSystem.CheckWelcomeUser(User.UserName);
 
                 ChannelEventActions selected = ChannelEventActions.UserJoined;
 
@@ -834,7 +832,7 @@ namespace StreamerBotLib.Systems
                     {
                         foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
                         {
-                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            DiscordWebhook.SendMessage(u.Item2, null, c.Url);
                             UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to Discord
                         }
                     }

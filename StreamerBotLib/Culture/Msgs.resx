@@ -213,6 +213,9 @@
     <value>cancelraid</value>
     <comment>default command, can be translated</comment>
   </data>
+  <data name="clip" xml:space="preserve">
+    <value>clip</value>
+  </data>
   <data name="commands" xml:space="preserve">
     <value>commands</value>
     <comment>default command, can be translated</comment>
@@ -394,10 +397,13 @@
     <value>shows the message usage</value>
   </data>
   <data name="Helpuser" xml:space="preserve">
-    <value>display name of the user sending action, some contexts - the streamer</value>
+    <value>display name of the user sending action, in some contexts - the streamer; '@user' format</value>
   </data>
   <data name="HelpUserJoined" xml:space="preserve">
     <value>The message the bot uses to welcome users to the channel. See options for "no welcome", "welcome when joined", or "welcome when user chats".</value>
+  </data>
+  <data name="Helpusername" xml:space="preserve">
+    <value>display name of the user sending action, in some contexts - the streamer; 'user' format</value>
   </data>
   <data name="Helpvalue" xml:space="preserve">
     <value>Blackjack message for card value **or** a general number value in some contexts</value>
@@ -492,6 +498,9 @@
   <data name="MsgBoxManageDataArchiveTitle" xml:space="preserve">
     <value>Only Shows Once and When Setting Is Reset to Default</value>
     <comment>Data archive message box title</comment>
+  </data>
+  <data name="Msgclip" xml:space="preserve">
+    <value>#user, I've asked for a 30 second clip of the stream. I'll check in a few minutes and post the clip link.</value>
   </data>
   <data name="Msgcommandnotfound" xml:space="preserve">
     <value>Command not found.</value>
@@ -712,6 +721,9 @@
   <data name="Paramcancelraid" xml:space="preserve">
     <value>-use:!cancelraid Mod only -p:Mod</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
+  </data>
+  <data name="Paramclip" xml:space="preserve">
+    <value>-use:!clip</value>
   </data>
   <data name="Paramcommands" xml:space="preserve">
     <value>-t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands</value>

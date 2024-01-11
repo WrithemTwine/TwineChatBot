@@ -25,7 +25,7 @@ namespace StreamerBotLib.Overlay.GUI
 
         /// <summary>
         /// The collection of styles presented to the user in the GUI, saved to specific files, and 
-        /// used to serve the content pages with these styles.
+        /// used to serve the Content pages with these styles.
         /// </summary>
         public List<OverlayStyle> OverlayEditStyles { get; private set; } = new();
 
@@ -92,7 +92,7 @@ namespace StreamerBotLib.Overlay.GUI
         }
 
         /// <summary>
-        /// Refreshes the links shown to the user for accessing html content.
+        /// Refreshes the links shown to the user for accessing html Content.
         /// </summary>
         public void UpdateLinks()
         {

@@ -121,10 +121,9 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
         {
-            if (IsInitialStart && IsStarted)
+            if (IsStarted)
             {
-                StopBot();
-                StartBot();
+                TwitchChat.SetConnectionCredentials(new(TwitchBotUserName, TwitchAccessToken));
 
                 SendChatMessages();
             }
@@ -159,8 +158,6 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchChat.OnError += TwitchChat_OnError;
         }
 
-
-        // TODO: work with this exception regarding 401 authorization invalid HTTP error return - review other bots for handling httpresponseexception for unauthorized access tokens - account for bots already started or not started
         private void TwitchChat_OnError(object sender, OnErrorEventArgs e)
         {
             if (e.Exception.Message.Contains("Unauthorized"))
@@ -191,7 +188,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (OptionFlags.LogBotStatus)
             {
-                LogWriter.WriteLog(LogType.LogBotStatus, e.DateTime.ToLocalTime().ToString() + ": " + e.Data);
+                LogWriter.WriteLog(e.DateTime.ToLocalTime().ToString() + ": " + e.Data);
             }
 
             NotifyPropertyChanged(nameof(StatusLog));
@@ -324,7 +321,6 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
-                    IsInitialStart = true;
                     IsStarted = true;
                     CreateClient();
                     Connected = Connect();
@@ -394,7 +390,7 @@ namespace StreamerBotLib.BotClients.Twitch
             throw new();
         }
 
-        private readonly List<string> newSendMsg = new();
+        private readonly List<string> newSendMsg = [];
 
         /// <summary>
         /// Send a message to the connected channels.

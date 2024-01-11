@@ -7,8 +7,6 @@ using System.Globalization;
 using System.Net.Http;
 using System.Reflection;
 
-using TwitchLib.Api;
-using TwitchLib.Api.Core;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -44,7 +42,6 @@ namespace StreamerBotLib.BotClients.Twitch
             BotClientName = Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
-
         }
 
         /// <summary>
@@ -54,29 +51,6 @@ namespace StreamerBotLib.BotClients.Twitch
         internal override void SetTokenBot(TwitchTokenBot tokenBot)
         {
             twitchTokenBot = tokenBot;
-            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
-        }
-
-        /// <summary>
-        /// Handles when we find the access token changed. We need to restart the bot.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
-        {
-            bool Multi = IsMultiLiveBotActive; // record current activity state
-
-            if (IsInitialStart && IsStarted)
-            {
-                StopBot();
-                StartBot();
-
-                if (Multi) // restore multi functionality if it was already enabled.
-                {
-                    StartMultiLive();
-                }
-            }
         }
 
         /// <summary>
@@ -97,16 +71,17 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void ConnectLiveMonitorService()
         {
-            if (IsStarted)
+            if (LiveStreamMonitor == null)
             {
-                LiveStreamMonitor?.Stop();
+                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+
+                // check if there is an unauthorized http access exception; we have an expired token
+                LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;
             }
-
-            ApiSettings apilive = new() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID };
-            LiveStreamMonitor = new(new TwitchAPI(null, null, apilive, null), (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
-
-            // check if there is an unauthorized http access exception; we have an expired token
-            LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;
+            else
+            {
+                LiveStreamMonitor.UpdateToken(TwitchAccessToken);
+            }
         }
 
         private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)
@@ -123,7 +98,7 @@ namespace StreamerBotLib.BotClients.Twitch
             string s = "";
             lock (s)
             {
-                List<string> ChannelsToMonitor = new();
+                List<string> ChannelsToMonitor = [];
 
                 if (IsStarted)
                 {
@@ -157,7 +132,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     IsStopped = false;
 
-                    SetLiveMonitorChannels(new());
+                    SetLiveMonitorChannels([]);
 
                     LiveStreamMonitor.Start();
                     InvokeBotStarted();
@@ -259,7 +234,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             else
             {
-                SetLiveMonitorChannels(new());
+                SetLiveMonitorChannels([]);
             }
         }
 
@@ -327,7 +302,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         {
                             if (u.Item1 == "Discord")
                             {
-                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary));
+                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary), VariableParser.BuildPlatformUrl(e.Stream.UserName, Platform.Twitch));
                             }
                         }
                     }

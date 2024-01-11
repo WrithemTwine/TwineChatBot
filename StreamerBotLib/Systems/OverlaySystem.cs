@@ -190,7 +190,7 @@ namespace StreamerBotLib.Systems
         /// Add the new Ticker Item to the database, then send it to the Overlay server
         /// </summary>
         /// <param name="item">An object containing the overlay ticker item details for updating.</param>
-        /// <param name="UserName">The username specific to the ticker item.</param>
+        /// <param name="UserName">The Username specific to the ticker item.</param>
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
             if (OptionFlags.ManageOverlayTicker)

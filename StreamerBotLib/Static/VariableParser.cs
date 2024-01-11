@@ -29,7 +29,7 @@ namespace StreamerBotLib.Static
         /// <returns>A key,value Dictionary with the specified prefix.</returns>
         public static Dictionary<string, string> BuildDictionary<T>(Tuple<T, string>[] paramArray)
         {
-            Dictionary<string, string> dict = new();
+            Dictionary<string, string> dict = [];
 
             foreach (Tuple<T, string> t in paramArray)
             {
@@ -37,6 +37,16 @@ namespace StreamerBotLib.Static
             }
 
             return dict;
+        }
+
+        public static string BuildPlatformUrl(string Channel, Platform platform)
+        {
+            return platform switch
+            {
+                Platform.Twitch => Resources.TwitchHomepage + Channel,
+                Platform.Default => throw new NotImplementedException(),
+                _ => throw new NotImplementedException()
+            };
         }
 
         /// <summary>
@@ -63,7 +73,7 @@ namespace StreamerBotLib.Static
         /// <returns>The message replaced with the dictionary key,value pairs.</returns>
         public static string ParseReplace(string message, Dictionary<string, string> dictionary, bool HTMLMarkup = false)
         {
-            string Markup(string variable, string value)
+            static string Markup(string variable, string value)
             {
                 return $"<span class=\"{variable[1..]}\">{value}</span>";
             }
@@ -80,7 +90,7 @@ namespace StreamerBotLib.Static
                             Markup(k, (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
                             dictionary[k]) :
 
-                            (k == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix username with @
+                            (k == Prefix + MsgVars.user.ToString() ? "@" : "") +  // prefix Username with @
                             (k == Prefix + MsgVars.url.ToString() ? Resources.TwitchHomepage : "") + // prefix URL with Twitch URL
                             dictionary[k]));
                     }

@@ -145,7 +145,7 @@ namespace StreamerBotLib.Overlay.Server
         }
 
         /// <summary>
-        /// Defines an async listener action for the http server, which then actually serves the content to any connected browsers. 
+        /// Defines an async listener action for the http server, which then actually serves the Content to any connected browsers. 
         /// Also, determines if the URL is for the tickers or alerts, and uses the respective collections for the outgoing html text.
         /// 
         /// While the bot is still active and the server is 'listening' for requests, method spins a while loop to add listeners as they

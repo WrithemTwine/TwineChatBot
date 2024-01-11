@@ -1894,5 +1894,341 @@ namespace StreamerBotLib.Properties {
                 this["EnableDebugTwitchTokenBot"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugCommandSystem {
+            get {
+                return ((bool)(this["EnableDebugCommandSystem"]));
+            }
+            set {
+                this["EnableDebugCommandSystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugSystemController {
+            get {
+                return ((bool)(this["EnableDebugSystemController"]));
+            }
+            set {
+                this["EnableDebugSystemController"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugStatSystem {
+            get {
+                return ((bool)(this["EnableDebugStatSystem"]));
+            }
+            set {
+                this["EnableDebugStatSystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugBotController {
+            get {
+                return ((bool)(this["EnableDebugBotController"]));
+            }
+            set {
+                this["EnableDebugBotController"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchUserSvcBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchUserSvcBot"]));
+            }
+            set {
+                this["EnableDebugTwitchUserSvcBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchMultiLiveBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchMultiLiveBot"]));
+            }
+            set {
+                this["EnableDebugTwitchMultiLiveBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugCurrencySystem {
+            get {
+                return ((bool)(this["EnableDebugCurrencySystem"]));
+            }
+            set {
+                this["EnableDebugCurrencySystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugModerationSystem {
+            get {
+                return ((bool)(this["EnableDebugModerationSystem"]));
+            }
+            set {
+                this["EnableDebugModerationSystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugOverlaySystem {
+            get {
+                return ((bool)(this["EnableDebugOverlaySystem"]));
+            }
+            set {
+                this["EnableDebugOverlaySystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugBlackjackGame {
+            get {
+                return ((bool)(this["EnableDebugBlackjackGame"]));
+            }
+            set {
+                this["EnableDebugBlackjackGame"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugLocalizedMessages {
+            get {
+                return ((bool)(this["EnableDebugLocalizedMessages"]));
+            }
+            set {
+                this["EnableDebugLocalizedMessages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugFormatData {
+            get {
+                return ((bool)(this["EnableDebugFormatData"]));
+            }
+            set {
+                this["EnableDebugFormatData"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugThreadManager {
+            get {
+                return ((bool)(this["EnableDebugThreadManager"]));
+            }
+            set {
+                this["EnableDebugThreadManager"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugOutputMsgParsing {
+            get {
+                return ((bool)(this["EnableDebugOutputMsgParsing"]));
+            }
+            set {
+                this["EnableDebugOutputMsgParsing"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUIProcessWatcher {
+            get {
+                return ((bool)(this["EnableDebugGUIProcessWatcher"]));
+            }
+            set {
+                this["EnableDebugGUIProcessWatcher"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUITabSizes {
+            get {
+                return ((bool)(this["EnableDebugGUITabSizes"]));
+            }
+            set {
+                this["EnableDebugGUITabSizes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUIThemes {
+            get {
+                return ((bool)(this["EnableDebugGUIThemes"]));
+            }
+            set {
+                this["EnableDebugGUIThemes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUITwitchTokenAuth {
+            get {
+                return ((bool)(this["EnableDebugGUITwitchTokenAuth"]));
+            }
+            set {
+                this["EnableDebugGUITwitchTokenAuth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUIEvents {
+            get {
+                return ((bool)(this["EnableDebugGUIEvents"]));
+            }
+            set {
+                this["EnableDebugGUIEvents"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUIHelpers {
+            get {
+                return ((bool)(this["EnableDebugGUIHelpers"]));
+            }
+            set {
+                this["EnableDebugGUIHelpers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUIDataViews {
+            get {
+                return ((bool)(this["EnableDebugGUIDataViews"]));
+            }
+            set {
+                this["EnableDebugGUIDataViews"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugGUIBotComs {
+            get {
+                return ((bool)(this["EnableDebugGUIBotComs"]));
+            }
+            set {
+                this["EnableDebugGUIBotComs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugCommonSystem {
+            get {
+                return ((bool)(this["EnableDebugCommonSystem"]));
+            }
+            set {
+                this["EnableDebugCommonSystem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchBots {
+            get {
+                return ((bool)(this["EnableDebugTwitchBots"]));
+            }
+            set {
+                this["EnableDebugTwitchBots"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchPriorChannelName {
+            get {
+                return ((string)(this["TwitchPriorChannelName"]));
+            }
+            set {
+                this["TwitchPriorChannelName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchPriorBotName {
+            get {
+                return ((string)(this["TwitchPriorBotName"]));
+            }
+            set {
+                this["TwitchPriorBotName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchBotUserId {
+            get {
+                return ((string)(this["TwitchBotUserId"]));
+            }
+            set {
+                this["TwitchBotUserId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchChannelUserId {
+            get {
+                return ((string)(this["TwitchChannelUserId"]));
+            }
+            set {
+                this["TwitchChannelUserId"] = value;
+            }
+        }
     }
 }

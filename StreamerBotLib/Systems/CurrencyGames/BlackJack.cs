@@ -10,13 +10,13 @@ namespace StreamerBotLib.Systems.CurrencyGames
     internal class BlackJack
     {
         public const int BlackJackWin = 21;
-        private int HouseStandValue = OptionFlags.GameBlackJackHouseStands;
+        private readonly int HouseStandValue = OptionFlags.GameBlackJackHouseStands;
 
         private PlayGameUserWager<PlayingCardFrench, PlayingCardSuit> HouseCards { get; set; } = new(null, 0);
 
         private PlayingCards<PlayingCardFrench, PlayingCardSuit> PlayDeck { get; set; }
 
-        private List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> GameUsers { get; set; } = new();
+        private List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> GameUsers { get; set; } = [];
 
         internal BlackJack() { }
 
@@ -43,7 +43,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
             SetupCard(); // deal round 1
             SetupCard(); // deal round 2
         }
-
+#nullable enable
         internal string GetUserCard(LiveUser? CurrUser = null)
         {
             string Message;
@@ -70,6 +70,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
 
             return Message;
         }
+#nullable disable
 
         internal int GetUserCardValue(LiveUser CurrUser)
         {
@@ -93,10 +94,10 @@ namespace StreamerBotLib.Systems.CurrencyGames
 
         internal void UserWantsCard(LiveUser CurrUser = null)
         {
-            int CountCards(List<PlayingCard<PlayingCardFrench, PlayingCardSuit>> cards)
+            static int CountCards(List<PlayingCard<PlayingCardFrench, PlayingCardSuit>> cards)
             {
                 int TotalValue = 0;
-                List<PlayingCard<PlayingCardFrench, PlayingCardSuit>> hasAce = new();
+                List<PlayingCard<PlayingCardFrench, PlayingCardSuit>> hasAce = [];
                 foreach (var C in cards)
                 {
                     if (C.PlayingCardValue == PlayingCardFrench.A)

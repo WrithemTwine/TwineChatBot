@@ -279,9 +279,9 @@
                             <Setter Property="BorderBrush" Value="{DynamicResource LightBackground}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Background" Value="{DynamicResource LightBackground}"/>
+                            <Setter Property="Background" Value="{DynamicResource ForegroundText}"/>
                             <Setter Property="BorderBrush" Value="{DynamicResource LightBackground}"/>
-                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource PartBackground}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource FullBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

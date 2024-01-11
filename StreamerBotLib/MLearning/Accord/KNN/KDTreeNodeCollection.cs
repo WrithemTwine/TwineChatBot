@@ -48,7 +48,7 @@
 //    2. This notice may not be removed or altered from any source
 //       distribution.
 // 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
 
 

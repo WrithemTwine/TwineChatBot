@@ -1,8 +1,11 @@
 ﻿
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
+
+using System.Reflection;
 
 namespace StreamerBotLib.GUI
 {
@@ -66,6 +69,8 @@ namespace StreamerBotLib.GUI
 
         private void Twitch_RaidCompleted(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Raid now reported complete.");
+
             LiveStreamMonitor_OnStreamOffline(this, new());
         }
 
@@ -73,6 +78,8 @@ namespace StreamerBotLib.GUI
         {
             if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now offline.");
+
                 OnLiveStreamStopped?.Invoke(this, new());
             }
         }
@@ -81,6 +88,8 @@ namespace StreamerBotLib.GUI
         {
             if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now updated.");
+
                 OnLiveStreamUpdated?.Invoke(this, new());
             }
         }
@@ -89,6 +98,8 @@ namespace StreamerBotLib.GUI
         {
             if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now online.");
+
                 OnLiveStreamStarted?.Invoke(this, new());
             }
         }

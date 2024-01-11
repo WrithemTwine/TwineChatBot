@@ -1,4 +1,4 @@
-﻿namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Math Library
     // The Accord.NET Framework

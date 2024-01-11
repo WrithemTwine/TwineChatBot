@@ -1,4 +1,4 @@
-﻿namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     public static class Vector
     {
@@ -19,7 +19,7 @@
 #endif
         public static T[] OneHot<T>(int index, T[] result)
         {
-            var one = (T)System.Convert.ChangeType(1, typeof(T));
+            var one = (T)Convert.ChangeType(1, typeof(T));
             result[index] = one;
             return result;
         }

@@ -41,7 +41,7 @@ namespace StreamerBotLib.Static
         public static bool TwitchStreamerUseToken => Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
 
         /// <summary>
-        /// User specified in the GUI, the user selects whether they want to use the "Twitch Implicit grant flow"
+        /// User specified in the GUI, the user selects whether they want to use the "Twitch Authentication Code flow"
         /// to automatically get access tokens as the token expires.
         /// </summary>
         public static bool TwitchTokenUseAuth => Settings.Default.TwitchTokenUseAuth;
@@ -176,7 +176,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool AutoShout => Settings.Default.MsgAutoShout;
         /// <summary>
-        /// Setting for the bot to emit the "!so username" to the given channel chat, such that other bots can pick-up a shout-out for additional notifications.
+        /// Setting for the bot to emit the "!so Username" to the given channel chat, such that other bots can pick-up a shout-out for additional notifications.
         /// </summary>
         public static bool MsgSendSOToChat => Settings.Default.MsgSendSOToChat;
         /// <summary>
@@ -459,6 +459,35 @@ namespace StreamerBotLib.Static
             get => Settings.Default.TwitchBotUserName; set => Settings.Default.TwitchBotUserName = value;
         }
         /// <summary>
+        /// Captures prior channel name to detect if the user is monitoring another channel, hence, requiring new channel user id.
+        /// </summary>
+        public static string TwitchPriorChannelName
+        {
+            get => Settings.Default.TwitchPriorChannelName; set => Settings.Default.TwitchPriorChannelName = value;
+        }
+        /// <summary>
+        /// Captures prior bot account name to detect if user changed bot accounts, hence, requiring a new bot user id.
+        /// </summary>
+        public static string TwitchPriorBotName
+        {
+            get => Settings.Default.TwitchPriorBotName; set => Settings.Default.TwitchPriorBotName = value;
+        }
+        /// <summary>
+        /// Holds the latest used bot user id, to minimize api calls.
+        /// </summary>
+        public static string TwitchBotUserId
+        {
+            get => Settings.Default.TwitchBotUserId; set => Settings.Default.TwitchBotUserId = value;
+        }
+
+        /// <summary>
+        /// Holds the latest used streamer user id, to minimize API calls.
+        /// </summary>
+        public static string TwitchStreamerUserId
+        {
+            get => Settings.Default.TwitchChannelUserId; set => Settings.Default.TwitchChannelUserId = value;
+        }
+        /// <summary>
         /// Specifies the bot account client ID, to use in authentication calls.
         /// </summary>
         public static string TwitchBotClientId
@@ -652,7 +681,7 @@ namespace StreamerBotLib.Static
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
         /// <summary>
-        /// Manages the Overlay action media port serving Overlay alert content through the http server.
+        /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
         public static int MediaOverlayMediaActionPort
         {
@@ -660,7 +689,7 @@ namespace StreamerBotLib.Static
         }
 
         /// <summary>
-        /// Manages the Overlay ticker medition port server Overlay ticker item content through the http server.
+        /// Manages the Overlay ticker medition port server Overlay ticker item Content through the http server.
         /// </summary>
         public static int MediaOverlayMediaTickerPort
         {
@@ -794,10 +823,39 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool EnableDebugTwitchPubSubBot => Settings.Default.EnableDebugTwitchPubSubBot;
         /// <summary>
+        /// Enables debug logging for Twitch bot User Service methods.
+        /// </summary>
+        public static bool EnableDebugTwitchUserSvcBot => Settings.Default.EnableDebugTwitchUserSvcBot;
+        /// <summary>
         /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
         public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
+        public static bool EnableDebugCommandSystem => Settings.Default.EnableDebugCommandSystem;
+        public static bool EnableDebugCommonSystem => Settings.Default.EnableDebugCommonSystem;
+        public static bool EnableDebugSystemController => Settings.Default.EnableDebugSystemController;
+        public static bool EnableDebugStatSystem => Settings.Default.EnableDebugStatSystem;
+        public static bool EnableDebugBotController => Settings.Default.EnableDebugBotController;
+        public static bool EnableDebugTwitchMultiLiveBot => Settings.Default.EnableDebugTwitchMultiLiveBot;
+        public static bool EnableDebugCurrencySystem => Settings.Default.EnableDebugCurrencySystem;
+        public static bool EnableDebugModerationSystem => Settings.Default.EnableDebugModerationSystem;
+        public static bool EnableDebugOverlaySystem => Settings.Default.EnableDebugOverlaySystem;
+        public static bool EnableDebugBlackjackGame => Settings.Default.EnableDebugBlackjackGame;
+        public static bool EnableDebugLocalizedMessages => Settings.Default.EnableDebugLocalizedMessages;
+        public static bool EnableDebugThreadManager => Settings.Default.EnableDebugThreadManager;
+        public static bool EnableDebugFormatData => Settings.Default.EnableDebugFormatData;
+        public static bool EnableDebugOutputMsgParsing => Settings.Default.EnableDebugOutputMsgParsing;
+        public static bool EnableDebugGUIProcessWatcher => Settings.Default.EnableDebugGUIProcessWatcher;
+        public static bool EnableDebugGUITabSizes => Settings.Default.EnableDebugGUITabSizes;
+        public static bool EnableDebugGUIThemes => Settings.Default.EnableDebugGUIThemes;
+        public static bool EnableDebugGUITwitchTokenAuth => Settings.Default.EnableDebugGUITwitchTokenAuth;
+        public static bool EnableDebugGUIEvents => Settings.Default.EnableDebugGUIEvents;
+        public static bool EnableDebugGUIHelpers => Settings.Default.EnableDebugGUIHelpers;
+        public static bool EnableDebugGUIDataViews => Settings.Default.EnableDebugGUIDataViews;
+        public static bool EnableDebugGUIBotComs => Settings.Default.EnableDebugGUIBotComs;
+        public static bool EnableDebugTwitchBots => Settings.Default.EnableDebugTwitchBots;
+
+
         #endregion
 
         #region GitHub links

@@ -66,7 +66,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchTokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
-            if (IsInitialStart && IsStarted)
+            if (IsStarted)
             {
                 if (OptionFlags.TwitchStreamerUseToken)
                 {
@@ -83,7 +83,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
         {
-            if (IsInitialStart && IsStarted)
+            if (IsStarted)
             {
                 if (!OptionFlags.TwitchStreamerUseToken)
                 {
@@ -120,12 +120,12 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
         {
-            string Clean(string message)
+            static string Clean(string message)
             {
                 return message.Replace("\n", "").Replace("\r", "");
             }
 
-            if (e.Data.ToLower().Contains("reconnect"))
+            if (e.Data.Contains("reconnect", StringComparison.CurrentCultureIgnoreCase))
             {
                 ReconnectService();
             }
@@ -164,7 +164,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         if (IsStopped || !IsStarted)
                         {
-                            IsInitialStart = true;
                             IsStarted = true;
                             BuildPubSubClient();
 
@@ -244,7 +243,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     // send the topics to listen
                     TwitchPubSub?.SendTopics(Token);
-
                     InvokeBotStarted();
                 }
 

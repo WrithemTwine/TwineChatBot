@@ -10,34 +10,73 @@ namespace StreamerBotLib.Static
     /// </summary>
     public static class LogWriter
     {
+        // stream flush parameters
+        private static TimeSpan StreamFlush = new(0, 10, 0);
+        private static DateTime FlushTime = DateTime.Now;
+
+        // file names & thread lock strings
         private const string StatusLog = "StatusLog.txt";
         private const string ExceptionLog = "ExceptionLog.txt";
-        private const string DataActLog = "DataActionLog.txt";
-        private const string OverlayLogFile = "OverlayLog.txt";
-
         private const string DebugLogFile = "DebugLogFile.txt";
+
+        private static bool started;
+
+        // streamwriters
+        private static readonly StreamWriter StatusLogWriter = new(StatusLog, true);
+        private static readonly StreamWriter ExceptionLogWriter = new(ExceptionLog, true);
+        private static readonly StreamWriter DebugLogFileWriter = new(DebugLogFile, true);
+
+        /// <summary>
+        /// Start a flush thread, to check and flush the streamwriter every <code>StreamFlush</code> amount of time.
+        /// </summary>
+        private static void StaticFlush()
+        {
+            if (!started)
+            {
+                started = true;
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    while (OptionFlags.ActiveToken)
+                    {
+                        if (DateTime.Now > FlushTime)
+                        {
+                            FlushTime = DateTime.Now + StreamFlush;
+                            StatusLogWriter.Flush();
+                            ExceptionLogWriter.Flush();
+                            DebugLogFileWriter.Flush();
+                        }
+                    }
+                });
+            }
+        }
+
+        /// <summary>
+        /// Closes logs when the application exits. Be sure to call to avoid possible corrupted files.
+        /// </summary>
+        public static void ExitCloseLogs()
+        {
+            StatusLogWriter.Close();
+            StatusLogWriter.Dispose();
+            ExceptionLogWriter.Close();
+            ExceptionLogWriter.Dispose();
+            DebugLogFileWriter.Close();
+            DebugLogFileWriter.Dispose();
+        }
 
         /// <summary>
         /// Write output to a specific log.
         /// </summary>
         /// <param name="ChooseLog">Choose which log to write the data.</param>
-        /// <param name="line">The line content to write to the log.</param>
-        public static void WriteLog(LogType ChooseLog, string line)
+        /// <param name="line">The line Content to write to the log.</param>
+        public static void WriteLog(string line)
         {
+            StaticFlush();
             lock (StatusLog)
             {
-                StreamWriter s;
-                if (ChooseLog == LogType.LogBotStatus)
+                if (OptionFlags.LogBotStatus)
                 {
-                    s = new(StatusLog, true);
+                    StatusLogWriter.WriteLine(line);
                 }
-                else // if (ChooseLog == LogType.LogExceptions)
-                {
-                    s = new(ExceptionLog, true);
-                }
-
-                s.WriteLine(line);
-                s.Close();
             }
         }
 
@@ -48,43 +87,14 @@ namespace StreamerBotLib.Static
         /// <param name="Method">Name of the method which caught the exception.</param>
         public static void LogException(Exception ex, string Method)
         {
+            StaticFlush();
             lock (ExceptionLog)
             {
                 if (OptionFlags.LogExceptions)
                 {
-                    WriteLog(LogType.LogExceptions, $"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {Method} {ex.GetType()}");
-                    WriteLog(LogType.LogExceptions, $"{ex.Message}\nStack Trace: {ex.StackTrace}");
+                    ExceptionLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {Method} {ex.GetType()}");
+                    ExceptionLogWriter.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
                 }
-            }
-        }
-
-        /// <summary>
-        /// Logs actions performed for managing database information. Internally adds 'DateTime.Now' to the logfile output.
-        /// </summary>
-        /// <param name="Method">Name of the method logging the current action.</param>
-        /// <param name="line">The information line of the performed action.</param>
-        public static void DataActionLog(string Method, string line)
-        {
-            lock (DataActLog)
-            {
-                StreamWriter s = new(DataActLog, true);
-                s.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {line}");
-                s.Close();
-            }
-        }
-
-        /// <summary>
-        /// Logs actions performed related to the Overlay system. Includes "DateTime.Now" with each logfile output.
-        /// </summary>
-        /// <param name="Method">The name of the method for the specific action.</param>
-        /// <param name="line">The details of the current action.</param>
-        public static void OverlayLog(string Method, string line)
-        {
-            lock (OverlayLogFile)
-            {
-                StreamWriter s = new(OverlayLogFile, true);
-                s.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {line}");
-                s.Close();
             }
         }
 
@@ -92,10 +102,11 @@ namespace StreamerBotLib.Static
         /// Logs the debug output for bot functions. Enabled by Settings Flags.
         /// </summary>
         /// <param name="Method">The name of the method performing the current functionality.</param>
-        /// <param name="debugLogTypes">The type of the current function to log.</param>
+        /// <param name="debugLogTypes">The type of the current function to log. If user doesn't enable this log setting, it won't emit.</param>
         /// <param name="line">The message to save to the log.</param>
-        internal static void DebugLog(string Method, DebugLogTypes debugLogTypes, string line)
+        public static void DebugLog(string Method, DebugLogTypes debugLogTypes, string line)
         {
+            StaticFlush();
             string Output = debugLogTypes switch
             {
                 DebugLogTypes.OverlayBot => OptionFlags.EnableDebugLogOverlays ? line : "",
@@ -107,15 +118,37 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.TwitchPubSubBot => OptionFlags.EnableDebugTwitchPubSubBot ? line : "",
                 DebugLogTypes.DiscordBot => OptionFlags.EnableDebugDiscordBot ? line : "",
                 DebugLogTypes.TwitchTokenBot => OptionFlags.EnableDebugTwitchTokenBot ? line : "",
+                DebugLogTypes.TwitchBotUserSvc => OptionFlags.EnableDebugTwitchUserSvcBot ? line : "",
+                DebugLogTypes.SystemController => OptionFlags.EnableDebugSystemController ? line : "",
+                DebugLogTypes.BotController => OptionFlags.EnableDebugBotController ? line : "",
+                DebugLogTypes.CommandSystem => OptionFlags.EnableDebugCommandSystem ? line : "",
+                DebugLogTypes.StatSystem => OptionFlags.EnableDebugStatSystem ? line : "",
+                DebugLogTypes.TwitchMultiLiveBot => OptionFlags.EnableDebugTwitchMultiLiveBot ? line : "",
+                DebugLogTypes.CurrencySystem => OptionFlags.EnableDebugCurrencySystem ? line : "",
+                DebugLogTypes.ModerationSystem => OptionFlags.EnableDebugModerationSystem ? line : "",
+                DebugLogTypes.OverlaySystem => OptionFlags.EnableDebugOverlaySystem ? line : "",
+                DebugLogTypes.CommonSystem => OptionFlags.EnableDebugCommonSystem ? line : "",
+                DebugLogTypes.BlackjackGame => OptionFlags.EnableDebugBlackjackGame ? line : "",
+                DebugLogTypes.LocalizedMessages => OptionFlags.EnableDebugLocalizedMessages ? line : "",
+                DebugLogTypes.FormatData => OptionFlags.EnableDebugFormatData ? line : "",
+                DebugLogTypes.ThreadManager => OptionFlags.EnableDebugThreadManager ? line : "",
+                DebugLogTypes.OutputMsgParsing => OptionFlags.EnableDebugOutputMsgParsing ? line : "",
+                DebugLogTypes.GUIProcessWatcher => OptionFlags.EnableDebugGUIProcessWatcher ? line : "",
+                DebugLogTypes.GUITabSizes => OptionFlags.EnableDebugGUITabSizes ? line : "",
+                DebugLogTypes.GUIThemes => OptionFlags.EnableDebugGUIThemes ? line : "",
+                DebugLogTypes.GUITwitchTokenAuth => OptionFlags.EnableDebugGUITwitchTokenAuth ? line : "",
+                DebugLogTypes.GUIEvents => OptionFlags.EnableDebugGUIEvents ? line : "",
+                DebugLogTypes.GUIHelpers => OptionFlags.EnableDebugGUIHelpers ? line : "",
+                DebugLogTypes.GUIDataViews => OptionFlags.EnableDebugGUIDataViews ? line : "",
+                DebugLogTypes.GUIBotComs => OptionFlags.EnableDebugGUIBotComs ? line : "",
+                DebugLogTypes.TwitchBots => OptionFlags.EnableDebugTwitchBots ? line : "",
                 _ => "",
             };
             if (Output != "")
             {
                 lock (DebugLogFile)
                 {
-                    StreamWriter s = new(DebugLogFile, true);
-                    s.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {debugLogTypes} {Output}");
-                    s.Close();
+                    DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {debugLogTypes} {Output}");
                 }
             }
         }

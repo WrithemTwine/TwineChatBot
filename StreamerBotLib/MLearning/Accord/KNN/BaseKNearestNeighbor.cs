@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Machine Learning Library
     // The Accord.NET Framework

@@ -23,7 +23,7 @@ namespace StreamerBotLib.Overlay.Models
         public string OverlayType { get; set; }
 
         /// <summary>
-        /// The content of the style file, default loads for no file.
+        /// The Content of the style file, default loads for no file.
         /// </summary>
         public string OverlayStyleText { get; set; }
 

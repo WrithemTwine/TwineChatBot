@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
     /// <summary>
     ///   Extension methods for sorting operations.
@@ -45,7 +45,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
         {
             while (last - first >= INTROSORT_THRESHOLD)
             {
-                int pivotIndex = Partition(keys, items, first, last, asc: asc);
+                int pivotIndex = keys.Partition(items, first, last, asc: asc);
 
                 if (n == pivotIndex)
                     return keys[n];
@@ -185,13 +185,13 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             int dir = asc ? 1 : -1;
             int middle = first + (last - first) / 2;
             if (dir * keys[middle].CompareTo(keys[first]) < 0)
-                Matrix.Swap(keys, middle, first);
+                keys.Swap(middle, first);
 
             if (dir * keys[last].CompareTo(keys[middle]) < 0)
             {
-                Matrix.Swap(keys, last, middle);
+                keys.Swap(last, middle);
                 if (dir * keys[middle].CompareTo(keys[first]) < 0)
-                    Matrix.Swap(keys, middle, first);
+                    keys.Swap(middle, first);
             }
 
             return middle;
@@ -211,18 +211,18 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             int middle = first + (last - first) / 2;
             if (dir * keys[middle].CompareTo(keys[first]) < 0)
             {
-                Matrix.Swap(keys, middle, first);
-                Matrix.Swap(items, middle, first);
+                keys.Swap(middle, first);
+                items.Swap(middle, first);
             }
             if (dir * keys[last].CompareTo(keys[middle]) < 0)
             {
-                Matrix.Swap(keys, last, middle);
-                Matrix.Swap(items, last, middle);
+                keys.Swap(last, middle);
+                items.Swap(last, middle);
 
                 if (dir * keys[middle].CompareTo(keys[first]) < 0)
                 {
-                    Matrix.Swap(keys, middle, first);
-                    Matrix.Swap(items, middle, first);
+                    keys.Swap(middle, first);
+                    items.Swap(middle, first);
                 }
             }
 

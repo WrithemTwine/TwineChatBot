@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Reflection;
 
+using TwitchLib.Api.Helix.Models.Clips.CreateClip;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Interfaces;
 
@@ -47,6 +48,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             QueryCountPerRequest = queryCountPerRequest;
             CacheSize = cacheSize;
+        }
+
+        public void UpdateAccessToken(string accessToken)
+        {
+            _api.Settings.AccessToken = accessToken;
         }
 
         /// <summary>
@@ -112,7 +118,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 {
                     HashSet<string> existingClips = new(Clipsknown.Select(f => f.Id));
                     string latestKnownClipDate = _lastClipsDates[channel];
-                    newClips = new();
+                    newClips = [];
 
                     foreach (Clip clip in latestClips)
                     {
@@ -153,8 +159,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 try
                 {
                     return after == null ?
-                        await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c), Channel, new object[] { queryCount })
-                        : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]), Channel, new object[] { queryCount, after });
+                        await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c), Channel, [queryCount])
+                        : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]), Channel, [queryCount, after]);
                 }
                 catch (HttpRequestException hrEx)
                 {
@@ -171,7 +177,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 }
             }
 
-            List<Clip> allClips = new();
+            List<Clip> allClips = [];
             string cursor = null;
 
             async Task<int> AddClip(string Channel, int queryCount, string after = null)
@@ -228,9 +234,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         private async Task<List<Clip>> GetLatestClipsAsync(string channel)
         {
             GetClipsResponse resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
-                channel, new object[] { QueryCountPerRequest });
+                channel, [QueryCountPerRequest]);
 
             return resultset.Clips.Reverse().ToList();
+        }
+
+        public async Task<CreatedClipResponse> CreateClip(string channelId)
+        {
+            return await _api.Helix.Clips.CreateClipAsync(channelId);
         }
     }
 }

@@ -4,8 +4,6 @@ using StreamerBotLib.Static;
 
 using System.Reflection;
 
-using TwitchLib.Api;
-using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
@@ -29,21 +27,6 @@ namespace StreamerBotLib.BotClients.Twitch
         internal override void SetTokenBot(TwitchTokenBot tokenBot)
         {
             twitchTokenBot = tokenBot;
-            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
-        }
-
-        /// <summary>
-        /// The token changed, we need to restart the clip bot with the new token..
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
-        {
-            if (IsInitialStart && IsStarted)
-            {
-                StopBot();
-                StartBot();
-            }
         }
 
         /// <summary>
@@ -53,16 +36,17 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="TwitchToken">Access token, if applicable</param>
         private void ConnectClipService(string ClientName = null, string TwitchToken = null)
         {
-            if (IsStarted)
+            if (ClipMonitorService == null)
             {
-                ClipMonitorService.Stop();
+                ClipMonitorService = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Ceiling(TwitchFrequencyClipTime));
+                ClipMonitorService.SetChannelsByName([ClientName ?? TwitchChannelName]);
+
+                ClipMonitorService.AccessTokenUnauthorized += ClipMonitorService_AccessTokenUnauthorized;
             }
-
-            ApiSettings apiclip = new() { AccessToken = TwitchToken ?? TwitchAccessToken, ClientId = ClientName ?? TwitchClientID };
-            ClipMonitorService = new(new TwitchAPI(null, null, apiclip, null), (int)Math.Ceiling(TwitchFrequencyClipTime));
-            ClipMonitorService.SetChannelsByName(new List<string>() { ClientName ?? TwitchChannelName });
-
-            ClipMonitorService.AccessTokenUnauthorized += ClipMonitorService_AccessTokenUnauthorized;
+            else
+            {
+                ClipMonitorService.UpdateAccessToken(TwitchAccessToken);
+            }
         }
 
         private void ClipMonitorService_AccessTokenUnauthorized(object sender, EventArgs e)
@@ -79,7 +63,6 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStopped || !IsStarted)
                 {
-                    IsInitialStart = true;
                     ConnectClipService();
                     IsStarted = true;
                     ClipMonitorService?.Start();
@@ -115,7 +98,6 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     ClipMonitorService = null;
-                    HandlersAdded = false;
                 }
                 return true;
             }
@@ -138,6 +120,11 @@ namespace StreamerBotLib.BotClients.Twitch
         public async Task<List<Clip>> GetAllClipsAsync(string ChannelName = null)
         {
             return await ClipMonitorService.GetAllClipsAsync(ChannelName ?? TwitchChannelName);
+        }
+
+        public void CreateClip()
+        {
+            _ = ClipMonitorService.CreateClip(TwitchChannelId);
         }
     }
 }

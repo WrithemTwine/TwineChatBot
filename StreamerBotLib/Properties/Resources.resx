@@ -121,13 +121,13 @@
     <value>WrithemTwine</value>
   </data>
   <data name="CredentialsTwitchScopesDiffOauthBot" xml:space="preserve">
-    <value>bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers</value>
+    <value>bits:read chat:read chat:edit channel:moderate moderator:read:followers clips:edit moderator:read:chatters</value>
   </data>
   <data name="CredentialsTwitchScopesDiffOauthChannel" xml:space="preserve">
     <value>channel:read:redemptions channel:manage:broadcast channel:manage:raids</value>
   </data>
   <data name="CredentialsTwitchScopesOauthSame" xml:space="preserve">
-    <value>bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids</value>
+    <value>bits:read chat:read chat:edit channel:moderate moderator:read:followers moderator:read:chatters clips:edit channel:read:redemptions channel:manage:broadcast channel:manage:raids</value>
   </data>
   <data name="GitHubLatestLink" xml:space="preserve">
     <value>https://github.com/WrithemTwine/TwineChatBot/releases/</value>

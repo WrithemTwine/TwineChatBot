@@ -13,8 +13,6 @@ using System.Windows.Data;
 
 namespace StreamerBotLib.Overlay
 {
-    // TODO: test new port number or add another server to mitigate pausing videoes
-
     /// <summary>
     /// Interaction logic for MediaOverlay.xaml
     /// </summary>
