@@ -551,14 +551,14 @@ namespace StreamerBotLib.BotClients
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Getting a list of all current viewers in the stream to register in the system.");
 
-                ThreadManager.CreateThreadStart(() =>
-                {
-                    InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
-                    {
-                        Users = (from C in TwitchBotUserSvc.GetChatters()
-                                 select AddUserId(C.UserName)).ToList()
-                    });
-                });
+                //ThreadManager.CreateThreadStart(() =>
+                //{
+                //    InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
+                //    {
+                //        Users = (from C in TwitchBotUserSvc.GetChatters()
+                //                 select AddUserId(C.UserName)).ToList()
+                //    });
+                //});
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Sent the current viewership list.");
 

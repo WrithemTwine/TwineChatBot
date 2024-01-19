@@ -77,13 +77,6 @@ namespace StreamerBotLib.BotClients.Twitch
             twitchTokenBot = tokenBot;
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
-
-            //ThreadManager.CreateThreadStart(() =>
-            //{
-            //    twitchTokenBot.CheckToken();
-            //    GetChattersResponse chatters = HelixApiService.TestGetChatAsync(TwitchClientID, TwitchAccessToken, TwitchChannelId, TwitchBotUserId).Result;
-            //    List<Chatter> chatters1 = new(chatters.Data);
-            //});
         }
 
         private void TwitchTokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
