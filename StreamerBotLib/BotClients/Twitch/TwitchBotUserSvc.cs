@@ -243,6 +243,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>The Game Category for the requested channel.</returns>
         public string GetUserGameCategory(string UserId = null, string UserName = null)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Checking for update to game category.");
+
             ChannelInformation channelInformation = GetUserInfo(UserId: UserId, UserName: UserName)?.Data[0];
             string gameName = channelInformation?.GameName ?? "N/A";
             string gameId = channelInformation?.GameId ?? "N/A";
@@ -434,19 +436,27 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void PostEvent_GetChannelGameName(string foundGameName, string foundGameId)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Posting game category update through 'GetChannelGameName' event.");
+
             GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName, GameId = foundGameId });
         }
 
         private void PostEvent_GetCustomRewards(List<string> CustomRewardsList)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Posting custom reward list through 'GetCustomRewards' event.");
+
             GetChannelPoints?.Invoke(this, new OnGetChannelPointsEventArgs() { ChannelPointNames = CustomRewardsList });
         }
         private void GetCurrentViewerCount(GetStreamsResponse getStreamsResponse)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Posting current viewer count through 'GetCurrentViewerCount' event.");
+
             GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
         }
         private void NotifyStartRaidResponse(string ToChannelName, StartRaidResponse response)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Posting the start of a raid to another channel through the 'StartRaidEventResponse' event.");
+
             StartRaidEventResponse?.Invoke(this, new()
             {
                 ToChannel = ToChannelName,
@@ -456,6 +466,8 @@ namespace StreamerBotLib.BotClients.Twitch
         }
         private void NotifyCancelRaid()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Posting to cancel current raid through 'CancelRaidEvent' event.");
+
             CancelRaidEvent?.Invoke(this, new());
         }
 

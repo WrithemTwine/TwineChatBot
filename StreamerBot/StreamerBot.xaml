@@ -768,7 +768,7 @@ streamer account, if you choose to seaparate the accesses.
                                                         </StackPanel>
                                                     </StackPanel>
                                                 </GroupBox>
-                                                <Button Content="Force Re-Authorization" Width="150" Margin="10" Click="Button_TwitchAuthToken_ReAuthorize" />
+                                                <Button Content="Force Re-Authorization" Width="150" Margin="10" IsEnabled="True" Click="Button_TwitchAuthToken_ReAuthorize" />
                                                 <GroupBox Header="Bot Account Info" Width="410">
                                                     <Expander x:Name="Expander_CredentialsAuthBot" ExpandDirection="Down" IsExpanded="False">
                                                         <Expander.Header>

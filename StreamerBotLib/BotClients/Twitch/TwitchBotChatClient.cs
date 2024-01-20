@@ -123,7 +123,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsStarted)
             {
-                TwitchChat.SetConnectionCredentials(new(TwitchBotUserName, TwitchAccessToken));
+                StopBot();
+                StartBot();
 
                 SendChatMessages();
             }

@@ -135,6 +135,8 @@ namespace StreamerBotLib.GUI
 
         public void GetUserGameCategory(string UserName)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Sending request for user game category.");
+
             _ = TwitchBotUserSvc.GetUserGameCategory(UserName: UserName);
         }
 

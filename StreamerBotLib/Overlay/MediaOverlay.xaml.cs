@@ -74,7 +74,7 @@ namespace StreamerBotLib.Overlay
             Controller.SetTickerData(e.TickerItems, GUIData.OverlayEditStyles);
         }
 
-        public void CloseApp(bool Token = false)
+        public void CloseApp()
         {
             Close();
         }

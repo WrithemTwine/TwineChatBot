@@ -217,14 +217,16 @@
     </Style>
 
     <Style TargetType="{x:Type Button}">
-        <!--<Style.Triggers>
+        <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{DynamicResource LightBackground}" />
-                <Setter Property="Foreground" Value="{DynamicResource PartBackground}" />
+                <Setter Property="Background" Value="{DynamicResource ForegroundText}" />
+                <Setter Property="Foreground" Value="{DynamicResource FullBackground}" />
             </Trigger>
-        </Style.Triggers>-->
-        <Setter Property="Background" Value="{DynamicResource PartBackground}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            </Trigger>
+        </Style.Triggers>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ButtonBase}">
@@ -287,6 +289,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+
 
     <Style TargetType="{x:Type RadioButton}">
         <Setter Property="Margin" Value="10,5,0,5" />
@@ -422,7 +425,6 @@
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
-   
     <Style x:Key="ToggleButtonTwitchTokenSelecter" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{StaticResource PartBackground}" />
         <Setter Property="Template">

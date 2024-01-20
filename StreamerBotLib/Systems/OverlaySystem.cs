@@ -40,7 +40,7 @@ namespace StreamerBotLib.Systems
             {"Commands", "CmdName"},
             {"ChannelEvents", "Name" }
         };
-        private readonly List<string> ChannelPointRewards = new();
+        private readonly List<string> ChannelPointRewards = [];
 
         /// <summary>
         /// Setup the channel points reward list, update the new information.
@@ -53,7 +53,7 @@ namespace StreamerBotLib.Systems
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {
-            Dictionary<string, List<string>> OverlayActionPairs = new();
+            Dictionary<string, List<string>> OverlayActionPairs = [];
 
             lock (GUI.GUIDataManagerLock.Lock)
             {
@@ -64,8 +64,8 @@ namespace StreamerBotLib.Systems
             }
 
             // if there are no channel point rewards, the streamers credentials may need to be loaded or there aren't any channel points
-            OverlayActionPairs.Add(OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : new() { "None or Not Loaded!" });
-            OverlayActionPairs.Add(OverlayTypes.Giveaway.ToString(), new() { OverlayTypes.Giveaway.ToString() });
+            OverlayActionPairs.Add(OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : ["None or Not Loaded!"]);
+            OverlayActionPairs.Add(OverlayTypes.Giveaway.ToString(), [OverlayTypes.Giveaway.ToString()]);
             //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
 
             foreach (string K in OverlayActionPairs.Keys)
@@ -155,24 +155,18 @@ namespace StreamerBotLib.Systems
             GetChannelClipsEvent?.Invoke(this, e);
         }
 
-        public class ShoutOutOverlayAction
+        public class ShoutOutOverlayAction(OverlayActionType ShoutOutoverlayAction, Action<NewOverlayEventArgs> ActionPostShoutOut)
         {
-            private OverlayActionType ShoutOut;
-            private readonly Action<NewOverlayEventArgs> PerformShoutOut;
+            private OverlayActionType ShoutOut = ShoutOutoverlayAction;
+            private readonly Action<NewOverlayEventArgs> PerformShoutOut = ActionPostShoutOut;
 
-            public bool Finish = false;
-
-            public ShoutOutOverlayAction(OverlayActionType ShoutOutoverlayAction, Action<NewOverlayEventArgs> ActionPostShoutOut)
-            {
-                ShoutOut = ShoutOutoverlayAction;
-                PerformShoutOut = ActionPostShoutOut;
-            }
+            public bool Finish;
 
             public void FoundChannelClips(List<Clip> clips)
             {
                 if (clips.Count > 0)
                 {
-                    Random random = new Random();
+                    Random random = new();
                     int found = random.Next(clips.Count);
                     Clip resultClip = clips[found];
 

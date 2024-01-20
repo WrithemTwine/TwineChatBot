@@ -223,6 +223,8 @@ namespace StreamerBotLib.Overlay.Communication
                     {
                         output = @"
     .marquee {
+        width: 180%;
+        white-space: nowrap;
         background-color: #949494;
         overflow: hidden;
         display: inline-block;

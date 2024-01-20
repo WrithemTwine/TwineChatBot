@@ -567,6 +567,8 @@ namespace StreamerBotLib.BotClients
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, OnStreamUpdateArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, $"Received, {e.Channel} has a stream update notification.");
+
             if (e.Channel == TwitchBotsBase.TwitchChannelName)
             {
                 InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
@@ -861,6 +863,8 @@ namespace StreamerBotLib.BotClients
 
         public void ForceTwitchReauthorization()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Received a request to reauthenticate.");
+
             TwitchTokenBot.ForceReauthorization();
         }
 
@@ -917,6 +921,8 @@ namespace StreamerBotLib.BotClients
 
         private void FollowerService_OnBulkFollowsUpdate(object sender, OnNewFollowersDetectedArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Received event to begin bulk followers update.");
+
             InvokeBotEvent(
                 this,
                 BotEvents.TwitchBulkPostFollowers,
@@ -1004,7 +1010,7 @@ namespace StreamerBotLib.BotClients
 
                     while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && LocalRaidStarted)
                     { // check for 90 seconds
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Checking if {LocalRaidStart} is after " +
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Checking if {LocalRaidStart}+{DefaultOutRaid.Seconds} seconds is after " +
                             $"the current time. And wait some time to check again if user cancels the raid (via !cancelraid command).");
 
                         lock (RaidLock)
@@ -1012,7 +1018,7 @@ namespace StreamerBotLib.BotClients
                             LocalRaidStart = OutRaidStarted;
                             LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
                         }
-                        Thread.Sleep(100);
+                        Thread.Sleep(5000);
                     }
 
                     // if the raid wasn't canceled after the loop finished, send raid event to main bot

@@ -411,7 +411,7 @@ namespace StreamerBot
             {
                 targetclick.IsEnabled = false;
 
-                new Thread(new ThreadStart(() =>
+                ThreadManager.CreateThreadStart(() =>
                 {
                     try
                     {
@@ -421,15 +421,19 @@ namespace StreamerBot
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
-                })).Start();
+                });
             }
         }
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "User pushed the category button.");
+
             BeginUpdateCategory();
         }
         private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received an livestream started event.");
+
             SetLiveStreamActive(true);
         }
         private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
@@ -440,14 +444,20 @@ namespace StreamerBot
         }
         private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received a livestream event.");
+
             BeginUpdateCategory();
         }
         private void BeginUpdateCategory()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
+
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
         }
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received update to the channel game category.");
+
             Dispatcher.Invoke(() =>
             {
                 TextBlock_CurrentCategory.Content = e.GameName;
@@ -466,6 +476,8 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
+
             List<RadioButton> BotOps =
             [
                 Radio_MultiLiveTwitch_StopBot,
@@ -522,6 +534,8 @@ namespace StreamerBot
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
+
             ToggleButton_ChooseTwitchAuth_Click(this, null);
 
             CheckFocus();
@@ -533,6 +547,8 @@ namespace StreamerBot
             CheckDebug(this, new());
             SetVisibility(this, new());
             CheckFocus();
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "End Window Loaded events.");
         }
 
         /// <summary>
@@ -541,7 +557,7 @@ namespace StreamerBot
         /// </summary>
         private void StartAutoBots()
         {
-            // need checks to keep from using tokens in the app mode where tokens may have been available but no longer available
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Attempting to start bots.");
 
             if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate
                 && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
@@ -556,6 +572,9 @@ namespace StreamerBot
                 )
             )
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
+
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
@@ -563,21 +582,33 @@ namespace StreamerBot
                     Dispatcher.BeginInvoke(new BotOperation(() =>
                     {
                         (tuple.Item2.DataContext as IOModule)?.StartBot();
-                    }), null);
+                    }));
                 }
                 Controller.InitializeHelix();
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
 
                 BeginUpdateCategory();
             }
         }
 
+        /// <summary>
+        /// When the user clicks the close button to the window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Closing the application. Setting flags to end threaded procedures.");
+
             WatchProcessOps = false;
             OptionFlags.IsStreamOnline = false;
             OptionFlags.ActiveToken = false;
 
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
             Controller.ExitBots();
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");
             LogWriter.ExitCloseLogs();
         }
 
@@ -631,7 +662,6 @@ namespace StreamerBot
         {
             CheckFocus();
         }
-
 
         /// <summary>
         /// Manage GUI element visibility based on user selection. The intent is to add friendly protection
@@ -1459,7 +1489,7 @@ namespace StreamerBot
 
         private void TextBox_TwitchChannelBotNames_TargetUpdated(object sender, DataTransferEventArgs e)
         {
-
+            CheckFocus();
         }
     }
 }

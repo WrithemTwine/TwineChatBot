@@ -52,11 +52,12 @@ namespace StreamerBot
             }
 
             CheckFocus();
-            StartAutoBots(); // start chosen auto-start bots if credentials are proper
         }
 
         private void Button_TwitchAuthCode_ApproveBotURL(object sender, RoutedEventArgs e)
         {
+            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = false;
+
             StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
@@ -66,6 +67,8 @@ namespace StreamerBot
 
         private void Button_TwitchAuthCode_ApproveStreamerURL(object sender, RoutedEventArgs e)
         {
+            Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = false;
+
             StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
             Dispatcher.BeginInvoke(() =>
             {

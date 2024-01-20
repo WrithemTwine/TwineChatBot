@@ -262,7 +262,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ClearWatchTime()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received \"Clear Watch Time\" OpenBrowser.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received \"Clear Watch Time\" request.");
 
             SystemsController.ClearWatchTime();
         }
@@ -272,7 +272,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ClearAllCurrenciesValues()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received \"Clear All Currencies Values\" OpenBrowser.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received \"Clear All Currencies Values\" request.");
 
             SystemsController.ClearAllCurrenciesValues();
         }
@@ -282,55 +282,55 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ClearUsersNonFollowers()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received \"Clear Users Non Followers\" OpenBrowser.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received \"Clear Users Non Followers\" request.");
 
             SystemsController.ClearUsersNonFollowers();
         }
 
         /// <summary>
-        /// Send a "Set System Events Enabled" toggle OpenBrowser to the system database.
+        /// Send a "Set System Events Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set System Events in bulk.</param>
         public static void SetSystemEventsEnabled(bool Enabled)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set System Events Enabled\" " +
-                $"OpenBrowser to set all events to {Enabled}.");
+                $"request to set all events to {Enabled}.");
 
             SystemsController.SetSystemEventsEnabled(Enabled);
         }
 
         /// <summary>
-        /// Send a "Set BuiltIn Commands Enabled" toggle OpenBrowser to the system database.
+        /// Send a "Set BuiltIn Commands Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set built-in commands in bulk.</param>
         public static void SetBuiltInCommandsEnabled(bool Enabled)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set Built-in " +
-                $"Commands Enabled\" OpenBrowser set all events to {Enabled}.");
+                $"Commands Enabled\" request set all events to {Enabled}.");
 
             SystemsController.SetBuiltInCommandsEnabled(Enabled);
         }
 
         /// <summary>
-        /// Send a "Set User Defined Commands Enabled" toggle OpenBrowser to the system database.
+        /// Send a "Set User Defined Commands Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set user defined commands in bulk.</param>
         public static void SetUserDefinedCommandsEnabled(bool Enabled)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set User Defined " +
-                $"Commands Enabled\" OpenBrowser set all events to {Enabled}.");
+                $"Commands Enabled\" request set all events to {Enabled}.");
 
             SystemsController.SetUserDefinedCommandsEnabled(Enabled);
         }
 
         /// <summary>
-        /// Send a "Set Discord Webhooks Enabled" toggle OpenBrowser to the system database.
+        /// Send a "Set Discord Webhooks Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set Discord Webhooks in bulk.</param>
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set Discord Webhooks Enabled\" " +
-                $"OpenBrowser set all events to {Enabled}.");
+                $"request to set all events to {Enabled}.");
 
             SystemsController.SetDiscordWebhooksEnabled(Enabled);
         }
@@ -342,7 +342,7 @@ namespace StreamerBotLib.BotIOController
         public static void AddNewAutoShoutUser(string UserName)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
-                $"OpenBrowser to add= {UserName} =to the database.");
+                $"request to add= {UserName} =to the database.");
 
             SystemsController.AddNewAutoShoutUser(UserName);
         }
@@ -362,7 +362,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public void ForceTwitchAuthReauthorization()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received OpenBrowser to invalidate Twitch Authorization Codes so user can re-authorize application.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
 
             TwitchBots.ForceTwitchReauthorization();
@@ -1222,7 +1222,7 @@ namespace StreamerBotLib.BotIOController
 
             if (OptionFlags.MediaOverlayChannelPoints)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay OpenBrowser.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay request.");
 
                 Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
             }
