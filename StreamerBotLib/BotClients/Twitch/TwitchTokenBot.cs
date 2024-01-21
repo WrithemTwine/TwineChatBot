@@ -756,14 +756,20 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         /// <summary>
-        /// Clears the authentication codes for the bot & streamer accounts.
+        /// Clears the authentication codes, access & refresh tokens for the bot & streamer accounts.
+        /// Required when access scopes change.
         /// </summary>
-        internal void ForceReauthorization()
+        internal static void ForceReauthorization()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Request to reauthorize the application. Clearing the authentication code(s).");
 
             OptionFlags.TwitchAuthBotAuthCode = "";
+            OptionFlags.TwitchAuthBotAccessToken = "";
+            OptionFlags.TwitchAuthBotRefreshToken = "";
+
             OptionFlags.TwitchAuthStreamerAuthCode = "";
+            OptionFlags.TwitchAuthStreamerAccessToken = "";
+            OptionFlags.TwitchAuthStreamerRefreshToken = "";
         }
     }
 }

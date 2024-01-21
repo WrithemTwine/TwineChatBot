@@ -131,10 +131,9 @@ namespace StreamerBotLib.BotClients.Twitch
             }
 
             BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender,
-                new global::TwitchLib.Client.Events.OnLogArgs()
+                new global::TwitchLib.Client.Events.OnSendReceiveDataArgs()
                 {
-                    Data = $"PubSub {Clean(e.Data)}",
-                    DateTime = DateTime.Now
+                    Data = $"PubSub {Clean(e.Data)}"
                 });
         }
 

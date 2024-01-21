@@ -76,7 +76,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public void InitializeHelix()
         {
-            TwitchBots.InitializeHelix();
+            BotsTwitch.InitializeHelix();
         }
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace StreamerBotLib.BotIOController
 
         public void CheckTwitchChannelBotIds()
         {
-            TwitchBots.CheckStreamerBotIds();
+            BotsTwitch.CheckStreamerBotIds();
         }
 
         /// <summary>
@@ -365,7 +365,7 @@ namespace StreamerBotLib.BotIOController
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
 
-            TwitchBots.ForceTwitchReauthorization();
+            BotsTwitch.ForceTwitchReauthorization();
         }
 
         /// <summary>
@@ -721,10 +721,6 @@ namespace StreamerBotLib.BotIOController
                 e.GiftedSubscription.MsgParamSubPlan.ToString());
         }
 
-        public static void TwitchNowHosting(OnNowHostingArgs e)
-        {
-            HandleOnStreamOffline(HostedChannel: e.HostedChannel);
-        }
 
         public void TwitchExistingUsers(StreamerOnExistingUserDetectedArgs e)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Threading;
 
 namespace SimpleTestFeature
 {
@@ -7,9 +8,16 @@ namespace SimpleTestFeature
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static Dispatcher MainDispatcher => Dispatcher.CurrentDispatcher;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string x = "";
         }
     }
 }
