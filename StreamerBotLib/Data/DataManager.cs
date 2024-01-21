@@ -1135,18 +1135,15 @@ switches:
         /// Adds a user to the auto shout table.
         /// </summary>
         /// <param name="UserName">The Username to add, duplicates are not added.</param>
-        public void PostNewAutoShoutUser(string UserName)
+        public void PostNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-
-            // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Adding user {UserName} to the auto shout-out listing.");
 
             lock (GUIDataManagerLock.Lock)
             {
                 if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
                 {
-                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
+                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName, UserId, platform);
                     _DataSource.ShoutOuts.AcceptChanges();
                     NotifySaveData();
                 }

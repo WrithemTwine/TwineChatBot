@@ -299,16 +299,6 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
         }
 
-        //private void Client_OnBeingHosted(object sender, OnBeingHostedArgs e)
-        //{
-        //    InvokeBotEvent(this, BotEvents.TwitchBeingHosted, e);
-        //}
-
-        private void Client_OnNowHosting(object sender, OnNowHostingArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchNowHosting, e);
-        }
-
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             if (OptionFlags.MsgBotConnection)

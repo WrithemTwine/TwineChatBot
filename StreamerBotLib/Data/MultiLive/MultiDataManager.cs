@@ -175,7 +175,7 @@ namespace StreamerBotLib.Data.MultiLive
         /// <param name="ChannelName">The name of the channel for the event.</param>
         /// <param name="dateTime">The date of the event.</param>
         /// <returns>true if the event posted. false if the date & time duplicates.</returns>
-        public bool PostStreamDate(string ChannelName, DateTime dateTime)
+        public bool PostStreamDate(string ChannelName, string UserId, DateTime dateTime)
         {
             lock (_DataSource)
             {
@@ -190,7 +190,7 @@ namespace StreamerBotLib.Data.MultiLive
                 else
                 {
                     // since we know this addition is only from a source based on the Channels, we forego null checking
-                    _DataSource.LiveStream.AddLiveStreamRow((ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}'").FirstOrDefault(), dateTime);
+                    _DataSource.LiveStream.AddLiveStreamRow( (ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}' AND {_DataSource.Channels.UserIdColumn.ColumnName}='{UserId}'").FirstOrDefault(), dateTime);
                     _DataSource.LiveStream.AcceptChanges();
                     NotifyPropertyChanged(nameof(_DataSource.LiveStream));
                     SaveData();
@@ -351,11 +351,11 @@ namespace StreamerBotLib.Data.MultiLive
             }
         }
 
-        public void PostMonitorChannel(string UserName)
+        public void PostMonitorChannel(string UserName, string UserId)
         {
             lock (_DataSource)
             {
-                _DataSource.Channels.AddChannelsRow(UserName);
+                _DataSource.Channels.AddChannelsRow(UserName, UserId);
                 _DataSource.Channels.AcceptChanges();
                 SaveData();
                 NotifyPropertyChanged(nameof(_DataSource.Channels));

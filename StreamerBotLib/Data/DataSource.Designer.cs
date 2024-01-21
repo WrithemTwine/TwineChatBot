@@ -70,9 +70,9 @@ namespace StreamerBotLib.Data {
         
         private QuotesDataTable tableQuotes;
         
-        private global::System.Data.DataRelation relationFK_Users_Currency;
-        
         private global::System.Data.DataRelation relationCurrency_CurrencyType;
+        
+        private global::System.Data.DataRelation relationFK_Users_Currency;
         
         private global::System.Data.DataRelation relationUsers_Followers;
         
@@ -730,8 +730,8 @@ namespace StreamerBotLib.Data {
                     this.tableQuotes.InitVars();
                 }
             }
-            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationCurrency_CurrencyType = this.Relations["Currency_CurrencyType"];
+            this.relationFK_Users_Currency = this.Relations["FK_Users_Currency"];
             this.relationUsers_Followers = this.Relations["Users_Followers"];
             this.relationCategoryList_GameDeadCounter = this.Relations["CategoryList_GameDeadCounter"];
         }
@@ -791,16 +791,16 @@ namespace StreamerBotLib.Data {
             this.tableQuotes = new QuotesDataTable();
             base.Tables.Add(this.tableQuotes);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
+                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.CurrencyNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            fkc = new global::System.Data.ForeignKeyConstraint("Currency_CurrencyType", new global::System.Data.DataColumn[] {
-                        this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.CurrencyNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn});
             this.tableCurrency.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
@@ -812,14 +812,14 @@ namespace StreamerBotLib.Data {
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.None;
-            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
-                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableCurrency.UserNameColumn}, false);
-            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationCurrency_CurrencyType = new global::System.Data.DataRelation("Currency_CurrencyType", new global::System.Data.DataColumn[] {
                         this.tableCurrencyType.CurrencyNameColumn}, new global::System.Data.DataColumn[] {
                         this.tableCurrency.CurrencyNameColumn}, false);
             this.Relations.Add(this.relationCurrency_CurrencyType);
+            this.relationFK_Users_Currency = new global::System.Data.DataRelation("FK_Users_Currency", new global::System.Data.DataColumn[] {
+                        this.tableUsers.UserNameColumn}, new global::System.Data.DataColumn[] {
+                        this.tableCurrency.UserNameColumn}, false);
+            this.Relations.Add(this.relationFK_Users_Currency);
             this.relationUsers_Followers = new global::System.Data.DataRelation("Users_Followers", new global::System.Data.DataColumn[] {
                         this.tableUsers.IdColumn}, new global::System.Data.DataColumn[] {
                         this.tableFollowers.IdColumn}, false);
@@ -4371,6 +4371,10 @@ namespace StreamerBotLib.Data {
             
             private global::System.Data.DataColumn columnUserName;
             
+            private global::System.Data.DataColumn columnUserId;
+            
+            private global::System.Data.DataColumn columnPlatform;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public ShoutOutsDataTable() {
@@ -4422,6 +4426,22 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UserIdColumn {
+                get {
+                    return this.columnUserId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn PlatformColumn {
+                get {
+                    return this.columnPlatform;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -4457,14 +4477,24 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ShoutOutsRow AddShoutOutsRow(string UserName) {
+            public ShoutOutsRow AddShoutOutsRow(string UserName, string UserId, string Platform) {
                 ShoutOutsRow rowShoutOutsRow = ((ShoutOutsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
-                        UserName};
+                        UserName,
+                        UserId,
+                        Platform};
                 rowShoutOutsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowShoutOutsRow);
                 return rowShoutOutsRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public ShoutOutsRow FindByIdUserId(int Id, string UserId) {
+                return ((ShoutOutsRow)(this.Rows.Find(new object[] {
+                            Id,
+                            UserId})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4486,6 +4516,8 @@ namespace StreamerBotLib.Data {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnUserName = base.Columns["UserName"];
+                this.columnUserId = base.Columns["UserId"];
+                this.columnPlatform = base.Columns["Platform"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -4495,12 +4527,21 @@ namespace StreamerBotLib.Data {
                 base.Columns.Add(this.columnId);
                 this.columnUserName = new global::System.Data.DataColumn("UserName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUserName);
+                this.columnUserId = new global::System.Data.DataColumn("UserId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserId);
+                this.columnPlatform = new global::System.Data.DataColumn("Platform", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPlatform);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId,
-                                this.columnUserName}, false));
+                                this.columnUserId}, true));
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnUserId}, false));
                 this.columnId.AutoIncrement = true;
+                this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
                 this.columnUserName.AllowDBNull = false;
+                this.columnUserId.AllowDBNull = false;
+                this.columnUserId.Unique = true;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -8966,23 +9007,23 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public UsersRow UsersRow {
-                get {
-                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public CurrencyTypeRow CurrencyTypeRow {
                 get {
                     return ((CurrencyTypeRow)(this.GetParentRow(this.Table.ParentRelations["Currency_CurrencyType"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["Currency_CurrencyType"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public UsersRow UsersRow {
+                get {
+                    return ((UsersRow)(this.GetParentRow(this.Table.ParentRelations["FK_Users_Currency"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Users_Currency"]);
                 }
             }
             
@@ -11113,12 +11154,7 @@ namespace StreamerBotLib.Data {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public int Id {
                 get {
-                    try {
-                        return ((int)(this[this.tableShoutOuts.IdColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'ShoutOuts\' is DBNull.", e);
-                    }
+                    return ((int)(this[this.tableShoutOuts.IdColumn]));
                 }
                 set {
                     this[this.tableShoutOuts.IdColumn] = value;
@@ -11138,14 +11174,41 @@ namespace StreamerBotLib.Data {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsIdNull() {
-                return this.IsNull(this.tableShoutOuts.IdColumn);
+            public string UserId {
+                get {
+                    return ((string)(this[this.tableShoutOuts.UserIdColumn]));
+                }
+                set {
+                    this[this.tableShoutOuts.UserIdColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetIdNull() {
-                this[this.tableShoutOuts.IdColumn] = global::System.Convert.DBNull;
+            public string Platform {
+                get {
+                    try {
+                        return ((string)(this[this.tableShoutOuts.PlatformColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Platform\' in table \'ShoutOuts\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableShoutOuts.PlatformColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsPlatformNull() {
+                return this.IsNull(this.tableShoutOuts.PlatformColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetPlatformNull() {
+                this[this.tableShoutOuts.PlatformColumn] = global::System.Convert.DBNull;
             }
         }
         

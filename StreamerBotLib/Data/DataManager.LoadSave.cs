@@ -281,7 +281,6 @@ namespace StreamerBotLib.Data
                 {
                     UR.Platform = Platform.Twitch.ToString();
                 }
-
                 _DataSource.Users.AcceptChanges();
                 foreach (var FR in from FollowersRow FR in _DataSource.Followers.Select()
                                    where DBNull.Value.Equals(FR["Platform"])
@@ -289,8 +288,16 @@ namespace StreamerBotLib.Data
                 {
                     FR.Platform = Platform.Twitch.ToString();
                 }
-
                 _DataSource.Followers.AcceptChanges();
+
+                foreach(var SOR in from ShoutOutsRow SR in _DataSource.ShoutOuts.Select()
+                                   where DBNull.Value.Equals(SR["UserId"])
+                                   select SR)
+                {
+                    UsersRow user = (UsersRow)DataSetStatic.GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{SOR.UserName}'");
+                    SOR.UserId = user.UserId;
+                    SOR.Platform = user.Platform;
+                }
             }
         }
     }

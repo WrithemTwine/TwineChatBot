@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.Data;
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
@@ -165,9 +166,9 @@ namespace StreamerBotLib.Systems
             DataManage.DeleteDataRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-            DataManage.PostNewAutoShoutUser(UserName);
+            DataManage.PostNewAutoShoutUser(UserName, UserId, platform);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)

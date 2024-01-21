@@ -298,9 +298,9 @@ namespace StreamerBotLib.Systems
             ActionSystem.DeleteRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-            ActionSystem.AddNewAutoShoutUser(UserName);
+            ActionSystem.AddNewAutoShoutUser(UserName, UserId, platform);
         }
 
         public static void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
