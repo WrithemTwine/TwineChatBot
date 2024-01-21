@@ -9,15 +9,8 @@ using ApiAuth = TwitchLib.Api.Auth;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
-    internal class ExtAuth : ApiAuth.Auth
+    internal class ExtAuth(IApiSettings settings, IRateLimiter rateLimiter, IHttpCallHandler http) : ApiAuth.Auth(settings, rateLimiter, http)
     {
-        // derived from:
-        // https://github.com/TwitchLib/TwitchLib.Api/blob/master/TwitchLib.Api/Auth/Auth.cs
-        // add another method to handle authentication scopes already converted into {group}:{area}:{method} style scopes
-
-        public ExtAuth(IApiSettings settings, IRateLimiter rateLimiter, IHttpCallHandler http) : base(settings, rateLimiter, http)
-        {
-        }
 
         /// <summary>
         /// Generates an authorization code URL. Please see OAuth authorization code flow https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#oauth-authorization-code-flow.
@@ -40,7 +33,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 { "redirect_uri", HttpUtility.UrlEncode(redirectUri) },
                 { "response_type", "code" },
                 { "scope", string.Join("+", scopes) },
-                { "state", state },
+                { "state", HttpUtility.UrlEncode(state) },
                 { "force_verify", $"{forceVerify}" }
             })}";
         }

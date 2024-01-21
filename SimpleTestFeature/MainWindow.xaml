@@ -11,6 +11,7 @@
     </Window.Resources>
 
     <DockPanel>
+        <Button Content="Click to Check" Height="20" Click="Button_Click" />
         <ListBox x:Name="ListBox_ChattersList" DataContext="{StaticResource ChatListing}" ItemsSource="{Binding ChatList}" />
     </DockPanel>
 </Window>
