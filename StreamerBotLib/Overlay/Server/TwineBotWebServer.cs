@@ -25,23 +25,23 @@ namespace StreamerBotLib.Overlay.Server
         /// <summary>
         /// The alert pages collection.
         /// </summary>
-        private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
+        private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = [];
         /// <summary>
         /// The ticker pages collection.
         /// </summary>
-        private static List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
+        private static List<IOverlayPageReadOnly> TickerPages { get; set; } = [];
 
         /// <summary>
         /// Instantiate and initialize a new object.
         /// </summary>
         public TwineBotWebServer()
         {
-            static int Assign(int CheckPort)
+            static ushort Assign(ushort CheckPort)
             {
                 if (CheckPort == 0)
                 {
                     Random random = new();
-                    return ValidatePort(random.Next(1024, 65536));
+                    return ValidatePort((ushort)random.Next(1024, 65536));
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         /// <param name="port">The port to check.</param>
         /// <returns>The provided port or next port determined availabe within the system.</returns>
-        public static int ValidatePort(int port)
+        public static ushort ValidatePort(ushort port)
         {
             while (!IsFree(port))
             {
@@ -86,7 +86,7 @@ namespace StreamerBotLib.Overlay.Server
         /// <summary>
         /// Adds the port prefixes and starts the HTTP server.
         /// </summary>
-        public void StartServer()
+        public static void StartServer()
         {
             HTTPListenServer.Prefixes.Clear();
             foreach (string P in PrefixGenerator.GetPrefixes())
@@ -106,7 +106,7 @@ namespace StreamerBotLib.Overlay.Server
         /// Adds an alert webpage to send out to any connected webpage.
         /// </summary>
         /// <param name="overlayPage">Contains the type of alert and the html text to send.</param>
-        public void SendAlert(IOverlayPageReadOnly overlayPage)
+        public static void SendAlert(IOverlayPageReadOnly overlayPage)
         {
             if (HTTPListenServer.IsListening)
             {
@@ -122,7 +122,7 @@ namespace StreamerBotLib.Overlay.Server
         /// Clear and replace all TickerPages when the user changes the visual ticker appearance.
         /// </summary>
         /// <param name="UpdateTickerPages">All of the new ticker pages to replace the current ticker pages.</param>
-        public void UpdateTicker(IEnumerable<IOverlayPageReadOnly> UpdateTickerPages)
+        public static void UpdateTicker(IEnumerable<IOverlayPageReadOnly> UpdateTickerPages)
         {
             lock (TickerPages)
             {
@@ -131,7 +131,7 @@ namespace StreamerBotLib.Overlay.Server
             }
         }
 
-        public void UpdateTicker(IOverlayPageReadOnly UpdateTickerPage)
+        public static void UpdateTicker(IOverlayPageReadOnly UpdateTickerPage)
         {
             lock (TickerPages)
             {
@@ -283,7 +283,7 @@ namespace StreamerBotLib.Overlay.Server
         /// <summary>
         /// Looks like it stops the server. Then, waits for all of the server listeners to finish sending.
         /// </summary>
-        public void StopServer()
+        public static void StopServer()
         {
             if (HTTPListenServer.IsListening)
             {

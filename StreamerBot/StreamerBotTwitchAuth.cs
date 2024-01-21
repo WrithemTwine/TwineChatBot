@@ -101,7 +101,7 @@ namespace StreamerBot
                             Process startBrowser = new();
                             startBrowser.StartInfo.UseShellExecute = true;
                             startBrowser.StartInfo.FileName = $"\"{URL}\"";
-                            startBrowser.Start();
+                            _ = startBrowser.Start();
                         }
                     }
                     catch (Exception Ex)
