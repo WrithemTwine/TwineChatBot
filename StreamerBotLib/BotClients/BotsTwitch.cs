@@ -52,7 +52,7 @@ namespace StreamerBotLib.BotClients
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
             TwitchBotChatClient.OnBotStopping += TwitchBotChatClient_OnBotStopping;
             TwitchBotChatClient.OnBotStopped += TwitchBotChatClient_OnBotStopped;
-            TwitchBotChatClient.UnRegisterHandlers += TwitchBotChatClient_UnRegisterHandlers;
+            //TwitchBotChatClient.UnRegisterHandlers += TwitchBotChatClient_UnRegisterHandlers;
 
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
@@ -88,7 +88,7 @@ namespace StreamerBotLib.BotClients
         /// (would otherwise create a new Helix api object) upon app start, and there's a category 
         /// update in the GUI - creates a null exception.
         /// </summary>
-        public void InitializeHelix()
+        public static void InitializeHelix()
         {
             _ = TwitchBotUserSvc.HelixAPIBotToken; // performs a null check and creates a new api if necessary
         }
@@ -212,7 +212,7 @@ namespace StreamerBotLib.BotClients
 
         }
 
-        public void CheckStreamerBotIds()
+        public static void CheckStreamerBotIds()
         {
             string Botuserid = OptionFlags.TwitchBotUserId, Channeluserid = OptionFlags.TwitchStreamerUserId;
 
@@ -279,24 +279,36 @@ namespace StreamerBotLib.BotClients
             TwitchBotChatClient.HandlersAdded = false;
         }
 
-        private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
+        private Task Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchNewSubscriber, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchNewSubscriber, e);
+            });
         }
 
-        private void Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
+        private Task Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchReSubscriber, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchReSubscriber, e);
+            });
         }
 
-        private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
+        private Task Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchGiftSubscription, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchGiftSubscription, e);
+            });
         }
 
-        private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
+        private Task Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
+            });
         }
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
@@ -307,20 +319,25 @@ namespace StreamerBotLib.BotClients
                 string s = string.Format(CultureInfo.CurrentCulture,
                     LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
 
-                Send(s);
-            }
+                    Send(s);
+                }
+            });
         }
 
-        private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
+        private Task Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
+            return new(() =>
             {
-                Users = e.Users.ConvertAll(AddUserId)
+                InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
+                {
+                    Users = e.Users.ConvertAll(AddUserId)
+                });
             });
         }
 
         private static Models.LiveUser AddUserId(string s)
         {
+
             Models.LiveUser user = new(s, Platform.Twitch);
 
             string userId = DataManager.GetUserId(user);
@@ -333,48 +350,70 @@ namespace StreamerBotLib.BotClients
                 user.UserId = userId;
             }
             return user;
+
         }
 
-        private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
+        private Task Client_OnUserBanned(object sender, OnUserBannedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserBanned, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchOnUserBanned, e);
+            });
         }
 
-        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
+        private Task Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserTimedout, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchOnUserTimedout, e);
+            });
         }
 
-        private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
+        private Task Client_OnUserLeft(object sender, OnUserLeftArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username) });
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username) });
+            });
         }
 
-        private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
+        private Task Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new StreamerOnUserJoinedArgs() { LiveUser = AddUserId(e.Username) });
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new StreamerOnUserJoinedArgs() { LiveUser = AddUserId(e.Username) });
+            });
         }
 
-        private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
+        private Task Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-            string CategoryName = GetUserCategory(e.RaidNotification.UserId);
+            return new(() =>
+            {
+                string CategoryName = GetUserCategory(e.RaidNotification.UserId);
 
-            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
+                InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
+            });
         }
 
-        private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
+        private Task Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchMessageReceived, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchMessageReceived, e);
+            });
         }
 
-        private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
+        private Task Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-            InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
+            return new(() =>
+            {
+                InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
+            });
         }
 
-        private void Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
+        private Task Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
         {
-
+            return null;
         }
 
         #endregion
@@ -851,7 +890,7 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        public void ForceTwitchReauthorization()
+        public static void ForceTwitchReauthorization()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Received a request to reauthenticate.");
 

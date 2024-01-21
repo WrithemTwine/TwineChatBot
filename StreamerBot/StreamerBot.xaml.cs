@@ -733,9 +733,10 @@ namespace StreamerBot
             else
             {
                 SetBotRadioButtons(
-                    OptionFlags.TwitchAuthBotRefreshToken != ""
-                    && OptionFlags.TwitchAuthBotAuthCode != ""
-                    && OptionFlags.TwitchAuthBotAuthCode != ""
+                    !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
+                    && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                    && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)
+                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode))
                     , Platform.Twitch);
             }
 
