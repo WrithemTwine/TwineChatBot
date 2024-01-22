@@ -16,6 +16,7 @@
         MsgNoDeathCounter,
         MsgDefaultQuote,
         MsgQuoteNumber,
-        MsgTwitchAuthFailedAuthentication
+        MsgTwitchAuthFailedAuthentication,
+        MsgDefaultSocialMsg
     }
 }

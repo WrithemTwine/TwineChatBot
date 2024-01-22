@@ -1,6 +1,6 @@
 ﻿using StreamerBotLib.Data;
-using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
@@ -23,7 +23,7 @@ namespace StreamerBotLib.Systems
     /// </summary>
     internal partial class ActionSystem
     {
-        internal static DataManager DataManage { get; set; }
+        internal static IDataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
         public static ObservableCollection<string> GiveawayCollection { get; set; } = [];

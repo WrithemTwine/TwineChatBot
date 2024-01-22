@@ -290,9 +290,9 @@ namespace StreamerBotLib.Data
                 }
                 _DataSource.Followers.AcceptChanges();
 
-                foreach(var SOR in from ShoutOutsRow SR in _DataSource.ShoutOuts.Select()
-                                   where DBNull.Value.Equals(SR["UserId"])
-                                   select SR)
+                foreach (var SOR in from ShoutOutsRow SR in _DataSource.ShoutOuts.Select()
+                                    where DBNull.Value.Equals(SR["UserId"])
+                                    select SR)
                 {
                     UsersRow user = (UsersRow)DataSetStatic.GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{SOR.UserName}'");
                     SOR.UserId = user.UserId;

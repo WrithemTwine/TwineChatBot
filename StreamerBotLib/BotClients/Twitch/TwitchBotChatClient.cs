@@ -11,7 +11,6 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
-using TwitchLib.Communication.Models;
 
 namespace StreamerBotLib.BotClients.Twitch
 {

@@ -2,6 +2,7 @@
 using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
@@ -21,7 +22,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        public static DataManager DataManage { get; private set; } = new();
+        public static IDataManager DataManage { get; private set; } = new DataManager();
 
         private Thread HoldNewFollowsForBulkAdd;
 
@@ -39,7 +40,7 @@ namespace StreamerBotLib.Systems
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
-        private readonly List<string> GiveawayCollectionList = new();
+        private readonly List<string> GiveawayCollectionList = [];
 
         /// <summary>
         /// Builds and initalizes the controller, instantiates all of the systems
@@ -200,7 +201,7 @@ namespace StreamerBotLib.Systems
             }
             else
             {
-                List<string> UserList = new();
+                List<string> UserList = [];
 
                 foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime(), CurrCategory.Item2)))
                 {
@@ -468,8 +469,7 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(LiveUser User)
         {
-            if ((User.UserName.ToLower(CultureInfo.CurrentCulture)
-               != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture)
+            if ((!User.UserName.Equals(ActionSystem.ChannelName, StringComparison.CurrentCultureIgnoreCase)
                && (User.UserName.ToLower(CultureInfo.CurrentCulture)
                != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture)))
                || OptionFlags.MsgWelcomeStreamer)
@@ -770,7 +770,7 @@ namespace StreamerBotLib.Systems
 
             if (GiveawayCollectionList.Count > 0)
             {
-                List<string> WinnerList = new();
+                List<string> WinnerList = [];
                 int x = 0;
                 while (x < OptionFlags.GiveawayCount)
                 {

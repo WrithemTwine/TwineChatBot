@@ -1,4 +1,5 @@
-﻿using static StreamerBotLib.Data.DataSource;
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.Models
 {
@@ -6,73 +7,45 @@ namespace StreamerBotLib.Models
     {
         public string Usage { get; }
         public bool IsEnabled { get; }
-        public short SendMsgCount { get; }
-        public string Permission { get; }
+        public ushort SendMsgCount { get; }
+        public ViewerTypes Permission { get; }
         public bool AddMe { get; }
         public string Message { get; }
         public bool AllowParam { get; }
         public bool Lookupdata { get; }
-        public int Top { get; }
-        public string Action { get; }
+        public uint Top { get; }
+        public CommandAction Action { get; }
         public string CmdName { get; }
         public string Table { get; }
         public string Key_field { get; }
         public string Data_field { get; }
         public string Currency_field { get; }
-        public string Sort { get; }
+        public DataSort Sort { get; }
 
-        public CommandData(CommandsRow row)
+        public CommandData(Commands row)
         {
             lock (GUI.GUIDataManagerLock.Lock)
             {
                 if (row != null)
                 {
-                    Usage = ColHelper<string>(row.Usage);
-                    IsEnabled = ColHelper<bool>(row.IsEnabled);
-                    SendMsgCount = ColHelper<short>(row.SendMsgCount);
-                    Permission = ColHelper<string>(row.Permission);
-                    AddMe = ColHelper<bool>(row.AddMe);
-                    Message = ColHelper<string>(row.Message);
-                    AllowParam = ColHelper<bool>(row.AllowParam);
-                    Lookupdata = ColHelper<bool>(row.lookupdata);
-                    Top = ColHelper<int>(row.top);
-                    Action = ColHelper<string>(row.action);
-                    CmdName = ColHelper<string>(row.CmdName);
-                    Table = ColHelper<string>(row.table);
-                    Key_field = ColHelper<string>(row.key_field);
-                    Data_field = ColHelper<string>(row.data_field);
-                    Currency_field = ColHelper<string>(row.currency_field);
-                    Sort = ColHelper<string>(row.sort);
+                    Usage = row.Usage;
+                    IsEnabled = row.IsEnabled;
+                    SendMsgCount = row.SendMsgCount;
+                    Permission = row.Permission;
+                    AddMe = row.AddMe;
+                    Message = row.Message;
+                    AllowParam = row.AllowParam;
+                    Lookupdata = row.LookupData;
+                    Top = row.Top;
+                    Action = row.Action;
+                    CmdName = row.CmdName;
+                    Table = row.Table;
+                    Key_field = row.KeyField;
+                    Data_field = row.DataField;
+                    Currency_field = row.CurrencyField;
+                    Sort = row.Sort;
                 }
             }
         }
-
-        private static T ColHelper<T>(object Data)
-        {
-            object returndata = null;
-
-            if (DBNull.Value.Equals(Data))
-            {
-                if (typeof(T) == typeof(string))
-                {
-                    returndata = "";
-                }
-                else if (typeof(T) == typeof(int) || typeof(T) == typeof(short))
-                {
-                    returndata = 0;
-                }
-                else if (typeof(T) == typeof(bool))
-                {
-                    returndata = false;
-                }
-            }
-            else
-            {
-                returndata = Data;
-            }
-
-            return (T)Convert.ChangeType(returndata, typeof(T));
-        }
-
     }
 }

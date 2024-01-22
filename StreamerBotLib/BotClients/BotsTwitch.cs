@@ -311,18 +311,21 @@ namespace StreamerBotLib.BotClients
             });
         }
 
-        private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
+        private Task Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            if (OptionFlags.MsgBotConnection)
+            return new(() =>
             {
-                Version version = Assembly.GetEntryAssembly().GetName().Version;
-                string s = string.Format(CultureInfo.CurrentCulture,
-                    LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
+                if (OptionFlags.MsgBotConnection)
+                {
+                    Version version = Assembly.GetEntryAssembly().GetName().Version;
+                    string s = string.Format(CultureInfo.CurrentCulture,
+                        LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
 
                     Send(s);
                 }
             });
         }
+
 
         private Task Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {

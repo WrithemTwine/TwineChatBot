@@ -1116,7 +1116,7 @@ namespace StreamerBot
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "CurrLoginDate" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }

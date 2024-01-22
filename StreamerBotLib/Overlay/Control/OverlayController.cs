@@ -89,7 +89,7 @@ namespace StreamerBotLib.Overlay.Control
         /// <param name="items">A collection of the user selected items for the ticker.</param>
         public void SetTickerItems(IEnumerable<SelectedTickerItem> items)
         {
-            tickerFormatter.SetTickersSelected(items);
+            TickerFormatter.SetTickersSelected(items);
         }
 
         /// <summary>
