@@ -11,22 +11,11 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotClipSvc : TwitchBotsBase
     {
-        private static TwitchTokenBot twitchTokenBot;
-
         public ClipMonitorService ClipMonitorService { get; set; }
 
         public TwitchBotClipSvc()
         {
             BotClientName = Bots.TwitchClipBot;
-        }
-
-        /// <summary>
-        /// Sets the Twitch Token bot used for the automatic refreshing access token.
-        /// </summary>
-        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
-        internal override void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            twitchTokenBot = tokenBot;
         }
 
         /// <summary>
@@ -51,6 +40,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void ClipMonitorService_AccessTokenUnauthorized(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
@@ -73,6 +63,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             catch (BadRequestException)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
                 twitchTokenBot.CheckToken();
             }
             catch (Exception ex)
@@ -80,6 +71,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                 IsStarted = false;
                 IsStopped = true;
+                InvokeBotFailedStart();
             }
             return false;
         }

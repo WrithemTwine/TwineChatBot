@@ -7,6 +7,14 @@ namespace StreamerBotLib.BotClients.Twitch
     /// </summary>
     public abstract class TwitchBotsBase : IOModule
     {
+
+        protected static TwitchTokenBot twitchTokenBot;
+
+        public static void SetTokenBot(TwitchTokenBot tokenBot)
+        {
+            twitchTokenBot = tokenBot;
+        }
+
         /// <summary>
         /// App Client Id for bot account used in the connection, connects with Access Token
         /// </summary>
@@ -141,10 +149,5 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <code>false</code> - when mode is disabled
         /// </summary>
         protected bool ResetTokenMode { get; set; } = false;
-
-        internal virtual void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

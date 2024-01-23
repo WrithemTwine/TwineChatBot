@@ -45,6 +45,7 @@ namespace StreamerBotLib.Static
                             ExceptionLogWriter.Flush();
                             DebugLogFileWriter.Flush();
                         }
+                        Thread.Sleep(500); // sleep for 10 minutes = app stays open, flush timespan
                     }
                 });
             }
@@ -77,13 +78,13 @@ namespace StreamerBotLib.Static
                 {
                     try
                     {
-                        StatusLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {line}");
+                        StatusLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
                     }
                     catch (ObjectDisposedException ex)
                     {
                         LogException(ex, "WriteLog");
                         StreamWriter sr = new(StatusLog);
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {line}");
+                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
                         sr.Close();
                     }
                 }
@@ -104,16 +105,16 @@ namespace StreamerBotLib.Static
                 {
                     try
                     {
-                        ExceptionLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {Method} {ex.GetType()}");
+                        ExceptionLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
                         ExceptionLogWriter.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
                     }
                     catch (ObjectDisposedException Eex)
                     {
                         StreamWriter sr = new(ExceptionLog);
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {Method} {ex.GetType()}");
+                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
                         sr.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
 
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {Method} {Eex.GetType()}");
+                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{Eex.GetType()}");
                         sr.WriteLine($"{Eex.Message}\nStack Trace: {Eex.StackTrace}");
                         sr.Close();
                     }
@@ -173,13 +174,13 @@ namespace StreamerBotLib.Static
                 {
                     try
                     {
-                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {debugLogTypes} {Output}");
+                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
                     }
                     catch (ObjectDisposedException ex)
                     {
                         LogException(ex, "WriteLog");
                         StreamWriter sr = new(DebugLogFile);
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime()} {Method} {debugLogTypes} {Output}");
+                        sr.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
                         sr.Close();
                     }
                 }

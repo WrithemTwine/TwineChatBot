@@ -74,7 +74,7 @@ namespace StreamerBotLib.BotIOController
         /// <summary>
         /// Initializes a Helix api.
         /// </summary>
-        public void InitializeHelix()
+        public static void InitializeHelix()
         {
             BotsTwitch.InitializeHelix();
         }

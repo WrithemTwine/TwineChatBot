@@ -33,7 +33,6 @@ namespace StreamerBot
 
     // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
 
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -137,6 +136,7 @@ namespace StreamerBot
             guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
             guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
             guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
+            guiTwitchBot.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
             guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
             guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
@@ -240,6 +240,28 @@ namespace StreamerBot
                         Controller.Systems.SendInitialTickerItems();
                     }
                 }
+            }), null);
+        }
+
+        private void GuiTwitchBot_OnBotFailedStart(object sender, BotStartStopEventArgs e)
+        {
+            _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+            {
+                ToggleInputEnabled(true);
+                RadioButton radio = e.BotName switch
+                {
+                    Bots.TwitchChatBot => Radio_Twitch_StopBot,
+                    Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
+                    Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
+                    Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
+                    Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
+                    Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
+                    Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
+                    Bots.Default => throw new NotImplementedException(),
+                    Bots.TwitchUserBot => throw new NotImplementedException(),
+                    _ => throw new NotImplementedException()
+                };
+                HelperStopBot(radio);
             }), null);
         }
 
@@ -584,7 +606,7 @@ namespace StreamerBot
                         (tuple.Item2.DataContext as IOModule)?.StartBot();
                     }));
                 }
-                Controller.InitializeHelix();
+                BotController.InitializeHelix();
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
 
