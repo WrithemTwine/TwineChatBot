@@ -15,8 +15,6 @@ namespace StreamerBotLib.BotClients.Twitch
     {
         // TODO: add mechanism to check the multilive listing to ensure those channels exist on Twitch. now with UserIds, convert their name & refer to their ID instead for user online checking
 
-        private static TwitchTokenBot twitchTokenBot;
-
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
@@ -42,15 +40,6 @@ namespace StreamerBotLib.BotClients.Twitch
             BotClientName = Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
-        }
-
-        /// <summary>
-        /// Sets the Twitch Token bot used for the automatic refreshing access token.
-        /// </summary>
-        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
-        internal override void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            twitchTokenBot = tokenBot;
         }
 
         /// <summary>
@@ -86,6 +75,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
@@ -143,6 +133,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
                     twitchTokenBot.CheckToken();
                 }
                 return false;
@@ -150,6 +141,7 @@ namespace StreamerBotLib.BotClients.Twitch
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                InvokeBotFailedStart();
                 return false;
             }
         }

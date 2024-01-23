@@ -11,7 +11,11 @@
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
         xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
         mc:Ignorable="d"
-        Title="Streamer Bot Manager" Height="750" Width="1100"
+        Title="Streamer Bot Manager" 
+        Top="{Binding GUITop, Source={x:Static s:Settings.Default}, Mode=TwoWay}"
+        Left="{Binding GUILeft, Source={x:Static s:Settings.Default}, Mode=TwoWay}"
+        Height="{Binding GUIHeight, Source={x:Static s:Settings.Default}, Mode=TwoWay}" 
+        Width="{Binding GUIWidth, Source={x:Static s:Settings.Default}, Mode=TwoWay}"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True"
         Background="{DynamicResource FullBackground}"
     >
@@ -287,10 +291,10 @@
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StartBot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" >
+                                            <RadioButton DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StartBot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" >
                                                 <TextBlock>Start Chat Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StopBot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" >
+                                            <RadioButton DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StopBot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" >
                                                 <TextBlock>Stop Chat Service Bot</TextBlock>
                                             </RadioButton>
                                             <Label x:Name="Label_TwitchChat_Error" Visibility="Collapsed" Height="Auto">
@@ -657,39 +661,40 @@
                                     </StackPanel>
 
                                     <StackPanel x:Name="StackPanel_TwitchAuthCodeFlow" Visibility="Visible">
-                                        <DockPanel LastChildFill="False" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                        <DockPanel LastChildFill="False">
+
                                             <Expander IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" DockPanel.Dock="Left" MinWidth="300" Width="Auto" ScrollViewer.CanContentScroll="True">
                                                 <Expander.Header>
                                                     <TextBlock>Authorization Code Token Flow</TextBlock>
                                                 </Expander.Header>
-                                                <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+<FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Height="522">
                                                     <FlowDocument>
                                                         <Paragraph>
-This bot performs tasks on behalf of the streamer. A 
-moderator level bot account can perform many tasks for the 
-streamer, including chat message responses. It is possible 
-to have a bot account perform most of 
-the tasks, and also utilize streamer account access 
-credentials to perform the additional tasks.
+                                                            This bot performs tasks on behalf of the streamer. A 
+    moderator level bot account can perform many tasks for the 
+    streamer, including chat message responses. It is possible 
+    to have a bot account perform most of 
+    the tasks, and also utilize streamer account access 
+    credentials to perform the additional tasks.
                                                         </Paragraph>
                                                         <Paragraph>
                                                             Before continuing, consider whether to attach this bot to 
-the streamer account or use a (recommended) separate bot account.
+    the streamer account or use a (recommended) separate bot account.
                                                             <LineBreak/>
                                                             For using a separate bot account, type the streamer account 
-name in the "Channel Name" box, and the bot account name in the 
-"Bot User Name" box.
+    name in the "Channel Name" box, and the bot account name in the 
+    "Bot User Name" box.
                                                         </Paragraph>
                                                         <Paragraph>
                                                             This token flow for accessing Twitch is more simplified than 
-the user method. This flow requires registering the bot,
+    the user method. This flow requires registering the bot,
                                                             <LineBreak /> at
 
                                                             <InlineUIContainer>
                                                                 <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Text="{DynamicResource CredentialsLinkTwitchConsole}"/>
                                                             </InlineUIContainer>
                                                             <LineBreak /> ,
-for a Client Id and Client Secret, with
+    for a Client Id and Client Secret, with
                                                             <LineBreak />
                                                             this "Redirect URL" (add to the Twitch Console registered application entry):
                                                             <InlineUIContainer>
@@ -701,11 +706,11 @@ for a Client Id and Client Secret, with
                                                         <Paragraph>
                                                             To authorize the application:
                                                             <LineBreak />
-In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the application (checked box) or your default browser (unchecked box). 
-                                                            Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application
-                                                            browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't 
-                                                            adapt to the account associated with the authorization. Meaning-if you are authorizing the bot access, your browser/Twitch may
-                                                            prompt you to authorize the application with your streamer account (current login).
+                                                            In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the application (checked box) or your default browser (unchecked box). 
+                                                                Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application
+                                                                browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't 
+                                                                adapt to the account associated with the authorization. Meaning-if you are authorizing the bot access, your browser/Twitch may
+                                                                prompt you to authorize the application with your streamer account (current login).
                                                             <LineBreak />
                                                             The browser will go to a blank looking or broken looking webpage. This is alright. The application intercepted the response from Twitch to save the provided access code, the user doesn't need to manually paste them.
                                                             <LineBreak />
@@ -718,13 +723,13 @@ In the "Bot Account Info" box, expand it and determine whether you want to use t
                                                         </Paragraph>
                                                         <Paragraph>
                                                             The bot will save each authentication code from the "authorized access" form Twitch provides to obtain a refresh token, and continually 
-retrieves a new access token, once the access token 
-expires. This occurs for the bot account and also a 
-streamer account, if you choose to seaparate the accesses.
+    retrieves a new access token, once the access token 
+    expires. This occurs for the bot account and also a 
+    streamer account, if you choose to seaparate the accesses.
                                                         </Paragraph>
                                                         <Paragraph>
                                                             <Run Foreground="{StaticResource BrightStop}">Filling in the client Ids and client secrets in both boxes, then authorizing may show a warning statusbar the other account isn't authorized. It's okay to continue authorizing one account then the other. The statusbar will
-                                                            also show if something happens to the authorization and requires the user to re-authorize the application access.</Run>
+                                                                also show if something happens to the authorization and requires the user to re-authorize the application access.</Run>
                                                         </Paragraph>
                                                         <Paragraph>
                                                             Note: The tokens expire for the associated account, if:
@@ -739,27 +744,23 @@ streamer account, if you choose to seaparate the accesses.
                                                         </List>
                                                         <Paragraph>
                                                             From time to time, this bot may add or remove features and changes the access scope. Be sure to look at the 
-                                                            release notes if the access scopes changed. This means the user will need to reauthorize the beat and/or streamer access
-                                                            again; otherwise, the tokens may fail during a live stream!
+                                                                release notes if the access scopes changed. This means the user will need to reauthorize the beat and/or streamer access
+                                                                again; otherwise, the tokens may fail during a live stream!
                                                             <LineBreak />
                                                             If you need to re-authorize the access and the buttons appear locked, click the "Force Re-Authorization" button to
-                                                            manually reset the authorization; and the authorization buttons will be ready to click.
+                                                                manually reset the authorization; and the authorization buttons will be ready to click.
                                                         </Paragraph>
                                                     </FlowDocument>
                                                 </FlowDocumentScrollViewer>
                                             </Expander>
 
-                                            <WrapPanel DockPanel.Dock="Left" Orientation="Vertical">
+<WrapPanel DockPanel.Dock="Left" Orientation="Vertical">
                                                 <GroupBox Header="Channel Information" Width="410">
                                                     <StackPanel Orientation="Vertical" Margin="10">
                                                         <StackPanel Orientation="Horizontal" Margin="10">
 
                                                             <TextBlock Width="100">Channel Name:</TextBlock>
                                                             <TextBox Height="22" Text="{Binding TwitchChannelName}" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" />
-
-                                                            <TextBlock Width="100">Token Scope</TextBlock>
-                                                            <TextBox Height="22" BorderBrush="Blue" BorderThickness="1" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
-                                                                 DataContext="" Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}}" />
 
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="10">
@@ -900,6 +901,7 @@ streamer account, if you choose to seaparate the accesses.
                                                 <Button Content="Enable All" Margin="3,0" Click="Button_OptionsDebugLog_EnableAll_Click" />
                                                 <Button Content="Disable All" Margin="3,0" Click="Button_OptionsDebugLog_DisableAll_Click" />
                                             </StackPanel>
+                                            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Width="220" Foreground="{StaticResource BrightStop}" Text="Caution-logging with these options can create a significant log file, and should be used sparingly or to track issues. Useful to include in debug/issue reports." />
                                             <ListBox DataContext="{StaticResource DebugFlags}" ItemsSource="{Binding DebugFlagsList}" />
                                         </DockPanel>
                                     </GroupBox>
@@ -1910,7 +1912,7 @@ streamer account, if you choose to seaparate the accesses.
                                         </TextBlock>
                                     </CheckBox>
                                 </StackPanel>
-                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchIO, Mode=OneWay, Source={StaticResource TwitchBot}}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Width="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
+                                <TextBox x:Name="TextBlock_TwitchBotLog" DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" Text="{Binding StatusLog, Mode=OneWay}" TextWrapping="Wrap" Width="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TextBox_TwitchBotLog_TextChanged" />
                             </DockPanel>
                         </GroupBox>
                     </TabItem>

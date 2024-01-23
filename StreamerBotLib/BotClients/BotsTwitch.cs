@@ -23,14 +23,14 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
-        public static TwitchBotChatClient TwitchBotChatClient { get; private set; } = new();
-        public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = new();
-        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = new();
-        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } = new();
-        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = new();
-        public static TwitchBotPubSub TwitchBotPubSub { get; private set; } = new();
+        internal static TwitchTokenBot TwitchTokenBot { get; private set; }
+        public static TwitchBotChatClient TwitchBotChatClient { get; private set; }
+        public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
+        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } 
+        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } 
+        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
+        public static TwitchBotPubSub TwitchBotPubSub { get; private set; }
 
-        internal static TwitchTokenBot TwitchTokenBot { get; private set; } = new();
 
         private Thread BulkLoadFollows;
         private Thread BulkLoadClips;
@@ -42,6 +42,15 @@ namespace StreamerBotLib.BotClients
 
         public BotsTwitch()
         {
+            TwitchTokenBot = new();
+            TwitchBotChatClient = new();
+            TwitchFollower = new();
+            TwitchLiveMonitor = new();
+            TwitchBotClipSvc = new();
+            TwitchBotUserSvc = new();
+            TwitchBotPubSub = new();
+
+            AddBot(TwitchTokenBot);
             // not including "TwitchBotUserSvc" bot, it's an authentication on-demand bot to get the info
             AddBot(TwitchFollower);
             AddBot(TwitchLiveMonitor);
@@ -68,17 +77,6 @@ namespace StreamerBotLib.BotClients
 
             DataManager = SystemsController.DataManage;
 
-            // assign token bot to every bot for shared access and refresh token sync
-            foreach (IIOModule bot in BotsList)
-            {
-                if (bot is TwitchBotsBase @base)
-                {
-                    ((TwitchBotsBase)bot).SetTokenBot(TwitchTokenBot);
-                }
-            }
-
-            TwitchBotUserSvc.SetTokenBot(TwitchTokenBot);
-            AddBot(TwitchTokenBot);
             CheckStreamerBotIds();
         }
 
@@ -279,68 +277,49 @@ namespace StreamerBotLib.BotClients
             TwitchBotChatClient.HandlersAdded = false;
         }
 
-        private Task Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
+        private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchNewSubscriber, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchNewSubscriber, e);
         }
 
-        private Task Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
+        private void Client_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchReSubscriber, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchReSubscriber, e);
         }
 
-        private Task Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
+        private void Client_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchGiftSubscription, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchGiftSubscription, e);
         }
 
-        private Task Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
+        private void Client_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchCommunitySubscription, e);
         }
 
-        private Task Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
+        private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            return new(() =>
+            if (OptionFlags.MsgBotConnection)
             {
-                if (OptionFlags.MsgBotConnection)
-                {
-                    Version version = Assembly.GetEntryAssembly().GetName().Version;
-                    string s = string.Format(CultureInfo.CurrentCulture,
-                        LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
+                Version version = Assembly.GetEntryAssembly().GetName().Version;
+                string s = string.Format(CultureInfo.CurrentCulture,
+                    LocalizedMsgSystem.GetTwineBotAuthorInfo(), version.Major, version.Minor, version.Build, version.Revision);
 
-                    Send(s);
-                }
-            });
+                Send(s);
+            }
         }
 
+        private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
 
-        private Task Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
-            return new(() =>
+            InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
             {
-                InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
-                {
-                    Users = e.Users.ConvertAll(AddUserId)
-                });
+                Users = e.Users.ConvertAll(AddUserId)
             });
         }
 
         private static Models.LiveUser AddUserId(string s)
         {
-
             Models.LiveUser user = new(s, Platform.Twitch);
 
             string userId = DataManager.GetUserId(user);
@@ -353,70 +332,47 @@ namespace StreamerBotLib.BotClients
                 user.UserId = userId;
             }
             return user;
-
         }
 
-        private Task Client_OnUserBanned(object sender, OnUserBannedArgs e)
+        private void Client_OnUserBanned(object sender, OnUserBannedArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchOnUserBanned, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchOnUserBanned, e);
         }
 
-        private Task Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
+        private void Client_OnUserTimedout(object sender, OnUserTimedoutArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchOnUserTimedout, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchOnUserTimedout, e);
         }
 
-        private Task Client_OnUserLeft(object sender, OnUserLeftArgs e)
+        private void Client_OnUserLeft(object sender, OnUserLeftArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username) });
-            });
+            InvokeBotEvent(this, BotEvents.TwitchOnUserLeft, new StreamerOnUserLeftArgs() { LiveUser = AddUserId(e.Username) });
         }
 
-        private Task Client_OnUserJoined(object sender, OnUserJoinedArgs e)
+        private void Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new StreamerOnUserJoinedArgs() { LiveUser = AddUserId(e.Username) });
-            });
+            InvokeBotEvent(this, BotEvents.TwitchOnUserJoined, new StreamerOnUserJoinedArgs() { LiveUser = AddUserId(e.Username) });
         }
 
-        private Task Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
+        private void Client_OnRaidNotification(object sender, OnRaidNotificationArgs e)
         {
-            return new(() =>
-            {
-                string CategoryName = GetUserCategory(e.RaidNotification.UserId);
+            string CategoryName = GetUserCategory(e.RaidNotification.UserId);
 
-                InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
-            });
+            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
         }
 
-        private Task Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
+        private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchMessageReceived, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchMessageReceived, e);
         }
 
-        private Task Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
+        private void Client_OnChatCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-            return new(() =>
-            {
-                InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
-            });
+            InvokeBotEvent(this, BotEvents.TwitchChatCommandReceived, e);
         }
 
-        private Task Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
+        private void Client_OnMessageCleared(object sender, OnMessageClearedArgs e)
         {
-            return null;
         }
 
         #endregion
@@ -845,6 +801,7 @@ namespace StreamerBotLib.BotClients
                         }
                     }
 
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
                     if (TwitchTokenBot.CheckToken())
                     { // proceed with getting a refresh token and access token
                         LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Captured the auth code. Now performing the " +

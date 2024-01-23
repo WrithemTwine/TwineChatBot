@@ -59,12 +59,13 @@ namespace StreamerBotLib.BotClients.Twitch
             ApiSettings apiSettings = new();
             AuthBot = new(apiSettings, new BypassLimiter(), new TwitchHttpClient(null));
 
-            Task checkToken = new(() =>
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            ThreadManager.CreateThreadStart(() =>
             {
                 CheckToken();
             });
 
-            checkToken.Start();
+            SetTokenBot(this);
         }
 
         public override bool StartBot()
@@ -109,7 +110,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
             while (!AbortRenewToken && OptionFlags.ActiveToken)
             {
-                _ = CheckToken();
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+                CheckToken();
 
                 DateTime wakeup = DateTime.Now.AddSeconds(IntervalRandom.Next(MaxInterval / 2, MaxInterval));
 

@@ -6,6 +6,7 @@ namespace StreamerBotLib.GUI
     {
         public event EventHandler<BotStartStopEventArgs> OnBotStarted;
         public event EventHandler<BotStartStopEventArgs> OnBotStopped;
+        public event EventHandler<BotStartStopEventArgs> OnBotFailedStart;
 
         protected void BotStarted(BotStartStopEventArgs e)
         {
@@ -15,6 +16,11 @@ namespace StreamerBotLib.GUI
         protected void BotStopped(BotStartStopEventArgs e)
         {
             OnBotStopped?.Invoke(this, e);
+        }
+
+        protected void BotFailedStart(BotStartStopEventArgs e)
+        {
+            OnBotFailedStart?.Invoke(this, e);
         }
     }
 }
