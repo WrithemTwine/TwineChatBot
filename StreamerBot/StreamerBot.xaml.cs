@@ -1138,7 +1138,7 @@ namespace StreamerBot
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "CurrLoginDate" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }
@@ -1341,7 +1341,7 @@ namespace StreamerBot
 
             foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
             {
-                BotController.AddNewAutoShoutUser(dr["UserName"].ToString());
+                BotController.AddNewAutoShoutUser(dr["UserName"].ToString(), dr["UserId"].ToString(), dr["Platform"].ToString());
             }
         }
 
@@ -1351,7 +1351,7 @@ namespace StreamerBot
 
             foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
             {
-                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString());
+                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString(), dr["UserId"].ToString());
             }
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)

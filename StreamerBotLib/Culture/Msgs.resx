@@ -524,6 +524,9 @@
   <data name="MsgDefaultQuote" xml:space="preserve">
     <value>Quote not found.</value>
   </data>
+  <data name="MsgDefaultSocialMsg" xml:space="preserve">
+    <value>Social media url here</value>
+  </data>
   <data name="Msgdequeue" xml:space="preserve">
     <value>Also with leave, user leaves the play list</value>
   </data>

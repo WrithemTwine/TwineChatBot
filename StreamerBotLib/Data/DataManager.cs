@@ -2,6 +2,7 @@
 using StreamerBotLib.Data.DataSetCommonMethods;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
@@ -18,7 +19,16 @@ using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Data
 {
-    public partial class DataManager
+
+    /*
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+            }
+
+    */
+    public partial class DataManager : IDataManager
     {
         #region DataSource
         /// <summary>
@@ -222,7 +232,7 @@ switches:
 
         public List<string> GetSocialComs()
         {
-            List<string> Coms = new();
+            List<string> Coms = [];
             string filter = "";
 
             System.Collections.IList list = Enum.GetValues(typeof(DefaultSocials));
@@ -1135,18 +1145,15 @@ switches:
         /// Adds a user to the auto shout table.
         /// </summary>
         /// <param name="UserName">The Username to add, duplicates are not added.</param>
-        public void PostNewAutoShoutUser(string UserName)
+        public void PostNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-
-            // TODO: Update for streaming platform, as user names might duplicate across platforms - may not be same user.
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Adding user {UserName} to the auto shout-out listing.");
 
             lock (GUIDataManagerLock.Lock)
             {
                 if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
                 {
-                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName);
+                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName, UserId, platform);
                     _DataSource.ShoutOuts.AcceptChanges();
                     NotifySaveData();
                 }
@@ -1489,7 +1496,7 @@ switches:
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Clear users who are not followers.");
 
-            List<string> RemoveIds = new();
+            List<string> RemoveIds = [];
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -1682,7 +1689,9 @@ switches:
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-                    CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
+                    CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, 
+                        $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' " +
+                        $"OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
                     bool found = false;
                     if (categoryList == null)
                     {
@@ -1921,7 +1930,8 @@ switches:
 
                 banReason = banrow != null ? (BanReasons)Enum.Parse(typeof(BanReasons), banrow.BanReason) : BanReasons.None;
 
-                BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules, $"{_DataSource.BanRules.ViewerTypesColumn.ColumnName}='{viewerTypes}' and {_DataSource.BanRules.MsgTypeColumn.ColumnName}='{msgTypes}'");
+                BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules, 
+                    $"{_DataSource.BanRules.ViewerTypesColumn.ColumnName}='{viewerTypes}' and {_DataSource.BanRules.MsgTypeColumn.ColumnName}='{msgTypes}'");
 
                 int Timeout = banRulesRow == null ? 0 : int.Parse(banRulesRow.TimeoutSeconds);
                 ModActions action = banRulesRow == null ? ModActions.Allow : (ModActions)Enum.Parse(typeof(ModActions), banRulesRow.ModAction);
@@ -1964,7 +1974,20 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                List<OverlayActionType> found = new(from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')") select new OverlayActionType() { ActionValue = overlayServicesRow.OverlayAction, Duration = overlayServicesRow.Duration, MediaFile = overlayServicesRow.MediaFile, ImageFile = overlayServicesRow.ImageFile, Message = overlayServicesRow.Message, OverlayType = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), overlayServicesRow.OverlayType), UserName = overlayServicesRow.UserName, UseChatMsg = overlayServicesRow.UseChatMsg });
+                List<OverlayActionType> found = new(
+                    from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, 
+                    Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true " +
+                    $"AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' " +
+                    $"AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' " +
+                    $"OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')") select new OverlayActionType() 
+                    { ActionValue = overlayServicesRow.OverlayAction, 
+                        Duration = overlayServicesRow.Duration, 
+                        MediaFile = overlayServicesRow.MediaFile, 
+                        ImageFile = overlayServicesRow.ImageFile, 
+                        Message = overlayServicesRow.Message, 
+                        OverlayType = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), overlayServicesRow.OverlayType), 
+                        UserName = overlayServicesRow.UserName, 
+                        UseChatMsg = overlayServicesRow.UseChatMsg });
 
                 List<OverlayActionType> result = new();
 

@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.Core.CoreMonitor&lt;T&gt;" Collapsed="true">
+    <Position X="6.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAICAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\Core\CoreMonitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.Core.IdBasedMonitor&lt;T&gt;" Collapsed="true">
+    <Position X="5.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\Core\IdBasedMonitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.Core.NameBasedMonitor&lt;T&gt;" Collapsed="true">
+    <Position X="7.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\Core\NameBasedMonitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.Core.ServiceTimer" Collapsed="true">
+    <Position X="19.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAEAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\Core\ServiceTimer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService.OnNewClipsDetectedArgs" Collapsed="true">
+    <Position X="24.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\Events\ClipService\OnNewClipsDetectedArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.Events.PubSub.OnChannelPointsRewardRedeemedArgs" Collapsed="true">
+    <Position X="23" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\Events\PubSub\OnChannelPointsRewardRedeemedArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.ClipMonitorService" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAIAAAAAAAAEgAAQxAAAAAAAAEgAUCAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\ClipMonitorService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.ExtApiService&lt;T&gt;" Collapsed="true">
+    <Position X="1.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAADAAAAwQAAAAABAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\ExtApiServices.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.ExtAuth" Collapsed="true">
+    <Position X="24.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\ExtAuth.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.ExtFollowerService" Collapsed="true">
+    <Position X="2.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAACAAAABAABQAAAEAAAAxAgAAAAAgAAIECAAAAQA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\ExtFollowerService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.HelixApiService" Collapsed="true">
+    <Position X="21.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgYAAAgAAAAAAAQAAAFAAgAAACAIAAAAAAAgABABAU=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\HelixApiService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchLib.ExtLiveStreamMonitorService" Collapsed="true">
+    <Position X="19.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAgAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchLib\LiveStreamMonitorService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotChatClient" Collapsed="true">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAIIAGAAAKCAggBABAAAIJAYAIEgAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotChatClient.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotClipSvc" Collapsed="true">
+    <Position X="8" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAABAAAAAAAAAAAAAgACAAgAAAAAAYoAAAAEAAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotClipSvc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotFollowerSvc" Collapsed="true">
+    <Position X="12.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAQAAAAAAAAAACAAgAIIAAAIIIAAIEAAQA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotFollowerSvc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotLiveMonitorSvc" Collapsed="true">
+    <Position X="14.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAABAAAACAAAEQAwACAAgAAAQADIIBAAAEQAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotLiveMonitorSvc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotPubSub" Collapsed="true">
+    <Position X="17" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAAACgAAABAAQQAQAiABgAgAAAAAIAAAIEBAAA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotPubSub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotsBase" Collapsed="true">
+    <Position X="10.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAEAAIAAAAAAACIgAAACCAQIABAAAAAAABEAEEAE=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotsBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchBotUserSvc" Collapsed="true">
+    <Position X="5.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAg0AABsQoCCEEAIEAAKCBQCAIBIAAYKAAIAgAAU=</HashCode>
+      <FileName>BotClients\Twitch\TwitchBotUserSvc.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Twitch.TwitchTokenBot" Collapsed="true">
+    <Position X="10.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAQIAAECCkACIABABAAAJggAAAAAACAEAAECgIA=</HashCode>
+      <FileName>BotClients\Twitch\TwitchTokenBot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.BotOverlayServer" Collapsed="true">
+    <Position X="1.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AUAAAAAAEAhANAAICEIIAAwAAoUAkAAABAAEIAEAgAA=</HashCode>
+      <FileName>BotClients\BotOverlayServer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.BotsBase" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAIAAAAEAAAAwgIAAAEACAAAAUAAAAAgA=</HashCode>
+      <FileName>BotClients\BotsBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.BotsTwitch" Collapsed="true">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JIgYOAAQUjAoBYGgEiFEgqyUgRCqoAwGRxRjqsABFQc=</HashCode>
+      <FileName>BotClients\BotsTwitch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.DiscordWebhook" Collapsed="true">
+    <Position X="21.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAQgCAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>BotClients\DiscordWebhook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.AllowedMentions" Collapsed="true">
+    <Position X="19.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgACAAAAAAAAABAAAAAAAAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\DiscordWebhook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.WebhookJSON" Collapsed="true">
+    <Position X="21.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAgAAAAAIAwAAAAAAAAAEAAAAAAAAIAAAAAQ=</HashCode>
+      <FileName>BotClients\DiscordWebhook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.Embed" Collapsed="true">
+    <Position X="23" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAkAEAAgAACCAAAACAAABAAAQAAgAAAgAg=</HashCode>
+      <FileName>BotClients\DiscordWebhook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.BotClients.IOModule" Collapsed="true">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAEAAAAAEEABAEAAIIAAAgBAEAIAIBAAAAEAwCA=</HashCode>
+      <FileName>BotClients\IOModule.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Enum Name="StreamerBotLib.BotClients.AllowedMentionTypes" Collapsed="true">
+    <Position X="19.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAgAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BotClients\DiscordWebhook.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

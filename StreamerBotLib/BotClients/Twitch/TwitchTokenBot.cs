@@ -32,7 +32,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// The Upcoming expiration date of the token. When the user uses the bot account for chatting, but needs streamer token access to access streamer level information.
         /// </summary>
         private DateTime StreamerAccessTokenExpireDate;
-
         /// <summary>
         /// The date & time the token bot checked the bot account access token for validity.
         /// </summary>

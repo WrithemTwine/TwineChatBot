@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Data;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
@@ -22,7 +23,7 @@ namespace StreamerBotLib.Systems
     /// </summary>
     internal partial class ActionSystem
     {
-        internal static DataManager DataManage { get; set; }
+        internal static IDataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
         public static ObservableCollection<string> GiveawayCollection { get; set; } = [];
@@ -165,9 +166,9 @@ namespace StreamerBotLib.Systems
             DataManage.DeleteDataRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-            DataManage.PostNewAutoShoutUser(UserName);
+            DataManage.PostNewAutoShoutUser(UserName, UserId, platform);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)

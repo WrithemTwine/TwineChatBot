@@ -53,15 +53,7 @@ namespace StreamerBotLib.Systems
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {
-            Dictionary<string, List<string>> OverlayActionPairs = [];
-
-            lock (GUI.GUIDataManagerLock.Lock)
-            {
-                foreach (string O in OverlayActionColumnPairs.Keys)
-                {
-                    OverlayActionPairs.Add(O, DataManage.GetRowsDataColumn(O, OverlayActionColumnPairs[O]).ConvertAll((i) => i.ToString()));
-                }
-            }
+            Dictionary<string, List<string>> OverlayActionPairs = DataManage.GetOverlayActions();
 
             // if there are no channel point rewards, the streamers credentials may need to be loaded or there aren't any channel points
             OverlayActionPairs.Add(OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : ["None or Not Loaded!"]);

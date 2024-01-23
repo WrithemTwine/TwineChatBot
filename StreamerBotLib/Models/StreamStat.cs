@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using StreamerBotLib.DataSQL.Models;
+
+using System.Diagnostics;
+using System.Reflection;
 
 namespace StreamerBotLib.Models
 {
@@ -6,40 +9,70 @@ namespace StreamerBotLib.Models
     /// Properties of a live stream
     /// </summary>
     [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
-    public class StreamStat
+    public class StreamStat(DateTime streamStart = default,
+                            DateTime streamEnd = default,
+                            uint newFollows = 0,
+                            uint newSubscribers = 0,
+                            uint giftSubs = 0,
+                            uint bits = 0,
+                            uint raids = 0,
+                            uint hosted = 0,
+                            uint usersBanned = 0,
+                            uint usersTimedOut = 0,
+                            uint moderatorsPresent = 0,
+                            uint subsPresent = 0,
+                            uint vIPsPresent = 0,
+                            uint totalChats = 0,
+                            uint commands = 0,
+                            uint automatedEvents = 0,
+                            uint automatedCommands = 0,
+                            uint discordMsgs = 0,
+                            uint clipsMade = 0,
+                            uint channelPtCount = 0,
+                            uint channelChallenge = 0,
+                            uint maxUsers = 0,
+                            string currentCategory = null)
     {
-        public DateTime StreamStart { get; set; } = DateTime.MinValue;
-        public DateTime StreamEnd { get; set; } = DateTime.MinValue;
-        public int NewFollows { get; set; } = 0;
-        public int NewSubscribers { get; set; } = 0;
-        public int GiftSubs { get; set; } = 0;
-        public long Bits { get; set; } = 0;
-        public int Raids { get; set; } = 0;
-        public int Hosted { get; set; } = 0;
-        public int UsersBanned { get; set; } = 0;
-        public int UsersTimedOut { get; set; } = 0;
-        public int ModeratorsPresent { get; set; } = 0;
-        public int SubsPresent { get; set; } = 0;
-        public int VIPsPresent { get; set; } = 0;
-        public int TotalChats { get; set; } = 0;
-        public int Commands { get; set; } = 0;
-        public int AutomatedEvents { get; set; } = 0;
-        public int AutomatedCommands { get; set; } = 0;
-        public int DiscordMsgs { get; set; } = 0;
-        public int ClipsMade { get; set; } = 0;
-        public int ChannelPtCount { get; set; } = 0;
-        public int ChannelChallenge { get; set; } = 0;
-        public int MaxUsers { get; set; } = 0;
+        public StreamStat(StreamStats streamStats) : this()
+        {
+            foreach(PropertyInfo property in streamStats.GetType().GetProperties())
+            {
+                GetType().GetProperty(property.Name).SetValue(this,property.GetValue(streamStats));
+            }
+        }
+
+        public DateTime StreamStart { get; set; } = streamStart;
+        public DateTime StreamEnd { get; set; } = streamEnd;
+        public uint NewFollows { get; set; } = newFollows;
+        public uint NewSubscribers { get; set; } = newSubscribers;
+        public uint GiftSubs { get; set; } = giftSubs;
+        public uint Bits { get; set; } = bits;
+        public uint Raids { get; set; } = raids;
+        public uint Hosted { get; set; } = hosted;
+        public uint UsersBanned { get; set; } = usersBanned;
+        public uint UsersTimedOut { get; set; } = usersTimedOut;
+        public uint ModeratorsPresent { get; set; } = moderatorsPresent;
+        public uint SubsPresent { get; set; } = subsPresent;
+        public uint VIPsPresent { get; set; } = vIPsPresent;
+        public uint TotalChats { get; set; } = totalChats;
+        public uint Commands { get; set; } = commands;
+        public uint AutomatedEvents { get; set; } = automatedEvents;
+        public uint AutomatedCommands { get; set; } = automatedCommands;
+        public uint DiscordMsgs { get; set; } = discordMsgs;
+        public uint ClipsMade { get; set; } = clipsMade;
+        public uint ChannelPtCount { get; set; } = channelPtCount;
+        public uint ChannelChallenge { get; set; } = channelChallenge;
+        public uint MaxUsers { get; set; } = maxUsers;
 
         /// <summary>
         /// Maintain current active category of the stream
         /// </summary>
-        public string CurrentCategory { get; set; }
+        public string Category { get; set; } = currentCategory;
 
         public void Clear()
         {
-            StreamStart = DateTime.MinValue;
-            StreamEnd = DateTime.MinValue;
+            StreamStart = default;
+            StreamEnd = default;
             NewFollows = 0;
             NewSubscribers = 0;
             GiftSubs = 0;
