@@ -19,7 +19,6 @@ namespace StreamerBotLib.BotClients.Twitch
     {
         private readonly static string TokenLock = "Lock";
 
-        private static TwitchTokenBot twitchTokenBot;
         private static HelixApiService HelixApiCalls;
 
         /// <summary>
@@ -65,19 +64,11 @@ namespace StreamerBotLib.BotClients.Twitch
         public TwitchBotUserSvc()
         {
             BotClientName = Bots.TwitchUserBot;
-        }
-
-        #region Token Bot ops
-        /// <summary>
-        /// Sets the Twitch Token bot used for the automatic refreshing access token.
-        /// </summary>
-        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
-        internal override void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            twitchTokenBot = tokenBot;
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
         }
+
+        #region Token Bot ops
 
         private void TwitchTokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
@@ -161,6 +152,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private static void HelixApiCalls_UnauthorizedToken(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
@@ -185,6 +177,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.LogException(ex, MethodName);
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Exception found. Attempting to update token.");
 
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
                 twitchTokenBot.CheckToken();
                 while (ResetTokenMode) { }
 

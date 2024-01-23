@@ -19,7 +19,7 @@ namespace StreamerBotLib.GUI
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        public TwitchBotChatClient TwitchIO { get; private set; }
+        public TwitchBotChatClient TwitchChat { get; private set; }
         public TwitchBotFollowerSvc TwitchFollower { get; private set; }
         public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
         public TwitchBotClipSvc TwitchClip { get; private set; }
@@ -28,36 +28,41 @@ namespace StreamerBotLib.GUI
 
         public GUITwitchBots()
         {
-            TwitchIO = BotsTwitch.TwitchBotChatClient;
+            TwitchChat = BotsTwitch.TwitchBotChatClient;
             TwitchFollower = BotsTwitch.TwitchFollower;
             TwitchClip = BotsTwitch.TwitchBotClipSvc;
             TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
             TwitchBotUserSvc = BotsTwitch.TwitchBotUserSvc;
             TwitchBotPubSub = BotsTwitch.TwitchBotPubSub;
 
-            TwitchIO.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchIO.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchChat.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchChat.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchChat.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
             TwitchFollower.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchFollower.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchFollower.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
             TwitchLiveMonitor.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
             TwitchLiveMonitor.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchLiveMonitor.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
             TwitchClip.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchClip.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchClip.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
             TwitchBotPubSub.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchBotPubSub.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchBotPubSub.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
             BotsTwitch.RaidCompleted += Twitch_RaidCompleted;
         }
 
         public void Send(string msg)
         {
-            TwitchIO.Send(msg);
+            TwitchChat.Send(msg);
         }
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
@@ -121,6 +126,11 @@ namespace StreamerBotLib.GUI
             OnFollowerBotStarted?.Invoke(this, new());
         }
 
+        private void TwitchBot_OnBotFailedStart(object sender, EventArgs e)
+        {
+            TwitchBotsBase currBot = sender as TwitchBotsBase;
+            BotFailedStart(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
+        }
 
         #region Events
         public void RegisterGetCategory(EventHandler<OnGetChannelGameNameEventArgs> GetCategoryEvent)

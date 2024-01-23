@@ -2230,5 +2230,53 @@ namespace StreamerBotLib.Properties {
                 this["WelcomeDisabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("750")]
+        public int GUIHeight {
+            get {
+                return ((int)(this["GUIHeight"]));
+            }
+            set {
+                this["GUIHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1100")]
+        public int GUIWidth {
+            get {
+                return ((int)(this["GUIWidth"]));
+            }
+            set {
+                this["GUIWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int GUITop {
+            get {
+                return ((int)(this["GUITop"]));
+            }
+            set {
+                this["GUITop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int GUILeft {
+            get {
+                return ((int)(this["GUILeft"]));
+            }
+            set {
+                this["GUILeft"] = value;
+            }
+        }
     }
 }

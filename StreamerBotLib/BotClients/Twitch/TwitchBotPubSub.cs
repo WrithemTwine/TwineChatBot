@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
@@ -14,8 +12,6 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotPubSub : TwitchBotsBase
     {
-        private static TwitchTokenBot twitchTokenBot;
-
         public TwitchPubSub TwitchPubSub { get; private set; }
         private Logger<TwitchPubSub> LogData { get; set; }
 
@@ -28,7 +24,9 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             BotClientName = Bots.TwitchPubSub;
 
-            LogData = new Logger<TwitchPubSub>(
+            LogData = (Logger<TwitchPubSub>)LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<TwitchPubSub>();
+
+                /*  new Logger<TwitchPubSub>(
                 new LoggerFactory(
                     new List<ILoggerProvider>() {
                         new ConsoleLoggerProvider(
@@ -43,20 +41,11 @@ namespace StreamerBotLib.BotClients.Twitch
                             )
                     }
                     )
-                );
+                );*/
 
-            BuildPubSubClient();
-        }
-
-        /// <summary>
-        /// Sets the Twitch Token bot used for the automatic refreshing access token.
-        /// </summary>
-        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
-        internal override void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            twitchTokenBot = tokenBot;
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
+            BuildPubSubClient();
         }
 
         /// <summary>
@@ -115,6 +104,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceError(object sender, OnPubSubServiceErrorArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
@@ -131,7 +121,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
 
             BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender,
-                new global::TwitchLib.Client.Events.OnSendReceiveDataArgs()
+                new global::TwitchLib.Client.Events.OnLogArgs()
                 {
                     Data = $"PubSub {Clean(e.Data)}"
                 });
@@ -186,7 +176,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-
+                        InvokeBotFailedStart();
                         Connected = false;
                     }
                 }
@@ -221,6 +211,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        InvokeBotFailedStart();
                     }
                 }
             });
@@ -243,6 +234,10 @@ namespace StreamerBotLib.BotClients.Twitch
                     // send the topics to listen
                     TwitchPubSub?.SendTopics(Token);
                     InvokeBotStarted();
+                }
+                else
+                {
+                    InvokeBotFailedStart();
                 }
 
                 IsConnected = true;

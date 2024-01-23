@@ -1,4 +1,8 @@
 ﻿
+#define TwitchLib_ConnectProblem
+
+using Microsoft.Extensions.Logging;
+
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
@@ -8,6 +12,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using TwitchLib.Client;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
@@ -16,18 +21,24 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotChatClient : TwitchBotsBase, INotifyPropertyChanged
     {
-        private static TwitchTokenBot twitchTokenBot;
-
         /// <summary>
         /// The client connection to the server.
         /// </summary>
         public TwitchClient TwitchChat { get; private set; } // chat bot
+
+        private Logger<TwitchClient> LogData { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string StatusLog { get; set; } = "";
         private const int maxlength = 8000;
         private const int SingleChatLength = 500;
 
+#if !TwitchLib_ConnectProblem
+        private bool IsInitialized = false;
+        private string ConnectedChannelName = "";
+#endif
+
+        public event EventHandler<EventArgs> UnRegisterHandlers;
         private readonly Queue<Task> TaskSend = new();
 
         // limits of the number of IRC commands or messages you are allowed to send to the server
@@ -48,19 +59,18 @@ namespace StreamerBotLib.BotClients.Twitch
         //100,000 accounts per day Verified bots
         public TwitchBotChatClient()
         {
-            BotClientName = Bots.TwitchChatBot;
-            CreateClient();
-        }
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Building the TwitchBotChatClient bot.");
 
-        /// <summary>
-        /// Sets the Twitch Token bot used for the automatic refreshing access token.
-        /// </summary>
-        /// <param name="tokenBot">An instance of the token bot, to use the same token bot across chat bots.</param>
-        internal override void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            twitchTokenBot = tokenBot;
+            BotClientName = Bots.TwitchChatBot;
+
+            LogData = (Logger<TwitchClient>)LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<TwitchClient>();
+
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.BotAccessTokenUnChanged += TwitchTokenBot_BotAccessTokenUnChanged;
+
+#if !TwitchLib_ConnectProblem
+            CreateClient();
+#endif
         }
 
         /// <summary>
@@ -70,6 +80,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchTokenBot_BotAccessTokenUnChanged(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Access token unchanged. Sending chat messages.");
             SendChatMessages();
         }
 
@@ -78,6 +89,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void SendChatMessages()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Sending chat messages.");
+
             lock (TaskSend)
             {
                 while (TaskSend.Count > 0)
@@ -91,44 +104,23 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsStarted)
             {
-                StopBot();
-                TwitchChat.SetConnectionCredentials(new(TwitchBotUserName, TwitchAccessToken));
-                StartBot();
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Detected new access token. Updating and reseting TwitchChatClient.");
 
-                SendChatMessages();
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    try
+                    {
+                        TwitchChat.Disconnect();
+                        TwitchChat.Connect();
+
+                        SendChatMessages();
+                    } 
+                    catch(Exception ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    }
+                });
             }
-        }
-
-        /// <summary>
-        /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The payload of the event.</param>
-        internal Task TwitchChat_OnLog(object sender, OnSendReceiveDataArgs e)
-        {
-            return new(() =>
-            {
-                DateTime curr = DateTime.Now.ToLocalTime();
-                void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-                {
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                }
-
-                if (StatusLog.Length + curr.ToString().Length + e.Data.Length + 2 >= maxlength)
-                {
-                    StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
-                }
-
-                StatusLog += $@"{curr.ToString(CultureInfo.CurrentCulture)} {e.Data}
-";
-
-                if (OptionFlags.LogBotStatus)
-                {
-                    LogWriter.WriteLog($"{curr}: {e.Data}");
-                }
-
-                NotifyPropertyChanged(nameof(StatusLog));
-            });
         }
 
         /// <summary>
@@ -136,20 +128,246 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void CreateClient()
         {
-            TwitchChat = new TwitchClient();
-            TwitchChat.OnSendReceiveData += TwitchChat_OnLog;
-            TwitchChat.OnError += TwitchChat_OnError;
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Creating a TwitchChat client.");
+
+            TwitchChat = new TwitchClient(null, ClientProtocol.WebSocket, LogData);
+            TwitchChat.OnLog += TwitchChat_OnLog;
+            TwitchChat.OnDisconnected += TwitchChat_OnDisconnected;
+            TwitchChat.AutoReListenOnException = true;
         }
 
-        private Task TwitchChat_OnError(object sender, OnErrorEventArgs e)
+        /// <summary>
+        /// Event to handle when the Twitch client sends and event. Updates the StatusLog property with the logged activity.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The payload of the event.</param>
+        internal void TwitchChat_OnLog(object sender, OnLogArgs e)
         {
-            return new(() =>
+            void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             {
-                if (e.Exception.Message.Contains("Unauthorized"))
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            if (StatusLog.Length + e.DateTime.ToLocalTime().ToString().Length + e.Data.Length + 2 >= maxlength)
+            {
+                StatusLog = StatusLog[StatusLog.IndexOf('\n')..];
+            }
+
+            StatusLog += $@"{e.DateTime.ToLocalTime().ToString(CultureInfo.CurrentCulture)} {e.Data}
+";
+
+            if (OptionFlags.LogBotStatus)
+            {
+                LogWriter.WriteLog(e.DateTime.ToLocalTime().ToString() + ": " + e.Data);
+            }
+
+            NotifyPropertyChanged(nameof(StatusLog));
+        }
+
+#if !TwitchLib_ConnectProblem
+        /// <summary>
+        /// Initializes and connects the Twitch client
+        /// </summary>
+        /// <returns>True for a successful connection.</returns>
+        public override bool Connect()
+        {
+            bool isConnected;
+            ConnectionCredentials credentials = new(TwitchBotUserName, TwitchAccessToken);
+            if (TwitchChannelName == null)
+            {
+                isConnected = false;
+            }
+            else
+            {
+                if (!IsInitialized && TwitchChannelName != ConnectedChannelName)
                 {
-                    twitchTokenBot.CheckToken();
+                    TwitchChat.Initialize(credentials, TwitchChannelName);
+                    IsInitialized = true;
                 }
-            });
+
+                ConnectedChannelName = TwitchChannelName;
+                TwitchChat.Connect();
+                //   TwitchChat.JoinChannel(ConnectedChannelName);
+                isConnected = true;
+            }
+
+            return isConnected;
+        }
+
+        /// <summary>
+        /// call Connect() first!
+        /// </summary>
+        /// <returns>true for successful bot start</returns>
+        public override bool StartBot()
+        {
+            bool Connected;
+
+            try
+            {
+                if (IsStopped || !IsStarted)
+                {
+                    Connected = Connect();
+                    if (Connected) // only connect if the joining channel name isn't null
+                    {
+                        IsStarted = true;
+                        IsStopped = false;
+                        InvokeBotStarted();
+                    }
+                }
+                else
+                {
+                    Connected = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+
+                Connected = false;
+            }
+
+            return Connected;
+        }
+
+        /// <summary>
+        /// Stops the Twitch client and the services.
+        /// </summary>
+        /// <returns>True when successful.</returns>
+        public override bool StopBot()
+        {
+            bool Stopped;
+            try
+            {
+                if (IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    TwitchChat.Disconnect();
+                    InvokeBotStopped();
+                }
+                Stopped = true;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                Stopped = false;
+            }
+
+            return Stopped;
+        }
+#else
+        /// <summary>
+        /// Initializes and connects the Twitch client
+        /// </summary>
+        /// <returns>True for a successful connection.</returns>
+        public override bool Connect()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Beginning to connect client.");
+
+            bool isConnected;
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Establishing credentials with bot user name and access token.");
+            ConnectionCredentials credentials = new(TwitchBotUserName, TwitchAccessToken);
+            if (TwitchChannelName == null)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "The TwitchChannelName is blank. Not connected.");
+                isConnected = false;
+            }
+            else
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "TwitchChannelName available. Beginning to connect to channel.");
+
+                TwitchChat.Initialize(credentials, TwitchChannelName);
+                TwitchChat.Connect();
+                isConnected = true;
+            }
+
+            return isConnected;
+        }
+
+        /// <summary>
+        /// call Connect() first!
+        /// </summary>
+        /// <returns>true for successful bot start</returns>
+        public override bool StartBot()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Starting chat bot.");
+            bool Connected = false;
+
+            try
+            {
+                if (IsStopped || !IsStarted)
+                {
+                    CreateClient();
+                    if (Connected = Connect())
+                    {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about started bot.");
+
+                        IsStarted = true;
+                        IsStopped = false;
+                        InvokeBotStarted();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found exception.");
+
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                InvokeBotFailedStart();
+                Connected = false;
+            }
+
+            return Connected;
+        }
+
+        /// <summary>
+        /// Stops the Twitch client and the services.
+        /// </summary>
+        /// <returns>True when successful.</returns>
+        public override bool StopBot()
+        {
+            bool Stopped;
+
+            try
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Attempting to stop bot.");
+                if (IsStarted)
+                {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a started bot, now stopping the chat bot.");
+
+                    InvokeBotStopping();
+                    IsStarted = false;
+                    IsStopped = true;
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Disconnecting the bot.");
+                    TwitchChat.Disconnect();
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Bot disconnected. Notifying the GUI.");
+                    InvokeBotStopped();
+                }
+                Stopped = true;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found exception.");
+
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                Stopped = false;
+            }
+
+            return Stopped;
+        }
+
+#endif
+
+        /// <summary>
+        /// Attempt to send the whisper to a user.
+        /// </summary>
+        /// <param name="user">The user to send the whisper.</param>
+        /// <param name="s">The message to send.</param>
+        /// <returns>True when succesulf whisper sent.</returns>
+        public override bool SendWhisper(string user, string s)
+        {
+            throw new();
         }
 
         private readonly List<string> newSendMsg = [];
@@ -165,6 +383,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             try
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Sending a message.");
+
                 newSendMsg.Clear();
                 string tempSend = s;
 
@@ -190,30 +410,16 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             catch (Exception ex)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found exception.");
+
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
 
-                // if we get an exception sending, need to check if unauthorized; queue the chat message for when the bot restarts
-                if (OptionFlags.TwitchTokenUseAuth)
-                {
-                    lock (TaskSend)
-                    {
-                        // sets the data into a queue to ensure it'll be sent once the token is refreshed, if in auth token mode
-                        TaskSend.Enqueue(new(() =>
-                        {
-                            foreach (string D in newSendMsg)
-                            {
-                                SendData(D);
-                            }
-                        }));
-                    }
-                }
-                else
-                {
-                    BackOffSend(); // if exception, perform backoff send
-                }
-
-                twitchTokenBot.CheckToken();
+                //CreateClient();
+                //StartBot();
+                //SendData(s);
+                BackOffSend(); // if exception, perform backoff send
             }
+            return true;
 
             void SendData(string s)
             {
@@ -246,97 +452,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
             }
 
-            return true;
-        }
-
-        /// <summary>
-        /// Initializes and connects the Twitch client
-        /// </summary>
-        /// <returns>True for a successful connection.</returns>
-        public override bool Connect()
-        {
-            bool isConnected;
-            ConnectionCredentials credentials = new(TwitchBotUserName, TwitchAccessToken);
-            if (TwitchChannelName == null)
-            {
-                isConnected = false;
-            }
-            else
-            {
-                TwitchChat.Initialize(credentials, TwitchChannelName);
-                TwitchChat.Connect();
-                isConnected = true;
-            }
-
-            return isConnected;
-        }
-
-        /// <summary>
-        /// Make sure TwitchChannelName is set!
-        /// </summary>
-        /// <returns><code>true</code> for successful bot start</returns>
-        public override bool StartBot()
-        {
-            bool Connected = true;
-
-            try
-            {
-                if ((IsStopped || !IsStarted) && Connect())
-                {
-                    IsStarted = true;
-                    IsStopped = false;
-                    InvokeBotStarted();
-                }
-                else
-                {
-                    Connected = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                Connected = false;
-            }
-
-            return Connected;
-        }
-
-        /// <summary>
-        /// Stops the Twitch client and the services.
-        /// </summary>
-        /// <returns><code>true</code> when successful.</returns>
-        public override bool StopBot()
-        {
-            bool Stopped;
-            try
-            {
-                if (IsStarted)
-                {
-                    IsStarted = false;
-                    IsStopped = true;
-                    TwitchChat.Disconnect();
-                    InvokeBotStopped();
-                }
-                Stopped = true;
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                Stopped = false;
-            }
-
-            return Stopped;
-        }
-
-        /// <summary>
-        /// Attempt to send the whisper to a user.
-        /// </summary>
-        /// <param name="user">The user to send the whisper.</param>
-        /// <param name="s">The message to send.</param>
-        /// <returns>True when succesulf whisper sent.</returns>
-        public override bool SendWhisper(string user, string s)
-        {
-            throw new();
         }
 
         /// <summary>
@@ -345,6 +460,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns></returns>
         public override bool ExitBot()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Exiting the chat bot.");
+
             if (TwitchChat != null && TwitchChat.IsConnected)
             {
                 StopBot();
@@ -353,5 +470,52 @@ namespace StreamerBotLib.BotClients.Twitch
 
             return base.ExitBot();
         }
+
+        /// <summary>
+        /// Reconnect the bot if in use but chat gets disconnected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TwitchChat_OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        {
+
+#if !TwitchLib_ConnectProblem
+            // the TwitchClient reports disconnected but user didn't click the 'stop bot' button
+            // the client should be started but is now disconnected
+            // check is required so the bot doesn't keep restarting when the user actually clicked stop
+            if (IsStarted)// && !TwitchChat.IsConnected)
+            {
+                Connect();    // restart the bot
+            }
+#else
+            if (IsStarted && !IsStopped) // && !TwitchChat.IsConnected)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Chat client disconnected. Attempting restart.");
+
+                IsStarted = false;
+                UnregisterHandlers();
+                StartBot();
+            }
+            else
+            {
+                UnregisterHandlers();
+                InvokeBotStopped();
+            }
+#endif
+        }
+
+#if TwitchLib_ConnectProblem
+        private void UnregisterHandlers()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Unregistering event handlers to switch chat clients.");
+
+            TwitchChat.OnLog -= TwitchChat_OnLog;
+            TwitchChat.OnDisconnected -= TwitchChat_OnDisconnected;
+            TwitchChat.LeaveChannel(TwitchChannelName);
+
+            UnRegisterHandlers?.Invoke(this, new());
+        }
+#endif
+
     }
 }
