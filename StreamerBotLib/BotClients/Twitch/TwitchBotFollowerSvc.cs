@@ -44,7 +44,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (FollowerService == null)
             {
                 FollowerService = new ExtFollowerService(
-                    new TwitchAPI(null, null, new ApiSettings() { ClientId = TwitchClientID, AccessToken = TwitchAccessToken }, null),
+                     BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken,
                     (int)Math.Round(TwitchFrequencyFollowerTime, 0));
 
                 FollowerService.SetChannelsByName([ClientName ?? TwitchChannelName]);

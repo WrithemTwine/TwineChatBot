@@ -8,20 +8,20 @@ using System.Text.RegularExpressions;
 namespace StreamerBotLib.Models
 {
     [DebuggerDisplay("Table={Table}, Field={Field}")]
-    public class CommandParams
+    public partial class CommandParams
     {
         public string Table { get; set; } = string.Empty;
         public string Field { get; set; } = string.Empty;
         public string Currency { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        public int Top { get; set; } = 0;
-        public string Sort { get; set; } = CommandSort.ASC.ToString();
-        public string Action { get; set; } = CommandAction.Get.ToString();
+        public uint Top { get; set; } = 0;
+        public CommandSort Sort { get; set; } = CommandSort.ASC;
+        public CommandAction Action { get; set; } = CommandAction.Get;
         public bool AllowParam { get; set; } = false;
         public bool LookupData { get; set; } = false;
-        public int Timer { get; set; } = 0;
-        public short RepeatMsg { get; set; } = 0;
+        public uint Timer { get; set; } = 0;
+        public ushort RepeatMsg { get; set; } = 0;
         public string Usage { get; set; } = "!<command>";
         public string Message { get; set; } = string.Empty;
         public bool IsEnabled { get; set; } = false;
@@ -29,7 +29,7 @@ namespace StreamerBotLib.Models
         public bool Empty { get; set; } = false;
         public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
 
-        public static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
+        public static CommandParams Parse(string ParamString) => Parse(new List<string>(MyRegex().Split(ParamString)));
 
         public static CommandParams Parse(List<string> ParamList)
         {
@@ -84,22 +84,22 @@ namespace StreamerBotLib.Models
                             data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), value);
                             break;
                         case "top":
-                            data.Top = int.Parse(value);
+                            data.Top = uint.Parse(value);
                             break;
                         case "s":
-                            data.Sort = Validate(value, typeof(CommandSort));
+                            data.Sort = Enum.Parse<CommandSort>( Validate(value, typeof(CommandSort)) );
                             break;
                         case "a":
-                            data.Action = Validate(value, typeof(CommandAction));
+                            data.Action = Enum.Parse<CommandAction>(Validate(value, typeof(CommandAction)));
                             break;
                         case "param":
                             data.AllowParam = bool.Parse(value);
                             break;
                         case "timer":
-                            data.Timer = int.Parse(value);
+                            data.Timer = uint.Parse(value);
                             break;
                         case "r":
-                            data.RepeatMsg = short.Parse(value);
+                            data.RepeatMsg = ushort.Parse(value);
                             break;
                         case "use":
                             checkUsage = true;
@@ -133,7 +133,7 @@ namespace StreamerBotLib.Models
 
         public static Dictionary<string, string> ParseEditCommandParams(List<string> arglist)
         {
-            Dictionary<string, string> edit = new();
+            Dictionary<string, string> edit = [];
             foreach (var (keyvalue, value) in from string param in arglist
                                               let keyvalue = param.Split(':')
                                               let value = (keyvalue.Length > 1) ? keyvalue[1].Trim() : ""
@@ -209,6 +209,9 @@ namespace StreamerBotLib.Models
 
             throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionArgument), v, type.GetEnumNames().ToString()));
         }
+
+        [GeneratedRegex(@"(^-)|( -)")]
+        private static partial Regex MyRegex();
 
 
 

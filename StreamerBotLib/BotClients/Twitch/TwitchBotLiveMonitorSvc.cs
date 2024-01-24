@@ -62,7 +62,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (LiveStreamMonitor == null)
             {
-                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
 
                 // check if there is an unauthorized http access exception; we have an expired token
                 LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;

@@ -17,5 +17,7 @@ namespace StreamerBotLib.DataSQL.Models
         public uint CallCommands { get; set; } = callCommands;
         public uint RewardRedeems { get; set; } = rewardRedeems;
         public uint ClipsCreated { get; set; } = clipsCreated;
+
+        public Users Users { get; set; }
     }
 }

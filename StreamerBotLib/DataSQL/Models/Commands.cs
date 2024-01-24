@@ -15,7 +15,7 @@ namespace StreamerBotLib.DataSQL.Models
                           string message = null,
                           uint repeatTimer = 0,
                           ushort sendMsgCount = 0,
-                          ICollection<CategoryList> category = null,
+                          ICollection<string> category = null,
                           bool allowParam = false,
                           string usage = null,
                           bool lookupData = false,
@@ -25,7 +25,8 @@ namespace StreamerBotLib.DataSQL.Models
                           string currencyField = null,
                           string unit = null,
                           CommandAction action = default,
-                          uint top = 0)
+                          uint top = 0,
+                          CommandSort sort = default)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;
@@ -36,7 +37,7 @@ namespace StreamerBotLib.DataSQL.Models
         public string Message { get; set; } = message;
         public uint RepeatTimer { get; set; } = repeatTimer;
         public ushort SendMsgCount { get; set; } = sendMsgCount;
-        public ICollection<CategoryList> Category { get; set; } = category;
+        public ICollection<string> Category { get; set; } = category;
         public bool AllowParam { get; set; } = allowParam;
         public string Usage { get; set; } = usage;
         public bool LookupData { get; set; } = lookupData;
@@ -47,6 +48,9 @@ namespace StreamerBotLib.DataSQL.Models
         public string Unit { get; set; } = unit;
         public CommandAction Action { get; set; } = action;
         public uint Top { get; set; } = top;
-        public DataSort Sort { get; set; }
+        public CommandSort Sort { get; set; } = sort;
+
+
+        public ICollection<CategoryList> CategoryList { get; set; }
     }
 }

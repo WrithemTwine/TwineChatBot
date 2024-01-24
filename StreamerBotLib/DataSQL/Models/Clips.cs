@@ -7,7 +7,6 @@ namespace StreamerBotLib.DataSQL.Models
     [Index(nameof(Id), nameof(CreatedAt), nameof(GameId))]
     public class Clips(uint id = 0, DateTime createdAt = default, string title = null, string gameId = null, string language = null, decimal duration = 0, string url = null)
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;
         public DateTime CreatedAt { get; set; } = createdAt;
         public string Title { get; set; } = title;

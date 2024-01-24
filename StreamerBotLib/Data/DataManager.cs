@@ -176,7 +176,11 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(), Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, DataSetStatic.GetKey(_DataSource.Tables[Params.Table], Params.Table), Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
+                _DataSource.Commands.AddCommandsRow(cmd, Params.AddMe, Params.Permission.ToString(),
+                    Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, Params.Category, 
+                    Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, 
+                    DataSetStatic.GetKey(_DataSource.Tables[Params.Table], Params.Table), 
+                    Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort);
 
                 _DataSource.Commands.AcceptChanges();
             }
@@ -951,38 +955,26 @@ switches:
         /// <returns>True if the user is added, else false if the user already existed.</returns>
         private UsersRow PostNewUser(LiveUser User, DateTime FirstSeen)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add a new user {User}, first seen at {FirstSeen}.");
-
-
             UsersRow usersRow = null;
             lock (GUIDataManagerLock.Lock)
             {
                 if (!CheckUser(User))
                 {
-
                     usersRow = _DataSource.Users.AddUsersRow(User.UserName, FirstSeen, FirstSeen, FirstSeen, TimeSpan.Zero, User.UserId, User.Source.ToString());
                     //AddCurrencyRows(ref usersRow);
                 }
-
-
                 // if the user is added to list before identified as follower, update first seen date to followed date
-
                 usersRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{User.UserName}'");
-
                 if (FirstSeen <= usersRow.FirstDateSeen)
                 {
                     usersRow.FirstDateSeen = FirstSeen;
                 }
-
                 if (usersRow.UserId == null && User.UserId != null)
                 {
                     usersRow.UserId = User.UserId;
                 }
-                if (usersRow.Platform == null)
-                {
-                    usersRow.Platform = User.Source.ToString();
-                }
+                usersRow.Platform ??= User.Source.ToString();
             }
 
             NotifySaveData();
@@ -1775,7 +1767,7 @@ switches:
             bool result = false;
             lock (GUIDataManagerLock.Lock)
             {
-                if (!((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Any())
+                if (((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Length == 0)
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime(), Title, GameId, Language, (decimal)Duration, Url);
                     _DataSource.Clips.AcceptChanges();

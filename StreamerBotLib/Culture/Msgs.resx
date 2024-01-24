@@ -457,6 +457,9 @@
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
+  <data name="MsgAddCommandFailed" xml:space="preserve">
+    <value>Command-{0}-already exists, not added. Instead, use !editcommand.</value>
+  </data>
   <data name="Msgaddquote" xml:space="preserve">
     <value>Thank you for adding quote #quotenum.</value>
   </data>
