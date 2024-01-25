@@ -65,7 +65,7 @@ namespace StreamerBotLib.Systems
         /// <summary>
         /// Set the DataManager to use for extracting event messages
         /// </summary>
-        public static void SetDataManager(DataManager dataManager)
+        public static void SetDataManager(IDataManageReadOnly dataManager)
         {
             _datamanager = dataManager;
         }

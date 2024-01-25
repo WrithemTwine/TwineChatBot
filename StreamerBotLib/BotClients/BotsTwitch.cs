@@ -310,6 +310,7 @@ namespace StreamerBotLib.BotClients
         }
 
         private void Client_OnExistingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
+
         {
             InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
             {

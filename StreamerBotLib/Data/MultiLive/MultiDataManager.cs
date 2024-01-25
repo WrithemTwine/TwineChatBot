@@ -27,7 +27,7 @@ namespace StreamerBotLib.Data.MultiLive
         public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; }
         public DataView SummaryLiveStream { get; set; }
-        public List<ArchiveMultiStream> CleanupList { get; private set; } = new List<ArchiveMultiStream>();
+        public List<ArchiveMultiStream> CleanupList { get; private set; } = [];
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string PropName)
@@ -100,8 +100,8 @@ namespace StreamerBotLib.Data.MultiLive
 
                 foreach (DataTable table in _DataSource.Tables)
                 {
-                    List<DataRow> UniqueRows = new();
-                    List<DataRow> DuplicateRows = new();
+                    List<DataRow> UniqueRows = [];
+                    List<DataRow> DuplicateRows = [];
 
                     foreach (DataRow datarow in table.Rows)
                     {
@@ -175,7 +175,7 @@ namespace StreamerBotLib.Data.MultiLive
         /// <param name="ChannelName">The name of the channel for the event.</param>
         /// <param name="dateTime">The date of the event.</param>
         /// <returns>true if the event posted. false if the date & time duplicates.</returns>
-        public bool PostStreamDate(string ChannelName, DateTime dateTime)
+        public bool PostStreamDate(string ChannelName, string UserId, DateTime dateTime)
         {
             lock (_DataSource)
             {
@@ -190,7 +190,7 @@ namespace StreamerBotLib.Data.MultiLive
                 else
                 {
                     // since we know this addition is only from a source based on the Channels, we forego null checking
-                    _DataSource.LiveStream.AddLiveStreamRow((ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}'").FirstOrDefault(), dateTime);
+                    _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime, UserId);
                     _DataSource.LiveStream.AcceptChanges();
                     NotifyPropertyChanged(nameof(_DataSource.LiveStream));
                     SaveData();
@@ -248,7 +248,7 @@ namespace StreamerBotLib.Data.MultiLive
                     if (summaryrow == null)
                     {
                         ChannelsRow UserRow = (ChannelsRow)DataSetStatic.GetRow(_DataSource.Channels, $"{_DataSource.Channels.ChannelNameColumn}='{SumNameRows.Name}'");
-                        _DataSource.SummaryLiveStream.AddSummaryLiveStreamRow(UserRow.Id, UserRow.ChannelName, SumNameRows.StreamCount, SumNameRows.ThroughDate);
+                        _DataSource.SummaryLiveStream.AddSummaryLiveStreamRow(UserRow.Id, UserRow, SumNameRows.StreamCount, SumNameRows.ThroughDate);
                     }
                     else
                     {
@@ -303,7 +303,7 @@ namespace StreamerBotLib.Data.MultiLive
         {
             lock (_DataSource)
             {
-                List<DataTable> updated = new();
+                List<DataTable> updated = [];
                 foreach (DataRow dr in dataRows)
                 {
                     if (CheckField(dr.Table.TableName, "IsEnabled"))
@@ -351,11 +351,11 @@ namespace StreamerBotLib.Data.MultiLive
             }
         }
 
-        public void PostMonitorChannel(string UserName)
+        public void PostMonitorChannel(string UserName, string UserId)
         {
             lock (_DataSource)
             {
-                _DataSource.Channels.AddChannelsRow(UserName);
+                _DataSource.Channels.AddChannelsRow(UserName, UserId);
                 _DataSource.Channels.AcceptChanges();
                 SaveData();
                 NotifyPropertyChanged(nameof(_DataSource.Channels));
@@ -406,7 +406,7 @@ namespace StreamerBotLib.Data.MultiLive
                 return GetTableNames().Contains(dataTable) && CheckField(dataTable, dataColumn)
                     ? (from DataRow row in _DataSource.Tables[dataTable].Rows
                        select row[dataColumn]).ToList()
-                    : (new());
+                    : ([]);
             }
         }
 

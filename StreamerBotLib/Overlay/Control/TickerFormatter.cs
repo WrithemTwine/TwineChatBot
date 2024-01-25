@@ -17,19 +17,19 @@ namespace StreamerBotLib.Overlay.Control
         /// <summary>
         /// the current selected items the user wants to view for the ticker
         /// </summary>
-        public static readonly List<SelectedTickerItem> selectedTickerItems = new();
+        public static readonly List<SelectedTickerItem> selectedTickerItems = [];
         private readonly List<TickerItem> overlayTickerItemsData;
 
         public TickerFormatter()
         {
-            overlayTickerItemsData = new();
+            overlayTickerItemsData = [];
         }
 
         /// <summary>
         /// Sets the user selected Ticker Items.
         /// </summary>
         /// <param name="tickerItems">Contains only the selected Ticker Item.</param>
-        public void SetTickersSelected(IEnumerable<SelectedTickerItem> tickerItems)
+        public static void SetTickersSelected(IEnumerable<SelectedTickerItem> tickerItems)
         {
             selectedTickerItems.Clear();
             selectedTickerItems.AddRange(tickerItems);
@@ -54,7 +54,7 @@ namespace StreamerBotLib.Overlay.Control
         /// <returns></returns>
         public IEnumerable<IOverlayPageReadOnly> GetTickerPages(IEnumerable<OverlayStyle> overlayStyles)
         {
-            List<IOverlayPageReadOnly> pages = new();
+            List<IOverlayPageReadOnly> pages = [];
             if (OptionFlags.MediaOverlayTickerSingle)
             {
                 // convert a data collection in a collection of pages

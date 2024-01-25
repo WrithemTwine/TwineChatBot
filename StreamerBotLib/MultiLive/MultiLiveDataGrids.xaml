@@ -15,8 +15,6 @@
             <MenuItem x:Name="DataGridContextMenu_Multi_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
             <MenuItem x:Name="DataGridContextMenu_Multi_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
             <MenuItem x:Name="DataGridContextMenu_Multi_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
-            <MenuItem x:Name="DataGridContextMenu_Multi_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
-            <MenuItem x:Name="DataGridContextMenu_Multi_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
         </ContextMenu>
     </Page.Resources>
 
@@ -55,12 +53,12 @@
         </StackPanel>
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" 
-                  ItemsSource="{Binding MsgEndPoints, Mode=OneWay}" 
+                  ItemsSource="{Binding MsgEndPoints}" 
                   ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
                   ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
                   MouseDoubleClick="DG_MouseDoubleClick" />
         <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" 
-                  ItemsSource="{Binding Channels, Mode=OneWay}" 
+                  ItemsSource="{Binding Channels}" 
                   ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
                   ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
                   MouseDoubleClick="DG_MouseDoubleClick" 
@@ -69,13 +67,13 @@
         <TabControl Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" >
             <TabItem Header="Daily Data" x:Name="TabItem_DailyData">
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
-                          ItemsSource="{Binding LiveStream, Mode=OneWay}" 
+                          ItemsSource="{Binding LiveStream}" 
                           ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
                           ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" />
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
-                          ItemsSource="{Binding SummaryLiveStream, Mode=OneWay}" 
+                          ItemsSource="{Binding SummaryLiveStream}" 
                           ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
                           ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" />
             </TabItem>

@@ -29,12 +29,12 @@ namespace StreamerBotLib.MultiLive
             InitializeComponent();
         }
 
-        public void AddNewMonitorChannel(string UserName)
+        public void AddNewMonitorChannel(string UserName, string UserId)
         {
             if (MultiLiveData.GetMonitorChannelCount() < MaxChannelCount
                 && !MultiLiveData.GetChannelNames().Contains(UserName))
             {
-                MultiLiveData.PostMonitorChannel(UserName);
+                MultiLiveData.PostMonitorChannel(UserName, UserId);
             }
         }
 

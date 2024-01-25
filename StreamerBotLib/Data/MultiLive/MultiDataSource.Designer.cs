@@ -32,7 +32,7 @@ namespace StreamerBotLib.Data.MultiLive {
         
         private SummaryLiveStreamDataTable tableSummaryLiveStream;
         
-        private global::System.Data.DataRelation relationFK_Channels_LiveStream;
+        private global::System.Data.DataRelation relationChannels_LiveStream;
         
         private global::System.Data.DataRelation relationFK_Channels_SummaryLiveStream;
         
@@ -270,7 +270,7 @@ namespace StreamerBotLib.Data.MultiLive {
                     this.tableSummaryLiveStream.InitVars();
                 }
             }
-            this.relationFK_Channels_LiveStream = this.Relations["FK_Channels_LiveStream"];
+            this.relationChannels_LiveStream = this.Relations["Channels_LiveStream"];
             this.relationFK_Channels_SummaryLiveStream = this.Relations["FK_Channels_SummaryLiveStream"];
         }
         
@@ -280,7 +280,7 @@ namespace StreamerBotLib.Data.MultiLive {
             this.DataSetName = "DataSource";
             this.Prefix = "";
             this.Namespace = "http://tempuri.org/DataSource.xsd";
-            this.EnforceConstraints = true;
+            this.EnforceConstraints = false;
             this.SchemaSerializationMode = global::System.Data.SchemaSerializationMode.ExcludeSchema;
             this.tableMsgEndPoints = new MsgEndPointsDataTable();
             base.Tables.Add(this.tableMsgEndPoints);
@@ -291,30 +291,30 @@ namespace StreamerBotLib.Data.MultiLive {
             this.tableSummaryLiveStream = new SummaryLiveStreamDataTable();
             base.Tables.Add(this.tableSummaryLiveStream);
             global::System.Data.ForeignKeyConstraint fkc;
-            fkc = new global::System.Data.ForeignKeyConstraint("FK_Channels_LiveStream", new global::System.Data.DataColumn[] {
-                        this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableLiveStream.ChannelNameColumn});
+            fkc = new global::System.Data.ForeignKeyConstraint("Channels_LiveStream", new global::System.Data.DataColumn[] {
+                        this.tableChannels.ChannelNameColumn,
+                        this.tableChannels.UserIdColumn}, new global::System.Data.DataColumn[] {
+                        this.tableLiveStream.ChannelNameColumn,
+                        this.tableLiveStream.UserIdColumn});
             this.tableLiveStream.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
             fkc = new global::System.Data.ForeignKeyConstraint("FK_Channels_SummaryLiveStream", new global::System.Data.DataColumn[] {
-                        this.tableChannels.IdColumn,
                         this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableSummaryLiveStream.IdColumn,
                         this.tableSummaryLiveStream.ChannelNameColumn});
             this.tableSummaryLiveStream.Constraints.Add(fkc);
             fkc.AcceptRejectRule = global::System.Data.AcceptRejectRule.None;
             fkc.DeleteRule = global::System.Data.Rule.Cascade;
             fkc.UpdateRule = global::System.Data.Rule.Cascade;
-            this.relationFK_Channels_LiveStream = new global::System.Data.DataRelation("FK_Channels_LiveStream", new global::System.Data.DataColumn[] {
-                        this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableLiveStream.ChannelNameColumn}, false);
-            this.Relations.Add(this.relationFK_Channels_LiveStream);
+            this.relationChannels_LiveStream = new global::System.Data.DataRelation("Channels_LiveStream", new global::System.Data.DataColumn[] {
+                        this.tableChannels.ChannelNameColumn,
+                        this.tableChannels.UserIdColumn}, new global::System.Data.DataColumn[] {
+                        this.tableLiveStream.ChannelNameColumn,
+                        this.tableLiveStream.UserIdColumn}, false);
+            this.Relations.Add(this.relationChannels_LiveStream);
             this.relationFK_Channels_SummaryLiveStream = new global::System.Data.DataRelation("FK_Channels_SummaryLiveStream", new global::System.Data.DataColumn[] {
-                        this.tableChannels.IdColumn,
                         this.tableChannels.ChannelNameColumn}, new global::System.Data.DataColumn[] {
-                        this.tableSummaryLiveStream.IdColumn,
                         this.tableSummaryLiveStream.ChannelNameColumn}, false);
             this.Relations.Add(this.relationFK_Channels_SummaryLiveStream);
         }
@@ -552,13 +552,6 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public MsgEndPointsRow FindById(int Id) {
-                return ((MsgEndPointsRow)(this.Rows.Find(new object[] {
-                            Id})));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public override global::System.Data.DataTable Clone() {
                 MsgEndPointsDataTable cln = ((MsgEndPointsDataTable)(base.Clone()));
                 cln.InitVars();
@@ -594,12 +587,9 @@ namespace StreamerBotLib.Data.MultiLive {
                 base.Columns.Add(this.columnType);
                 this.columnURL = new global::System.Data.DataColumn("URL", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnURL);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnId}, true));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
-                this.columnId.Unique = true;
                 this.columnIsEnabled.DefaultValue = ((bool)(true));
                 this.columnType.DefaultValue = ((string)("Discord"));
             }
@@ -739,6 +729,8 @@ namespace StreamerBotLib.Data.MultiLive {
             
             private global::System.Data.DataColumn columnChannelName;
             
+            private global::System.Data.DataColumn columnUserId;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public ChannelsDataTable() {
@@ -790,6 +782,14 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UserIdColumn {
+                get {
+                    return this.columnUserId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -825,11 +825,12 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ChannelsRow AddChannelsRow(string ChannelName) {
+            public ChannelsRow AddChannelsRow(string ChannelName, string UserId) {
                 ChannelsRow rowChannelsRow = ((ChannelsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
-                        ChannelName};
+                        ChannelName,
+                        UserId};
                 rowChannelsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowChannelsRow);
                 return rowChannelsRow;
@@ -837,9 +838,10 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ChannelsRow FindById(int Id) {
+            public ChannelsRow FindByChannelNameUserId(string ChannelName, string UserId) {
                 return ((ChannelsRow)(this.Rows.Find(new object[] {
-                            Id})));
+                            ChannelName,
+                            UserId})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -861,6 +863,7 @@ namespace StreamerBotLib.Data.MultiLive {
             internal void InitVars() {
                 this.columnId = base.Columns["Id"];
                 this.columnChannelName = base.Columns["ChannelName"];
+                this.columnUserId = base.Columns["UserId"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -870,19 +873,19 @@ namespace StreamerBotLib.Data.MultiLive {
                 base.Columns.Add(this.columnId);
                 this.columnChannelName = new global::System.Data.DataColumn("ChannelName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnChannelName);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint3", new global::System.Data.DataColumn[] {
-                                this.columnId}, true));
+                this.columnUserId = new global::System.Data.DataColumn("UserId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserId);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnChannelName}, false));
+                                this.columnChannelName,
+                                this.columnUserId}, true));
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
-                                this.columnId,
                                 this.columnChannelName}, false));
                 this.columnId.AutoIncrement = true;
                 this.columnId.AllowDBNull = false;
                 this.columnId.ReadOnly = true;
-                this.columnId.Unique = true;
                 this.columnChannelName.AllowDBNull = false;
                 this.columnChannelName.Unique = true;
+                this.columnUserId.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1022,6 +1025,8 @@ namespace StreamerBotLib.Data.MultiLive {
             
             private global::System.Data.DataColumn columnLiveDate;
             
+            private global::System.Data.DataColumn columnUserId;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public LiveStreamDataTable() {
@@ -1081,6 +1086,14 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UserIdColumn {
+                get {
+                    return this.columnUserId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1116,15 +1129,13 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public LiveStreamRow AddLiveStreamRow(ChannelsRow parentChannelsRowByFK_Channels_LiveStream, System.DateTime LiveDate) {
+            public LiveStreamRow AddLiveStreamRow(string ChannelName, System.DateTime LiveDate, string UserId) {
                 LiveStreamRow rowLiveStreamRow = ((LiveStreamRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
-                        null,
-                        LiveDate};
-                if ((parentChannelsRowByFK_Channels_LiveStream != null)) {
-                    columnValuesArray[1] = parentChannelsRowByFK_Channels_LiveStream[1];
-                }
+                        ChannelName,
+                        LiveDate,
+                        UserId};
                 rowLiveStreamRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowLiveStreamRow);
                 return rowLiveStreamRow;
@@ -1132,10 +1143,11 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public LiveStreamRow FindByChannelNameLiveDate(string ChannelName, System.DateTime LiveDate) {
+            public LiveStreamRow FindByUserIdLiveDateChannelName(string UserId, System.DateTime LiveDate, string ChannelName) {
                 return ((LiveStreamRow)(this.Rows.Find(new object[] {
-                            ChannelName,
-                            LiveDate})));
+                            UserId,
+                            LiveDate,
+                            ChannelName})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1158,6 +1170,7 @@ namespace StreamerBotLib.Data.MultiLive {
                 this.columnId = base.Columns["Id"];
                 this.columnChannelName = base.Columns["ChannelName"];
                 this.columnLiveDate = base.Columns["LiveDate"];
+                this.columnUserId = base.Columns["UserId"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1169,15 +1182,16 @@ namespace StreamerBotLib.Data.MultiLive {
                 base.Columns.Add(this.columnChannelName);
                 this.columnLiveDate = new global::System.Data.DataColumn("LiveDate", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnLiveDate);
+                this.columnUserId = new global::System.Data.DataColumn("UserId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserId);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnId}, false));
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
-                                this.columnChannelName,
-                                this.columnLiveDate}, true));
+                                this.columnUserId,
+                                this.columnLiveDate,
+                                this.columnChannelName}, true));
                 this.columnId.AutoIncrement = true;
-                this.columnId.Unique = true;
                 this.columnChannelName.AllowDBNull = false;
                 this.columnLiveDate.AllowDBNull = false;
+                this.columnUserId.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1421,13 +1435,16 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public SummaryLiveStreamRow AddSummaryLiveStreamRow(int Id, string ChannelName, int StreamCount, System.DateTime ThroughDate) {
+            public SummaryLiveStreamRow AddSummaryLiveStreamRow(int Id, ChannelsRow parentChannelsRowByFK_Channels_SummaryLiveStream, int StreamCount, System.DateTime ThroughDate) {
                 SummaryLiveStreamRow rowSummaryLiveStreamRow = ((SummaryLiveStreamRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Id,
-                        ChannelName,
+                        null,
                         StreamCount,
                         ThroughDate};
+                if ((parentChannelsRowByFK_Channels_SummaryLiveStream != null)) {
+                    columnValuesArray[1] = parentChannelsRowByFK_Channels_SummaryLiveStream[1];
+                }
                 rowSummaryLiveStreamRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowSummaryLiveStreamRow);
                 return rowSummaryLiveStreamRow;
@@ -1435,10 +1452,10 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public SummaryLiveStreamRow FindByIdChannelName(int Id, string ChannelName) {
+            public SummaryLiveStreamRow FindByChannelNameId(string ChannelName, int Id) {
                 return ((SummaryLiveStreamRow)(this.Rows.Find(new object[] {
-                            Id,
-                            ChannelName})));
+                            ChannelName,
+                            Id})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1476,8 +1493,8 @@ namespace StreamerBotLib.Data.MultiLive {
                 this.columnThroughDate = new global::System.Data.DataColumn("ThroughDate", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnThroughDate);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnId,
-                                this.columnChannelName}, true));
+                                this.columnChannelName,
+                                this.columnId}, true));
                 this.columnId.AllowDBNull = false;
                 this.columnChannelName.AllowDBNull = false;
             }
@@ -1782,6 +1799,17 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string UserId {
+                get {
+                    return ((string)(this[this.tableChannels.UserIdColumn]));
+                }
+                set {
+                    this[this.tableChannels.UserIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public SummaryLiveStreamRow[] GetSummaryLiveStreamRows() {
                 if ((this.Table.ChildRelations["FK_Channels_SummaryLiveStream"] == null)) {
                     return new SummaryLiveStreamRow[0];
@@ -1794,11 +1822,11 @@ namespace StreamerBotLib.Data.MultiLive {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public LiveStreamRow[] GetLiveStreamRows() {
-                if ((this.Table.ChildRelations["FK_Channels_LiveStream"] == null)) {
+                if ((this.Table.ChildRelations["Channels_LiveStream"] == null)) {
                     return new LiveStreamRow[0];
                 }
                 else {
-                    return ((LiveStreamRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Channels_LiveStream"])));
+                    return ((LiveStreamRow[])(base.GetChildRows(this.Table.ChildRelations["Channels_LiveStream"])));
                 }
             }
         }
@@ -1857,12 +1885,23 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ChannelsRow ChannelsRow {
+            public string UserId {
                 get {
-                    return ((ChannelsRow)(this.GetParentRow(this.Table.ParentRelations["FK_Channels_LiveStream"])));
+                    return ((string)(this[this.tableLiveStream.UserIdColumn]));
                 }
                 set {
-                    this.SetParentRow(value, this.Table.ParentRelations["FK_Channels_LiveStream"]);
+                    this[this.tableLiveStream.UserIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public ChannelsRow ChannelsRowParent {
+                get {
+                    return ((ChannelsRow)(this.GetParentRow(this.Table.ParentRelations["Channels_LiveStream"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["Channels_LiveStream"]);
                 }
             }
             
@@ -1949,7 +1988,7 @@ namespace StreamerBotLib.Data.MultiLive {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public ChannelsRow ChannelsRowParent {
+            public ChannelsRow ChannelsRow {
                 get {
                     return ((ChannelsRow)(this.GetParentRow(this.Table.ParentRelations["FK_Channels_SummaryLiveStream"])));
                 }

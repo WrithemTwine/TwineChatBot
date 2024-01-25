@@ -339,12 +339,12 @@ namespace StreamerBotLib.BotIOController
         /// Insert a new AutoShoutUser entry into the database.
         /// </summary>
         /// <param name="UserName">The username to add into the database for the autoshout table.</param>
-        public static void AddNewAutoShoutUser(string UserName)
+        public static void AddNewAutoShoutUser(string UserName, string Userid, string platform)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
                 $"request to add= {UserName} =to the database.");
 
-            SystemsController.AddNewAutoShoutUser(UserName);
+            SystemsController.AddNewAutoShoutUser(UserName, Userid, platform);
         }
 
         #endregion
@@ -720,7 +720,6 @@ namespace StreamerBotLib.BotIOController
                 e.GiftedSubscription.MsgParamSenderCount,
                 e.GiftedSubscription.MsgParamSubPlan.ToString());
         }
-
 
         public void TwitchExistingUsers(StreamerOnExistingUserDetectedArgs e)
         {
