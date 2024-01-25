@@ -193,7 +193,7 @@ namespace StreamerBot
             }
 
             string newversion = (from s in NewVersionLink.Split('/')
-                                 select s).Last();
+                                 select s).Last().Split('_').First();
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             string AppVersion = $"v.{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
