@@ -28,7 +28,7 @@ namespace StreamerBotLib.Data
             }
 
     */
-    public partial class DataManager : IDataManager
+    public partial class DataManager //: IDataManager
     {
         #region DataSource
         /// <summary>
@@ -415,7 +415,10 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                return new(from CommandsRow row in (CommandsRow[])GetRows(_DataSource.Commands, "RepeatTimer>0 AND IsEnabled=True") select new Tuple<string, int, string[]>(row.CmdName, row.RepeatTimer, row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? Array.Empty<string>()));
+                return new(from CommandsRow row in (CommandsRow[])GetRows(_DataSource.Commands, "RepeatTimer>0 AND IsEnabled=True")
+                           select new Tuple<string, int, string[]>(row.CmdName,
+                                                                                                                                                                            row.RepeatTimer,
+                                                                                                                                                                            row.Category?.Split(',', StringSplitOptions.TrimEntries) ?? []));
             }
         }
 
@@ -502,7 +505,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                List<DataTable> updated = new();
+                List<DataTable> updated = [];
                 foreach (DataRow dr in dataRows)
                 {
                     if (CheckField(dr.Table.TableName, "IsEnabled"))
@@ -775,7 +778,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach (UsersRow U in (UsersRow[])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ('{string.Join("', '", Users.ToArray())}')"))
+                foreach (UsersRow U in (UsersRow[])GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} in ('{string.Join("', '", [.. Users])}')"))
                 {
                     if (U.LastDateSeen < CurrStreamStart)
                     {
@@ -979,10 +982,7 @@ switches:
                 {
                     usersRow.UserId = User.UserId;
                 }
-                if (usersRow.Platform == null)
-                {
-                    usersRow.Platform = User.Source.ToString();
-                }
+                usersRow.Platform ??= User.Source.ToString();
             }
 
             NotifySaveData();
@@ -1153,7 +1153,7 @@ switches:
             {
                 if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
                 {
-                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName, UserId, platform);
+                    _DataSource.ShoutOuts.AddShoutOutsRow(UserId);
                     _DataSource.ShoutOuts.AcceptChanges();
                     NotifySaveData();
                 }
@@ -1775,7 +1775,7 @@ switches:
             bool result = false;
             lock (GUIDataManagerLock.Lock)
             {
-                if (!((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Any())
+                if (((ClipsRow[])GetRows(_DataSource.Clips, $"{_DataSource.Clips.IdColumn.ColumnName}='{ClipId}'")).Length == 0)
                 {
                     _ = _DataSource.Clips.AddClipsRow(ClipId, DateTime.Parse(CreatedAt).ToLocalTime(), Title, GameId, Language, (decimal)Duration, Url);
                     _DataSource.Clips.AcceptChanges();
@@ -1804,7 +1804,7 @@ switches:
             {
                 bool found = false;
 
-                if (!GetRows(_DataSource.LearnMsgs).Any())
+                if (GetRows(_DataSource.LearnMsgs).Length == 0)
                 {
                     foreach (LearnedMessage M in LearnedMessagesPrimer.PrimerList)
                     {
@@ -1817,7 +1817,7 @@ switches:
                     }
                 }
 
-                if (!GetRows(_DataSource.BanReasons).Any())
+                if (GetRows(_DataSource.BanReasons).Length == 0)
                 {
                     found = false;
                     foreach (BanReason B in LearnedMessagesPrimer.BanReasonList)
@@ -1831,7 +1831,7 @@ switches:
                     }
                 }
 
-                if (!GetRows(_DataSource.BanRules).Any())
+                if (GetRows(_DataSource.BanRules).Length == 0)
                 {
                     found = false;
                     foreach (BanViewerRule BVR in LearnedMessagesPrimer.BanViewerRulesList)
@@ -1989,7 +1989,7 @@ switches:
                         UserName = overlayServicesRow.UserName, 
                         UseChatMsg = overlayServicesRow.UseChatMsg });
 
-                List<OverlayActionType> result = new();
+                List<OverlayActionType> result = [];
 
                 foreach (OverlayActionType OAT in found)
                 {
@@ -2029,7 +2029,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                if (_DataSource.OverlayTicker.Select($"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'").Any())
+                if (_DataSource.OverlayTicker.Select($"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'").Length != 0)
                 {
                     SetDataTableFieldRows(_DataSource.OverlayTicker, _DataSource.OverlayTicker.UserNameColumn, name, $"{_DataSource.OverlayTicker.TickerNameColumn.ColumnName}='{item}'");
                 }

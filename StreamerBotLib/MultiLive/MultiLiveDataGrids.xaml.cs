@@ -22,8 +22,6 @@ namespace StreamerBotLib.MultiLive
         private static MultiDataManager MultiLiveData;
         private ManageWindows PopupWindows { get; set; } = new();
 
-        private const int MaxChannelCount = 99;
-
         public MultiLiveDataGrids()
         {
             InitializeComponent();
@@ -31,10 +29,9 @@ namespace StreamerBotLib.MultiLive
 
         public void AddNewMonitorChannel(string UserName, string UserId)
         {
-            if (MultiLiveData.GetMonitorChannelCount() < MaxChannelCount
-                && !MultiLiveData.GetChannelNames().Contains(UserName))
+            if (!MultiLiveData.GetChannelNames().Contains(UserName))
             {
-                MultiLiveData.PostMonitorChannel(UserName, UserId);
+                MultiLiveData.PostMonitorChannel(UserName);
             }
         }
 
@@ -72,7 +69,7 @@ namespace StreamerBotLib.MultiLive
         {
             DataGrid item = sender as DataGrid;
 
-            if (((DataGrid)sender).Name != "DG_Multi_ChannelNames" || MultiLiveData.GetMonitorChannelCount() < MaxChannelCount)
+            if (((DataGrid)sender).Name != "DG_Multi_ChannelNames")
             {
                 Popup_DataEdit(item, false);
             }
@@ -82,7 +79,8 @@ namespace StreamerBotLib.MultiLive
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddEdit = ((DataGrid)sender).Name == "DG_Multi_WebHooks" || (((DataGrid)sender).Name == "DG_Multi_ChannelNames" && MultiLiveData.GetMonitorChannelCount() < MaxChannelCount);
+                bool FoundAddEdit = ((DataGrid)sender).Name == "DG_Multi_WebHooks" ||
+                    (((DataGrid)sender).Name == "DG_Multi_ChannelNames");
                 bool FoundIsEnabled = MultiLiveData.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName, "IsEnabled");
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_Multi_ContextMenu"]).Items)

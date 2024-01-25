@@ -122,12 +122,15 @@
   </data>
   <data name="CredentialsTwitchScopesDiffOauthBot" xml:space="preserve">
     <value>bits:read chat:read chat:edit channel:moderate clips:edit moderator:read:chatters moderator:read:followers</value>
+    <comment>use scope when app user uses a bot account different than streamer account</comment>
   </data>
   <data name="CredentialsTwitchScopesDiffOauthChannel" xml:space="preserve">
     <value>channel:read:redemptions channel:manage:broadcast channel:manage:raids user:read:follows</value>
+    <comment>scopes for streamer account credentials when using a bot account</comment>
   </data>
   <data name="CredentialsTwitchScopesOauthSame" xml:space="preserve">
-    <value>bits:read chat:read chat:edit channel:moderate clips:edit moderator:read:chatters moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids user:read:follows</value>
+    <value>bits:read chat:read chat:edit channel:moderate clips:edit moderator:read:chatters  channel:read:redemptions channel:manage:broadcast channel:manage:raids user:read:follows</value>
+    <comment>the scopes to use when app user has bot account same as streamer account</comment>
   </data>
   <data name="GitHubLatestLink" xml:space="preserve">
     <value>https://github.com/WrithemTwine/TwineChatBot/releases/</value>

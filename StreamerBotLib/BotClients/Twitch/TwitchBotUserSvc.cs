@@ -82,6 +82,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     ChooseConnectUserService();
                 }
+                ResetTokenMode = false;
             }
         }
 
@@ -97,6 +98,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     ChooseConnectUserService();
                 }
+                    ResetTokenMode = false;
             }
         }
 

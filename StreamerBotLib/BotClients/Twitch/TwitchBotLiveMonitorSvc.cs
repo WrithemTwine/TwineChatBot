@@ -156,11 +156,9 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (IsStarted)
                 {
                     StopMultiLive();
-                    LiveStreamMonitor?.Stop();
-                    LiveStreamMonitor = null;
+                    LiveStreamMonitor.Stop();
                     IsStarted = false;
                     IsStopped = true;
-                    HandlersAdded = false;
                     InvokeBotStopped();
                 }
                 return true;
@@ -269,7 +267,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 DateTime CurrTime = e.Stream.StartedAt.ToLocalTime();
 
                 // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.UserId, CurrTime);
+                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, CurrTime);
 
                 if (PostedLive)
                 {
