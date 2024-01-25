@@ -28,7 +28,7 @@ namespace StreamerBotLib.DataSQL.Models
                              uint channelPtCount = 0,
                              uint channelChallenge = 0,
                              uint maxUsers = 0,
-                             ICollection<CategoryList> category = default)
+                             string category = default)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;
@@ -54,6 +54,7 @@ namespace StreamerBotLib.DataSQL.Models
         public uint ChannelPtCount { get; set; } = channelPtCount;
         public uint ChannelChallenge { get; set; } = channelChallenge;
         public uint MaxUsers { get; set; } = maxUsers;
-        public ICollection<CategoryList> Category { get; set; } = category;
+        public string Category { get; set; } = category;
+
     }
 }

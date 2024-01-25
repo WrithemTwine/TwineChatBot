@@ -7,5 +7,6 @@ namespace StreamerBotLib.DataSQL.Models
                                string userName = null,
                                Platform platform = Platform.Default) : UserBase(id, userId, userName, platform)
     {
+        public Users? Users { get; set; }
     }
 }

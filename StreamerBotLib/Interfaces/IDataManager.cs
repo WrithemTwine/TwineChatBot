@@ -90,7 +90,7 @@ namespace StreamerBotLib.Interfaces
         bool RemoveCommand(string command);
         bool RemoveQuote(int QuoteNum);
         void SetBuiltInCommandsEnabled(bool Enabled);
-        void SetDiscordWebhooksEnabled(bool Enabled);
+        void SetWebhooksEnabled(bool Enabled);
         void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false);
         void SetSystemEventsEnabled(bool Enabled);
         void SetUserDefinedCommandsEnabled(bool Enabled);

@@ -9,14 +9,14 @@ namespace StreamerBotLib.DataSQL.Models
                            bool isFollower = false,
                            DateTime followedDate = default,
                            DateTime statusChangeDate = default,
-                           string category = null,
-                           CategoryList categoryList = null) : UserBase(id, userId, userName, platform)
+                           string category = null) : UserBase(id, userId, userName, platform)
     {
         public bool IsFollower { get; set; } = isFollower;
         public DateTime FollowedDate { get; set; } = followedDate;
         public DateTime StatusChangeDate { get; set; } = statusChangeDate;
         public string Category { get; set; } = category;
 
-        public CategoryList CategoryList { get; set; } = categoryList;
+        public Users? Users { get; set; }
+        public CategoryList? CategoryList { get; set; }
     }
 }

@@ -7,8 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Id), nameof(Server), nameof(Kind))]
-    public class Discord(uint id = 0,
+    public class Webhooks(uint id = 0,
                          bool isEnabled = false,
+                         WebhooksSource webhooksSource = default,
                          string server = null,
                          WebhooksKind kind = default,
                          bool addEveryone = false)
@@ -16,6 +17,7 @@ namespace StreamerBotLib.DataSQL.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;
         public bool IsEnabled { get; set; } = isEnabled;
+        public WebhooksSource WebhooksSource { get; set; } = webhooksSource;
         public string Server { get; set; } = server;
         public WebhooksKind Kind { get; set; } = kind;
         public bool AddEveryone { get; set; } = addEveryone;

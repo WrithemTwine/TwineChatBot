@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Id), nameof(MsgType))]
-    public class LearnMsgs(uint id, MsgTypes msgType = default, string teachingMsg = null)
+    public class LearnMsgs(uint id = 0, MsgTypes msgType = default, string teachingMsg = null)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;

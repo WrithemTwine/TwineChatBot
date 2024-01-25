@@ -13,5 +13,15 @@ namespace StreamerBotLib.DataSQL.Models
         public DateTime FirstDateSeen { get; set; } = firstDateSeen;
         public DateTime CurrLoginDate { get; set; } = currLoginDate;
         public DateTime LastDateSeen { get; set; } = lastDateSeen;
+
+        public UserStats UserStats { get; set; }
+        public ICollection<Currency> Currency { get; } = new List<Currency>();
+        public Followers? Followers { get; set; }
+        public ShoutOuts? ShoutOuts { get; set; }
+        public CustomWelcome? CustomWelcome { get; set; }
+
+        public MultiLiveStream? MultiLiveStream { get; set; }
+        public MultiChannels? MultiChannels { get; set; }
+        public MultiSummaryLiveStream? MultiSummaryLiveStream { get; set; }
     }
 }

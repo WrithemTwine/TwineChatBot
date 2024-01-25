@@ -19,5 +19,16 @@ namespace StreamerBotLib.DataSQL.Models
         public uint ClipsCreated { get; set; } = clipsCreated;
 
         public Users Users { get; set; }
+
+        public static UserStats operator+(UserStats userStats, UserStats otherStats)
+        {
+            userStats.WatchTime += otherStats.WatchTime;
+            userStats.ChannelChat += otherStats.ChannelChat;
+            userStats.CallCommands += otherStats.CallCommands;
+            userStats.RewardRedeems += otherStats.RewardRedeems;
+            userStats.ClipsCreated += otherStats.ClipsCreated;
+
+            return userStats;
+        }
     }
 }

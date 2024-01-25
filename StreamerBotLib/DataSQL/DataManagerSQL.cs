@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-using StreamerBotLib.Data;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
@@ -46,7 +45,11 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckField(string table, string field)
         {
-            throw new NotImplementedException();
+            lock ( GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return (context.Model.FindEntityType(table).FindProperty(field) != null);
+            }
         }
 
         public bool CheckFollower(string User)
@@ -121,13 +124,13 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="UserName">The UserName to shoutout.</param>
         /// <returns>true if in the ShoutOut table.</returns>
-        public bool CheckShoutName(string UserName)
+        public bool CheckShoutName(string UserId)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
                 return (from s in context.ShoutOuts
-                        where s.UserName == UserName
+                        where s.UserId == UserId
                         select s).Any();
             }
         }
@@ -245,7 +248,6 @@ namespace StreamerBotLib.DataSQL
 
         public void DeleteDataRows(IEnumerable<DataRow> dataRows)
         {
-            throw new NotImplementedException();
         }
 
         public string EditCommand(string cmd, List<string> Arglist)
@@ -584,13 +586,13 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks)
+        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                return new(from W in context.Discord
-                           where W.Kind == webhooks
+                return new(from W in context.Webhooks
+                           where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
                            select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
             }
         }
@@ -684,19 +686,50 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void PostCurrencyRows()
-        {
-            throw new NotImplementedException();
-        }
+        //public void PostCurrencyRows()
+        //{
+        //    lock (GUIDataManagerLock.Lock)
+        //    {
+        //        using var context = dbContextFactory.CreateDbContext();
+        //        List<string> currencyTypeName = new(from CT in context.CurrencyType
+        //                                            select CT.CurrencyName);
 
-        public void PostCurrencyRows(ref DataSource.UsersRow usersRow)
-        {
-            throw new NotImplementedException();
-        }
+        //        foreach(Users U in context.Users)
+        //        {
+        //            foreach(string CurrencyName in currencyTypeName)
+        //            {
+        //                if(!(from C in context.Currency where (C.UserName == U.UserName && C.CurrencyName == CurrencyName) select C.CurrencyName).Any())
+        //                {
+        //                    context.Currency.Add()
+        //                }
+        //            }
+
+        //        }
+        //    } 
+        //}
+
+        //public void PostCurrencyRows(ref DataSource.UsersRow usersRow)
+        //{
+        //    lock (GUIDataManagerLock.Lock)
+        //    {
+        //        using var context = dbContextFactory.CreateDbContext();
+        //    }
+        //}
 
         public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                Currency currency = (from C in context.Currency
+                                     where (C.CurrencyName == CurrencyName && C.UserName == User.UserName)
+                                     select C).FirstOrDefault();
+                if (currency != default)
+                {
+                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.MaxValue);
+                }
+                context.SaveChanges();
+            }
         }
 
         public uint PostDeathCounterUpdate(string currCategory, bool Reset = false, uint updateValue = 1)
@@ -725,7 +758,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool PostFollower(LiveUser User, DateTime FollowedDate, string Category)
+        public bool PostFollower(LiveUser User, DateTime FollowedDate, string Category, bool delaysave = false)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -744,13 +777,22 @@ namespace StreamerBotLib.DataSQL
                     // TODO: fix PostFollower!
                 }
 
+                if (!delaysave)
+                {
+                    context.SaveChanges();
+                }
                 return found;
             }
         }
 
         public void PostGiveawayData(string DisplayName, DateTime dateTime)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                context.GiveawayUserData.Add(new(dateTime, userName: DisplayName));
+                context.SaveChanges();
+            }
         }
 
         public void PostInRaidData(string user, DateTime time, uint viewers, string gamename, Platform platform)
@@ -765,18 +807,69 @@ namespace StreamerBotLib.DataSQL
 
         public void PostLearnMsgsRow(string Message, MsgTypes MsgType)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                if(!(from M in context.LearnMsgs
+                     where M.TeachingMsg == Message
+                     select M).Any())
+                {
+                    context.LearnMsgs.Add(new(msgType: MsgType, teachingMsg: Message));
+                    LearnMsgChanged = true;
+                }
+                context.SaveChanges();
+            }
         }
 
         public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.UserName == CurrUser select uCu;
+                IEnumerable<Currency> srcCurrency = from sCu in context.Currency where sCu.UserName == SourceUser select sCu;
+
+                foreach( (Currency UC, Currency SC) in (from U in userCurrency 
+                                          from S in srcCurrency
+                                          where U.CurrencyName == S.CurrencyName
+                                          select (U,S) ))
+                {
+                    UC.Add(SC);
+                }
+                context.Currency.RemoveRange(srcCurrency);
+
+                UserStats currUserstat = (from Cu in context.UserStats where (Cu.UserName == CurrUser && Cu.Platform == platform) select Cu).FirstOrDefault();
+                UserStats sourceUser = (from Su in context.UserStats where (Su.UserName == SourceUser && Su.Platform == platform) select Su).FirstOrDefault();
+
+                if (currUserstat != default && sourceUser != default)
+                {
+                    currUserstat += sourceUser;
+
+                    context.UserStats.Remove(sourceUser);
+                    context.SaveChanges();
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
-        public void PostNewAutoShoutUser(string UserName, string UserId, string platform)
+        public void PostNewAutoShoutUser(string UserName, string UserId, Platform platform)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                if(!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.UserName == UserName && SO.Platform==platform) select SO).Any())
+                {
+                    context.ShoutOuts.Add(new(userId: UserId, userName: UserName, platform: platform));
+                }
+                context.SaveChanges();
+            }
         }
+
         private Users PostNewUser(LiveUser User, DateTime FirstSeen)
         {
             lock (GUIDataManagerLock.Lock)
@@ -795,15 +888,29 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-
         public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                context.OutRaidData.Add(new(channelRaided: HostedChannel, raidDate: dateTime));
+                context.SaveChanges();
+            }
         }
 
         public int PostQuote(string Text)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                List<Quotes> quotes = new(from Q in context.Quotes select Q);
+                ushort opennum = (from Q in context.Quotes select Q.Number).IntersectBy(Enumerable.Range(1, quotes.Count>0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
+
+                context.Quotes.Add(new(opennum, Text));
+                context.SaveChanges();
+                return opennum;
+            }
         }
 
         public bool PostStream(DateTime StreamStart)
@@ -821,9 +928,17 @@ namespace StreamerBotLib.DataSQL
             throw new NotImplementedException();
         }
 
-        public void PostUserCustomWelcome(string User, string WelcomeMsg)
+        public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                if(!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
+                {
+                    context.CustomWelcome.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Source, message: WelcomeMsg));
+                    context.SaveChanges();
+                }
+            }
         }
 
    
@@ -944,12 +1059,12 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void SetDiscordWebhooksEnabled(bool Enabled)
+        public void SetWebhooksEnabled(bool Enabled)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                foreach (var webhook in context.Discord)
+                foreach (var webhook in context.Webhooks)
                 {
                     webhook.IsEnabled = Enabled;
                 }
@@ -1024,17 +1139,53 @@ namespace StreamerBotLib.DataSQL
 
         private void UpdateCurrency(Users User, DateTime CurrTime)
         {
-
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                TimeSpan clock = CurrTime - User.CurrLoginDate;
+                foreach(Currency currency in User.Currency)
+                {
+                    currency.Value = 
+                        Math.Min(
+                            currency.CurrencyType.MaxValue,
+                            Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
+                        );
+                }
+            }
         }
 
         public void UpdateFollowers(IEnumerable<Follow> follows, string Category)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                if (follows.Any())
+                {
+                    foreach (Follow f in follows)
+                    {
+                        PostFollower(f.FromUser, f.FollowedAt, Category, true);
+                    }
+                    context.SaveChanges();
+                }
+            }
         }
 
         public List<LearnMsgRecord> UpdateLearnedMsgs()
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                if (LearnMsgChanged)
+                {
+                    LearnMsgChanged = false;
+                    return new(from L in context.LearnMsgs
+                               select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg));
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         public void UpdateOverlayTicker(OverlayTickerItem item, string name)

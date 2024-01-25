@@ -492,7 +492,7 @@ switches:
             NotifySaveData();
         }
 
-        public void SetDiscordWebhooksEnabled(bool Enabled)
+        public void SetWebhooksEnabled(bool Enabled)
         {
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Set the enable as {Enabled} for all the Discord webhooks.");
@@ -1133,24 +1133,24 @@ switches:
             NotifySaveData();
         }
 
-        /// <summary>
-        /// Adds a user to the auto shout table.
-        /// </summary>
-        /// <param name="UserName">The Username to add, duplicates are not added.</param>
-        public void PostNewAutoShoutUser(string UserName, string UserId, string platform)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Adding user {UserName} to the auto shout-out listing.");
+        ///// <summary>
+        ///// Adds a user to the auto shout table.
+        ///// </summary>
+        ///// <param name="UserName">The Username to add, duplicates are not added.</param>
+        //public void PostNewAutoShoutUser(string UserName, string UserId, string platform)
+        //{
+        //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Adding user {UserName} to the auto shout-out listing.");
 
-            lock (GUIDataManagerLock.Lock)
-            {
-                if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
-                {
-                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName, UserId, platform);
-                    _DataSource.ShoutOuts.AcceptChanges();
-                    NotifySaveData();
-                }
-            }
-        }
+        //    lock (GUIDataManagerLock.Lock)
+        //    {
+        //        if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
+        //        {
+        //            _DataSource.ShoutOuts.AddShoutOutsRow(UserName, UserId, platform);
+        //            _DataSource.ShoutOuts.AcceptChanges();
+        //            NotifySaveData();
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Combine two user names, in the case of a user visits the channel for awhile, changes their name, and they want to update their progress across user names.
@@ -1159,57 +1159,57 @@ switches:
         /// <param name="SourceUser">The user containing all of the stats to migrate.</param>
         /// <param name="platform">The source platform for these users, to distinguish unique user names per streaming platform.</param>
         /// <returns></returns>
-        public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
-        {
-            bool success = false;
+        //public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
+        //{
+        //    bool success = false;
 
-            lock (GUIDataManagerLock.Lock)
-            {
-                // do currency updates first
+        //    lock (GUIDataManagerLock.Lock)
+        //    {
+        //        // do currency updates first
 
-                CurrencyRow[] CurrencyCurrUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{CurrUser}'");
-                CurrencyRow[] CurrencySourceUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{SourceUser}'");
+        //        CurrencyRow[] CurrencyCurrUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{CurrUser}'");
+        //        CurrencyRow[] CurrencySourceUserRow = (CurrencyRow[])GetRows(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{SourceUser}'");
 
-                foreach (var (SCR, CCR) in from CurrencyRow SCR in CurrencySourceUserRow
-                                           from CurrencyRow CCR in CurrencyCurrUserRow
-                                           where SCR.CurrencyName == CCR.CurrencyName
-                                           select (SCR, CCR))
-                {
-                    CCR.Value += SCR.Value;
-                    success = true;
-                }
+        //        foreach (var (SCR, CCR) in from CurrencyRow SCR in CurrencySourceUserRow
+        //                                   from CurrencyRow CCR in CurrencyCurrUserRow
+        //                                   where SCR.CurrencyName == CCR.CurrencyName
+        //                                   select (SCR, CCR))
+        //        {
+        //            CCR.Value += SCR.Value;
+        //            success = true;
+        //        }
 
-                if (success)
-                {
-                    foreach (CurrencyRow cr in CurrencySourceUserRow)
-                    {
-                        cr.Delete();
-                    }
-                }
+        //        if (success)
+        //        {
+        //            foreach (CurrencyRow cr in CurrencySourceUserRow)
+        //            {
+        //                cr.Delete();
+        //            }
+        //        }
 
-                _DataSource.Currency.AcceptChanges();
+        //        _DataSource.Currency.AcceptChanges();
 
-                // do user table updates last
-                UsersRow CurrUserRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{CurrUser}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{platform}'");
-                UsersRow SourceUserRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{SourceUser}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{platform}'");
+        //        // do user table updates last
+        //        UsersRow CurrUserRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{CurrUser}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{platform}'");
+        //        UsersRow SourceUserRow = (UsersRow)GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{SourceUser}' AND {_DataSource.Users.PlatformColumn.ColumnName}='{platform}'");
 
-                if (CurrUserRow != null && SourceUserRow != null)
-                {
-                    CurrUserRow.WatchTime += SourceUserRow.WatchTime;
-                    SourceUserRow.Delete();
-                    _DataSource.Users.AcceptChanges();
-                    _DataSource.Followers.AcceptChanges();
-                    success = success && true;
-                }
+        //        if (CurrUserRow != null && SourceUserRow != null)
+        //        {
+        //            CurrUserRow.WatchTime += SourceUserRow.WatchTime;
+        //            SourceUserRow.Delete();
+        //            _DataSource.Users.AcceptChanges();
+        //            _DataSource.Followers.AcceptChanges();
+        //            success = success && true;
+        //        }
 
-                if (success)
-                {
-                    NotifySaveData();
-                }
-            }
+        //        if (success)
+        //        {
+        //            NotifySaveData();
+        //        }
+        //    }
 
-            return success;
-        }
+        //    return success;
+        //}
 
         #endregion Users and Followers
 
@@ -1409,9 +1409,7 @@ switches:
         /// <param name="usersRow">The user row containing data for creating new rows depending if the currency doesn't have a row for each currency type.</param>
         public void PostCurrencyRows(ref UsersRow usersRow)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add all currency rows for user {usersRow.UserName}.");
-
             lock (GUIDataManagerLock.Lock)
             {
                 CurrencyTypeRow[] currencyTypeRows = (CurrencyTypeRow[])GetRows(_DataSource.CurrencyType);
@@ -1437,12 +1435,12 @@ switches:
             }
         }
 
-        public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
-        {
-            CurrencyRow currencyRow = (CurrencyRow)GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
-            _DataSource.Currency.AcceptChanges();
-            return currencyRow.Value >= value;
-        }
+        //public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
+        //{
+        //    CurrencyRow currencyRow = (CurrencyRow)GetRow(_DataSource.Currency, $"{_DataSource.Currency.UserNameColumn.ColumnName}='{User.UserName}' AND {_DataSource.Currency.CurrencyNameColumn.ColumnName}='{CurrencyName}'");
+        //    _DataSource.Currency.AcceptChanges();
+        //    return currencyRow.Value >= value;
+        //}
 
         public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
         {
@@ -1463,7 +1461,6 @@ switches:
         /// </summary>
         public void PostCurrencyRows()
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Add currency for all users.");
 
             lock (GUIDataManagerLock.Lock)

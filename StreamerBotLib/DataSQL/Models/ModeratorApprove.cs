@@ -7,7 +7,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Id), nameof(ModActionType), nameof(ModActionName))]
-    public class ModeratorApprove(uint id = 0, bool isEnabled = false, ModActionType modActionType = default, string modActionName = null, ModPerformType modPerformType = default, string modPerformAction = null)
+    public class ModeratorApprove(uint id = 0,
+                                  bool isEnabled = false,
+                                  ModActionType modActionType = default,
+                                  string modActionName = null,
+                                  ModPerformType modPerformType = default,
+                                  string modPerformAction = null)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;

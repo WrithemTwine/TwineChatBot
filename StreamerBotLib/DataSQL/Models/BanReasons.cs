@@ -10,5 +10,7 @@ namespace StreamerBotLib.DataSQL.Models
                             Enums.BanReasons banReason = default) : BanBase(id, msgType)
     {
         public Enums.BanReasons BanReason { get; set; } = banReason;
+
+        public BanRules BanRules { get; set; }
     }
 }

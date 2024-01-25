@@ -17,7 +17,6 @@ namespace StreamerBotLib.DataSQL
         public DbSet<Currency> Currency { get; set; }
         public DbSet<CurrencyType> CurrencyType { get; set; }
         public DbSet<CustomWelcome> CustomWelcome { get; set; }
-        public DbSet<Discord> Discord { get; set; }
         public DbSet<Followers> Followers { get; set; }
         public DbSet<GameDeadCounter> GameDeadCounter { get; set; }
         public DbSet<GiveawayUserData> GiveawayUserData { get; set; }
@@ -32,6 +31,7 @@ namespace StreamerBotLib.DataSQL
         public DbSet<StreamStats> StreamStats { get; set; }
         public DbSet<Users> Users { get; set; }
         public DbSet<UserStats> UserStats { get; set; }
+        public DbSet<Webhooks> Webhooks { get; set; }
 
         public DbSet<MultiMsgEndPoints> MultiMsgEndPoints { get; set; }
         public DbSet<MultiSummaryLiveStream> MultiSummaryLiveStreams { get; set; }

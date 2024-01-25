@@ -66,21 +66,21 @@ namespace StreamerBotLib.Data
 
         #region Interface
 
-        /// <summary>
-        /// Check if the provided field is part of the supplied table.
-        /// </summary>
-        /// <param name="table">The table to check.</param>
-        /// <param name="field">The field within the table to see if it exists.</param>
-        /// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
-        public bool CheckField(string table, string field)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if field {field} is in table {table}.");
+        ///// <summary>
+        ///// Check if the provided field is part of the supplied table.
+        ///// </summary>
+        ///// <param name="table">The table to check.</param>
+        ///// <param name="field">The field within the table to see if it exists.</param>
+        ///// <returns><i>true</i> - if table contains the supplied field, <i>false</i> - if table doesn't contain the supplied field.</returns>
+        //public bool CheckField(string table, string field)
+        //{
+        //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check if field {field} is in table {table}.");
 
-            lock (GUIDataManagerLock.Lock)
-            {
-                return _DataSource.Tables[table].Columns.Contains(field);
-            }
-        }
+        //    lock (GUIDataManagerLock.Lock)
+        //    {
+        //        return _DataSource.Tables[table].Columns.Contains(field);
+        //    }
+        //}
 
         public List<object> GetRowsDataColumn(string dataTable, string dataColumn)
         {

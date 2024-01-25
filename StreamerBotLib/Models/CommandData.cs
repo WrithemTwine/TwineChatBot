@@ -20,7 +20,7 @@ namespace StreamerBotLib.Models
         public string Key_field { get; }
         public string Data_field { get; }
         public string Currency_field { get; }
-        public DataSort Sort { get; }
+        public CommandSort Sort { get; }
 
         public CommandData(Commands row)
         {

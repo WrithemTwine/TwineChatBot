@@ -1,11 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Id), nameof(CreatedAt), nameof(GameId))]
-    public class Clips(uint id = 0, DateTime createdAt = default, string title = null, string gameId = null, string language = null, decimal duration = 0, string url = null)
+    public class Clips(uint id = 0,
+                       DateTime createdAt = default,
+                       string title = null,
+                       string gameId = null,
+                       string language = null,
+                       decimal duration = 0,
+                       string url = null)
     {
         public uint Id { get; set; } = id;
         public DateTime CreatedAt { get; set; } = createdAt;
@@ -15,6 +19,6 @@ namespace StreamerBotLib.DataSQL.Models
         public decimal Duration { get; set; } = duration;
         public string Url { get; set; } = url;
 
-        public CategoryList CategoryList { get; set; }
+        public CategoryList? CategoryList { get; set; }
     }
 }

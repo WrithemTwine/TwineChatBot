@@ -15,5 +15,7 @@ namespace StreamerBotLib.DataSQL.Models
         public MsgTypes MsgTypes { get; set; } = msgTypes;
         public ModActions ModAction { get; set; } = modAction;
         public ushort TimeoutSeconds { get; set; }
+
+        public BanReasons BanReasons { get; set; }
     }
 }

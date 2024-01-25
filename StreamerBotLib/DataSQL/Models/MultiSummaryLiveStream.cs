@@ -11,5 +11,7 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public uint StreamCount { get; set; } = streamCount;
         public DateTime ThroughDate { get; set; } = throughDate;
+
+        public Users? Users { get; set; }
     }
 }

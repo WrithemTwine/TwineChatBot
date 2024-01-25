@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,13 +42,6 @@ namespace StreamerBot
             {
                 while (WatchProcessOps)
                 {
-                    Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                    if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
-                    {
-                        UpdateProc(processes.Length > 0);
-                        IsMultiProcActive = processes.Length > 0;
-                    }
-
                     if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
                         NotifyExpiredCredentials?.Invoke(this, new());

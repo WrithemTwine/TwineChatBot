@@ -9,5 +9,7 @@ namespace StreamerBotLib.DataSQL.Models
                                  DateTime liveDate = default) : UserBase(id, userId, userName, platform)
     {
         public DateTime LiveDate { get; set; } = liveDate;
+
+        public Users? Users { get; set; }
     }
 }

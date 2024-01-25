@@ -7,7 +7,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(CategoryId), nameof(Category), IsUnique = true)]
-    public class CategoryList(uint id = 0, string categoryId = null, string category = null, uint streamCount = 1)
+    public class CategoryList(uint id = 0,
+                              string categoryId = null,
+                              string category = null,
+                              uint streamCount = 1)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint Id { get; set; } = id;
@@ -18,5 +21,9 @@ namespace StreamerBotLib.DataSQL.Models
         public string Category { get; set; } = FormatData.AddEscapeFormat(category);
         public uint StreamCount { get; set; } = streamCount;
 
+        public GameDeadCounter GameDeadCounter { get; set; }
+        public Clips? Clips { get; set; }
+        public Followers? Followers { get; set; }
+        public InRaidData? InRaidData { get; set; }
     }
 }
