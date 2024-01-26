@@ -26,8 +26,8 @@ namespace StreamerBotLib.BotClients
         internal static TwitchTokenBot TwitchTokenBot { get; private set; }
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; }
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } 
-        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } 
+        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
+        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; }
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
         public static TwitchBotPubSub TwitchBotPubSub { get; private set; }
 
@@ -82,7 +82,7 @@ namespace StreamerBotLib.BotClients
 
         /// <summary>
         /// Retrieves a property within the Helix, and creates a new API object.
-        /// The use case is: access tokens ready to go at the GUI level, no bots are auto-started 
+        /// The use case is: access tokens ready to go at the GUI level, no bots are auto-ProcessFollowQueuestarted 
         /// (would otherwise create a new Helix api object) upon app start, and there's a category 
         /// update in the GUI - creates a null exception.
         /// </summary>
@@ -510,7 +510,7 @@ namespace StreamerBotLib.BotClients
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Bot started, registering handles.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Bot ProcessFollowQueuestarted, registering handles.");
             RegisterHandlers();
         }
 

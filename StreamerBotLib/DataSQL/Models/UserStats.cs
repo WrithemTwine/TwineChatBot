@@ -7,20 +7,20 @@ namespace StreamerBotLib.DataSQL.Models
                            string userName = null,
                            Platform platform = Platform.Default,
                            TimeSpan watchTime = default,
-                           uint channelChat = 0,
-                           uint callCommands = 0,
-                           uint rewardRedeems = 0,
-                           uint clipsCreated = 0) : UserBase(id, userId, userName, platform)
+                           int channelChat = 0,
+                           int callCommands = 0,
+                           int rewardRedeems = 0,
+                           int clipsCreated = 0) : UserBase(id, userId, userName, platform)
     {
         public TimeSpan WatchTime { get; set; } = watchTime;
-        public uint ChannelChat { get; set; } = channelChat;
-        public uint CallCommands { get; set; } = callCommands;
-        public uint RewardRedeems { get; set; } = rewardRedeems;
-        public uint ClipsCreated { get; set; } = clipsCreated;
+        public int ChannelChat { get; set; } = channelChat;
+        public int CallCommands { get; set; } = callCommands;
+        public int RewardRedeems { get; set; } = rewardRedeems;
+        public int ClipsCreated { get; set; } = clipsCreated;
 
         public Users Users { get; set; }
 
-        public static UserStats operator+(UserStats userStats, UserStats otherStats)
+        public static UserStats operator +(UserStats userStats, UserStats otherStats)
         {
             userStats.WatchTime += otherStats.WatchTime;
             userStats.ChannelChat += otherStats.ChannelChat;

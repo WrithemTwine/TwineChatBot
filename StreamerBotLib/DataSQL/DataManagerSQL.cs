@@ -11,22 +11,21 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
+using System.Collections.Concurrent;
 using System.Data;
 using System.Globalization;
 
 namespace StreamerBotLib.DataSQL
 {
-    public class DataManagerSQL(IDbContextFactory<SQLDBContext> dbContextFactory) : IDataManager, IDataManageReadOnly
+    public class DataManagerSQL(IDbContextFactory<SQLDBContext> dbContextFactory) : IDataManager
     {
         /// <summary>
         /// always true to begin one learning cycle
         /// </summary>
         private bool LearnMsgChanged = true;
 
-        /// <summary>
-        /// When the follower bot begins a bulk follower update, this flag 'locks' the database Follower table from changes until bulk update concludes.
-        /// </summary>
-        public bool UpdatingFollowers { get; set; }
+        private readonly ConcurrentQueue<Follow> followsQueue = new();
+
         private readonly string DefaulSocialMsg = LocalizedMsgSystem.GetVar(Msg.MsgDefaultSocialMsg);
         private DateTime CurrStreamStart { get; set; } = default;
 
@@ -45,7 +44,7 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckField(string table, string field)
         {
-            lock ( GUIDataManagerLock.Lock)
+            lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
                 return (context.Model.FindEntityType(table).FindProperty(field) != null);
@@ -269,7 +268,7 @@ namespace StreamerBotLib.DataSQL
                         EditCom.GetType().GetProperty(k).SetValue(EditCom, EditParamsDict[k]);
                     }
                     result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
-                    context.SaveChanges();
+                    context.SaveChanges(true);
                 }
                 else
                 {
@@ -334,7 +333,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public uint GetDeathCounter(string currCategory)
+        public int GetDeathCounter(string currCategory)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -345,7 +344,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out ushort Multi)
+        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -390,12 +389,12 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public IEnumerable<IKey> GetKeys(string Table)
+        public IEnumerable<string> GetKeys(string Table)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                return context.Model.FindEntityType(Table).GetKeys();
+                return new List<string>(from P in context.Model.FindEntityType(Table).FindPrimaryKey().Properties select P.Name);
             }
         }
 
@@ -529,31 +528,31 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public Tuple<string, uint, string[]> GetTimerCommand(string Cmd)
+        public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
                 return (from R in context.Commands
                         where R.RepeatTimer > 0
-                        select new Tuple<string, uint, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
+                        select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
                                                                                             select C).ToArray())).FirstOrDefault();
             }
         }
 
-        public List<Tuple<string, uint, string[]>> GetTimerCommands()
+        public List<Tuple<string, int, string[]>> GetTimerCommands()
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
                 return new(from R in context.Commands
                            where R.RepeatTimer > 0
-                           select new Tuple<string, uint, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
+                           select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
                                                                                                select C).ToArray()));
             }
         }
 
-        public uint GetTimerCommandTime(string Cmd)
+        public int GetTimerCommandTime(string Cmd)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -572,6 +571,17 @@ namespace StreamerBotLib.DataSQL
                 return (from C in context.Commands
                         where C.CmdName == command
                         select C.Usage).FirstOrDefault();
+            }
+        }
+
+        public LiveUser GetUser(string UserName)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return (from U in context.Users
+                        where U.UserName == UserName
+                        select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
             }
         }
 
@@ -601,13 +611,13 @@ namespace StreamerBotLib.DataSQL
         {
             throw new NotImplementedException();
         }
-
-        public object[] PerformQuery(CommandData row, int Top = 0)
+        // TODO: complete the DBContext for "perform query"
+        public object[] PerformQuery(Commands row, int Top = 0)
         {
             throw new NotImplementedException();
         }
 
-        public object PerformQuery(CommandData row, string ParamValue)
+        public object PerformQuery(Commands row, string ParamValue)
         {
             throw new NotImplementedException();
         }
@@ -642,13 +652,13 @@ namespace StreamerBotLib.DataSQL
                         }
                         found = true;
                     }
-                    context.SaveChanges();
+                    context.SaveChanges(true);
                 }
             }
             return found;
         }
 
-        public bool PostClip(uint ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url)
+        public bool PostClip(int ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -658,7 +668,7 @@ namespace StreamerBotLib.DataSQL
                       select C).Any())
                 {
                     context.Clips.Add(new(ClipId, CreatedAt, Title, GameId, Language, Duration, Url));
-                    context.SaveChanges();
+                    context.SaveChanges(true);
                     return true;
                 }
                 return false;
@@ -679,7 +689,7 @@ namespace StreamerBotLib.DataSQL
                     Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table),
                     Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort));
 
-                    context.SaveChanges();
+                    context.SaveChanges(true);
                     return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
                 }
                 return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(Msg.MsgAddCommandFailed), cmd);
@@ -732,7 +742,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public uint PostDeathCounterUpdate(string currCategory, bool Reset = false, uint updateValue = 1)
+        public int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -758,30 +768,80 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool PostFollower(LiveUser User, DateTime FollowedDate, string Category, bool delaysave = false)
+        /// <summary>
+        /// Add a new follower to the database.
+        /// </summary>
+        /// <param name="follow">The follower information to add to the database.</param>
+        /// <returns>
+        ///     <code>true</code>: first time follower; 
+        ///     <code>false</code>: user previously followed.
+        /// </returns>
+        public bool PostFollower(Follow follow)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                IEnumerable<Followers> follow = (from F in context.Followers
-                                                 where F.UserId == User.UserId && F.UserName == User.UserName && F.Platform == User.Source
-                                                 select F);
-                bool found = follow.Any();
 
-                if (!found)
-                {
-                    context.Followers.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Source, isFollower: true, followedDate: FollowedDate, category: Category));
-                }
-                else
-                {
-                    // TODO: fix PostFollower!
-                }
+                followsQueue.Enqueue(follow);
+                PostFollowsQueue();
 
-                if (!delaysave)
+                return !(from F in context.Followers
+                         where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Source
+                         select F).Any();
+            }
+        }
+
+        private static bool ProcessFollowQueuestarted = false;
+
+        /// <summary>
+        /// Threaded database update to add followers.
+        /// </summary>
+        private void PostFollowsQueue()
+        {
+            if (!ProcessFollowQueuestarted)
+            {
+                ProcessFollowQueuestarted = true;
+
+                ThreadManager.CreateThreadStart(() =>
                 {
-                    context.SaveChanges();
-                }
-                return found;
+                    DateTime currTime = DateTime.Now.ToLocalTime();
+                    Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
+                    using var context = dbContextFactory.CreateDbContext();
+                    while (followsQueue.TryDequeue(out Follow currUser))
+                    {
+                        lock (GUIDataManagerLock.Lock)
+                        {
+                            Followers userfollow = (from F in context.Followers
+                                                    where (F.UserId == currUser.FromUser.UserId
+                                                    && F.UserName == currUser.FromUser.UserName
+                                                    && F.Platform == currUser.FromUser.Source)
+                                                    select F).FirstOrDefault();
+                            if (userfollow != default)
+                            {
+                                userfollow.IsFollower = true;
+                                userfollow.FollowedDate = currUser.FollowedAt;
+                                if (string.IsNullOrEmpty(userfollow.Category))
+                                {
+                                    userfollow.Category = currUser.Category;
+                                }
+                            }
+                            else
+                            {
+                                context.Followers.Add(new(userId: currUser.FromUser.UserId,
+                                    userName: currUser.FromUser.UserName, platform: currUser.FromUser.Source,
+                                    isFollower: true, followedDate: currUser.FollowedAt,
+                                    statusChangeDate: currUser.FollowedAt, addDate: currTime,
+                                    category: currUser.Category));
+                            }
+                        }
+                    }
+                    lock (GUIDataManagerLock.Lock)
+                    {
+                        context.SaveChanges(true);
+                    }
+                    ProcessFollowQueuestarted = false;
+                });
+
             }
         }
 
@@ -795,7 +855,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void PostInRaidData(string user, DateTime time, uint viewers, string gamename, Platform platform)
+        public void PostInRaidData(string user, DateTime time, int viewers, string gamename, Platform platform)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -810,9 +870,9 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                if(!(from M in context.LearnMsgs
-                     where M.TeachingMsg == Message
-                     select M).Any())
+                if (!(from M in context.LearnMsgs
+                      where M.TeachingMsg == Message
+                      select M).Any())
                 {
                     context.LearnMsgs.Add(new(msgType: MsgType, teachingMsg: Message));
                     LearnMsgChanged = true;
@@ -829,10 +889,10 @@ namespace StreamerBotLib.DataSQL
                 IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.UserName == CurrUser select uCu;
                 IEnumerable<Currency> srcCurrency = from sCu in context.Currency where sCu.UserName == SourceUser select sCu;
 
-                foreach( (Currency UC, Currency SC) in (from U in userCurrency 
-                                          from S in srcCurrency
-                                          where U.CurrencyName == S.CurrencyName
-                                          select (U,S) ))
+                foreach ((Currency UC, Currency SC) in (from U in userCurrency
+                                                        from S in srcCurrency
+                                                        where U.CurrencyName == S.CurrencyName
+                                                        select (U, S)))
                 {
                     UC.Add(SC);
                 }
@@ -846,7 +906,7 @@ namespace StreamerBotLib.DataSQL
                     currUserstat += sourceUser;
 
                     context.UserStats.Remove(sourceUser);
-                    context.SaveChanges();
+                    context.SaveChanges(true);
 
                     return true;
                 }
@@ -862,7 +922,7 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                if(!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.UserName == UserName && SO.Platform==platform) select SO).Any())
+                if (!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.UserName == UserName && SO.Platform == platform) select SO).Any())
                 {
                     context.ShoutOuts.Add(new(userId: UserId, userName: UserName, platform: platform));
                 }
@@ -905,7 +965,7 @@ namespace StreamerBotLib.DataSQL
                 using var context = dbContextFactory.CreateDbContext();
 
                 List<Quotes> quotes = new(from Q in context.Quotes select Q);
-                ushort opennum = (from Q in context.Quotes select Q.Number).IntersectBy(Enumerable.Range(1, quotes.Count>0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
+                short opennum = (from Q in context.Quotes select Q.Number).IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
 
                 context.Quotes.Add(new(opennum, Text));
                 context.SaveChanges();
@@ -913,19 +973,39 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        /// <summary>
+        /// Starts a new Stream record, if it doesn't currently exist.
+        /// </summary>
+        /// <param name="StreamStart">The time of stream start.</param>
+        /// <returns><code>true</code>: for posting a new stream start; <code>false</code>: when a stream start date row already exists</returns>
         public bool PostStream(DateTime StreamStart)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                bool addstream = !(from S in context.StreamStats where S.StreamStart == StreamStart select S).Any();
+                if (addstream)
+                {
+                    context.StreamStats.Add(new(streamStart: StreamStart, streamEnd: StreamStart));
+                    context.SaveChanges(true);
+                }
+
+                return addstream;
+            }
         }
 
         public void PostStreamStat(StreamStat streamStat)
         {
-            throw new NotImplementedException();
-        }
-
-        public void PostUpdatedDataRow(bool RowChanged)
-        {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                StreamStats currStream = (from S in context.StreamStats where S.StreamStart == streamStat.StreamStart select S).FirstOrDefault();
+                if (currStream != default)
+                {
+                    currStream.Update(streamStat);
+                    context.SaveChanges(true);
+                }
+            }
         }
 
         public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg)
@@ -933,15 +1013,14 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                if(!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
+                if (!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
                 {
                     context.CustomWelcome.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Source, message: WelcomeMsg));
-                    context.SaveChanges();
+                    context.SaveChanges(true);
                 }
             }
         }
 
-   
         public void RemoveAllFollowers()
         {
             lock (GUIDataManagerLock.Lock)
@@ -951,7 +1030,7 @@ namespace StreamerBotLib.DataSQL
                 context.SaveChanges();
             }
         }
- 
+
         public void RemoveAllGiveawayData()
         {
             lock (GUIDataManagerLock.Lock)
@@ -961,7 +1040,7 @@ namespace StreamerBotLib.DataSQL
                 context.SaveChanges();
             }
         }
- 
+
         public void RemoveAllInRaidData()
         {
             lock (GUIDataManagerLock.Lock)
@@ -1105,12 +1184,55 @@ namespace StreamerBotLib.DataSQL
 
         public void StartBulkFollowers()
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                foreach (Followers F in context.Followers)
+                {
+                    F.IsFollower = false; // reset all followers to not following, add existing followers back as followers
+                }
+                context.SaveChanges(true);
+            }
         }
 
         public void StopBulkFollows()
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                while (ProcessFollowQueuestarted) { } // spin until the queue processing finishes
+
+                DateTime currtime = DateTime.Now.ToLocalTime();
+                using var context = dbContextFactory.CreateDbContext();
+
+                if (OptionFlags.TwitchPruneNonFollowers)
+                {
+                    context.Followers.RemoveRange(from R in context.Followers where !R.IsFollower select R);
+                }
+                else // if pruning followers, there won't be multiple 'UserId' records
+                {
+                    foreach (var UF in (from F in context.Followers
+                                        orderby F.AddDate descending // the higher Id entries are after initial entries
+                                        group F by F.UserId into UserIdFollows
+                                        select UserIdFollows))
+                    {
+                        if (UF.Count() == 1 && UF.First().StatusChangeDate != UF.First().FollowedDate)
+                        {
+                            UF.First().StatusChangeDate = UF.First().FollowedDate;
+                        }
+                        else if (UF.Count() > 1)
+                        { // adjust the status change date to the current time
+                            List<Followers> currUser = new(UF.Take(2));
+
+                            if (currUser[0].StatusChangeDate != currUser[1].StatusChangeDate)
+                            { // only change when the dates are different, show user which records change
+                                currUser[0].StatusChangeDate = currtime;
+                                currUser[1].StatusChangeDate = currtime;
+                            }
+                        }
+                    }
+                }
+                context.SaveChanges(true);
+            }
         }
 
         public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
@@ -1128,9 +1250,9 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 using var context = dbContextFactory.CreateDbContext();
-                foreach(string U in Users)
+                foreach (string U in Users)
                 {
-                    UpdateCurrency((from user in context.Users where user.UserName==U select user).FirstOrDefault(), dateTime);
+                    UpdateCurrency((from user in context.Users where user.UserName == U select user).FirstOrDefault(), dateTime);
                 }
                 context.SaveChanges();
             }
@@ -1143,9 +1265,9 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 TimeSpan clock = CurrTime - User.CurrLoginDate;
-                foreach(Currency currency in User.Currency)
+                foreach (Currency currency in User.Currency)
                 {
-                    currency.Value = 
+                    currency.Value =
                         Math.Min(
                             currency.CurrencyType.MaxValue,
                             Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
@@ -1154,18 +1276,13 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void UpdateFollowers(IEnumerable<Follow> follows, string Category)
+        public void UpdateFollowers(IEnumerable<Follow> follows)
         {
-            lock (GUIDataManagerLock.Lock)
+            if (follows.Any())
             {
-                using var context = dbContextFactory.CreateDbContext();
-                if (follows.Any())
+                foreach (Follow f in follows)
                 {
-                    foreach (Follow f in follows)
-                    {
-                        PostFollower(f.FromUser, f.FollowedAt, Category, true);
-                    }
-                    context.SaveChanges();
+                    PostFollower(f);
                 }
             }
         }
@@ -1194,10 +1311,11 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
-                if(ticker == default)
+                if (ticker == default)
                 {
                     context.OverlayTicker.Add(new(tickerName: item, userName: name));
-                } else
+                }
+                else
                 {
                     ticker.UserName = name;
                 }
@@ -1217,7 +1335,7 @@ namespace StreamerBotLib.DataSQL
                         U.Users.LastDateSeen = CurrStreamStart;
                     }
 
-                    if(CurrTime > U.Users.LastDateSeen && CurrTime > CurrStreamStart)
+                    if (CurrTime > U.Users.LastDateSeen && CurrTime > CurrStreamStart)
                     {
                         U.WatchTime = U.WatchTime.Add(CurrTime - U.Users.LastDateSeen);
                     }
@@ -1258,9 +1376,161 @@ namespace StreamerBotLib.DataSQL
                     {
                         UpdateCurrency(user, LastSeen);
                     }
-                    context.SaveChanges();
+                    context.SaveChanges(true);
                 }
             }
         }
+
+
+        #region MultiLive data
+        public event EventHandler UpdatedMonitoringChannels;
+        public List<ArchiveMultiStream> CleanupList { get; } = [];
+        private bool IsLiveStreamUpdated = false;
+        public string MultiLiveStatusLog { get; set; } = "";
+
+        public bool CheckMultiStreamDate(string ChannelName, Platform platform, DateTime dateTime)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return (from P in context.MultiLiveStreams where (P.UserName == ChannelName && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
+            }
+        }
+
+        public bool GetMultiChannelName(string UserName, Platform platform)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return (from M in context.MultiChannels where (M.UserName == UserName && M.Platform == platform) select M).Any();
+            }
+        }
+        public List<string> GetMultiChannelNames()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return new(from M in context.MultiChannels select M.UserName);
+            }
+        }
+
+        public List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                return new(from W in context.MultiMsgEndPoints where W.IsEnabled select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook));
+            }
+        }
+
+        public void PostMonitorChannel(string username, string userid, Platform platform)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                context.MultiChannels.Add(new(userId: userid, userName: username, platform: platform));
+                context.SaveChanges(true);
+                UpdatedMonitoringChannels?.Invoke(this, new());
+            }
+        }
+
+        public bool PostMultiStreamDate(string userid, string username, Platform platform, DateTime onDate)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                bool result = (from P in context.MultiLiveStreams where (P.UserId == userid && P.UserName == username && P.LiveDate == onDate) select P).Any();
+                if (!result)
+                {
+                    context.MultiLiveStreams.Add(new(userId: userid, userName: username, platform: platform, liveDate: onDate));
+                    context.SaveChanges(true);
+                }
+
+                return !result;
+            }
+        }
+
+        public void SummarizeStreamData()
+        {
+            if (IsLiveStreamUpdated || CleanupList.Count == 0) // only perform if flag for update occurs
+            {
+                lock (GUIDataManagerLock.Lock)
+                {
+                    CleanupList.Clear();
+
+                    using var context = dbContextFactory.CreateDbContext();
+
+                    List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate);
+                    List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
+                    CleanupList.AddRange(UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
+                    {
+                        ThroughDate = uniqueDate,
+                        StreamCount = (int)(from DateTime dates in AllDates
+                                             where dates.Date <= uniqueDate
+                                             select dates).Count()
+                    }));
+
+                    IsLiveStreamUpdated = false; // reset update flag indicator
+                }
+            }
+        }
+
+        public void SummarizeStreamData(ArchiveMultiStream archiveRecord)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                var multiLiveStreams = (from MLS in context.MultiLiveStreams
+                                        where MLS.LiveDate <= archiveRecord.ThroughDate.Date
+                                        group MLS by
+                                        new
+                                        {
+                                            name = MLS.UserName,
+                                            date = MLS.LiveDate,
+                                            platform = MLS.Platform,
+                                            userid = MLS.UserId
+                                        } into GroupedMLS
+                                        select new ArchiveMultiStream()
+                                        {
+                                            Name = new(GroupedMLS.Key.name, GroupedMLS.Key.platform, GroupedMLS.Key.userid),
+                                            ThroughDate = GroupedMLS.MaxBy(G => GroupedMLS.Key.date).LiveDate,
+                                            StreamCount = (int)GroupedMLS.Count()
+                                        });
+
+                foreach (var GroupedStreams in
+                    (from archive in multiLiveStreams
+                     join sumlive in context.MultiSummaryLiveStreams on archive.Name.UserName equals sumlive.UserName into GroupedSum
+                     from G in GroupedSum.DefaultIfEmpty()
+                     select new { username = archive.Name, livestreamrow = archive, sumrow = G }))
+                {
+                    if (GroupedStreams != default)
+                    {
+                        GroupedStreams.sumrow.ThroughDate = GroupedStreams.livestreamrow.ThroughDate;
+                        GroupedStreams.sumrow.StreamCount += GroupedStreams.livestreamrow.StreamCount;
+                    }
+                    else
+                    {
+                        context.MultiSummaryLiveStreams.Add(new(
+                            userId: GroupedStreams.sumrow.UserId, userName: GroupedStreams.sumrow.UserName,
+                            streamCount: GroupedStreams.livestreamrow.StreamCount, throughDate: GroupedStreams.livestreamrow.ThroughDate));
+                    }
+                }
+
+                context.MultiLiveStreams.RemoveRange((from MLS in context.MultiLiveStreams
+                                                      where MLS.LiveDate <= archiveRecord.ThroughDate.Date
+                                                      select MLS));
+
+                IsLiveStreamUpdated = true;
+
+                CleanupList.Clear();
+                context.SaveChanges(true);
+                SummarizeStreamData();
+            }
+        }
+
+
+
+        #endregion
     }
 }

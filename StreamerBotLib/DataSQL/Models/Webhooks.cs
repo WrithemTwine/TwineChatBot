@@ -15,7 +15,7 @@ namespace StreamerBotLib.DataSQL.Models
                          bool addEveryone = false)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public bool IsEnabled { get; set; } = isEnabled;
         public WebhooksSource WebhooksSource { get; set; } = webhooksSource;
         public string Server { get; set; } = server;

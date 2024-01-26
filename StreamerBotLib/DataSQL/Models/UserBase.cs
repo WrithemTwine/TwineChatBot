@@ -10,7 +10,7 @@ namespace StreamerBotLib.DataSQL.Models
     public abstract class UserBase(uint id = 0, string userId = null, string userName = null, Platform platform = default)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public string UserId { get; set; } = userId;
         public string UserName { get; set; } = userName;
         public Platform Platform { get; set; } = platform;

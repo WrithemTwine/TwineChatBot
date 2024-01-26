@@ -54,7 +54,7 @@ namespace StreamerBotLib.BotClients
 
                 _ = await client.PostAsync(job.Item1.AbsoluteUri, job.Item2);
 
-                // wait so Discord doesn't complain about bots posting too fast to a page
+                // wait so WebHooks doesn't complain about bots posting too fast to a page
                 Thread.Sleep(20000); // wait 20 seconds between posting, 3 posts a minute
             }
 
@@ -71,7 +71,7 @@ namespace StreamerBotLib.BotClients
     //
     // https://discord.com/developers/docs/resources/webhook#execute-webhook
     //
-    //    JSON/Form Params - Discord Webhooks
+    //    JSON/Form Params - WebHooks Webhooks
     //FIELD         TYPE                                DESCRIPTION                                     REQUIRED
     //content       string                              the message contents(up to 2000 characters)     one of content, file, embeds
     //username      string                              override the default username of the webhook    false
@@ -194,7 +194,7 @@ namespace StreamerBotLib.BotClients
         [AllowNull, JsonPropertyName("file")]
         public object File { get; private set; } = file;
         [AllowNull, JsonPropertyName("embeds")]
-        public Embed[] Embeds { get; private set; } = embeds; // Discord expects to remove in future API updates
+        public Embed[] Embeds { get; private set; } = embeds; // WebHooks expects to remove in future API updates
         [AllowNull, JsonPropertyName("payloadjson")]
         public string PayloadJson { get; private set; } = payloadjson;
         [AllowNull, JsonPropertyName("allowedmentions")]

@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    public class MultiMsgEndPoints(uint id = 0,
+    public class MultiMsgEndPoints(int id = 0,
                                    bool isEnabled = false,
                                    WebhooksSource webhooksSource = WebhooksSource.Discord,
                                    string server = null,

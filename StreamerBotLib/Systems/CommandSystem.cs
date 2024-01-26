@@ -189,7 +189,7 @@ namespace StreamerBotLib.Systems
 
                     lock (cmd) // lock the cmd because it's referenced in other threads
                     {
-                        repeat = DataManage.GetTimerCommandTime(cmd.Command) ?? 0;
+                        repeat = DataManage.GetTimerCommandTime(cmd.Command);
                         cmd.ModifyTime(repeat, diluteTime);
                     }
                 }
@@ -292,7 +292,7 @@ namespace StreamerBotLib.Systems
             {
                 result = "";
             }
-            else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
+            else if (cmdrow.Permission < cmdMessage.UserType)
             {
                 Tuple<string, string> ApproveAction = GetApprovalRule(ModActionType.Commands, cmdMessage.CommandText);
                 if (ApproveAction == null)
@@ -466,7 +466,7 @@ namespace StreamerBotLib.Systems
                     string adduser = arglist[0].Replace("@", "");
                     string message = string.Join(' ', arglist.Skip(1));
 
-                    DataManage.PostUserCustomWelcome(adduser, message);
+                    DataManage.PostUserCustomWelcome(DataManage.GetUser(adduser), message);
                 }
                 else
                 {
@@ -612,7 +612,7 @@ namespace StreamerBotLib.Systems
                         new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
                         new( MsgVars.viewers, FormatData.Plurality(arglist.Count > 0 ? arglist[0] : "", MsgVars.Pluralviewers) ),
                         new( MsgVars.deltaviewers, $"{(DeltaViewers>0?'+':"")}{DeltaViewers}" ),
-                        new( MsgVars.viewrate, arglist.Count > 0 ? (Convert.ToDouble(arglist[0])/(DataManage.GetFollowerCount() ?? 1)).ToString("0.#00 %") : "0 %")
+                        new( MsgVars.viewrate, arglist.Count > 0 ? (Convert.ToDouble(arglist[0])/( Math.Max( DataManage.GetFollowerCount(), 1) )).ToString("0.#00 %") : "0 %")
                     }));
 
                     LastLiveViewerCount = Convert.ToInt32(arglist[0]);
@@ -878,7 +878,7 @@ namespace StreamerBotLib.Systems
                 case > 0:
                 case -1:
                     {
-                        if (CommData.Action != CommandAction.Get.ToString())
+                        if (CommData.Action != CommandAction.Get)
                         {
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidComUsage), CommData.CmdName, CommData.Action, CommandAction.Get.ToString()));
                         }

@@ -19,31 +19,31 @@ namespace StreamerBotLib.Models
         /// </summary>
         public Platform Source { get; set; }
         /// <summary>
-        /// The User Id of the user name, per the Bot platform
+        /// The userName userId of the user name, per the Bot platform
         /// </summary>
         public string UserId { get; set; }
 
         /// <summary>
         /// Constructs the object.
         /// </summary>
-        /// <param name="User">Name of the user.</param>
+        /// <param name="userName">Name of the user.</param>
         /// <param name="botSource">The bot source of user.</param>
         /// <param name="userType">The type of the user.</param>
-        public LiveUser(string User, Platform botSource, string Id = "")
+        public LiveUser(string userName, Platform botSource, string userId = "")
         {
-            UserName = User;
+            UserName = userName;
             Source = botSource;
-            UserId = Id;
+            UserId = userId;
         }
 
-         /// <summary>
+        /// <summary>
         /// Determines if the provided object is equal to another object.
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns>True if the objects contain identical values.</returns>
         public bool Equals(LiveUser other)
         {
-            return other!=null & UserName == other.UserName && Source == other.Source && UserId == other.UserId;
+            return other != null & UserName == other.UserName && Source == other.Source && UserId == other.UserId;
         }
 
         public int GetHashCode(object Obj)

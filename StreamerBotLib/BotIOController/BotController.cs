@@ -175,7 +175,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         private void BeginProcMsgs()
         {
-            // TODO: set option to stop messages immediately, and wait until started again to send them
+            // TODO: set option to stop messages immediately, and wait until ProcessFollowQueuestarted again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
             while ((OptionFlags.ActiveToken || Operations.Count > 0) && StartedChatBots.Count > 0)
             {
@@ -324,12 +324,12 @@ namespace StreamerBotLib.BotIOController
         }
 
         /// <summary>
-        /// Send a "Set Discord Webhooks Enabled" toggle request to the system database.
+        /// Send a "Set WebHooks Webhooks Enabled" toggle request to the system database.
         /// </summary>
-        /// <param name="Enabled">True or False to set Discord Webhooks in bulk.</param>
+        /// <param name="Enabled">True or False to set WebHooks Webhooks in bulk.</param>
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set Discord Webhooks Enabled\" " +
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set WebHooks Webhooks Enabled\" " +
                 $"request to set all events to {Enabled}.");
 
             SystemsController.SetDiscordWebhooksEnabled(Enabled);
@@ -339,7 +339,7 @@ namespace StreamerBotLib.BotIOController
         /// Insert a new AutoShoutUser entry into the database.
         /// </summary>
         /// <param name="UserName">The username to add into the database for the autoshout table.</param>
-        public static void AddNewAutoShoutUser(string UserName, string Userid, string platform)
+        public static void AddNewAutoShoutUser(string UserName, string Userid, Platform platform)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
                 $"request to add= {UserName} =to the database.");
@@ -351,7 +351,7 @@ namespace StreamerBotLib.BotIOController
 
         #region Query Bots
 
-        public void CheckTwitchChannelBotIds()
+        public static void CheckTwitchChannelBotIds()
         {
             BotsTwitch.CheckStreamerBotIds();
         }
@@ -360,7 +360,7 @@ namespace StreamerBotLib.BotIOController
         /// Part of the Twitch-Auth-Code Token operation method.
         /// Call to clear out the Twitch Authorization Code(s) to permit the user to re-authorize the application.
         /// </summary>
-        public void ForceTwitchAuthReauthorization()
+        public static void ForceTwitchAuthReauthorization()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
@@ -548,7 +548,7 @@ namespace StreamerBotLib.BotIOController
 
         public static void ConnectTwitchMultiLive()
         {
-            BotsTwitch.LiveMonitorSvc.MultiConnect();
+            BotsTwitch.LiveMonitorSvc.MultiConnect(SystemsController.DataManage);
         }
 
         public static void DisconnectTwitchMultiLive()
@@ -595,7 +595,8 @@ namespace StreamerBotLib.BotIOController
                     DateTime.Parse(f.FollowedAt).ToLocalTime(),
                     f.UserId,
                     f.UserName,
-                    Source
+                    Source,
+                    null // gets re-assigned in SystemController where Category is tracked
                 );
             });
         }
@@ -956,7 +957,7 @@ namespace StreamerBotLib.BotIOController
         public static void ManageBotsStreamStatusChanged(bool Start)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Starting any stopped bots or " +
-                $"stopping any started bots, based on the current active livestream={Start} status.");
+                $"stopping any ProcessFollowQueuestarted bots, based on the current active livestream={Start} status.");
 
             // loop the bots and send message to start or stop based on stream online or offline status
             foreach (IBotTypes bots in BotsList)

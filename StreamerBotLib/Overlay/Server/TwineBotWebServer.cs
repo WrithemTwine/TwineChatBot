@@ -36,7 +36,7 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         public TwineBotWebServer()
         {
-            static ushort Assign(ushort CheckPort)
+            static short Assign(ushort CheckPort)
             {
                 if (CheckPort == 0)
                 {
@@ -58,7 +58,7 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         /// <param name="port">The port to check.</param>
         /// <returns>The provided port or next port determined availabe within the system.</returns>
-        public static ushort ValidatePort(ushort port)
+        public static short ValidatePort(ushort port)
         {
             while (!IsFree(port))
             {

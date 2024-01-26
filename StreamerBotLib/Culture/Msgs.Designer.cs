@@ -520,7 +520,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When included, will replace &apos;#everyone&apos; with either (true) &apos;@everyone&apos; or (false) &apos;&lt;blank&gt;&apos; depending on whether the &apos;AddEveryone&apos; is checked (true) or unchecked (false) alongside the Discord Server link..
+        ///   Looks up a localized string similar to When included, will replace &apos;#everyone&apos; with either (true) &apos;@everyone&apos; or (false) &apos;&lt;blank&gt;&apos; depending on whether the &apos;AddEveryone&apos; is checked (true) or unchecked (false) alongside the WebHooks Server link..
         /// </summary>
         internal static string Helpeveryone {
             get {
@@ -1006,7 +1006,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #user started a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to &apos;#hit&apos; for a card, or &apos;#stand&apos;. No answer means a &apos;#stand&apos;. Payouts at the end of the game..
+        ///   Looks up a localized string similar to #user ProcessFollowQueuestarted a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to &apos;#hit&apos; for a card, or &apos;#stand&apos;. No answer means a &apos;#stand&apos;. Payouts at the end of the game..
         /// </summary>
         internal static string Msgblackjack {
             get {
@@ -1339,7 +1339,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The queue list to join me in the game has started!.
+        ///   Looks up a localized string similar to The queue list to join me in the game has ProcessFollowQueuestarted!.
         /// </summary>
         internal static string Msgqstart {
             get {

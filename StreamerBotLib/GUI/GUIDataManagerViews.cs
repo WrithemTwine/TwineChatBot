@@ -1,6 +1,9 @@
-﻿
-using StreamerBotLib.Data;
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
@@ -16,17 +19,20 @@ namespace StreamerBotLib.GUI
     {
         // TODO: Add probable datamanagerview sorting options, per user input
 
+        private SQLDBContext sqlDBContext;
+
         #region DataManager TableViews
+        private IDataManager DataManager { get; set; }
 
         // datatable views to display the data in the GUI
 
-        public List<string> KindsWebhooks { get; private set; } = new(System.Enum.GetNames(typeof(WebhooksKind)));
+        public List<string> KindsWebhooks { get; private set; } = new(Enum.GetNames(typeof(WebhooksKind)));
 
         public FlowDocument ChatData { get; private set; }
         public ObservableCollection<string> CurrUserList { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
-        public ObservableCollection<string> CommandCollection { get; set; } = new();
+        public ObservableCollection<string> CommandCollection { get; set; } = [];
         public ObservableCollection<string> GiveawayCollection { get; set; }
         public int CurrFollowers
         {
@@ -34,7 +40,7 @@ namespace StreamerBotLib.GUI
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-                    return Followers.Table.Select("IsFollower=true").Length;
+                    return Followers.Count(f=>f.IsFollower);
                 }
             }
         }
@@ -72,41 +78,43 @@ namespace StreamerBotLib.GUI
             }
         }
 
-        public DataView ChannelEvents { get; private set; } // DataSource.ChannelEventsDataTable
-        public DataView Users { get; private set; }  // DataSource.UsersDataTable
-        public DataView Followers { get; private set; } // DataSource.FollowersDataTable
-        public DataView Discord { get; private set; } // DataSource.DiscordDataTable
-        public DataView Currency { get; private set; }  // DataSource.CurrencyDataTable
-        public DataView CurrencyType { get; private set; }  // DataSource.CurrencyTypeDataTable
-        public DataView BuiltInCommands { get; private set; } // DataSource.CommandsDataTable
-        public DataView Commands { get; private set; }  // DataSource.CommandsDataTable
-        public DataView StreamStats { get; private set; } // DataSource.StreamStatsTable
-        public DataView ShoutOuts { get; private set; } // DataSource.ShoutOutsTable
-        public DataView Category { get; private set; } // DataSource.CategoryTable
-        public DataView Clips { get; private set; }  // DataSource.ClipsDataTable
-        public DataView InRaidData { get; private set; } // DataSource.InRaidDataDataTable
-        public DataView OutRaidData { get; private set; } // DataSource.OutRaidDataDataTable
-        public DataView GiveawayUserData { get; private set; } // DataSource.GiveawayUserDataDataTable
-        public DataView CustomWelcomeData { get; private set; } // DataSource.CustomWelcomeDataTable
-        public DataView LearnMsgs { get; private set; }
-        public DataView BanRules { get; private set; }
-        public DataView BanReasons { get; private set; }
-        public DataView OverlayService { get; private set; }
-        public DataView OverlayTicker { get; private set; }
-        public DataView ModeratorApprove { get; private set; }
-        public DataView GameDeadCounter { get; private set; }
+        public ObservableCollection<ChannelEvents> ChannelEvents { get; private set; }
+        public ObservableCollection<Users> Users { get; private set; } 
+        public ObservableCollection<Followers> Followers { get; private set; }
+        public ObservableCollection<Webhooks> WebHooks { get; private set; }
+        public ObservableCollection<Currency> Currency { get; private set; }
+        public ObservableCollection<DataSQL.Models.CurrencyType> CurrencyType { get; private set; }
+        public ObservableCollection<Commands> BuiltInCommands { get; private set; }
+        public ObservableCollection<Commands> Commands { get; private set; }
+        public ObservableCollection<StreamStats> StreamStats { get; private set; }
+        public ObservableCollection<ShoutOuts> ShoutOuts { get; private set; }
+        public ObservableCollection<CategoryList> CategoryList { get; private set; } 
+        public ObservableCollection<Clips> Clips { get; private set; }  
+        public ObservableCollection<InRaidData> InRaidData { get; private set; } 
+        public ObservableCollection<OutRaidData> OutRaidData { get; private set; } 
+        public ObservableCollection<GiveawayUserData> GiveawayUserData { get; private set; } 
+        public ObservableCollection<CustomWelcome> CustomWelcomeData { get; private set; } 
+        public ObservableCollection<LearnMsgs> LearnMsgs { get; private set; }
+        public ObservableCollection<BanRules> BanRules { get; private set; }
+        public ObservableCollection<DataSQL.Models.BanReasons> BanReasons { get; private set; }
+        public ObservableCollection<OverlayServices> OverlayService { get; private set; }
+        public ObservableCollection<OverlayTicker> OverlayTicker { get; private set; }
+        public ObservableCollection<ModeratorApprove> ModeratorApprove { get; private set; }
+        public ObservableCollection<GameDeadCounter> GameDeadCounter { get; private set; }
 
-        public DataView Quotes { get; private set; }
+        public ObservableCollection<Quotes> Quotes { get; private set; }
 
         #endregion
 
         public GUIDataManagerViews()
         {
+            DataManager = SystemsController.DataManage;
+
             ChatData = ActionSystem.ChatData;
             JoinCollection = ActionSystem.JoinCollection;
             GiveawayCollection = ActionSystem.GiveawayCollection;
             CurrUserList = ActionSystem.CurrUserJoin;
-            SetDataTableViews(SystemsController.DataManage);
+            SetDataTableViews();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -123,76 +131,34 @@ namespace StreamerBotLib.GUI
         /// <summary>
         /// Used in class object construction to build assign the DataTable views for the GUI, requires <c>SystemsController</c> to be initialized.
         /// </summary>
-        private void SetDataTableViews(DataManager dataManager)
+        private void SetDataTableViews()
         {
-            static string ComFilter()
-            {
-                string filter = string.Empty;
+            using var context = new SQLDBContext();
 
-                foreach (DefaultCommand d in System.Enum.GetValues(typeof(DefaultCommand)))
-                {
-                    filter += "'" + d.ToString() + "',";
-                }
-
-                foreach (DefaultSocials s in System.Enum.GetValues(typeof(DefaultSocials)))
-                {
-                    filter += "'" + s.ToString() + "',";
-                }
-
-                return filter == string.Empty ? "" : filter[0..^1];
-            }
-
-            ChannelEvents = dataManager._DataSource.ChannelEvents.DefaultView;
-            Users = new(dataManager._DataSource.Users, null, $"{dataManager._DataSource.Users.LastDateSeenColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
-            Followers = new(dataManager._DataSource.Followers, null, $"{dataManager._DataSource.Followers.FollowedDateColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
-            Discord = dataManager._DataSource.Discord.DefaultView;
-            CurrencyType = dataManager._DataSource.CurrencyType.DefaultView;
-            Currency = dataManager._DataSource.Currency.DefaultView;
-            BuiltInCommands = new(dataManager._DataSource.Commands, $"{dataManager._DataSource.Commands.CmdNameColumn.ColumnName} IN (" + ComFilter() + ")", dataManager._DataSource.Commands.CmdNameColumn.ColumnName, DataViewRowState.CurrentRows);
-            Commands = new(dataManager._DataSource.Commands, $"{dataManager._DataSource.Commands.CmdNameColumn.ColumnName} NOT IN (" + ComFilter() + ")", dataManager._DataSource.Commands.CmdNameColumn.ColumnName, DataViewRowState.CurrentRows);
-            StreamStats = new(dataManager._DataSource.StreamStats, null, $"{dataManager._DataSource.StreamStats.StreamStartColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
-            ShoutOuts = dataManager._DataSource.ShoutOuts.DefaultView;
-            Category = dataManager._DataSource.CategoryList.DefaultView;
-            Clips = dataManager._DataSource.Clips.DefaultView;
-            InRaidData = new(dataManager._DataSource.InRaidData, null, $"{dataManager._DataSource.InRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
-            OutRaidData = new(dataManager._DataSource.OutRaidData, null, $"{dataManager._DataSource.OutRaidData.DateTimeColumn.ColumnName} DESC", DataViewRowState.CurrentRows);
-            GiveawayUserData = dataManager._DataSource.GiveawayUserData.DefaultView;
-            CustomWelcomeData = dataManager._DataSource.CustomWelcome.DefaultView;
-            LearnMsgs = dataManager._DataSource.LearnMsgs.DefaultView;
-            BanRules = dataManager._DataSource.BanRules.DefaultView;
-            BanReasons = dataManager._DataSource.BanReasons.DefaultView;
-            OverlayService = dataManager._DataSource.OverlayServices.DefaultView;
-            OverlayTicker = dataManager._DataSource.OverlayTicker.DefaultView;
-            ModeratorApprove = dataManager._DataSource.ModeratorApprove.DefaultView;
-            GameDeadCounter = dataManager._DataSource.GameDeadCounter.DefaultView;
-            Quotes = dataManager._DataSource.Quotes.DefaultView;
-
-            /**/
-            ChannelEvents.ListChanged += DataView_ListChanged;
-            Users.ListChanged += DataView_ListChanged;
-            Followers.ListChanged += DataView_ListChanged;
-            Discord.ListChanged += DataView_ListChanged;
-            CurrencyType.ListChanged += DataView_ListChanged;
-            Currency.ListChanged += DataView_ListChanged;
-            BuiltInCommands.ListChanged += DataView_ListChanged;
-            Commands.ListChanged += DataView_ListChanged;
-            StreamStats.ListChanged += DataView_ListChanged;
-            ShoutOuts.ListChanged += DataView_ListChanged;
-            Category.ListChanged += DataView_ListChanged;
-            Clips.ListChanged += DataView_ListChanged;
-            InRaidData.ListChanged += DataView_ListChanged;
-            OutRaidData.ListChanged += DataView_ListChanged;
-            GiveawayUserData.ListChanged += DataView_ListChanged;
-            CustomWelcomeData.ListChanged += DataView_ListChanged;
-            LearnMsgs.ListChanged += DataView_ListChanged;
-            BanRules.ListChanged += DataView_ListChanged;
-            BanReasons.ListChanged += DataView_ListChanged;
-            OverlayService.ListChanged += DataView_ListChanged;
-            OverlayTicker.ListChanged += DataView_ListChanged;
-            ModeratorApprove.ListChanged += DataView_ListChanged;
-            GameDeadCounter.ListChanged += DataView_ListChanged;
-            Quotes.ListChanged += DataView_ListChanged;
-            /**/
+            ChannelEvents = new(context.ChannelEvents);
+            Users = new(from U in context.Users orderby U.LastDateSeen descending select U);
+            Followers = new(from F in context.Followers orderby F.StatusChangeDate descending, F.FollowedDate descending select F);
+            WebHooks = new(context.Webhooks);
+            CurrencyType = new(context.CurrencyType);
+            Currency = new(context.Currency);
+            BuiltInCommands = new(from C in context.Commands.IntersectBy(Enum.GetNames<DefaultCommand>(), f => f.CmdName) select C); 
+            Commands = new(from C in context.Commands.ExceptBy(Enum.GetNames<DefaultCommand>(), f=>f.CmdName ) select C);
+            StreamStats = new(from SS in context.StreamStats orderby SS.StreamStart descending select SS);
+            ShoutOuts = new(context.ShoutOuts);
+            CategoryList = new(context.CategoryList);
+            Clips = new(context.Clips);
+            InRaidData = new(from IR in context.InRaidData orderby IR.RaidDate descending select IR);
+            OutRaidData = new(from OR in context.OutRaidData orderby OR.RaidDate descending select OR);
+            GiveawayUserData = new(context.GiveawayUserData);
+            CustomWelcomeData = new(context.CustomWelcome);
+            LearnMsgs = new(context.LearnMsgs);
+            BanRules = new(context.BanRules);
+            BanReasons = new(context.BanReasons);
+            OverlayService = new(context.OverlayServices);
+            OverlayTicker = new(context.OverlayTicker);
+            ModeratorApprove = new(context.ModeratorApprove);
+            GameDeadCounter = new(context.GameDeadCounter);
+            Quotes = new(context.Quotes);
 
             SetCommandCollection();
         }
@@ -229,12 +195,12 @@ namespace StreamerBotLib.GUI
         {
             lock (GUIDataManagerLock.Lock)
             {
-                foreach (DataSource.CommandsRow c in from DataSource.CommandsRow c in Commands.Table.Select()
-                                                     where !CommandCollection.Contains(c.CmdName)
-                                                     orderby c.CmdName
-                                                     select c)
+                CommandCollection.Clear();
+
+                using var context = new SQLDBContext();
+                foreach (var command in context.Commands)
                 {
-                    CommandCollection.Add(c.CmdName);
+                    CommandCollection.Add(command.CmdName);
                 }
             }
         }

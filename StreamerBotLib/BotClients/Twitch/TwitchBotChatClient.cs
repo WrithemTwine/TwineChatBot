@@ -114,8 +114,8 @@ namespace StreamerBotLib.BotClients.Twitch
                         TwitchChat.Connect();
 
                         SendChatMessages();
-                    } 
-                    catch(Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
@@ -301,7 +301,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     CreateClient();
                     if (Connected = Connect())
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about started bot.");
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about ProcessFollowQueuestarted bot.");
 
                         IsStarted = true;
                         IsStopped = false;
@@ -334,7 +334,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Attempting to stop bot.");
                 if (IsStarted)
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a started bot, now stopping the chat bot.");
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a ProcessFollowQueuestarted bot, now stopping the chat bot.");
 
                     InvokeBotStopping();
                     IsStarted = false;

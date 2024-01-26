@@ -7,14 +7,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(CmdName), IsUnique = true)]
-    public class Commands(uint id = 0,
+    public class Commands(int id = 0,
                           string cmdName = null,
                           bool addMe = false,
                           ViewerTypes permission = default,
                           bool isEnabled = false,
                           string message = null,
-                          uint repeatTimer = 0,
-                          ushort sendMsgCount = 0,
+                          int repeatTimer = 0,
+                          short sendMsgCount = 0,
                           ICollection<string> category = null,
                           bool allowParam = false,
                           string usage = null,
@@ -25,18 +25,18 @@ namespace StreamerBotLib.DataSQL.Models
                           string currencyField = null,
                           string unit = null,
                           CommandAction action = default,
-                          uint top = 0,
+                          int top = 0,
                           CommandSort sort = default)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public string CmdName { get; set; } = cmdName;
         public bool AddMe { get; set; } = addMe;
         public ViewerTypes Permission { get; set; } = permission;
         public bool IsEnabled { get; set; } = isEnabled;
         public string Message { get; set; } = message;
-        public uint RepeatTimer { get; set; } = repeatTimer;
-        public ushort SendMsgCount { get; set; } = sendMsgCount;
+        public int RepeatTimer { get; set; } = repeatTimer;
+        public short SendMsgCount { get; set; } = sendMsgCount;
         public ICollection<string> Category { get; set; } = category;
         public bool AllowParam { get; set; } = allowParam;
         public string Usage { get; set; } = usage;
@@ -47,7 +47,7 @@ namespace StreamerBotLib.DataSQL.Models
         public string CurrencyField { get; set; } = currencyField;
         public string Unit { get; set; } = unit;
         public CommandAction Action { get; set; } = action;
-        public uint Top { get; set; } = top;
+        public int Top { get; set; } = top;
         public CommandSort Sort { get; set; } = sort;
 
 

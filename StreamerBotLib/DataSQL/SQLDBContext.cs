@@ -6,7 +6,7 @@ namespace StreamerBotLib.DataSQL
 {
     public class SQLDBContext : DbContext
     {
-        private readonly string DatabaseFileName="TwineStreamerBot.db";
+        private readonly string DatabaseFileName = "TwineStreamerBot.db";
 
         public DbSet<BanReasons> BanReasons { get; set; }
         public DbSet<BanRules> BanRules { get; set; }
@@ -43,6 +43,6 @@ namespace StreamerBotLib.DataSQL
             optionsBuilder.UseSqlite($"Data Source={DatabaseFileName}");
         }
 
-        
+
     }
 }

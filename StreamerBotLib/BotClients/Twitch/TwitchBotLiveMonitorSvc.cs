@@ -1,9 +1,8 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
-using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.Enums;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 
-using System.Globalization;
 using System.Net.Http;
 using System.Reflection;
 
@@ -33,7 +32,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Database connection to the other channels the streamer is monitoring to determine if the user went live.
         /// </summary>
-        public MultiDataManager MultiLiveDataManager { get; private set; }
+        public IDataManager MultiLiveDataManager { get; private set; }
 
         public TwitchBotLiveMonitorSvc()
         {
@@ -191,15 +190,14 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// manages the multilive monitored channels; build the client
         /// </summary>
-        public void MultiConnect()
+        public void MultiConnect(IDataManager datamanage)
         {
-            if (MultiLiveDataManager == null)
+            if (MultiLiveDataManager == default)
             {
-                MultiLiveDataManager = new();
+                MultiLiveDataManager = datamanage;
                 MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;
             }
 
-            MultiLiveDataManager.LoadData();
             IsMultiConnected = true;
         }
 
@@ -219,10 +217,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsMultiLiveBotActive)
             {
-                MultiLiveDataManager.SaveData();
-                SetLiveMonitorChannels(MultiLiveDataManager.GetChannelNames());
+                SetLiveMonitorChannels(MultiLiveDataManager.GetMultiChannelNames());
                 // TODO: localize the multilive bot data
-                MultiLiveDataManager.LogEntry(string.Format(CultureInfo.CurrentCulture, "MultiLive Bot started and monitoring {0} channels.", LiveStreamMonitor.ChannelsToMonitor.Count.ToString(CultureInfo.CurrentCulture)), DateTime.Now.ToLocalTime());
             }
             else
             {
@@ -254,7 +250,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     UpdateChannels();
                 }
-                MultiLiveDataManager.LogEntry("MultiLive Bot stopped.", DateTime.Now.ToLocalTime());
             }
         }
 
@@ -269,11 +264,11 @@ namespace StreamerBotLib.BotClients.Twitch
                 DateTime CurrTime = e.Stream.StartedAt.ToLocalTime();
 
                 // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.UserId, CurrTime);
+                bool PostedLive = MultiLiveDataManager.PostMultiStreamDate(e.Stream.UserId, e.Stream.UserName, Platform.Twitch, CurrTime);
 
                 if (PostedLive)
                 {
-                    bool MultiLive = MultiLiveDataManager.CheckStreamDate(e.Channel, CurrTime);
+                    bool MultiLive = MultiLiveDataManager.CheckMultiStreamDate(e.Channel, Platform.Twitch, CurrTime);
 
                     if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
@@ -289,10 +284,9 @@ namespace StreamerBotLib.BotClients.Twitch
                             { "#url", e.Stream.UserName }
                         };
 
-                        MultiLiveDataManager.LogEntry(VariableParser.ParseReplace(msg, dictionary), CurrTime);
-                        foreach (Tuple<string, Uri> u in MultiLiveDataManager.GetWebLinks())
+                        foreach (Tuple<WebhooksSource, Uri> u in MultiLiveDataManager.GetMultiWebHooks())
                         {
-                            if (u.Item1 == "Discord")
+                            if (u.Item1 == WebhooksSource.Discord)
                             {
                                 DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary), VariableParser.BuildPlatformUrl(e.Stream.UserName, Platform.Twitch));
                             }

@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(CurrencyName), IsUnique = true)]
-    public abstract class CurrencyBase(uint id, string currencyName)
+    public abstract class CurrencyBase(int id, string currencyName)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public string CurrencyName { get; set; } = currencyName;
     }
 }

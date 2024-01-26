@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.Culture;
-using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
@@ -59,13 +58,13 @@ namespace StreamerBotLib.Systems
 
          * 
          */
-        private static IDataManageReadOnly _datamanager;
+        private static IDataManagerReadOnly _datamanager;
         private static readonly ResourceManager RM = Msgs.ResourceManager;
 
         /// <summary>
         /// Set the DataManager to use for extracting event messages
         /// </summary>
-        public static void SetDataManager(IDataManageReadOnly dataManager)
+        public static void SetDataManager(IDataManagerReadOnly dataManager)
         {
             _datamanager = dataManager;
         }

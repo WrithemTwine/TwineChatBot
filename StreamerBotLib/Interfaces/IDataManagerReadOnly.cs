@@ -3,8 +3,10 @@ using StreamerBotLib.Models;
 
 namespace StreamerBotLib.Interfaces
 {
-    public interface IDataManageReadOnly
+    public interface IDataManagerReadOnly
     {
+        event EventHandler UpdatedMonitoringChannels;
+
         public bool CheckField(string table, string field);
         public bool CheckPermission(string cmd, ViewerTypes permission);
         public bool CheckShoutName(string UserName);
@@ -15,7 +17,7 @@ namespace StreamerBotLib.Interfaces
         public List<Tuple<string, int, string[]>> GetTimerCommands();
         public Tuple<string, int, string[]> GetTimerCommand(string Cmd);
         public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
-        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksKind webhooks);
+        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
         bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
         bool TestOutRaidData(string HostedChannel, DateTime dateTime);
         List<LearnMsgRecord> UpdateLearnedMsgs();
@@ -27,18 +29,15 @@ namespace StreamerBotLib.Interfaces
         bool CheckUser(LiveUser User);
         bool CheckFollower(string User, DateTime ToDateTime);
         bool CheckUser(LiveUser User, DateTime ToDateTime);
-        List<object> GetRowsDataColumn(string dataTable, string dataColumn);
         string GetUserId(LiveUser User);
         IEnumerable<string> GetKeys(string Table);
         IEnumerable<string> GetCommandList();
         string GetCommands();
-        int? GetTimerCommandTime(string Cmd);
-
-        //  public bool CheckTable(string table);
-        //  List<object> GetRowsDataColumn(DataTable dataTable, DataColumn dataColumn);
-        //  DataRow[] GetRows(DataTable dataTable, string Filter = null, string Sort = null);
-        //  DataRow GetRow(DataTable dataTable, string Filter = null, string Sort = null);
-        //  List<string> GetTableFields(DataTable dataTable);
-
+        int GetTimerCommandTime(string Cmd);
+        bool GetMultiChannelName(string UserName, Platform platform);
+        List<string> GetMultiChannelNames();
+        List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks();
+        bool CheckMultiStreamDate(string ChannelName, Platform platform, DateTime dateTime);
+        LiveUser GetUser(string UserName);
     }
 }

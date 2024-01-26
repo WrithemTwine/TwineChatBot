@@ -37,7 +37,7 @@ namespace StreamerBotLib.Overlay.Models
         /// <summary>
         /// The user provided length of the notification.
         /// </summary>
-        public ushort Duration { get; set; } = 0;
+        public short Duration { get; set; } = 0;
 
         /// <summary>
         /// The path to an image used in the event.

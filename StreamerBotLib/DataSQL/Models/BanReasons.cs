@@ -5,7 +5,7 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(MsgType), nameof(BanReason))]
-    public class BanReasons(uint id,
+    public class BanReasons(int id,
                             MsgTypes msgType = default,
                             Enums.BanReasons banReason = default) : BanBase(id, msgType)
     {

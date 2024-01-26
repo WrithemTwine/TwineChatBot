@@ -2,6 +2,7 @@
 
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
@@ -106,6 +107,7 @@ namespace StreamerBot
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
+            MultiLive_Data.DataContext = Resources["DataViews"] as GUIDataManagerViews;
 
             ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
@@ -1339,9 +1341,9 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
+            foreach (UserBase dr in new List<UserBase>(item.SelectedItems.Cast<UserBase>().Select(DRV => DRV)))
             {
-                BotController.AddNewAutoShoutUser(dr["UserName"].ToString(), dr["UserId"].ToString(), dr["Platform"].ToString());
+                BotController.AddNewAutoShoutUser(dr.UserName, dr.UserId, dr.Platform);
             }
         }
 
@@ -1349,9 +1351,9 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
+            foreach (UserBase dr in new List<UserBase>(item.SelectedItems.Cast<UserBase>().Select(DRV => DRV)))
             {
-                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString(), dr["UserId"].ToString());
+                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr.UserName, dr.UserId, dr.Platform);
             }
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)

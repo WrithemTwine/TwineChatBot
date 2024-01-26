@@ -15,13 +15,13 @@ namespace StreamerBotLib.Models
         public string Currency { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
-        public uint Top { get; set; } = 0;
+        public int Top { get; set; } = 0;
         public CommandSort Sort { get; set; } = CommandSort.ASC;
         public CommandAction Action { get; set; } = CommandAction.Get;
         public bool AllowParam { get; set; } = false;
         public bool LookupData { get; set; } = false;
-        public uint Timer { get; set; } = 0;
-        public ushort RepeatMsg { get; set; } = 0;
+        public int Timer { get; set; } = 0;
+        public short RepeatMsg { get; set; } = 0;
         public string Usage { get; set; } = "!<command>";
         public string Message { get; set; } = string.Empty;
         public bool IsEnabled { get; set; } = false;
@@ -84,10 +84,10 @@ namespace StreamerBotLib.Models
                             data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), value);
                             break;
                         case "top":
-                            data.Top = uint.Parse(value);
+                            data.Top = int.Parse(value);
                             break;
                         case "s":
-                            data.Sort = Enum.Parse<CommandSort>( Validate(value, typeof(CommandSort)) );
+                            data.Sort = Enum.Parse<CommandSort>(Validate(value, typeof(CommandSort)));
                             break;
                         case "a":
                             data.Action = Enum.Parse<CommandAction>(Validate(value, typeof(CommandAction)));
@@ -96,7 +96,7 @@ namespace StreamerBotLib.Models
                             data.AllowParam = bool.Parse(value);
                             break;
                         case "timer":
-                            data.Timer = uint.Parse(value);
+                            data.Timer = int.Parse(value);
                             break;
                         case "r":
                             data.RepeatMsg = ushort.Parse(value);

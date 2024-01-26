@@ -68,7 +68,7 @@ namespace StreamerBotLib.Overlay.Control
         {
             TwineBotWebServer.StartServer();
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server started.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server ProcessFollowQueuestarted.");
 
         }
 

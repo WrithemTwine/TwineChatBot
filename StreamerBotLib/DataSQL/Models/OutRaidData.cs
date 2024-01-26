@@ -8,7 +8,7 @@ namespace StreamerBotLib.DataSQL.Models
     public class OutRaidData(uint id = 0, string channelRaided = null, DateTime raidDate = default)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public string ChannelRaided { get; set; } = channelRaided;
         public DateTime RaidDate { get; set; } = raidDate;
     }

@@ -10,7 +10,7 @@ namespace StreamerBotLib.DataSQL.Models
     public class OverlayTicker(uint id = 0, OverlayTickerItem tickerName = default, string userName = null)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public OverlayTickerItem TickerName { get; set; } = tickerName;
         public string UserName { get; set; } = userName;
     }

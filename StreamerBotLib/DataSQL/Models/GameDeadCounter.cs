@@ -2,12 +2,12 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    public class GameDeadCounter(string category = null, uint counter = 0)
+    public class GameDeadCounter(string category = null, int counter = 0)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get { return Id; } }
+        public int Id { get { return Id; } }
         public string Category { get; set; } = category;
-        public uint Counter { get; set; } = counter;
+        public int Counter { get; set; } = counter;
 
         public CategoryList CategoryList { get; set; }
     }

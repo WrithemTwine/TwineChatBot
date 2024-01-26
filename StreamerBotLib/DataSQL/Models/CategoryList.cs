@@ -7,19 +7,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(CategoryId), nameof(Category), IsUnique = true)]
-    public class CategoryList(uint id = 0,
+    public class CategoryList(int id = 0,
                               string categoryId = null,
                               string category = null,
-                              uint streamCount = 1)
+                              int streamCount = 1)
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public uint Id { get; set; } = id;
+        public int Id { get; set; } = id;
         public string CategoryId { get; set; } = categoryId;
         /// <summary>
         /// Formatted with escape characters
         /// </summary>
         public string Category { get; set; } = FormatData.AddEscapeFormat(category);
-        public uint StreamCount { get; set; } = streamCount;
+        public int StreamCount { get; set; } = streamCount;
 
         public GameDeadCounter GameDeadCounter { get; set; }
         public Clips? Clips { get; set; }
