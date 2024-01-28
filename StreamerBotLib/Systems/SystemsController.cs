@@ -22,7 +22,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        public static IDataManager DataManage { get; private set; } = new DataManagerSQL(new DataManagerFactory());
+        public static IDataManager DataManage { get; private set; }
 
         private static Tuple<string, string> CurrCategory { get; set; } = new("", "");
 
@@ -45,6 +45,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public SystemsController()
         {
+            DataManage = new DataManagerSQL();
             ActionSystem.DataManage = DataManage;
             LocalizedMsgSystem.SetDataManager(DataManage);
             DataManage.Initialize();

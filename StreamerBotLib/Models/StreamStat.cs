@@ -23,23 +23,39 @@ namespace StreamerBotLib.Models
                             int subsPresent = 0,
                             int vIPsPresent = 0,
                             int totalChats = 0,
-                            int commands = 0,
+                            int commandsMsgs = 0,
                             int automatedEvents = 0,
                             int automatedCommands = 0,
-                            int webhooks = 0,
+                            int webhooksMsgs = 0,
                             int clipsMade = 0,
                             int channelPtCount = 0,
                             int channelChallenge = 0,
                             int maxUsers = 0,
                             string currentCategory = null)
     {
-        public StreamStat(StreamStats streamStats) : this()
-        {
-            foreach (PropertyInfo property in streamStats.GetType().GetProperties())
-            {
-                GetType().GetProperty(property.Name).SetValue(this, property.GetValue(streamStats));
-            }
-        }
+        public static StreamStat Create(StreamStats streamStats) => new(
+              streamStats.StreamStart,
+              streamStats.StreamEnd,
+              streamStats.NewFollows,
+              streamStats.NewSubscribers,
+              streamStats.GiftSubs,
+              streamStats.Bits,
+              streamStats.Raids,
+              streamStats.Hosted,
+              streamStats.UsersBanned,
+              streamStats.UsersTimedOut,
+              streamStats.ModeratorsPresent,
+              streamStats.SubsPresent,
+              streamStats.VIPsPresent,
+              streamStats.TotalChats,
+              streamStats.CommandsMsgs,
+              streamStats.AutomatedEvents,
+              streamStats.AutomatedCommands,
+              streamStats.WebhooksMsgs,
+              streamStats.ClipsMade,
+              streamStats.ChannelPtCount,
+              streamStats.ChannelChallenge,
+              streamStats.MaxUsers);
 
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
@@ -55,10 +71,10 @@ namespace StreamerBotLib.Models
         public int SubsPresent { get; set; } = subsPresent;
         public int VIPsPresent { get; set; } = vIPsPresent;
         public int TotalChats { get; set; } = totalChats;
-        public int Commands { get; set; } = commands;
+        public int CommandsMsgs { get; set; } = commandsMsgs;
         public int AutomatedEvents { get; set; } = automatedEvents;
         public int AutomatedCommands { get; set; } = automatedCommands;
-        public int Webhooks { get; set; } = webhooks;
+        public int WebhooksMsgs { get; set; } = webhooksMsgs;
         public int ClipsMade { get; set; } = clipsMade;
         public int ChannelPtCount { get; set; } = channelPtCount;
         public int ChannelChallenge { get; set; } = channelChallenge;
@@ -85,10 +101,10 @@ namespace StreamerBotLib.Models
             SubsPresent = 0;
             VIPsPresent = 0;
             TotalChats = 0;
-            Commands = 0;
+            CommandsMsgs = 0;
             AutomatedEvents = 0;
             AutomatedCommands = 0;
-            Webhooks = 0;
+            WebhooksMsgs = 0;
             ClipsMade = 0;
             ChannelPtCount = 0;
             ChannelChallenge = 0;

@@ -133,7 +133,7 @@ namespace StreamerBotLib.GUI
         /// </summary>
         private void SetDataTableViews()
         {
-            using var context = new SQLDBContext();
+            var context = new SQLDBContext();
 
             ChannelEvents = new(context.ChannelEvents);
             Users = new(from U in context.Users orderby U.LastDateSeen descending select U);

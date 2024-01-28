@@ -15,11 +15,8 @@ using StreamerBotLib.Systems;
 
 using System.Collections.Concurrent;
 using System.Data;
-using System.Data.Common;
 using System.Globalization;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Windows.Input;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -46,8 +43,11 @@ switches:
 -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
  */
 
-    public class DataManagerSQL(IDbContextFactory<SQLDBContext> dbContextFactory) : IDataManager
+    public class DataManagerSQL() : IDataManager
     {
+        //private readonly IDbContextFactory<SQLDBContext> dbContextFactory = dbContextFactory;
+        private readonly SQLDBContext context = new();
+
         /// <summary>
         /// always true to begin one learning cycle
         /// </summary>
@@ -58,7 +58,6 @@ switches:
         private readonly string DefaulSocialMsg = LocalizedMsgSystem.GetVar(Msg.MsgDefaultSocialMsg);
         private DateTime CurrStreamStart { get; set; } = default;
 
-        private readonly IDbContextFactory<SQLDBContext> dbContextFactory = dbContextFactory;
 
         #region Construct default items
         /// <summary>
@@ -82,7 +81,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 if (!(from C in context.CategoryList where C.Category == LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) select C).Any())
                 {
@@ -144,7 +143,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
@@ -219,8 +218,6 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                var context = dbContextFactory.CreateDbContext();
-
                 if (!context.LearnMsgs.Any())
                 {
                     context.LearnMsgs.AddRange(from M in LearnedMessagesPrimer.PrimerList
@@ -248,7 +245,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from C in context.Currency
                         where (C.UserName == User.UserName && C.CurrencyName == CurrencyName)
                         select C.Value).FirstOrDefault() >= value;
@@ -259,7 +256,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (context.Model.FindEntityType(table).FindProperty(field) != null);
             }
         }
@@ -276,7 +273,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from f in context.Followers
                         where (f.IsFollower && f.UserName == User && (ToDateTime == default || f.FollowedDate < ToDateTime))
                         select f).Any();
@@ -287,7 +284,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from M in context.ModeratorApprove
                         where (M.ModActionType == modActionType && M.ModActionName == ModAction)
                         select new Tuple<string, string>(
@@ -307,7 +304,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from s in context.StreamStats
                         where (s.StreamStart == streamStart)
                         select s).Count() > 1;
@@ -324,7 +321,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from c in context.Commands
                         where c.CmdName == cmd
                         select c).FirstOrDefault().Permission > permission;
@@ -340,7 +337,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from s in context.ShoutOuts
                         where s.UserId == UserId
                         select s).Any();
@@ -356,7 +353,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from s in context.StreamStats
                         where s.StreamStart == CurrTime
                         select s).Any();
@@ -386,7 +383,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from s in context.Users
                         where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Source
                         select s).Any();
@@ -402,7 +399,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from s in context.CustomWelcome
                         where s.UserName == User
                         select s.Message).FirstOrDefault() ?? "";
@@ -413,7 +410,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (Currency c in from u in context.Currency
                                        select u)
                 {
@@ -430,7 +427,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 context.Users.RemoveRange((IEnumerable<Users>)(from user in context.Users
                                                                join follower in context.Followers on user.UserId equals follower.UserId into UserFollow
@@ -448,7 +445,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (var userstat in from US in context.UserStats
                                          select US)
                 {
@@ -469,7 +466,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
                 Commands EditCom = (from C in context.Commands
                                     where C.CmdName == cmd
@@ -497,7 +494,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 Enums.BanReasons banReasons = (from Br in context.BanReasons
                                                where Br.MsgType == msgTypes
                                                select Br.BanReason).FirstOrDefault();
@@ -513,7 +510,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new((from Com in context.Commands
                             where Com.CmdName == cmd
                             select Com).FirstOrDefault());
@@ -529,7 +526,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return string.Join(", ", (from Com in context.Commands
                                           where (Com.Message == DefaulSocialMsg && Com.IsEnabled)
                                           orderby Com.CmdName
@@ -541,7 +538,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from C in context.CurrencyType
                            select C.CurrencyName);
             }
@@ -551,7 +548,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from D in context.GameDeadCounter
                         where D.Category == currCategory
                         select D.Counter).FirstOrDefault();
@@ -562,7 +559,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 ChannelEvents found = (from Event in context.ChannelEvents
                                        where Event.Name == rowcriteria
                                        select Event).FirstOrDefault();
@@ -577,7 +574,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from F in context.Followers
                         select F).Count();
             }
@@ -587,7 +584,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from G in context.CategoryList
                            let game = new Tuple<string, string>(G.CategoryId, G.Category)
                            select game);
@@ -598,7 +595,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return context.Model.FindEntityType(Table).FindPrimaryKey().GetName();
             }
         }
@@ -607,7 +604,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new List<string>(from P in context.Model.FindEntityType(Table).FindPrimaryKey().Properties select P.Name);
             }
         }
@@ -616,7 +613,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return context.Followers.MaxBy((i) => i.FollowedDate).UserName;
             }
         }
@@ -625,7 +622,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from O in context.OverlayServices
                            where (O.IsEnabled
                            && O.OverlayType.ToString() == overlayType
@@ -649,7 +646,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from Q in context.Quotes
                         where Q.Number == QuoteNum
                         select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
@@ -660,7 +657,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
             }
 
@@ -670,7 +667,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new()
                 {
                     { nameof(Commands), new(from C in context.Commands select C.CmdName) },
@@ -683,7 +680,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
                            select SC.CmdName);
             }
@@ -693,7 +690,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return string.Join(" ", (from SC in
                                              context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)),
                                                 (c) => c.CmdName)
@@ -705,10 +702,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from SD in context.StreamStats
                         where SD.StreamStart == dateTime
-                        select new StreamStat(SD)).FirstOrDefault();
+                        select StreamStat.Create(SD)).FirstOrDefault();
             }
         }
 
@@ -716,7 +713,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from T in context.Model.FindEntityType(TableName).GetMembers()
                            select T.Name);
             }
@@ -746,7 +743,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from F in context.OverlayTicker
                            select new TickerItem(F.TickerName, F.UserName));
             }
@@ -756,7 +753,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from R in context.Commands
                         where R.RepeatTimer > 0
                         select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
@@ -768,7 +765,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from R in context.Commands
                            where R.RepeatTimer > 0
                            select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
@@ -780,7 +777,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from R in context.Commands
                         where R.CmdName == Cmd
                         select R.RepeatTimer).FirstOrDefault();
@@ -791,7 +788,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from C in context.Commands
                         where C.CmdName == command
                         select C.Usage).FirstOrDefault();
@@ -802,7 +799,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from U in context.Users
                         where U.UserName == UserName
                         select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
@@ -813,7 +810,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from U in context.Users
                         where U.UserName == User.UserName
                         select U.UserId).FirstOrDefault();
@@ -824,7 +821,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from W in context.Webhooks
                            where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
                            select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
@@ -837,7 +834,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 IEnumerable<object> output = row.Table switch
                 {
                     nameof(Currency) => (from C in context.Currency where C.CurrencyName == row.CurrencyField orderby C.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
@@ -864,7 +861,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 object output = row.Table switch
                 {
@@ -896,7 +893,7 @@ switches:
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-                    using var context = dbContextFactory.CreateDbContext();
+    
                     CategoryList categoryList = (from CL in context.CategoryList
                                                  where (CL.Category == FormatData.AddEscapeFormat(newCategory)) || CL.CategoryId == CategoryId
                                                  select CL).FirstOrDefault();
@@ -925,7 +922,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 if (!(from C in context.Clips
                       where (C.Id == ClipId)
                       select C).Any())
@@ -942,7 +939,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 if (!(from Com in context.Commands
                       where Com.CmdName == cmd
                       select Com).Any())
@@ -963,7 +960,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 Currency currency = (from C in context.Currency
                                      where (C.CurrencyName == CurrencyName && C.UserName == User.UserName)
                                      select C).FirstOrDefault();
@@ -979,7 +976,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 GameDeadCounter update = (from G in context.GameDeadCounter where G.Category == currCategory select G).FirstOrDefault();
                 if (update != default)
                 {
@@ -1013,7 +1010,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 followsQueue.Enqueue(follow);
                 PostFollowsQueue();
@@ -1039,7 +1036,7 @@ switches:
                 {
                     DateTime currTime = DateTime.Now.ToLocalTime();
                     Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
-                    using var context = dbContextFactory.CreateDbContext();
+    
                     while (followsQueue.TryDequeue(out Follow currUser))
                     {
                         lock (GUIDataManagerLock.Lock)
@@ -1082,7 +1079,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.GiveawayUserData.Add(new(dateTime, userName: DisplayName));
                 context.SaveChanges(true);
             }
@@ -1092,7 +1089,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.InRaidData.Add(new(userName: user, raidDate: time, viewerCount: viewers, category: gamename, platform: platform));
                 context.SaveChanges(true);
             }
@@ -1102,7 +1099,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 if (!(from M in context.LearnMsgs
                       where M.TeachingMsg == Message
                       select M).Any())
@@ -1118,7 +1115,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.UserName == CurrUser select uCu;
                 IEnumerable<Currency> srcCurrency = from sCu in context.Currency where sCu.UserName == SourceUser select sCu;
 
@@ -1154,7 +1151,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 if (!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.UserName == UserName && SO.Platform == platform) select SO).Any())
                 {
                     context.ShoutOuts.Add(new(userId: UserId, userName: UserName, platform: platform));
@@ -1167,7 +1164,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 Users newuser = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Source) select U).FirstOrDefault();
                 if (newuser == default)
                 {
@@ -1185,7 +1182,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.OutRaidData.Add(new(channelRaided: HostedChannel, raidDate: dateTime));
                 context.SaveChanges(true);
             }
@@ -1195,7 +1192,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 List<Quotes> quotes = new(from Q in context.Quotes select Q);
                 short opennum = (from Q in context.Quotes select Q.Number).IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
@@ -1215,7 +1212,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 bool addstream = !(from S in context.StreamStats where S.StreamStart == StreamStart select S).Any();
                 if (addstream)
                 {
@@ -1231,7 +1228,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 StreamStats currStream = (from S in context.StreamStats where S.StreamStart == streamStat.StreamStart select S).FirstOrDefault();
                 if (currStream != default)
                 {
@@ -1245,7 +1242,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 if (!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
                 {
                     context.CustomWelcome.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Source, message: WelcomeMsg));
@@ -1258,7 +1255,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.Followers.RemoveRange(context.Followers);
                 context.SaveChanges(true);
             }
@@ -1268,7 +1265,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.GiveawayUserData.RemoveRange(context.GiveawayUserData);
                 context.SaveChanges(true);
             }
@@ -1278,7 +1275,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.InRaidData.RemoveRange(context.InRaidData);
                 context.SaveChanges(true);
             }
@@ -1288,7 +1285,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.OutRaidData.RemoveRange(context.OutRaidData);
                 context.SaveChanges(true);
             }
@@ -1298,7 +1295,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.OverlayTicker.RemoveRange(context.OverlayTicker);
                 context.SaveChanges(true);
             }
@@ -1308,7 +1305,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.StreamStats.RemoveRange(context.StreamStats);
                 context.SaveChanges(true);
             }
@@ -1318,7 +1315,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.Users.RemoveRange(context.Users);
                 context.SaveChanges(true);
             }
@@ -1329,7 +1326,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 bool found = false;
-                using var context = dbContextFactory.CreateDbContext();
+
                 Commands cmd = (from C in context.Commands where C.CmdName == command select C).FirstOrDefault();
                 if (cmd != default)
                 {
@@ -1346,7 +1343,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 bool found = false;
-                using var context = dbContextFactory.CreateDbContext();
+
                 Quotes quotes = (from Q in context.Quotes where Q.Number == QuoteNum select Q).FirstOrDefault();
                 if (quotes != default)
                 {
@@ -1362,7 +1359,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (var Command in context.Commands.IntersectBy((string[])(Enum.GetValues(typeof(DefaultCommand))), (Com) => Com.CmdName))
                 {
                     Command.IsEnabled = Enabled;
@@ -1375,7 +1372,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (var webhook in context.Webhooks)
                 {
                     webhook.IsEnabled = Enabled;
@@ -1393,7 +1390,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (var Sys in context.ChannelEvents)
                 {
                     Sys.IsEnabled = Enabled;
@@ -1406,7 +1403,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (var Command in context.Commands.ExceptBy((string[])(Enum.GetValues(typeof(DefaultCommand))), (Com) => Com.CmdName))
                 {
                     Command.IsEnabled = Enabled;
@@ -1419,7 +1416,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (Followers F in context.Followers)
                 {
                     F.IsFollower = false; // reset all followers to not following, add existing followers back as followers
@@ -1435,7 +1432,7 @@ switches:
                 while (ProcessFollowQueuestarted) { } // spin until the queue processing finishes
 
                 DateTime currtime = DateTime.Now.ToLocalTime();
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 if (OptionFlags.TwitchPruneNonFollowers)
                 {
@@ -1482,7 +1479,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (string U in Users)
                 {
                     UpdateCurrency((from user in context.Users where user.UserName == U select user).FirstOrDefault(), dateTime);
@@ -1496,7 +1493,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 TimeSpan clock = CurrTime - User.CurrLoginDate;
                 foreach (Currency currency in User.Currency)
                 {
@@ -1524,7 +1521,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 if (LearnMsgChanged)
                 {
                     LearnMsgChanged = false;
@@ -1542,7 +1539,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
                 if (ticker == default)
                 {
@@ -1560,7 +1557,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 foreach (UserStats U in context.UserStats.IntersectBy((from L in Users select L), (U) => new(U.UserName, U.Platform, U.UserId)))
                 {
                     if (U.Users.LastDateSeen < CurrStreamStart)
@@ -1588,7 +1585,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 Users user = PostNewUser(User, NowSeen);
                 user.CurrLoginDate = Max(user.CurrLoginDate, NowSeen);
                 user.LastDateSeen = Max(user.LastDateSeen, NowSeen);
@@ -1600,7 +1597,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 Users user = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Source) select U).FirstOrDefault();
                 if (user != default)
                 {
@@ -1625,7 +1622,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from P in context.MultiLiveStreams where (P.UserName == ChannelName && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
             }
         }
@@ -1634,7 +1631,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return (from M in context.MultiChannels where (M.UserName == UserName && M.Platform == platform) select M).Any();
             }
         }
@@ -1642,7 +1639,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from M in context.MultiChannels select M.UserName);
             }
         }
@@ -1651,7 +1648,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 return new(from W in context.MultiMsgEndPoints where W.IsEnabled select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook));
             }
         }
@@ -1660,7 +1657,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 context.MultiChannels.Add(new(userId: userid, userName: username, platform: platform));
                 context.SaveChanges(true);
                 UpdatedMonitoringChannels?.Invoke(this, new());
@@ -1671,7 +1668,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
                 bool result = (from P in context.MultiLiveStreams where (P.UserId == userid && P.UserName == username && P.LiveDate == onDate) select P).Any();
                 if (!result)
                 {
@@ -1691,7 +1688,7 @@ switches:
                 {
                     CleanupList.Clear();
 
-                    using var context = dbContextFactory.CreateDbContext();
+    
 
                     List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate);
                     List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
@@ -1712,7 +1709,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
+
 
                 var multiLiveStreams = (from MLS in context.MultiLiveStreams
                                         where MLS.LiveDate <= archiveRecord.ThroughDate.Date
