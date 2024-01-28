@@ -43,10 +43,10 @@ switches:
 -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
  */
 
-    public class DataManagerSQL() : IDataManager
+    public class DataManagerSQL : IDataManager
     {
-        //private readonly IDbContextFactory<SQLDBContext> dbContextFactory = dbContextFactory;
-        private readonly SQLDBContext context = new();
+        private readonly IDbContextFactory<SQLDBContext> dbContextFactory = new DataManagerFactory();
+        private readonly SQLDBContext context;
 
         /// <summary>
         /// always true to begin one learning cycle
@@ -58,6 +58,10 @@ switches:
         private readonly string DefaulSocialMsg = LocalizedMsgSystem.GetVar(Msg.MsgDefaultSocialMsg);
         private DateTime CurrStreamStart { get; set; } = default;
 
+        public DataManagerSQL()
+        {
+            context = dbContextFactory.CreateDbContext();
+        }
 
         #region Construct default items
         /// <summary>
@@ -73,68 +77,6 @@ switches:
         }
 
         /// <summary>
-        /// Add all of the default commands to the table, ensure they are available
-        /// </summary>
-        private void SetDefaultCommandsTable()
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
-
-            lock (GUIDataManagerLock.Lock)
-            {
-
-
-                if (!(from C in context.CategoryList where C.Category == LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) select C).Any())
-                {
-                    context.CategoryList.Add(new(categoryId: "0", category: LocalizedMsgSystem.GetVar(Msg.MsgAllCategory), streamCount: 0));
-                }
-
-                // dictionary with commands, messages, and parameters
-                // command name     // msg   // params
-                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = [];
-
-                // add each of the default commands with localized strings
-                foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
-                {
-                    DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
-                }
-
-                // add each of the social commands
-                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
-                {
-                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
-                }
-
-                context.Commands.AddRange(from C in (from key in DefCommandsDictionary.ExceptBy(context.Commands.Select((C) => C.CmdName), c => c.Key)
-                                                     let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
-                                                     select (key.Key, param))
-                                          select new Commands(cmdName: C.Key,
-                                                     addMe: false,
-                                                     permission: C.param.Permission,
-                                                     isEnabled: C.param.IsEnabled,
-                                                     message: DefCommandsDictionary[C.Key].Item1,
-                                                     repeatTimer: C.param.Timer,
-                                                     sendMsgCount: C.param.RepeatMsg,
-                                                     category: [string.IsNullOrEmpty(C.param.Category) ?
-                                                                 LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) :
-                                                                 C.param.Category],
-                                                     allowParam: C.param.AllowParam,
-                                                     usage: C.param.Usage,
-                                                     lookupData: C.param.LookupData,
-                                                     table: C.param.Table,
-                                                     keyField: GetKey(C.param.Table),
-                                                     dataField: C.param.Field,
-                                                     currencyField: C.param.Currency,
-                                                     unit: C.param.Unit,
-                                                     action: C.param.Action,
-                                                     top: C.param.Top,
-                                                     sort: C.param.Sort)
-                 );
-
-                context.SaveChanges(true);
-            }
-        }
-
-        /// <summary>
         /// Add default data to Channel Events table, to ensure the data is available to use in event messages.
         /// </summary>
         private void SetDefaultChannelEventsTable()
@@ -143,8 +85,6 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-
-
                 Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
             {
                 {
@@ -209,12 +149,70 @@ switches:
 
             }
         }
+    
+        /// <summary>
+        /// Add all of the default commands to the table, ensure they are available
+        /// </summary>
+        private void SetDefaultCommandsTable()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                if (!(from C in context.CategoryList where C.Category == LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) select C).Any())
+                {
+                    context.CategoryList.Add(new(categoryId: "0", category: LocalizedMsgSystem.GetVar(Msg.MsgAllCategory), streamCount: 0));
+                }
+
+                // dictionary with commands, messages, and parameters
+                // command name     // msg   // params
+                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = [];
+
+                // add each of the default commands with localized strings
+                foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
+                {
+                    DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
+                }
+
+                // add each of the social commands
+                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+                {
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
+                }
+
+                context.Commands.AddRange(from C in (from key in DefCommandsDictionary.ExceptBy(context.Commands.Select((C) => C.CmdName), c => c.Key)
+                                                     let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
+                                                     select (key.Key, param))
+                                          select new Commands(cmdName: C.Key,
+                                                     addMe: false,
+                                                     permission: C.param.Permission,
+                                                     isEnabled: C.param.IsEnabled,
+                                                     message: DefCommandsDictionary[C.Key].Item1,
+                                                     repeatTimer: C.param.Timer,
+                                                     sendMsgCount: C.param.RepeatMsg,
+                                                     category: [string.IsNullOrEmpty(C.param.Category) ?
+                                                                 LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) :
+                                                                 C.param.Category],
+                                                     allowParam: C.param.AllowParam,
+                                                     usage: C.param.Usage,
+                                                     lookupData: C.param.LookupData,
+                                                     table: C.param.Table,
+                                                     keyField: GetKey(C.param.Table),
+                                                     dataField: C.param.Field,
+                                                     currencyField: C.param.Currency,
+                                                     unit: C.param.Unit,
+                                                     action: C.param.Action,
+                                                     top: C.param.Top,
+                                                     sort: C.param.Sort)
+                 );
+
+                context.SaveChanges(true);
+            }
+        }
 
         private void SetLearnedMessages()
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
-
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -499,7 +497,7 @@ switches:
                                                where Br.MsgType == msgTypes
                                                select Br.BanReason).FirstOrDefault();
                 BanRules banRules = (from B in context.BanRules
-                                     where (B.ViewerTypes == ViewerTypes.Viewer && B.MsgTypes == msgTypes)
+                                     where (B.ViewerTypes == ViewerTypes.Viewer && B.MsgType == msgTypes)
                                      select B).FirstOrDefault();
 
                 return new(banRules?.ModAction ?? ModActions.Allow, banReasons, banRules.TimeoutSeconds);
@@ -563,18 +561,17 @@ switches:
                 ChannelEvents found = (from Event in context.ChannelEvents
                                        where Event.Name == rowcriteria
                                        select Event).FirstOrDefault();
-                Enabled = found.IsEnabled;
-                Multi = found.RepeatMsg;
-                return found.Message;
-            }
+                Enabled = found?.IsEnabled ?? false;
+                Multi = found?.RepeatMsg ?? 0;
 
+                return found?.Message;
+            }
         }
 
         public int GetFollowerCount()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
                 return (from F in context.Followers
                         select F).Count();
             }
@@ -584,7 +581,6 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
                 return new(from G in context.CategoryList
                            let game = new Tuple<string, string>(G.CategoryId, G.Category)
                            select game);
@@ -924,7 +920,7 @@ switches:
             {
 
                 if (!(from C in context.Clips
-                      where (C.Id == ClipId)
+                      where (C.ClipId == ClipId)
                       select C).Any())
                 {
                     context.Clips.Add(new(ClipId, CreatedAt, Title, GameId, Language, Duration, Url));
@@ -966,7 +962,7 @@ switches:
                                      select C).FirstOrDefault();
                 if (currency != default)
                 {
-                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.MaxValue);
+                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.Where(c => c.CurrencyName == CurrencyName).Select(t=>t.MaxValue).FirstOrDefault());
                 }
                 context.SaveChanges(true);
             }
@@ -1499,8 +1495,8 @@ switches:
                 {
                     currency.Value =
                         Math.Min(
-                            currency.CurrencyType.MaxValue,
-                            Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
+                            currency.CurrencyType.Where(t=>t.CurrencyName == currency.CurrencyName).Select(c=>c.MaxValue).FirstOrDefault(),
+                            Math.Round(currency.Value + (currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.AccrueAmt).FirstOrDefault() * (clock.TotalSeconds / currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.Seconds).FirstOrDefault() )), 2)
                         );
                 }
             }

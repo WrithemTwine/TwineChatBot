@@ -7,7 +7,8 @@ namespace StreamerBotLib.DataSQL.Models
                                    WebhooksSource webhooksSource = WebhooksSource.Discord,
                                    string server = null,
                                    WebhooksKind kind = WebhooksKind.Live,
-                                   bool addEveryone = false) : Webhooks(id, isEnabled, webhooksSource, server, kind, addEveryone)
+                                   bool addEveryone = false,
+                                   Uri webhook = default) : Webhooks(id, isEnabled, webhooksSource, server, kind, addEveryone, webhook)
     {
     }
 }

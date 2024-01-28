@@ -1,5 +1,9 @@
-﻿namespace StreamerBotLib.DataSQL.Models
+﻿using Microsoft.EntityFrameworkCore;
+using StreamerBotLib.Enums;
+
+namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(UserName), nameof(CurrencyName))]
     public class Currency(int id,
                           string currencyName,
                           string userName = null,
@@ -9,7 +13,7 @@
         public double Value { get; set; } = value;
 
         public Users User { get; set; }
-        public CurrencyType CurrencyType { get; set; }
+        public ICollection<CurrencyType> CurrencyType { get; } = new List<CurrencyType>();
 
         public static Currency operator +(Currency lhs, Currency rhs)
         {

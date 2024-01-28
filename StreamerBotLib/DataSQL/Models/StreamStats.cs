@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(StreamStart))]
     [Index(nameof(StreamStart))]
     public class StreamStats(int id = 0,
                              DateTime streamStart = default,
@@ -49,7 +50,7 @@ namespace StreamerBotLib.DataSQL.Models
         public int CommandsMsgs { get; set; } = commandsMsgs;
         public int AutomatedEvents { get; set; } = automatedEvents;
         public int AutomatedCommands { get; set; } = automatedCommands;
-        public int WebhooksMsgs { get; set; } = webhookMsgs;
+        public int WebhookMsgs { get; set; } = webhookMsgs;
         public int ClipsMade { get; set; } = clipsMade;
         public int ChannelPtCount { get; set; } = channelPtCount;
         public int ChannelChallenge { get; set; } = channelChallenge;
@@ -75,7 +76,7 @@ namespace StreamerBotLib.DataSQL.Models
             CommandsMsgs = streamStat.CommandsMsgs;
             AutomatedEvents = streamStat.AutomatedEvents;
             AutomatedCommands = streamStat.AutomatedCommands;
-            WebhooksMsgs = streamStat.WebhooksMsgs;
+            WebhookMsgs = streamStat.WebhookMsgs;
             ClipsMade = streamStat.ClipsMade;
             ChannelPtCount = streamStat.ChannelPtCount;
             ChannelChallenge = streamStat.ChannelChallenge;

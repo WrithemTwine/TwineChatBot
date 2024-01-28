@@ -6,8 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(MsgType))]
     [Index(nameof(Id), nameof(MsgType))]
-    public class LearnMsgs(int id = 0, MsgTypes msgType = default, string teachingMsg = null) : EntityBase
+    public class LearnMsgs(int id = 0,
+                           MsgTypes msgType = default,
+                           string teachingMsg = null) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;

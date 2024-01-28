@@ -356,7 +356,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
-                CurrStream.WebhooksMsgs++;
+                CurrStream.WebhookMsgs++;
             }
         }
 

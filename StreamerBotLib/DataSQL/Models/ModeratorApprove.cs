@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(ModActionType), nameof(ModActionName))]
     [Index(nameof(Id), nameof(ModActionType), nameof(ModActionName))]
     public class ModeratorApprove(int id = 0,
                                   bool isEnabled = false,

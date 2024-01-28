@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(CmdName))]
     [Index(nameof(CmdName), IsUnique = true)]
     public class Commands(int id = 0,
                           string cmdName = null,

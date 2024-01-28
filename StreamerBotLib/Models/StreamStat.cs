@@ -26,7 +26,7 @@ namespace StreamerBotLib.Models
                             int commandsMsgs = 0,
                             int automatedEvents = 0,
                             int automatedCommands = 0,
-                            int webhooksMsgs = 0,
+                            int webhookMsgs = 0,
                             int clipsMade = 0,
                             int channelPtCount = 0,
                             int channelChallenge = 0,
@@ -51,7 +51,7 @@ namespace StreamerBotLib.Models
               streamStats.CommandsMsgs,
               streamStats.AutomatedEvents,
               streamStats.AutomatedCommands,
-              streamStats.WebhooksMsgs,
+              streamStats.WebhookMsgs,
               streamStats.ClipsMade,
               streamStats.ChannelPtCount,
               streamStats.ChannelChallenge,
@@ -74,7 +74,7 @@ namespace StreamerBotLib.Models
         public int CommandsMsgs { get; set; } = commandsMsgs;
         public int AutomatedEvents { get; set; } = automatedEvents;
         public int AutomatedCommands { get; set; } = automatedCommands;
-        public int WebhooksMsgs { get; set; } = webhooksMsgs;
+        public int WebhookMsgs { get; set; } = webhookMsgs;
         public int ClipsMade { get; set; } = clipsMade;
         public int ChannelPtCount { get; set; } = channelPtCount;
         public int ChannelChallenge { get; set; } = channelChallenge;
@@ -104,7 +104,7 @@ namespace StreamerBotLib.Models
             CommandsMsgs = 0;
             AutomatedEvents = 0;
             AutomatedCommands = 0;
-            WebhooksMsgs = 0;
+            WebhookMsgs = 0;
             ClipsMade = 0;
             ChannelPtCount = 0;
             ChannelChallenge = 0;

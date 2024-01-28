@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
     [Index(nameof(UserId), nameof(UserName), nameof(Platform))]
     public abstract class UserBase(int id = 0,
                                    string userId = null,

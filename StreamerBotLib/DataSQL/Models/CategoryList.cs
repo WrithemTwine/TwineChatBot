@@ -3,9 +3,11 @@
 using StreamerBotLib.Static;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(CategoryId), nameof(Category))]
     [Index(nameof(CategoryId), nameof(Category), IsUnique = true)]
     public class CategoryList(int id = 0,
                               string categoryId = null,
@@ -22,8 +24,11 @@ namespace StreamerBotLib.DataSQL.Models
         public int StreamCount { get; set; } = streamCount;
 
         public GameDeadCounter GameDeadCounter { get; set; }
-        public Clips? Clips { get; set; }
-        public Followers? Followers { get; set; }
-        public InRaidData? InRaidData { get; set; }
+        [AllowNull]
+        public ICollection<Clips>? Clips { get; } = [];
+        [AllowNull]
+        public ICollection<Followers>? Followers { get; } = [];
+        [AllowNull]
+        public ICollection<InRaidData>? InRaidData { get; } = [];
     }
 }

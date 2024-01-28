@@ -1,7 +1,10 @@
-﻿using StreamerBotLib.Enums;
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
     public class Followers(int id = 0,
                            string userId = null,
                            string userName = null,

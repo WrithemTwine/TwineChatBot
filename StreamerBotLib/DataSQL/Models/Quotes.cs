@@ -2,6 +2,7 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(Number))]
     [Index(nameof(Number))]
     public class Quotes(short number = 0, string quote = null) : EntityBase
     {

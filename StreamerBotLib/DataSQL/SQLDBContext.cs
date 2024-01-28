@@ -56,6 +56,51 @@ namespace StreamerBotLib.DataSQL
             optionsBuilder.UseSqlite($"Data Source={DatabaseFileName}");
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BanRules>()
+                .HasOne(b => b.BanReasons)
+                .WithOne(r => r.BanRules)
+                .HasForeignKey<BanReasons>(b => b.MsgType);
+
+            modelBuilder.Entity<CategoryList>()
+                .HasOne(g => g.GameDeadCounter)
+                .WithOne(c => c.CategoryList)
+                .HasForeignKey<GameDeadCounter>(c => new { c.CategoryId, c.Category });
+
+            modelBuilder.Entity<Users>()
+                .HasOne(f => f.Followers)
+                .WithOne(u => u.Users)
+                .HasForeignKey<Followers>(f => new { f.UserId, f.UserName, f.Platform });
+
+            modelBuilder.Entity<Users>()
+                .HasOne(w => w.CustomWelcome)
+                .WithOne(u => u.Users)
+                .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.UserName, w.Platform });
+
+            modelBuilder.Entity<Users>()
+                .HasOne(m => m.MultiChannels)
+                .WithOne(u => u.Users)
+                .HasForeignKey<MultiChannels>(m => new { m.UserId, m.UserName, m.Platform });
+
+            modelBuilder.Entity<Users>()
+                .HasOne(s => s.MultiSummaryLiveStream)
+                .WithOne(u => u.Users)
+                .HasForeignKey<MultiSummaryLiveStream>(s => new { s.UserId, s.UserName, s.Platform });
+
+            modelBuilder.Entity<Users>()
+                .HasOne(o => o.ShoutOuts)
+                .WithOne(u => u.Users)
+                .HasForeignKey<ShoutOuts>(o => new { o.UserId, o.UserName, o.Platform });
+
+            modelBuilder.Entity<Users>()
+                .HasOne(s => s.UserStats)
+                .WithOne(u => u.Users)
+                .HasForeignKey<UserStats>(s => new { s.UserId, s.UserName, s.Platform });
+        }
+
         public SQLDBContext()
         {
             ChangeTracker.LazyLoadingEnabled = false;

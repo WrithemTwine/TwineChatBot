@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(TickerName))]
     [Index(nameof(Id), nameof(TickerName))]
     public class OverlayTicker(int id = 0, OverlayTickerItem tickerName = default, string userName = null) : EntityBase
     {

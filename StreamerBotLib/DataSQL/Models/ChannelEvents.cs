@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(Name))]
     [Index(nameof(Name), IsUnique = true)]
     public class ChannelEvents(int id = 0,
                                ChannelEventActions name = default,
