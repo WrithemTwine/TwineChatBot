@@ -639,7 +639,7 @@ namespace StreamerBotLib.Systems
             }
             if (OptionFlags.ManageRaidData)
             {
-                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
+                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName, User.Source);
             }
             if (OptionFlags.ManageOverlayTicker)
             {

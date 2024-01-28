@@ -10,7 +10,7 @@ namespace StreamerBotLib.DataSQL.Models
     public class CategoryList(int id = 0,
                               string categoryId = null,
                               string category = null,
-                              int streamCount = 1)
+                              int streamCount = 1) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;

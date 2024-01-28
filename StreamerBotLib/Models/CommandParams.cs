@@ -99,7 +99,7 @@ namespace StreamerBotLib.Models
                             data.Timer = int.Parse(value);
                             break;
                         case "r":
-                            data.RepeatMsg = ushort.Parse(value);
+                            data.RepeatMsg = short.Parse(value);
                             break;
                         case "use":
                             checkUsage = true;

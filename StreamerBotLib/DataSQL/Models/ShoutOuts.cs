@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    public class ShoutOuts(uint id = 0,
+    public class ShoutOuts(int id = 0,
                            string userId = null,
                            string userName = null,
                            Platform platform = Platform.Default) : UserBase(id, userId, userName, platform)

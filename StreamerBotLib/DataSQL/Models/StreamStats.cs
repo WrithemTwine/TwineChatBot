@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(StreamStart))]
-    public class StreamStats(uint id = 0,
+    public class StreamStats(int id = 0,
                              DateTime streamStart = default,
                              DateTime streamEnd = default,
                              int newFollows = 0,
@@ -28,7 +28,7 @@ namespace StreamerBotLib.DataSQL.Models
                              int channelPtCount = 0,
                              int channelChallenge = 0,
                              int maxUsers = 0,
-                             string category = default)
+                             string category = default) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;

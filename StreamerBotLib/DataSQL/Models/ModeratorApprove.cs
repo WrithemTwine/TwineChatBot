@@ -12,7 +12,7 @@ namespace StreamerBotLib.DataSQL.Models
                                   ModActionType modActionType = default,
                                   string modActionName = null,
                                   ModPerformType modPerformType = default,
-                                  string modPerformAction = null)
+                                  string modPerformAction = null) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;

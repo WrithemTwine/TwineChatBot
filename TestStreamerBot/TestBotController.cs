@@ -1,8 +1,8 @@
 ﻿using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotIOController;
-using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -19,8 +19,8 @@ namespace TestStreamerBot
         private string result = string.Empty;
         private const int Viewers = 80;
 
-        private BotController botController = new();
-        private DataManager dataManager = SystemsController.DataManage;
+        private readonly BotController botController = new();
+        private readonly IDataManager dataManager = SystemsController.DataManage;
 
         private Random Random { get; set; } = new();
 
@@ -83,7 +83,7 @@ namespace TestStreamerBot
         {
             Initialize();
             botController.HandleAddChat(UserName, Source);
-            botController.HandleUserJoined(new() { new(UserName, Source) });
+            botController.HandleUserJoined([new(UserName, Source)]);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace TestStreamerBot
             // add some good/friendly users, waiting for joining
             foreach (string U in new List<string> { "DarkStreamPhantom", "Jijijava", "CuteChibiChu", "BlkbryOnline", "NewUser", "OutlawTorn14" })
             {
-                botController.HandleUserJoined(new() { new(U, Platform.Twitch) });
+                botController.HandleUserJoined([new(U, Platform.Twitch)]);
                 Thread.Sleep(Random.Next(10000, 80000));
                 botController.HandleMessageReceived(new() { DisplayName = U, IsSubscriber = 0 == Random.Next(0, 1), Message = "Hey stud!" }, Platform.Twitch);
             }
@@ -142,7 +142,7 @@ namespace TestStreamerBot
 
             if (Joined)
             {
-                botController.HandleUserJoined(new() { new(UserName, Platform.Twitch) });
+                botController.HandleUserJoined([new(UserName, Platform.Twitch)]);
                 Thread.Sleep(5000);
             }
 
@@ -190,11 +190,12 @@ namespace TestStreamerBot
                     getFollowedAt(),
                     "00112233",
                     $"{prefix}Follower{x}",
-                    Platform.Default
+                    Platform.Default,
+                    GetRandomGameIdName().GameName
                 );
             }
 
-            List<Follow> bulkfollows = new();
+            List<Follow> bulkfollows = [];
 
             int bulkfollowercount = (int)(new Random().NextDouble() * PickFollowers);
             for (x = 0; x < bulkfollowercount; x++)
@@ -202,22 +203,33 @@ namespace TestStreamerBot
                 bulkfollows.Add(GenerateFollower("Bulk"));
             }
 
-            List<Follow> regularfollower = new() { GenerateFollower("Reg") };
+            List<Follow> regularfollower = [GenerateFollower("Reg")];
 
             BotController.HandleBotEventStartBulkFollowers();
             botController.HandleBotEventNewFollowers(regularfollower);
-            Assert.True(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt, GetRandomGameIdName().GameName));
+            Assert.True(dataManager.PostFollower(
+                new(regularfollower[0].FollowedAt,
+                regularfollower[0].FromUserId,
+                regularfollower[0].
+                FromUserName,
+                Platform.Twitch,
+                GetRandomGameIdName().GameName)));
 
             BotController.HandleBotEventBulkPostFollowers(bulkfollows);
             BotController.HandleBotEventStopBulkFollowers();
 
             foreach (Follow f in bulkfollows)
             {
-                Assert.False(dataManager.PostFollower(f.FromUser, f.FollowedAt, GetRandomGameIdName().GameName));
+                Assert.False(dataManager.PostFollower(new(f.FollowedAt, f.FromUserId, f.FromUserName, Platform.Twitch, GetRandomGameIdName().GameName)));
             }
 
             Thread.Sleep(5000); // wait enough time for the regular followers to add into the database
-            Assert.False(dataManager.PostFollower(regularfollower[0].FromUser, regularfollower[0].FollowedAt, GetRandomGameIdName().GameName));
+            Assert.False(dataManager.PostFollower(
+                new(regularfollower[0].FollowedAt,
+                regularfollower[0].FromUserId,
+                regularfollower[0].FromUserName,
+                Platform.Twitch,
+                GetRandomGameIdName().GameName)));
         }
 
         [Fact]
@@ -227,15 +239,16 @@ namespace TestStreamerBot
 
             string datestring = DateTime.Now.ToString("MMddhhmmss");
 
-            List<Follow> follows = new();
+            List<Follow> follows = [];
 
             for (int x = 0; x < Random.Next(1, 20); x++)
             {
                 follows.Add(new(
                     followedAt: DateTime.Now,
-                    fromUserName: $"IFollow{datestring}{x}",
                     fromUserId: "00112233",
-                    Source: Platform.Default)
+                    fromUserName: $"IFollow{datestring}{x}",
+                    Source: Platform.Default,
+                    GetRandomGameIdName().GameName)
                     );
             }
 
@@ -247,7 +260,7 @@ namespace TestStreamerBot
         {
             Initialize();
 
-            List<Clip> clips = new() {
+            List<Clip> clips = [
                 new()
                 {
                     ClipId = "3489249",
@@ -258,11 +271,11 @@ namespace TestStreamerBot
                     Title = "Ready for TakeOff",
                     Language = "en"
                 }
-            };
+            ];
 
             botController.HandleBotEventPostNewClip(clips);
 
-            Assert.False(dataManager.PostClip(clips[0].ClipId, clips[0].CreatedAt, clips[0].Duration, clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url));
+            Assert.False(dataManager.PostClip(int.Parse(clips[0].ClipId), DateTime.Parse(clips[0].CreatedAt), Convert.ToDecimal(clips[0].Duration), clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url));
         }
 
         [Fact]
@@ -360,7 +373,7 @@ namespace TestStreamerBot
             botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
 
             botController.HandleIncomingRaidData(new("Pitcy", Platform.Twitch), DateTime.Now.ToLocalTime(), "13", "Fortnite");
-            botController.HandleUserJoined(new() { new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly", Platform.Twitch) });
+            botController.HandleUserJoined([new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly", Platform.Twitch)]);
             botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName = "Pitcy", IsModerator = true, Message = "!followage" }, Platform.Twitch);
 
         }
@@ -387,7 +400,7 @@ namespace TestStreamerBot
             OptionFlags.GiveawayCount = 2;
             OptionFlags.ManageGiveawayUsers = true;
 
-            List<string> entrylist = new() { "CuteChibiChu", "WrithemTwine", "DarkStreamPhantom", "OutlawTorn14" };
+            List<string> entrylist = ["CuteChibiChu", "WrithemTwine", "DarkStreamPhantom", "OutlawTorn14"];
 
             botController.HandleGiveawayBegin(GiveawayTypes.Command, "giveaway");
 
@@ -428,7 +441,7 @@ namespace TestStreamerBot
 
             // Assert.True(ActionSystem.UserChat(new(RaidUserName, Platform.Twitch)));
 
-            botController.HandleUserJoined(new() { new(RaidUserName, Platform.Twitch) });
+            botController.HandleUserJoined([new(RaidUserName, Platform.Twitch)]);
             //Assert.False(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch)));
 
             botController.HandleUserLeft(new(RaidUserName, Platform.Twitch));
@@ -458,12 +471,18 @@ namespace TestStreamerBot
                 Url = $"http://debug.app/{ClipName}"
             };
 
-            botController.HandleBotEventPostNewClip(new() { TestClip });
+            botController.HandleBotEventPostNewClip([TestClip]);
 
             Thread.Sleep(2000);
 
             Assert.False(
-                dataManager.PostClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
+                dataManager.PostClip(int.Parse(TestClip.ClipId),
+                                     DateTime.Parse(TestClip.CreatedAt),
+                                     Convert.ToDecimal(TestClip.Duration),
+                                     TestClip.GameId,
+                                     TestClip.Language,
+                                     TestClip.Title,
+                                     TestClip.Url)
                 );
         }
 

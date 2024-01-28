@@ -185,7 +185,7 @@ namespace StreamerBotLib.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.PostClip(Convert.ToUInt32(c.ClipId), DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.PostClip(Convert.ToInt32(c.ClipId), DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
 
         /// <summary>

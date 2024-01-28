@@ -1253,7 +1253,7 @@ namespace StreamerBot
             {
                 bool FoundAddEdit = ((DataGrid)sender).Name is "DG_BuiltInCommands" or "DG_CommonMsgs";
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
-                bool FoundIsEnabled = SystemsController.CheckField(((DataView)((DataGrid)sender).ItemsSource).Table.TableName, "IsEnabled");
+                bool FoundIsEnabled = SystemsController.CheckField(((DataGrid)sender).ItemsSource.GetType().Name, "IsEnabled"); // TODO: fix getting a table name
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {

@@ -69,10 +69,10 @@ namespace StreamerBotLib.MLearning
 
                         rule.TimeoutSeconds = rule.ModAction switch
                         {
-                            ModActions.Allow => "0",
-                            ModActions.Ban => "0",
-                            ModActions.Timeout => V is > ViewerTypes.Broadcaster and < ViewerTypes.VIP ? "0" : "1800",
-                            ModActions.Respond => "0",
+                            ModActions.Allow => 0,
+                            ModActions.Ban => 0,
+                            ModActions.Timeout => V is > ViewerTypes.Broadcaster and < ViewerTypes.VIP ? 0 : 1800,
+                            ModActions.Respond => 0,
                             _ => throw new NotImplementedException()
                         };
 

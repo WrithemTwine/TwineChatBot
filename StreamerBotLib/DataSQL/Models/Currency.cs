@@ -1,6 +1,9 @@
 ﻿namespace StreamerBotLib.DataSQL.Models
 {
-    public class Currency(int id, string currencyName, string userName = null, double value = 0) : CurrencyBase(id, currencyName)
+    public class Currency(int id,
+                          string currencyName,
+                          string userName = null,
+                          double value = 0) : CurrencyBase(id, currencyName)
     {
         public string UserName { get; set; } = userName;
         public double Value { get; set; } = value;

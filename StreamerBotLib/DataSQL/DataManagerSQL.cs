@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
@@ -13,10 +15,37 @@ using StreamerBotLib.Systems;
 
 using System.Collections.Concurrent;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Windows.Input;
 
 namespace StreamerBotLib.DataSQL
 {
+    /*
+
+!command: <switches-optional> <message>
+
+switches:
+-t:<table>   (requires -f)
+-f:<field>    (requires -t)
+-c:<currency> (requires -f, optional switch)
+-unit:<field units>   (optional with -f, but recommended)
+
+-p:<permission>
+-top:<number>
+-s:<sort>
+-a:<action>
+-e:<true|false> // IsEnabled
+-param:<allow params to command>
+-timer:<seconds>
+-use:<usage message>
+-category:<All-defaul>
+
+-m:<message> -> The message to display, may include parameters (e.g. #user, #field).
+ */
+
     public class DataManagerSQL(IDbContextFactory<SQLDBContext> dbContextFactory) : IDataManager
     {
         /// <summary>
@@ -30,6 +59,190 @@ namespace StreamerBotLib.DataSQL
         private DateTime CurrStreamStart { get; set; } = default;
 
         private readonly IDbContextFactory<SQLDBContext> dbContextFactory = dbContextFactory;
+
+        #region Construct default items
+        /// <summary>
+        /// Perform table setup procedures
+        /// </summary>
+        public void Initialize()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Initializing the database.");
+
+            SetDefaultChannelEventsTable();  // check all default ChannelEvents names
+            SetDefaultCommandsTable(); // check all default Commands
+            SetLearnedMessages();
+        }
+
+        /// <summary>
+        /// Add all of the default commands to the table, ensure they are available
+        /// </summary>
+        private void SetDefaultCommandsTable()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                if (!(from C in context.CategoryList where C.Category == LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) select C).Any())
+                {
+                    context.CategoryList.Add(new(categoryId: "0", category: LocalizedMsgSystem.GetVar(Msg.MsgAllCategory), streamCount: 0));
+                }
+
+                // dictionary with commands, messages, and parameters
+                // command name     // msg   // params
+                Dictionary<string, Tuple<string, string>> DefCommandsDictionary = [];
+
+                // add each of the default commands with localized strings
+                foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
+                {
+                    DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
+                }
+
+                // add each of the social commands
+                foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+                {
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
+                }
+
+                context.Commands.AddRange(from C in (from key in DefCommandsDictionary.ExceptBy(context.Commands.Select((C) => C.CmdName), c => c.Key)
+                                                     let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
+                                                     select (key.Key, param))
+                                          select new Commands(cmdName: C.Key,
+                                                     addMe: false,
+                                                     permission: C.param.Permission,
+                                                     isEnabled: C.param.IsEnabled,
+                                                     message: DefCommandsDictionary[C.Key].Item1,
+                                                     repeatTimer: C.param.Timer,
+                                                     sendMsgCount: C.param.RepeatMsg,
+                                                     category: [string.IsNullOrEmpty(C.param.Category) ?
+                                                                 LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) :
+                                                                 C.param.Category],
+                                                     allowParam: C.param.AllowParam,
+                                                     usage: C.param.Usage,
+                                                     lookupData: C.param.LookupData,
+                                                     table: C.param.Table,
+                                                     keyField: GetKey(C.param.Table),
+                                                     dataField: C.param.Field,
+                                                     currencyField: C.param.Currency,
+                                                     unit: C.param.Unit,
+                                                     action: C.param.Action,
+                                                     top: C.param.Top,
+                                                     sort: C.param.Sort)
+                 );
+
+                context.SaveChanges(true);
+            }
+        }
+
+        /// <summary>
+        /// Add default data to Channel Events table, to ensure the data is available to use in event messages.
+        /// </summary>
+        private void SetDefaultChannelEventsTable()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting default channel events, adding any missing events.");
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
+            {
+                {
+                    ChannelEventActions.BeingHosted,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.autohost, MsgVars.viewers]))
+                },
+                {
+                    ChannelEventActions.Bits,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.bits]))
+                },
+                {
+                    ChannelEventActions.CommunitySubs,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.count, MsgVars.subplan]))
+                },
+                {
+                    ChannelEventActions.NewFollow,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                },
+                {
+                    ChannelEventActions.GiftSub,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname]))
+                },
+                {
+                    ChannelEventActions.Live,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone]))
+                },
+                {
+                    ChannelEventActions.Raid,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.viewers]))
+                },
+                {
+                    ChannelEventActions.Resubscribe,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak]))
+                },
+                {
+                    ChannelEventActions.Subscribe,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname]))
+                },
+                {
+                    ChannelEventActions.UserJoined,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                },
+                {
+                    ChannelEventActions.ReturnUserJoined,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                },
+                {
+                    ChannelEventActions.SupporterJoined,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                },
+                {
+                    ChannelEventActions.BannedUser,
+                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                }
+            };
+
+                context.ChannelEvents.AddRange(from CE in from E in dictionary.ExceptBy(context.ChannelEvents.Select(C => C.Name), E => E.Key)
+                                                          let values = dictionary[E.Key]
+                                                          select (E.Key, values)
+                                               select new ChannelEvents(0, CE.Key, 0, false, true, CE.values.Item1, CE.values.Item2));
+                context.SaveChanges(true);
+
+            }
+        }
+
+        private void SetLearnedMessages()
+        {
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
+
+
+            lock (GUIDataManagerLock.Lock)
+            {
+                var context = dbContextFactory.CreateDbContext();
+
+                if (!context.LearnMsgs.Any())
+                {
+                    context.LearnMsgs.AddRange(from M in LearnedMessagesPrimer.PrimerList
+                                               select new LearnMsgs(msgType: M.MsgType, teachingMsg: M.Message));
+                }
+
+                if (!context.BanReasons.Any())
+                {
+                    context.BanReasons.AddRange(from B in LearnedMessagesPrimer.BanReasonList
+                                                select new Models.BanReasons(msgType: B.MsgType, banReason: B.Reason));
+                }
+
+                if (!context.BanRules.Any())
+                {
+                    context.BanRules.AddRange(from R in LearnedMessagesPrimer.BanViewerRulesList
+                                              select new BanRules(0,R.ViewerType, R.MsgType, R.ModAction, R.TimeoutSeconds));
+                }
+
+                context.SaveChanges(true);
+            }
+        }
+        #endregion
 
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
@@ -206,7 +419,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     c.Value = 0;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -224,7 +437,7 @@ namespace StreamerBotLib.DataSQL
                                                                from subuser in UserFollow.DefaultIfEmpty()
                                                                where !subuser.IsFollower
                                                                select subuser));
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -241,12 +454,13 @@ namespace StreamerBotLib.DataSQL
                 {
                     userstat.WatchTime = new(0);
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
         public void DeleteDataRows(IEnumerable<DataRow> dataRows)
         {
+            throw new NotImplementedException();
         }
 
         public string EditCommand(string cmd, List<string> Arglist)
@@ -350,7 +564,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 ChannelEvents found = (from Event in context.ChannelEvents
-                                       where Event.Name == rowcriteria.ToString()
+                                       where Event.Name == rowcriteria
                                        select Event).FirstOrDefault();
                 Enabled = found.IsEnabled;
                 Multi = found.RepeatMsg;
@@ -460,7 +674,7 @@ namespace StreamerBotLib.DataSQL
                 return new()
                 {
                     { nameof(Commands), new(from C in context.Commands select C.CmdName) },
-                    { nameof(ChannelEvents), new(from E in context.ChannelEvents select E.Name) }
+                    { nameof(ChannelEvents), new(from E in context.ChannelEvents select E.Name.ToString()) }
                 };
             }
         }
@@ -512,9 +726,19 @@ namespace StreamerBotLib.DataSQL
         {
             lock (GUIDataManagerLock.Lock)
             {
-                using var context = dbContextFactory.CreateDbContext();
-                return new(from N in context.Model.GetEntityTypes()
-                           select N.Name);
+                //using var context = dbContextFactory.CreateDbContext();
+                //return new(from N in context.Model.GetEntityTypes()
+                //           select N.Name);
+                var list = new List<string>()
+                {
+                    nameof(Currency),
+                    nameof(UserStats),
+                    nameof(Commands),
+                    nameof(CustomWelcome),
+                    nameof(Followers)
+                };
+                list.Sort();
+                return list;
             }
         }
 
@@ -607,19 +831,58 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void Initialize()
-        {
-            throw new NotImplementedException();
-        }
-        // TODO: complete the DBContext for "perform query"
+
+
         public object[] PerformQuery(Commands row, int Top = 0)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+                IEnumerable<object> output = row.Table switch
+                {
+                    nameof(Currency) => (from C in context.Currency where C.CurrencyName == row.CurrencyField orderby C.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
+                    nameof(Followers) => (from F in context.Followers orderby F.UserName select F),
+                    nameof(UserStats) => (from US in context.UserStats orderby US.UserName select new Tuple<object, object>(US[row.KeyField], US[row.DataField])),
+                    _ => [""]
+                };
+
+                if (row.Sort == CommandSort.DESC)
+                {
+                    output = output.OrderByDescending((o) => (o as Tuple<object, object>).Item1);
+                }
+
+                if (row.Top > 0)
+                {
+                    output = output.Take(row.Top);
+                }
+
+                return output.ToArray();
+            }
         }
 
         public object PerformQuery(Commands row, string ParamValue)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                using var context = dbContextFactory.CreateDbContext();
+
+                object output = row.Table switch
+                {
+                    nameof(Currency) => (from C in context.Currency where (C.UserName == ParamValue && C.CurrencyName == row.CurrencyField) select C[row.DataField ?? "Value"]).FirstOrDefault(),
+                    nameof(CustomWelcome) => (from W in context.CustomWelcome where W.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
+                    nameof(Followers) => (from F in context.Followers where F.UserName == ParamValue select F).FirstOrDefault(),
+                    nameof(UserStats) => (from US in context.UserStats where US.UserName == ParamValue select US[row.DataField]).FirstOrDefault(),
+                    nameof(Commands) => (from C in context.Commands where C.CmdName == ParamValue select C[row.DataField]).FirstOrDefault(),
+                    _ => ""
+                };
+
+                if(row.Table == nameof(Followers))
+                {
+                    output = ((Followers)output).IsFollower ? ((Followers)output).FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
+                }
+
+                return output;
+            }
         }
 
         public bool PostCategory(string CategoryId, string newCategory)
@@ -696,36 +959,6 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        //public void PostCurrencyRows()
-        //{
-        //    lock (GUIDataManagerLock.Lock)
-        //    {
-        //        using var context = dbContextFactory.CreateDbContext();
-        //        List<string> currencyTypeName = new(from CT in context.CurrencyType
-        //                                            select CT.CurrencyName);
-
-        //        foreach(Users U in context.Users)
-        //        {
-        //            foreach(string CurrencyName in currencyTypeName)
-        //            {
-        //                if(!(from C in context.Currency where (C.UserName == U.UserName && C.CurrencyName == CurrencyName) select C.CurrencyName).Any())
-        //                {
-        //                    context.Currency.Add()
-        //                }
-        //            }
-
-        //        }
-        //    } 
-        //}
-
-        //public void PostCurrencyRows(ref DataSource.UsersRow usersRow)
-        //{
-        //    lock (GUIDataManagerLock.Lock)
-        //    {
-        //        using var context = dbContextFactory.CreateDbContext();
-        //    }
-        //}
-
         public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
         {
             lock (GUIDataManagerLock.Lock)
@@ -738,7 +971,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.MaxValue);
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -763,7 +996,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     update = context.GameDeadCounter.Add(new(category: currCategory)).Entity;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
                 return update?.Counter ?? 0;
             }
         }
@@ -851,7 +1084,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.GiveawayUserData.Add(new(dateTime, userName: DisplayName));
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -861,7 +1094,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.InRaidData.Add(new(userName: user, raidDate: time, viewerCount: viewers, category: gamename, platform: platform));
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -877,7 +1110,7 @@ namespace StreamerBotLib.DataSQL
                     context.LearnMsgs.Add(new(msgType: MsgType, teachingMsg: Message));
                     LearnMsgChanged = true;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -926,7 +1159,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     context.ShoutOuts.Add(new(userId: UserId, userName: UserName, platform: platform));
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -943,7 +1176,7 @@ namespace StreamerBotLib.DataSQL
                 if (FirstSeen <= newuser.FirstDateSeen) { newuser.FirstDateSeen = FirstSeen; }
                 newuser.UserId ??= User.UserId;
                 if (newuser.Platform == default) { newuser.Platform = User.Source; }
-                context.SaveChanges();
+                context.SaveChanges(true);
                 return newuser;
             }
         }
@@ -954,7 +1187,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.OutRaidData.Add(new(channelRaided: HostedChannel, raidDate: dateTime));
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -968,7 +1201,7 @@ namespace StreamerBotLib.DataSQL
                 short opennum = (from Q in context.Quotes select Q.Number).IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
 
                 context.Quotes.Add(new(opennum, Text));
-                context.SaveChanges();
+                context.SaveChanges(true);
                 return opennum;
             }
         }
@@ -1027,7 +1260,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.Followers.RemoveRange(context.Followers);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1037,7 +1270,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.GiveawayUserData.RemoveRange(context.GiveawayUserData);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1047,7 +1280,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.InRaidData.RemoveRange(context.InRaidData);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1057,7 +1290,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.OutRaidData.RemoveRange(context.OutRaidData);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1067,7 +1300,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.OverlayTicker.RemoveRange(context.OverlayTicker);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1077,7 +1310,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.StreamStats.RemoveRange(context.StreamStats);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1087,7 +1320,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = dbContextFactory.CreateDbContext();
                 context.Users.RemoveRange(context.Users);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1103,7 +1336,7 @@ namespace StreamerBotLib.DataSQL
                     context.Commands.Remove(cmd);
                     found = true;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
                 return found;
             }
         }
@@ -1120,7 +1353,7 @@ namespace StreamerBotLib.DataSQL
                     context.Quotes.Remove(quotes);
                     found = true;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
                 return found;
             }
         }
@@ -1134,7 +1367,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     Command.IsEnabled = Enabled;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1147,7 +1380,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     webhook.IsEnabled = Enabled;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1165,7 +1398,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     Sys.IsEnabled = Enabled;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1178,7 +1411,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     Command.IsEnabled = Enabled;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1254,7 +1487,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     UpdateCurrency((from user in context.Users where user.UserName == U select user).FirstOrDefault(), dateTime);
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
 
         }
@@ -1319,7 +1552,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     ticker.UserName = name;
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1340,7 +1573,7 @@ namespace StreamerBotLib.DataSQL
                         U.WatchTime = U.WatchTime.Add(CurrTime - U.Users.LastDateSeen);
                     }
                 }
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1359,7 +1592,7 @@ namespace StreamerBotLib.DataSQL
                 Users user = PostNewUser(User, NowSeen);
                 user.CurrLoginDate = Max(user.CurrLoginDate, NowSeen);
                 user.LastDateSeen = Max(user.LastDateSeen, NowSeen);
-                context.SaveChanges();
+                context.SaveChanges(true);
             }
         }
 
@@ -1532,5 +1765,24 @@ namespace StreamerBotLib.DataSQL
 
 
         #endregion
+
+
+        private void LearnMsgs_LearnMsgsRowDeleted(object sender, EventArgs e)
+        {
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are deleted.");
+
+
+            LearnMsgChanged = true;
+        }
+
+        private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
+        {
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether adding a new learned message.");
+
+
+            LearnMsgChanged = true;
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    public class Users(uint id = 0,
+    public class Users(int id = 0,
                        string userId = null,
                        string userName = null,
                        Platform platform = Platform.Default,

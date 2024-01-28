@@ -1,5 +1,6 @@
 ﻿
 using StreamerBotLib.BotIOController;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
@@ -885,7 +886,7 @@ namespace StreamerBotLib.Systems
 
                         // convert multi-row output to a string
                         string queryoutput = "";
-                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(CommData, CommData.Top)
+                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(Commands.GetCommands(CommData), CommData.Top)
                                                                  let bundle = r as Tuple<object, object>
                                                                  where bundle.Item1 == bundle.Item2
                                                                  select bundle)
@@ -900,7 +901,7 @@ namespace StreamerBotLib.Systems
 
                 default:
                     {
-                        object querydata = DataManage.PerformQuery(CommData, paramvalue);
+                        object querydata = DataManage.PerformQuery(Commands.GetCommands(CommData), paramvalue);
 
                         string output = "";
                         if (querydata.GetType() == typeof(string))

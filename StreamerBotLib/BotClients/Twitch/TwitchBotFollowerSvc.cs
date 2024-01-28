@@ -24,7 +24,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public TwitchBotFollowerSvc()
         {
             BotClientName = Bots.TwitchFollowBot;
-            twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            //twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
         }
 
         private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)

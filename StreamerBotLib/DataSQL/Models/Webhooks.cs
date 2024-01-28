@@ -7,12 +7,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Id), nameof(Server), nameof(Kind))]
-    public class Webhooks(uint id = 0,
+    public class Webhooks(int id = 0,
                          bool isEnabled = false,
                          WebhooksSource webhooksSource = default,
                          string server = null,
                          WebhooksKind kind = default,
-                         bool addEveryone = false)
+                         bool addEveryone = false) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;

@@ -3,7 +3,7 @@
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Number))]
-    public class Quotes(short number = 0, string quote = null)
+    public class Quotes(short number = 0, string quote = null) : EntityBase
     {
         public short Number { get; set; } = number;
         public string Quote { get; set; } = quote;

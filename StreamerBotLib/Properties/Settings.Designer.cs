@@ -554,9 +554,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("17")]
-        public short GameBlackJackHouseStands {
+        public int GameBlackJackHouseStands {
             get {
-                return ((ushort)(this["GameBlackJackHouseStands"]));
+                return ((int)(this["GameBlackJackHouseStands"]));
             }
             set {
                 this["GameBlackJackHouseStands"] = value;
@@ -566,9 +566,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("200")]
-        public short GameBlackJackPayoutDealt21 {
+        public int GameBlackJackPayoutDealt21 {
             get {
-                return ((ushort)(this["GameBlackJackPayoutDealt21"]));
+                return ((int)(this["GameBlackJackPayoutDealt21"]));
             }
             set {
                 this["GameBlackJackPayoutDealt21"] = value;
@@ -590,9 +590,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("150")]
-        public short GameBlackJackPayoutReach21 {
+        public int GameBlackJackPayoutReach21 {
             get {
-                return ((ushort)(this["GameBlackJackPayoutReach21"]));
+                return ((int)(this["GameBlackJackPayoutReach21"]));
             }
             set {
                 this["GameBlackJackPayoutReach21"] = value;
@@ -602,9 +602,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public short GameBlackJackPayoutUnder21 {
+        public int GameBlackJackPayoutUnder21 {
             get {
-                return ((ushort)(this["GameBlackJackPayoutUnder21"]));
+                return ((int)(this["GameBlackJackPayoutUnder21"]));
             }
             set {
                 this["GameBlackJackPayoutUnder21"] = value;
@@ -638,9 +638,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public short GiveawayCount {
+        public int GiveawayCount {
             get {
-                return ((ushort)(this["GiveawayCount"]));
+                return ((int)(this["GiveawayCount"]));
             }
             set {
                 this["GiveawayCount"] = value;
@@ -662,9 +662,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public short GiveawayMaxEntries {
+        public int GiveawayMaxEntries {
             get {
-                return ((ushort)(this["GiveawayMaxEntries"]));
+                return ((int)(this["GiveawayMaxEntries"]));
             }
             set {
                 this["GiveawayMaxEntries"] = value;
@@ -710,9 +710,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("950")]
-        public short GridTabifyStreamRaidsWidth {
+        public int GridTabifyStreamRaidsWidth {
             get {
-                return ((ushort)(this["GridTabifyStreamRaidsWidth"]));
+                return ((int)(this["GridTabifyStreamRaidsWidth"]));
             }
             set {
                 this["GridTabifyStreamRaidsWidth"] = value;
@@ -734,9 +734,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("950")]
-        public short GridTabifyUserFollowWidth {
+        public int GridTabifyUserFollowWidth {
             get {
-                return ((ushort)(this["GridTabifyUserFollowWidth"]));
+                return ((int)(this["GridTabifyUserFollowWidth"]));
             }
             set {
                 this["GridTabifyUserFollowWidth"] = value;
@@ -878,9 +878,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public short MediaOverlayActionPort {
+        public int MediaOverlayActionPort {
             get {
-                return ((ushort)(this["MediaOverlayActionPort"]));
+                return ((int)(this["MediaOverlayActionPort"]));
             }
             set {
                 this["MediaOverlayActionPort"] = value;
@@ -1022,9 +1022,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public short MediaOverlayTickerMarqueeTime {
+        public int MediaOverlayTickerMarqueeTime {
             get {
-                return ((ushort)(this["MediaOverlayTickerMarqueeTime"]));
+                return ((int)(this["MediaOverlayTickerMarqueeTime"]));
             }
             set {
                 this["MediaOverlayTickerMarqueeTime"] = value;
@@ -1046,9 +1046,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public short MediaOverlayTickerPort {
+        public int MediaOverlayTickerPort {
             get {
-                return ((ushort)(this["MediaOverlayTickerPort"]));
+                return ((int)(this["MediaOverlayTickerPort"]));
             }
             set {
                 this["MediaOverlayTickerPort"] = value;
@@ -1070,9 +1070,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public short MediaOverlayTickerRotateTime {
+        public int MediaOverlayTickerRotateTime {
             get {
-                return ((ushort)(this["MediaOverlayTickerRotateTime"]));
+                return ((int)(this["MediaOverlayTickerRotateTime"]));
             }
             set {
                 this["MediaOverlayTickerRotateTime"] = value;
@@ -1166,9 +1166,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public short ModeratorApprovalTimeout {
+        public int ModeratorApprovalTimeout {
             get {
-                return ((ushort)(this["ModeratorApprovalTimeout"]));
+                return ((int)(this["ModeratorApprovalTimeout"]));
             }
             set {
                 this["ModeratorApprovalTimeout"] = value;
@@ -1334,9 +1334,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public short RepeatChatCount {
+        public int RepeatChatCount {
             get {
-                return ((ushort)(this["RepeatChatCount"]));
+                return ((int)(this["RepeatChatCount"]));
             }
             set {
                 this["RepeatChatCount"] = value;
@@ -1346,9 +1346,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public short RepeatChatMinutes {
+        public int RepeatChatMinutes {
             get {
-                return ((ushort)(this["RepeatChatMinutes"]));
+                return ((int)(this["RepeatChatMinutes"]));
             }
             set {
                 this["RepeatChatMinutes"] = value;
@@ -1418,9 +1418,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public short RepeatUserCount {
+        public int RepeatUserCount {
             get {
-                return ((ushort)(this["RepeatUserCount"]));
+                return ((int)(this["RepeatUserCount"]));
             }
             set {
                 this["RepeatUserCount"] = value;
@@ -1430,9 +1430,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public short RepeatUserMinutes {
+        public int RepeatUserMinutes {
             get {
-                return ((ushort)(this["RepeatUserMinutes"]));
+                return ((int)(this["RepeatUserMinutes"]));
             }
             set {
                 this["RepeatUserMinutes"] = value;
@@ -1850,9 +1850,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("50")]
-        public short TwitchFollowerAutoBanCount {
+        public int TwitchFollowerAutoBanCount {
             get {
-                return ((ushort)(this["TwitchFollowerAutoBanCount"]));
+                return ((int)(this["TwitchFollowerAutoBanCount"]));
             }
             set {
                 this["TwitchFollowerAutoBanCount"] = value;
@@ -1910,9 +1910,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public short TwitchFollowerMsgLimit {
+        public int TwitchFollowerMsgLimit {
             get {
-                return ((ushort)(this["TwitchFollowerMsgLimit"]));
+                return ((int)(this["TwitchFollowerMsgLimit"]));
             }
             set {
                 this["TwitchFollowerMsgLimit"] = value;
@@ -1922,9 +1922,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("24")]
-        public short TwitchFollowerRefreshHrs {
+        public int TwitchFollowerRefreshHrs {
             get {
-                return ((ushort)(this["TwitchFollowerRefreshHrs"]));
+                return ((int)(this["TwitchFollowerRefreshHrs"]));
             }
             set {
                 this["TwitchFollowerRefreshHrs"] = value;
@@ -1946,9 +1946,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("300")]
-        public short TwitchFrequencyClipTime {
+        public int TwitchFrequencyClipTime {
             get {
-                return ((ushort)(this["TwitchFrequencyClipTime"]));
+                return ((int)(this["TwitchFrequencyClipTime"]));
             }
             set {
                 this["TwitchFrequencyClipTime"] = value;
@@ -1958,9 +1958,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public short TwitchFrequencyFollow {
+        public int TwitchFrequencyFollow {
             get {
-                return ((ushort)(this["TwitchFrequencyFollow"]));
+                return ((int)(this["TwitchFrequencyFollow"]));
             }
             set {
                 this["TwitchFrequencyFollow"] = value;
@@ -1970,9 +1970,9 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("300")]
-        public short TwitchGoLiveFrequency {
+        public int TwitchGoLiveFrequency {
             get {
-                return ((ushort)(this["TwitchGoLiveFrequency"]));
+                return ((int)(this["TwitchGoLiveFrequency"]));
             }
             set {
                 this["TwitchGoLiveFrequency"] = value;

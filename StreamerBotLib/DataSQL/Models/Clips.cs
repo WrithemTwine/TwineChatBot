@@ -9,7 +9,7 @@ namespace StreamerBotLib.DataSQL.Models
                        string gameId = null,
                        string language = null,
                        decimal duration = 0,
-                       string url = null)
+                       string url = null) : EntityBase
     {
         public int Id { get; set; } = id;
         public DateTime CreatedAt { get; set; } = createdAt;

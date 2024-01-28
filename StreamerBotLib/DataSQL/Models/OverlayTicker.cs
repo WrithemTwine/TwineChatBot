@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(Id), nameof(TickerName))]
-    public class OverlayTicker(uint id = 0, OverlayTickerItem tickerName = default, string userName = null)
+    public class OverlayTicker(int id = 0, OverlayTickerItem tickerName = default, string userName = null) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;
