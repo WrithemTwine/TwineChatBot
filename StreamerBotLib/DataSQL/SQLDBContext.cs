@@ -6,7 +6,7 @@ namespace StreamerBotLib.DataSQL
 {
     public class SQLDBContext : DbContext
     {
-        private readonly string DatabaseFileName = "TwineStreamerBot.db";
+        private readonly string DatabaseFileName = "ChatDataStoreTwineBot.db";
 
         #region User Data
         public DbSet<Followers> Followers { get; set; }
@@ -60,11 +60,6 @@ namespace StreamerBotLib.DataSQL
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<BanRules>()
-                .HasOne(b => b.BanReasons)
-                .WithOne(r => r.BanRules)
-                .HasForeignKey<BanReasons>(b => b.MsgType);
-
             modelBuilder.Entity<CategoryList>()
                 .HasOne(g => g.GameDeadCounter)
                 .WithOne(c => c.CategoryList)
@@ -99,6 +94,11 @@ namespace StreamerBotLib.DataSQL
                 .HasOne(s => s.UserStats)
                 .WithOne(u => u.Users)
                 .HasForeignKey<UserStats>(s => new { s.UserId, s.UserName, s.Platform });
+
+            modelBuilder.Entity<LearnMsgs>()
+                .Property(i => i.Id)
+                .ValueGeneratedOnAdd();
+
         }
 
         public SQLDBContext()

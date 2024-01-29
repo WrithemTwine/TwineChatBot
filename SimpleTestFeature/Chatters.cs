@@ -28,18 +28,19 @@ namespace SimpleTestFeature
             string channelId = "";
             string moderatorId = "";
 
-            Thread thread = new(() => {
+            Thread thread = new(() =>
+            {
 
-            List<string> chatlisting = new (from U in TestGetChatAsync(clientId, accesstoken, channelId, moderatorId).Data
-                                             select U.UserName);
+                List<string> chatlisting = new(from U in TestGetChatAsync(clientId, accesstoken, channelId, moderatorId).Data
+                                               select U.UserName);
 
                 GetChatterCompleted?.Invoke(this, new() { Chatters = chatlisting });
 
-                 List<string> chatlistingHelix = new(from U in TestHelixGetChatters(clientId, accesstoken, channelId, moderatorId).Data
-                                               select U.UserName);
+                List<string> chatlistingHelix = new(from U in TestHelixGetChatters(clientId, accesstoken, channelId, moderatorId).Data
+                                                    select U.UserName);
 
                 GetChatterCompleted?.Invoke(this, new() { Chatters = chatlistingHelix });
-           
+
             });
 
             thread.Start();
@@ -71,12 +72,12 @@ namespace SimpleTestFeature
                 { "first", "100" }
             };
 
-            return HelixIO.TwitchGet<GetChattersResponse>(Enums.RequestUrlType.HelixUrl, $"chat/chatters",$"?{Helpers.BuildQueryString(query)}", httpRequest);
+            return HelixIO.TwitchGet<GetChattersResponse>(Enums.RequestUrlType.HelixUrl, $"chat/chatters", $"?{Helpers.BuildQueryString(query)}", httpRequest);
         }
 
         public static GetChattersResponse TestHelixGetChatters(string clientid, string accesstoken, string channelid, string moderatorid)
         {
-            TwitchAPI helixApi = new(settings: new ApiSettings() { AccessToken = accesstoken, ClientId=clientid });
+            TwitchAPI helixApi = new(settings: new ApiSettings() { AccessToken = accesstoken, ClientId = clientid });
 
             return helixApi.Helix.Chat.GetChattersAsync(channelid, moderatorid).Result;
         }

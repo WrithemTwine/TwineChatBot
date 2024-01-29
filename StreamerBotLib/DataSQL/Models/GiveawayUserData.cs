@@ -3,10 +3,9 @@
 namespace StreamerBotLib.DataSQL.Models
 {
     public class GiveawayUserData(DateTime dateTime,
-                                  int id = 0,
-                                  string userId = null,
-                                  string userName = null,
-                                  Platform platform = Platform.Default) : UserBase(id, userId, userName, platform)
+                                  string userId = default,
+                                  string userName = default,
+                                  Platform platform = Platform.Default) : UserBase(userId, userName, platform)
     {
         public DateTime DateTime { get; set; } = dateTime;
     }

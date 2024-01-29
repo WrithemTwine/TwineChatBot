@@ -5,13 +5,12 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
-    public class Users(int id = 0,
-                       string userId = null,
+    public class Users(string userId = null,
                        string userName = null,
                        Platform platform = Platform.Default,
                        DateTime firstDateSeen = default,
                        DateTime currLoginDate = default,
-                       DateTime lastDateSeen = default) : UserBase(id, userId, userName, platform)
+                       DateTime lastDateSeen = default) : UserBase(userId, userName, platform)
     {
         public DateTime FirstDateSeen { get; set; } = firstDateSeen;
         public DateTime CurrLoginDate { get; set; } = currLoginDate;

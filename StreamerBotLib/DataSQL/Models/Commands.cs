@@ -3,14 +3,11 @@
 using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CmdName))]
     [Index(nameof(CmdName), IsUnique = true)]
-    public class Commands(int id = 0,
-                          string cmdName = null,
+    public class Commands(string cmdName = null,
                           bool addMe = false,
                           ViewerTypes permission = default,
                           bool isEnabled = false,
@@ -30,8 +27,6 @@ namespace StreamerBotLib.DataSQL.Models
                           int top = 0,
                           CommandSort sort = default) : EntityBase
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } = id;
         public string CmdName { get; set; } = cmdName;
         public bool AddMe { get; set; } = addMe;
         public ViewerTypes Permission { get; set; } = permission;

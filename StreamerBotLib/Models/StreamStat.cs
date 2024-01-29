@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 
 using System.Diagnostics;
-using System.Reflection;
 
 namespace StreamerBotLib.Models
 {

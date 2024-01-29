@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL;
+﻿using StreamerBotLib.DataSQL;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
@@ -12,6 +10,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows.Documents;
+
+using TwitchLib.Api.Core.Extensions.System;
 
 namespace StreamerBotLib.GUI
 {
@@ -40,7 +40,7 @@ namespace StreamerBotLib.GUI
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-                    return Followers.Count(f=>f.IsFollower);
+                    return Followers.Count(f => f.IsFollower);
                 }
             }
         }
@@ -79,7 +79,7 @@ namespace StreamerBotLib.GUI
         }
 
         public ObservableCollection<ChannelEvents> ChannelEvents { get; private set; }
-        public ObservableCollection<Users> Users { get; private set; } 
+        public ObservableCollection<Users> Users { get; private set; }
         public ObservableCollection<Followers> Followers { get; private set; }
         public ObservableCollection<Webhooks> WebHooks { get; private set; }
         public ObservableCollection<Currency> Currency { get; private set; }
@@ -88,12 +88,12 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<Commands> Commands { get; private set; }
         public ObservableCollection<StreamStats> StreamStats { get; private set; }
         public ObservableCollection<ShoutOuts> ShoutOuts { get; private set; }
-        public ObservableCollection<CategoryList> CategoryList { get; private set; } 
-        public ObservableCollection<Clips> Clips { get; private set; }  
-        public ObservableCollection<InRaidData> InRaidData { get; private set; } 
-        public ObservableCollection<OutRaidData> OutRaidData { get; private set; } 
-        public ObservableCollection<GiveawayUserData> GiveawayUserData { get; private set; } 
-        public ObservableCollection<CustomWelcome> CustomWelcomeData { get; private set; } 
+        public ObservableCollection<CategoryList> CategoryList { get; private set; }
+        public ObservableCollection<Clips> Clips { get; private set; }
+        public ObservableCollection<InRaidData> InRaidData { get; private set; }
+        public ObservableCollection<OutRaidData> OutRaidData { get; private set; }
+        public ObservableCollection<GiveawayUserData> GiveawayUserData { get; private set; }
+        public ObservableCollection<CustomWelcome> CustomWelcomeData { get; private set; }
         public ObservableCollection<LearnMsgs> LearnMsgs { get; private set; }
         public ObservableCollection<BanRules> BanRules { get; private set; }
         public ObservableCollection<DataSQL.Models.BanReasons> BanReasons { get; private set; }
@@ -141,8 +141,25 @@ namespace StreamerBotLib.GUI
             WebHooks = new(context.Webhooks);
             CurrencyType = new(context.CurrencyType);
             Currency = new(context.Currency);
-            BuiltInCommands = new(from C in context.Commands.IntersectBy(Enum.GetNames<DefaultCommand>(), f => f.CmdName) select C); 
-            Commands = new(from C in context.Commands.ExceptBy(Enum.GetNames<DefaultCommand>(), f=>f.CmdName ) select C);
+            BuiltInCommands = new(
+                from C in context.Commands
+                join D in 
+                    (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList()) 
+                     select def) on C.CmdName equals D into DefCmds
+                from DC in DefCmds.DefaultIfEmpty()
+                where DC != null
+                orderby C.CmdName
+                select C
+                );
+            Commands = new(
+                from C in context.Commands
+                join D in (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
+                           select def) on C.CmdName equals D into UsrCmds
+                from UC in UsrCmds.DefaultIfEmpty()
+                where UC == null
+                orderby C.CmdName
+                select C
+                );
             StreamStats = new(from SS in context.StreamStats orderby SS.StreamStart descending select SS);
             ShoutOuts = new(context.ShoutOuts);
             CategoryList = new(context.CategoryList);

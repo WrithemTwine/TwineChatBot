@@ -8,9 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Threading;
 
 
 namespace SimpleTestFeature.Com
@@ -37,7 +34,7 @@ namespace SimpleTestFeature.Com
         {
             if (response.IsSuccessStatusCode)
             {
-                T output = (T)JsonConvert.DeserializeObject<T>(result, new JsonSerializerSettings() { NullValueHandling=NullValueHandling.Ignore, MissingMemberHandling=MissingMemberHandling.Ignore});
+                T output = (T)JsonConvert.DeserializeObject<T>(result, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MissingMemberHandling = MissingMemberHandling.Ignore });
 
                 return output;
             }

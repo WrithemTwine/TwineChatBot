@@ -11,7 +11,7 @@ namespace StreamerBotLib.DataSQL.Models
                        string title = null,
                        string categoryId = null,
                        string language = null,
-                       decimal duration = 0,
+                       float duration = 0,
                        string url = null) : EntityBase
     {
         public int ClipId { get; set; } = clipId;
@@ -19,7 +19,7 @@ namespace StreamerBotLib.DataSQL.Models
         public string Title { get; set; } = title;
         public string CategoryId { get; set; } = categoryId;
         public string Language { get; set; } = language;
-        public decimal Duration { get; set; } = duration;
+        public float Duration { get; set; } = duration;
         public string Url { get; set; } = url;
 
         [AllowNull]

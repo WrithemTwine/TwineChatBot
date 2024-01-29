@@ -5,13 +5,12 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
-    public class InRaidData(int id = 0,
-                            string userId = null,
+    public class InRaidData(string userId = null,
                             string userName = null,
                             Platform platform = Platform.Default,
                             int viewerCount = 0,
                             DateTime raidDate = default,
-                            string category = null) : UserBase(id, userId, userName, platform)
+                            string category = null) : UserBase(userId, userName, platform)
     {
         public int ViewerCount { get; set; } = viewerCount;
         public DateTime RaidDate { get; set; } = raidDate;

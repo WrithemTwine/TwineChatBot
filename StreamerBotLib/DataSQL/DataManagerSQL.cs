@@ -45,7 +45,7 @@ switches:
 
     public class DataManagerSQL : IDataManager
     {
-        private readonly IDbContextFactory<SQLDBContext> dbContextFactory = new DataManagerFactory();
+        private readonly DataManagerFactory dbContextFactory = new();
         private readonly SQLDBContext context;
 
         /// <summary>
@@ -74,6 +74,8 @@ switches:
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
             SetLearnedMessages();
+
+            OptionFlags.DataLoaded = true;
         }
 
         /// <summary>
@@ -86,70 +88,70 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 Dictionary<ChannelEventActions, Tuple<string, string>> dictionary = new()
-            {
                 {
-                    ChannelEventActions.BeingHosted,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.autohost, MsgVars.viewers]))
-                },
-                {
-                    ChannelEventActions.Bits,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.bits]))
-                },
-                {
-                    ChannelEventActions.CommunitySubs,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.count, MsgVars.subplan]))
-                },
-                {
-                    ChannelEventActions.NewFollow,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
-                },
-                {
-                    ChannelEventActions.GiftSub,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname]))
-                },
-                {
-                    ChannelEventActions.Live,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone]))
-                },
-                {
-                    ChannelEventActions.Raid,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.viewers]))
-                },
-                {
-                    ChannelEventActions.Resubscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak]))
-                },
-                {
-                    ChannelEventActions.Subscribe,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname]))
-                },
-                {
-                    ChannelEventActions.UserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
-                },
-                {
-                    ChannelEventActions.ReturnUserJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
-                },
-                {
-                    ChannelEventActions.SupporterJoined,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
-                },
-                {
-                    ChannelEventActions.BannedUser,
-                    new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
-                }
-            };
+                    {
+                        ChannelEventActions.BeingHosted,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.autohost, MsgVars.viewers]))
+                    },
+                    {
+                        ChannelEventActions.Bits,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.bits]))
+                    },
+                    {
+                        ChannelEventActions.CommunitySubs,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.count, MsgVars.subplan]))
+                    },
+                    {
+                        ChannelEventActions.NewFollow,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    },
+                    {
+                        ChannelEventActions.GiftSub,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.receiveuser, MsgVars.subplan, MsgVars.subplanname]))
+                    },
+                    {
+                        ChannelEventActions.Live,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.category, MsgVars.title, MsgVars.url, MsgVars.everyone]))
+                    },
+                    {
+                        ChannelEventActions.Raid,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.viewers]))
+                    },
+                    {
+                        ChannelEventActions.Resubscribe,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.months, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname, MsgVars.streak]))
+                    },
+                    {
+                        ChannelEventActions.Subscribe,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.submonths, MsgVars.subplan, MsgVars.subplanname]))
+                    },
+                    {
+                        ChannelEventActions.UserJoined,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.UserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    },
+                    {
+                        ChannelEventActions.ReturnUserJoined,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.ReturnUserJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    },
+                    {
+                        ChannelEventActions.SupporterJoined,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.SupporterJoined, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    },
+                    {
+                        ChannelEventActions.BannedUser,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    }
+                };
 
                 context.ChannelEvents.AddRange(from CE in from E in dictionary.ExceptBy(context.ChannelEvents.Select(C => C.Name), E => E.Key)
                                                           let values = dictionary[E.Key]
                                                           select (E.Key, values)
-                                               select new ChannelEvents(0, CE.Key, 0, false, true, CE.values.Item1, CE.values.Item2));
+                                               select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
                 context.SaveChanges(true);
 
             }
         }
-    
+
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
@@ -197,7 +199,7 @@ switches:
                                                      usage: C.param.Usage,
                                                      lookupData: C.param.LookupData,
                                                      table: C.param.Table,
-                                                     keyField: GetKey(C.param.Table),
+                                                     keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table) : "",
                                                      dataField: C.param.Field,
                                                      currencyField: C.param.Currency,
                                                      unit: C.param.Unit,
@@ -231,7 +233,7 @@ switches:
                 if (!context.BanRules.Any())
                 {
                     context.BanRules.AddRange(from R in LearnedMessagesPrimer.BanViewerRulesList
-                                              select new BanRules(0,R.ViewerType, R.MsgType, R.ModAction, R.TimeoutSeconds));
+                                              select new BanRules(0, R.ViewerType, R.MsgType, R.ModAction, R.TimeoutSeconds));
                 }
 
                 context.SaveChanges(true);
@@ -243,7 +245,6 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
                 return (from C in context.Currency
                         where (C.UserName == User.UserName && C.CurrencyName == CurrencyName)
                         select C.Value).FirstOrDefault() >= value;
@@ -254,8 +255,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (context.Model.FindEntityType(table).FindProperty(field) != null);
+                return (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
             }
         }
 
@@ -271,7 +271,6 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
                 return (from f in context.Followers
                         where (f.IsFollower && f.UserName == User && (ToDateTime == default || f.FollowedDate < ToDateTime))
                         select f).Any();
@@ -282,7 +281,6 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
                 return (from M in context.ModeratorApprove
                         where (M.ModActionType == modActionType && M.ModActionName == ModAction)
                         select new Tuple<string, string>(
@@ -592,7 +590,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
 
-                return context.Model.FindEntityType(Table).FindPrimaryKey().GetName();
+                return context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
             }
         }
 
@@ -601,7 +599,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
 
-                return new List<string>(from P in context.Model.FindEntityType(Table).FindPrimaryKey().Properties select P.Name);
+                return new List<string>(from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name);
             }
         }
 
@@ -710,7 +708,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
 
-                return new(from T in context.Model.FindEntityType(TableName).GetMembers()
+                return new(from T in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
                            select T.Name);
             }
         }
@@ -753,7 +751,7 @@ switches:
                 return (from R in context.Commands
                         where R.RepeatTimer > 0
                         select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
-                                                                                            select C).ToArray())).FirstOrDefault();
+                                                                                           select C).ToArray())).FirstOrDefault();
             }
         }
 
@@ -765,7 +763,7 @@ switches:
                 return new(from R in context.Commands
                            where R.RepeatTimer > 0
                            select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
-                                                                                               select C).ToArray()));
+                                                                                              select C).ToArray()));
             }
         }
 
@@ -869,7 +867,7 @@ switches:
                     _ => ""
                 };
 
-                if(row.Table == nameof(Followers))
+                if (row.Table == nameof(Followers))
                 {
                     output = ((Followers)output).IsFollower ? ((Followers)output).FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
                 }
@@ -889,7 +887,7 @@ switches:
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-    
+
                     CategoryList categoryList = (from CL in context.CategoryList
                                                  where (CL.Category == FormatData.AddEscapeFormat(newCategory)) || CL.CategoryId == CategoryId
                                                  select CL).FirstOrDefault();
@@ -923,7 +921,7 @@ switches:
                       where (C.ClipId == ClipId)
                       select C).Any())
                 {
-                    context.Clips.Add(new(ClipId, CreatedAt, Title, GameId, Language, Duration, Url));
+                    context.Clips.Add(new(ClipId, CreatedAt, Title, GameId, Language, (float)Duration, Url));
                     context.SaveChanges(true);
                     return true;
                 }
@@ -940,7 +938,7 @@ switches:
                       where Com.CmdName == cmd
                       select Com).Any())
                 {
-                    context.Commands.Add(new(id: 0, cmd, Params.AddMe, Params.Permission,
+                    context.Commands.Add(new(cmd, Params.AddMe, Params.Permission,
                     Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, new[] { Params.Category },
                     Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table),
                     Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort));
@@ -962,7 +960,7 @@ switches:
                                      select C).FirstOrDefault();
                 if (currency != default)
                 {
-                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.Where(c => c.CurrencyName == CurrencyName).Select(t=>t.MaxValue).FirstOrDefault());
+                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.Where(c => c.CurrencyName == CurrencyName).Select(t => t.MaxValue).FirstOrDefault());
                 }
                 context.SaveChanges(true);
             }
@@ -1032,7 +1030,7 @@ switches:
                 {
                     DateTime currTime = DateTime.Now.ToLocalTime();
                     Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
-    
+
                     while (followsQueue.TryDequeue(out Follow currUser))
                     {
                         lock (GUIDataManagerLock.Lock)
@@ -1356,7 +1354,14 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
 
-                foreach (var Command in context.Commands.IntersectBy((string[])(Enum.GetValues(typeof(DefaultCommand))), (Com) => Com.CmdName))
+                foreach (var Command in (from C in context.Commands
+                                         join D in
+                                             (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
+                                              select def) on C.CmdName equals D into DefCmds
+                                         from DC in DefCmds.DefaultIfEmpty()
+                                         where DC != null
+                                         orderby C.CmdName
+                                         select C))
                 {
                     Command.IsEnabled = Enabled;
                 }
@@ -1400,7 +1405,13 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
 
-                foreach (var Command in context.Commands.ExceptBy((string[])(Enum.GetValues(typeof(DefaultCommand))), (Com) => Com.CmdName))
+                foreach (var Command in (from C in context.Commands
+                                         join D in (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
+                                                    select def) on C.CmdName equals D into UsrCmds
+                                         from UC in UsrCmds.DefaultIfEmpty()
+                                         where UC == null
+                                         orderby C.CmdName
+                                         select C))
                 {
                     Command.IsEnabled = Enabled;
                 }
@@ -1482,10 +1493,9 @@ switches:
                 }
                 context.SaveChanges(true);
             }
-
         }
 
-        private void UpdateCurrency(Users User, DateTime CurrTime)
+        private static void UpdateCurrency(Users User, DateTime CurrTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -1495,8 +1505,8 @@ switches:
                 {
                     currency.Value =
                         Math.Min(
-                            currency.CurrencyType.Where(t=>t.CurrencyName == currency.CurrencyName).Select(c=>c.MaxValue).FirstOrDefault(),
-                            Math.Round(currency.Value + (currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.AccrueAmt).FirstOrDefault() * (clock.TotalSeconds / currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.Seconds).FirstOrDefault() )), 2)
+                            currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.MaxValue).FirstOrDefault(),
+                            Math.Round(currency.Value + (currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.AccrueAmt).FirstOrDefault() * (clock.TotalSeconds / currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.Seconds).FirstOrDefault())), 2)
                         );
                 }
             }
@@ -1684,7 +1694,7 @@ switches:
                 {
                     CleanupList.Clear();
 
-    
+
 
                     List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate);
                     List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
@@ -1692,8 +1702,8 @@ switches:
                     {
                         ThroughDate = uniqueDate,
                         StreamCount = (int)(from DateTime dates in AllDates
-                                             where dates.Date <= uniqueDate
-                                             select dates).Count()
+                                            where dates.Date <= uniqueDate
+                                            select dates).Count()
                     }));
 
                     IsLiveStreamUpdated = false; // reset update flag indicator

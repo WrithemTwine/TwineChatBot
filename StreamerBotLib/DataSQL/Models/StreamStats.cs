@@ -1,13 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(StreamStart))]
     [Index(nameof(StreamStart))]
-    public class StreamStats(int id = 0,
-                             DateTime streamStart = default,
+    public class StreamStats(DateTime streamStart = default,
                              DateTime streamEnd = default,
                              int newFollows = 0,
                              int newSubscribers = 0,
@@ -31,8 +28,6 @@ namespace StreamerBotLib.DataSQL.Models
                              int maxUsers = 0,
                              string category = default) : EntityBase
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } = id;
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
         public int NewFollows { get; set; } = newFollows;

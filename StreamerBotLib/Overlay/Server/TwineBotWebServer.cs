@@ -36,7 +36,7 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         public TwineBotWebServer()
         {
-            int Assign(int CheckPort)
+            static int Assign(int CheckPort)
             {
                 if (CheckPort == 0)
                 {

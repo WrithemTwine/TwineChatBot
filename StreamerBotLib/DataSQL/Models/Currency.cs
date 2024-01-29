@@ -1,13 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserName), nameof(CurrencyName))]
-    public class Currency(int id,
-                          string currencyName,
+    public class Currency(string currencyName,
                           string userName = null,
-                          double value = 0) : CurrencyBase(id, currencyName)
+                          double value = 0) : CurrencyBase(currencyName)
     {
         public string UserName { get; set; } = userName;
         public double Value { get; set; } = value;

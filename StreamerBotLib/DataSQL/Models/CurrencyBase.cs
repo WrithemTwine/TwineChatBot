@@ -1,15 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CurrencyName))]
     [Index(nameof(CurrencyName), IsUnique = true)]
-    public abstract class CurrencyBase(int id, string currencyName) : EntityBase
+    public abstract class CurrencyBase(string currencyName) : EntityBase
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } = id;
         public string CurrencyName { get; set; } = currencyName;
     }
 }

@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(ChannelRaided), nameof(RaidDate))]
-    [Index(nameof(Id), nameof(ChannelRaided), IsUnique = true)]
+    [PrimaryKey(nameof(Id))]
+    [Index(nameof(Id), nameof(ChannelRaided))]
     public class OutRaidData(int id = 0,
                              string channelRaided = null,
                              DateTime raidDate = default) : EntityBase

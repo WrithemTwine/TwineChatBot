@@ -5,15 +5,14 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
-    public class Followers(int id = 0,
-                           string userId = null,
+    public class Followers(string userId = null,
                            string userName = null,
                            Platform platform = Platform.Default,
                            bool isFollower = false,
                            DateTime followedDate = default,
                            DateTime statusChangeDate = default,
                            DateTime addDate = default,
-                           string category = null) : UserBase(id, userId, userName, platform)
+                           string category = null) : UserBase(userId, userName, platform)
     {
         public bool IsFollower { get; set; } = isFollower;
         public DateTime FollowedDate { get; set; } = followedDate;

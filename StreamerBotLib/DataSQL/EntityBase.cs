@@ -9,8 +9,8 @@ namespace StreamerBotLib.DataSQL
             get
             {
                 return (from PropertyInfo propertyInfo in GetType().GetProperties()
-                                             where propertyInfo.Name == name
-                                             select propertyInfo).FirstOrDefault()?.GetValue(this, null);
+                        where propertyInfo.Name == name
+                        select propertyInfo).FirstOrDefault()?.GetValue(this, null);
             }
         }
     }

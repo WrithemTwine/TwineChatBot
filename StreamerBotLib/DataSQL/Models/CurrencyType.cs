@@ -1,10 +1,9 @@
 ﻿namespace StreamerBotLib.DataSQL.Models
 {
-    public class CurrencyType(int id,
-                              string currencyName,
+    public class CurrencyType(string currencyName,
                               double accrueAmt,
                               int seconds = 0,
-                              int maxValue = 0) : CurrencyBase(id, currencyName)
+                              int maxValue = 0) : CurrencyBase(currencyName)
     {
         public double AccrueAmt { get; set; } = accrueAmt;
         public int Seconds { get; set; } = seconds;

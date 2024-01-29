@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(WebhooksSource), nameof(Kind), nameof(Server))]
+    [PrimaryKey(nameof(Id))]
     [Index(nameof(WebhooksSource), nameof(Server), nameof(Kind))]
     public class Webhooks(int id = 0,
                          bool isEnabled = false,

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(OverlayType), nameof(OverlayAction), nameof(UserName))]
+    [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(OverlayType), nameof(OverlayAction))]
     public class OverlayServices(int id = 0,
                                  bool isEnabled = false,
