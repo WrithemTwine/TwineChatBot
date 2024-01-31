@@ -33,6 +33,8 @@ namespace StreamerBotLib.BotClients.Twitch
         private const int maxlength = 8000;
         private const int SingleChatLength = 500;
 
+        private bool resetToken;
+
 #if !TwitchLib_ConnectProblem
         private bool IsInitialized = false;
         private string ConnectedChannelName = "";
@@ -110,8 +112,10 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     try
                     {
+                        resetToken = true;
                         TwitchChat.Disconnect();
                         TwitchChat.Connect();
+                        resetToken = false;
 
                         SendChatMessages();
                     }
@@ -493,7 +497,10 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Chat client disconnected. Attempting restart.");
 
                 IsStarted = false;
-                UnregisterHandlers();
+                if (!resetToken)
+                {
+                    UnregisterHandlers();
+                }
                 StartBot();
             }
             else
