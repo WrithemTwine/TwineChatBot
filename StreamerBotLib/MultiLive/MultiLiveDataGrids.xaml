@@ -32,7 +32,8 @@
             <ColumnDefinition Width="320*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="2" Padding="3"><Run Text="Use this tab to set up which channels (only first 100) to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
+        <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="2" Padding="3">
+            <TextBlock.ToolTip>The Twitch documentation for checking user streams might say 100 at a time, but the TwitchLib library will check as many as you want, it does this by cycling through the stream list 100 users at a time until all are checked!</TextBlock.ToolTip><Run Text="Use this tab to set up which channels to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
         <StackPanel Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" >
             <TextBlock TextWrapping="Wrap" Text="Message for Live Notification:" />
             <TextBox x:Name="TB_LiveMsg" VerticalContentAlignment="Top" 

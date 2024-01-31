@@ -62,6 +62,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (LiveStreamMonitor == null)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Creating new Livestream instance.");
                 LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
 
                 // check if there is an unauthorized http access exception; we have an expired token
@@ -69,13 +70,15 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             else
             {
-                LiveStreamMonitor.UpdateToken(TwitchAccessToken);
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Found livestream instance, updating the token.");
+
+                LiveStreamMonitor.UpdateToken(TwitchStreamerAccessToken);
             }
         }
 
         private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream - checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
@@ -111,6 +114,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             try
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Starting bot.");
+
                 if (IsStopped || !IsStarted)
                 {
                     IsInitialStart = true;
@@ -133,7 +138,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
                     twitchTokenBot.CheckToken();
                 }
                 return false;
