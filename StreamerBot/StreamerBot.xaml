@@ -1312,8 +1312,10 @@
                             </DockPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="Themes" Visibility="Collapsed">
-                        <Label>Placeholder for application color themes</Label>
+                    <TabItem Header="Database">
+                        <DockPanel>
+                            
+                        </DockPanel>
                     </TabItem>
                 </TabControl>
                 <!-- Settings Template                                

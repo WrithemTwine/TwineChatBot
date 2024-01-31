@@ -2278,5 +2278,153 @@ namespace StreamerBotLib.Properties {
                 this["GUILeft"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EFCDatabaseProviderSqlServer {
+            get {
+                return ((bool)(this["EFCDatabaseProviderSqlServer"]));
+            }
+            set {
+                this["EFCDatabaseProviderSqlServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool EFCDatabaseProviderSqlite {
+            get {
+                return ((bool)(this["EFCDatabaseProviderSqlite"]));
+            }
+            set {
+                this["EFCDatabaseProviderSqlite"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EFCDatabaseProviderCosmos {
+            get {
+                return ((bool)(this["EFCDatabaseProviderCosmos"]));
+            }
+            set {
+                this["EFCDatabaseProviderCosmos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EFCDatabaseProviderPostgreSQL {
+            get {
+                return ((bool)(this["EFCDatabaseProviderPostgreSQL"]));
+            }
+            set {
+                this["EFCDatabaseProviderPostgreSQL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EFCDatabaseProviderMySql {
+            get {
+                return ((bool)(this["EFCDatabaseProviderMySql"]));
+            }
+            set {
+                this["EFCDatabaseProviderMySql"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EFCDatabaseProviderKNet {
+            get {
+                return ((bool)(this["EFCDatabaseProviderKNet"]));
+            }
+            set {
+                this["EFCDatabaseProviderKNet"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=(localdb)\\\\mssqllocaldb;Database=StreamerBotDB;Trusted_Connection=True;")]
+        public string EFCConnectStringSqlServer {
+            get {
+                return ((string)(this["EFCConnectStringSqlServer"]));
+            }
+            set {
+                this["EFCConnectStringSqlServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=StreamerBot.db")]
+        public string EFCConnectStringSqlite {
+            get {
+                return ((string)(this["EFCConnectStringSqlite"]));
+            }
+            set {
+                this["EFCConnectStringSqlite"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(" AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJI" +
+            "WEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;databaseName=Streame" +
+            "rBotDB")]
+        public string EFCConnectStringCosmos {
+            get {
+                return ((string)(this["EFCConnectStringCosmos"]));
+            }
+            set {
+                this["EFCConnectStringCosmos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Host=localhost; Database=StreamerBotdb; Username=postgres; Password=mysecretpassw" +
+            "ord")]
+        public string EFCConnectStringPostgreSQL {
+            get {
+                return ((string)(this["EFCConnectStringPostgreSQL"]));
+            }
+            set {
+                this["EFCConnectStringPostgreSQL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("server=localhost;database=library;user=user;password=password")]
+        public string EFCConnectStringMySql {
+            get {
+                return ((string)(this["EFCConnectStringMySql"]));
+            }
+            set {
+                this["EFCConnectStringMySql"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server={server_address};Database={database_name};UserId={username};Password={pass" +
+            "word};")]
+        public string EFCConnectStringKNet {
+            get {
+                return ((string)(this["EFCConnectStringKNet"]));
+            }
+            set {
+                this["EFCConnectStringKNet"] = value;
+            }
+        }
     }
 }

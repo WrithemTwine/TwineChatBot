@@ -11,16 +11,10 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows.Documents;
 
-using TwitchLib.Api.Core.Extensions.System;
-
 namespace StreamerBotLib.GUI
 {
     public class GUIDataManagerViews : INotifyPropertyChanged
     {
-        // TODO: Add probable datamanagerview sorting options, per user input
-
-        private SQLDBContext sqlDBContext;
-
         #region DataManager TableViews
         private IDataManager DataManager { get; set; }
 
@@ -101,7 +95,6 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<OverlayTicker> OverlayTicker { get; private set; }
         public ObservableCollection<ModeratorApprove> ModeratorApprove { get; private set; }
         public ObservableCollection<GameDeadCounter> GameDeadCounter { get; private set; }
-
         public ObservableCollection<Quotes> Quotes { get; private set; }
 
         #endregion
@@ -143,8 +136,8 @@ namespace StreamerBotLib.GUI
             Currency = new(context.Currency);
             BuiltInCommands = new(
                 from C in context.Commands
-                join D in 
-                    (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList()) 
+                join D in
+                    (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
                      select def) on C.CmdName equals D into DefCmds
                 from DC in DefCmds.DefaultIfEmpty()
                 where DC != null
