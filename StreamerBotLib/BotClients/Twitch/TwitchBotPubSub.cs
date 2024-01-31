@@ -26,22 +26,22 @@ namespace StreamerBotLib.BotClients.Twitch
 
             LogData = (Logger<TwitchPubSub>)LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<TwitchPubSub>();
 
-                /*  new Logger<TwitchPubSub>(
-                new LoggerFactory(
-                    new List<ILoggerProvider>() {
-                        new ConsoleLoggerProvider(
-                            new OptionsMonitor<ConsoleLoggerOptions>(
-                                new OptionsFactory<ConsoleLoggerOptions>(
-                                    new List<ConfigureOptions<ConsoleLoggerOptions>>(),
-                                    new List<PostConfigureOptions<ConsoleLoggerOptions>>()
-                                ),
-                                new List<ConfigurationChangeTokenSource<ConsoleLoggerOptions>>(),
-                                new OptionsCache<ConsoleLoggerOptions>()
-                                )
+            /*  new Logger<TwitchPubSub>(
+            new LoggerFactory(
+                new List<ILoggerProvider>() {
+                    new ConsoleLoggerProvider(
+                        new OptionsMonitor<ConsoleLoggerOptions>(
+                            new OptionsFactory<ConsoleLoggerOptions>(
+                                new List<ConfigureOptions<ConsoleLoggerOptions>>(),
+                                new List<PostConfigureOptions<ConsoleLoggerOptions>>()
+                            ),
+                            new List<ConfigurationChangeTokenSource<ConsoleLoggerOptions>>(),
+                            new OptionsCache<ConsoleLoggerOptions>()
                             )
-                    }
-                    )
-                );*/
+                        )
+                }
+                )
+            );*/
 
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;

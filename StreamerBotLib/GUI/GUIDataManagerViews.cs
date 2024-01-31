@@ -26,7 +26,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<string> CurrUserList { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
-        public ObservableCollection<string> CommandCollection { get; set; } = new();
+        public ObservableCollection<string> CommandCollection { get; set; } = [];
         public ObservableCollection<string> GiveawayCollection { get; set; }
         public int CurrFollowers
         {
@@ -106,7 +106,7 @@ namespace StreamerBotLib.GUI
             JoinCollection = ActionSystem.JoinCollection;
             GiveawayCollection = ActionSystem.GiveawayCollection;
             CurrUserList = ActionSystem.CurrUserJoin;
-            SetDataTableViews(SystemsController.DataManage);
+            SetDataTableViews((DataManager)SystemsController.DataManage);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

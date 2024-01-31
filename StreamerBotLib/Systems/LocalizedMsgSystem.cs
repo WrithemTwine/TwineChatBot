@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.Culture;
-using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;

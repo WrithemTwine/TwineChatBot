@@ -19,16 +19,7 @@ using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Data
 {
-
-    /*
-            lock (GUIDataManagerLock.Lock)
-            {
-                using var context = dbContextFactory.CreateDbContext();
-
-            }
-
-    */
-    public partial class DataManager //: IDataManager
+    public partial class DataManager : IDataManageReadOnly
     {
         #region DataSource
         /// <summary>
@@ -307,7 +298,7 @@ switches:
             {
                 CommandsRow comrow = (CommandsRow)GetRow(_DataSource.Commands, $"{_DataSource.Commands.CmdNameColumn.ColumnName}='{cmd}'");
 
-                return comrow != null ? new(comrow) : null;
+                return comrow != null ? new CommandData(comrow) : null;
             }
         }
 
@@ -1153,7 +1144,7 @@ switches:
             {
                 if (GetRow(_DataSource.ShoutOuts, $"{_DataSource.ShoutOuts.UserNameColumn.ColumnName}='{UserName}'") == null)
                 {
-                    _DataSource.ShoutOuts.AddShoutOutsRow(UserId);
+                    _DataSource.ShoutOuts.AddShoutOutsRow(UserName, UserId, platform);
                     _DataSource.ShoutOuts.AcceptChanges();
                     NotifySaveData();
                 }
@@ -1689,7 +1680,7 @@ switches:
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-                    CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList, 
+                    CategoryListRow categoryList = (CategoryListRow)GetRow(_DataSource.CategoryList,
                         $"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{FormatData.AddEscapeFormat(newCategory)}' " +
                         $"OR {_DataSource.CategoryList.CategoryIdColumn.ColumnName}='{CategoryId}'");
                     bool found = false;
@@ -1930,7 +1921,7 @@ switches:
 
                 banReason = banrow != null ? (BanReasons)Enum.Parse(typeof(BanReasons), banrow.BanReason) : BanReasons.None;
 
-                BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules, 
+                BanRulesRow banRulesRow = (BanRulesRow)GetRow(_DataSource.BanRules,
                     $"{_DataSource.BanRules.ViewerTypesColumn.ColumnName}='{viewerTypes}' and {_DataSource.BanRules.MsgTypeColumn.ColumnName}='{msgTypes}'");
 
                 int Timeout = banRulesRow == null ? 0 : int.Parse(banRulesRow.TimeoutSeconds);
@@ -1975,19 +1966,22 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 List<OverlayActionType> found = new(
-                    from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices, 
+                    from OverlayServicesRow overlayServicesRow in GetRows(_DataSource.OverlayServices,
                     Filter: $"{_DataSource.OverlayServices.IsEnabledColumn.ColumnName}=true " +
                     $"AND {_DataSource.OverlayServices.OverlayTypeColumn.ColumnName}='{overlayType}' " +
                     $"AND ({_DataSource.OverlayServices.UserNameColumn.ColumnName}='' " +
-                    $"OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')") select new OverlayActionType() 
-                    { ActionValue = overlayServicesRow.OverlayAction, 
-                        Duration = overlayServicesRow.Duration, 
-                        MediaFile = overlayServicesRow.MediaFile, 
-                        ImageFile = overlayServicesRow.ImageFile, 
-                        Message = overlayServicesRow.Message, 
-                        OverlayType = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), overlayServicesRow.OverlayType), 
-                        UserName = overlayServicesRow.UserName, 
-                        UseChatMsg = overlayServicesRow.UseChatMsg });
+                    $"OR {_DataSource.OverlayServices.UserNameColumn.ColumnName}='{username}')")
+                    select new OverlayActionType()
+                    {
+                        ActionValue = overlayServicesRow.OverlayAction,
+                        Duration = overlayServicesRow.Duration,
+                        MediaFile = overlayServicesRow.MediaFile,
+                        ImageFile = overlayServicesRow.ImageFile,
+                        Message = overlayServicesRow.Message,
+                        OverlayType = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), overlayServicesRow.OverlayType),
+                        UserName = overlayServicesRow.UserName,
+                        UseChatMsg = overlayServicesRow.UseChatMsg
+                    });
 
                 List<OverlayActionType> result = [];
 

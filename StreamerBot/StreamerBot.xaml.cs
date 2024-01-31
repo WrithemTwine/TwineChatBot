@@ -50,7 +50,7 @@ namespace StreamerBot
         private DateTime ChannelPtRetrievalDate = DateTime.MinValue;
         private TimeSpan ChannelPtRefresh = new(0, 15, 0);
 
-        private int TwitchFollowerCurrRefreshHrs = 0;
+        private short TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
@@ -107,7 +107,7 @@ namespace StreamerBot
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
 
-            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<short>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
@@ -1341,7 +1341,7 @@ namespace StreamerBot
 
             foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
             {
-                BotController.AddNewAutoShoutUser(dr["UserName"].ToString());
+                BotController.AddNewAutoShoutUser(dr["UserName"].ToString(), dr["UserId"].ToString(), dr["Platform"].ToString());
             }
         }
 

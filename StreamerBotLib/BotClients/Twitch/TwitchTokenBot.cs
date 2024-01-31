@@ -162,7 +162,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             BotAccessTokenLastCheckedDate = DateTime.Now;
 
                             // with a good response, set the token data
-                            if (Botresponse.Item1 != "" && Botresponse.Item2 != "" && Botresponse.Item3 != 0)
+                            if (Botresponse.Item1 != "" && Botresponse.Item2 != "")
                             {
                                 TwitchAccessToken = Botresponse.Item1;
                                 TwitchRefreshToken = Botresponse.Item2;
@@ -194,7 +194,7 @@ namespace StreamerBotLib.BotClients.Twitch
                                 StreamerAccessTokenLastCheckedDate = DateTime.Now;
 
                                 // with a good response, set the token data
-                                if (Streamerresponse.Item1 != "" && Streamerresponse.Item2 != "" && Streamerresponse.Item3 != 0)
+                                if (Streamerresponse.Item1 != "" && Streamerresponse.Item2 != "")
                                 {
                                     TwitchStreamerAccessToken = Streamerresponse.Item1;
                                     TwitchStreamerRefreshToken = Streamerresponse.Item2;

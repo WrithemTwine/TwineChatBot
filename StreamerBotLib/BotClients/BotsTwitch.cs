@@ -26,8 +26,8 @@ namespace StreamerBotLib.BotClients
         internal static TwitchTokenBot TwitchTokenBot { get; private set; }
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; }
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } 
-        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; } 
+        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
+        public static TwitchBotClipSvc TwitchBotClipSvc { get; private set; }
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
         public static TwitchBotPubSub TwitchBotPubSub { get; private set; }
 
@@ -802,13 +802,11 @@ namespace StreamerBotLib.BotClients
                     }
 
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-                    if (TwitchTokenBot.CheckToken())
-                    { // proceed with getting a refresh token and access token
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Captured the auth code. Now performing the " +
+                    TwitchTokenBot.CheckToken();   // proceed with getting a refresh token and access token
+                    
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Captured the auth code. Now attempting the " +
                             "finishing action.");
-
-                        FinishedAuthenticationAction.Invoke();
-                    }
+                    FinishedAuthenticationAction.Invoke();
 
                     HttpStarted = false;
                 });

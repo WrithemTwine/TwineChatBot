@@ -295,8 +295,11 @@ namespace StreamerBotLib.Data
                                     select SR)
                 {
                     UsersRow user = (UsersRow)DataSetStatic.GetRow(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName}='{SOR.UserName}'");
-                    SOR.UserId = user.UserId;
-                    SOR.Platform = user.Platform;
+                    if (user != null)
+                    {
+                        SOR.UserId = user.UserId;
+                        SOR.Platform = user.Platform;
+                    }
                 }
             }
         }

@@ -1,6 +1,4 @@
-﻿using StreamerBotLib.DataSQL.Models;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 
 namespace StreamerBotLib.Models
@@ -11,58 +9,50 @@ namespace StreamerBotLib.Models
     [DebuggerDisplay("StreamStart={StreamStart}, NewFollows={NewFollows}")]
     public class StreamStat(DateTime streamStart = default,
                             DateTime streamEnd = default,
-                            uint newFollows = 0,
-                            uint newSubscribers = 0,
-                            uint giftSubs = 0,
-                            uint bits = 0,
-                            uint raids = 0,
-                            uint hosted = 0,
-                            uint usersBanned = 0,
-                            uint usersTimedOut = 0,
-                            uint moderatorsPresent = 0,
-                            uint subsPresent = 0,
-                            uint vIPsPresent = 0,
-                            uint totalChats = 0,
-                            uint commands = 0,
-                            uint automatedEvents = 0,
-                            uint automatedCommands = 0,
-                            uint discordMsgs = 0,
-                            uint clipsMade = 0,
-                            uint channelPtCount = 0,
-                            uint channelChallenge = 0,
-                            uint maxUsers = 0,
+                            int newFollows = 0,
+                            int newSubscribers = 0,
+                            int giftSubs = 0,
+                            int bits = 0,
+                            int raids = 0,
+                            int hosted = 0,
+                            int usersBanned = 0,
+                            int usersTimedOut = 0,
+                            int moderatorsPresent = 0,
+                            int subsPresent = 0,
+                            int vIPsPresent = 0,
+                            int totalChats = 0,
+                            int commands = 0,
+                            int automatedEvents = 0,
+                            int automatedCommands = 0,
+                            int discordMsgs = 0,
+                            int clipsMade = 0,
+                            int channelPtCount = 0,
+                            int channelChallenge = 0,
+                            int maxUsers = 0,
                             string currentCategory = null)
     {
-        public StreamStat(StreamStats streamStats) : this()
-        {
-            foreach(PropertyInfo property in streamStats.GetType().GetProperties())
-            {
-                GetType().GetProperty(property.Name).SetValue(this,property.GetValue(streamStats));
-            }
-        }
-
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
-        public uint NewFollows { get; set; } = newFollows;
-        public uint NewSubscribers { get; set; } = newSubscribers;
-        public uint GiftSubs { get; set; } = giftSubs;
-        public uint Bits { get; set; } = bits;
-        public uint Raids { get; set; } = raids;
-        public uint Hosted { get; set; } = hosted;
-        public uint UsersBanned { get; set; } = usersBanned;
-        public uint UsersTimedOut { get; set; } = usersTimedOut;
-        public uint ModeratorsPresent { get; set; } = moderatorsPresent;
-        public uint SubsPresent { get; set; } = subsPresent;
-        public uint VIPsPresent { get; set; } = vIPsPresent;
-        public uint TotalChats { get; set; } = totalChats;
-        public uint Commands { get; set; } = commands;
-        public uint AutomatedEvents { get; set; } = automatedEvents;
-        public uint AutomatedCommands { get; set; } = automatedCommands;
-        public uint DiscordMsgs { get; set; } = discordMsgs;
-        public uint ClipsMade { get; set; } = clipsMade;
-        public uint ChannelPtCount { get; set; } = channelPtCount;
-        public uint ChannelChallenge { get; set; } = channelChallenge;
-        public uint MaxUsers { get; set; } = maxUsers;
+        public int NewFollows { get; set; } = newFollows;
+        public int NewSubscribers { get; set; } = newSubscribers;
+        public int GiftSubs { get; set; } = giftSubs;
+        public int Bits { get; set; } = bits;
+        public int Raids { get; set; } = raids;
+        public int Hosted { get; set; } = hosted;
+        public int UsersBanned { get; set; } = usersBanned;
+        public int UsersTimedOut { get; set; } = usersTimedOut;
+        public int ModeratorsPresent { get; set; } = moderatorsPresent;
+        public int SubsPresent { get; set; } = subsPresent;
+        public int VIPsPresent { get; set; } = vIPsPresent;
+        public int TotalChats { get; set; } = totalChats;
+        public int Commands { get; set; } = commands;
+        public int AutomatedEvents { get; set; } = automatedEvents;
+        public int AutomatedCommands { get; set; } = automatedCommands;
+        public int DiscordMsgs { get; set; } = discordMsgs;
+        public int ClipsMade { get; set; } = clipsMade;
+        public int ChannelPtCount { get; set; } = channelPtCount;
+        public int ChannelChallenge { get; set; } = channelChallenge;
+        public int MaxUsers { get; set; } = maxUsers;
 
         /// <summary>
         /// Maintain current active category of the stream

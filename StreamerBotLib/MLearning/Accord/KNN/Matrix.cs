@@ -481,7 +481,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 throw new ArgumentNullException("indexes");
 
             if (inPlace && source.Length != indexes.Length)
-                throw new DimensionMismatchException("Source and indexes arrays must have the same dimension for in-place operations.");
+                throw new DimensionMismatchException(paramName: "Source and indexes arrays must have the same dimension for in-place operations.");
 
             var destination = new T[indexes.Length];
             for (int i = 0; i < indexes.Length; i++)

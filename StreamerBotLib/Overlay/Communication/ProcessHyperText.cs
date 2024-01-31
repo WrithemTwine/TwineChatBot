@@ -83,7 +83,7 @@ namespace StreamerBotLib.Overlay.Communication
 
             string Msg = $"<div class=\"message\">{overlayActionType.Message}</div>";
 
-            return ProcessPage(overlayStyle.OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
+            return ProcessPage(overlayStyle.OverlayStyleText, Img + Media + Msg, (int)overlayActionType.Duration, Media != "");
         }
 
         public static OverlayPage ProcessTicker(TickerItem tickerItem, IEnumerable<OverlayStyle> overlayStyles)

@@ -1,6 +1,9 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
+using System;
+using System.Collections.Generic;
+
 namespace StreamerBotLib.Interfaces
 {
     public interface IDataManageReadOnly

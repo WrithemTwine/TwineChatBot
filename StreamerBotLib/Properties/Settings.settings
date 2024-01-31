@@ -134,19 +134,19 @@
     <Setting Name="FirstUserJoinedMsg" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="GameBlackJackHouseStands" Type="System.UInt16" Scope="User">
+    <Setting Name="GameBlackJackHouseStands" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">17</Value>
     </Setting>
-    <Setting Name="GameBlackJackPayoutDealt21" Type="System.UInt16" Scope="User">
+    <Setting Name="GameBlackJackPayoutDealt21" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">200</Value>
     </Setting>
     <Setting Name="GameBlackJackPayoutMessage" Type="System.String" Scope="User">
       <Value Profile="(Default)">You won #value currency!</Value>
     </Setting>
-    <Setting Name="GameBlackJackPayoutReach21" Type="System.UInt16" Scope="User">
+    <Setting Name="GameBlackJackPayoutReach21" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">150</Value>
     </Setting>
-    <Setting Name="GameBlackJackPayoutUnder21" Type="System.UInt16" Scope="User">
+    <Setting Name="GameBlackJackPayoutUnder21" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="GitHubCheckStable" Type="System.String" Scope="User">
@@ -155,13 +155,13 @@
     <Setting Name="GiveawayBegMsg" Type="System.String" Scope="User">
       <Value Profile="(Default)">The message when beginning giveaway - blank is no chat message</Value>
     </Setting>
-    <Setting Name="GiveawayCount" Type="System.UInt16" Scope="User">
+    <Setting Name="GiveawayCount" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="GiveawayEndMsg" Type="System.String" Scope="User">
       <Value Profile="(Default)">The message when ending giveaway - blank is no chat message</Value>
     </Setting>
-    <Setting Name="GiveawayMaxEntries" Type="System.UInt16" Scope="User">
+    <Setting Name="GiveawayMaxEntries" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="GiveawayMultiUser" Type="System.Boolean" Scope="User">
@@ -173,13 +173,13 @@
     <Setting Name="GridTabifyStreamRaids" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="GridTabifyStreamRaidsWidth" Type="System.UInt16" Scope="User">
+    <Setting Name="GridTabifyStreamRaidsWidth" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">950</Value>
     </Setting>
     <Setting Name="GridTabifyUserFollow" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="GridTabifyUserFollowWidth" Type="System.UInt16" Scope="User">
+    <Setting Name="GridTabifyUserFollowWidth" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">950</Value>
     </Setting>
     <Setting Name="LogBotStatus" Type="System.Boolean" Scope="User">
@@ -215,7 +215,7 @@
     <Setting Name="ManageUsers" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayActionPort" Type="System.UInt16" Scope="User">
+    <Setting Name="MediaOverlayActionPort" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MediaOverlayAutoServerStart" Type="System.Boolean" Scope="User">
@@ -251,19 +251,19 @@
     <Setting Name="MediaOverlayTickerMarquee" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayTickerMarqueeTime" Type="System.UInt16" Scope="User">
+    <Setting Name="MediaOverlayTickerMarqueeTime" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="MediaOverlayTickerMulti" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayTickerPort" Type="System.UInt16" Scope="User">
+    <Setting Name="MediaOverlayTickerPort" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MediaOverlayTickerRotate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="MediaOverlayTickerRotateTime" Type="System.UInt16" Scope="User">
+    <Setting Name="MediaOverlayTickerRotateTime" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="MediaOverlayTickerSelected" Type="System.String" Scope="User">
@@ -287,7 +287,7 @@
     <Setting Name="ModerateUsersWarn" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ModeratorApprovalTimeout" Type="System.UInt16" Scope="User">
+    <Setting Name="ModeratorApprovalTimeout" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
     <Setting Name="MsgAutoShout" Type="System.Boolean" Scope="User">
@@ -329,10 +329,10 @@
     <Setting Name="RepeatAboveUserCount" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="RepeatChatCount" Type="System.UInt16" Scope="User">
+    <Setting Name="RepeatChatCount" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">20</Value>
     </Setting>
-    <Setting Name="RepeatChatMinutes" Type="System.UInt16" Scope="User">
+    <Setting Name="RepeatChatMinutes" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
     <Setting Name="RepeatLiveReset" Type="System.Boolean" Scope="User">
@@ -350,10 +350,10 @@
     <Setting Name="RepeatTimerComSlowdown" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="RepeatUserCount" Type="System.UInt16" Scope="User">
+    <Setting Name="RepeatUserCount" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="RepeatUserMinutes" Type="System.UInt16" Scope="User">
+    <Setting Name="RepeatUserMinutes" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">30</Value>
     </Setting>
     <Setting Name="RepeatUseThresholds" Type="System.Boolean" Scope="User">
@@ -458,7 +458,7 @@
     <Setting Name="TwitchFollowerAutoBanBots" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TwitchFollowerAutoBanCount" Type="System.UInt16" Scope="User">
+    <Setting Name="TwitchFollowerAutoBanCount" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">50</Value>
     </Setting>
     <Setting Name="TwitchFollowerAutoRefresh" Type="System.Boolean" Scope="User">
@@ -473,22 +473,22 @@
     <Setting Name="TwitchFollowerEnableMsgLimit" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TwitchFollowerMsgLimit" Type="System.UInt16" Scope="User">
+    <Setting Name="TwitchFollowerMsgLimit" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
-    <Setting Name="TwitchFollowerRefreshHrs" Type="System.UInt16" Scope="User">
+    <Setting Name="TwitchFollowerRefreshHrs" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">24</Value>
     </Setting>
     <Setting Name="TwitchFollowerSvcAutoStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TwitchFrequencyClipTime" Type="System.UInt16" Scope="User">
+    <Setting Name="TwitchFrequencyClipTime" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">300</Value>
     </Setting>
-    <Setting Name="TwitchFrequencyFollow" Type="System.UInt16" Scope="User">
+    <Setting Name="TwitchFrequencyFollow" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">30</Value>
     </Setting>
-    <Setting Name="TwitchGoLiveFrequency" Type="System.UInt16" Scope="User">
+    <Setting Name="TwitchGoLiveFrequency" Type="System.Int16" Scope="User">
       <Value Profile="(Default)">300</Value>
     </Setting>
     <Setting Name="TwitchLiveStreamSvcAutoStart" Type="System.Boolean" Scope="User">

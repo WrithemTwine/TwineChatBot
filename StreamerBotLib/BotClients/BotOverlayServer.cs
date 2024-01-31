@@ -382,7 +382,7 @@ namespace StreamerBotLib.BotClients
             LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"BotOverlayServer - sending {overlayActionType.OverlayType} to the Overlay Server.");
 #endif
 
-            Thread.Sleep(overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
+            Thread.Sleep((int)overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
         }
 
         #endregion

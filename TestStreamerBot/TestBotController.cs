@@ -20,7 +20,7 @@ namespace TestStreamerBot
         private const int Viewers = 80;
 
         private BotController botController = new();
-        private DataManager dataManager = SystemsController.DataManage;
+        private DataManager dataManager = (DataManager)SystemsController.DataManage;
 
         private Random Random { get; set; } = new();
 

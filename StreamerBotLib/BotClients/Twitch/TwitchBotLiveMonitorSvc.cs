@@ -267,7 +267,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 DateTime CurrTime = e.Stream.StartedAt.ToLocalTime();
 
                 // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, CurrTime);
+                bool PostedLive = MultiLiveDataManager.PostStreamDate(e.Stream.UserName, e.Stream.UserId, CurrTime);
 
                 if (PostedLive)
                 {

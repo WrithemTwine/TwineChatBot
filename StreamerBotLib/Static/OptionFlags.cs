@@ -395,7 +395,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
         /// </summary>
-        public static ushort GiveawayCount
+        public static short GiveawayCount
         {
             get => Settings.Default.GiveawayCount; set => Settings.Default.GiveawayCount = value;
         }
@@ -430,7 +430,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// The number of giveaway entries a user can submit.
         /// </summary>
-        public static ushort GiveawayMaxEntries
+        public static short GiveawayMaxEntries
         {
             get => Settings.Default.GiveawayMaxEntries; set => Settings.Default.GiveawayMaxEntries = value;
         }
@@ -683,7 +683,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
-        public static ushort MediaOverlayMediaActionPort
+        public static short MediaOverlayMediaActionPort
         {
             get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
         }
@@ -691,7 +691,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay ticker medition port server Overlay ticker item Content through the http server.
         /// </summary>
-        public static ushort MediaOverlayMediaTickerPort
+        public static short MediaOverlayMediaTickerPort
         {
             get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }

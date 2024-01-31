@@ -31,7 +31,7 @@ namespace StreamerBotLib.MultiLive
         {
             if (!MultiLiveData.GetChannelNames().Contains(UserName))
             {
-                MultiLiveData.PostMonitorChannel(UserName);
+                MultiLiveData.PostMonitorChannel(UserName, UserId);
             }
         }
 

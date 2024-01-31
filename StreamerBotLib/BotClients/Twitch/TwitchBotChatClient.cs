@@ -114,8 +114,8 @@ namespace StreamerBotLib.BotClients.Twitch
                         TwitchChat.Connect();
 
                         SendChatMessages();
-                    } 
-                    catch(Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }

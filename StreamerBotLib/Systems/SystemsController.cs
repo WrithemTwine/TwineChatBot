@@ -2,7 +2,6 @@
 using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
@@ -22,7 +21,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        public static IDataManager DataManage { get; private set; } = new DataManager();
+        public static DataManager DataManage { get; private set; } = new DataManager();
 
         private Thread HoldNewFollowsForBulkAdd;
 
@@ -470,8 +469,7 @@ namespace StreamerBotLib.Systems
         private void UserWelcomeMessage(LiveUser User)
         {
             if ((!User.UserName.Equals(ActionSystem.ChannelName, StringComparison.CurrentCultureIgnoreCase)
-               && (User.UserName.ToLower(CultureInfo.CurrentCulture)
-               != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture)))
+               && (!User.UserName.Equals(ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture), StringComparison.CurrentCultureIgnoreCase)))
                || OptionFlags.MsgWelcomeStreamer)
             {
                 string msg = ActionSystem.CheckWelcomeUser(User.UserName);
