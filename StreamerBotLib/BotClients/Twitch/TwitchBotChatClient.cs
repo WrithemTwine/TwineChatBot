@@ -114,7 +114,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         resetToken = true;
                         TwitchChat.Disconnect();
-                        TwitchChat.Connect();
+                        Connect();
                         resetToken = false;
 
                         SendChatMessages();
