@@ -63,7 +63,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (LiveStreamMonitor == null)
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Creating new Livestream instance.");
-                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0), instanceDate: DateTime.Now.ToLocalTime());
 
                 // check if there is an unauthorized http access exception; we have an expired token
                 LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;

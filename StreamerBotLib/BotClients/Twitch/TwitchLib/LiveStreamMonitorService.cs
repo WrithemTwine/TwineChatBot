@@ -10,9 +10,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     public class ExtLiveStreamMonitorService(ITwitchAPI api,
                                        int checkIntervalInSeconds = 60,
-                                       int maxStreamRequestCountPerRequest = 100) : LiveStreamMonitorService(api, checkIntervalInSeconds, maxStreamRequestCountPerRequest)
+                                       int maxStreamRequestCountPerRequest = 100,
+                                       DateTime instanceDate = default) : LiveStreamMonitorService(api, checkIntervalInSeconds, maxStreamRequestCountPerRequest)
     {
         public event EventHandler AccessTokenUnauthorized;
+
+        public DateTime InstanceDate { get; } = instanceDate;
 
         protected override async Task OnServiceTimerTick()
         {
@@ -20,6 +23,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             {
                 await base.OnServiceTimerTick();
                 await UpdateLiveStreamersAsync();
+
+                // suspected multiple instances produces duplicative output events
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchLiveBot, $"Processing a Timer Tick on instance dated {InstanceDate}.");
             }
             catch (HttpRequestException hrEx)
             {

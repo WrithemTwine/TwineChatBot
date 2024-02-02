@@ -706,8 +706,8 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 UsersRow userrow = PostNewUser(User, NowSeen);
-                userrow.CurrLoginDate = Max(userrow.CurrLoginDate, NowSeen);
-                userrow.LastDateSeen = Max(userrow.LastDateSeen, NowSeen);
+                userrow.CurrLoginDate = NowSeen;
+                userrow.LastDateSeen = NowSeen;
                 _DataSource.Users.AcceptChanges();
                 NotifySaveData();
             }
@@ -720,7 +720,6 @@ switches:
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
         public string CheckWelcomeUser(string User)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Check for a custom user welcome message for user {User}.");
 
             lock (GUIDataManagerLock.Lock)
@@ -1378,7 +1377,7 @@ switches:
             {
                 if (User != null)
                 {
-                    TimeSpan currencyclock = CurrTime - User.CurrLoginDate; // the amount of time changed for the currency accrual calculation
+                    TimeSpan currencyclock = CurrTime - User.LastDateSeen; // the amount of time changed for the currency accrual calculation
 
                     double ComputeCurrency(double Accrue, double Seconds)
                     {
@@ -1396,7 +1395,7 @@ switches:
                     }
 
                     // set the current login date, always set regardless if currency accrual is started
-                    User.CurrLoginDate = CurrTime;
+                    User.LastDateSeen = CurrTime;
                 }
             }
             return;

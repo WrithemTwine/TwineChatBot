@@ -42,6 +42,8 @@ namespace StreamerBotLib.BotClients
 
         public BotsTwitch()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Building all of the Twitch bots.");
+
             TwitchTokenBot = new();
             TwitchBotChatClient = new();
             TwitchFollower = new();
@@ -57,6 +59,8 @@ namespace StreamerBotLib.BotClients
             AddBot(TwitchBotClipSvc);
             AddBot(TwitchBotChatClient);
             AddBot(TwitchBotPubSub);
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding event handlers from bot managers.");
 
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
             TwitchBotChatClient.OnBotStopping += TwitchBotChatClient_OnBotStopping;
@@ -153,6 +157,8 @@ namespace StreamerBotLib.BotClients
 
         private void TwitchBotUserSvc_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Updating channel category game name.");
+
             InvokeBotEvent(this, BotEvents.TwitchCategoryUpdate, e);
         }
 
@@ -160,6 +166,8 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.IsStarted && !TwitchBotChatClient.HandlersAdded)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding event handlers to chat client.");
+
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived += Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription += Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected += Client_OnExistingUsersDetected;
@@ -180,6 +188,8 @@ namespace StreamerBotLib.BotClients
 
             if (TwitchFollower.IsStarted && !TwitchFollower.HandlersAdded)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding event handlers to follower service.");
+
                 TwitchFollower.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
                 TwitchFollower.FollowerService.OnBulkFollowsUpdate += FollowerService_OnBulkFollowsUpdate;
 
@@ -188,6 +198,9 @@ namespace StreamerBotLib.BotClients
 
             if (TwitchLiveMonitor.IsStarted && !TwitchLiveMonitor.HandlersAdded)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, 
+                    $"Adding event handlers to Livestream object, with instance date: {TwitchLiveMonitor.LiveStreamMonitor.InstanceDate}.");
+
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
@@ -197,6 +210,8 @@ namespace StreamerBotLib.BotClients
 
             if (TwitchBotClipSvc.IsStarted && !TwitchBotClipSvc.HandlersAdded)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding event handlers to clip service.");
+
                 TwitchBotClipSvc.ClipMonitorService.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
 
                 TwitchBotClipSvc.HandlersAdded = true;
@@ -204,6 +219,8 @@ namespace StreamerBotLib.BotClients
 
             if (TwitchBotPubSub.IsStarted && !TwitchBotPubSub.HandlersAdded)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding event handlers to PubSub service.");
+
                 TwitchBotPubSub.TwitchPubSub.OnChannelPointsRewardRedeemed += TwitchPubSub_OnChannelPointsRewardRedeemed;
                 TwitchBotPubSub.HandlersAdded = true;
             }
@@ -212,6 +229,8 @@ namespace StreamerBotLib.BotClients
 
         public static void CheckStreamerBotIds()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Checking and getting user ids for bot and/or streamer account(s).");
+
             string Botuserid = OptionFlags.TwitchBotUserId, Channeluserid = OptionFlags.TwitchStreamerUserId;
 
             if (OptionFlags.TwitchPriorBotName != OptionFlags.TwitchBotUserName)
@@ -232,6 +251,8 @@ namespace StreamerBotLib.BotClients
         {
             if (TwitchBotChatClient.HandlersAdded)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Removing event handlers from chat client.");
+
                 TwitchBotChatClient.TwitchChat.OnChatCommandReceived -= Client_OnChatCommandReceived;
                 TwitchBotChatClient.TwitchChat.OnCommunitySubscription -= Client_OnCommunitySubscription;
                 TwitchBotChatClient.TwitchChat.OnExistingUsersDetected -= Client_OnExistingUsersDetected;
