@@ -585,22 +585,22 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="EFCConnectStringSqlServer" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Server=(localdb)\\mssqllocaldb;Database=StreamerBotDB;Trusted_Connection=True;</Value>
+      <Value Profile="(Default)">Server=(localdb)\\mssqllocaldb;Database=TwineStreamerBotDB;Trusted_Connection=True;</Value>
     </Setting>
     <Setting Name="EFCConnectStringSqlite" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=StreamerBot.db</Value>
+      <Value Profile="(Default)">Data Source=TwineStreamerBot.db</Value>
     </Setting>
     <Setting Name="EFCConnectStringCosmos" Type="System.String" Scope="User">
-      <Value Profile="(Default)"> AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;databaseName=StreamerBotDB</Value>
+      <Value Profile="(Default)"> AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;databaseName=TwineStreamerBotDB</Value>
     </Setting>
     <Setting Name="EFCConnectStringPostgreSQL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Host=localhost; Database=StreamerBotdb; Username=postgres; Password=mysecretpassword</Value>
+      <Value Profile="(Default)">Host=localhost; Database=TwineStreamerBotdb; Username=postgres; Password=mysecretpassword</Value>
     </Setting>
     <Setting Name="EFCConnectStringMySql" Type="System.String" Scope="User">
-      <Value Profile="(Default)">server=localhost;database=library;user=user;password=password</Value>
+      <Value Profile="(Default)">server=localhost;database=TwineStreamerBotdb;user=user;password=password</Value>
     </Setting>
     <Setting Name="EFCConnectStringKNet" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Server={server_address};Database={database_name};UserId={username};Password={password};</Value>
+      <Value Profile="(Default)">Server={server_address};Database=TwineStreamerBotdb;UserId={username};Password={password};</Value>
     </Setting>
   </Settings>
 </SettingsFile>

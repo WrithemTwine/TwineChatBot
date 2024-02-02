@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
@@ -10,6 +11,8 @@ namespace StreamerBotLib.Interfaces
 {
     public interface IDataManager : IDataManagerReadOnly
     {
+        event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
+
         bool CheckCurrency(LiveUser User, double value, string CurrencyName);
         new bool CheckField(string table, string field);
         new bool CheckFollower(string User);
@@ -68,7 +71,7 @@ namespace StreamerBotLib.Interfaces
         void PostInRaidData(string user, DateTime time, int viewers, string gamename, Platform platform);
         void PostLearnMsgsRow(string Message, MsgTypes MsgType);
         bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform);
-        void PostMonitorChannel(string username, string userid, Platform platform);
+        void PostMonitorChannel(IEnumerable<LiveUser> liveUsers);
         bool PostMultiStreamDate(string userid, string username, Platform platform, DateTime onDate);
         void PostNewAutoShoutUser(string UserName, string UserId, Platform platform);
         void PostOutgoingRaid(string HostedChannel, DateTime dateTime);
@@ -91,7 +94,6 @@ namespace StreamerBotLib.Interfaces
         void SetUserDefinedCommandsEnabled(bool Enabled);
         void SetWebhooksEnabled(bool Enabled);
         void StartBulkFollowers();
-        void StopBulkFollows();
         void SummarizeStreamData();
         void SummarizeStreamData(ArchiveMultiStream archiveRecord);
         new bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
@@ -103,6 +105,7 @@ namespace StreamerBotLib.Interfaces
         void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime);
         void UpdateWatchTime(LiveUser User, DateTime CurrTime);
         void UserJoined(LiveUser User, DateTime NowSeen);
+        void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen);
         void UserLeft(LiveUser User, DateTime LastSeen);
 
     }

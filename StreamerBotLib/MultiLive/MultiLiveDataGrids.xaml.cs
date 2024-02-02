@@ -1,9 +1,11 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Static;
 
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -15,10 +17,11 @@ namespace StreamerBotLib.MultiLive
     /// </summary>
     public partial class MultiLiveDataGrids : Page
     {
+        public event EventHandler<MultiLiveSummarizeEventArgs> SummarizeChannels;
+
         private EventHandler<RoutedEventArgs> m_Routed;
         private EventHandler<TextChangedEventArgs> m_TextChanged;
 
-        private static IDataManager MultiLiveData;
         private ManageWindows PopupWindows { get; set; } = new();
 
         public MultiLiveDataGrids()
@@ -26,16 +29,10 @@ namespace StreamerBotLib.MultiLive
             InitializeComponent();
         }
 
-        public void AddNewMonitorChannel(string UserName, string UserId, Platform platform)
-        {
-            if (!MultiLiveData.GetMultiChannelName(UserName, platform))
-            {
-                MultiLiveData.PostMonitorChannel(UserName, UserId, platform);
-            }
-        }
-
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Right-click menu is clicked.");
+
             int start = TB_LiveMsg.SelectionStart;
 
             if (TB_LiveMsg.SelectionLength > 0)
@@ -49,17 +46,15 @@ namespace StreamerBotLib.MultiLive
 
         public void SetIsEnabled(bool IsEnabled)
         {
-            Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
-        }
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, $"Setting visual area IsEnabled={IsEnabled}.");
 
-        public void SetDataManager(IDataManager MultiLiveDataManager)
-        {
-            Grid_MultiUserLiveMonitor.DataContext = MultiLiveDataManager;
-            MultiLiveData = MultiLiveDataManager;
+            Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
         }
 
         public void SetHandlers(EventHandler<RoutedEventArgs> SettingsLostFocus, EventHandler<TextChangedEventArgs> TextChanged)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting handlers for textbox and lost focus.");
+
             m_Routed = SettingsLostFocus;
             m_TextChanged = TextChanged;
         }
@@ -155,6 +150,8 @@ namespace StreamerBotLib.MultiLive
 
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to enabled.");
+
             IEnumerable<MultiMsgEndPoints> item = (IEnumerable<MultiMsgEndPoints>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
             SetMultiChannelIsEnabled(item, true);
         }
@@ -169,6 +166,8 @@ namespace StreamerBotLib.MultiLive
 
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to disabled.");
+
             IEnumerable<MultiMsgEndPoints> item = (IEnumerable<MultiMsgEndPoints>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
             SetMultiChannelIsEnabled(item, false);
         }
@@ -198,12 +197,24 @@ namespace StreamerBotLib.MultiLive
 
         private void ComboBox_DropDownOpened(object sender, EventArgs e)
         {
-            MultiLiveData.SummarizeStreamData();
-            ComboBox_SummarizeLive_List.Items.Refresh();
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Computing the date with stream count data for the combo box.");
+
+            SummarizeChannels?.Invoke(this, new()
+            {
+                CallbackAction = () =>
+                {
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        ComboBox_SummarizeLive_List.Items.Refresh();
+                    });
+                }
+            });
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Enable the button to permit actually summarizing the stream data.");
+
             if (((ComboBox)sender).SelectedItem != null)
             {
                 Button_StartSummarizingLiveData.IsEnabled = true;
@@ -212,15 +223,28 @@ namespace StreamerBotLib.MultiLive
 
         private void Button_StartSummarizingLiveData_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Disabling buttons and sending a summarizing message to the data manager.");
+
             TabItem_DailyData.IsEnabled = false;
             TabItem_SummaryDailyData.IsEnabled = false;
             Button_StartSummarizingLiveData.IsEnabled = false;
 
             ArchiveMultiStream selectedItem = (ArchiveMultiStream)ComboBox_SummarizeLive_List.SelectedItem;
-            MultiLiveData.SummarizeStreamData(selectedItem);
-            ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
-            TabItem_DailyData.IsEnabled = true;
-            TabItem_SummaryDailyData.IsEnabled = true;
+
+            SummarizeChannels?.Invoke(this, new()
+            {
+                Data = selectedItem,
+                CallbackAction = () =>
+                {
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
+                        TabItem_DailyData.IsEnabled = true;
+                        TabItem_SummaryDailyData.IsEnabled = true;
+                    });
+                }
+            }
+                                    );
         }
     }
 }

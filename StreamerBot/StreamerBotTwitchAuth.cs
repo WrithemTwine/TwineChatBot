@@ -33,6 +33,7 @@ namespace StreamerBot
         private void Button_TwitchAuthToken_ReAuthorize(object sender, RoutedEventArgs e)
         {
             StreamerBotLib.BotIOController.BotController.ForceTwitchAuthReauthorization();
+            GUIStopBots_Click(this, new());
             CheckFocus();
         }
 
@@ -121,7 +122,7 @@ namespace StreamerBot
             Dispatcher.BeginInvoke(() =>
             {
                 CheckFocus();
-                StartAutoBots();
+                //StartAutoBots();
             });
         }
 

@@ -25,14 +25,10 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrUsers)
             {
-                foreach (LiveUser U in CurrUsers)
+                if (OptionFlags.ManageUsers)
                 {
-                    if (OptionFlags.ManageUsers)
-                    {
-                        DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
-                    }
+                    DataManage.UserJoined(CurrUsers, SpecifyTime.ToLocalTime());
                 }
-
             }
         }
 

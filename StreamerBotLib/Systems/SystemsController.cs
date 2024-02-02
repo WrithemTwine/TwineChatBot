@@ -53,6 +53,8 @@ namespace StreamerBotLib.Systems
 
             SystemActions.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             SystemActions.ProcessedCommand += Command_ProcessedCommand;
+
+            DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
         }
 
         private void ActionProcessCmds()
@@ -153,12 +155,11 @@ namespace StreamerBotLib.Systems
             DataManage.UpdateFollowers(Follows);
         }
 
-        public static void StopBulkFollowers()
+        private void DataManage_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
         {
-            DataManage.StopBulkFollows();
-
-            AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, DataManage.GetNewestFollower());
+            AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, e.LastFollowerUserName);
         }
+
 
         private delegate void ProcFollowDelegate();
 
@@ -640,7 +641,7 @@ namespace StreamerBotLib.Systems
             }
             if (OptionFlags.ManageRaidData)
             {
-                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName, User.Source);
+                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName, User.Platform);
             }
             if (OptionFlags.ManageOverlayTicker)
             {
@@ -870,5 +871,27 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
+        #region MultiLive 
+
+        public void AddNewMonitorChannel(IEnumerable<LiveUser> liveUsers)
+        {
+            DataManage.PostMonitorChannel(liveUsers);
+        }
+
+        public static void MultiSummarize(MultiLiveSummarizeEventArgs multiLiveSummarizeEventArgs)
+        {
+            if (multiLiveSummarizeEventArgs.Data != null)
+            {
+                DataManage.SummarizeStreamData();
+                multiLiveSummarizeEventArgs.CallbackAction.Invoke();
+            }
+            else
+            {
+                DataManage.SummarizeStreamData(multiLiveSummarizeEventArgs.Data);
+                multiLiveSummarizeEventArgs.CallbackAction.Invoke();
+            }
+        }
+
+        #endregion
     }
 }

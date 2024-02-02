@@ -4,8 +4,11 @@ using StreamerBotLib.Static;
 
 using System.Reflection;
 
+using TwitchLib.Api;
+using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
+using TwitchLib.Api.Services;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -29,7 +32,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
         {
-            FollowerService?.UpdateAccessToken(TwitchStreamerAccessToken);
+            FollowerService?.UpdateAccessToken(TwitchAccessToken);
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (FollowerService == null)
             {
                 FollowerService = new ExtFollowerService(
-                     BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken,
+                     new TwitchAPI( settings: new ApiSettings() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID }),
                     (int)Math.Round(TwitchFrequencyFollowerTime, 0));
 
                 FollowerService.SetChannelsByName([ClientName ?? TwitchChannelName]);
@@ -52,7 +55,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             else
             {
-                FollowerService.UpdateAccessToken(TwitchStreamerAccessToken);
+                FollowerService.UpdateAccessToken(TwitchAccessToken);
             }
         }
 

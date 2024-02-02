@@ -216,7 +216,6 @@ namespace TestStreamerBot
                 GetRandomGameIdName().GameName)));
 
             BotController.HandleBotEventBulkPostFollowers(bulkfollows);
-            BotController.HandleBotEventStopBulkFollowers();
 
             foreach (Follow f in bulkfollows)
             {
@@ -247,7 +246,7 @@ namespace TestStreamerBot
                     followedAt: DateTime.Now,
                     fromUserId: "00112233",
                     fromUserName: $"IFollow{datestring}{x}",
-                    Source: Platform.Default,
+                    platform: Platform.Default,
                     GetRandomGameIdName().GameName)
                     );
             }

@@ -731,6 +731,9 @@ namespace StreamerBotLib.Static
         /// Defines rotating each ticker item in the same spot
         /// </summary>
         public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
+        /// <summary>
+        /// Defines the overlay ticker rotation time
+        /// </summary>
         public static int MediaOverlayTickerRotateTime => Settings.Default.MediaOverlayTickerRotateTime;
         /// <summary>
         /// Defines a marquee ticker scroller
@@ -880,6 +883,59 @@ namespace StreamerBotLib.Static
         /// Specifies the GitHub link to the application Wiki
         /// </summary>
         public static string GitHubWikiLink => Resources.GitHubWikiLink;
+
+        #endregion
+
+        #region Database choose and connection strings
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlServer => Settings.Default.EFCDatabaseProviderSqlServer;
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlite => Settings.Default.EFCDatabaseProviderSqlite;
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderCosmos => Settings.Default.EFCDatabaseProviderCosmos;
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderPostgreSQL => Settings.Default.EFCDatabaseProviderPostgreSQL;
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderMySql => Settings.Default.EFCDatabaseProviderMySql;
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderKNet => Settings.Default.EFCDatabaseProviderKNet;
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringSqlite => Settings.Default.EFCConnectStringSqlite;
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringSqlServer => Settings.Default.EFCConnectStringSqlServer;
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringCostmos => Settings.Default.EFCConnectStringCosmos;
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringPostgreSQL => Settings.Default.EFCConnectStringPostgreSQL;
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringMySql => Settings.Default.EFCConnectStringMySql;
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringKNet => Settings.Default.EFCConnectStringKNet;
 
         #endregion
 

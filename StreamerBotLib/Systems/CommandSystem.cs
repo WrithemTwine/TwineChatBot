@@ -341,7 +341,7 @@ namespace StreamerBotLib.Systems
 
             foreach (LiveUser u in CurrActiveUsers)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Contains {u.UserName}, {u.UserId}, {u.Source}");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Contains {u.UserName}, {u.UserId}, {u.Platform}");
             }
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Now checking if the user is on the shout list.");
@@ -409,7 +409,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count > 0)
                 {
-                    bool success = BotController.ModifyChannelInformation(User.Source, Title: string.Join(' ', arglist));
+                    bool success = BotController.ModifyChannelInformation(User.Platform, Title: string.Join(' ', arglist));
                     result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
                 }
                 else
@@ -421,7 +421,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count > 0)
                 {
-                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Source);
+                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Platform);
                     result = cmdrow.Message;
                 }
                 else
@@ -431,7 +431,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
             {
-                BotController.CancelRaidChannel(User.Source);
+                BotController.CancelRaidChannel(User.Platform);
                 result = cmdrow.Message;
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.approve))
@@ -501,7 +501,7 @@ namespace StreamerBotLib.Systems
                             break;
                     }
 
-                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Source);
+                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
                 }
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
@@ -511,7 +511,7 @@ namespace StreamerBotLib.Systems
                 {
                     if (int.TryParse(arglist[0], out int GameId))
                     {
-                        BotController.ModifyChannelInformation(User.Source, CategoryId: GameId.ToString());
+                        BotController.ModifyChannelInformation(User.Platform, CategoryId: GameId.ToString());
                         result = cmdrow.Message;
                     }
                     else
@@ -523,11 +523,11 @@ namespace StreamerBotLib.Systems
 
                         if (found != null)
                         {
-                            success = BotController.ModifyChannelInformation(User.Source, CategoryId: found.Item1);
+                            success = BotController.ModifyChannelInformation(User.Platform, CategoryId: found.Item1);
                         }
                         else
                         {
-                            success = BotController.ModifyChannelInformation(User.Source, CategoryName: CategoryName);
+                            success = BotController.ModifyChannelInformation(User.Platform, CategoryName: CategoryName);
                         }
 
                         result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
@@ -563,7 +563,7 @@ namespace StreamerBotLib.Systems
 
                 ThreadManager.CreateThreadStart(() =>
                 {
-                    DateTime created = BotController.GetUserAccountAge(ParamUser, User.Source);
+                    DateTime created = BotController.GetUserAccountAge(ParamUser, User.Platform);
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.user,ParamUser),
@@ -597,7 +597,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count == 0 && cmdrow.Message.Contains(MsgVars.viewers.ToString()))
                 {
-                    BotController.GetViewerCount(User.Source);
+                    BotController.GetViewerCount(User.Platform);
                     result = "";
                 }
                 else
@@ -760,7 +760,7 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Source))
+                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Platform))
                 {
                     result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
                 }
@@ -778,7 +778,7 @@ namespace StreamerBotLib.Systems
                             lock (GUI.GUIDataManagerLock.Lock)
                             {
                                 VariableParser.AddData(ref datavalues,
-                                new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Source)), bots: User.Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                                new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                                 string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                                 tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);

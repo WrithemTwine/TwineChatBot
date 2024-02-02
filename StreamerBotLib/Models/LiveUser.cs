@@ -17,7 +17,7 @@ namespace StreamerBotLib.Models
         /// <summary>
         /// The source of the Bot with the registered user.
         /// </summary>
-        public Platform Source { get; set; }
+        public Platform Platform { get; set; }
         /// <summary>
         /// The userName userId of the user name, per the Bot platform
         /// </summary>
@@ -32,7 +32,7 @@ namespace StreamerBotLib.Models
         public LiveUser(string userName, Platform botSource, string userId = "")
         {
             UserName = userName;
-            Source = botSource;
+            Platform = botSource;
             UserId = userId;
         }
 
@@ -43,7 +43,7 @@ namespace StreamerBotLib.Models
         /// <returns>True if the objects contain identical values.</returns>
         public bool Equals(LiveUser other)
         {
-            return other != null & UserName == other.UserName && Source == other.Source && UserId == other.UserId;
+            return other != null & UserName == other.UserName && Platform == other.Platform && UserId == other.UserId;
         }
 
         public int GetHashCode(object Obj)
@@ -68,7 +68,7 @@ namespace StreamerBotLib.Models
 
         public override string ToString()
         {
-            return $"{UserName}{Source}{UserId}";
+            return $"{UserName}{Platform}{UserId}";
         }
 
         public static bool operator <(LiveUser left, LiveUser right)

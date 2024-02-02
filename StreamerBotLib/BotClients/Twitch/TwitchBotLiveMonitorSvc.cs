@@ -1,18 +1,18 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Events;
 using StreamerBotLib.Static;
 
 using System.Net.Http;
 using System.Reflection;
-
-using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
         // TODO: add mechanism to check the multilive listing to ensure those channels exist on Twitch. now with UserIds, convert their name & refer to their ID instead for user online checking
+
+        public event EventHandler<MultiLiveGetChannelsEventArgs> MultiLiveGetChannels;
 
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
@@ -28,11 +28,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Notifies if the multilive channels are monitored for changes and will update the monitored channel list. 
         /// </summary>
         public bool IsMultiConnected { get; set; }
-
-        /// <summary>
-        /// Database connection to the other channels the streamer is monitoring to determine if the user went live.
-        /// </summary>
-        public IDataManager MultiLiveDataManager { get; private set; }
+        private const string s = "";
 
         public TwitchBotLiveMonitorSvc()
         {
@@ -61,7 +57,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (LiveStreamMonitor == null)
             {
-                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIStreamerToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
 
                 // check if there is an unauthorized http access exception; we have an expired token
                 LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;
@@ -82,24 +78,23 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Adds and updates the channels to monitor for if the streamer goes live.
         /// </summary>
         /// <param name="ChannelList">The channel names to monitor - the chat bot channel will automatically add to this monitor list.</param>
-        public void SetLiveMonitorChannels(List<string> ChannelList)
+        public void SetLiveMonitorChannels(List<string> ChannelIdList)
         {
-            string s = "";
             lock (s)
             {
                 List<string> ChannelsToMonitor = [];
 
                 if (IsStarted)
                 {
-                    ChannelsToMonitor.UniqueAdd(TwitchChannelName);
+                    ChannelsToMonitor.UniqueAdd(TwitchChannelId);
                 }
 
                 if (IsMultiConnected)
                 {
-                    ChannelsToMonitor.UniqueAddRange(ChannelList);
+                    ChannelsToMonitor.UniqueAddRange(ChannelIdList);
                 }
 
-                LiveStreamMonitor?.SetChannelsByName(ChannelsToMonitor);
+                LiveStreamMonitor?.SetChannelsById(ChannelsToMonitor);
             }
         }
 
@@ -156,10 +151,8 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     StopMultiLive();
                     LiveStreamMonitor?.Stop();
-                    LiveStreamMonitor = null;
                     IsStarted = false;
                     IsStopped = true;
-                    HandlersAdded = false;
                     InvokeBotStopped();
                 }
                 return true;
@@ -190,15 +183,10 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// manages the multilive monitored channels; build the client
         /// </summary>
-        public void MultiConnect(IDataManager datamanage)
+        public EventHandler GetUpdatedChannelHandler()
         {
-            if (MultiLiveDataManager == default)
-            {
-                MultiLiveDataManager = datamanage;
-                MultiLiveDataManager.UpdatedMonitoringChannels += MultiLiveDataManager_UpdatedMonitoringChannels;
-            }
-
             IsMultiConnected = true;
+            return MultiLiveDataManager_UpdatedMonitoringChannels;
         }
 
         /// <summary>
@@ -217,8 +205,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsMultiLiveBotActive)
             {
-                SetLiveMonitorChannels(MultiLiveDataManager.GetMultiChannelNames());
-                // TODO: localize the multilive bot data
+                MultiLiveGetChannels?.Invoke(this, new() { Callback = SetLiveMonitorChannels });
             }
             else
             {
@@ -249,49 +236,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (OptionFlags.ActiveToken)
                 {
                     UpdateChannels();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Send notification messages based on stream went live.
-        /// </summary>
-        /// <param name="e"></param>
-        public void SendMultiLiveMsg(OnStreamOnlineArgs e)
-        {
-            if (IsMultiLiveBotActive)
-            {
-                DateTime CurrTime = e.Stream.StartedAt.ToLocalTime();
-
-                // true posted new event, false did not post
-                bool PostedLive = MultiLiveDataManager.PostMultiStreamDate(e.Stream.UserId, e.Stream.UserName, Platform.Twitch, CurrTime);
-
-                if (PostedLive)
-                {
-                    bool MultiLive = MultiLiveDataManager.CheckMultiStreamDate(e.Channel, Platform.Twitch, CurrTime);
-
-                    if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
-                    {
-                        // get message, set a default if otherwise deleted/unavailable
-                        string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
-
-                        // keys for exchanging codes for representative names
-                        Dictionary<string, string> dictionary = new()
-                        {
-                            { "#user", e.Stream.UserName },
-                            { "#category", e.Stream.GameName },
-                            { "#title", e.Stream.Title },
-                            { "#url", e.Stream.UserName }
-                        };
-
-                        foreach (Tuple<WebhooksSource, Uri> u in MultiLiveDataManager.GetMultiWebHooks())
-                        {
-                            if (u.Item1 == WebhooksSource.Discord)
-                            {
-                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(msg, dictionary), VariableParser.BuildPlatformUrl(e.Stream.UserName, Platform.Twitch));
-                            }
-                        }
-                    }
                 }
             }
         }

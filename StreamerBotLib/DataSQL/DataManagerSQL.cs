@@ -2,8 +2,11 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+using Newtonsoft.Json.Linq;
+
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.MLearning;
@@ -14,6 +17,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
@@ -43,10 +47,13 @@ switches:
 -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
  */
 
-    public class DataManagerSQL : IDataManager
+    public class DataManagerSQL : IDataManager, IDataManagerReadOnly
     {
         private readonly DataManagerFactory dbContextFactory = new();
-        private readonly SQLDBContext context;
+        private SQLDBContext context;
+
+        private bool constructingModel_Context;
+        private bool BulkFollowerUpdate;
 
         /// <summary>
         /// always true to begin one learning cycle
@@ -58,9 +65,28 @@ switches:
         private readonly string DefaulSocialMsg = LocalizedMsgSystem.GetVar(Msg.MsgDefaultSocialMsg);
         private DateTime CurrStreamStart { get; set; } = default;
 
+        public event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
+
         public DataManagerSQL()
         {
             context = dbContextFactory.CreateDbContext();
+        }
+
+        private void BuildDataContext()
+        {
+            if (context == default)
+            {
+                context = dbContextFactory.CreateDbContext();
+            }
+        }
+
+        private void ClearDataContext()
+        {
+            if (!constructingModel_Context && !BulkFollowerUpdate)
+            {
+                context.Dispose();
+                context = default;
+            }
         }
 
         #region Construct default items
@@ -71,10 +97,17 @@ switches:
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Initializing the database.");
 
+            constructingModel_Context = true;
+
+            BuildDataContext();
+
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
             SetLearnedMessages();
 
+            constructingModel_Context = false;
+
+            ClearDataContext();
             OptionFlags.DataLoaded = true;
         }
 
@@ -245,9 +278,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return (from C in context.Currency
+                BuildDataContext();
+                var result = (from C in context.Currency
                         where (C.UserName == User.UserName && C.CurrencyName == CurrencyName)
                         select C.Value).FirstOrDefault() >= value;
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -255,7 +291,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
+                BuildDataContext();
+                var result = (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -263,7 +302,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return CheckFollower(User, default);
+                BuildDataContext();
+                var result = CheckFollower(User, default);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -271,9 +313,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return (from f in context.Followers
+                BuildDataContext();
+                var result = (from f in context.Followers
                         where (f.IsFollower && f.UserName == User && (ToDateTime == default || f.FollowedDate < ToDateTime))
                         select f).Any();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -281,12 +326,15 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return (from M in context.ModeratorApprove
+                BuildDataContext();
+                var result = (from M in context.ModeratorApprove
                         where (M.ModActionType == modActionType && M.ModActionName == ModAction)
                         select new Tuple<string, string>(
                             !string.IsNullOrEmpty(M.ModPerformType.ToString()) ? M.ModPerformType.ToString() : M.ModActionType.ToString(),
                             !string.IsNullOrEmpty(M.ModPerformAction) ? M.ModPerformAction : M.ModActionName
                             )).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -300,10 +348,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from s in context.StreamStats
-                        where (s.StreamStart == streamStart)
-                        select s).Count() > 1;
+                bool result = (from s in context.StreamStats
+                               where (s.StreamStart == streamStart)
+                               select s).Count() > 1;
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -317,10 +368,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from c in context.Commands
+                bool result = (from c in context.Commands
                         where c.CmdName == cmd
                         select c).FirstOrDefault().Permission > permission;
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -333,10 +387,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from s in context.ShoutOuts
+                bool result= (from s in context.ShoutOuts
                         where s.UserId == UserId
                         select s).Any();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -349,10 +406,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from s in context.StreamStats
+                bool result = (from s in context.StreamStats
                         where s.StreamStart == CurrTime
                         select s).Any();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -379,10 +439,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from s in context.Users
-                        where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Source
+                bool result = (from s in context.Users
+                        where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Platform
                         select s).Any();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -395,10 +458,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from s in context.CustomWelcome
+                string result= (from s in context.CustomWelcome
                         where s.UserName == User
                         select s.Message).FirstOrDefault() ?? "";
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -407,12 +473,14 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
 
+                BuildDataContext();
                 foreach (Currency c in from u in context.Currency
                                        select u)
                 {
                     c.Value = 0;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -423,6 +491,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
 
                 context.Users.RemoveRange((IEnumerable<Users>)(from user in context.Users
@@ -431,6 +500,7 @@ switches:
                                                                where !subuser.IsFollower
                                                                select subuser));
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -441,6 +511,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
                 foreach (var userstat in from US in context.UserStats
                                          select US)
@@ -448,6 +519,7 @@ switches:
                     userstat.WatchTime = new(0);
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -462,7 +534,7 @@ switches:
 
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
                 Commands EditCom = (from C in context.Commands
                                     where C.CmdName == cmd
@@ -482,7 +554,8 @@ switches:
                     result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
 
                 }
-            }
+             ClearDataContext();
+           }
             return result;
         }
 
@@ -490,7 +563,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 Enums.BanReasons banReasons = (from Br in context.BanReasons
                                                where Br.MsgType == msgTypes
                                                select Br.BanReason).FirstOrDefault();
@@ -498,6 +571,7 @@ switches:
                                      where (B.ViewerTypes == ViewerTypes.Viewer && B.MsgType == msgTypes)
                                      select B).FirstOrDefault();
 
+                ClearDataContext();
                 return new(banRules?.ModAction ?? ModActions.Allow, banReasons, banRules.TimeoutSeconds);
             }
         }
@@ -506,27 +580,34 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new((from Com in context.Commands
+                BuildDataContext();
+                CommandData result = new((from Com in context.Commands
                             where Com.CmdName == cmd
                             select Com).FirstOrDefault());
+                ClearDataContext();
+                return result;
             }
         }
 
         public IEnumerable<string> GetCommandList()
         {
-            return GetCommands().Split(", ");
+            BuildDataContext();
+            IEnumerable<string> result = GetCommands().Split(", ");
+            ClearDataContext();
+            return result;
         }
 
         public string GetCommands()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return string.Join(", ", (from Com in context.Commands
+                BuildDataContext();
+                string result = string.Join(", ", (from Com in context.Commands
                                           where (Com.Message == DefaulSocialMsg && Com.IsEnabled)
                                           orderby Com.CmdName
                                           select $"!{Com.CmdName}"));
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -534,9 +615,11 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from C in context.CurrencyType
+                BuildDataContext();
+                List<string> result = new(from C in context.CurrencyType
                            select C.CurrencyName);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -544,10 +627,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from D in context.GameDeadCounter
+                BuildDataContext();
+int result = (from D in context.GameDeadCounter
                         where D.Category == currCategory
                         select D.Counter).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -555,12 +640,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 ChannelEvents found = (from Event in context.ChannelEvents
                                        where Event.Name == rowcriteria
                                        select Event).FirstOrDefault();
                 Enabled = found?.IsEnabled ?? false;
                 Multi = found?.RepeatMsg ?? 0;
+                ClearDataContext();
 
                 return found?.Message;
             }
@@ -570,8 +656,11 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return (from F in context.Followers
+                BuildDataContext();
+                var result=  (from F in context.Followers
                         select F).Count();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -579,9 +668,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                return new(from G in context.CategoryList
+                BuildDataContext();
+                List<Tuple<string,string>> result= new(from G in context.CategoryList
                            let game = new Tuple<string, string>(G.CategoryId, G.Category)
-                           select game);
+                           select game); 
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -589,8 +681,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
+                BuildDataContext();
+                string result= context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -598,8 +692,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new List<string>(from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name);
+                BuildDataContext();
+                IEnumerable<string> result= new List<string>(from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -607,8 +703,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return context.Followers.MaxBy((i) => i.FollowedDate).UserName;
+                BuildDataContext();
+                string result = (from F in context.Followers orderby F.FollowedDate descending select F).FirstOrDefault().UserName;
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -616,8 +714,8 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from O in context.OverlayServices
+                BuildDataContext();
+                List<OverlayActionType> result = new(from O in context.OverlayServices
                            where (O.IsEnabled
                            && O.OverlayType.ToString() == overlayType
                            && (string.IsNullOrEmpty(O.UserName) || O.UserName == username)
@@ -633,6 +731,8 @@ switches:
                                UserName = O.UserName,
                                UseChatMsg = O.UseChatMsg
                            });
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -640,10 +740,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from Q in context.Quotes
+                BuildDataContext();
+                var result =  (from Q in context.Quotes
                         where Q.Number == QuoteNum
                         select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -651,22 +753,25 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
+                BuildDataContext();
+                int result= context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
+                ClearDataContext();
+                return result;
             }
-
         }
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new()
+                BuildDataContext();
+                Dictionary<string,List<string>> result = new()
                 {
                     { nameof(Commands), new(from C in context.Commands select C.CmdName) },
                     { nameof(ChannelEvents), new(from E in context.ChannelEvents select E.Name.ToString()) }
                 };
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -674,9 +779,11 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
+                BuildDataContext();
+                List<string> result = new(from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
                            select SC.CmdName);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -684,11 +791,14 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return string.Join(" ", (from SC in
+                BuildDataContext();
+                var result = string.Join(" ", (from SC in
                                              context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)),
                                                 (c) => c.CmdName)
+                                                where SC.Message != DefaulSocialMsg
                                          select SC));
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -696,10 +806,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
-                return (from SD in context.StreamStats
+                var result = (from SD in context.StreamStats
                         where SD.StreamStart == dateTime
                         select StreamStat.Create(SD)).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -707,9 +820,11 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from T in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
-                           select T.Name);
+                BuildDataContext();
+                List<string> result = new(from T in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
+                                          select T.Name);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -717,9 +832,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                //using var context = dbContextFactory.CreateDbContext();
-                //return new(from N in context.Model.GetEntityTypes()
-                //           select N.Name);
+                BuildDataContext();
                 var list = new List<string>()
                 {
                     nameof(Currency),
@@ -729,6 +842,7 @@ switches:
                     nameof(Followers)
                 };
                 list.Sort();
+                ClearDataContext();
                 return list;
             }
         }
@@ -737,9 +851,11 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from F in context.OverlayTicker
+                BuildDataContext();
+                List<TickerItem> result = new(from F in context.OverlayTicker
                            select new TickerItem(F.TickerName, F.UserName));
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -747,11 +863,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from R in context.Commands
+                BuildDataContext();
+                Tuple<string,int,string[]> result = (from R in context.Commands
                         where R.RepeatTimer > 0
                         select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
                                                                                            select C).ToArray())).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -759,11 +877,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from R in context.Commands
+                BuildDataContext();
+                List<Tuple<string,int,string[]>> result = new(from R in context.Commands
                            where R.RepeatTimer > 0
                            select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
                                                                                               select C).ToArray()));
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -771,10 +891,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from R in context.Commands
+                BuildDataContext();
+                int result = (from R in context.Commands
                         where R.CmdName == Cmd
                         select R.RepeatTimer).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -782,10 +904,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from C in context.Commands
+                BuildDataContext();
+                string result = (from C in context.Commands
                         where C.CmdName == command
                         select C.Usage).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -793,10 +917,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from U in context.Users
+                BuildDataContext();
+                LiveUser result = (from U in context.Users
                         where U.UserName == UserName
                         select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -804,10 +930,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from U in context.Users
+                BuildDataContext();
+                var result = (from U in context.Users
                         where U.UserName == User.UserName
                         select U.UserId).FirstOrDefault();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -815,19 +943,20 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from W in context.Webhooks
+                BuildDataContext();
+                List<Tuple<bool, Uri>> result = new(from W in context.Webhooks
                            where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
                            select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
+                ClearDataContext();
+                return result;
             }
         }
-
-
 
         public object[] PerformQuery(Commands row, int Top = 0)
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
                 IEnumerable<object> output = row.Table switch
                 {
@@ -847,6 +976,7 @@ switches:
                     output = output.Take(row.Top);
                 }
 
+                ClearDataContext();
                 return output.ToArray();
             }
         }
@@ -855,7 +985,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
 
                 object output = row.Table switch
                 {
@@ -872,6 +1002,7 @@ switches:
                     output = ((Followers)output).IsFollower ? ((Followers)output).FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
                 }
 
+                ClearDataContext();
                 return output;
             }
         }
@@ -887,7 +1018,7 @@ switches:
             {
                 lock (GUIDataManagerLock.Lock)
                 {
-
+                    BuildDataContext();
                     CategoryList categoryList = (from CL in context.CategoryList
                                                  where (CL.Category == FormatData.AddEscapeFormat(newCategory)) || CL.CategoryId == CategoryId
                                                  select CL).FirstOrDefault();
@@ -909,6 +1040,7 @@ switches:
                     context.SaveChanges(true);
                 }
             }
+            ClearDataContext();
             return found;
         }
 
@@ -916,16 +1048,19 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                bool result;
+                BuildDataContext();
                 if (!(from C in context.Clips
                       where (C.ClipId == ClipId)
                       select C).Any())
                 {
                     context.Clips.Add(new(ClipId, CreatedAt, Title, GameId, Language, (float)Duration, Url));
                     context.SaveChanges(true);
-                    return true;
+                    result = true;
                 }
-                return false;
+                result = false;
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -933,7 +1068,8 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                string result;
+                BuildDataContext();
                 if (!(from Com in context.Commands
                       where Com.CmdName == cmd
                       select Com).Any())
@@ -944,9 +1080,44 @@ switches:
                     Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort));
 
                     context.SaveChanges(true);
-                    return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
+                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
                 }
-                return string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(Msg.MsgAddCommandFailed), cmd);
+                result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(Msg.MsgAddCommandFailed), cmd);
+                ClearDataContext();
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Post a new currency type to the database. Will add new currency records for existing users.
+        /// </summary>
+        /// <param name="currencyType"></param>
+        public void PostCurrencyType(Models.CurrencyType currencyType)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+
+                if (!(from CT in context.CurrencyType where CT.CurrencyName == currencyType.CurrencyName select CT).Any())
+                {
+                    context.CurrencyType.Add(currencyType);
+
+                    List<Models.CurrencyType> types = new(context.CurrencyType);
+
+                    foreach(Users U in context.Users)
+                    {
+                        foreach (Models.CurrencyType t in types)
+                        {
+                            if (!(from C in context.Currency where (C.User == U && C.CurrencyName == t.CurrencyName) select C).Any())
+                            {
+                                context.Currency.Add(new(t.CurrencyName, U.UserName, 0));
+                            }
+                        }
+                    }
+                }
+
+                context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -954,15 +1125,16 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 Currency currency = (from C in context.Currency
                                      where (C.CurrencyName == CurrencyName && C.UserName == User.UserName)
                                      select C).FirstOrDefault();
                 if (currency != default)
                 {
-                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.Where(c => c.CurrencyName == CurrencyName).Select(t => t.MaxValue).FirstOrDefault());
+                    currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.MaxValue);
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -970,7 +1142,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 GameDeadCounter update = (from G in context.GameDeadCounter where G.Category == currCategory select G).FirstOrDefault();
                 if (update != default)
                 {
@@ -988,6 +1160,7 @@ switches:
                     update = context.GameDeadCounter.Add(new(category: currCategory)).Entity;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
                 return update?.Counter ?? 0;
             }
         }
@@ -1004,14 +1177,15 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-
+                BuildDataContext();
                 followsQueue.Enqueue(follow);
                 PostFollowsQueue();
 
-                return !(from F in context.Followers
-                         where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Source
+                var result = !(from F in context.Followers
+                         where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform
                          select F).Any();
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -1030,15 +1204,17 @@ switches:
                 {
                     DateTime currTime = DateTime.Now.ToLocalTime();
                     Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
+                    BuildDataContext();
 
                     while (followsQueue.TryDequeue(out Follow currUser))
                     {
                         lock (GUIDataManagerLock.Lock)
                         {
+                            PostNewUser(currUser.FromUser, currUser.FollowedAt);
                             Followers userfollow = (from F in context.Followers
                                                     where (F.UserId == currUser.FromUser.UserId
                                                     && F.UserName == currUser.FromUser.UserName
-                                                    && F.Platform == currUser.FromUser.Source)
+                                                    && F.Platform == currUser.FromUser.Platform)
                                                     select F).FirstOrDefault();
                             if (userfollow != default)
                             {
@@ -1052,7 +1228,7 @@ switches:
                             else
                             {
                                 context.Followers.Add(new(userId: currUser.FromUser.UserId,
-                                    userName: currUser.FromUser.UserName, platform: currUser.FromUser.Source,
+                                    userName: currUser.FromUser.UserName, platform: currUser.FromUser.Platform,
                                     isFollower: true, followedDate: currUser.FollowedAt,
                                     statusChangeDate: currUser.FollowedAt, addDate: currTime,
                                     category: currUser.Category));
@@ -1063,7 +1239,13 @@ switches:
                     {
                         context.SaveChanges(true);
                     }
+                    ClearDataContext();
                     ProcessFollowQueuestarted = false;
+
+                    if (BulkFollowerUpdate)
+                    {
+                        StopBulkFollows();
+                    }
                 });
 
             }
@@ -1073,9 +1255,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.GiveawayUserData.Add(new(dateTime, userName: DisplayName));
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1083,9 +1266,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.InRaidData.Add(new(userName: user, raidDate: time, viewerCount: viewers, category: gamename, platform: platform));
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1093,7 +1277,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 if (!(from M in context.LearnMsgs
                       where M.TeachingMsg == Message
                       select M).Any())
@@ -1102,6 +1286,7 @@ switches:
                     LearnMsgChanged = true;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1109,7 +1294,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.UserName == CurrUser select uCu;
                 IEnumerable<Currency> srcCurrency = from sCu in context.Currency where sCu.UserName == SourceUser select sCu;
 
@@ -1125,6 +1310,7 @@ switches:
                 UserStats currUserstat = (from Cu in context.UserStats where (Cu.UserName == CurrUser && Cu.Platform == platform) select Cu).FirstOrDefault();
                 UserStats sourceUser = (from Su in context.UserStats where (Su.UserName == SourceUser && Su.Platform == platform) select Su).FirstOrDefault();
 
+                bool result;
                 if (currUserstat != default && sourceUser != default)
                 {
                     currUserstat += sourceUser;
@@ -1132,12 +1318,15 @@ switches:
                     context.UserStats.Remove(sourceUser);
                     context.SaveChanges(true);
 
-                    return true;
+                    result = true;
                 }
                 else
                 {
-                    return false;
+                    result = false;
                 }
+
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -1145,12 +1334,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 if (!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.UserName == UserName && SO.Platform == platform) select SO).Any())
                 {
                     context.ShoutOuts.Add(new(userId: UserId, userName: UserName, platform: platform));
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1158,16 +1348,25 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                Users newuser = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Source) select U).FirstOrDefault();
+                Users newuser = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Platform) select U).FirstOrDefault();
                 if (newuser == default)
                 {
-                    newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Source, firstDateSeen: FirstSeen, currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
+                    newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform, firstDateSeen: FirstSeen, currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
                 }
                 if (FirstSeen <= newuser.FirstDateSeen) { newuser.FirstDateSeen = FirstSeen; }
                 newuser.UserId ??= User.UserId;
-                if (newuser.Platform == default) { newuser.Platform = User.Source; }
-                context.SaveChanges(true);
+                if (newuser.Platform == default) { newuser.Platform = User.Platform; }
+
+                List<Models.CurrencyType> types = new(context.CurrencyType);
+
+                foreach (Models.CurrencyType t in types)
+                {
+                    if (!(from UC in context.Currency where (UC.UserName == newuser.UserName && UC.CurrencyName == t.CurrencyName) select UC).Any())
+                    {
+                        context.Currency.Add(new(t.CurrencyName, newuser.UserName, 0));
+                    }
+                }
+
                 return newuser;
             }
         }
@@ -1176,9 +1375,10 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.OutRaidData.Add(new(channelRaided: HostedChannel, raidDate: dateTime));
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1186,13 +1386,14 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-
+                BuildDataContext();
                 List<Quotes> quotes = new(from Q in context.Quotes select Q);
-                short opennum = (from Q in context.Quotes select Q.Number).IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
+                short opennum = (from Q in context.Quotes select Q.Number)
+                    .IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
 
                 context.Quotes.Add(new(opennum, Text));
                 context.SaveChanges(true);
+                ClearDataContext();
                 return opennum;
             }
         }
@@ -1201,12 +1402,12 @@ switches:
         /// Starts a new Stream record, if it doesn't currently exist.
         /// </summary>
         /// <param name="StreamStart">The time of stream start.</param>
-        /// <returns><code>true</code>: for posting a new stream start; <code>false</code>: when a stream start date row already exists</returns>
+        /// <returns><code>true: for posting a new stream start;</code> <code>false: when a stream start date row already exists</code></returns>
         public bool PostStream(DateTime StreamStart)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 bool addstream = !(from S in context.StreamStats where S.StreamStart == StreamStart select S).Any();
                 if (addstream)
                 {
@@ -1214,6 +1415,7 @@ switches:
                     context.SaveChanges(true);
                 }
 
+                ClearDataContext();
                 return addstream;
             }
         }
@@ -1222,103 +1424,141 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 StreamStats currStream = (from S in context.StreamStats where S.StreamStart == streamStat.StreamStart select S).FirstOrDefault();
                 if (currStream != default)
                 {
                     currStream.Update(streamStat);
                     context.SaveChanges(true);
+                    ClearDataContext();
                 }
             }
         }
 
+        /// <summary>
+        /// Add a custom welcome message for a specific user. Does not edit existing welcome message.
+        /// </summary>
+        /// <param name="User">The user to add the custom welcome message.</param>
+        /// <param name="WelcomeMsg">The message for the user.</param>
         public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 if (!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
                 {
-                    context.CustomWelcome.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Source, message: WelcomeMsg));
+                    context.CustomWelcome.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform, message: WelcomeMsg));
                     context.SaveChanges(true);
+                    ClearDataContext();
                 }
             }
         }
 
+        #region Clear DataBase Records 
+        /// <summary>
+        /// Clear all 'Followers' table records.
+        /// </summary>
         public void RemoveAllFollowers()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.Followers.RemoveRange(context.Followers);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Clear all 'GiveawayUserData' table records.
+        /// </summary>
         public void RemoveAllGiveawayData()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.GiveawayUserData.RemoveRange(context.GiveawayUserData);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Clear all 'InRaidData' table records.
+        /// </summary>
         public void RemoveAllInRaidData()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.InRaidData.RemoveRange(context.InRaidData);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Clear all 'OutRaidData' table records.
+        /// </summary>
         public void RemoveAllOutRaidData()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.OutRaidData.RemoveRange(context.OutRaidData);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Clear all 'OverlayTicker' table records.
+        /// </summary>
         public void RemoveAllOverlayTickerData()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.OverlayTicker.RemoveRange(context.OverlayTicker);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Clear all 'StreamStats' table records.
+        /// </summary>
         public void RemoveAllStreamStats()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.StreamStats.RemoveRange(context.StreamStats);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Clear all 'Users' table records.
+        /// </summary>
         public void RemoveAllUsers()
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 context.Users.RemoveRange(context.Users);
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
+        #endregion
 
         public bool RemoveCommand(string command)
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
                 bool found = false;
 
                 Commands cmd = (from C in context.Commands where C.CmdName == command select C).FirstOrDefault();
@@ -1328,6 +1568,7 @@ switches:
                     found = true;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
                 return found;
             }
         }
@@ -1336,6 +1577,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
                 bool found = false;
 
                 Quotes quotes = (from Q in context.Quotes where Q.Number == QuoteNum select Q).FirstOrDefault();
@@ -1345,6 +1587,7 @@ switches:
                     found = true;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
                 return found;
             }
         }
@@ -1353,7 +1596,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 foreach (var Command in (from C in context.Commands
                                          join D in
                                              (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
@@ -1366,6 +1609,7 @@ switches:
                     Command.IsEnabled = Enabled;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1373,12 +1617,14 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
 
                 foreach (var webhook in context.Webhooks)
                 {
                     webhook.IsEnabled = Enabled;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1391,20 +1637,25 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 foreach (var Sys in context.ChannelEvents)
                 {
                     Sys.IsEnabled = Enabled;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Sets the 'IsEnabled' column for all records of the Commands table, specifically the user created commands (not the default commands).
+        /// </summary>
+        /// <param name="Enabled">The value to set for 'IsEnabled'.</param>
         public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 foreach (var Command in (from C in context.Commands
                                          join D in (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
                                                     select def) on C.CmdName equals D into UsrCmds
@@ -1416,6 +1667,7 @@ switches:
                     Command.IsEnabled = Enabled;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1423,23 +1675,23 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BulkFollowerUpdate = true;
+                BuildDataContext();
                 foreach (Followers F in context.Followers)
                 {
                     F.IsFollower = false; // reset all followers to not following, add existing followers back as followers
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
-        public void StopBulkFollows()
+        private void StopBulkFollows()
         {
             lock (GUIDataManagerLock.Lock)
             {
-                while (ProcessFollowQueuestarted) { } // spin until the queue processing finishes
-
                 DateTime currtime = DateTime.Now.ToLocalTime();
-
+                BuildDataContext();
 
                 if (OptionFlags.TwitchPruneNonFollowers)
                 {
@@ -1447,11 +1699,13 @@ switches:
                 }
                 else // if pruning followers, there won't be multiple 'UserId' records
                 {
-                    foreach (var UF in (from F in context.Followers
-                                        orderby F.AddDate descending // the higher Id entries are after initial entries
-                                        group F by F.UserId into UserIdFollows
-                                        select UserIdFollows))
+                    List<string> FollowUserIds = [];
+                    FollowUserIds.UniqueAddRange(from f in context.Followers select f.UserId);
+
+                    foreach (string Id in FollowUserIds)
                     {
+                        var UF = (from F in context.Followers where F.UserId == Id orderby F.AddDate descending select F);
+
                         if (UF.Count() == 1 && UF.First().StatusChangeDate != UF.First().FollowedDate)
                         {
                             UF.First().StatusChangeDate = UF.First().FollowedDate;
@@ -1468,45 +1722,81 @@ switches:
                         }
                     }
                 }
-                context.SaveChanges(true);
+                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
+               BulkFollowerUpdate = false;
+                context.SaveChanges(true); 
+                ClearDataContext();
             }
         }
 
+        /// <summary>
+        /// Provides check for test code; checks if there's a record for the provided channel, date, viewer count, and game name.
+        /// </summary>
+        /// <param name="user">The user bringing in the raid.</param>
+        /// <param name="time">The time the user raided.</param>
+        /// <param name="viewers">The viewers they brought.</param>
+        /// <param name="gamename">The category the raiding stream had at the raid time.</param>
+        /// <returns><code>true: when record is found.</code>
+        /// <code>false: when record is not found.</code></returns>
         public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                var result = (from I in context.InRaidData
+                        where (I.UserName == user && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
+                        select I).Any();
+                ClearDataContext();
+                return result;
+            }
         }
 
+        /// <summary>
+        /// Provides check for test code; checks if there's a record for the provided channel and date.
+        /// </summary>
+        /// <param name="HostedChannel">The channel raided.</param>
+        /// <param name="dateTime">The date & time of the raid.</param>
+        /// <returns><code>true: when record is found.</code>
+        /// <code>false: when record is not found.</code></returns>
         public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
         {
-            throw new NotImplementedException();
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                var result = (from O in context.OutRaidData
+                        where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
+                        select O).Any();
+                ClearDataContext();
+                return result;
+            }
         }
+
 
         public void UpdateCurrency(List<string> Users, DateTime dateTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 foreach (string U in Users)
                 {
                     UpdateCurrency((from user in context.Users where user.UserName == U select user).FirstOrDefault(), dateTime);
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
-        private static void UpdateCurrency(Users User, DateTime CurrTime)
+        private void UpdateCurrency(Users User, DateTime CurrTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
                 TimeSpan clock = CurrTime - User.CurrLoginDate;
                 foreach (Currency currency in User.Currency)
                 {
                     currency.Value =
                         Math.Min(
-                            currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.MaxValue).FirstOrDefault(),
-                            Math.Round(currency.Value + (currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.AccrueAmt).FirstOrDefault() * (clock.TotalSeconds / currency.CurrencyType.Where(t => t.CurrencyName == currency.CurrencyName).Select(c => c.Seconds).FirstOrDefault())), 2)
+                            currency.CurrencyType.MaxValue,
+                            Math.Round( (currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
                         );
                 }
             }
@@ -1516,9 +1806,13 @@ switches:
         {
             if (follows.Any())
             {
-                foreach (Follow f in follows)
+                lock (followsQueue)
                 {
-                    PostFollower(f);
+                    foreach (Follow f in follows)
+                    {
+                        followsQueue.Enqueue(f);
+                    }
+                    PostFollowsQueue();
                 }
             }
         }
@@ -1527,17 +1821,20 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                List<LearnMsgRecord> result;
+                BuildDataContext();
                 if (LearnMsgChanged)
                 {
                     LearnMsgChanged = false;
-                    return new(from L in context.LearnMsgs
+                    result = new(from L in context.LearnMsgs
                                select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg));
                 }
                 else
                 {
-                    return null;
+                    result = null;
                 }
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -1545,7 +1842,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
                 if (ticker == default)
                 {
@@ -1556,6 +1853,7 @@ switches:
                     ticker.UserName = name;
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1563,8 +1861,13 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                foreach (UserStats U in context.UserStats.IntersectBy((from L in Users select L), (U) => new(U.UserName, U.Platform, U.UserId)))
+                BuildDataContext();
+                foreach (UserStats U in from S in context.UserStats
+                                        join U in Users on
+                                            new { S.UserId, S.UserName, S.Platform } equals
+                                            new { U.UserId, U.UserName, U.Platform } into CurrUserStats
+                                        where CurrUserStats.DefaultIfEmpty() != null
+                                        select S)
                 {
                     if (U.Users.LastDateSeen < CurrStreamStart)
                     {
@@ -1577,6 +1880,7 @@ switches:
                     }
                 }
                 context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1585,17 +1889,42 @@ switches:
             UpdateWatchTime([User], CurrTime);
         }
 
+        /// <summary>
+        /// Adds a new user to the Users table; updates active dates to <paramref name="NowSeen"/>.
+        /// </summary>
+        /// <param name="User">The user to add in database and update.</param>
+        /// <param name="NowSeen">The reported date & time of the user.</param>
         public void UserJoined(LiveUser User, DateTime NowSeen)
         {
-            static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
-
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 Users user = PostNewUser(User, NowSeen);
-                user.CurrLoginDate = Max(user.CurrLoginDate, NowSeen);
-                user.LastDateSeen = Max(user.LastDateSeen, NowSeen);
+                user.CurrLoginDate = NowSeen;
+                user.LastDateSeen = NowSeen;
                 context.SaveChanges(true);
+                ClearDataContext();
+            }
+        }
+
+        /// <summary>
+        /// Adds a collection of new users to the Users table; updates active dates to <paramref name="NowSeen"/>.
+        /// </summary>
+        /// <param name="Users">The user to add in database and update.</param>
+        /// <param name="NowSeen">The reported date & time of the user.</param>
+        public void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                foreach (var L in Users)
+                {
+                    Users user = PostNewUser(L, NowSeen);
+                    user.CurrLoginDate = NowSeen;
+                    user.LastDateSeen = NowSeen;
+                }
+                context.SaveChanges(true);
+                ClearDataContext();
             }
         }
 
@@ -1603,8 +1932,8 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                Users user = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Source) select U).FirstOrDefault();
+                BuildDataContext();
+                Users user = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Platform) select U).FirstOrDefault();
                 if (user != default)
                 {
                     UpdateWatchTime(User, LastSeen);
@@ -1614,22 +1943,24 @@ switches:
                     }
                     context.SaveChanges(true);
                 }
-            }
+                       ClearDataContext();
+         }
         }
-
 
         #region MultiLive data
         public event EventHandler UpdatedMonitoringChannels;
-        public List<ArchiveMultiStream> CleanupList { get; } = [];
+        public ObservableCollection<ArchiveMultiStream> CleanupList { get; } = [];
         private bool IsLiveStreamUpdated = false;
-        public string MultiLiveStatusLog { get; set; } = "";
+        public string MultiLiveStatusLog { get; private set; } = "";
 
         public bool CheckMultiStreamDate(string ChannelName, Platform platform, DateTime dateTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from P in context.MultiLiveStreams where (P.UserName == ChannelName && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
+                BuildDataContext();
+                var result = (from P in context.MultiLiveStreams where (P.UserName == ChannelName && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -1637,16 +1968,20 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return (from M in context.MultiChannels where (M.UserName == UserName && M.Platform == platform) select M).Any();
+                BuildDataContext();
+                var result = (from M in context.MultiChannels where (M.UserName == UserName && M.Platform == platform) select M).Any();
+                ClearDataContext();
+                return result;
             }
         }
-        public List<string> GetMultiChannelNames()
+        public List<string> GetMultiChannelNames(Platform platform)
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from M in context.MultiChannels select M.UserName);
+                BuildDataContext();
+                List<string> result = new(from M in context.MultiChannels where M.Platform == platform select M.UserId);
+                ClearDataContext();
+                return result;
             }
         }
 
@@ -1654,19 +1989,31 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-                return new(from W in context.MultiMsgEndPoints where W.IsEnabled select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook));
+                BuildDataContext();
+                List<Tuple<WebhooksSource, Uri>> result = new(from W in context.MultiMsgEndPoints where W.IsEnabled select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook));
+                ClearDataContext();
+                return result;
             }
         }
 
-        public void PostMonitorChannel(string username, string userid, Platform platform)
+        public void PostMonitorChannel(IEnumerable<LiveUser> liveUsers)
         {
             lock (GUIDataManagerLock.Lock)
             {
+                BuildDataContext();
+                foreach (LiveUser U in liveUsers)
+                {
+                    if ((from L in context.MultiChannels
+                         where (L.UserName == U.UserName && L.UserId == U.UserId && L.Platform == U.Platform)
+                         select L).Any())
+                    {
+                        context.MultiChannels.Add(new(userId: U.UserId, userName: U.UserName, platform: U.Platform));
+                    }
+                }
 
-                context.MultiChannels.Add(new(userId: userid, userName: username, platform: platform));
                 context.SaveChanges(true);
                 UpdatedMonitoringChannels?.Invoke(this, new());
+                ClearDataContext();
             }
         }
 
@@ -1674,13 +2021,14 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
+                BuildDataContext();
                 bool result = (from P in context.MultiLiveStreams where (P.UserId == userid && P.UserName == username && P.LiveDate == onDate) select P).Any();
                 if (!result)
                 {
                     context.MultiLiveStreams.Add(new(userId: userid, userName: username, platform: platform, liveDate: onDate));
                     context.SaveChanges(true);
                 }
+                ClearDataContext();
 
                 return !result;
             }
@@ -1692,21 +2040,26 @@ switches:
             {
                 lock (GUIDataManagerLock.Lock)
                 {
+                    BuildDataContext();
                     CleanupList.Clear();
-
-
 
                     List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate);
                     List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
-                    CleanupList.AddRange(UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
+
+                    foreach (var A in (from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
                     {
                         ThroughDate = uniqueDate,
                         StreamCount = (int)(from DateTime dates in AllDates
                                             where dates.Date <= uniqueDate
                                             select dates).Count()
-                    }));
+                    })
+                                       select M))
+                    {
+                        CleanupList.Add(A);
+                    }
 
                     IsLiveStreamUpdated = false; // reset update flag indicator
+                    ClearDataContext();
                 }
             }
         }
@@ -1715,8 +2068,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-
-
+                BuildDataContext();
                 var multiLiveStreams = (from MLS in context.MultiLiveStreams
                                         where MLS.LiveDate <= archiveRecord.ThroughDate.Date
                                         group MLS by
@@ -1762,33 +2114,25 @@ switches:
                 CleanupList.Clear();
                 context.SaveChanges(true);
                 SummarizeStreamData();
+
+                ClearDataContext();
             }
         }
 
-
-
         #endregion
-
 
         private void LearnMsgs_LearnMsgsRowDeleted(object sender, EventArgs e)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are deleted.");
-
 
             LearnMsgChanged = true;
         }
 
         private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether adding a new learned message.");
-
 
             LearnMsgChanged = true;
         }
-
-
-
     }
 }

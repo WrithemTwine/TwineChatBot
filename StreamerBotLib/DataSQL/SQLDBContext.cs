@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Static;
 
 namespace StreamerBotLib.DataSQL
 {
     public class SQLDBContext : DbContext
     {
-        private readonly string DatabaseFileName = "ChatDataStoreTwineBot.db";
-
         #region User Data
         public DbSet<Followers> Followers { get; set; }
         public DbSet<Currency> Currency { get; set; }
@@ -53,7 +52,10 @@ namespace StreamerBotLib.DataSQL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Data Source={DatabaseFileName}");
+            if (OptionFlags.EFCDatabaseProviderSqlite)
+            {
+                optionsBuilder.UseSqlite(OptionFlags.EFCConnectStringSqlite);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -191,6 +191,7 @@ namespace StreamerBotLib.BotClients
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
+                TwitchLiveMonitor.MultiLiveGetChannels += TwitchLiveMonitor_MultiLiveGetChannels;
 
                 TwitchLiveMonitor.HandlersAdded = true;
             }
@@ -209,6 +210,7 @@ namespace StreamerBotLib.BotClients
             }
 
         }
+
 
         public static void CheckStreamerBotIds()
         {
@@ -507,6 +509,10 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region Twitch LiveMonitor
+        private void TwitchLiveMonitor_MultiLiveGetChannels(object sender, MultiLiveGetChannelsEventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchMultiGetChannels, e);
+        }
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {
@@ -522,7 +528,7 @@ namespace StreamerBotLib.BotClients
 
             if (e.Channel != TwitchBotsBase.TwitchChannelName)
             {
-                TwitchLiveMonitor.SendMultiLiveMsg(e);
+                InvokeBotEvent(this, BotEvents.TwitchMultiStreamOnline, e);
             }
             else
             {
@@ -539,14 +545,14 @@ namespace StreamerBotLib.BotClients
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Getting a list of all current viewers in the stream to register in the system.");
 
-                //ThreadManager.CreateThreadStart(() =>
-                //{
-                //    InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
-                //    {
-                //        Users = (from C in TwitchBotUserSvc.GetChatters()
-                //                 select AddUserId(C.UserName)).ToList()
-                //    });
-                //});
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
+                    {
+                        Users = (from C in TwitchBotUserSvc.GetChatters()
+                                 select AddUserId(C.UserName)).ToList()
+                    });
+                });
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Sent the current viewership list.");
 
@@ -802,13 +808,11 @@ namespace StreamerBotLib.BotClients
                     }
 
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-                    if (TwitchTokenBot.CheckToken())
-                    { // proceed with getting a refresh token and access token
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Captured the auth code. Now performing the " +
-                            "finishing action.");
+                    TwitchTokenBot.CheckToken();
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Captured the auth code. Now performing the " +
+                        "finishing action.");
 
-                        FinishedAuthenticationAction.Invoke();
-                    }
+                    FinishedAuthenticationAction.Invoke();
 
                     HttpStarted = false;
                 });
@@ -901,7 +905,6 @@ namespace StreamerBotLib.BotClients
 
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Wrap up bulk-add Twitch followers.");
 
-                    InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
                 });
                 MultiThreadOps.Add(BulkLoadFollows);
                 BulkLoadFollows.Start();

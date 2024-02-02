@@ -9,6 +9,6 @@
         public int Seconds { get; set; } = seconds;
         public int MaxValue { get; set; } = maxValue;
 
-        public Currency Currency { get; set; }
+        public ICollection<Currency> Currency { get; } = new List<Currency>();
     }
 }

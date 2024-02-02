@@ -2353,7 +2353,8 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=(localdb)\\\\mssqllocaldb;Database=StreamerBotDB;Trusted_Connection=True;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=(localdb)\\\\mssqllocaldb;Database=TwineStreamerBotDB;Trusted_Connection=Tru" +
+            "e;")]
         public string EFCConnectStringSqlServer {
             get {
                 return ((string)(this["EFCConnectStringSqlServer"]));
@@ -2365,7 +2366,7 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=StreamerBot.db")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=TwineStreamerBot.db")]
         public string EFCConnectStringSqlite {
             get {
                 return ((string)(this["EFCConnectStringSqlite"]));
@@ -2378,8 +2379,8 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(" AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJI" +
-            "WEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;databaseName=Streame" +
-            "rBotDB")]
+            "WEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;databaseName=TwineSt" +
+            "reamerBotDB")]
         public string EFCConnectStringCosmos {
             get {
                 return ((string)(this["EFCConnectStringCosmos"]));
@@ -2391,8 +2392,8 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Host=localhost; Database=StreamerBotdb; Username=postgres; Password=mysecretpassw" +
-            "ord")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Host=localhost; Database=TwineStreamerBotdb; Username=postgres; Password=mysecret" +
+            "password")]
         public string EFCConnectStringPostgreSQL {
             get {
                 return ((string)(this["EFCConnectStringPostgreSQL"]));
@@ -2404,7 +2405,7 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("server=localhost;database=library;user=user;password=password")]
+        [global::System.Configuration.DefaultSettingValueAttribute("server=localhost;database=TwineStreamerBotdb;user=user;password=password")]
         public string EFCConnectStringMySql {
             get {
                 return ((string)(this["EFCConnectStringMySql"]));
@@ -2416,8 +2417,8 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server={server_address};Database={database_name};UserId={username};Password={pass" +
-            "word};")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server={server_address};Database=TwineStreamerBotdb;UserId={username};Password={p" +
+            "assword};")]
         public string EFCConnectStringKNet {
             get {
                 return ((string)(this["EFCConnectStringKNet"]));

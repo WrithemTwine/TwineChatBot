@@ -548,7 +548,7 @@ namespace StreamerBotLib.BotIOController
 
         public static void ConnectTwitchMultiLive()
         {
-            BotsTwitch.LiveMonitorSvc.MultiConnect(SystemsController.DataManage);
+            SystemsController.DataManage.UpdatedMonitoringChannels += BotsTwitch.LiveMonitorSvc.GetUpdatedChannelHandler();
         }
 
         public static void DisconnectTwitchMultiLive()
@@ -627,12 +627,6 @@ namespace StreamerBotLib.BotIOController
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
-        public static void TwitchStopBulkFollowers(EventArgs args = null)
-        {
-            HandleBotEventStopBulkFollowers();
-        }
-
         public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
         {
             HandleBotEventPostNewClip(ConvertClips(clips.ClipList));
@@ -658,6 +652,20 @@ namespace StreamerBotLib.BotIOController
         public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
         {
             HandleBotEventPostNewClip(ConvertClips(clips.Clips));
+        }
+
+        /// <summary>
+        /// Send notification messages based on a monitored channel stream went live.
+        /// </summary>
+        /// <param name="e"></param>
+        public void TwitchMultiStreamOnline(OnStreamOnlineArgs e)
+        {
+            HandleMultiLiveOnStreamOnline(e.Stream.UserId, e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt, e.Stream.GameId, e.Stream.GameName);
+        }
+
+        public void TwitchMultiGetChannels(MultiLiveGetChannelsEventArgs e)
+        {
+            Dispatcher.CurrentDispatcher.Invoke(() => e.Callback(SystemsController.DataManage.GetMultiChannelNames(Platform.Twitch)));
         }
 
         public void TwitchStreamOnline(OnStreamOnlineArgs e)
@@ -848,11 +856,6 @@ namespace StreamerBotLib.BotIOController
             SystemsController.UpdateFollowers(follows);
         }
 
-        public static void HandleBotEventStopBulkFollowers()
-        {
-            SystemsController.StopBulkFollowers();
-        }
-
         #endregion
 
         #region Clips
@@ -869,6 +872,45 @@ namespace StreamerBotLib.BotIOController
         private void PostGameCategoryEvent(string GameId, string GameName)
         {
             OnStreamCategoryChanged?.Invoke(this, new() { GameId = GameId, GameName = GameName });
+        }
+
+        private void HandleMultiLiveOnStreamOnline(string userid, string username, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch)
+        {
+            DateTime CurrTime = StartedAt.ToLocalTime();
+
+            // true posted new event, false did not post
+            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(userid, username, Platform.Twitch, CurrTime);
+
+            if (PostedLive)
+            {
+                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(username, Platform.Twitch, CurrTime);
+
+                if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
+                {
+                    // get message, set a default if otherwise deleted/unavailable
+                    string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+
+                    // keys for exchanging codes for representative names
+                    Dictionary<string, string> dictionary = new()
+                        {
+                            { "#user", username },
+                            { "#category", Category },
+                            { "#title", Title },
+                            { "#url", username }
+                        };
+
+                    foreach (Tuple<WebhooksSource, Uri> u in SystemsController.DataManage.GetMultiWebHooks())
+                    {
+                        if (u.Item1 == WebhooksSource.Discord)
+                        {
+                            DiscordWebhook.SendMessage(u.Item2,
+                                VariableParser.ParseReplace(msg, dictionary),
+                                VariableParser.BuildPlatformUrl(username, Platform.Twitch));
+                        }
+                    }
+                }
+            }
+
         }
 
         public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch, bool Debug = false)
@@ -1270,7 +1312,7 @@ namespace StreamerBotLib.BotIOController
 
         private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
         {
-            if (e.User.Source == Platform.Twitch)
+            if (e.User.Platform == Platform.Twitch)
             {
                 // TODO: verify users are correctly determined to be banned before banning, added to log
                 LogWriter.WriteLog($"Request to ban or timeout user {e.User.UserName} for {e.BanReason} for {e.Duration} seconds.");

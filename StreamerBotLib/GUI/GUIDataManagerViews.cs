@@ -1,4 +1,6 @@
-﻿using StreamerBotLib.DataSQL;
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
@@ -16,6 +18,8 @@ namespace StreamerBotLib.GUI
     public class GUIDataManagerViews : INotifyPropertyChanged
     {
         #region DataManager TableViews
+        private readonly SQLDBContext context = new DataManagerFactory().CreateDbContext();
+
         private IDataManager DataManager { get; set; }
 
         // datatable views to display the data in the GUI
@@ -73,8 +77,8 @@ namespace StreamerBotLib.GUI
         }
 
         public ObservableCollection<ChannelEvents> ChannelEvents { get; private set; }
-        public ObservableCollection<Users> Users { get; private set; }
-        public ObservableCollection<Followers> Followers { get; private set; }
+        public ObservableCollection<Users> Users => context.Users.Local.ToObservableCollection();
+        public ObservableCollection<Followers> Followers => context.Followers.Local.ToObservableCollection();
         public ObservableCollection<Webhooks> WebHooks { get; private set; }
         public ObservableCollection<Currency> Currency { get; private set; }
         public ObservableCollection<DataSQL.Models.CurrencyType> CurrencyType { get; private set; }
@@ -97,6 +101,15 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<GameDeadCounter> GameDeadCounter { get; private set; }
         public ObservableCollection<Quotes> Quotes { get; private set; }
 
+        #region MultiLive Collections
+        public ObservableCollection<MultiMsgEndPoints> MultiMsgEndPoints { get; private set; }
+        public ObservableCollection<MultiChannels> MultiChannels { get; private set; }
+        public ObservableCollection<MultiLiveStream> MultiLiveStreams { get; private set; }
+        public ObservableCollection<MultiSummaryLiveStream> MultiSummaryLiveStream { get; private set; }
+
+        public ObservableCollection<ArchiveMultiStream> CleanupList => DataManager.CleanupList;
+        public string MultiLiveStatusLog => DataManager.MultiLiveStatusLog;
+        #endregion
         #endregion
 
         public GUIDataManagerViews()
@@ -126,49 +139,83 @@ namespace StreamerBotLib.GUI
         /// </summary>
         private void SetDataTableViews()
         {
-            var context = new SQLDBContext();
+            context.ChannelEvents.Load();
+            context.Webhooks.Load();
+            context.CurrencyType.Load();
+            context.Currency.Load();
+            context.ShoutOuts.Load();
+            context.CategoryList.Load();
+            context.Clips.Load();
+            context.GiveawayUserData.Load();
+            context.CustomWelcome.Load();
+            context.LearnMsgs.Load();
+            context.BanReasons.Load();
+            context.BanRules.Load();
+            context.OverlayServices.Load();
+            context.OverlayTicker.Load();
+            context.ModeratorApprove.Load();
+            context.GameDeadCounter.Load();
+            context.Quotes.Load();
+            context.MultiChannels.Load();
+            context.MultiLiveStreams.Load();
+            context.MultiMsgEndPoints.Load();
+            context.MultiSummaryLiveStreams.Load();
+            context.Users.OrderBy(x => x.LastDateSeen).Load();
+            context.Followers.OrderByDescending((x) => x.StatusChangeDate).OrderByDescending((f) => f.FollowedDate).Load();
+            context.StreamStats.OrderByDescending((s) => s.StreamStart).Load();
+            context.InRaidData.OrderByDescending((r) => r.RaidDate).Load();
+            context.OutRaidData.OrderByDescending((r) => r.RaidDate).Load();
 
-            ChannelEvents = new(context.ChannelEvents);
-            Users = new(from U in context.Users orderby U.LastDateSeen descending select U);
-            Followers = new(from F in context.Followers orderby F.StatusChangeDate descending, F.FollowedDate descending select F);
-            WebHooks = new(context.Webhooks);
-            CurrencyType = new(context.CurrencyType);
-            Currency = new(context.Currency);
-            BuiltInCommands = new(
-                from C in context.Commands
-                join D in
-                    (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
-                     select def) on C.CmdName equals D into DefCmds
-                from DC in DefCmds.DefaultIfEmpty()
-                where DC != null
-                orderby C.CmdName
-                select C
-                );
+            ChannelEvents = context.ChannelEvents.Local.ToObservableCollection();
+            WebHooks = context.Webhooks.Local.ToObservableCollection();
+            CurrencyType = context.CurrencyType.Local.ToObservableCollection();
+            Currency = context.Currency.Local.ToObservableCollection();
+            ShoutOuts = context.ShoutOuts.Local.ToObservableCollection();
+            CategoryList = context.CategoryList.Local.ToObservableCollection();
+            Clips = context.Clips.Local.ToObservableCollection();
+            GiveawayUserData = context.GiveawayUserData.Local.ToObservableCollection();
+            CustomWelcomeData = context.CustomWelcome.Local.ToObservableCollection();
+            LearnMsgs = context.LearnMsgs.Local.ToObservableCollection();
+            BanRules = context.BanRules.Local.ToObservableCollection();
+            BanReasons = context.BanReasons.Local.ToObservableCollection();
+            OverlayService = context.OverlayServices.Local.ToObservableCollection();
+            OverlayTicker = context.OverlayTicker.Local.ToObservableCollection();
+            ModeratorApprove = context.ModeratorApprove.Local.ToObservableCollection();
+            GameDeadCounter = context.GameDeadCounter.Local.ToObservableCollection();
+            Quotes = context.Quotes.Local.ToObservableCollection();
+            MultiMsgEndPoints = context.MultiMsgEndPoints.Local.ToObservableCollection();
+            MultiChannels = context.MultiChannels.Local.ToObservableCollection();
+            MultiLiveStreams = context.MultiLiveStreams.Local.ToObservableCollection();
+            MultiSummaryLiveStream = context.MultiSummaryLiveStreams.Local.ToObservableCollection();
+            StreamStats = context.StreamStats.Local.ToObservableCollection();
+            InRaidData = context.InRaidData.Local.ToObservableCollection();
+            OutRaidData = context.OutRaidData.Local.ToObservableCollection();
+
             Commands = new(
-                from C in context.Commands
-                join D in (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
-                           select def) on C.CmdName equals D into UsrCmds
-                from UC in UsrCmds.DefaultIfEmpty()
-                where UC == null
-                orderby C.CmdName
-                select C
-                );
-            StreamStats = new(from SS in context.StreamStats orderby SS.StreamStart descending select SS);
-            ShoutOuts = new(context.ShoutOuts);
-            CategoryList = new(context.CategoryList);
-            Clips = new(context.Clips);
-            InRaidData = new(from IR in context.InRaidData orderby IR.RaidDate descending select IR);
-            OutRaidData = new(from OR in context.OutRaidData orderby OR.RaidDate descending select OR);
-            GiveawayUserData = new(context.GiveawayUserData);
-            CustomWelcomeData = new(context.CustomWelcome);
-            LearnMsgs = new(context.LearnMsgs);
-            BanRules = new(context.BanRules);
-            BanReasons = new(context.BanReasons);
-            OverlayService = new(context.OverlayServices);
-            OverlayTicker = new(context.OverlayTicker);
-            ModeratorApprove = new(context.ModeratorApprove);
-            GameDeadCounter = new(context.GameDeadCounter);
-            Quotes = new(context.Quotes);
+                (from C in context.Commands
+                 join D in (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
+                            select def) on C.CmdName equals D into UsrCmds
+                 from UC in UsrCmds.DefaultIfEmpty()
+                 where UC == null
+                 orderby C.CmdName
+                 select C
+                ).AsTracking());
+
+            BuiltInCommands = new(
+                (from C in context.Commands
+                 join D in
+                     (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
+                      select def) on C.CmdName equals D into DefCmds
+                 from DC in DefCmds.DefaultIfEmpty()
+                 where DC != null
+                 orderby C.CmdName
+                 select C
+                ).AsTracking());
+
+            Users.CollectionChanged += DataGrid_CollectionChanged;
+            Followers.CollectionChanged += DataGrid_CollectionChanged;
+            BuiltInCommands.CollectionChanged += DataGrid_CollectionChanged;
+            Commands.CollectionChanged += DataGrid_CollectionChanged;
 
             SetCommandCollection();
         }
@@ -178,13 +225,10 @@ namespace StreamerBotLib.GUI
         /// </summary>
         /// <param name="sender">Object invoking the event.</param>
         /// <param name="e">The parameters sent with the event.</param>
-        private void DataView_ListChanged(object sender, ListChangedEventArgs e)
+        private void DataGrid_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             lock (GUIDataManagerLock.Lock)
             {
-                DataView dataView = (DataView)sender;
-                NotifyPropertyChanged(nameof(dataView.Table));
-
                 // refresh the 'status bar' count items
                 NotifyPropertyChanged(nameof(CurrUserCount));
                 NotifyPropertyChanged(nameof(CurrFollowers));

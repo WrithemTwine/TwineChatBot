@@ -896,6 +896,18 @@
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
                                     <GroupBox Header="Bot Management - Debug Mode" Width="auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                         <DockPanel>
+                                            <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                                                <CheckBox IsChecked="{Binding LogBotStatus}" Margin="3" ToolTip="Save this log - 'StatusLog.txt'">
+                                                    <TextBlock>
+            Enable Bot Status Logging
+                                                    </TextBlock>
+                                                </CheckBox>
+                                                <CheckBox IsChecked="{Binding LogExceptions}" Margin="3" ToolTip="Save Exceptions - 'ExceptionsLog.txt'">
+                                                    <TextBlock>
+            Enable TwineBot Exception Logging
+                                                    </TextBlock>
+                                                </CheckBox>
+                                            </StackPanel>
                                             <TextBlock DockPanel.Dock="Top" Margin="0,0,0,5">Log the following functionality:</TextBlock>
                                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,0,0,5">
                                                 <Button Content="Enable All" Margin="3,0" Click="Button_OptionsDebugLog_EnableAll_Click" />
@@ -1313,8 +1325,65 @@
                         </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Database">
-                        <DockPanel>
-                            
+                        <DockPanel HorizontalAlignment="Left">
+                            <GroupBox Header="Choose Database Provider" DockPanel.Dock="Top" Width="700">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="100*" />
+                                        <ColumnDefinition Width="500*" />
+                                        <ColumnDefinition Width="10" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="30*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.Resources>
+                                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                                            <Setter Property="Padding" Value="1" />
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="TextWrapping" Value="Wrap" />
+                                        </Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                        </Style>
+                                    </Grid.Resources>
+
+                                    <TextBlock Grid.Column="1" Grid.ColumnSpan="3">Current implementation is only Sqlite.</TextBlock>
+
+                                    <RadioButton IsChecked="{Binding EFCDatabaseProviderSqlite}" Grid.Row="1" Grid.Column="0" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1">Sqlite</TextBlock>
+                                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding EFCConnectStringSqlite}" />
+                                    
+                                    <RadioButton IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderSqlServer}" Grid.Row="2" Grid.Column="0" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1">Sql Server</TextBlock>
+                                    <TextBox  IsEnabled="False" Grid.Row="2" Grid.Column="2" Text="{Binding EFCConnectStringSqlServer}" />
+
+                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderCosmos}" Grid.Row="3" Grid.Column="0" />
+                                    <TextBlock Grid.Row="3" Grid.Column="1">Cosmos</TextBlock>
+                                    <TextBox  IsEnabled="False" Grid.Row="3" Grid.Column="2" Text="{Binding EFCConnectStringCosmos}" />
+
+                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderPostgreSQL}" Grid.Row="4" Grid.Column="0" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1">PostgreSQL</TextBlock>
+                                    <TextBox  IsEnabled="False" Grid.Row="4" Grid.Column="2" Text="{Binding EFCConnectStringPostgreSQL}" />
+
+                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderMySql}" Grid.Row="5" Grid.Column="0" />
+                                    <TextBlock Grid.Row="5" Grid.Column="1">MySql</TextBlock>
+                                    <TextBox  IsEnabled="False" Grid.Row="5" Grid.Column="2" Text="{Binding EFCConnectStringMySql}" />
+
+                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderKNet}" Grid.Row="6" Grid.Column="0" />
+                                    <TextBlock Grid.Row="6" Grid.Column="1">MASES-KNet</TextBlock>
+                                    <TextBox  IsEnabled="False" Grid.Row="6" Grid.Column="2" Text="{Binding EFCConnectStringKNet}" />
+                                </Grid>
+                            </GroupBox>
                         </DockPanel>
                     </TabItem>
                 </TabControl>
@@ -1582,7 +1651,7 @@
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <StackPanel.Resources>
-                                                    <Style TargetType="Button">
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                                         <Setter Property="Padding" Value="5,0" />
                                                         <Setter Property="Margin" Value="5,3"/>
                                                     </Style>
@@ -1873,7 +1942,7 @@
                         </TabItem>
                         <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Height="10" Visibility="Visible" />
                         <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Visible">
-                            <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" />
+                            <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" IsManipulationEnabled="True" Loaded="MultiLive_Data_Loaded" />
                         </TabItem>
                     </TabControl>
                 </DockPanel>
@@ -1888,16 +1957,16 @@
                                     <Label Content="{Binding Value, Converter={StaticResource AppDataConverter}}" />
                                 </StackPanel>
                             </DataTemplate>
-                            <Style TargetType="ListViewItem">
+                            <Style TargetType="ListBoxItem">
                                 <Setter Property="ContentTemplate" Value="{StaticResource AppStatTemplate}" />
                             </Style>
                         </TabItem.Resources>
-                        <ListView BorderBrush="{DynamicResource ForegroundText}" BorderThickness="2,2,1,2" Padding="5">
-                            <ListViewItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ForegroundText}" />
-                            <ListViewItem Content="{Binding Path=Threads}" />
-                            <ListViewItem Content="{Binding Path=ClosedThreads}" />
-                            <ListViewItem Content="{Binding Path=Uptime}" />
-                        </ListView>
+                        <ListBox BorderBrush="{DynamicResource ForegroundText}" Padding="5">
+                            <ListBoxItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ForegroundText}" />
+                            <ListBoxItem Content="{Binding Path=Threads}" />
+                            <ListBoxItem Content="{Binding Path=ClosedThreads}" />
+                            <ListBoxItem Content="{Binding Path=Uptime}" />
+                        </ListBox>
                     </TabItem>
                     <TabItem Header="Twitch Status" GotFocus="TabItem_GotFocus">
                         <GroupBox Header="Bot Status Log" BorderBrush="Black" Width="Auto">
