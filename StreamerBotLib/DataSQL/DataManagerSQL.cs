@@ -1790,7 +1790,7 @@ int result = (from D in context.GameDeadCounter
         {
             lock (GUIDataManagerLock.Lock)
             {
-                TimeSpan clock = CurrTime - User.CurrLoginDate;
+                TimeSpan clock = CurrTime - User.LastDateSeen;
                 foreach (Currency currency in User.Currency)
                 {
                     currency.Value =
@@ -1799,6 +1799,7 @@ int result = (from D in context.GameDeadCounter
                             Math.Round( (currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
                         );
                 }
+                User.LastDateSeen = CurrTime;
             }
         }
 
