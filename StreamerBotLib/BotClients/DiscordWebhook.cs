@@ -184,7 +184,7 @@ namespace StreamerBotLib.BotClients
         //private const int max_embeds = 10;
 
         [AllowNull, JsonPropertyName("content")]
-        public string Content { get; private set; } = content[..Math.Min(2000, content.Length)];
+        public string Content { get; private set; } = content != null ? content[..Math.Min(2000, content.Length)] : null;
         [AllowNull, JsonPropertyName("username")]
         public string Username { get; private set; } = username;
         [AllowNull, JsonPropertyName("avatarurl")]
@@ -194,7 +194,7 @@ namespace StreamerBotLib.BotClients
         [AllowNull, JsonPropertyName("file")]
         public object File { get; private set; } = file;
         [AllowNull, JsonPropertyName("embeds")]
-        public Embed[] Embeds { get; private set; } = embeds; // Discord expects to remove in future API updates
+        public Embed[] Embeds { get; private set; } = embeds;
         [AllowNull, JsonPropertyName("payloadjson")]
         public string PayloadJson { get; private set; } = payloadjson;
         [AllowNull, JsonPropertyName("allowedmentions")]

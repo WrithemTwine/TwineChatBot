@@ -527,7 +527,6 @@ switches:
 
         private StreamStatsRow[] GetAllStreamData()
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get all stream data.");
 
             lock (GUIDataManagerLock.Lock)
@@ -538,9 +537,7 @@ switches:
 
         private StreamStatsRow GetAllStreamData(DateTime dateTime)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Find stream data for the {dateTime} date time.");
-
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -552,9 +549,7 @@ switches:
 
         public StreamStat GetStreamData(DateTime dateTime)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Get the content stats for a particular stream dated {dateTime}.");
-
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -563,15 +558,7 @@ switches:
 
                 if (streamStatsRow != null)
                 {
-                    // can't use a simple method to duplicate this because "ref" can't be used with boxing
-                    foreach (PropertyInfo property in streamStat.GetType().GetProperties())
-                    {
-                        if (streamStatsRow.GetType().GetProperties().Contains(property))
-                        {
-                            // use properties from 'StreamStat' since StreamStatRow has additional properties
-                            property.SetValue(streamStat, streamStatsRow.GetType().GetProperty(property.Name).GetValue(streamStatsRow));
-                        }
-                    }
+                    streamStat.Update(streamStatsRow);
                 }
 
                 return streamStat;
@@ -706,7 +693,10 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 UsersRow userrow = PostNewUser(User, NowSeen);
-                userrow.CurrLoginDate = NowSeen;
+                if (NowSeen > userrow.CurrLoginDate)
+                {
+                    userrow.CurrLoginDate = NowSeen;
+                }
                 userrow.LastDateSeen = NowSeen;
                 _DataSource.Users.AcceptChanges();
                 NotifySaveData();

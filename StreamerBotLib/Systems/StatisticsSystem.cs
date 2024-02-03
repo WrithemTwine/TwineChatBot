@@ -206,10 +206,13 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Updating the current stream data to the database.");
 
-            CurrStream.ModeratorsPresent = ModUsers.Count;
-            CurrStream.VIPsPresent = VIPUsers.Count;
-            CurrStream.SubsPresent = SubUsers.Count;
-            DataManage.PostStreamStat(CurrStream);
+            if (OptionFlags.ManageStreamStats)
+            {
+                CurrStream.ModeratorsPresent = ModUsers.Count;
+                CurrStream.VIPsPresent = VIPUsers.Count;
+                CurrStream.SubsPresent = SubUsers.Count;
+                DataManage.PostStreamStat(CurrStream);
+            }
         }
 
         public static void StreamOffline(DateTime Stopped)
@@ -261,6 +264,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.NewFollows++;
+                StreamDataUpdate();
             }
         }
 
@@ -269,6 +273,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.NewSubscribers++;
+                StreamDataUpdate();
             }
         }
 
@@ -277,6 +282,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.GiftSubs += Gifted;
+                StreamDataUpdate();
             }
         }
 
@@ -285,6 +291,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Bits += BitCount;
+                StreamDataUpdate();
             }
         }
 
@@ -293,6 +300,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Raids++;
+                StreamDataUpdate();
             }
         }
 
@@ -301,6 +309,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Hosted++;
+                StreamDataUpdate();
             }
         }
 
@@ -309,6 +318,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.UsersBanned++;
+                StreamDataUpdate();
             }
         }
 
@@ -317,6 +327,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.UsersTimedOut++;
+                StreamDataUpdate();
             }
         }
 
@@ -333,6 +344,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Commands++;
+                StreamDataUpdate();
             }
         }
 
@@ -341,6 +353,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.AutomatedEvents++;
+                StreamDataUpdate();
             }
         }
 
@@ -349,6 +362,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.AutomatedCommands++;
+                StreamDataUpdate();
             }
         }
 
@@ -365,6 +379,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.ClipsMade++;
+                StreamDataUpdate();
             }
         }
 

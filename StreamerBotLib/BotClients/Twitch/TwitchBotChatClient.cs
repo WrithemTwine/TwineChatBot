@@ -113,7 +113,9 @@ namespace StreamerBotLib.BotClients.Twitch
                     try
                     {
                         resetToken = true;
+                        UnregisterHandlers();
                         TwitchChat.Disconnect();
+                        CreateClient();
                         Connect();
                         resetToken = false;
 
@@ -137,7 +139,7 @@ namespace StreamerBotLib.BotClients.Twitch
             TwitchChat = new TwitchClient(null, ClientProtocol.WebSocket, LogData);
             TwitchChat.OnLog += TwitchChat_OnLog;
             TwitchChat.OnDisconnected += TwitchChat_OnDisconnected;
-            TwitchChat.AutoReListenOnException = true;
+            TwitchChat.AutoReListenOnException = false;
         }
 
         /// <summary>

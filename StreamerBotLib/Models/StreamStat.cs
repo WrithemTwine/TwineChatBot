@@ -36,7 +36,7 @@ namespace StreamerBotLib.Models
         public int NewFollows { get; set; } = newFollows;
         public int NewSubscribers { get; set; } = newSubscribers;
         public int GiftSubs { get; set; } = giftSubs;
-        public int Bits { get; set; } = bits;
+        public long Bits { get; set; } = bits;
         public int Raids { get; set; } = raids;
         public int Hosted { get; set; } = hosted;
         public int UsersBanned { get; set; } = usersBanned;
@@ -58,6 +58,31 @@ namespace StreamerBotLib.Models
         /// Maintain current active category of the stream
         /// </summary>
         public string Category { get; set; } = currentCategory;
+
+        public void Update(Data.DataSource.StreamStatsRow streamStatsRow)
+        {
+            StreamStart = streamStatsRow.StreamStart;
+            StreamEnd = streamStatsRow.StreamEnd;
+            NewFollows = streamStatsRow.NewFollows;
+            NewSubscribers = streamStatsRow.NewSubscribers;
+            GiftSubs = streamStatsRow.GiftSubs;
+            Bits = streamStatsRow.Bits;
+            Raids = streamStatsRow.Raids;
+            Hosted = streamStatsRow.Hosted;
+            UsersBanned = streamStatsRow.UsersBanned;
+            UsersTimedOut = streamStatsRow.UsersTimedOut;
+            ModeratorsPresent = streamStatsRow.ModeratorsPresent;
+            SubsPresent = streamStatsRow.SubsPresent;
+            VIPsPresent = streamStatsRow.VIPsPresent;
+            TotalChats = streamStatsRow.TotalChats;
+            Commands = streamStatsRow.Commands;
+            AutomatedCommands = streamStatsRow.AutomatedCommands;
+            DiscordMsgs = streamStatsRow.DiscordMsgs;
+            ClipsMade = streamStatsRow.ClipsMade;
+            ChannelPtCount = streamStatsRow.ChannelPtCount;
+            ChannelChallenge = streamStatsRow.ChannelChallenge;
+            MaxUsers = streamStatsRow.MaxUsers;
+        }
 
         public void Clear()
         {

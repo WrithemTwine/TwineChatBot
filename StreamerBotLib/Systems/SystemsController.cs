@@ -340,10 +340,10 @@ namespace StreamerBotLib.Systems
         {
             bool streamstart = SystemActions.StreamOnline(CurrTime);
 
-            if (OptionFlags.ManageStreamStats)
-            {
-                BeginPostingStreamUpdates();
-            }
+            //if (OptionFlags.ManageStreamStats)
+            //{
+            //    BeginPostingStreamUpdates();
+            //}
 
             SystemActions.StartElapsedTimerThread();
 
@@ -352,21 +352,21 @@ namespace StreamerBotLib.Systems
             return streamstart;
         }
 
-        private void BeginPostingStreamUpdates()
-        {
-            ThreadManager.CreateThreadStart(() =>
-            {
-                while (OptionFlags.IsStreamOnline)
-                {
-                    AppDispatcher.BeginInvoke(new BotOperation(() =>
-                    {
-                        ActionSystem.StreamDataUpdate();
-                    }), null);
+        //private void BeginPostingStreamUpdates()
+        //{
+        //    ThreadManager.CreateThreadStart(() =>
+        //    {
+        //        while (OptionFlags.IsStreamOnline)
+        //        {
+        //            AppDispatcher.BeginInvoke(new BotOperation(() =>
+        //            {
+        //                ActionSystem.StreamDataUpdate();
+        //            }), null);
 
-                    Thread.Sleep(SleepWait); // wait 6 seconds
-                }
-            });
-        }
+        //            Thread.Sleep(SleepWait); // wait 6 seconds
+        //        }
+        //    });
+        //}
 
         public static void StreamOffline(DateTime CurrTime)
         {

@@ -22,6 +22,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public TwitchBotPubSub()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Constructing PubSub instance.");
+
             BotClientName = Bots.TwitchPubSub;
 
             LogData = (Logger<TwitchPubSub>)LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<TwitchPubSub>();
@@ -59,6 +61,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (OptionFlags.TwitchStreamerUseToken)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Detected token changed. Updating bot.");
                     StopBot(); // stop the PubSub bot
                     StartBot(); // restart the PubSub bot
                 }
@@ -76,16 +79,23 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (!OptionFlags.TwitchStreamerUseToken)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Detected token changed. Updating bot.");
+
                     StopBot(); // stop the PubSub bot
                     StartBot(); // restart the PubSub bot
                 }
             }
         }
 
+        /// <summary>
+        /// Build the PubSub instance. Will add an output logger and attach events.
+        /// </summary>
         private void BuildPubSubClient()
         {
             if (TwitchPubSub == null)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Building the PubSub client.");
+
                 TwitchPubSub = new(LogData);
 
                 TwitchPubSub.OnLog += TwitchPubSub_OnLog;
@@ -104,12 +114,20 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceError(object sender, OnPubSubServiceErrorArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name,
+                DebugLogTypes.TwitchPubSubBot, "Found a service error. Checking the token for issues.");
             twitchTokenBot.CheckToken();
         }
 
+        /// <summary>
+        /// Handled event when PubSub logs a status message.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TwitchPubSub_OnLog(object sender, OnLogArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Posting a new logged message.");
+
             static string Clean(string message)
             {
                 return message.Replace("\n", "").Replace("\r", "");
@@ -123,12 +141,22 @@ namespace StreamerBotLib.BotClients.Twitch
             BotsTwitch.TwitchBotChatClient.TwitchChat_OnLog(sender,
                 new global::TwitchLib.Client.Events.OnLogArgs()
                 {
-                    Data = $"PubSub {Clean(e.Data)}"
+                    Data = $"PubSub {Clean(e.Data)}",
+                    DateTime = DateTime.Now
                 });
         }
 
+        /// <summary>
+        /// Create a new client when there's an error or receive a signal to reconnect.
+        /// 
+        /// Reconnects the PubSub service.
+        /// First, remove event handlers.
+        /// Second, start the bot.
+        /// </summary>
         private void ReconnectService()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Reconnecting the service.");
+
             IsStarted = false;
             IsStopped = true;
             TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
@@ -141,8 +169,14 @@ namespace StreamerBotLib.BotClients.Twitch
             StartBot();
         }
 
+        /// <summary>
+        /// Start the PubSub bot service.
+        /// </summary>
+        /// <returns><code>true: if the service is successfully started. false: if the service isn't started.</code></returns>
         public override bool StartBot()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Starting the PubSub bot.");
+
             bool Connected = true;
 
             ThreadManager.CreateThreadStart(() =>
@@ -185,8 +219,14 @@ namespace StreamerBotLib.BotClients.Twitch
             return Connected;
         }
 
+        /// <summary>
+        /// Stop the PubSub bot service.
+        /// </summary>
+        /// <returns><code>true: from successfully stopping the bot; false: if unable to stop the bot.</code></returns>
         public override bool StopBot()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Stopping the PubSub bot.");
+
             bool Stopped = true;
 
             ThreadManager.CreateThreadStart(() =>
@@ -204,14 +244,20 @@ namespace StreamerBotLib.BotClients.Twitch
                             TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
                             TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
                             TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+                            TwitchPubSub.OnPubSubServiceError -= TwitchPubSub_OnPubSubServiceError;
                             HandlersAdded = false;
                             TwitchPubSub = null;
+                        }
+                        else
+                        {
+                            Stopped = false;
                         }
                     }
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                         InvokeBotFailedStart();
+                        Stopped = false;
                     }
                 }
             });
@@ -231,6 +277,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 Token = OptionFlags.TwitchStreamerUseToken ? TwitchStreamerAccessToken : TwitchAccessToken;
                 if (Token != null)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Detected PubSub service connected. Now sending topics to listen.");
                     // send the topics to listen
                     TwitchPubSub?.SendTopics(Token);
                     InvokeBotStarted();
@@ -244,8 +291,15 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        /// <summary>
+        /// Recieved event when PubSub service is closed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceClosed(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Stopping PubSub service and stop listening to topics.");
+
             TwitchPubSub?.SendTopics(Token, true);
 
             IsConnected = false;
