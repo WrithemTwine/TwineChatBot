@@ -5,6 +5,7 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [Index(nameof(StatusChangeDate), nameof(UserId), nameof(FollowedDate), IsDescending = [true, false, true])]
     public class Followers(string userId = null,
                            string userName = null,
                            Platform platform = Platform.Default,

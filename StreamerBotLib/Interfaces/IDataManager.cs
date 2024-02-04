@@ -5,6 +5,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 
+using System.Collections.ObjectModel;
 using System.Data;
 
 namespace StreamerBotLib.Interfaces
@@ -12,7 +13,6 @@ namespace StreamerBotLib.Interfaces
     public interface IDataManager : IDataManagerReadOnly
     {
         event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
-
         bool CheckCurrency(LiveUser User, double value, string CurrencyName);
         new bool CheckField(string table, string field);
         new bool CheckFollower(string User);
@@ -31,33 +31,62 @@ namespace StreamerBotLib.Interfaces
         void DeleteDataRows(IEnumerable<DataRow> dataRows);
         string EditCommand(string cmd, List<string> Arglist);
         Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes);
+        ObservableCollection<DataSQL.Models.BanReasons> GetBanReasonsLocalObservable();
+        ObservableCollection<BanRules> GetBanRulesLocalObservable();
+        ObservableCollection<CategoryList> GetCategoryListLocalObservable();
+        ObservableCollection<ChannelEvents> GetChannelEventsLocalObservable();
+        ObservableCollection<Clips> GetClipsLocalObservable();
         new CommandData GetCommand(string cmd);
         new IEnumerable<string> GetCommandList();
         new string GetCommands();
+        ObservableCollection<Commands> GetCommandsLocalObservable();
+        ObservableCollection<CommandsUser> GetCommandsUserLocalObservable();
+        ObservableCollection<Currency> GetCurrencyLocalObservable();
         new List<string> GetCurrencyNames();
+        ObservableCollection<DataSQL.Models.CurrencyType> GetCurrencyTypeLocalObservable();
+        ObservableCollection<CustomWelcome> GetCustomWelcomeLocalObservable();
         int GetDeathCounter(string currCategory);
         new string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
         int GetFollowerCount();
+        ObservableCollection<Followers> GetFollowersLocalObservable();
         new List<Tuple<string, string>> GetGameCategories();
+        ObservableCollection<GameDeadCounter> GetGameDeadCounterLocalObservable();
+        ObservableCollection<GiveawayUserData> GetGiveawayUserDataLocalObservable();
+        ObservableCollection<InRaidData> GetInRaidDataLocalObservable();
         new string GetKey(string Table);
         new IEnumerable<string> GetKeys(string Table);
+        ObservableCollection<LearnMsgs> GetLearnMsgsLocalObservable();
+        ObservableCollection<ModeratorApprove> GetModeratorApproveLocalObservable();
+        ObservableCollection<MultiChannels> GetMultiChannelsLocalObservable();
+        ObservableCollection<MultiLiveStreams> GetMultiLiveStreamsLocalObservable();
+        ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable();
+        ObservableCollection<MultiSummaryLiveStreams> GetMultiSummaryLiveStreamsLocalObservable();
         string GetNewestFollower();
+        ObservableCollection<OutRaidData> GetOutRaidDataLocalObservable();
         Dictionary<string, List<string>> GetOverlayActions();
         List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username);
+        ObservableCollection<OverlayServices> GetOverlayServicesLocalObservable();
+        ObservableCollection<OverlayTicker> GetOverlayTickerLocalObservable();
         string GetQuote(int QuoteNum);
         int GetQuoteCount();
+        ObservableCollection<Quotes> GetQuotesLocalObservable();
+        ObservableCollection<ShoutOuts> GetShoutOutsLocalObservable();
         List<string> GetSocialComs();
         new string GetSocials();
         StreamStat GetStreamData(DateTime dateTime);
+        ObservableCollection<StreamStats> GetStreamStatsLocalObservable();
         new List<string> GetTableFields(string TableName);
         new List<string> GetTableNames();
         List<TickerItem> GetTickerItems();
-        new Tuple<string, int, string[]> GetTimerCommand(string Cmd);
-        new List<Tuple<string, int, string[]>> GetTimerCommands();
+        new Tuple<string, int, List<string>> GetTimerCommand(string Cmd);
+        new List<Tuple<string, int, List<string>>> GetTimerCommands();
         new int GetTimerCommandTime(string Cmd);
         new string GetUsage(string command);
         new string GetUserId(LiveUser User);
+        ObservableCollection<Users> GetUsersLocalObservable();
+        ObservableCollection<UserStats> GetUserStatsLocalObservable();
         new List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
+        ObservableCollection<Webhooks> GetWebhooksLocalObservable();
         void Initialize();
         object[] PerformQuery(Commands row, int Top = 0);
         object PerformQuery(Commands row, string ParamValue);

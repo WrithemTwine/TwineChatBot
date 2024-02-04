@@ -87,7 +87,7 @@ namespace StreamerBotLib.Systems
                 while (ComputeRerunLoop())
                 {
                     diluteTime = CheckDilute();
-                    foreach (var item in from Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands()
+                    foreach (var item in from Tuple<string, int, List<string>> Timers in DataManage.GetTimerCommands()
                                          where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))
                                          let item = new TimerCommand(Timers, diluteTime)
                                          select item)

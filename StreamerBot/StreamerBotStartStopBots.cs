@@ -9,7 +9,7 @@ using System.Windows.Media;
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
-    { 
+    {
         private void GUI_OnBotStarted(object sender, BotStartStopEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new BotOperation(() =>

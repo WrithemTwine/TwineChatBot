@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-using Newtonsoft.Json.Linq;
-
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
@@ -60,7 +58,7 @@ switches:
         /// </summary>
         private bool LearnMsgChanged = true;
 
-        private readonly ConcurrentQueue<Follow> followsQueue = new();
+        private readonly ConcurrentQueue<IEnumerable<Follow>> followsQueue = new();
 
         private readonly string DefaulSocialMsg = LocalizedMsgSystem.GetVar(Msg.MsgDefaultSocialMsg);
         private DateTime CurrStreamStart { get; set; } = default;
@@ -76,7 +74,7 @@ switches:
         {
             if (context == default)
             {
-                context = dbContextFactory.CreateDbContext();
+                //context = dbContextFactory.CreateDbContext();
             }
         }
 
@@ -84,8 +82,8 @@ switches:
         {
             if (!constructingModel_Context && !BulkFollowerUpdate)
             {
-                context.Dispose();
-                context = default;
+                //context.Dispose();
+                //context = default;
             }
         }
 
@@ -100,6 +98,8 @@ switches:
             constructingModel_Context = true;
 
             BuildDataContext();
+
+            context = dbContextFactory.CreateDbContext();
 
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
@@ -274,14 +274,164 @@ switches:
         }
         #endregion
 
+        #region LocalView ObservableCollection
+
+        public ObservableCollection<Models.BanReasons> GetBanReasonsLocalObservable()
+        {
+            context.BanReasons.Load(); return context.BanReasons.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<BanRules> GetBanRulesLocalObservable()
+        {
+            context.BanRules.Load(); return context.BanRules.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<CategoryList> GetCategoryListLocalObservable()
+        {
+            context.CategoryList.Load(); return context.CategoryList.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<ChannelEvents> GetChannelEventsLocalObservable()
+        {
+            context.ChannelEvents.Load(); return context.ChannelEvents.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Clips> GetClipsLocalObservable()
+        {
+            context.Clips.Load(); return context.Clips.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Commands> GetCommandsLocalObservable()
+        {
+            context.Commands.Load(); return context.Commands.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<CommandsUser> GetCommandsUserLocalObservable()
+        {
+            context.CommandsUser.Load(); return context.CommandsUser.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Currency> GetCurrencyLocalObservable()
+        {
+            context.Currency.Load(); return context.Currency.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Models.CurrencyType> GetCurrencyTypeLocalObservable()
+        {
+            context.CurrencyType.Load(); return context.CurrencyType.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<CustomWelcome> GetCustomWelcomeLocalObservable()
+        {
+            context.CustomWelcome.Load(); return context.CustomWelcome.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Followers> GetFollowersLocalObservable()
+        {
+            context.Followers.Load(); return context.Followers.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<GameDeadCounter> GetGameDeadCounterLocalObservable()
+        {
+            context.GameDeadCounter.Load(); return context.GameDeadCounter.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<GiveawayUserData> GetGiveawayUserDataLocalObservable()
+        {
+            context.GiveawayUserData.Load(); return context.GiveawayUserData.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<InRaidData> GetInRaidDataLocalObservable()
+        {
+            context.InRaidData.Load(); return context.InRaidData.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<LearnMsgs> GetLearnMsgsLocalObservable()
+        {
+            context.LearnMsgs.Load(); return context.LearnMsgs.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<ModeratorApprove> GetModeratorApproveLocalObservable()
+        {
+            context.ModeratorApprove.Load(); return context.ModeratorApprove.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<MultiChannels> GetMultiChannelsLocalObservable()
+        {
+            context.MultiChannels.Load(); return context.MultiChannels.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<MultiLiveStreams> GetMultiLiveStreamsLocalObservable()
+        {
+            context.MultiLiveStreams.Load(); return context.MultiLiveStreams.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable()
+        {
+            context.MultiMsgEndPoints.Load(); return context.MultiMsgEndPoints.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<MultiSummaryLiveStreams> GetMultiSummaryLiveStreamsLocalObservable()
+        {
+            context.MultiSummaryLiveStreams.Load(); return context.MultiSummaryLiveStreams.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<OutRaidData> GetOutRaidDataLocalObservable()
+        {
+            context.OutRaidData.Load(); return context.OutRaidData.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<OverlayServices> GetOverlayServicesLocalObservable()
+        {
+            context.OverlayServices.Load(); return context.OverlayServices.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<OverlayTicker> GetOverlayTickerLocalObservable()
+        {
+            context.OverlayTicker.Load(); return context.OverlayTicker.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Quotes> GetQuotesLocalObservable()
+        {
+            context.Quotes.Load(); return context.Quotes.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<ShoutOuts> GetShoutOutsLocalObservable()
+        {
+            context.ShoutOuts.Load(); return context.ShoutOuts.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<StreamStats> GetStreamStatsLocalObservable()
+        {
+            context.StreamStats.Load(); return context.StreamStats.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Users> GetUsersLocalObservable()
+        {
+            context.Users.Load();
+            return context.Users.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<UserStats> GetUserStatsLocalObservable()
+        {
+            context.UserStats.Load(); return context.UserStats.Local.ToObservableCollection();
+        }
+
+        public ObservableCollection<Webhooks> GetWebhooksLocalObservable()
+        {
+            context.Webhooks.Load(); return context.Webhooks.Local.ToObservableCollection();
+        }
+
+        #endregion
+
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
                 var result = (from C in context.Currency
-                        where (C.UserName == User.UserName && C.CurrencyName == CurrencyName)
-                        select C.Value).FirstOrDefault() >= value;
+                              where (C.UserName == User.UserName && C.CurrencyName == CurrencyName)
+                              select C.Value).FirstOrDefault() >= value;
                 ClearDataContext();
                 return result;
             }
@@ -315,8 +465,8 @@ switches:
             {
                 BuildDataContext();
                 var result = (from f in context.Followers
-                        where (f.IsFollower && f.UserName == User && (ToDateTime == default || f.FollowedDate < ToDateTime))
-                        select f).Any();
+                              where (f.IsFollower && f.UserName == User && (ToDateTime == default || f.FollowedDate < ToDateTime))
+                              select f).Any();
                 ClearDataContext();
                 return result;
             }
@@ -328,11 +478,11 @@ switches:
             {
                 BuildDataContext();
                 var result = (from M in context.ModeratorApprove
-                        where (M.ModActionType == modActionType && M.ModActionName == ModAction)
-                        select new Tuple<string, string>(
-                            !string.IsNullOrEmpty(M.ModPerformType.ToString()) ? M.ModPerformType.ToString() : M.ModActionType.ToString(),
-                            !string.IsNullOrEmpty(M.ModPerformAction) ? M.ModPerformAction : M.ModActionName
-                            )).FirstOrDefault();
+                              where (M.ModActionType == modActionType && M.ModActionName == ModAction)
+                              select new Tuple<string, string>(
+                                  !string.IsNullOrEmpty(M.ModPerformType.ToString()) ? M.ModPerformType.ToString() : M.ModActionType.ToString(),
+                                  !string.IsNullOrEmpty(M.ModPerformAction) ? M.ModPerformAction : M.ModActionName
+                                  )).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -371,8 +521,8 @@ switches:
                 BuildDataContext();
 
                 bool result = (from c in context.Commands
-                        where c.CmdName == cmd
-                        select c).FirstOrDefault().Permission > permission;
+                               where c.CmdName == cmd
+                               select c).FirstOrDefault().Permission > permission;
                 ClearDataContext();
                 return result;
             }
@@ -389,9 +539,9 @@ switches:
             {
                 BuildDataContext();
 
-                bool result= (from s in context.ShoutOuts
-                        where s.UserId == UserId
-                        select s).Any();
+                bool result = (from s in context.ShoutOuts
+                               where s.UserId == UserId
+                               select s).Any();
                 ClearDataContext();
                 return result;
             }
@@ -409,8 +559,8 @@ switches:
                 BuildDataContext();
 
                 bool result = (from s in context.StreamStats
-                        where s.StreamStart == CurrTime
-                        select s).Any();
+                               where s.StreamStart == CurrTime
+                               select s).Any();
                 ClearDataContext();
                 return result;
             }
@@ -442,8 +592,8 @@ switches:
                 BuildDataContext();
 
                 bool result = (from s in context.Users
-                        where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Platform
-                        select s).Any();
+                               where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Platform
+                               select s).Any();
                 ClearDataContext();
                 return result;
             }
@@ -460,9 +610,9 @@ switches:
             {
                 BuildDataContext();
 
-                string result= (from s in context.CustomWelcome
-                        where s.UserName == User
-                        select s.Message).FirstOrDefault() ?? "";
+                string result = (from s in context.CustomWelcome
+                                 where s.UserName == User
+                                 select s.Message).FirstOrDefault() ?? "";
                 ClearDataContext();
                 return result;
             }
@@ -554,8 +704,8 @@ switches:
                     result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
 
                 }
-             ClearDataContext();
-           }
+                ClearDataContext();
+            }
             return result;
         }
 
@@ -581,9 +731,9 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                CommandData result = new((from Com in context.Commands
-                            where Com.CmdName == cmd
-                            select Com).FirstOrDefault());
+                CommandData result = new((from Com in (context.Commands.Union(context.CommandsUser))
+                                          where Com.CmdName == cmd
+                                          select Com).FirstOrDefault());
                 ClearDataContext();
                 return result;
             }
@@ -602,10 +752,10 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                string result = string.Join(", ", (from Com in context.Commands
-                                          where (Com.Message == DefaulSocialMsg && Com.IsEnabled)
-                                          orderby Com.CmdName
-                                          select $"!{Com.CmdName}"));
+                string result = string.Join(", ", (from Com in (context.Commands.Union(context.CommandsUser))
+                                                   where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
+                                                   orderby Com.CmdName
+                                                   select $"!{Com.CmdName}"));
                 ClearDataContext();
                 return result;
             }
@@ -617,7 +767,7 @@ switches:
             {
                 BuildDataContext();
                 List<string> result = new(from C in context.CurrencyType
-                           select C.CurrencyName);
+                                          select C.CurrencyName);
                 ClearDataContext();
                 return result;
             }
@@ -628,9 +778,9 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-int result = (from D in context.GameDeadCounter
-                        where D.Category == currCategory
-                        select D.Counter).FirstOrDefault();
+                int result = (from D in context.GameDeadCounter
+                              where D.Category == currCategory
+                              select D.Counter).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -657,8 +807,8 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                var result=  (from F in context.Followers
-                        select F).Count();
+                var result = (from F in context.Followers
+                              select F).Count();
                 ClearDataContext();
                 return result;
             }
@@ -669,9 +819,9 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                List<Tuple<string,string>> result= new(from G in context.CategoryList
-                           let game = new Tuple<string, string>(G.CategoryId, G.Category)
-                           select game); 
+                List<Tuple<string, string>> result = new(from G in context.CategoryList
+                                                         let game = new Tuple<string, string>(G.CategoryId, G.Category)
+                                                         select game);
                 ClearDataContext();
                 return result;
             }
@@ -682,7 +832,7 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                string result= context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
+                string result = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
                 ClearDataContext();
                 return result;
             }
@@ -693,7 +843,7 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                IEnumerable<string> result= new List<string>(from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name);
+                IEnumerable<string> result = new List<string>(from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name);
                 ClearDataContext();
                 return result;
             }
@@ -716,21 +866,21 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 List<OverlayActionType> result = new(from O in context.OverlayServices
-                           where (O.IsEnabled
-                           && O.OverlayType.ToString() == overlayType
-                           && (string.IsNullOrEmpty(O.UserName) || O.UserName == username)
-                           && O.OverlayAction == overlayAction)
-                           select new OverlayActionType()
-                           {
-                               ActionValue = O.OverlayAction,
-                               Duration = O.Duration,
-                               MediaFile = O.MediaFile,
-                               ImageFile = O.ImageFile,
-                               Message = O.Message,
-                               OverlayType = O.OverlayType,
-                               UserName = O.UserName,
-                               UseChatMsg = O.UseChatMsg
-                           });
+                                                     where (O.IsEnabled
+                                                     && O.OverlayType.ToString() == overlayType
+                                                     && (string.IsNullOrEmpty(O.UserName) || O.UserName == username)
+                                                     && O.OverlayAction == overlayAction)
+                                                     select new OverlayActionType()
+                                                     {
+                                                         ActionValue = O.OverlayAction,
+                                                         Duration = O.Duration,
+                                                         MediaFile = O.MediaFile,
+                                                         ImageFile = O.ImageFile,
+                                                         Message = O.Message,
+                                                         OverlayType = O.OverlayType,
+                                                         UserName = O.UserName,
+                                                         UseChatMsg = O.UseChatMsg
+                                                     });
                 ClearDataContext();
                 return result;
             }
@@ -741,9 +891,9 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                var result =  (from Q in context.Quotes
-                        where Q.Number == QuoteNum
-                        select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
+                var result = (from Q in context.Quotes
+                              where Q.Number == QuoteNum
+                              select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -754,7 +904,7 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                int result= context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
+                int result = context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
                 ClearDataContext();
                 return result;
             }
@@ -765,7 +915,7 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                Dictionary<string,List<string>> result = new()
+                Dictionary<string, List<string>> result = new()
                 {
                     { nameof(Commands), new(from C in context.Commands select C.CmdName) },
                     { nameof(ChannelEvents), new(from E in context.ChannelEvents select E.Name.ToString()) }
@@ -781,7 +931,7 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 List<string> result = new(from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
-                           select SC.CmdName);
+                                          select SC.CmdName);
                 ClearDataContext();
                 return result;
             }
@@ -795,8 +945,8 @@ int result = (from D in context.GameDeadCounter
                 var result = string.Join(" ", (from SC in
                                              context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)),
                                                 (c) => c.CmdName)
-                                                where SC.Message != DefaulSocialMsg
-                                         select SC));
+                                               where SC.Message != DefaulSocialMsg
+                                               select SC));
                 ClearDataContext();
                 return result;
             }
@@ -809,8 +959,8 @@ int result = (from D in context.GameDeadCounter
                 BuildDataContext();
 
                 var result = (from SD in context.StreamStats
-                        where SD.StreamStart == dateTime
-                        select StreamStat.Create(SD)).FirstOrDefault();
+                              where SD.StreamStart == dateTime
+                              select StreamStat.Create(SD)).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -853,35 +1003,33 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 List<TickerItem> result = new(from F in context.OverlayTicker
-                           select new TickerItem(F.TickerName, F.UserName));
+                                              select new TickerItem(F.TickerName, F.UserName));
                 ClearDataContext();
                 return result;
             }
         }
 
-        public Tuple<string, int, string[]> GetTimerCommand(string Cmd)
+        public Tuple<string, int, List<string>> GetTimerCommand(string Cmd)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                Tuple<string,int,string[]> result = (from R in context.Commands
-                        where R.RepeatTimer > 0
-                        select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
-                                                                                           select C).ToArray())).FirstOrDefault();
+                Tuple<string, int, List<string>> result = (from R in context.Commands
+                                                       where R.RepeatTimer > 0
+                                                       select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
         }
 
-        public List<Tuple<string, int, string[]>> GetTimerCommands()
+        public List<Tuple<string, int, List<string>>> GetTimerCommands()
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                List<Tuple<string,int,string[]>> result = new(from R in context.Commands
-                           where R.RepeatTimer > 0
-                           select new Tuple<string, int, string[]>(R.CmdName, R.RepeatTimer, (from C in R.Category
-                                                                                              select C).ToArray()));
+                List<Tuple<string, int, List<string>>> result = new(from R in context.Commands
+                                                                where R.RepeatTimer > 0
+                                                                select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)));
                 ClearDataContext();
                 return result;
             }
@@ -893,8 +1041,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 int result = (from R in context.Commands
-                        where R.CmdName == Cmd
-                        select R.RepeatTimer).FirstOrDefault();
+                              where R.CmdName == Cmd
+                              select R.RepeatTimer).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -906,8 +1054,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 string result = (from C in context.Commands
-                        where C.CmdName == command
-                        select C.Usage).FirstOrDefault();
+                                 where C.CmdName == command
+                                 select C.Usage).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -919,8 +1067,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 LiveUser result = (from U in context.Users
-                        where U.UserName == UserName
-                        select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
+                                   where U.UserName == UserName
+                                   select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -932,8 +1080,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 var result = (from U in context.Users
-                        where U.UserName == User.UserName
-                        select U.UserId).FirstOrDefault();
+                              where U.UserName == User.UserName
+                              select U.UserId).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -945,8 +1093,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 List<Tuple<bool, Uri>> result = new(from W in context.Webhooks
-                           where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
-                           select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
+                                                    where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
+                                                    select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
                 ClearDataContext();
                 return result;
             }
@@ -1070,11 +1218,11 @@ int result = (from D in context.GameDeadCounter
             {
                 string result;
                 BuildDataContext();
-                if (!(from Com in context.Commands
+                if (!(from Com in (context.Commands.Union(context.CommandsUser))
                       where Com.CmdName == cmd
                       select Com).Any())
                 {
-                    context.Commands.Add(new(cmd, Params.AddMe, Params.Permission,
+                    context.CommandsUser.Add(new(cmd, Params.AddMe, Params.Permission,
                     Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, new[] { Params.Category },
                     Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table),
                     Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort));
@@ -1104,7 +1252,7 @@ int result = (from D in context.GameDeadCounter
 
                     List<Models.CurrencyType> types = new(context.CurrencyType);
 
-                    foreach(Users U in context.Users)
+                    foreach (Users U in context.Users)
                     {
                         foreach (Models.CurrencyType t in types)
                         {
@@ -1178,12 +1326,12 @@ int result = (from D in context.GameDeadCounter
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                followsQueue.Enqueue(follow);
+                followsQueue.Enqueue([follow]);
                 PostFollowsQueue();
 
                 var result = !(from F in context.Followers
-                         where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform
-                         select F).Any();
+                               where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform
+                               select F).Any();
                 ClearDataContext();
                 return result;
             }
@@ -1202,52 +1350,53 @@ int result = (from D in context.GameDeadCounter
 
                 ThreadManager.CreateThreadStart(() =>
                 {
-                    DateTime currTime = DateTime.Now.ToLocalTime();
-                    Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
-                    BuildDataContext();
-
-                    while (followsQueue.TryDequeue(out Follow currUser))
+                    SystemsController.AppDispatcher.BeginInvoke(() =>
                     {
-                        lock (GUIDataManagerLock.Lock)
+                        DateTime currTime = DateTime.Now.ToLocalTime();
+                        //Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
+                        BuildDataContext();
+
+                        while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
                         {
-                            PostNewUser(currUser.FromUser, currUser.FollowedAt);
-                            Followers userfollow = (from F in context.Followers
-                                                    where (F.UserId == currUser.FromUser.UserId
-                                                    && F.UserName == currUser.FromUser.UserName
-                                                    && F.Platform == currUser.FromUser.Platform)
-                                                    select F).FirstOrDefault();
-                            if (userfollow != default)
+                            lock (GUIDataManagerLock.Lock)
                             {
-                                userfollow.IsFollower = true;
-                                userfollow.FollowedDate = currUser.FollowedAt;
-                                if (string.IsNullOrEmpty(userfollow.Category))
+                                List<Followers> tempfollow = [];
+                                foreach (Follow f in currUser)
                                 {
-                                    userfollow.Category = currUser.Category;
+                                    var user = PostNewUser(f.FromUser, f.FollowedAt);
+
+                                    if (user.Followers != null)
+                                    {
+                                        user.Followers.IsFollower = true;
+                                        user.Followers.FollowedDate = f.FollowedAt;
+                                        user.Followers.Category ??= f.Category;
+                                    }
+                                    else
+                                    {
+                                        tempfollow.Add(new Followers(userId: f.FromUser.UserId,
+                                                                            userName: f.FromUser.UserName, platform: f.FromUser.Platform,
+                                                                            isFollower: true, followedDate: f.FollowedAt,
+                                                                            statusChangeDate: f.FollowedAt, addDate: currTime,
+                                                                            category: f.Category));
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                context.Followers.Add(new(userId: currUser.FromUser.UserId,
-                                    userName: currUser.FromUser.UserName, platform: currUser.FromUser.Platform,
-                                    isFollower: true, followedDate: currUser.FollowedAt,
-                                    statusChangeDate: currUser.FollowedAt, addDate: currTime,
-                                    category: currUser.Category));
+                                context.Followers.AddRange(tempfollow);
                             }
                         }
-                    }
-                    lock (GUIDataManagerLock.Lock)
-                    {
-                        context.SaveChanges(true);
-                    }
-                    ClearDataContext();
-                    ProcessFollowQueuestarted = false;
 
-                    if (BulkFollowerUpdate)
-                    {
-                        StopBulkFollows();
-                    }
+                        lock (GUIDataManagerLock.Lock)
+                        {
+                            context.SaveChanges(true);
+                        }
+                        ClearDataContext();
+                        ProcessFollowQueuestarted = false;
+
+                        if (BulkFollowerUpdate)
+                        {
+                            StopBulkFollows();
+                        }
+                    });
                 });
-
             }
         }
 
@@ -1353,9 +1502,11 @@ int result = (from D in context.GameDeadCounter
                 {
                     newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform, firstDateSeen: FirstSeen, currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
                 }
-                if (FirstSeen <= newuser.FirstDateSeen) { newuser.FirstDateSeen = FirstSeen; }
-                newuser.UserId ??= User.UserId;
-                if (newuser.Platform == default) { newuser.Platform = User.Platform; }
+                else
+                {
+                    newuser.UserId ??= User.UserId;
+                    if (newuser.Platform == default) { newuser.Platform = User.Platform; }
+                }
 
                 List<Models.CurrencyType> types = new(context.CurrencyType);
 
@@ -1366,6 +1517,8 @@ int result = (from D in context.GameDeadCounter
                         context.Currency.Add(new(t.CurrencyName, newuser.UserName, 0));
                     }
                 }
+
+                context.UserStats.Add(new(User.UserId, User.UserName, User.Platform));
 
                 return newuser;
             }
@@ -1722,9 +1875,9 @@ int result = (from D in context.GameDeadCounter
                         }
                     }
                 }
-                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
-               BulkFollowerUpdate = false;
-                context.SaveChanges(true); 
+                OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
+                BulkFollowerUpdate = false;
+                context.SaveChanges(true);
                 ClearDataContext();
             }
         }
@@ -1744,8 +1897,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 var result = (from I in context.InRaidData
-                        where (I.UserName == user && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
-                        select I).Any();
+                              where (I.UserName == user && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
+                              select I).Any();
                 ClearDataContext();
                 return result;
             }
@@ -1764,8 +1917,8 @@ int result = (from D in context.GameDeadCounter
             {
                 BuildDataContext();
                 var result = (from O in context.OutRaidData
-                        where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
-                        select O).Any();
+                              where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
+                              select O).Any();
                 ClearDataContext();
                 return result;
             }
@@ -1796,7 +1949,7 @@ int result = (from D in context.GameDeadCounter
                     currency.Value =
                         Math.Min(
                             currency.CurrencyType.MaxValue,
-                            Math.Round( (currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
+                            Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
                         );
                 }
                 User.LastDateSeen = CurrTime;
@@ -1809,10 +1962,7 @@ int result = (from D in context.GameDeadCounter
             {
                 lock (followsQueue)
                 {
-                    foreach (Follow f in follows)
-                    {
-                        followsQueue.Enqueue(f);
-                    }
+                    followsQueue.Enqueue(follows);
                     PostFollowsQueue();
                 }
             }
@@ -1828,7 +1978,7 @@ int result = (from D in context.GameDeadCounter
                 {
                     LearnMsgChanged = false;
                     result = new(from L in context.LearnMsgs
-                               select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg));
+                                 select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg));
                 }
                 else
                 {
@@ -1944,8 +2094,8 @@ int result = (from D in context.GameDeadCounter
                     }
                     context.SaveChanges(true);
                 }
-                       ClearDataContext();
-         }
+                ClearDataContext();
+            }
         }
 
         #region MultiLive data

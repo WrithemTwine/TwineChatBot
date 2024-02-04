@@ -6,6 +6,7 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(ChannelRaided))]
+    [Index(nameof(RaidDate), IsDescending = [true])]
     public class OutRaidData(int id = 0,
                              string channelRaided = null,
                              DateTime raidDate = default) : EntityBase

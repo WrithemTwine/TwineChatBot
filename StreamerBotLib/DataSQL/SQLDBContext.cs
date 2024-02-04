@@ -40,22 +40,20 @@ namespace StreamerBotLib.DataSQL
         #region Stream Action Data
         public DbSet<ChannelEvents> ChannelEvents { get; set; }
         public DbSet<Commands> Commands { get; set; }
+        public DbSet<CommandsUser> CommandsUser { get; set; }
         public DbSet<ModeratorApprove> ModeratorApprove { get; set; }
         #endregion
 
         #region MultiLive Data
         public DbSet<MultiMsgEndPoints> MultiMsgEndPoints { get; set; }
-        public DbSet<MultiSummaryLiveStream> MultiSummaryLiveStreams { get; set; }
+        public DbSet<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; set; }
         public DbSet<MultiChannels> MultiChannels { get; set; }
-        public DbSet<MultiLiveStream> MultiLiveStreams { get; set; }
+        public DbSet<MultiLiveStreams> MultiLiveStreams { get; set; }
         #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (OptionFlags.EFCDatabaseProviderSqlite)
-            {
                 optionsBuilder.UseSqlite(OptionFlags.EFCConnectStringSqlite);
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -85,7 +83,7 @@ namespace StreamerBotLib.DataSQL
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.MultiSummaryLiveStream)
                 .WithOne(u => u.Users)
-                .HasForeignKey<MultiSummaryLiveStream>(s => new { s.UserId, s.UserName, s.Platform });
+                .HasForeignKey<MultiSummaryLiveStreams>(s => new { s.UserId, s.UserName, s.Platform });
 
             modelBuilder.Entity<Users>()
                 .HasOne(o => o.ShoutOuts)

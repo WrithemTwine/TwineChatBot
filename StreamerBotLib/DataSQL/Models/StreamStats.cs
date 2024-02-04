@@ -3,7 +3,7 @@
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(StreamStart))]
-    [Index(nameof(StreamStart))]
+    [Index(nameof(StreamStart), IsDescending = [true])]
     public class StreamStats(DateTime streamStart = default,
                              DateTime streamEnd = default,
                              int newFollows = 0,

@@ -3,6 +3,7 @@
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 

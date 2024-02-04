@@ -5,6 +5,7 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [Index(nameof(RaidDate), IsDescending = [true])]
     public class InRaidData(string userId = null,
                             string userName = null,
                             Platform platform = Platform.Default,

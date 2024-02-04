@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    public class MultiSummaryLiveStream(string userId = null,
+    public class MultiSummaryLiveStreams(string userId = null,
                                         string userName = null,
                                         Platform platform = Platform.Default,
                                         int streamCount = 0,

@@ -27,7 +27,7 @@ namespace StreamerBotLib.Systems
         private static Tuple<string, string> CurrCategory { get; set; } = new("", "");
 
         private ActionSystem SystemActions { get; set; }
-        internal Dispatcher AppDispatcher { get; set; }
+        internal static Dispatcher AppDispatcher { get; set; }
 
         private Queue<Task> ProcMsgQueue { get; set; } = new();
         private Thread ProcessMsgs;
@@ -166,7 +166,6 @@ namespace StreamerBotLib.Systems
         public void AddNewFollowers(List<Follow> FollowList)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
-
             FollowList.ForEach((f) => { f.Category = CurrCategory.Item2; }); // add category into follow object(s)
             ProcessFollow(FollowList, msg, FollowEnabled);
         }

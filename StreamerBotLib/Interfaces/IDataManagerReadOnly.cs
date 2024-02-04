@@ -8,19 +8,19 @@ namespace StreamerBotLib.Interfaces
     public interface IDataManagerReadOnly
     {
         event EventHandler UpdatedMonitoringChannels;
-        public ObservableCollection<ArchiveMultiStream> CleanupList { get; }
-        public string MultiLiveStatusLog { get; }
-        public bool CheckField(string table, string field);
-        public bool CheckPermission(string cmd, ViewerTypes permission);
-        public bool CheckShoutName(string UserName);
-        public string GetKey(string Table);
-        public string GetSocials();
-        public string GetUsage(string command);
-        public CommandData GetCommand(string cmd);
-        public List<Tuple<string, int, string[]>> GetTimerCommands();
-        public Tuple<string, int, string[]> GetTimerCommand(string Cmd);
-        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
-        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
+        ObservableCollection<ArchiveMultiStream> CleanupList { get; }
+        string MultiLiveStatusLog { get; }
+        bool CheckField(string table, string field);
+        bool CheckPermission(string cmd, ViewerTypes permission);
+        bool CheckShoutName(string UserName);
+        string GetKey(string Table);
+        string GetSocials();
+        string GetUsage(string command);
+        CommandData GetCommand(string cmd);
+        Tuple<string, int, List<string>> GetTimerCommand(string Cmd);
+        List<Tuple<string, int, List<string>>> GetTimerCommands();
+        string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
+        List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
         bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
         bool TestOutRaidData(string HostedChannel, DateTime dateTime);
         List<LearnMsgRecord> UpdateLearnedMsgs();

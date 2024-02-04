@@ -5,6 +5,7 @@ using StreamerBotLib.Enums;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [Index(nameof(LastDateSeen), IsDescending = [true])]
     public class Users(string userId = null,
                        string userName = null,
                        Platform platform = Platform.Default,
@@ -23,8 +24,8 @@ namespace StreamerBotLib.DataSQL.Models
         public CustomWelcome? CustomWelcome { get; set; }
         public UserStats UserStats { get; set; }
 
-        public ICollection<MultiLiveStream>? MultiLiveStream { get; } = new List<MultiLiveStream>();
+        public ICollection<MultiLiveStreams>? MultiLiveStream { get; } = new List<MultiLiveStreams>();
         public MultiChannels? MultiChannels { get; set; }
-        public MultiSummaryLiveStream? MultiSummaryLiveStream { get; set; }
+        public MultiSummaryLiveStreams? MultiSummaryLiveStream { get; set; }
     }
 }

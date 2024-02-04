@@ -108,7 +108,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="e">The parameters to include the method name to invoke, and the event arguments for the invoked method.</param>
         private void HandleBotEvent(object sender, BotEventArgs e)
         {
-            AppDispatcher.Invoke(() =>
+            AppDispatcher.BeginInvoke(() =>
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Event, {e.MethodName}, received from bots to post into system.");
 
