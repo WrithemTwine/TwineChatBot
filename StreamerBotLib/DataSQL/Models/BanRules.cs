@@ -3,6 +3,8 @@
 using StreamerBotLib.Enums;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace StreamerBotLib.DataSQL.Models
 {
@@ -20,6 +22,5 @@ namespace StreamerBotLib.DataSQL.Models
         public MsgTypes MsgType { get; set; } = msgType;
         public ModActions ModAction { get; set; } = modAction;
         public int TimeoutSeconds { get; set; } = timeoutSeconds;
-
     }
 }

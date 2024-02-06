@@ -74,17 +74,17 @@ switches:
         {
             if (context == default)
             {
-                //context = dbContextFactory.CreateDbContext();
+                context = dbContextFactory.CreateDbContext();
             }
         }
 
         private void ClearDataContext()
         {
-            if (!constructingModel_Context && !BulkFollowerUpdate)
-            {
-                //context.Dispose();
-                //context = default;
-            }
+            //if (!constructingModel_Context && !BulkFollowerUpdate)
+            //{
+            //    context.Dispose();
+            //    context = default;
+            //}
         }
 
         #region Construct default items
@@ -98,8 +98,6 @@ switches:
             constructingModel_Context = true;
 
             BuildDataContext();
-
-            context = dbContextFactory.CreateDbContext();
 
             SetDefaultChannelEventsTable();  // check all default ChannelEvents names
             SetDefaultCommandsTable(); // check all default Commands
@@ -860,14 +858,14 @@ switches:
             }
         }
 
-        public List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username)
+        public List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
                 List<OverlayActionType> result = new(from O in context.OverlayServices
                                                      where (O.IsEnabled
-                                                     && O.OverlayType.ToString() == overlayType
+                                                     && O.OverlayType == overlayType
                                                      && (string.IsNullOrEmpty(O.UserName) || O.UserName == username)
                                                      && O.OverlayAction == overlayAction)
                                                      select new OverlayActionType()
@@ -1518,7 +1516,12 @@ switches:
                     }
                 }
 
-                context.UserStats.Add(new(User.UserId, User.UserName, User.Platform));
+                if (!(from US in context.UserStats
+                      where (US.UserId == User.UserId && US.UserName == User.UserName && US.Platform == User.Platform)
+                      select US).Any())
+                {
+                    context.UserStats.Add(new(User.UserId, User.UserName, User.Platform));
+                }
 
                 return newuser;
             }
@@ -2013,23 +2016,29 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                foreach (UserStats U in from S in context.UserStats
-                                        join U in Users on
-                                            new { S.UserId, S.UserName, S.Platform } equals
-                                            new { U.UserId, U.UserName, U.Platform } into CurrUserStats
-                                        where CurrUserStats.DefaultIfEmpty() != null
-                                        select S)
+
+                foreach (LiveUser L in Users)
                 {
-                    if (U.Users.LastDateSeen < CurrStreamStart)
+                    UserStats stats = (from S in context.UserStats
+                                       where (S.UserId == L.UserId && S.UserName == L.UserName && S.Platform == L.Platform)
+                                       select S).FirstOrDefault();
+
+                    if (stats == default)
                     {
-                        U.Users.LastDateSeen = CurrStreamStart;
+                        stats = context.UserStats.Add(new(L.UserId, L.UserName, L.Platform)).Entity;
                     }
 
-                    if (CurrTime > U.Users.LastDateSeen && CurrTime > CurrStreamStart)
+                    if (stats.Users.LastDateSeen < CurrStreamStart)
                     {
-                        U.WatchTime = U.WatchTime.Add(CurrTime - U.Users.LastDateSeen);
+                        stats.Users.LastDateSeen = CurrStreamStart;
+                    }
+
+                    if (CurrTime > stats.Users.LastDateSeen && CurrTime > CurrStreamStart)
+                    {
+                        stats.WatchTime = stats.WatchTime.Add(CurrTime - stats.Users.LastDateSeen);
                     }
                 }
+
                 context.SaveChanges(true);
                 ClearDataContext();
             }

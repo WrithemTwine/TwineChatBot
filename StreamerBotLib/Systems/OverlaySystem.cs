@@ -89,7 +89,7 @@ namespace StreamerBotLib.Systems
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
-            List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType.ToString(), Action, UserName);
+            List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType, Action, UserName);
             OverlayActionType FoundAction = null;
 
             if (UserName != null && overlayActionTypes.Count > 0)

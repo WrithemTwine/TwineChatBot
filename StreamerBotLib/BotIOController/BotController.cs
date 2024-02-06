@@ -999,7 +999,7 @@ namespace StreamerBotLib.BotIOController
         public static void ManageBotsStreamStatusChanged(bool Start)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Starting any stopped bots or " +
-                $"stopping any ProcessFollowQueuestarted bots, based on the current active livestream={Start} status.");
+                $"stopping any started bots, based on the current active livestream={Start} status.");
 
             // loop the bots and send message to start or stop based on stream online or offline status
             foreach (IBotTypes bots in BotsList)

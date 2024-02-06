@@ -29,12 +29,6 @@
         </Setter>
     </Style>
 
-    <DataTemplate x:Key="ReadOnlyIntTemplate">
-        <StackPanel>
-            <TextBlock Text="{Binding Id}" />
-        </StackPanel>
-    </DataTemplate>
-
     <DataTemplate x:Key="DateFirstSeenTemplate">
         <StackPanel>
             <Border BorderThickness="1">
@@ -90,5 +84,90 @@
         </StackPanel>
     </DataTemplate>
 
- 
+    <DataTemplate x:Key="DateGiveawayTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding DateTime, StringFormat={}{0:MMM dd, yyyy}}" />
+            </Border>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding DateTime, StringFormat={}{0:HH:mm.ss}}"/>
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditDateGiveawayTemplate">
+        <DatePicker SelectedDate="{Binding DateTime}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateInRaidTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:MMM dd, yyyy}}" />
+            </Border>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:HH:mm.ss}}"/>
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditInRaidTemplate">
+        <DatePicker SelectedDate="{Binding RaidDate}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateOutRaidTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:MMM dd, yyyy}}" />
+            </Border>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:HH:mm.ss}}"/>
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditOutRaidTemplate">
+        <DatePicker SelectedDate="{Binding RaidDate}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateClipCreatedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:MMM dd, yyyy}}" />
+            </Border>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:HH:mm.ss}}"/>
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStreamStartTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:MMM dd, yyyy}}" />
+            </Border>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:HH:mm.ss}}"/>
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="EditStreamStartTemplate">
+        <DatePicker SelectedDate="{Binding StreamStart}" />
+    </DataTemplate>
+    
+    <DataTemplate x:Key="DateStreamEndTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:MMM dd, yyyy}}" />
+            </Border>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:HH:mm.ss}}"/>
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="EditStreamEndTemplate">
+        <DatePicker SelectedDate="{Binding StreamEnd}" />
+    </DataTemplate>
+    
 </ResourceDictionary>

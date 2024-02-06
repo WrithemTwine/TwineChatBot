@@ -43,7 +43,7 @@ namespace StreamerBotLib.Models
         /// <returns>True if the objects contain identical values.</returns>
         public bool Equals(LiveUser other)
         {
-            return other != null & UserName == other.UserName && Platform == other.Platform && UserId == other.UserId;
+            return other != null && UserName == other.UserName && Platform == other.Platform && UserId == other.UserId;
         }
 
         public int GetHashCode(object Obj)

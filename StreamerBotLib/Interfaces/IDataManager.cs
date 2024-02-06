@@ -64,7 +64,7 @@ namespace StreamerBotLib.Interfaces
         string GetNewestFollower();
         ObservableCollection<OutRaidData> GetOutRaidDataLocalObservable();
         Dictionary<string, List<string>> GetOverlayActions();
-        List<OverlayActionType> GetOverlayActions(string overlayType, string overlayAction, string username);
+        List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username);
         ObservableCollection<OverlayServices> GetOverlayServicesLocalObservable();
         ObservableCollection<OverlayTicker> GetOverlayTickerLocalObservable();
         string GetQuote(int QuoteNum);

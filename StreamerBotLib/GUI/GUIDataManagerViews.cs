@@ -113,25 +113,9 @@ namespace StreamerBotLib.GUI
             GiveawayCollection = ActionSystem.GiveawayCollection;
             CurrUserList = ActionSystem.CurrUserJoin;
 
-            SetDataTableViews();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Notifies a property changed for the GUI to refresh.
-        /// </summary>
-        /// <param name="propertyName">Name of the property which updated values.</param>
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Used in class object construction to build assign the DataTable views for the GUI, requires <c>SystemsController</c> to be initialized.
-        /// </summary>
-        public void SetDataTableViews()
-        {
+            /// <summary>
+            /// Used in class object construction to build assign the DataTable views for the GUI, requires <c>SystemsController</c> to be initialized.
+            /// </summary>
             BanReasons = DataManager.GetBanReasonsLocalObservable();
             BanRules = DataManager.GetBanRulesLocalObservable();
             CategoryList = DataManager.GetCategoryListLocalObservable();
@@ -168,6 +152,17 @@ namespace StreamerBotLib.GUI
             Commands.CollectionChanged += DataGrid_CollectionChanged;
 
             SetCommandCollection();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Notifies a property changed for the GUI to refresh.
+        /// </summary>
+        /// <param name="propertyName">Name of the property which updated values.</param>
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

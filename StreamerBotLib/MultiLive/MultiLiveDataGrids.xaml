@@ -4,6 +4,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="clr-namespace:StreamerBotLib.Properties"
+      xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
+      xmlns:core="clr-namespace:System;assembly=mscorlib" 
       xmlns:M="clr_namespace:StreamerBotLib.Models" 
       xmlns:gui="clr-namespace:StreamerBotLib.GUI" 
       d:DataContext="{d:DesignInstance Type=gui:GUIDataManagerViews}"
@@ -12,6 +14,50 @@
       Title="MultiLiveDataGrids" SnapsToDevicePixels="True" UseLayoutRounding="True" 
       Background="{DynamicResource FullBackground}"
       >
+    <Page.Resources>
+        <ObjectDataProvider x:Key="EnumWebhooksSource" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Enums:WebhooksSource" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EnumWebhooksKind" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Enums:WebhooksKind" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <DataTemplate x:Key="DateLiveTemplate">
+            <StackPanel>
+                <Border BorderThickness="1">
+                    <TextBlock Text="{Binding LiveDate, StringFormat={}{0:MMM dd, yyyy}}" />
+                </Border>
+                <Border BorderThickness="1">
+                    <TextBlock Text="{Binding LiveDate, StringFormat={}{0:HH:mm.ss}}"/>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="EditLiveDateTemplate">
+            <DatePicker SelectedDate="{Binding LiveDate}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="DateThroughTemplate">
+            <StackPanel>
+                <Border BorderThickness="1">
+                    <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:MMM dd, yyyy}}" />
+                </Border>
+                <Border BorderThickness="1">
+                    <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:HH:mm.ss}}"/>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="EditThroughDateTemplate">
+            <DatePicker SelectedDate="{Binding ThroughDate}" />
+        </DataTemplate>
+        
+    </Page.Resources>
 
     <Grid x:Name="Grid_MultiUserLiveMonitor" DataContext="{Binding}">
         <Grid.RowDefinitions>
@@ -54,21 +100,51 @@
         </StackPanel>
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                  ItemsSource="{Binding MultiMsgEndPoints}" />
+                  ItemsSource="{Binding MultiMsgEndPoints}" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
+                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
+                <DataGridCheckBoxColumn Header="Add @Everyone" Binding="{Binding AddEveryone}" />
+                <DataGridComboBoxColumn Header="Webhook Source" SelectedItemBinding="{Binding WebhooksSource}" ItemsSource="{Binding Source={StaticResource EnumWebhooksSource}}" />
+                <DataGridComboBoxColumn Header="Kind" SelectedItemBinding="{Binding Kind}" ItemsSource="{Binding Source={StaticResource EnumWebhooksKind}}" />
+                <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="250" MaxWidth="250" />
+                <DataGridTextColumn Header="Webhook" Binding="{Binding Webhook}" Width="250" MaxWidth="250" />
+            </DataGrid.Columns>
+        </DataGrid>
         <DockPanel Grid.Column="2" Grid.Row="2"  >
             <Label DockPanel.Dock="Top">Monitored Channels</Label>
             <DataGrid x:Name="DG_Multi_ChannelNames" DockPanel.Dock="Top"
-                  ItemsSource="{Binding MultiChannels}" />
+                  ItemsSource="{Binding MultiChannels}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
+                    <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
+                    <DataGridTextColumn Header="Platform" Binding="{Binding Users.Platform}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </DockPanel>
 
         <TabControl Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" >
             <TabItem Header="Daily Data" x:Name="TabItem_DailyData">
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
-                          ItemsSource="{Binding MultiLiveStreams}" />
+                          ItemsSource="{Binding MultiLiveStreams}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="User Id" Binding="{Binding Users.UserId}" />
+                        <DataGridTextColumn Header="User Name" Binding="{Binding Users.UserName}" />
+                        <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateLiveTemplate}" CellEditingTemplate="{StaticResource EditLiveDateTemplate}" SortMemberPath="LiveDate" />
+                        <DataGridTextColumn Header="Platform" Binding="{Binding Users.Platform}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
-                          ItemsSource="{Binding MultiSummaryLiveStreams}" />
+                          ItemsSource="{Binding MultiSummaryLiveStreams}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="User Id" Binding="{Binding Users.UserId}" />
+                        <DataGridTextColumn Header="User Name" Binding="{Binding Users.UserName}" />
+                        <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateThroughTemplate}" CellEditingTemplate="{StaticResource EditThroughDateTemplate}" SortMemberPath="ThroughDate" />
+                        <DataGridTextColumn Header="Streams" Binding="{Binding StreamCount}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Archive">
                 <DockPanel>
@@ -104,7 +180,7 @@
                                 to and including the selected date. These notifications per channel are added to
                                 the Summary table, either as a new row or added to the existing row. The last date in the
                                 archive operation, per channel, is also saved.
-                                </TextBlock>
+                            </TextBlock>
                             <Button x:Name="Button_StartSummarizingLiveData" IsEnabled="False" Width="75" Content="Summarize" Click="Button_StartSummarizingLiveData_Click" />
                         </StackPanel>
                     </GroupBox>
