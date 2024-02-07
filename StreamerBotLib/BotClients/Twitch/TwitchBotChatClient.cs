@@ -82,8 +82,11 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchTokenBot_BotAccessTokenUnChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Access token unchanged. Sending chat messages.");
-            SendChatMessages();
+            if (IsStarted)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Access token unchanged. Sending chat messages.");
+                SendChatMessages();
+            }
         }
 
         /// <summary>
@@ -337,7 +340,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
             try
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Attempting to stop bot.");
                 if (IsStarted)
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a started bot, now stopping the chat bot.");

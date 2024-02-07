@@ -52,6 +52,25 @@ namespace StreamerBotLib.Data.MultiLive
             SummaryLiveStream.ListChanged += DataView_ListChanged;
         }
 
+        private void UpdateChannelsForId()
+        {
+            lock (_DataSource)
+            {
+                ChannelsRow[] channelsRows = (ChannelsRow[])_DataSource.Channels.Select();
+
+                foreach(ChannelsRow c in channelsRows)
+                {
+                    if (DBNull.Value.Equals(c["UserId"]))
+                    {
+                        c.UserId = "";
+                    }
+                }
+
+                _DataSource.Channels.AcceptChanges();
+                SaveData();
+             }
+        }
+
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
         {
             DataView dataView = (DataView)sender;
@@ -128,6 +147,7 @@ namespace StreamerBotLib.Data.MultiLive
             NotifyPropertyChanged(nameof(_DataSource.MsgEndPoints));
             NotifyPropertyChanged(nameof(_DataSource.LiveStream));
 
+            UpdateChannelsForId();
         }
 
         /// <summary>
@@ -277,12 +297,11 @@ namespace StreamerBotLib.Data.MultiLive
         /// Retrieves the list of channel names from the Channels table.
         /// </summary>
         /// <returns>A list of strings from the Channels table.</returns>
-        public List<string> GetChannelNames()
+        public List<LiveUser> GetChannelNames()
         {
             lock (_DataSource)
             {
-                return new(from ChannelsRow c in _DataSource.Channels.Select()
-                           select c.ChannelName);
+                return new(from ChannelsRow c in _DataSource.Channels.Select() select new LiveUser(c.ChannelName, Platform.Twitch, DBNull.Value.Equals(c.UserId) ? null : c.UserId ));
             }
         }
 
@@ -359,6 +378,22 @@ namespace StreamerBotLib.Data.MultiLive
                 _DataSource.Channels.AcceptChanges();
                 SaveData();
                 NotifyPropertyChanged(nameof(_DataSource.Channels));
+            }
+        }
+
+        public void PostUpdatedChannelbyId(string UserName, string UserId)
+        {
+            lock (_DataSource)
+            {
+                ChannelsRow channelsRow = (ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{UserName}'").FirstOrDefault();
+
+                if (channelsRow != default && string.IsNullOrEmpty(channelsRow.UserId))
+                {
+                    channelsRow.UserId = UserId;
+                    _DataSource.Channels.AcceptChanges();
+                    SaveData();
+                    NotifyPropertyChanged(nameof(Channels));
+                }
             }
         }
 
@@ -522,6 +557,11 @@ namespace StreamerBotLib.Data.MultiLive
         }
 
         public int? GetTimerCommandTime(string Cmd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<LiveUser> GetUserIdsByName(IEnumerable<LiveUser> Users)
         {
             throw new NotImplementedException();
         }

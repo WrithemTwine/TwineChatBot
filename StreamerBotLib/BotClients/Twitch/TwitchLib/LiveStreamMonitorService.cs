@@ -37,6 +37,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// </summary>
         public event EventHandler<OnStreamUpdateArgs> OnStreamUpdate;
 
+        public DateTime InstanceDate { get; set; }
+
         /// <summary>
         /// The constructor from the LiveStreamMonitorService
         /// </summary>
@@ -46,13 +48,15 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <param name="api">The api used to query information.</param>
         /// <param name="checkIntervalInSeconds"></param>
         /// <param name="maxStreamRequestCountPerRequest"></param>
-        public ExtLiveStreamMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int maxStreamRequestCountPerRequest = 100) :
+        public ExtLiveStreamMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int maxStreamRequestCountPerRequest = 100, DateTime instanceDate = default) :
             base(api, checkIntervalInSeconds)
         {
             if (maxStreamRequestCountPerRequest < 1 || maxStreamRequestCountPerRequest > 100)
                 throw new ArgumentException("Twitch doesn't support less than 1 or more than 100 streams per request.", nameof(maxStreamRequestCountPerRequest));
 
             MaxStreamRequestCountPerRequest = maxStreamRequestCountPerRequest;
+
+            InstanceDate = instanceDate;
         }
 
         public void ClearCache()
@@ -127,6 +131,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private void HandleLiveStreamUpdate(string channel, Stream liveStream, bool callEvents)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchLiveBot, $"Performing stream update with instance dated {InstanceDate}.");
+
             var wasAlreadyLive = LiveStreams.ContainsKey(channel);
 
             LiveStreams[channel] = liveStream;
@@ -167,10 +173,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             for (var i = 0; i < pages; i++)
             {
                 var selectedSet = ChannelsToMonitor.Skip(i * MaxStreamRequestCountPerRequest).Take(MaxStreamRequestCountPerRequest).ToList();
-                var resultset = await _monitor.ActionAsync(
-                    (c, param)=> _api.Helix.Streams.GetStreamsAsync(first: (int)param[0], userLogins: (List<string>)param[1], accessToken: (string)param[2] ), 
-                    null,
-                    [selectedSet.Count, selectedSet, _api.Settings.AccessToken] );
+                GetStreamsResponse resultset;
+
+                resultset = await _monitor.ActionAsync(
+                        (c, param) => _api.Helix.Streams.GetStreamsAsync(first: (int)param[0], userIds: (List<string>)param[1], accessToken: (string)param[2]),
+                        null,
+                        [selectedSet.Count, selectedSet, _api.Settings.AccessToken]);
 
                 if (resultset.Streams == null)
                     continue;

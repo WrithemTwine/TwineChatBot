@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiUserLiveBot", "MultiUserLiveBot\MultiUserLiveBot.csproj", "{BC756E65-DBF5-4AFB-9100-9528BE698765}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBot", "StreamerBot\StreamerBot.csproj", "{C807A207-AC56-4AA4-BFF1-F3D4853F817C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
@@ -35,10 +30,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C807A207-AC56-4AA4-BFF1-F3D4853F817C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C807A207-AC56-4AA4-BFF1-F3D4853F817C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C807A207-AC56-4AA4-BFF1-F3D4853F817C}.Release|Any CPU.ActiveCfg = Release|Any CPU

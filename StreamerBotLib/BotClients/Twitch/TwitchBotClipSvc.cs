@@ -19,22 +19,16 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         /// <summary>
-        /// Rebuilds the clip service.
+        /// Builds the clip service.
         /// </summary>
-        /// <param name="ClientName">Channel to monitor.</param>
-        /// <param name="TwitchToken">Access token, if applicable</param>
-        private void ConnectClipService(string ClientName = null, string TwitchToken = null)
+        private void ConnectClipService()
         {
             if (ClipMonitorService == null)
             {
                 ClipMonitorService = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Ceiling(TwitchFrequencyClipTime));
-                ClipMonitorService.SetChannelsByName([ClientName ?? TwitchChannelName]);
+                ClipMonitorService.SetChannelsById([TwitchChannelId]);
 
                 ClipMonitorService.AccessTokenUnauthorized += ClipMonitorService_AccessTokenUnauthorized;
-            }
-            else
-            {
-                ClipMonitorService.UpdateAccessToken(TwitchAccessToken);
             }
         }
 
@@ -89,7 +83,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     InvokeBotStopped();
-                    ClipMonitorService = null;
+                    //ClipMonitorService = null;
                 }
                 return true;
             }
@@ -109,9 +103,9 @@ namespace StreamerBotLib.BotClients.Twitch
             return base.ExitBot();
         }
 
-        public async Task<List<Clip>> GetAllClipsAsync(string ChannelName = null)
+        public async Task<List<Clip>> GetAllClipsAsync()
         {
-            return await ClipMonitorService.GetAllClipsAsync(ChannelName ?? TwitchChannelName);
+            return await ClipMonitorService.GetAllClipsAsync(TwitchChannelId);
         }
 
         public void CreateClip()

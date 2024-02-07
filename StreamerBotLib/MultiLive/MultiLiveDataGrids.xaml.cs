@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Data.MultiLive;
+﻿using StreamerBotLib.BotIOController;
+using StreamerBotLib.Data.MultiLive;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
@@ -29,9 +30,10 @@ namespace StreamerBotLib.MultiLive
 
         public void AddNewMonitorChannel(string UserName, string UserId)
         {
-            if (!MultiLiveData.GetChannelNames().Contains(UserName))
+            if (!(from M in MultiLiveData.GetChannelNames() where M.UserName == UserName select M).Any())
             {
                 MultiLiveData.PostMonitorChannel(UserName, UserId);
+                BotController.UpdateTwitchMultiLiveChannels();
             }
         }
 
@@ -183,7 +185,7 @@ namespace StreamerBotLib.MultiLive
                 case "DG_Multi_ChannelNames":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "ChannelName")
+                        if (dc.Header.ToString() is not "Id" and not "ChannelName" and not "UserId")
                         {
                             Collapse(dc);
                         }

@@ -682,6 +682,29 @@ switches:
             }
         }
 
+        public IEnumerable<LiveUser> GetUserIdsByName(IEnumerable<LiveUser> Users)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                List<LiveUser> liveUsers = [];
+
+                string LikeList = string.Join("', '", from LU in Users select LU.UserName);
+
+                foreach (UsersRow U in (UsersRow[])(GetRows(_DataSource.Users, $"{_DataSource.Users.UserNameColumn.ColumnName} IN ('{LikeList}')")))
+                {
+                    LiveUser found = (from L in Users where L.UserName.ToLower() == U.UserName.ToLower() select L).FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(found.UserId))
+                    {
+                        found.UserId = U.UserId;
+                    }
+                    liveUsers.Add(found);
+                }
+
+                return liveUsers;
+            }
+        }
+
         public void UserJoined(LiveUser User, DateTime NowSeen)
         {
 

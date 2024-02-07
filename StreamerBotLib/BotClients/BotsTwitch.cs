@@ -44,10 +44,12 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Building all of the Twitch bots.");
 
+             DataManager = SystemsController.DataManage;
+
             TwitchTokenBot = new();
             TwitchBotChatClient = new();
             TwitchFollower = new();
-            TwitchLiveMonitor = new();
+            TwitchLiveMonitor = new(DataManager);
             TwitchBotClipSvc = new();
             TwitchBotUserSvc = new();
             TwitchBotPubSub = new();
@@ -75,11 +77,11 @@ namespace StreamerBotLib.BotClients
             TwitchBotUserSvc.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
             TwitchBotUserSvc.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
             TwitchBotPubSub.OnBotStarted += TwitchBotPubSub_OnBotStarted;
+            TwitchBotPubSub.OnBotStopped += TwitchBotPubSub_OnBotStopped;
 
             TwitchTokenBot.BotAcctAuthCodeExpired += TwitchTokenBot_BotAcctAuthCodeExpired;
             TwitchTokenBot.StreamerAcctAuthCodeExpired += TwitchTokenBot_StreamerAcctAuthCodeExpired;
 
-            DataManager = SystemsController.DataManage;
 
             CheckStreamerBotIds();
         }
@@ -637,9 +639,9 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         /// <param name="ChannelName">Channel to get the clips.</param>
         /// <param name="ReturnData">The callback method when the clips are found.</param>
-        public void GetChannelClips(string ChannelName, Action<List<Models.Clip>> ReturnData)
+        public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
         {
-            ThreadManager.CreateThreadStart(() => ProcessChannelClips(ChannelName, ReturnData));
+            ThreadManager.CreateThreadStart(() => ProcessChannelClips(ReturnData));
         }
 
         /// <summary>
@@ -662,6 +664,14 @@ namespace StreamerBotLib.BotClients
         {
             Twitch.TwitchLib.Events.PubSub.OnChannelPointsRewardRedeemedArgs local = new() { ChannelId = e.ChannelId, RewardRedeemed = e.RewardRedeemed };
             InvokeBotEvent(this, BotEvents.TwitchChannelPointsRewardRedeemed, local);
+        }
+
+        private void TwitchBotPubSub_OnBotStopped(object sender, EventArgs e)
+        {
+            if (TwitchBotPubSub.HandlersAdded)
+            {
+                TwitchBotPubSub.TwitchPubSub.OnChannelPointsRewardRedeemed -= TwitchPubSub_OnChannelPointsRewardRedeemed;
+            }
         }
 
         #endregion
@@ -953,13 +963,13 @@ namespace StreamerBotLib.BotClients
             StartClips = false;
         }
 
-        private async void ProcessChannelClips(string ChannelName, Action<List<Models.Clip>> ActionCallback)
+        private async void ProcessChannelClips(Action<List<Models.Clip>> ActionCallback)
         {
             List<Clip> result = [];
             TwitchBotClipSvc ChannelClips = new();
             if (ChannelClips.StartBot())
             {
-                result = await ChannelClips.GetAllClipsAsync(ChannelName);
+                result = await ChannelClips.GetAllClipsAsync();
                 ChannelClips.StopBot();
             }
 

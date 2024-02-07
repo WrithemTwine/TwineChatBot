@@ -47,7 +47,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
-            BuildPubSubClient();
         }
 
         /// <summary>
@@ -159,10 +158,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             IsStarted = false;
             IsStopped = true;
-            TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
-            TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
-            TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
-            TwitchPubSub.OnPubSubServiceError -= TwitchPubSub_OnPubSubServiceError;
+            UnregisterHandlers();
             HandlersAdded = false;
             TwitchPubSub = null;
 
@@ -225,7 +221,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns><code>true: from successfully stopping the bot; false: if unable to stop the bot.</code></returns>
         public override bool StopBot()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Stopping the PubSub bot.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Checking to stop the PubSub bot.");
 
             bool Stopped = true;
 
@@ -237,15 +233,13 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         if (IsStarted)
                         {
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "PubSub found and started. Attempting to stop.");
+
                             IsStarted = false;
                             IsStopped = true;
                             TwitchPubSub.Disconnect();
-
-                            TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
-                            TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
-                            TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
-                            TwitchPubSub.OnPubSubServiceError -= TwitchPubSub_OnPubSubServiceError;
-                            HandlersAdded = false;
+                            UnregisterHandlers();
+                            HandlersAdded = false; 
                             TwitchPubSub = null;
                         }
                         else
@@ -301,9 +295,17 @@ namespace StreamerBotLib.BotClients.Twitch
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Stopping PubSub service and stop listening to topics.");
 
             TwitchPubSub?.SendTopics(Token, true);
-
+            UnregisterHandlers();
             IsConnected = false;
             InvokeBotStopped();
+        }
+
+        private void UnregisterHandlers()
+        {
+            TwitchPubSub.OnLog -= TwitchPubSub_OnLog;
+            TwitchPubSub.OnPubSubServiceConnected -= TwitchPubSub_OnPubSubServiceConnected;
+            TwitchPubSub.OnPubSubServiceClosed -= TwitchPubSub_OnPubSubServiceClosed;
+            TwitchPubSub.OnPubSubServiceError -= TwitchPubSub_OnPubSubServiceError;
         }
     }
 }

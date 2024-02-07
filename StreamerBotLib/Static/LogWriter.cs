@@ -41,9 +41,18 @@ namespace StreamerBotLib.Static
                         if (DateTime.Now > FlushTime)
                         {
                             FlushTime = DateTime.Now + StreamFlush;
-                            StatusLogWriter.Flush();
-                            ExceptionLogWriter.Flush();
-                            DebugLogFileWriter.Flush();
+                            lock (StatusLog)
+                            {
+                                StatusLogWriter.Flush();
+                            }
+                            lock (ExceptionLog)
+                            {
+                                ExceptionLogWriter.Flush();
+                            }
+                            lock (DebugLogFile)
+                            {
+                                DebugLogFileWriter.Flush();
+                            }
                         }
                         Thread.Sleep(500); // sleep for 10 minutes = app stays open, flush timespan
                     }
@@ -56,12 +65,21 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static void ExitCloseLogs()
         {
-            StatusLogWriter.Close();
-            StatusLogWriter.Dispose();
-            ExceptionLogWriter.Close();
-            ExceptionLogWriter.Dispose();
-            DebugLogFileWriter.Close();
-            DebugLogFileWriter.Dispose();
+            lock (StatusLog)
+            {
+                StatusLogWriter.Close();
+                StatusLogWriter.Dispose();
+            }
+            lock (ExceptionLog)
+            {
+                ExceptionLogWriter.Close();
+                ExceptionLogWriter.Dispose();
+            }
+            lock (DebugLogFile)
+            {
+                DebugLogFileWriter.Close();
+                DebugLogFileWriter.Dispose();
+            }
         }
 
         /// <summary>
@@ -83,7 +101,7 @@ namespace StreamerBotLib.Static
                     catch (ObjectDisposedException ex)
                     {
                         LogException(ex, "WriteLog");
-                        StreamWriter sr = new(StatusLog);
+                        StreamWriter sr = new(StatusLog, true);
                         sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
                         sr.Close();
                     }
@@ -110,7 +128,7 @@ namespace StreamerBotLib.Static
                     }
                     catch (ObjectDisposedException Eex)
                     {
-                        StreamWriter sr = new(ExceptionLog);
+                        StreamWriter sr = new(ExceptionLog, true);
                         sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
                         sr.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
 
@@ -179,7 +197,7 @@ namespace StreamerBotLib.Static
                     catch (ObjectDisposedException ex)
                     {
                         LogException(ex, "WriteLog");
-                        StreamWriter sr = new(DebugLogFile);
+                        StreamWriter sr = new(DebugLogFile, true);
                         sr.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
                         sr.Close();
                     }

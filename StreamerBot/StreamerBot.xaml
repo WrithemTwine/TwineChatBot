@@ -854,7 +854,7 @@
                                                 <Label Width="Auto" Content="Seconds between checking for going live: " />
                                                 <Label Width="Auto" Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                             </StackPanel>
-                                            <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="Auto" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="10" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="100" TickFrequency="10"  />
+                                            <Slider x:Name="Slider_TimeGoLivePollSeconds" Height="40" Width="Auto" AutoToolTipPlacement="TopLeft" Interval="1" TickPlacement="Both" ToolTip="Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel." Value="{Binding TwitchGoLiveFrequency, Mode=TwoWay}" Maximum="3600" Minimum="5" SmallChange="1" SelectionStart="5" SelectionEnd="3600" Margin="10,0" IsSnapToTickEnabled="True" LostFocus="Settings_LostFocus" LargeChange="50" TickFrequency="10"  />
                                         </StackPanel>
                                     </GroupBox>
                                 </StackPanel>
