@@ -23,7 +23,7 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
-        internal static TwitchTokenBot TwitchTokenBot { get; private set; }
+        internal static TwitchTokenBot TwitchTokenBot { get; private set; } = new();
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; }
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
@@ -44,9 +44,8 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Building all of the Twitch bots.");
 
-             DataManager = SystemsController.DataManage;
+            DataManager = SystemsController.DataManage;
 
-            TwitchTokenBot = new();
             TwitchBotChatClient = new();
             TwitchFollower = new();
             TwitchLiveMonitor = new(DataManager);
@@ -543,7 +542,7 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, $"Found {e.Channel} is now online.");
 
-            if (e.Channel != TwitchBotsBase.TwitchChannelName)
+            if (e.Channel != TwitchBotsBase.TwitchChannelName && e.Channel != TwitchBotsBase.TwitchChannelId)
             {
                 TwitchLiveMonitor.SendMultiLiveMsg(e);
             }
@@ -580,7 +579,7 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, $"Received, {e.Channel} has a stream update notification.");
 
-            if (e.Channel == TwitchBotsBase.TwitchChannelName)
+            if (e.Channel == TwitchBotsBase.TwitchChannelName || e.Channel == TwitchBotsBase.TwitchChannelId)
             {
                 InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
             }
@@ -588,7 +587,7 @@ namespace StreamerBotLib.BotClients
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            if (e.Channel == TwitchBotsBase.TwitchChannelName) // live monitor checks different channels, we need this event to focus on the streamer channel
+            if (e.Channel == TwitchBotsBase.TwitchChannelName || e.Channel == TwitchBotsBase.TwitchChannelId) // live monitor checks different channels, we need this event to focus on the streamer channel
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, $"Received, {e.Channel} is now offline.");
 

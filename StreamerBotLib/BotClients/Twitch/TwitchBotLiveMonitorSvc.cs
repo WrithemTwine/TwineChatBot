@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Windows.Threading;
 
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -139,15 +140,12 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
-            catch (HttpRequestException hrEx)
+            catch (BadScopeException)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
-                    twitchTokenBot.CheckToken();
-                    LiveStreamMonitor.Start();
-                    InvokeBotStarted();
-                }
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
+                twitchTokenBot.CheckToken();
+                LiveStreamMonitor.Start();
+                InvokeBotStarted();
                 return false;
             }
             catch (Exception ex)

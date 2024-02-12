@@ -32,10 +32,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Followers.Table.Select("IsFollower=true").Length;
-                }
+                return Followers.Table.Select("IsFollower=true").Length;
             }
         }
 
@@ -43,10 +40,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Users.Count;
-                }
+                return Users.Count;
             }
         }
 
@@ -54,10 +48,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return BuiltInCommands.Count;
-                }
+                return BuiltInCommands.Count;
             }
         }
 
@@ -65,10 +56,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Commands.Count;
-                }
+                return Commands.Count;
             }
         }
 

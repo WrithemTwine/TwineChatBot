@@ -3,6 +3,7 @@
 using System.Net.Http;
 using System.Reflection;
 
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -92,12 +93,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
                 // suspected multiple instances produces duplicative output events
             }
-            catch (HttpRequestException hrEx)
+            catch (BadScopeException)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    AccessTokenUnauthorized?.Invoke(this, new());
-                }
+                AccessTokenUnauthorized?.Invoke(this, new());
             }
             catch (Exception ex)
             {

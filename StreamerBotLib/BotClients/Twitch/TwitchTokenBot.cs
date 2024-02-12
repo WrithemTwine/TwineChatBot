@@ -54,6 +54,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public TwitchTokenBot()
         {
+            BotClientName = Bots.TwitchTokenBot;
+
             AbortRenewToken = false;
 
             ApiSettings apiSettings = new();
@@ -65,7 +67,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 CheckToken();
             });
 
-            SetTokenBot(this);
+            twitchTokenBot = this;
         }
 
         public override bool StartBot()

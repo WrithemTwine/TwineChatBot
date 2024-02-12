@@ -707,11 +707,7 @@ switches:
 
         public void UserJoined(LiveUser User, DateTime NowSeen)
         {
-
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Update for a user joined, user {User} at {NowSeen}.");
-
-
-            static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
 
             lock (GUIDataManagerLock.Lock)
             {

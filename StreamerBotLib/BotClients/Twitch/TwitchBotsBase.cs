@@ -10,11 +10,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
         protected static TwitchTokenBot twitchTokenBot;
 
-        public static void SetTokenBot(TwitchTokenBot tokenBot)
-        {
-            twitchTokenBot = tokenBot;
-        }
-
         /// <summary>
         /// App Client Id for bot account used in the connection, connects with Access Token
         /// </summary>

@@ -133,20 +133,20 @@ namespace StreamerBot
         /// </summary>
         private void ConstructEvents()
         {
-            guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
-            guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
-            guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
-            guiTwitchBot.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
-            guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
-            guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
+            GUITwitchBots.OnBotStopped += GUI_OnBotStopped;
+            GUITwitchBots.OnBotStarted += GUI_OnBotStarted;
+            GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
+            GUITwitchBots.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
+            GUITwitchBots.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
+            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            GUITwitchBots.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
+            GUITwitchBots.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
+            GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.AppDataDirectory = GetAppDataCWD();
-            guiAppServices.OnBotStarted += GUI_OnBotStarted;
-            guiAppServices.OnBotStopped += GUI_OnBotStopped;
+            GUIAppServices.OnBotStarted += GUI_OnBotStarted;
+            GUIAppServices.OnBotStopped += GUI_OnBotStopped;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
@@ -474,7 +474,7 @@ namespace StreamerBot
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
 
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => GUITwitchBots.GetUserGameCategory(UserName: s)));
         }
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -1082,7 +1082,7 @@ namespace StreamerBot
 
         private void BotChat_SendButton_Click(object sender, RoutedEventArgs e)
         {
-            guiTwitchBot.Send(TextBox_BotChat.Text);
+            GUITwitchBots.Send(TextBox_BotChat.Text);
             TextBox_BotChat.Text = "";
         }
 
@@ -1401,7 +1401,7 @@ namespace StreamerBot
         {
             if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
             {
-                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.GetChannelPoints(UserName: s)));
+                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => GUITwitchBots.GetChannelPoints(UserName: s)));
                 ChannelPtRetrievalDate = DateTime.Now;
             }
         }

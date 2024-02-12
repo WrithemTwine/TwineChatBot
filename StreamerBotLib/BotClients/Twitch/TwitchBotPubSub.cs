@@ -171,8 +171,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns><code>true: if the service is successfully started. false: if the service isn't started.</code></returns>
         public override bool StartBot()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Starting the PubSub bot.");
-
             bool Connected = true;
 
             ThreadManager.CreateThreadStart(() =>
@@ -183,6 +181,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         if (IsStopped || !IsStarted)
                         {
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Starting the PubSub bot.");
                             IsStarted = true;
                             BuildPubSubClient();
 
@@ -221,8 +220,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns><code>true: from successfully stopping the bot; false: if unable to stop the bot.</code></returns>
         public override bool StopBot()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Checking to stop the PubSub bot.");
-
             bool Stopped = true;
 
             ThreadManager.CreateThreadStart(() =>
@@ -239,7 +236,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             IsStopped = true;
                             TwitchPubSub.Disconnect();
                             UnregisterHandlers();
-                            HandlersAdded = false; 
+                            HandlersAdded = false;
                             TwitchPubSub = null;
                         }
                         else

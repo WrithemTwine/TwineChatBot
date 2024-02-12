@@ -66,7 +66,9 @@ namespace StreamerBotLib.BotClients.Twitch
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Building the Twitch User Bot.");
             BotClientName = Bots.TwitchUserBot;
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            twitchTokenBot.BotAccessTokenUnChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
+            twitchTokenBot.StreamerAccessTokenUnChanged += TwitchTokenBot_StreamerAccessTokenChanged;
         }
 
         #region Token Bot ops
