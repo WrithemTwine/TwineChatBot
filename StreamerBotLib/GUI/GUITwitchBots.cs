@@ -11,20 +11,20 @@ namespace StreamerBotLib.GUI
 {
     public class GUITwitchBots : GUIBotBase
     {
-        public event EventHandler OnLiveStreamStarted;
-        public event EventHandler OnLiveStreamUpdated;
-        public event EventHandler OnFollowerBotStarted;
-        public event EventHandler OnLiveStreamStopped;
+        public static event EventHandler OnLiveStreamStarted;
+        public static event EventHandler OnLiveStreamUpdated;
+        public static event EventHandler OnFollowerBotStarted;
+        public static event EventHandler OnLiveStreamStopped;
 
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        public TwitchBotChatClient TwitchChat { get; private set; }
-        public TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        public TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
-        public TwitchBotClipSvc TwitchClip { get; private set; }
-        public TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
-        public TwitchBotPubSub TwitchBotPubSub { get; private set; }
+        public static TwitchBotChatClient TwitchChat { get; private set; }
+        public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
+        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
+        public static TwitchBotClipSvc TwitchClip { get; private set; }
+        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
+        public static TwitchBotPubSub TwitchBotPubSub { get; private set; }
 
         public GUITwitchBots()
         {
@@ -60,7 +60,7 @@ namespace StreamerBotLib.GUI
             BotsTwitch.RaidCompleted += Twitch_RaidCompleted;
         }
 
-        public void Send(string msg)
+        public static void Send(string msg)
         {
             TwitchChat.Send(msg);
         }
@@ -81,7 +81,7 @@ namespace StreamerBotLib.GUI
 
         private void LiveStreamMonitor_OnStreamOffline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOfflineArgs e)
         {
-            if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
+            if (OptionFlags.TwitchChannelName == e.Channel || TwitchBotsBase.TwitchChannelId == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now offline.");
 
@@ -91,7 +91,7 @@ namespace StreamerBotLib.GUI
 
         private void LiveStreamMonitor_OnStreamUpdate(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamUpdateArgs e)
         {
-            if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
+            if (OptionFlags.TwitchChannelName == e.Channel || TwitchBotsBase.TwitchChannelId == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now updated.");
 
@@ -101,7 +101,7 @@ namespace StreamerBotLib.GUI
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOnlineArgs e)
         {
-            if (OptionFlags.TwitchChannelName == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
+            if (OptionFlags.TwitchChannelName == e.Channel || TwitchBotsBase.TwitchChannelId == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now online.");
 
@@ -133,17 +133,17 @@ namespace StreamerBotLib.GUI
         }
 
         #region Events
-        public void RegisterGetCategory(EventHandler<OnGetChannelGameNameEventArgs> GetCategoryEvent)
+        public static void RegisterGetCategory(EventHandler<OnGetChannelGameNameEventArgs> GetCategoryEvent)
         {
             TwitchBotUserSvc.GetChannelGameName += GetCategoryEvent;
         }
 
-        public void RegisterChannelPoints(EventHandler<OnGetChannelPointsEventArgs> GetPointsEvent)
+        public static void RegisterChannelPoints(EventHandler<OnGetChannelPointsEventArgs> GetPointsEvent)
         {
             TwitchBotUserSvc.GetChannelPoints += GetPointsEvent;
         }
 
-        public void GetUserGameCategory(string UserName)
+        public static void GetUserGameCategory(string UserName)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Sending request for user game category.");
 
@@ -151,7 +151,7 @@ namespace StreamerBotLib.GUI
         }
 
 
-        public void GetChannelPoints(string UserName)
+        public static void GetChannelPoints(string UserName)
         {
             _ = TwitchBotUserSvc.GetUserCustomRewards(UserName: UserName);
         }

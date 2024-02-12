@@ -1,10 +1,10 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.Static;
 
-using System.Globalization;
-using System.Net.Http;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Clips.CreateClip;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Interfaces;
@@ -19,15 +19,15 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         private readonly Dictionary<string, string> _lastClipsDates = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// The current known followers for each channel.
+        /// The current known clips for each channel.
         /// </summary>
         public Dictionary<string, List<Clip>> KnownClips { get; } = new(StringComparer.OrdinalIgnoreCase);
         /// <summary>
-        /// The amount of followers queried per request.
+        /// The amount of clips queried per request.
         /// </summary>
         public int QueryCountPerRequest { get; }
         /// <summary>
-        /// The maximum amount of followers cached per channel.
+        /// The maximum amount of clips cached per channel.
         /// </summary>
         public int CacheSize { get; }
 
@@ -82,29 +82,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 List<Clip> newClips;
                 List<Clip> latestClips = null;
 
-                int loop = 0;
-
-                while (loop < 5 && latestClips == null)
-                {
-                    try
-                    {
-                        latestClips = await GetLatestClipsAsync(channel);
-                    }
-                    catch (HttpRequestException hrEx)
-                    {
-                        if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                        {
-                            AccessTokenUnauthorized?.Invoke(this, new());
-                            break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                        loop++;
-                        Thread.Sleep(400);
-                    }
-                }
+                latestClips = await GetLatestClipsAsync(channel);
 
                 if (latestClips == null || latestClips.Count == 0) { continue; }
 
@@ -118,21 +96,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 {
                     HashSet<string> existingClips = new(Clipsknown.Select(f => f.Id));
                     string latestKnownClipDate = _lastClipsDates[channel];
-                    newClips = [];
-
-                    foreach (Clip clip in latestClips)
-                    {
-                        if (!existingClips.Add(clip.Id) || DateTime.Parse(clip.CreatedAt, CultureInfo.CurrentCulture) < DateTime.Parse(latestKnownClipDate, CultureInfo.CurrentCulture))
-                        {
-                            continue;
-                        }
-
-                        newClips.Add(clip);
-                        latestKnownClipDate = clip.CreatedAt;
-                        Clipsknown.Add(clip);
-                    }
-                    existingClips.Clear();
-                    existingClips.TrimExcess();
+                    newClips = latestClips.Except(Clipsknown, new ClipsComparer()).ToList();
+                    latestKnownClipDate = latestClips.Last().CreatedAt;
+                    Clipsknown.AddRange(newClips);
 
                     if (Clipsknown.Count > CacheSize)
                     {
@@ -154,81 +120,53 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<List<Clip>> GetAllClipsAsync(string ChannelName)
         {
-            async Task<GetClipsResponse> Clips(string Channel, int queryCount, string after = null)
+            string after = null;
+
+            List<Clip> clips = [];
+
+            try
             {
-                try
+                do
                 {
-                    return after == null ?
-                        await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c), Channel, [queryCount])
-                        : await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[1], broadcasterId: c, after: (string)param[0]), Channel, [queryCount, after]);
-                }
-                catch (HttpRequestException hrEx)
-                {
-                    if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    {
-                        AccessTokenUnauthorized?.Invoke(this, new());
-                    }
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    return null;
-                }
+                    GetClipsResponse curr = await _monitor.ActionAsync((c, param) =>
+                                                                    _api.Helix.Clips.GetClipsAsync(first: (int)param[0],
+                                                                                                   broadcasterId: c,
+                                                                                                   after: (string)param[1]), 
+                                                                                                   ChannelName, 
+                                                                                                   [QueryCountPerRequest, after]);
+                    after = curr.Pagination.Cursor;
+                    clips.AddRange(curr.Clips);
+                } while (after != null);
+
+                return clips;
             }
-
-            List<Clip> allClips = [];
-            string cursor = null;
-
-            async Task<int> AddClip(string Channel, int queryCount, string after = null)
+            catch (BadScopeException)
             {
-                GetClipsResponse getClips = null;
-                int x = 0;
-
-                while (getClips == null && x < 5)
-                {
-                    getClips = await Clips(Channel, queryCount, after);
-
-                    if (getClips != null)
-                    {
-                        allClips.AddRange(getClips.Clips);
-                        cursor = getClips.Pagination.Cursor;
-                    }
-                    else
-                    {
-                        Thread.Sleep(5000);
-                        x++;
-                    }
-                }
-                return getClips?.Clips?.Length ?? -1;
+                AccessTokenUnauthorized?.Invoke(this, new());
+                return null;
             }
-
-            int count = 0, loop = 0;
-
-            while ((allClips.Count == 0 || count == 100 || count == -1) && loop < 5)
-            // either start with an empty list, start filling the list (count == 100, 100 clips per request), or an exception getting the list (count == -1), continue up to 5 tries on failures (loop = 0, loop++ < 5)
+            catch (Exception ex)
             {
-                try
-                {
-                    count = await AddClip(ChannelName, 100, cursor);
-                }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-                if (count == -1) // -1 => fail condition based on exception
-                {
-                    loop++;
-                }
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return null;
             }
-
-            return allClips;
         }
 
         protected override async Task OnServiceTimerTick()
         {
-            await base.OnServiceTimerTick();
-            await MonitorNewClips();
+            try
+            {
+                await base.OnServiceTimerTick();
+                await MonitorNewClips();
+            }
+            catch (BadScopeException)
+            {
+                AccessTokenUnauthorized?.Invoke(this, new());
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         private async Task<List<Clip>> GetLatestClipsAsync(string channel)
@@ -241,7 +179,33 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public async Task<CreatedClipResponse> CreateClip(string channelId)
         {
-            return await _api.Helix.Clips.CreateClipAsync(channelId);
+            try
+            {
+                return await _api.Helix.Clips.CreateClipAsync(channelId);
+            }
+            catch (BadScopeException)
+            {
+                AccessTokenUnauthorized?.Invoke(this, new());
+                return null;
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                return null;
+            }
+        }
+    }
+
+    internal class ClipsComparer : IEqualityComparer<Clip>
+    {
+        public bool Equals(Clip x, Clip y)
+        {
+            return (x.CreatedAt == y.CreatedAt) && (x.Id == y.Id);
+        }
+
+        public int GetHashCode([DisallowNull] Clip obj)
+        {
+            return obj.CreatedAt.GetHashCode();
         }
     }
 }

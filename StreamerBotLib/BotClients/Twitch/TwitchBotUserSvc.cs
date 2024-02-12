@@ -63,9 +63,12 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public TwitchBotUserSvc()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Building the Twitch User Bot.");
             BotClientName = Bots.TwitchUserBot;
             twitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            twitchTokenBot.BotAccessTokenUnChanged += TwitchTokenBot_BotAccessTokenChanged;
             twitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
+            twitchTokenBot.StreamerAccessTokenUnChanged += TwitchTokenBot_StreamerAccessTokenChanged;
         }
 
         #region Token Bot ops
@@ -74,6 +77,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             lock (TokenLock)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Updating the streamer access token.");
+
                 if (HelixApiCalls != null)
                 {
                     HelixAPIStreamerToken.Settings.AccessToken = TwitchStreamerAccessToken;
@@ -82,6 +87,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     ChooseConnectUserService();
                 }
+                ResetTokenMode = false;
             }
         }
 
@@ -89,6 +95,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             lock (TokenLock)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Updating the bot access token.");
+
                 if (HelixApiCalls != null)
                 {
                     HelixAPIBotToken.Settings.AccessToken = TwitchAccessToken;
@@ -97,6 +105,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     ChooseConnectUserService();
                 }
+                ResetTokenMode = false;
             }
         }
 
@@ -108,8 +117,12 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="UseStreamToken">Specify whether the Streamer's Token is required to access Channel Data</param>
         private void ChooseConnectUserService()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Checking the HelixApi service.");
+
             if (HelixApiCalls == null)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Need to build the HelixApi service.");
+
                 ApiSettings BotApiSettings = null;
                 ApiSettings StreamerApiSettings = null;
 
@@ -120,10 +133,14 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 if (OptionFlags.TwitchStreamerUseToken)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Using both streamer and bot accounts.");
+
                     ClientId = TwitchStreamClientId;
                     OauthToken = TwitchStreamerAccessToken;
                     if (ClientId != null && OauthToken != null)
                     {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Building the streamer api settings.");
+
                         StreamerApiSettings = new() { AccessToken = OauthToken, ClientId = ClientId };
                     }
                 }
@@ -132,6 +149,8 @@ namespace StreamerBotLib.BotClients.Twitch
                 OauthToken = TwitchAccessToken;
                 if (ClientId != null && OauthToken != null)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Building the bot api settings.");
+
                     BotApiSettings = new() { ClientId = ClientId, AccessToken = OauthToken };
                 }
 
@@ -139,11 +158,15 @@ namespace StreamerBotLib.BotClients.Twitch
                     && ((OptionFlags.TwitchStreamerUseToken && StreamerApiSettings != null)
                        || !OptionFlags.TwitchStreamerUseToken))
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Now constructing the HelixApi service.");
+
                     HelixApiCalls = new(BotApiSettings, StreamerApiSettings);
                     HelixApiCalls.UnauthorizedToken += HelixApiCalls_UnauthorizedToken;
 
                     if (TwitchChannelId == null && TwitchBotUserId == null)
                     {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Updating the monitored channel and bot account user ids.");
+
                         SetIds();
                     }
                 }
@@ -153,6 +176,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private static void HelixApiCalls_UnauthorizedToken(object sender, EventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Detected unauthorized access, and checking token to update it.");
             twitchTokenBot.CheckToken();
         }
 
@@ -176,7 +200,6 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.LogException(ex, MethodName);
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Exception found. Attempting to update token.");
-
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
                 twitchTokenBot.CheckToken();
                 while (ResetTokenMode) { }

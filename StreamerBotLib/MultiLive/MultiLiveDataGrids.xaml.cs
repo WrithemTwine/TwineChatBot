@@ -186,7 +186,7 @@ namespace StreamerBotLib.MultiLive
                 case "DG_Multi_ChannelNames":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "ChannelName")
+                        if (dc.Header.ToString() is not "Id" and not "ChannelName" and not "UserId")
                         {
                             Collapse(dc);
                         }

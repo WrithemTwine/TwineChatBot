@@ -4,9 +4,9 @@ namespace StreamerBotLib.GUI
 {
     public class GUIBotBase
     {
-        public event EventHandler<BotStartStopEventArgs> OnBotStarted;
-        public event EventHandler<BotStartStopEventArgs> OnBotStopped;
-        public event EventHandler<BotStartStopEventArgs> OnBotFailedStart;
+        public static event EventHandler<BotStartStopEventArgs> OnBotStarted;
+        public static event EventHandler<BotStartStopEventArgs> OnBotStopped;
+        public static event EventHandler<BotStartStopEventArgs> OnBotFailedStart;
 
         protected void BotStarted(BotStartStopEventArgs e)
         {

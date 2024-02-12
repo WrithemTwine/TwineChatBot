@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System.Net.Http;
 using System.Reflection;
 
 using TwitchLib.Api.Core.Exceptions;
@@ -48,12 +47,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     Thread.Sleep(1000);
                 }
             }
-            catch (HttpRequestException hrEx)
+            catch (BadScopeException)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    AccessTokenUnauthorized?.Invoke(this, new());
-                }
+                AccessTokenUnauthorized?.Invoke(this, new());
             }
             catch (Exception ex)
             {
@@ -75,7 +71,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             try
             {
                 int MaxFollowers = 100; // use the max for bulk retrieve
-                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
+                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: [ChannelName])).Users.FirstOrDefault()?.Id;
 
                 GetChannelFollowersResponse followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
 
@@ -88,12 +84,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     Thread.Sleep(2000);
                 }
             }
-            catch (HttpRequestException hrEx)
+            catch (BadScopeException)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    AccessTokenUnauthorized?.Invoke(this, new());
-                }
+                AccessTokenUnauthorized?.Invoke(this, new());
                 return null;
             }
             catch (Exception ex)
@@ -256,7 +249,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                 AccessTokenUnauthorized?.Invoke(this, new());
 
-                return new();
+                return [];
             }
 
         }

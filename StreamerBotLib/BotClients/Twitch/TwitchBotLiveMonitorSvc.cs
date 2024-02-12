@@ -5,12 +5,13 @@ using StreamerBotLib.Static;
 
 using System.Net.Http;
 using System.Reflection;
+using System.Windows.Threading;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
-        // TODO: add mechanism to check the multilive listing to ensure those channels exist on Twitch. now with UserIds, convert their name & refer to their ID instead for user online checking
+        // TODO: consider adding mechanism to check the multilive listing to ensure those channels exist on Twitch. now with UserIds, convert their name & refer to their ID instead for user online checking
 
         public event EventHandler<MultiLiveGetChannelsEventArgs> MultiLiveGetChannels;
 
@@ -30,11 +31,13 @@ namespace StreamerBotLib.BotClients.Twitch
         public bool IsMultiConnected { get; set; }
         private const string s = "";
 
-        public TwitchBotLiveMonitorSvc()
+        public TwitchBotLiveMonitorSvc(IDataManageReadOnly datamanager)
         {
             BotClientName = Bots.TwitchLiveBot;
             IsStarted = false;
             IsStopped = true;
+
+            DataManageReadOnly = datamanager;
         }
 
         /// <summary>
@@ -57,20 +60,25 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (LiveStreamMonitor == null)
             {
-                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0));
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Creating new Livestream instance.");
+                LiveStreamMonitor = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Round(TwitchFrequencyLiveNotifyTime, 0), instanceDate: DateTime.Now.ToLocalTime());
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, $"Using {(int)Math.Round(TwitchFrequencyLiveNotifyTime, 0)} seconds live-check frequency.");
 
                 // check if there is an unauthorized http access exception; we have an expired token
                 LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;
             }
-            else
-            {
-                LiveStreamMonitor.UpdateToken(TwitchAccessToken);
-            }
+            //else
+            //{
+            //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Found livestream instance, updating the token.");
+
+                //    LiveStreamMonitor.UpdateToken(TwitchAccessToken);
+                //}
         }
 
         private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream - checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
@@ -105,6 +113,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             try
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Starting bot.");
+
                 if (IsStopped || !IsStarted)
                 {
                     IsInitialStart = true;
@@ -112,24 +122,20 @@ namespace StreamerBotLib.BotClients.Twitch
                     if (LiveStreamMonitor == null)
                     {
                         ConnectLiveMonitorService();
+                        IsStopped = false;
+                        SetLiveMonitorChannels([]);
                     }
-
-                    IsStopped = false;
-
-                    SetLiveMonitorChannels([]);
-
                     LiveStreamMonitor.Start();
                     InvokeBotStarted();
                 }
                 return true;
             }
-            catch (HttpRequestException hrEx)
+            catch (BadScopeException)
             {
-                if (hrEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-                    twitchTokenBot.CheckToken();
-                }
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
+                twitchTokenBot.CheckToken();
+                LiveStreamMonitor.Start();
+                InvokeBotStarted();
                 return false;
             }
             catch (Exception ex)
@@ -149,6 +155,8 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStarted)
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Stopping bot.");
+
                     StopMultiLive();
                     LiveStreamMonitor?.Stop();
                     IsStarted = false;
@@ -172,6 +180,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsStarted)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Stopping and exiting bot.");
+
                 StopBot();
             }
             LiveStreamMonitor = null;
@@ -179,6 +189,27 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         #region MultiLive Bot
+
+        private void CheckUserIds()
+        {
+            List<LiveUser> users = MultiLiveDataManager.GetChannelNames();
+
+            List<LiveUser> names = null;
+
+            if ((from u in users where string.IsNullOrEmpty(u.UserId) select u).Any())
+            {
+                names = new(DataManageReadOnly.GetUserIdsByName(users));
+
+                foreach (LiveUser N in users)
+                {
+                    if (string.IsNullOrEmpty(N.UserId))
+                    {
+                        N.UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(N.UserName);
+                    }
+                    MultiLiveDataManager.PostUpdatedChannelbyId(N.UserName, N.UserId);
+                }
+            }
+        }
 
         /// <summary>
         /// manages the multilive monitored channels; build the client

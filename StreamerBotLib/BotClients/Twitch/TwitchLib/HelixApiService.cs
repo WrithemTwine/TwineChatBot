@@ -33,8 +33,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         public HelixApiService(ApiSettings BotApi, ApiSettings StreamerApi = null)
         {
-            BotAPI = new(null, null, BotApi, null);
-            StreamerAPI = StreamerApi == null ? BotAPI : new(null, null, StreamerApi, null);
+            BotAPI = new(settings: BotApi);
+            StreamerAPI = StreamerApi == null ? BotAPI : new(settings: StreamerApi);
         }
 
         private async Task<GetUsersResponse> GetUsersAsync(string UserName = null, string Id = null)

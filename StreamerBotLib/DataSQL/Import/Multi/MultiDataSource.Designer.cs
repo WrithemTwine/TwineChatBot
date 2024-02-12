@@ -1192,6 +1192,7 @@ namespace StreamerBotLib.DataSQL.Import.Multi {
                 this.columnChannelName.AllowDBNull = false;
                 this.columnLiveDate.AllowDBNull = false;
                 this.columnUserId.AllowDBNull = false;
+                this.columnUserId.DefaultValue = ((string)("\"\""));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

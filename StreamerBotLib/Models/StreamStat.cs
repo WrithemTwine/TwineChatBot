@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.DataSQL.Models;
 
 using System.Diagnostics;
 
@@ -83,6 +83,31 @@ namespace StreamerBotLib.Models
         /// Maintain current active category of the stream
         /// </summary>
         public string Category { get; set; } = currentCategory;
+
+        public void Update(Data.DataSource.StreamStatsRow streamStatsRow)
+        {
+            StreamStart = streamStatsRow.StreamStart;
+            StreamEnd = streamStatsRow.StreamEnd;
+            NewFollows = streamStatsRow.NewFollows;
+            NewSubscribers = streamStatsRow.NewSubscribers;
+            GiftSubs = streamStatsRow.GiftSubs;
+            Bits = streamStatsRow.Bits;
+            Raids = streamStatsRow.Raids;
+            Hosted = streamStatsRow.Hosted;
+            UsersBanned = streamStatsRow.UsersBanned;
+            UsersTimedOut = streamStatsRow.UsersTimedOut;
+            ModeratorsPresent = streamStatsRow.ModeratorsPresent;
+            SubsPresent = streamStatsRow.SubsPresent;
+            VIPsPresent = streamStatsRow.VIPsPresent;
+            TotalChats = streamStatsRow.TotalChats;
+            Commands = streamStatsRow.Commands;
+            AutomatedCommands = streamStatsRow.AutomatedCommands;
+            DiscordMsgs = streamStatsRow.DiscordMsgs;
+            ClipsMade = streamStatsRow.ClipsMade;
+            ChannelPtCount = streamStatsRow.ChannelPtCount;
+            ChannelChallenge = streamStatsRow.ChannelChallenge;
+            MaxUsers = streamStatsRow.MaxUsers;
+        }
 
         public void Clear()
         {

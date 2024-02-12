@@ -184,7 +184,7 @@ namespace StreamerBotLib.BotClients
         //private const int max_embeds = 10;
 
         [AllowNull, JsonPropertyName("content")]
-        public string Content { get; private set; } = content[..Math.Min(2000, content.Length)];
+        public string Content { get; private set; } = content != null ? content[..Math.Min(2000, content.Length)] : null;
         [AllowNull, JsonPropertyName("username")]
         public string Username { get; private set; } = username;
         [AllowNull, JsonPropertyName("avatarurl")]

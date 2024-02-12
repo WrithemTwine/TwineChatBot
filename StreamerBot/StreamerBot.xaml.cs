@@ -46,7 +46,7 @@ namespace StreamerBot
         private DateTime ChannelPtRetrievalDate = DateTime.MinValue;
         private readonly TimeSpan ChannelPtRefresh = new(0, 15, 0);
 
-        private int TwitchFollowerCurrRefreshHrs = 0;
+        private short TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
@@ -91,7 +91,7 @@ namespace StreamerBot
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
 
-            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<short>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
@@ -194,7 +194,7 @@ namespace StreamerBot
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
 
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => GUITwitchBots.GetUserGameCategory(UserName: s)));
         }
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -630,7 +630,7 @@ namespace StreamerBot
 
         private void BotChat_SendButton_Click(object sender, RoutedEventArgs e)
         {
-            guiTwitchBot.Send(TextBox_BotChat.Text);
+            GUITwitchBots.Send(TextBox_BotChat.Text);
             TextBox_BotChat.Text = "";
         }
 

@@ -27,43 +27,32 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Followers?.Count(f => f.IsFollower) ?? 0;
-                }
+               
+                    return Followers?.Count(f => f.IsFollower) ?? 0;                
             }
         }
 
         public int CurrUserCount
         {
             get
-            {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Users?.Count ?? 0;
-                }
+            {                
+                    return Users?.Count ?? 0;                
             }
         }
 
         public int CurrBuiltInComCount
         {
             get
-            {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Commands?.Count ?? 0;
-                }
+            {                
+                    return Commands?.Count ?? 0;                
             }
         }
 
         public int CurrUserComsCount
         {
             get
-            {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return CommandsUser?.Count ?? 0;
-                }
+            {                
+                    return CommandsUser?.Count ?? 0;                
             }
         }
 
