@@ -23,7 +23,7 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
-        internal static TwitchTokenBot TwitchTokenBot { get; private set; } = new();
+        internal static TwitchTokenBot TwitchTokenBot { get; private set; }
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; }
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
@@ -46,6 +46,7 @@ namespace StreamerBotLib.BotClients
 
             DataManager = SystemsController.DataManage;
 
+            TwitchTokenBot = new();
             TwitchBotChatClient = new();
             TwitchFollower = new();
             TwitchLiveMonitor = new(DataManager);
