@@ -332,15 +332,15 @@ namespace StreamerBotLib.BotClients.Twitch
                 List<Chatter> currChat = [];
                 string cursor = null;
 
-                do
-                {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
+                //do
+                //{
+                //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
 
-                    GetChattersResponse curr = HelixApiCalls.GetChatters(channelId, botId, after: cursor).Result;
-                    cursor = curr.Pagination?.Cursor;
-                    currChat.AddRange(curr.Data);
-                }
-                while (!string.IsNullOrEmpty(cursor));
+                //    GetChattersResponse curr = HelixApiCalls.GetChatters(channelId, botId, after: cursor).Result;
+                //    cursor = curr.Pagination?.Cursor;
+                //    currChat.AddRange(curr.Data);
+                //}
+                //while (!string.IsNullOrEmpty(cursor));
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Finished getting a list of {currChat.Count} current chatters.");
 
