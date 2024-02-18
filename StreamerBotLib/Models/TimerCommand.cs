@@ -28,13 +28,13 @@ namespace StreamerBotLib.Models
         /// <summary>
         /// The list of categories applying to this command, run command if category matches current stream or "All" category designation.
         /// </summary>
-        public List<string> CategoryList { get; } = new();
+        public List<string> CategoryList { get; }
 
-        public TimerCommand(Tuple<string, int, string[]> ComRepeat, double TimeDilute)
+        public TimerCommand(Tuple<string, int, List<string>> ComRepeat, double TimeDilute)
         {
             Command = ComRepeat.Item1.ToLower();
             RepeatTime = ComRepeat.Item2;
-            CategoryList.AddRange(ComRepeat.Item3);
+            CategoryList = ComRepeat.Item3;
             LastRun = DateTime.Now;
             UpdateTime(TimeDilute);
         }

@@ -138,14 +138,14 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (OptionFlags.TwitchTokenUseAuth)
                 {
-                    StartBot(); // ensure bot is started
+                    StartBot(); // ensure bot is ProcessFollowQueuestarted
                 }
                 else
                 {
                     StopBot();
                 }
 
-                if (IsStarted) // only calculate if bot is started, meaning the User is using this operation mode.
+                if (IsStarted) // only calculate if bot is ProcessFollowQueuestarted, meaning the User is using this operation mode.
                 {
                     lock (TokenLock)
                     {

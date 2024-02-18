@@ -457,6 +457,9 @@
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
+  <data name="MsgAddCommandFailed" xml:space="preserve">
+    <value>Command-{0}-already exists, not added. Instead, use !editcommand.</value>
+  </data>
   <data name="Msgaddquote" xml:space="preserve">
     <value>Thank you for adding quote #quotenum.</value>
   </data>
@@ -486,7 +489,7 @@
     <value>Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
   </data>
   <data name="MsgBoxDataLoadedMsg" xml:space="preserve">
-    <value>$"Fatal error, both main data and backup data files failed to properly load. All further data saves have been suspended until the Bot restarts. Please close and review the data files for improper XML formatting, retore from backups - ensure using the '{StreamerBotLib.Data.DataManager.DataFileXML}' filename. Without restoration, the datafile will need to be restarted from default."</value>
+    <value>"Could not connect to the database. Please ensure the data file is available and not open by another program."</value>
   </data>
   <data name="MsgBoxDataLoadedTitle" xml:space="preserve">
     <value>Fatal DataFile Load</value>

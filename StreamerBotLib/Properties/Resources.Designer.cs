@@ -88,7 +88,7 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate clips:edit moderator:read:chatters  channel:read:redemptions channel:manage:broadcast channel:manage:raids moderator:read:follows.
+        ///   Looks up a localized string similar to bits:read chat:read chat:edit channel:moderate clips:edit moderator:read:chatters  channel:read:redemptions channel:manage:broadcast channel:manage:raids moderator:read:followers.
         /// </summary>
         public static string CredentialsTwitchScopesOauthSame {
             get {

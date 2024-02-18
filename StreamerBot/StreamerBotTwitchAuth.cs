@@ -26,13 +26,14 @@ namespace StreamerBot
         {
             if (!string.IsNullOrEmpty(OptionFlags.TwitchChannelName) && !string.IsNullOrEmpty(OptionFlags.TwitchBotUserName))
             {
-                Controller.CheckTwitchChannelBotIds();
+                StreamerBotLib.BotIOController.BotController.CheckTwitchChannelBotIds();
             }
         }
 
         private void Button_TwitchAuthToken_ReAuthorize(object sender, RoutedEventArgs e)
         {
-            Controller.ForceTwitchAuthReauthorization();
+            StreamerBotLib.BotIOController.BotController.ForceTwitchAuthReauthorization();
+            GUIStopBots_Click(this, new());
             CheckFocus();
         }
 
@@ -121,7 +122,7 @@ namespace StreamerBot
             Dispatcher.BeginInvoke(() =>
             {
                 CheckFocus();
-                StartAutoBots();
+                //StartAutoBots();
             });
         }
 

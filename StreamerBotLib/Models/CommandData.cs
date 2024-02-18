@@ -7,19 +7,19 @@ namespace StreamerBotLib.Models
         public string Usage { get; }
         public bool IsEnabled { get; }
         public short SendMsgCount { get; }
-        public string Permission { get; }
+        public ViewerTypes Permission { get; }
         public bool AddMe { get; }
         public string Message { get; }
         public bool AllowParam { get; }
         public bool Lookupdata { get; }
         public int Top { get; }
-        public string Action { get; }
+        public CommandAction Action { get; }
         public string CmdName { get; }
         public string Table { get; }
         public string Key_field { get; }
         public string Data_field { get; }
         public string Currency_field { get; }
-        public string Sort { get; }
+        public CommandSort Sort { get; }
 
         public CommandData(CommandsRow row)
         {
