@@ -267,7 +267,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 else // we have an authcode, try to get the first refresh token & access token
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"auth code is available.");
-
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"testing access token, it is {(validToken == null ? "invalid" : "valid")}");
 
                     // clientId_!null, clientsecret_!null, authcode_!null, refreshtoken_null-try to get one
@@ -284,7 +283,6 @@ namespace StreamerBotLib.BotClients.Twitch
                             ExpiresIn = BotAuthRefresh.ExpiresIn;
 
                             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Twitch provided updated access & refresh tokens.");
-
                         }
                         catch (BadRequestException AuthCodEx)
                         {

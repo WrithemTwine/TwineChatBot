@@ -79,7 +79,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (!OptionFlags.TwitchStreamerUseToken)
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Detected token changed. Updating bot.");
-
                     StopBot(); // stop the PubSub bot
                     StartBot(); // restart the PubSub bot
                 }

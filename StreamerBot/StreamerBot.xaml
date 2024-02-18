@@ -2296,7 +2296,7 @@
             </TabItem>
             <TabItem Header="Logs">
                 <TabControl>
-                    <TabItem Header="Bot Status" DataContext="{DynamicResource AppStats}" >
+                    <TabItem Header="Bot Status" >
                         <TabItem.Resources>
                             <DataTemplate x:Key="AppStatTemplate">
                                 <StackPanel Orientation="Horizontal">
@@ -2308,11 +2308,12 @@
                                 <Setter Property="ContentTemplate" Value="{StaticResource AppStatTemplate}" />
                             </Style>
                         </TabItem.Resources>
-                        <ListBox BorderBrush="{DynamicResource ForegroundText}" Padding="5">
-                            <ListBoxItem Content="{Binding Path=Header}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ForegroundText}" />
-                            <ListBoxItem Content="{Binding Path=Threads}" />
-                            <ListBoxItem Content="{Binding Path=ClosedThreads}" />
-                            <ListBoxItem Content="{Binding Path=Uptime}" />
+
+                        <ListBox DataContext="{DynamicResource AppStats}" BorderBrush="{DynamicResource ForegroundText}" BorderThickness="2,2,1,2" Padding="5">
+                            <ListBoxItem Content="{Binding Header}" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ForegroundText}" />
+                            <ListBoxItem Content="{Binding Threads}" />
+                            <ListBoxItem Content="{Binding ClosedThreads}" />
+                            <ListBoxItem Content="{Binding Uptime}" />
                         </ListBox>
                     </TabItem>
                     <TabItem Header="Twitch Status" GotFocus="TabItem_GotFocus">
