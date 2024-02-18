@@ -64,15 +64,17 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 catch (BadRequestException)
                 {
                     UnauthorizedToken?.Invoke(this, new());
+                    break; // have to break to set the token
                 }
                 catch (BadScopeException)
                 {
                     UnauthorizedToken?.Invoke(this, new());
+                    break; // have to break to set the token
                 }
-                catch
+                catch // backoff request
                 {
-                    loop++;
                 }
+                loop++;
             }
 
             return result;
