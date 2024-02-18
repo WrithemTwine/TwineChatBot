@@ -175,7 +175,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private static void HelixApiCalls_UnauthorizedToken(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Checking tokens.");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Detected unauthorized access, and checking token to update it.");
             twitchTokenBot.CheckToken();
         }
@@ -245,6 +245,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void BanUser(string BannedUserName, BanReasons banReason, int Duration = 0)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Performing a ban user operation.");
+
             _ = PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 return HelixApiCalls.BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
@@ -275,6 +277,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public GetChannelInformationResponse GetUserInfo(string UserId = null, string UserName = null)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"The API call to get the channel information for {UserName}.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 return HelixApiCalls.GetChannelInformationAsync(UserId: UserId, UserName: UserName)?.Result;
@@ -283,6 +287,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public string GetUserId(string UserName)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Retrieving the user Id for the username, {UserName}.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 return HelixApiCalls.GetUserId(UserName)?.Result;
@@ -296,6 +302,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>The Twitch Id of the game.</returns>
         public string GetGameId(string GameName)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Getting the game ID of the provided game name, {GameName}.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 return HelixApiCalls.GetGameId(GameName: [GameName]).Result.Games[0].Id;
@@ -309,6 +317,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="UserName">The channel user name to get the current viewer count.</param>
         public void GetViewerCount(string UserName)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting the current viewer count.");
+
             _ = PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 GetStreamsResponse getStreamsResponse = HelixApiCalls.GetStreams(UserName: UserName).Result;
@@ -325,6 +335,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>A list of Chatters detailing the current viewers of the channel.</returns>
         public List<Chatter> GetChatters()
         {
+                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
+         
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 string channelId = TwitchChannelId, botId = TwitchBotUserId;
@@ -332,15 +344,14 @@ namespace StreamerBotLib.BotClients.Twitch
                 List<Chatter> currChat = [];
                 string cursor = null;
 
-                //do
-                //{
-                //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
+                do
+                {
 
-                //    GetChattersResponse curr = HelixApiCalls.GetChatters(channelId, botId, after: cursor).Result;
-                //    cursor = curr.Pagination?.Cursor;
-                //    currChat.AddRange(curr.Data);
-                //}
-                //while (!string.IsNullOrEmpty(cursor));
+                    GetChattersResponse curr = HelixApiCalls.GetChatters(channelId, botId, after: cursor).Result;
+                    cursor = curr.Pagination?.Cursor;
+                    currChat.AddRange(curr.Data);
+                }
+                while (!string.IsNullOrEmpty(cursor));
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Finished getting a list of {currChat.Count} current chatters.");
 
@@ -358,7 +369,6 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting the current account's creation date.");
 
-
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 return HelixApiCalls.GetUserCreatedAt(UserName, UserId).Result;
@@ -371,6 +381,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public GetCustomRewardsResponse GetCustomRewardsId(string UserId = null, string UserName = null)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "API call to get a channel's point redemption rewards.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 return HelixApiCalls?.GetChannelPointInformationAsync(UserId: UserId, UserName: UserName).Result;
@@ -379,6 +391,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public List<string> GetUserCustomRewards(string UserId = null, string UserName = null)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting the stream's current channel point redemptions.");
+
             GetCustomRewardsResponse getCustom = GetCustomRewardsId(UserId: UserId, UserName: UserName);
 
             List<string> CustomRewardsList = [];
@@ -398,6 +412,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public bool SetChannelTitle(string Title)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Setting current stream title to, {Title}.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 _ = HelixApiCalls?.ModifyChannelInformation(TwitchChannelId, Title: Title);
@@ -407,6 +423,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public bool SetChannelCategory(string CategoryName = null, string CategoryId = null)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Setting the channel category to {CategoryName}.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 CategoryId ??= GetGameId(CategoryName);
@@ -417,6 +435,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void RaidChannel(string ToChannelName)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Raiding another channel, {ToChannelName}.");
+
             if (ToChannelName == null)
             {
                 return;
@@ -438,6 +458,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void CancelRaidChannel()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Cancel raid.");
+
             _ = PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 HelixApiCalls?.CancelRaid(TwitchChannelId);

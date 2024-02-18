@@ -60,7 +60,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void FollowerService_AccessTokenUnauthorized(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchFollowBot, "Checking tokens.");
             twitchTokenBot.CheckToken();
         }
 
