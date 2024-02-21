@@ -1,5 +1,7 @@
 ﻿using StreamerBotLib.Enums;
 
+using System.Collections.Concurrent;
+
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
@@ -17,6 +19,13 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     internal class HelixApiService
     {
+        // TODO: somewhere above, do a data call to the database and load usernames & user Ids into the user cache
+
+        /// <summary>
+        /// (Key=Username, Value=UserId); one username has a single Id, one Id might have multiple usernames
+        /// </summary>
+        private ConcurrentDictionary<string,string> CacheUserIds = new();
+
         public event EventHandler UnauthorizedToken;
 
         // Streamer Id-Token API
@@ -55,26 +64,41 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             string result = null;
             int loop = 0;
 
-            while (loop < 5 && result == null)
+            // try to get the value from the user cache to avoid repeated calls to the system - works better over time
+            if (CacheUserIds.TryGetValue(UserName, out string userId))
             {
-                try
+                result = userId;
+            }
+            else
+            {
+                while (loop < 5 && result == null)
                 {
-                    result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
+                    try
+                    {
+                        result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
+
+                        if (result != null)
+                        {
+                            // cache the result
+                            CacheUserIds.AddOrUpdate(UserName, result, (key, oldvalue) => result);
+                        }
+                    }
+                    catch (BadRequestException)
+                    {
+                        UnauthorizedToken?.Invoke(this, new());
+                        break; // have to break to set the token
+                    }
+                    catch (BadScopeException)
+                    {
+                        UnauthorizedToken?.Invoke(this, new());
+                        break; // have to break to set the token
+                    }
+                    catch // backoff request
+                    {
+                        Thread.Sleep(1000 * (loop + 1));
+                    }
+                    loop++;
                 }
-                catch (BadRequestException)
-                {
-                    UnauthorizedToken?.Invoke(this, new());
-                    break; // have to break to set the token
-                }
-                catch (BadScopeException)
-                {
-                    UnauthorizedToken?.Invoke(this, new());
-                    break; // have to break to set the token
-                }
-                catch // backoff request
-                {
-                }
-                loop++;
             }
 
             return result;
