@@ -1,8 +1,7 @@
 ﻿using StreamerBotLib.BotClients;
-using StreamerBotLib.DataSQL;
+using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
@@ -22,12 +21,14 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        public static IDataManager DataManage { get; private set; }
+        public static DataManager DataManage { get; private set; } = new DataManager();
+
+        private Thread HoldNewFollowsForBulkAdd;
 
         private static Tuple<string, string> CurrCategory { get; set; } = new("", "");
 
         private ActionSystem SystemActions { get; set; }
-        internal static Dispatcher AppDispatcher { get; set; }
+        internal Dispatcher AppDispatcher { get; set; }
 
         private Queue<Task> ProcMsgQueue { get; set; } = new();
         private Thread ProcessMsgs;
@@ -45,7 +46,6 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public SystemsController()
         {
-            DataManage = new DataManagerSQL();
             ActionSystem.DataManage = DataManage;
             LocalizedMsgSystem.SetDataManager(DataManage);
             DataManage.Initialize();
@@ -53,8 +53,6 @@ namespace StreamerBotLib.Systems
 
             SystemActions.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             SystemActions.ProcessedCommand += Command_ProcessedCommand;
-
-            DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
         }
 
         private void ActionProcessCmds()
@@ -149,25 +147,44 @@ namespace StreamerBotLib.Systems
             DataManage.StartBulkFollowers();
         }
 
-        public static void UpdateFollowers(List<Follow> Follows)
+        public static void UpdateFollowers(IEnumerable<Follow> Follows)
         {
-            Follows.ForEach((f) => { f.Category = CurrCategory.Item2; });
-            DataManage.UpdateFollowers(Follows);
+            DataManage.UpdateFollowers(Follows, CurrCategory.Item2);
         }
 
-        private void DataManage_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
+        public static void StopBulkFollowers()
         {
-            AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, e.LastFollowerUserName);
-        }
+            DataManage.StopBulkFollows();
 
+            AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, DataManage.GetNewestFollower());
+        }
 
         private delegate void ProcFollowDelegate();
 
-        public void AddNewFollowers(List<Follow> FollowList)
+        public void AddNewFollowers(IEnumerable<Follow> FollowList)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
-            FollowList.ForEach((f) => { f.Category = CurrCategory.Item2; }); // add category into follow object(s)
-            ProcessFollow(FollowList, msg, FollowEnabled);
+
+            if (DataManage.UpdatingFollowers)
+            { // capture any followers found after starting the bot and before completing the bulk follower load
+                HoldNewFollowsForBulkAdd = ThreadManager.CreateThread(() =>
+                {
+                    while (DataManage.UpdatingFollowers && OptionFlags.ActiveToken) { } // spin until the 'add followers when bot starts - this.ProcessFollows()' is finished
+
+                    ProcessFollow(FollowList, msg, FollowEnabled);
+                }, ThreadWaitStates.Wait, ThreadExitPriority.High);
+
+                _ = AppDispatcher.BeginInvoke(new ProcFollowDelegate(PerformFollow));
+            }
+            else
+            {
+                ProcessFollow(FollowList, msg, FollowEnabled);
+            }
+        }
+
+        private void PerformFollow()
+        {
+            HoldNewFollowsForBulkAdd.Start();
         }
 
         private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
@@ -185,7 +202,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = [];
 
-                foreach (Follow f in FollowList.Where(DataManage.PostFollower))
+                foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime(), CurrCategory.Item2)))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
@@ -281,7 +298,7 @@ namespace StreamerBotLib.Systems
             ActionSystem.DeleteRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName, string UserId, Platform platform)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
             ActionSystem.AddNewAutoShoutUser(UserName, UserId, platform);
         }
@@ -296,9 +313,9 @@ namespace StreamerBotLib.Systems
             return ActionSystem.CheckField(dataTable, FieldName);
         }
 
-        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksSource source, WebhooksKind webhooksKind)
+        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
-            return DataManage.GetWebhooks(source, webhooksKind);
+            return DataManage.GetWebhooks(webhooksKind);
         }
 
 
@@ -429,7 +446,7 @@ namespace StreamerBotLib.Systems
         #endregion
 
         #region User Related
-        private static bool RegisterJoinedUser(LiveUser User, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
+        private bool RegisterJoinedUser(LiveUser User, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
         {
             bool FoundUserJoined = false;
             bool FoundUserChat = false;
@@ -640,7 +657,7 @@ namespace StreamerBotLib.Systems
             }
             if (OptionFlags.ManageRaidData)
             {
-                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName, User.Platform);
+                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName);
             }
             if (OptionFlags.ManageOverlayTicker)
             {
@@ -715,7 +732,7 @@ namespace StreamerBotLib.Systems
         }
 
         /// <summary>
-        /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be ProcessFollowQueuestarted through <code>BeginGiveaway()</code>.
+        /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be started through <code>BeginGiveaway()</code>.
         /// </summary>
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
@@ -811,10 +828,10 @@ namespace StreamerBotLib.Systems
 
                     if (OptionFlags.TwitchClipPostDiscord)
                     {
-                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksSource.Discord, WebhooksKind.Clips))
+                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
                         {
                             DiscordWebhook.SendMessage(u.Item2, null, c.Url);
-                            UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to WebHooks
+                            UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to Discord
                         }
                     }
 
@@ -870,27 +887,5 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
-        #region MultiLive 
-
-        public void AddNewMonitorChannel(IEnumerable<LiveUser> liveUsers)
-        {
-            DataManage.PostMonitorChannel(liveUsers);
-        }
-
-        public static void MultiSummarize(MultiLiveSummarizeEventArgs multiLiveSummarizeEventArgs)
-        {
-            if (multiLiveSummarizeEventArgs.Data != null)
-            {
-                DataManage.SummarizeStreamData();
-                multiLiveSummarizeEventArgs.CallbackAction.Invoke();
-            }
-            else
-            {
-                DataManage.SummarizeStreamData(multiLiveSummarizeEventArgs.Data);
-                multiLiveSummarizeEventArgs.CallbackAction.Invoke();
-            }
-        }
-
-        #endregion
     }
 }

@@ -2,7 +2,6 @@
 using StreamerBotLib.GUI;
 using StreamerBotLib.MultiLive;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
 using System.Windows;
 
@@ -11,13 +10,6 @@ namespace StreamerBot
     public partial class StreamerBotWindow
     {
         #region MultiLive
-
-        private void MultiLive_Data_Loaded(object sender, RoutedEventArgs e)
-        {
-            (MultiLive_Data.Content as MultiLiveDataGrids).DataContext = Resources["DataViews"] as GUIDataManagerViews;
-            SetMultiLiveActive();
-        }
-
         private const string MultiLiveName = "MultiUserLiveBot";
 
         private void SetMultiLiveActive(bool ProcessFound = false)
@@ -42,7 +34,7 @@ namespace StreamerBot
                 // allow edits while bot is active
                 (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
                 (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-                (MultiLive_Data.Content as MultiLiveDataGrids).SummarizeChannels += StreamerBotWindow_SummarizeChannels;
+                (MultiLive_Data.Content as MultiLiveDataGrids).SetDataManager(GUITwitchBots.TwitchLiveMonitor.MultiLiveDataManager);
             }
             else
             {
@@ -53,11 +45,6 @@ namespace StreamerBot
                 // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
                 (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
             }
-        }
-
-        private void StreamerBotWindow_SummarizeChannels(object sender, StreamerBotLib.Events.MultiLiveSummarizeEventArgs e)
-        {
-            SystemsController.MultiSummarize(e);
         }
 
         private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)

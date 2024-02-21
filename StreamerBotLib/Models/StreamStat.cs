@@ -1,6 +1,5 @@
-using StreamerBotLib.DataSQL.Models;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Reflection;
 
 namespace StreamerBotLib.Models
 {
@@ -22,46 +21,22 @@ namespace StreamerBotLib.Models
                             int subsPresent = 0,
                             int vIPsPresent = 0,
                             int totalChats = 0,
-                            int commandsMsgs = 0,
+                            int commands = 0,
                             int automatedEvents = 0,
                             int automatedCommands = 0,
-                            int webhookMsgs = 0,
+                            int discordMsgs = 0,
                             int clipsMade = 0,
                             int channelPtCount = 0,
                             int channelChallenge = 0,
                             int maxUsers = 0,
                             string currentCategory = null)
     {
-        public static StreamStat Create(StreamStats streamStats) => new(
-              streamStats.StreamStart,
-              streamStats.StreamEnd,
-              streamStats.NewFollows,
-              streamStats.NewSubscribers,
-              streamStats.GiftSubs,
-              streamStats.Bits,
-              streamStats.Raids,
-              streamStats.Hosted,
-              streamStats.UsersBanned,
-              streamStats.UsersTimedOut,
-              streamStats.ModeratorsPresent,
-              streamStats.SubsPresent,
-              streamStats.VIPsPresent,
-              streamStats.TotalChats,
-              streamStats.CommandsMsgs,
-              streamStats.AutomatedEvents,
-              streamStats.AutomatedCommands,
-              streamStats.WebhookMsgs,
-              streamStats.ClipsMade,
-              streamStats.ChannelPtCount,
-              streamStats.ChannelChallenge,
-              streamStats.MaxUsers);
-
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
         public int NewFollows { get; set; } = newFollows;
         public int NewSubscribers { get; set; } = newSubscribers;
         public int GiftSubs { get; set; } = giftSubs;
-        public int Bits { get; set; } = bits;
+        public long Bits { get; set; } = bits;
         public int Raids { get; set; } = raids;
         public int Hosted { get; set; } = hosted;
         public int UsersBanned { get; set; } = usersBanned;
@@ -70,10 +45,10 @@ namespace StreamerBotLib.Models
         public int SubsPresent { get; set; } = subsPresent;
         public int VIPsPresent { get; set; } = vIPsPresent;
         public int TotalChats { get; set; } = totalChats;
-        public int CommandsMsgs { get; set; } = commandsMsgs;
+        public int Commands { get; set; } = commands;
         public int AutomatedEvents { get; set; } = automatedEvents;
         public int AutomatedCommands { get; set; } = automatedCommands;
-        public int WebhookMsgs { get; set; } = webhookMsgs;
+        public int DiscordMsgs { get; set; } = discordMsgs;
         public int ClipsMade { get; set; } = clipsMade;
         public int ChannelPtCount { get; set; } = channelPtCount;
         public int ChannelChallenge { get; set; } = channelChallenge;
@@ -125,10 +100,10 @@ namespace StreamerBotLib.Models
             SubsPresent = 0;
             VIPsPresent = 0;
             TotalChats = 0;
-            CommandsMsgs = 0;
+            Commands = 0;
             AutomatedEvents = 0;
             AutomatedCommands = 0;
-            WebhookMsgs = 0;
+            DiscordMsgs = 0;
             ClipsMade = 0;
             ChannelPtCount = 0;
             ChannelChallenge = 0;

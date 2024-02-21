@@ -16,7 +16,7 @@ namespace StreamerBotLib.BotClients
         /// <summary>
         /// Utilize the read-only version of the data manager, designed to only read data
         /// </summary>
-        public static IDataManagerReadOnly DataManager { get; set; }
+        public static IDataManageReadOnly DataManager { get; set; }
 
         internal Collection<IIOModule> BotsList { get; private set; } = new();
 

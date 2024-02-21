@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace StreamerBotLib.Models
 {
     [DebuggerDisplay("Table={Table}, Field={Field}")]
-    public partial class CommandParams
+    public class CommandParams
     {
         public string Table { get; set; } = string.Empty;
         public string Field { get; set; } = string.Empty;
@@ -16,8 +16,8 @@ namespace StreamerBotLib.Models
         public string Unit { get; set; } = string.Empty;
         public ViewerTypes Permission { get; set; } = ViewerTypes.Viewer;
         public int Top { get; set; } = 0;
-        public CommandSort Sort { get; set; } = CommandSort.ASC;
-        public CommandAction Action { get; set; } = CommandAction.Get;
+        public string Sort { get; set; } = CommandSort.ASC.ToString();
+        public string Action { get; set; } = CommandAction.Get.ToString();
         public bool AllowParam { get; set; } = false;
         public bool LookupData { get; set; } = false;
         public int Timer { get; set; } = 0;
@@ -29,7 +29,7 @@ namespace StreamerBotLib.Models
         public bool Empty { get; set; } = false;
         public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
 
-        public static CommandParams Parse(string ParamString) => Parse(new List<string>(MyRegex().Split(ParamString)));
+        public static CommandParams Parse(string ParamString) => Parse(new List<string>(new Regex(@"(^-)|( -)").Split(ParamString)));
 
         public static CommandParams Parse(List<string> ParamList)
         {
@@ -87,10 +87,10 @@ namespace StreamerBotLib.Models
                             data.Top = int.Parse(value);
                             break;
                         case "s":
-                            data.Sort = Enum.Parse<CommandSort>(Validate(value, typeof(CommandSort)));
+                            data.Sort = Validate(value, typeof(CommandSort));
                             break;
                         case "a":
-                            data.Action = Enum.Parse<CommandAction>(Validate(value, typeof(CommandAction)));
+                            data.Action = Validate(value, typeof(CommandAction));
                             break;
                         case "param":
                             data.AllowParam = bool.Parse(value);
@@ -133,7 +133,7 @@ namespace StreamerBotLib.Models
 
         public static Dictionary<string, string> ParseEditCommandParams(List<string> arglist)
         {
-            Dictionary<string, string> edit = [];
+            Dictionary<string, string> edit = new();
             foreach (var (keyvalue, value) in from string param in arglist
                                               let keyvalue = param.Split(':')
                                               let value = (keyvalue.Length > 1) ? keyvalue[1].Trim() : ""
@@ -209,9 +209,6 @@ namespace StreamerBotLib.Models
 
             throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionArgument), v, type.GetEnumNames().ToString()));
         }
-
-        [GeneratedRegex(@"(^-)|( -)")]
-        private static partial Regex MyRegex();
 
 
 

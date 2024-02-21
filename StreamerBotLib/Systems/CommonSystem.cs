@@ -1,5 +1,5 @@
+﻿using StreamerBotLib.Data;
 using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
@@ -112,13 +112,13 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        ///// <summary>
-        ///// Add currency accrual rows for every user when a new currency type is added to the database
-        ///// </summary>
-        //public static void UpdateCurrencyTable()
-        //{
-        //    DataManage.PostCurrencyRows();
-        //}
+        /// <summary>
+        /// Add currency accrual rows for every user when a new currency type is added to the database
+        /// </summary>
+        public static void UpdateCurrencyTable()
+        {
+            DataManage.PostCurrencyRows();
+        }
 
         public static void ClearWatchTime()
         {
@@ -152,12 +152,12 @@ namespace StreamerBotLib.Systems
 
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
-            DataManage.SetWebhooksEnabled(Enabled);
+            DataManage.SetDiscordWebhooksEnabled(Enabled);
         }
 
         public static void PostUpdatedDataRow(bool RowChanged)
         {
-            //DataManage.PostUpdatedDataRow(RowChanged);
+            DataManage.PostUpdatedDataRow(RowChanged);
         }
 
         public static void DeleteRows(IEnumerable<DataRow> dataRows)
@@ -165,7 +165,7 @@ namespace StreamerBotLib.Systems
             DataManage.DeleteDataRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName, string UserId, Enums.Platform platform)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
             DataManage.PostNewAutoShoutUser(UserName, UserId, platform);
         }
@@ -185,7 +185,7 @@ namespace StreamerBotLib.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.PostClip(Convert.ToInt32(c.ClipId), DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.PostClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace StreamerBotLib.Systems
 
         public bool BlackJackActive; // whether a game is active
         private bool BlackJackPlay; // bool - time to play, add no more players
-        private List<LiveUser> GameBlackJackPlayers { get; set; } = [];
+        private List<LiveUser> GameBlackJackPlayers { get; set; } = new();
         private LiveUser GameCurrBlackJackPlayer = null;
         private BlackJack GameCurrBlackJack;
         private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = new();
@@ -65,7 +65,8 @@ namespace StreamerBotLib.Systems
                         {
                             lock (CurrUsers)
                             {
-                                DataManage.UpdateWatchTime(CurrUsers, DateTime.Now.ToLocalTime());
+                                DataManage.UpdateWatchTime(new List<string>(from LiveUser U in CurrUsers
+                                                                            select U.UserName), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
                             Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));

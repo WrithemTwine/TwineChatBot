@@ -4,64 +4,23 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="clr-namespace:StreamerBotLib.Properties"
-      xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
-      xmlns:core="clr-namespace:System;assembly=mscorlib" 
-      xmlns:M="clr_namespace:StreamerBotLib.Models" 
-      xmlns:gui="clr-namespace:StreamerBotLib.GUI" 
-      d:DataContext="{d:DesignInstance Type=gui:GUIDataManagerViews}"
+      xmlns:M="clr_namespace:StreamerBotLib.Models"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MultiLiveDataGrids" SnapsToDevicePixels="True" UseLayoutRounding="True" 
-      Background="{DynamicResource FullBackground}"
-      >
+        Background="{DynamicResource FullBackground}"
+        >
     <Page.Resources>
-        <ObjectDataProvider x:Key="EnumWebhooksSource" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="Enums:WebhooksSource" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-        <ObjectDataProvider x:Key="EnumWebhooksKind" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="Enums:WebhooksKind" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-        <DataTemplate x:Key="DateLiveTemplate">
-            <StackPanel>
-                <Border BorderThickness="1">
-                    <TextBlock Text="{Binding LiveDate, StringFormat={}{0:MMM dd, yyyy}}" />
-                </Border>
-                <Border BorderThickness="1">
-                    <TextBlock Text="{Binding LiveDate, StringFormat={}{0:HH:mm.ss}}"/>
-                </Border>
-            </StackPanel>
-        </DataTemplate>
-
-        <DataTemplate x:Key="EditLiveDateTemplate">
-            <DatePicker SelectedDate="{Binding LiveDate}" />
-        </DataTemplate>
-
-        <DataTemplate x:Key="DateThroughTemplate">
-            <StackPanel>
-                <Border BorderThickness="1">
-                    <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:MMM dd, yyyy}}" />
-                </Border>
-                <Border BorderThickness="1">
-                    <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:HH:mm.ss}}"/>
-                </Border>
-            </StackPanel>
-        </DataTemplate>
-
-        <DataTemplate x:Key="EditThroughDateTemplate">
-            <DatePicker SelectedDate="{Binding ThroughDate}" />
-        </DataTemplate>
-        
+        <ContextMenu x:Key="DataGrid_Multi_ContextMenu" Name="DataGrid_Multi_ContextMenu">
+            <MenuItem x:Name="DataGridContextMenu_Multi_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
+            <MenuItem x:Name="DataGridContextMenu_Multi_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
+            <MenuItem x:Name="DataGridContextMenu_Multi_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
+        </ContextMenu>
     </Page.Resources>
 
     <Grid x:Name="Grid_MultiUserLiveMonitor" DataContext="{Binding}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
+            <RowDefinition Height="80" />
             <RowDefinition Height="60*" />
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
@@ -74,12 +33,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="2" Padding="3">
-            <TextBlock.ToolTip>The Twitch documentation for checking user streams might say 100 at a 
-                time, but the TwitchLib library will check as many as you want, it does this by cycling 
-                through the stream list 100 users at a time until all are checked!</TextBlock.ToolTip>
-            <TextBlock.Text>Use this tab to set up which channels to watch for going live and where 
-                to post messages. Currently only Discord.</TextBlock.Text>
-        </TextBlock>
+            <TextBlock.ToolTip>The Twitch documentation for checking user streams might say 100 at a time, but the TwitchLib library will check as many as you want, it does this by cycling through the stream list 100 users at a time until all are checked!</TextBlock.ToolTip><Run Text="Use this tab to set up which channels to watch for going live and where to post messages. Currently only Discord."/></TextBlock>
         <StackPanel Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" >
             <TextBlock TextWrapping="Wrap" Text="Message for Live Notification:" />
             <TextBox x:Name="TB_LiveMsg" VerticalContentAlignment="Top" 
@@ -99,52 +53,30 @@
             </TextBox>
         </StackPanel>
 
-        <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                  ItemsSource="{Binding MultiMsgEndPoints}" >
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
-                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
-                <DataGridCheckBoxColumn Header="Add @Everyone" Binding="{Binding AddEveryone}" />
-                <DataGridComboBoxColumn Header="Webhook Source" SelectedItemBinding="{Binding WebhooksSource}" ItemsSource="{Binding Source={StaticResource EnumWebhooksSource}}" />
-                <DataGridComboBoxColumn Header="Kind" SelectedItemBinding="{Binding Kind}" ItemsSource="{Binding Source={StaticResource EnumWebhooksKind}}" />
-                <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="250" MaxWidth="250" />
-                <DataGridTextColumn Header="Webhook" Binding="{Binding Webhook}" Width="250" MaxWidth="250" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <DockPanel Grid.Column="2" Grid.Row="2"  >
-            <Label DockPanel.Dock="Top">Monitored Channels</Label>
-            <DataGrid x:Name="DG_Multi_ChannelNames" DockPanel.Dock="Top"
-                  ItemsSource="{Binding MultiChannels}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
-                    <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
-                    <DataGridTextColumn Header="Platform" Binding="{Binding Users.Platform}" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </DockPanel>
+        <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" 
+                  ItemsSource="{Binding MsgEndPoints}" 
+                  ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
+                  ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
+                  MouseDoubleClick="DG_MouseDoubleClick" />
+        <DataGrid x:Name="DG_Multi_ChannelNames" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" 
+                  ItemsSource="{Binding Channels}" 
+                  ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
+                  ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
+                  MouseDoubleClick="DG_MouseDoubleClick" 
+                  AutoGeneratedColumns="DG_Multi_ChannelNames_AutoGeneratedColumns" />
 
         <TabControl Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" >
             <TabItem Header="Daily Data" x:Name="TabItem_DailyData">
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
-                          ItemsSource="{Binding MultiLiveStreams}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="User Id" Binding="{Binding Users.UserId}" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding Users.UserName}" />
-                        <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateLiveTemplate}" CellEditingTemplate="{StaticResource EditLiveDateTemplate}" SortMemberPath="LiveDate" />
-                        <DataGridTextColumn Header="Platform" Binding="{Binding Users.Platform}" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                          ItemsSource="{Binding LiveStream}" 
+                          ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
+                          ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" />
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
-                          ItemsSource="{Binding MultiSummaryLiveStreams}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="User Id" Binding="{Binding Users.UserId}" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding Users.UserName}" />
-                        <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateThroughTemplate}" CellEditingTemplate="{StaticResource EditThroughDateTemplate}" SortMemberPath="ThroughDate" />
-                        <DataGridTextColumn Header="Streams" Binding="{Binding StreamCount}" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                          ItemsSource="{Binding SummaryLiveStream}" 
+                          ContextMenu="{DynamicResource DataGrid_Multi_ContextMenu}"
+                          ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" />
             </TabItem>
             <TabItem Header="Archive">
                 <DockPanel>
@@ -180,7 +112,7 @@
                                 to and including the selected date. These notifications per channel are added to
                                 the Summary table, either as a new row or added to the existing row. The last date in the
                                 archive operation, per channel, is also saved.
-                            </TextBlock>
+                                </TextBlock>
                             <Button x:Name="Button_StartSummarizingLiveData" IsEnabled="False" Width="75" Content="Summarize" Click="Button_StartSummarizingLiveData_Click" />
                         </StackPanel>
                     </GroupBox>
@@ -190,7 +122,7 @@
 
         <DockPanel x:Name="Panel_BotActivity" Grid.Row="2" Grid.Column="0" Visibility="Visible">
             <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog, Mode=OneWay}"  />
+            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}"  />
         </DockPanel>
     </Grid>
 </Page>

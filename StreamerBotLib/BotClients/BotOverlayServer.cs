@@ -274,7 +274,7 @@ namespace StreamerBotLib.BotClients
         /// <summary>
         /// Probably starts the bot.
         /// </summary>
-        /// <returns>True, the bot has ProcessFollowQueuestarted.</returns>
+        /// <returns>True, the bot has started.</returns>
         public override bool StartBot()
         {
             WindowClosing = false;
@@ -395,7 +395,7 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         private void ProcessAlerts()
         {
-            AlertsThreadStarted = true; // flag, this loop has ProcessFollowQueuestarted
+            AlertsThreadStarted = true; // flag, this loop has started
             while (IsStarted)
             {
                 lock (SendAlerts)

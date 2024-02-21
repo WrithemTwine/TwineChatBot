@@ -33,7 +33,7 @@ namespace StreamerBotLib.Overlay
 
             GUIData = (GUIData)Resources["GUIAppData"];
 
-            // when overlay server is offline/not ProcessFollowQueuestarted, main bot queues alerts
+            // when overlay server is offline/not started, main bot queues alerts
             // starting this bot then tries to process alerts without loading styles
             // trying to set the alert html text lead to NULL exception when no style available
             // to match the alert, so the bot crashed.
@@ -104,9 +104,9 @@ namespace StreamerBotLib.Overlay
         }
 
         /// <summary>
-        /// Disable user access to certain GUI elements depending on whether the HTTP Server is ProcessFollowQueuestarted.
+        /// Disable user access to certain GUI elements depending on whether the HTTP Server is started.
         /// </summary>
-        /// <param name="ServerStarted">If the Server is ProcessFollowQueuestarted</param>
+        /// <param name="ServerStarted">If the Server is started</param>
         private void SetIsEnabled(bool ServerStarted = true)
         {
             if (ServerStarted)

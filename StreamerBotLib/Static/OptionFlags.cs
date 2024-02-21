@@ -28,7 +28,7 @@ namespace StreamerBotLib.Static
         public static bool IsStreamOnline { get; set; } = false;
 
         /// <summary>
-        /// Flags whether the streamer channel ProcessFollowQueuestarted a raid - could be anyone based on command rights
+        /// Flags whether the streamer channel started a raid - could be anyone based on command rights
         /// </summary>
         public static bool TwitchOutRaidStarted { get; set; } = false;
         /// <summary>
@@ -247,7 +247,7 @@ namespace StreamerBotLib.Static
         public static bool UserPartyStop => Settings.Default.UserPartyStop;
 
         /// <summary>
-        /// Specifies if the MultiLive bot autostarts when application opens, standalone app isn't running, and LiveMonitor bot is ProcessFollowQueuestarted.
+        /// Specifies if the MultiLive bot autostarts when application opens, standalone app isn't running, and LiveMonitor bot is started.
         /// </summary>
         public static bool TwitchMultiLiveAutoStart => Settings.Default.TwitchMultiLiveAutoStart;
 
@@ -347,7 +347,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static double TwitchFrequencyClipTime => Settings.Default.TwitchFrequencyClipTime;
         /// <summary>
-        /// Specifies whether to post a channel clip link to WebHooks, and WebHooks webhooks need a 'clips' link.
+        /// Specifies whether to post a channel clip link to Discord, and Discord webhooks need a 'clips' link.
         /// </summary>
         public static bool TwitchClipPostDiscord => Settings.Default.TwitchClipPostDiscord;
         /// <summary>
@@ -395,7 +395,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
         /// </summary>
-        public static int GiveawayCount
+        public static short GiveawayCount
         {
             get => Settings.Default.GiveawayCount; set => Settings.Default.GiveawayCount = value;
         }
@@ -430,7 +430,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// The number of giveaway entries a user can submit.
         /// </summary>
-        public static int GiveawayMaxEntries
+        public static short GiveawayMaxEntries
         {
             get => Settings.Default.GiveawayMaxEntries; set => Settings.Default.GiveawayMaxEntries = value;
         }
@@ -683,7 +683,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
-        public static int MediaOverlayMediaActionPort
+        public static short MediaOverlayMediaActionPort
         {
             get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
         }
@@ -691,7 +691,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay ticker medition port server Overlay ticker item Content through the http server.
         /// </summary>
-        public static int MediaOverlayMediaTickerPort
+        public static short MediaOverlayMediaTickerPort
         {
             get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
@@ -731,9 +731,6 @@ namespace StreamerBotLib.Static
         /// Defines rotating each ticker item in the same spot
         /// </summary>
         public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
-        /// <summary>
-        /// Defines the overlay ticker rotation time
-        /// </summary>
         public static int MediaOverlayTickerRotateTime => Settings.Default.MediaOverlayTickerRotateTime;
         /// <summary>
         /// Defines a marquee ticker scroller
@@ -830,7 +827,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool EnableDebugTwitchUserSvcBot => Settings.Default.EnableDebugTwitchUserSvcBot;
         /// <summary>
-        /// Enables the Media-WebHooks (may change to be more generic) Bot- related actions to save to the debug log.
+        /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
         public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
@@ -886,63 +883,10 @@ namespace StreamerBotLib.Static
 
         #endregion
 
-        #region Database choose and connection strings
-
         /// <summary>
-        /// Holds user selection for an EF Core database provider
+        /// Sets whether the "Join Party" list is started or not, and refreshes the settings.
         /// </summary>
-        public static bool EFCDatabaseProviderSqlServer => Settings.Default.EFCDatabaseProviderSqlServer;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderSqlite => Settings.Default.EFCDatabaseProviderSqlite;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderCosmos => Settings.Default.EFCDatabaseProviderCosmos;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderPostgreSQL => Settings.Default.EFCDatabaseProviderPostgreSQL;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderMySql => Settings.Default.EFCDatabaseProviderMySql;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderKNet => Settings.Default.EFCDatabaseProviderKNet;
-        /// <summary>
-        /// Holds the user modified connection string for access through the database provider
-        /// </summary>
-        public static string EFCConnectStringSqlite => Settings.Default.EFCConnectStringSqlite;
-        /// <summary>
-        /// Holds the user modified connection string for access through the database provider
-        /// </summary>
-        public static string EFCConnectStringSqlServer => Settings.Default.EFCConnectStringSqlServer;
-        /// <summary>
-        /// Holds the user modified connection string for access through the database provider
-        /// </summary>
-        public static string EFCConnectStringCostmos => Settings.Default.EFCConnectStringCosmos;
-        /// <summary>
-        /// Holds the user modified connection string for access through the database provider
-        /// </summary>
-        public static string EFCConnectStringPostgreSQL => Settings.Default.EFCConnectStringPostgreSQL;
-        /// <summary>
-        /// Holds the user modified connection string for access through the database provider
-        /// </summary>
-        public static string EFCConnectStringMySql => Settings.Default.EFCConnectStringMySql;
-        /// <summary>
-        /// Holds the user modified connection string for access through the database provider
-        /// </summary>
-        public static string EFCConnectStringKNet => Settings.Default.EFCConnectStringKNet;
-
-        #endregion
-
-        /// <summary>
-        /// Sets whether the "Join Party" list is ProcessFollowQueuestarted or not, and refreshes the settings.
-        /// </summary>
-        /// <param name="Start">Whether the party is ProcessFollowQueuestarted.</param>
+        /// <param name="Start">Whether the party is started.</param>
         public static void SetParty(bool Start = true)
         {
             Settings.Default.UserPartyStart = Start;

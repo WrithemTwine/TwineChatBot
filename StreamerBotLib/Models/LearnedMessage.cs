@@ -2,10 +2,16 @@
 
 namespace StreamerBotLib.Models
 {
-    public class LearnedMessage(string Msg, MsgTypes msgTypes)
+    public class LearnedMessage
     {
-        public string Message { get; set; } = Msg;
-        public MsgTypes MsgType { get; set; } = msgTypes;
+        public string Message { get; set; }
+        public MsgTypes MsgType { get; set; }
+
+        public LearnedMessage(string Msg, MsgTypes msgTypes)
+        {
+            Message = Msg;
+            MsgType = msgTypes;
+        }
 
         public static List<LearnedMessage> BuildList(string[] Msgs, MsgTypes msgType)
         {

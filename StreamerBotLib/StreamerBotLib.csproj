@@ -37,12 +37,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
@@ -59,16 +53,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="DataSQL\Import\DataSource.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>DataSource.xsd</DependentUpon>
-		</Compile>
-		<Compile Update="DataSQL\Import\Multi\MultiDataSource.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>MultiDataSource.xsd</DependentUpon>
-		</Compile>
 		<Compile Update="Data\DataSource.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -99,14 +83,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="DataSQL\Import\DataSource.xsd">
-		  <Generator>MSDataSetGenerator</Generator>
-		  <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
-		</None>
-		<None Update="DataSQL\Import\Multi\MultiDataSource.xsd">
-		  <Generator>MSDataSetGenerator</Generator>
-		  <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
-		</None>
 		<None Update="Data\DataSource.xsd">
 			<Generator>MSDataSetGenerator</Generator>
 			<LastGenOutput>DataSource.Designer.cs</LastGenOutput>

@@ -310,7 +310,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     CreateClient();
                     if (Connected = Connect())
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about ProcessFollowQueuestarted bot.");
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about started bot.");
 
                         IsStarted = true;
                         IsStopped = false;
@@ -342,7 +342,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStarted)
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a ProcessFollowQueuestarted bot, now stopping the chat bot.");
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a started bot, now stopping the chat bot.");
 
                     InvokeBotStopping();
                     IsStarted = false;
