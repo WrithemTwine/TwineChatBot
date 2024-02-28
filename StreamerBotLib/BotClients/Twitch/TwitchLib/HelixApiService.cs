@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Enums;
 
 using System.Collections.Concurrent;
 
@@ -111,9 +112,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await BotAPI.Helix.Channels.GetChannelInformationAsync(UserId ?? await GetUserId(UserName));
+                return await BotAPI.Helix.Channels.GetChannelInformationAsync(Id);
             }
 
             return null;
@@ -121,9 +124,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await StreamerAPI.Helix.ChannelPoints.GetCustomRewardAsync(UserId ?? await GetUserId(UserName));
+                return await StreamerAPI.Helix.ChannelPoints.GetCustomRewardAsync(Id);
             }
             return null;
         }
@@ -175,9 +180,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
         {
-            if (ToUserId != null || ToUserName != null)
+            string ToId = ToUserId ?? await GetUserId(ToUserName);
+
+            if (ToId != null)
             {
-                return await StreamerAPI.Helix.Raids.StartRaidAsync(FromId, ToUserId ?? await GetUserId(ToUserName));
+                return await StreamerAPI.Helix.Raids.StartRaidAsync(FromId, ToId);
             }
             return null;
         }
@@ -189,9 +196,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await BotAPI.Helix.Streams.GetStreamsAsync(userIds: [UserId ?? await GetUserId(UserName)]);
+                return await BotAPI.Helix.Streams.GetStreamsAsync(userIds: [Id]);
             }
             return null;
         }
