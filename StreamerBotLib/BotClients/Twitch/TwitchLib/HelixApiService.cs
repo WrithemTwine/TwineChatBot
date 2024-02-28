@@ -87,9 +87,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await BotAPI.Helix.Channels.GetChannelInformationAsync(UserId ?? await GetUserId(UserName));
+                return await BotAPI.Helix.Channels.GetChannelInformationAsync(Id);
             }
 
             return null;
@@ -97,27 +99,42 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await StreamerAPI.Helix.ChannelPoints.GetCustomRewardAsync(UserId ?? await GetUserId(UserName));
+                return await StreamerAPI.Helix.ChannelPoints.GetCustomRewardAsync(Id);
             }
             return null;
         }
 
         internal async Task<GetChattersResponse> GetChatters(string channelId, string botId, int first = 100, string after = null)
         {
-            return await BotAPI.Helix.Chat.GetChattersAsync(channelId, botId, first, after);
+            if (channelId != null && botId != null)
+            {
+                return await BotAPI.Helix.Chat.GetChattersAsync(channelId, botId, first, after);
+            }
+            return null;
         }
 
         internal async Task<BanUserResponse> BanUser(string UserId = null, string UserName = null, int forDuration = 0, BanReasons banReason = BanReasons.UnsolicitedSpam)
         {
-            BanUserRequest userRequest = new() { UserId = UserId ?? await GetUserId(UserName), Duration = forDuration, Reason = banReason.ToString() };
+            string Id = UserId ?? await GetUserId(UserName);
 
-            userRequest.Duration = forDuration is < 0 or > 1209600
-                ? throw new ArgumentOutOfRangeException(nameof(forDuration), "Duration is only allowed between 1 to 1,209,600 seconds.")
-                : forDuration > 0 ? forDuration : null;
+            if (Id != null)
+            {
+                BanUserRequest userRequest = new() { UserId = UserId ?? await GetUserId(UserName), Duration = forDuration, Reason = banReason.ToString() };
 
-            return await BotAPI.Helix.Moderation.BanUserAsync(TwitchBotsBase.TwitchChannelId, TwitchBotsBase.TwitchBotUserId, userRequest);
+                userRequest.Duration = forDuration is < 0 or > 1209600
+                    ? throw new ArgumentOutOfRangeException(nameof(forDuration), "Duration is only allowed between 1 to 1,209,600 seconds.")
+                    : forDuration > 0 ? forDuration : null;
+
+                if (userRequest != null)
+                {
+                    return await BotAPI.Helix.Moderation.BanUserAsync(TwitchBotsBase.TwitchChannelId, TwitchBotsBase.TwitchBotUserId, userRequest);
+                }
+            }
+            return null;
         }
 
         internal async Task ModifyChannelInformation(string UserId, string GameId = null, string BroadcasterLanguage = null, string Title = null, int Delay = -1)
@@ -146,28 +163,39 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetGamesResponse> GetGameId(List<string> GameId = null, List<string> GameName = null)
         {
-            return await BotAPI.Helix.Games.GetGamesAsync(GameId, GameName);
+            if (GameId != null || GameName != null)
+            {
+                return await BotAPI.Helix.Games.GetGamesAsync(GameId, GameName);
+            }
+            return null;
         }
 
         internal async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
         {
-            if (ToUserId != null || ToUserName != null)
+            string ToId = ToUserId ?? await GetUserId(ToUserName);
+
+            if (ToId != null)
             {
-                return await StreamerAPI.Helix.Raids.StartRaidAsync(FromId, ToUserId ?? await GetUserId(ToUserName));
+                return await StreamerAPI.Helix.Raids.StartRaidAsync(FromId, ToId);
             }
             return null;
         }
 
         internal async Task CancelRaid(string FromId)
         {
-            await StreamerAPI.Helix.Raids.CancelRaidAsync(FromId);
+            if (FromId != null)
+            {
+                await StreamerAPI.Helix.Raids.CancelRaidAsync(FromId);
+            }
         }
 
         internal async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await BotAPI.Helix.Streams.GetStreamsAsync(userIds: [UserId ?? await GetUserId(UserName)]);
+                return await BotAPI.Helix.Streams.GetStreamsAsync(userIds: [Id]);
             }
             return null;
         }

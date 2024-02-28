@@ -201,7 +201,13 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.LogException(ex, MethodName);
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Exception found. Attempting to update token.");
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-                twitchTokenBot.CheckToken();
+
+                Task token = new(() =>
+                {
+                    twitchTokenBot.CheckToken();
+                });
+                token.Start();
+
                 while (ResetTokenMode) { }
 
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Attempting to again perform user-service action.");
@@ -391,6 +397,12 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public List<string> GetUserCustomRewards(string UserId = null, string UserName = null)
         {
+            if(UserName == TwitchChannelName && TwitchChannelId != null) // switch the username for Id
+            {
+                UserName = null;
+                UserId = TwitchChannelId;
+            }
+
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting the stream's current channel point redemptions.");
 
             GetCustomRewardsResponse getCustom = GetCustomRewardsId(UserId: UserId, UserName: UserName);
