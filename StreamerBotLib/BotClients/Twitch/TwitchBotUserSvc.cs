@@ -43,12 +43,12 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             get
             {
-                if (HelixApiService.StreamerAPI == null)
+                if (HelixApiService.BotAPI == null)
                 {
                     ChooseConnectUserService();
                 }
 
-                return HelixApiService.StreamerAPI;
+                return HelixApiService.BotAPI;
             }
         }
 
