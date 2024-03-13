@@ -202,13 +202,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Exception found. Attempting to update token.");
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
 
-                Task token = new(() =>
-                {
-                    twitchTokenBot.CheckToken();
-                });
-                token.Start();
-
-                while (ResetTokenMode) { }
+                twitchTokenBot.CheckToken();
 
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Attempting to again perform user-service action.");
 

@@ -813,7 +813,7 @@ namespace StreamerBotLib.BotIOController
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
             // much more data exists in the resulting data output
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, $"Received Twitch Channel Point Reward {e.RewardRedeemed}. Now processing.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, $"Received Twitch Channel Point Reward \"{e.RewardRedeemed.Redemption.Reward.Title}\". Now processing.");
 
             HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title, e.RewardRedeemed.Redemption.UserInput, Platform.Twitch);
         }

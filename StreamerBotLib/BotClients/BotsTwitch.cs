@@ -67,7 +67,7 @@ namespace StreamerBotLib.BotClients
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
             TwitchBotChatClient.OnBotStopping += TwitchBotChatClient_OnBotStopping;
             TwitchBotChatClient.OnBotStopped += TwitchBotChatClient_OnBotStopped;
-            //TwitchBotChatClient.UnRegisterHandlers += TwitchBotChatClient_UnRegisterHandlers;
+            TwitchBotChatClient.UnRegisterHandlers += TwitchBotChatClient_UnRegisterHandlers;
 
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;

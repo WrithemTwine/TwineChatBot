@@ -27,7 +27,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Building clip service object.");
 
-                ClipMonitorService = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Ceiling(TwitchFrequencyClipTime));
+                ClipMonitorService = new(HelixApiService.BotAPI, (int)Math.Ceiling(TwitchFrequencyClipTime));
                 ClipMonitorService.SetChannelsById([TwitchChannelId]);
 
                 ClipMonitorService.AccessTokenUnauthorized += ClipMonitorService_AccessTokenUnauthorized;
@@ -52,8 +52,8 @@ namespace StreamerBotLib.BotClients.Twitch
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Starting bot.");
 
                     ConnectClipService();
+                    ClipMonitorService.Start();
                     IsStarted = true;
-                    ClipMonitorService?.Start();
                     IsStopped = false;
                     InvokeBotStarted();
                 }
@@ -85,7 +85,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Stopping bot.");
 
-                    ClipMonitorService?.Stop();
+                    ClipMonitorService.Stop();
                     IsStarted = false;
                     IsStopped = true;
                     InvokeBotStopped();
