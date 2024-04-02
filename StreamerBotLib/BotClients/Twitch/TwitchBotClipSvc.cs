@@ -27,7 +27,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Building clip service object.");
 
-                ClipMonitorService = new(HelixApiService.BotAPI, (int)Math.Ceiling(TwitchFrequencyClipTime));
+                ClipMonitorService = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Ceiling(TwitchFrequencyClipTime));
                 ClipMonitorService.SetChannelsById([TwitchChannelId]);
 
                 ClipMonitorService.AccessTokenUnauthorized += ClipMonitorService_AccessTokenUnauthorized;

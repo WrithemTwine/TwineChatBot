@@ -112,7 +112,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     ChannelsToMonitor.UniqueAddRange(ChannelList);
                 }
 
-                LiveStreamMonitor.SetChannelsById(ChannelsToMonitor);
+                LiveStreamMonitor?.SetChannelsById(ChannelsToMonitor);
             }
         }
 
