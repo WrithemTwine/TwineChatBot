@@ -67,9 +67,12 @@ namespace StreamerBotLib.BotClients.Twitch
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                IsStarted = false;
-                IsStopped = true;
-                InvokeBotFailedStart();
+                if (!IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    InvokeBotFailedStart();
+                }
             }
             return false;
         }
