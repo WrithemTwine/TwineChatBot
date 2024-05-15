@@ -114,7 +114,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Aware of whether to use the bot user client Id or streamer client Id, due to API calls requiring the client Id of the streaming channel to retrieve the data.
         /// </summary>
-        /// <param name="UseStreamToken">Specify whether the Streamer's Token is required to access Channel Data</param>
         private void ChooseConnectUserService()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Checking the HelixApi service.");
@@ -160,7 +159,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, $"Now constructing the HelixApi service.");
 
-                    HelixApiCalls = new(BotApiSettings, StreamerApiSettings);
+                    HelixApiCalls = new(BotApiSettings, StreamerApiSettings ?? BotApiSettings);
                     HelixApiCalls.UnauthorizedToken += HelixApiCalls_UnauthorizedToken;
 
                     if (TwitchChannelId == null && TwitchBotUserId == null)

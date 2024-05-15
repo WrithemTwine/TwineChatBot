@@ -73,7 +73,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     ConnectFollowerService();
                     IsStarted = true;
-                    FollowerService?.Start();
+                    FollowerService.Start();
                     RestartRefreshAccessToken = true; // record reason is from refreshing token
                     IsStopped = false;
                     InvokeBotStarted();
@@ -89,9 +89,12 @@ namespace StreamerBotLib.BotClients.Twitch
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                IsStarted = false;
-                IsStopped = true;
-                InvokeBotFailedStart();
+                if (!IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    InvokeBotFailedStart();
+                }
             }
             return false;
         }
