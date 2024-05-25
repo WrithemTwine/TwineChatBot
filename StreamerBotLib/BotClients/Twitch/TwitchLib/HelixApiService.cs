@@ -1,4 +1,7 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Enums;
+
+using System.Collections.Concurrent;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -17,6 +20,13 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     internal class HelixApiService
     {
+        // TODO: somewhere above, do a data call to the database and load usernames & user Ids into the user cache
+
+        /// <summary>
+        /// (Key=Username, Value=UserId); one username has a single Id, one Id might have multiple usernames
+        /// </summary>
+        private ConcurrentDictionary<string,string> CacheUserIds = new();
+
         public event EventHandler UnauthorizedToken;
 
         // Streamer Id-Token API
@@ -55,22 +65,39 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             string result = null;
             int loop = 0;
 
-            while (loop < 5 && result == null)
+            // try to get the value from the user cache to avoid repeated calls to the system - works better over time
+            if (CacheUserIds.TryGetValue(UserName, out string userId))
             {
-                try
+                result = userId;
+            }
+            else
+            {
+                while (loop < 5 && result == null)
                 {
-                    result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
-                }
-                catch (BadRequestException)
-                {
-                    UnauthorizedToken?.Invoke(this, new());
-                }
-                catch (BadScopeException)
-                {
-                    UnauthorizedToken?.Invoke(this, new());
-                }
-                catch
-                {
+                    try
+                    {
+                        result = (await GetUsersAsync(UserName: UserName))?.Users.FirstOrDefault()?.Id ?? null;
+
+                        if (result != null)
+                        {
+                            // cache the result
+                            CacheUserIds.AddOrUpdate(UserName, result, (key, oldvalue) => result);
+                        }
+                    }
+                    catch (BadRequestException)
+                    {
+                        UnauthorizedToken?.Invoke(this, new());
+                        break; // have to break to set the token
+                    }
+                    catch (BadScopeException)
+                    {
+                        UnauthorizedToken?.Invoke(this, new());
+                        break; // have to break to set the token
+                    }
+                    catch // backoff request
+                    {
+                        Thread.Sleep(1000 * (loop + 1));
+                    }
                     loop++;
                 }
             }
@@ -85,9 +112,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetChannelInformationResponse> GetChannelInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await BotAPI.Helix.Channels.GetChannelInformationAsync(UserId ?? await GetUserId(UserName));
+                return await BotAPI.Helix.Channels.GetChannelInformationAsync(Id);
             }
 
             return null;
@@ -95,9 +124,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetCustomRewardsResponse> GetChannelPointInformationAsync(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await StreamerAPI.Helix.ChannelPoints.GetCustomRewardAsync(UserId ?? await GetUserId(UserName));
+                return await StreamerAPI.Helix.ChannelPoints.GetCustomRewardAsync(Id);
             }
             return null;
         }
@@ -149,9 +180,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<StartRaidResponse> StartRaid(string FromId, string ToUserId = null, string ToUserName = null)
         {
-            if (ToUserId != null || ToUserName != null)
+            string ToId = ToUserId ?? await GetUserId(ToUserName);
+
+            if (ToId != null)
             {
-                return await StreamerAPI.Helix.Raids.StartRaidAsync(FromId, ToUserId ?? await GetUserId(ToUserName));
+                return await StreamerAPI.Helix.Raids.StartRaidAsync(FromId, ToId);
             }
             return null;
         }
@@ -163,9 +196,11 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         internal async Task<GetStreamsResponse> GetStreams(string UserId = null, string UserName = null)
         {
-            if (UserId != null || UserName != null)
+            string Id = UserId ?? await GetUserId(UserName);
+
+            if (Id != null)
             {
-                return await BotAPI.Helix.Streams.GetStreamsAsync(userIds: [UserId ?? await GetUserId(UserName)]);
+                return await BotAPI.Helix.Streams.GetStreamsAsync(userIds: [Id]);
             }
             return null;
         }

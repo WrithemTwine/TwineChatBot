@@ -18,6 +18,7 @@
         GUIDataViews,
         GUIEvents,
         GUIHelpers,
+        GUIMultiLive,
         GUIProcessWatcher,
         GUITabSizes,
         GUIThemes,

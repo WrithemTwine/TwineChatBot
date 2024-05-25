@@ -25,14 +25,10 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrUsers)
             {
-                foreach (LiveUser U in CurrUsers)
+                if (OptionFlags.ManageUsers)
                 {
-                    if (OptionFlags.ManageUsers)
-                    {
-                        DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
-                    }
+                    DataManage.UserJoined(CurrUsers, SpecifyTime.ToLocalTime());
                 }
-
             }
         }
 
@@ -153,16 +149,16 @@ namespace StreamerBotLib.Systems
 
         #region Incoming Raids
 
-        public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
+        public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Platform platform)
         {
-            DataManage.PostInRaidData(UserName, RaidTime, Viewers, GameName);
+            DataManage.PostInRaidData(UserName, RaidTime, int.Parse(Viewers), GameName, platform);
         }
 
         #endregion
 
         public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
-            return DataManage.GetWebhooks(webhooksKind);
+            return DataManage.GetWebhooks(WebhooksSource.Discord, webhooksKind);
         }
 
         public bool StreamOnline(DateTime Started)
@@ -343,8 +339,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
-                CurrStream.Commands++;
-                StreamDataUpdate();
+                CurrStream.CommandsMsgs++;
             }
         }
 
@@ -370,7 +365,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
-                CurrStream.DiscordMsgs++;
+                CurrStream.WebhookMsgs++;
             }
         }
 

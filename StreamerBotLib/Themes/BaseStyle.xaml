@@ -286,7 +286,6 @@
         </Setter>-->
     </Style>
 
-
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="Background" Value="{DynamicResource PartBackground}" />
         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
@@ -323,40 +322,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource ScrollBarForeground}"/>
             </Trigger>
         </Style.Triggers>
-    </Style>
-
-    <Style TargetType="{x:Type DataGrid}">
-        <Setter Property="AlternationCount" Value="1" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-        <Setter Property="AutoGenerateColumns" Value="True" />
-        <Setter Property="CanUserAddRows" Value="False" />
-        <Setter Property="CanUserDeleteRows" Value="True" />
-        <Setter Property="IsReadOnly" Value="True" />
-
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-        <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-        <Setter Property="RowBackground" Value="{DynamicResource DataGridBackground}" />
-        <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternateColor}"/>
-
-        <Setter Property="ColumnHeaderStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
-                    <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                    <Setter Property="Padding" Value="8,0" />
-                </Style>
-            </Setter.Value>
-        </Setter>
-
-        <Setter Property="RowHeaderStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type DataGridRowHeader}">
-                    <Setter Property="Background" Value="{DynamicResource DataGridRowHeaderBackground}" />
-                    <Setter Property="Width" Value="5" />
-                </Style>
-            </Setter.Value>
-        </Setter>
-
     </Style>
 
     <Style TargetType="{x:Type TabControl}">

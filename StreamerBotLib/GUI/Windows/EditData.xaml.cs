@@ -30,7 +30,7 @@ namespace StreamerBotLib.GUI.Windows
     {
         private bool IsClosing;
 
-        private IDataManageReadOnly DataManage { get; set; }
+        private IDataManagerReadOnly DataManage { get; set; }
         private DataRow SaveDataRow { get; set; }
         private bool IsNewRow { get; set; }
         private List<EditPopupTime> DateList { get; set; } = new();
@@ -63,7 +63,7 @@ namespace StreamerBotLib.GUI.Windows
         /// <summary>
         /// Constructor, initalizes window
         /// </summary>
-        public EditData(IDataManageReadOnly dataManageReadOnly)
+        public EditData(IDataManagerReadOnly dataManageReadOnly)
         {
             InitializeComponent();
             IsNewRow = false;
@@ -197,7 +197,7 @@ namespace StreamerBotLib.GUI.Windows
         /// </summary>
         /// <param name="FileName">Path and file from which to copy.</param>
         /// <param name="OverlayType">The name of the overlaytype, which becomes the subfolder name to hold the file in the current application folder.</param>
-        private string FileCopy(string FileName, string OverlayType)
+        private static string FileCopy(string FileName, string OverlayType)
         {
             string resultfile;
             string CopyFile = Path.Combine(PublicConstants.BaseOverlayPath, OverlayType, Path.GetFileName(FileName)).Replace("_", " ").Replace(" ", ""); // replace '_' to prevent issues with converting class object to string to class object
@@ -305,7 +305,7 @@ namespace StreamerBotLib.GUI.Windows
                             { "ViewerTypes", Enum.GetValues(typeof(ViewerTypes)) },
                             { "Kind", Enum.GetValues(typeof(WebhooksKind)) },
                             { "action", Enum.GetValues(typeof(CommandAction)) },
-                            { "sort", Enum.GetValues(typeof(DataSort)) },
+                            { "sort", Enum.GetValues(typeof(CommandSort)) },
                             { "ModAction", Enum.GetValues(typeof(ModActions)) },
                             { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
                             { "BanReason", Enum.GetValues(typeof(BanReasons)) },
@@ -394,8 +394,7 @@ namespace StreamerBotLib.GUI.Windows
                         if (dataColumn.ColumnName == "Category")
                         {
                             List<CheckBox> CBcombocollection = new();
-                            List<string> selection = new();
-                            selection.AddRange(((string)datavalue).Split(", "));
+                            List<string> selection = [.. ((string)datavalue).Split(", ")];
                             foreach (Tuple<string, string> tuple in DataManage.GetGameCategories())
                             {
                                 CheckBox item = new()
@@ -747,7 +746,7 @@ namespace StreamerBotLib.GUI.Windows
         /// </summary>
         /// <param name="dataElement">The UIElement to retrieve the data value.</param>
         /// <returns>The data value from the element, as a string.</returns>
-        private string ConvertBack(UIElement dataElement)
+        private static string ConvertBack(UIElement dataElement)
         {
             string result;
             if (dataElement.GetType() == typeof(CheckBox))

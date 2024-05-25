@@ -116,7 +116,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// The maximum amount of followers cached per channel.
         /// </summary>
         public int CacheSize { get; }
-
         /// <summary>
         /// Event which is called when new followers are detected.
         /// </summary>
@@ -164,7 +163,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         }
 
         /// <summary>
-        /// Updates the followerservice with the latest followers. Automatically called internally when service is started.
+        /// Updates the followerservice with the latest followers. Automatically called internally when service is ProcessFollowQueuestarted.
         /// </summary>
         /// <param name="callEvents">Whether to invoke the update events or not.</param>
         public async Task UpdateLatestFollowersAsync(bool callEvents = true)
