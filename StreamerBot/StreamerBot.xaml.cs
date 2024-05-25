@@ -1351,7 +1351,7 @@ namespace StreamerBot
 
             foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
             {
-                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString(), "");
+                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString(), dr["UserId"].ToString());
             }
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)

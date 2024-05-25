@@ -344,3 +344,7 @@ healthchecksdb
 /ChatDataStore.xml
 
 /MaintainStreamerBotLib
+*.db
+DebugLogFile.txt
+ExceptionLog.txt
+StatusLog.txt

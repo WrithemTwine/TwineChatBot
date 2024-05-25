@@ -79,7 +79,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 if (!OptionFlags.TwitchStreamerUseToken)
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Detected token changed. Updating bot.");
-
                     StopBot(); // stop the PubSub bot
                     StartBot(); // restart the PubSub bot
                 }
@@ -205,8 +204,13 @@ namespace StreamerBotLib.BotClients.Twitch
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                        InvokeBotFailedStart();
-                        Connected = false;
+                        if (!IsStarted)
+                        {
+                            InvokeBotFailedStart();
+                            IsStarted = false;
+                            IsStopped = true;
+                            Connected = false;
+                        }
                     }
                 }
             });

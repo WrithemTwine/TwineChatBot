@@ -52,8 +52,8 @@ namespace StreamerBotLib.BotClients.Twitch
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Starting bot.");
 
                     ConnectClipService();
+                    ClipMonitorService.Start();
                     IsStarted = true;
-                    ClipMonitorService?.Start();
                     IsStopped = false;
                     InvokeBotStarted();
                 }
@@ -67,9 +67,12 @@ namespace StreamerBotLib.BotClients.Twitch
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                IsStarted = false;
-                IsStopped = true;
-                InvokeBotFailedStart();
+                if (!IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    InvokeBotFailedStart();
+                }
             }
             return false;
         }
@@ -85,7 +88,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Stopping bot.");
 
-                    ClipMonitorService?.Stop();
+                    ClipMonitorService.Stop();
                     IsStarted = false;
                     IsStopped = true;
                     InvokeBotStopped();

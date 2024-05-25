@@ -121,6 +121,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         CreateClient();
                         Connect();
                         resetToken = false;
+                        InvokeBotStarted();
 
                         SendChatMessages();
                     }
