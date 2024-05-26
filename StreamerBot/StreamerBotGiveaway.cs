@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.GUI;
 
 using System.Windows;
 using System.Windows.Controls;
@@ -39,7 +40,7 @@ namespace StreamerBot
         {
             if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
             {
-                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.GetChannelPoints(UserName: s)));
+                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => GUITwitchBots.GetChannelPoints(UserName: s)));
                 ChannelPtRetrievalDate = DateTime.Now;
             }
         }

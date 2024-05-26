@@ -1,11 +1,11 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Net.Http;
 using System.Reflection;
-using System.Windows.Threading;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -13,7 +13,7 @@ namespace StreamerBotLib.BotClients.Twitch
     {
         // TODO: consider adding mechanism to check the multilive listing to ensure those channels exist on Twitch. now with UserIds, convert their name & refer to their ID instead for user online checking
 
-        public event EventHandler<MultiLiveGetChannelsEventArgs> MultiLiveGetChannels;
+        private static IDataManagerReadOnly DataManageReadOnly;
 
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
@@ -31,7 +31,7 @@ namespace StreamerBotLib.BotClients.Twitch
         public bool IsMultiConnected { get; set; }
         private const string s = "";
 
-        public TwitchBotLiveMonitorSvc(IDataManageReadOnly datamanager)
+        public TwitchBotLiveMonitorSvc(IDataManagerReadOnly datamanager)
         {
             BotClientName = Bots.TwitchLiveBot;
             IsStarted = false;
@@ -130,7 +130,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 return true;
             }
-            catch (BadScopeException)
+            catch (global::TwitchLib.Api.Core.Exceptions.BadScopeException)
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
                 twitchTokenBot.CheckToken();
@@ -190,27 +190,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region MultiLive Bot
 
-        private void CheckUserIds()
-        {
-            List<LiveUser> users = MultiLiveDataManager.GetChannelNames();
-
-            List<LiveUser> names = null;
-
-            if ((from u in users where string.IsNullOrEmpty(u.UserId) select u).Any())
-            {
-                names = new(DataManageReadOnly.GetUserIdsByName(users));
-
-                foreach (LiveUser N in users)
-                {
-                    if (string.IsNullOrEmpty(N.UserId))
-                    {
-                        N.UserId = BotsTwitch.TwitchBotUserSvc.GetUserId(N.UserName);
-                    }
-                    MultiLiveDataManager.PostUpdatedChannelbyId(N.UserName, N.UserId);
-                }
-            }
-        }
-
         /// <summary>
         /// manages the multilive monitored channels; build the client
         /// </summary>
@@ -236,7 +215,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (IsMultiLiveBotActive)
             {
-                MultiLiveGetChannels?.Invoke(this, new() { Callback = SetLiveMonitorChannels });
+                SetLiveMonitorChannels(DataManageReadOnly.GetMultiChannelNames(Platform.Twitch));
             }
             else
             {

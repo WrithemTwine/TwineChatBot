@@ -16,6 +16,8 @@ using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 
+using BanReasons = StreamerBotLib.Enums.BanReasons;
+
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
     internal class HelixApiService

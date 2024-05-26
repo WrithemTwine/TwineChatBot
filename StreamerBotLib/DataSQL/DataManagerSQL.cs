@@ -2134,6 +2134,12 @@ switches:
                 return result;
             }
         }
+
+        /// <summary>
+        /// The user selects channels to monitor, get all of the channel Ids for the selected channels.
+        /// </summary>
+        /// <param name="platform">The platform to retrieve</param>
+        /// <returns>A list of monitored UserIds for the provided platform.</returns>
         public List<string> GetMultiChannelNames(Platform platform)
         {
             lock (GUIDataManagerLock.Lock)

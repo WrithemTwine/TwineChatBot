@@ -1,4 +1,6 @@
-﻿using static StreamerBotLib.Data.DataSource;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
+using static StreamerBotLib.DataSQL.Import.DataSource;
 
 namespace StreamerBotLib.Models
 {
@@ -21,7 +23,7 @@ namespace StreamerBotLib.Models
         public string Currency_field { get; }
         public CommandSort Sort { get; }
 
-        public CommandData(CommandsRow row)
+        public CommandData(Commands row)
         {
             lock (GUI.GUIDataManagerLock.Lock)
             {
@@ -34,15 +36,15 @@ namespace StreamerBotLib.Models
                     AddMe = row.AddMe;
                     Message = row.Message;
                     AllowParam = row.AllowParam;
-                    Lookupdata = row.lookupdata;
-                    Top = row.top;
-                    Action = row.action;
+                    Lookupdata = row.LookupData;
+                    Top = row.Top;
+                    Action = row.Action;
                     CmdName = row.CmdName;
-                    Table = row.table;
-                    Key_field = row.key_field;
-                    Data_field = row.data_field;
-                    Currency_field = row.currency_field;
-                    Sort = row.sort;
+                    Table = row.Table;
+                    Key_field = row.KeyField;
+                    Data_field = row.DataField;
+                    Currency_field = row.CurrencyField;
+                    Sort = row.Sort;
                 }
             }
         }

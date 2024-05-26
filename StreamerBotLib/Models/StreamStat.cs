@@ -84,14 +84,21 @@ namespace StreamerBotLib.Models
         /// </summary>
         public string Category { get; set; } = currentCategory;
 
-        public void Update(Data.DataSource.StreamStatsRow streamStatsRow)
+        public void Update(DataSQL.Import.DataSource.StreamStatsRow streamStatsRow)
         {
             StreamStart = streamStatsRow.StreamStart;
             StreamEnd = streamStatsRow.StreamEnd;
             NewFollows = streamStatsRow.NewFollows;
             NewSubscribers = streamStatsRow.NewSubscribers;
             GiftSubs = streamStatsRow.GiftSubs;
-            Bits = streamStatsRow.Bits;
+            try
+            {
+                Bits = Convert.ToInt32(streamStatsRow.Bits);
+            }
+            catch (OverflowException)
+            {
+                Bits = int.MaxValue;
+            }
             Raids = streamStatsRow.Raids;
             Hosted = streamStatsRow.Hosted;
             UsersBanned = streamStatsRow.UsersBanned;
@@ -100,9 +107,9 @@ namespace StreamerBotLib.Models
             SubsPresent = streamStatsRow.SubsPresent;
             VIPsPresent = streamStatsRow.VIPsPresent;
             TotalChats = streamStatsRow.TotalChats;
-            Commands = streamStatsRow.Commands;
+            CommandsMsgs = streamStatsRow.Commands;
             AutomatedCommands = streamStatsRow.AutomatedCommands;
-            DiscordMsgs = streamStatsRow.DiscordMsgs;
+            WebhookMsgs = streamStatsRow.DiscordMsgs;
             ClipsMade = streamStatsRow.ClipsMade;
             ChannelPtCount = streamStatsRow.ChannelPtCount;
             ChannelChallenge = streamStatsRow.ChannelChallenge;

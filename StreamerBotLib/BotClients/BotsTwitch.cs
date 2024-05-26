@@ -206,7 +206,6 @@ namespace StreamerBotLib.BotClients
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
-                TwitchLiveMonitor.MultiLiveGetChannels += TwitchLiveMonitor_MultiLiveGetChannels;
 
                 TwitchLiveMonitor.HandlersAdded = true;
             }
@@ -594,10 +593,6 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region Twitch LiveMonitor
-        private void TwitchLiveMonitor_MultiLiveGetChannels(object sender, MultiLiveGetChannelsEventArgs e)
-        {
-            InvokeBotEvent(this, BotEvents.TwitchMultiGetChannels, e);
-        }
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {

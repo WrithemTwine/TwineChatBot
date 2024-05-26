@@ -663,11 +663,6 @@ namespace StreamerBotLib.BotIOController
             HandleMultiLiveOnStreamOnline(e.Stream.UserId, e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt, e.Stream.GameId, e.Stream.GameName);
         }
 
-        public void TwitchMultiGetChannels(MultiLiveGetChannelsEventArgs e)
-        {
-            Dispatcher.CurrentDispatcher.Invoke(() => e.Callback(SystemsController.DataManage.GetMultiChannelNames(Platform.Twitch)));
-        }
-
         public void TwitchStreamOnline(OnStreamOnlineArgs e)
         {
             HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);

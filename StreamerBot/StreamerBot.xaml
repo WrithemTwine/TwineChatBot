@@ -1682,7 +1682,7 @@
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" SortMemberPath="UserId" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding IsFollower}" />
-                                                    <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}" SortMemberPath="FollwedDate" />
+                                                    <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}" SortMemberPath="FollowedDate" />
                                                     <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" SortMemberPath="StatusChangeDate" SortDirection="Descending" />
                                                 </DataGrid.Columns>
                                             </DataGrid>

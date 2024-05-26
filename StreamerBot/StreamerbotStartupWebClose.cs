@@ -47,20 +47,20 @@ namespace StreamerBot
         /// </summary>
         private void ConstructEvents()
         {
-            guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
-            guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
-            guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
-            guiTwitchBot.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
-            guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
-            guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
+            GUITwitchBots.OnBotStopped += GUI_OnBotStopped;
+            GUITwitchBots.OnBotStarted += GUI_OnBotStarted;
+            GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
+            GUITwitchBots.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
+            GUITwitchBots.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
+            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            GUITwitchBots.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
+            GUITwitchBots.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
+            GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.AppDataDirectory = GetAppDataCWD();
-            guiAppServices.OnBotStarted += GUI_OnBotStarted;
-            guiAppServices.OnBotStopped += GUI_OnBotStopped;
+            GUIAppServices.OnBotStarted += GUI_OnBotStarted;
+            GUIAppServices.OnBotStopped += GUI_OnBotStopped;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
