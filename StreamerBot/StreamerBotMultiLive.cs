@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.BotIOController;
+using StreamerBotLib.GUI;
 using StreamerBotLib.MultiLive;
 using StreamerBotLib.Static;
 
@@ -33,7 +34,7 @@ namespace StreamerBot
                 // allow edits while bot is active
                 (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
                 (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetDataManager(guiTwitchBot.TwitchLiveMonitor.MultiLiveDataManager);
+                (MultiLive_Data.Content as MultiLiveDataGrids).SetDataManager(GUITwitchBots.TwitchLiveMonitor.MultiLiveDataManager);
             }
             else
             {

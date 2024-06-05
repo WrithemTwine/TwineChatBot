@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.Properties;
 
-using System;
 using System.Configuration;
-using System.Linq;
 using System.Reflection;
 
 namespace StreamerBotLib.Static
@@ -41,6 +39,12 @@ namespace StreamerBotLib.Static
         /// Flag to indicate whether the API should use Streamer Client Id credentials per Twitch requirements.
         /// </summary>
         public static bool TwitchStreamerUseToken => Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
+
+        /// <summary>
+        /// User specified in the GUI, the user selects whether they want to use the "Twitch Authentication Code flow"
+        /// to automatically get access tokens as the token expires.
+        /// </summary>
+        public static bool TwitchTokenUseAuth => Settings.Default.TwitchTokenUseAuth;
 
         #region Twitch Credential Scopes
 
@@ -172,7 +176,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool AutoShout => Settings.Default.MsgAutoShout;
         /// <summary>
-        /// Setting for the bot to emit the "!so username" to the given channel chat, such that other bots can pick-up a shout-out for additional notifications.
+        /// Setting for the bot to emit the "!so Username" to the given channel chat, such that other bots can pick-up a shout-out for additional notifications.
         /// </summary>
         public static bool MsgSendSOToChat => Settings.Default.MsgSendSOToChat;
         /// <summary>
@@ -391,7 +395,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
         /// </summary>
-        public static int GiveawayCount
+        public static short GiveawayCount
         {
             get => Settings.Default.GiveawayCount; set => Settings.Default.GiveawayCount = value;
         }
@@ -426,7 +430,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// The number of giveaway entries a user can submit.
         /// </summary>
-        public static int GiveawayMaxEntries
+        public static short GiveawayMaxEntries
         {
             get => Settings.Default.GiveawayMaxEntries; set => Settings.Default.GiveawayMaxEntries = value;
         }
@@ -455,6 +459,35 @@ namespace StreamerBotLib.Static
             get => Settings.Default.TwitchBotUserName; set => Settings.Default.TwitchBotUserName = value;
         }
         /// <summary>
+        /// Captures prior channel name to detect if the user is monitoring another channel, hence, requiring new channel user id.
+        /// </summary>
+        public static string TwitchPriorChannelName
+        {
+            get => Settings.Default.TwitchPriorChannelName; set => Settings.Default.TwitchPriorChannelName = value;
+        }
+        /// <summary>
+        /// Captures prior bot account name to detect if user changed bot accounts, hence, requiring a new bot user id.
+        /// </summary>
+        public static string TwitchPriorBotName
+        {
+            get => Settings.Default.TwitchPriorBotName; set => Settings.Default.TwitchPriorBotName = value;
+        }
+        /// <summary>
+        /// Holds the latest used bot user id, to minimize api calls.
+        /// </summary>
+        public static string TwitchBotUserId
+        {
+            get => Settings.Default.TwitchBotUserId; set => Settings.Default.TwitchBotUserId = value;
+        }
+
+        /// <summary>
+        /// Holds the latest used streamer user id, to minimize API calls.
+        /// </summary>
+        public static string TwitchStreamerUserId
+        {
+            get => Settings.Default.TwitchChannelUserId; set => Settings.Default.TwitchChannelUserId = value;
+        }
+        /// <summary>
         /// Specifies the bot account client ID, to use in authentication calls.
         /// </summary>
         public static string TwitchBotClientId
@@ -472,7 +505,12 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Twitch Refresh Token.
         /// </summary>
-        public static string TwitchRefreshToken => Settings.Default.TwitchRefreshToken;
+        public static string TwitchRefreshToken
+        {
+            get => Settings.Default.TwitchRefreshToken;
+            set => Settings.Default.TwitchRefreshToken = value;
+        }
+
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account client ID, to perform the function call.
         /// </summary>
@@ -480,11 +518,107 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account access token, to perform the function call.
         /// </summary>
-        public static string TwitchStreamOauthToken => Settings.Default.TwitchStreamOauthToken;
+        public static string TwitchStreamOauthToken
+        {
+            get => Settings.Default.TwitchStreamOauthToken;
+            set => Settings.Default.TwitchStreamOauthToken = value;
+        }
+
+        /// <summary>
+        /// Manages the Twitch Streamer based Refresh Token
+        /// </summary>
+        public static string TwitchStreamRefreshToken
+        {
+            get => Settings.Default.TwitchStreamerRefreshToken;
+            set => Settings.Default.TwitchStreamerRefreshToken = value;
+        }
+
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account access token expiration date.
         /// </summary>
         public static DateTime TwitchStreamerTokenDate => Settings.Default.TwitchStreamerTokenDate;
+
+        #region Twitch Authorization code flow
+
+        /// <summary>
+        /// Retrieve the URL used to retrieve the Auth Code, through the auth code grant flow
+        /// </summary>
+        public static string TwitchAuthRedirectURL => Settings.Default.TwitchAuthRedirectURL;
+        /// <summary>
+        /// Refers to the bot client Id, from app registration.
+        /// </summary>
+        public static string TwitchAuthClientId => Settings.Default.TwitchAuthClientId;
+        /// <summary>
+        /// Holds the bot account access token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthBotAccessToken
+        {
+            get => Settings.Default.TwitchAuthBotAccessToken;
+            set => Settings.Default.TwitchAuthBotAccessToken = value;
+        }
+        /// <summary>
+        /// Holds the bot account refresh token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthBotRefreshToken
+        {
+            get => Settings.Default.TwitchAuthBotRefreshToken;
+            set => Settings.Default.TwitchAuthBotRefreshToken = value;
+        }
+        /// <summary>
+        /// Holds the bot account user authorized code obtained in the 'authorization code flow' method
+        /// </summary>
+        public static string TwitchAuthBotAuthCode
+        {
+            get => Settings.Default.TwitchAuthBotAuthCode;
+            set => Settings.Default.TwitchAuthBotAuthCode = value;
+        }
+        /// <summary>
+        /// Holds the bot account client secret obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthBotClientSecret => Settings.Default.TwitchAuthBotClientSecret;
+        /// <summary>
+        /// Refers to the streamer account based client Id, from app registration.
+        /// </summary>
+        public static string TwitchAuthStreamerClientId => Settings.Default.TwitchAuthStreamerClientId;
+        /// <summary>
+        /// Holds the streamer account access token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthStreamerAccessToken
+        {
+            get => Settings.Default.TwitchAuthStreamerAccessToken;
+            set => Settings.Default.TwitchAuthStreamerAccessToken = value;
+        }
+        /// <summary>
+        /// Holds the streamer account refresh token obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthStreamerRefreshToken
+        {
+            get
+            {
+                return Settings.Default.TwitchAuthStreamerRefreshToken;
+            }
+            set
+            {
+                Settings.Default.TwitchAuthStreamerRefreshToken = value;
+            }
+        }
+        /// <summary>
+        /// Holds the streamer account auth code obtained in the 'authorization code flow' method to receive an access token
+        /// </summary>
+        public static string TwitchAuthStreamerAuthCode
+        {
+            get => Settings.Default.TwitchAuthStreamerAuthCode;
+            set => Settings.Default.TwitchAuthStreamerAuthCode = value;
+        }
+        /// <summary>
+        /// Holds the streamer account client secret obtained in the 'authorization code flow' method to receive an access token.
+        /// </summary>
+        public static string TwitchAuthStreamerClientSecret => Settings.Default.TwitchAuthStreamerClientSecret;
+        /// <summary>
+        /// Flag on whether to use the internal web browser for the authentication code process
+        /// </summary>
+        public static bool TwitchAuthUseInternalBrowser => Settings.Default.TwitchAuthUseInternalBrowser;
+        #endregion
 
         /// <summary>
         /// The user specified time frequency for when to check Twitch for new followers.
@@ -547,17 +681,17 @@ namespace StreamerBotLib.Static
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
         /// <summary>
-        /// Manages the Overlay action media port serving Overlay alert content through the http server.
+        /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
-        public static int MediaOverlayMediaActionPort
+        public static short MediaOverlayMediaActionPort
         {
             get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
         }
 
         /// <summary>
-        /// Manages the Overlay ticker medition port server Overlay ticker item content through the http server.
+        /// Manages the Overlay ticker medition port server Overlay ticker item Content through the http server.
         /// </summary>
-        public static int MediaOverlayMediaTickerPort
+        public static short MediaOverlayMediaTickerPort
         {
             get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
@@ -689,9 +823,39 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool EnableDebugTwitchPubSubBot => Settings.Default.EnableDebugTwitchPubSubBot;
         /// <summary>
+        /// Enables debug logging for Twitch bot User Service methods.
+        /// </summary>
+        public static bool EnableDebugTwitchUserSvcBot => Settings.Default.EnableDebugTwitchUserSvcBot;
+        /// <summary>
         /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
+        public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
+        public static bool EnableDebugCommandSystem => Settings.Default.EnableDebugCommandSystem;
+        public static bool EnableDebugCommonSystem => Settings.Default.EnableDebugCommonSystem;
+        public static bool EnableDebugSystemController => Settings.Default.EnableDebugSystemController;
+        public static bool EnableDebugStatSystem => Settings.Default.EnableDebugStatSystem;
+        public static bool EnableDebugBotController => Settings.Default.EnableDebugBotController;
+        public static bool EnableDebugTwitchMultiLiveBot => Settings.Default.EnableDebugTwitchMultiLiveBot;
+        public static bool EnableDebugCurrencySystem => Settings.Default.EnableDebugCurrencySystem;
+        public static bool EnableDebugModerationSystem => Settings.Default.EnableDebugModerationSystem;
+        public static bool EnableDebugOverlaySystem => Settings.Default.EnableDebugOverlaySystem;
+        public static bool EnableDebugBlackjackGame => Settings.Default.EnableDebugBlackjackGame;
+        public static bool EnableDebugLocalizedMessages => Settings.Default.EnableDebugLocalizedMessages;
+        public static bool EnableDebugThreadManager => Settings.Default.EnableDebugThreadManager;
+        public static bool EnableDebugFormatData => Settings.Default.EnableDebugFormatData;
+        public static bool EnableDebugOutputMsgParsing => Settings.Default.EnableDebugOutputMsgParsing;
+        public static bool EnableDebugGUIProcessWatcher => Settings.Default.EnableDebugGUIProcessWatcher;
+        public static bool EnableDebugGUITabSizes => Settings.Default.EnableDebugGUITabSizes;
+        public static bool EnableDebugGUIThemes => Settings.Default.EnableDebugGUIThemes;
+        public static bool EnableDebugGUITwitchTokenAuth => Settings.Default.EnableDebugGUITwitchTokenAuth;
+        public static bool EnableDebugGUIEvents => Settings.Default.EnableDebugGUIEvents;
+        public static bool EnableDebugGUIHelpers => Settings.Default.EnableDebugGUIHelpers;
+        public static bool EnableDebugGUIDataViews => Settings.Default.EnableDebugGUIDataViews;
+        public static bool EnableDebugGUIBotComs => Settings.Default.EnableDebugGUIBotComs;
+        public static bool EnableDebugTwitchBots => Settings.Default.EnableDebugTwitchBots;
+
+
         #endregion
 
         #region GitHub links
@@ -707,15 +871,15 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies the GitHub link to the stable application version.
         /// </summary>
-        public static string GitHubStableLink => Settings.Default.GitHubStableLink;
+        public static string GitHubStableLink => Resources.GitHubStableLink;
         /// <summary>
         /// Specifies the GitHub link to the latest application version.
         /// </summary>
-        public static string GitHubLatestLink => Settings.Default.GitHubLatestLink;
+        public static string GitHubLatestLink => Resources.GitHubLatestLink;
         /// <summary>
         /// Specifies the GitHub link to the application Wiki
         /// </summary>
-        public static string GitHubWikiLink => Settings.Default.GitHubWikiLink;
+        public static string GitHubWikiLink => Resources.GitHubWikiLink;
 
         #endregion
 

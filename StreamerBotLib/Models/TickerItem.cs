@@ -1,13 +1,13 @@
 ﻿using StreamerBotLib.Overlay.Enums;
 
-using System;
-
 namespace StreamerBotLib.Models
 {
-    public class TickerItem : IEquatable<TickerItem>
+    public class TickerItem(OverlayTickerItem overlayTickerItem = default, string userName = null) : IEquatable<TickerItem>
     {
-        public OverlayTickerItem OverlayTickerItem { get; set; }
-        public string UserName { get; set; }
+        public TickerItem() : this(default, null) { }
+
+        public OverlayTickerItem OverlayTickerItem { get; set; } = overlayTickerItem;
+        public string UserName { get; set; } = userName;
 
         public bool Equals(TickerItem other)
         {

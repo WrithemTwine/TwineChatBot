@@ -1,13 +1,9 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.Data
 {
@@ -41,7 +37,7 @@ namespace StreamerBotLib.Data
             return
 #if DEBUG
             // add specific directory location for debug purposes, ignore for release
-            Path.Combine(@"C:\Source\ChatBotApp\StreamerBot\bin\Debug\net6.0-windows",
+            Path.Combine(Directory.GetCurrentDirectory(),
 #endif
                 fileName
 #if DEBUG

@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.BotClients;
 
-using System;
 using System.ComponentModel;
 
 namespace StreamerBotLib.GUI

@@ -7,7 +7,7 @@ namespace ConvertDataSourceFile
     {
         private static readonly string DataFileXML = "ChatDataStore.xml";
 
-        static void Main(string[] args)
+        static void Main()
         {
             if (File.Exists(DataFileXML))
             {
@@ -116,7 +116,7 @@ namespace ConvertDataSourceFile
                         Found = true;
                     }
 
-                    if(line.Contains("</CategoryList>"))
+                    if (line.Contains("</CategoryList>"))
                     {
                         if (!Found)
                         {

@@ -1,6 +1,4 @@
-﻿using System;
-
-using TwitchLib.PubSub.Models.Responses.Messages.Redemption;
+﻿using TwitchLib.PubSub.Models.Responses.Messages.Redemption;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib.Events.PubSub
 {

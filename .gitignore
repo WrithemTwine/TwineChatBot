@@ -342,3 +342,9 @@ healthchecksdb
 /TestStreamerBot/Orion_ChatDataStore_after_merge.xml
 /TestStreamerBot/Atlantis_ChatDataStore_unsure_merge.xml
 /ChatDataStore.xml
+
+/MaintainStreamerBotLib
+*.db
+DebugLogFile.txt
+ExceptionLog.txt
+StatusLog.txt

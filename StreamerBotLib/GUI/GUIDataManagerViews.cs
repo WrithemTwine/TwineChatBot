@@ -4,11 +4,9 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Documents;
 
@@ -28,16 +26,13 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<string> CurrUserList { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
-        public ObservableCollection<string> CommandCollection { get; set; } = new();
+        public ObservableCollection<string> CommandCollection { get; set; } = [];
         public ObservableCollection<string> GiveawayCollection { get; set; }
         public int CurrFollowers
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Followers.Table.Select("IsFollower=true").Length;
-                }
+                return Followers.Table.Select("IsFollower=true").Length;
             }
         }
 
@@ -45,10 +40,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Users.Count;
-                }
+                return Users.Count;
             }
         }
 
@@ -56,10 +48,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return BuiltInCommands.Count;
-                }
+                return BuiltInCommands.Count;
             }
         }
 
@@ -67,10 +56,7 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-                lock (GUIDataManagerLock.Lock)
-                {
-                    return Commands.Count;
-                }
+                return Commands.Count;
             }
         }
 
@@ -108,7 +94,7 @@ namespace StreamerBotLib.GUI
             JoinCollection = ActionSystem.JoinCollection;
             GiveawayCollection = ActionSystem.GiveawayCollection;
             CurrUserList = ActionSystem.CurrUserJoin;
-            SetDataTableViews(SystemsController.DataManage);
+            SetDataTableViews((DataManager)SystemsController.DataManage);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

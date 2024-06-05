@@ -33,6 +33,7 @@
         viewdeath,
         addquote,
         quote,
-        removequote
+        removequote,
+        clip
     }
 }

@@ -3,17 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiUserLiveBot", "MultiUserLiveBot\MultiUserLiveBot.csproj", "{BC756E65-DBF5-4AFB-9100-9528BE698765}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBot", "StreamerBot\StreamerBot.csproj", "{C807A207-AC56-4AA4-BFF1-F3D4853F817C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestStreamerBot", "TestStreamerBot\TestStreamerBot.csproj", "{5BBA6290-982F-423B-B92F-AA02702527A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBotLib", "StreamerBotLib\StreamerBotLib.csproj", "{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertDataSourceFile", "ConvertDataSourceFile\ConvertDataSourceFile.csproj", "{7C2D0A88-0D74-4E4C-9058-D3945119E3AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTestFeature", "SimpleTestFeature\SimpleTestFeature.csproj", "{F735F8FE-6259-4FB7-A980-FF9250CD4650}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D} = {4C91C30A-F2DA-4B9F-AD15-2519AB91CA4D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaintainStreamerBotLib", "MaintainStreamerBotLib\MaintainStreamerBotLib.csproj", "{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +30,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC756E65-DBF5-4AFB-9100-9528BE698765}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C807A207-AC56-4AA4-BFF1-F3D4853F817C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C807A207-AC56-4AA4-BFF1-F3D4853F817C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C807A207-AC56-4AA4-BFF1-F3D4853F817C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +50,10 @@ Global
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F735F8FE-6259-4FB7-A980-FF9250CD4650}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

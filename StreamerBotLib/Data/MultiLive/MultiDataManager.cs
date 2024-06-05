@@ -5,12 +5,9 @@ using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Xml;
 
 using static StreamerBotLib.Data.MultiLive.DataSource;
@@ -30,7 +27,7 @@ namespace StreamerBotLib.Data.MultiLive
         public DataView MsgEndPoints { get; set; }
         public DataView LiveStream { get; set; }
         public DataView SummaryLiveStream { get; set; }
-        public List<ArchiveMultiStream> CleanupList { get; private set; } = new List<ArchiveMultiStream>();
+        public List<ArchiveMultiStream> CleanupList { get; private set; } = [];
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string PropName)
@@ -53,6 +50,25 @@ namespace StreamerBotLib.Data.MultiLive
             MsgEndPoints.ListChanged += DataView_ListChanged;
             LiveStream.ListChanged += DataView_ListChanged;
             SummaryLiveStream.ListChanged += DataView_ListChanged;
+        }
+
+        private void UpdateChannelsForId()
+        {
+            lock (_DataSource)
+            {
+                ChannelsRow[] channelsRows = (ChannelsRow[])_DataSource.Channels.Select();
+
+                foreach(ChannelsRow c in channelsRows)
+                {
+                    if (DBNull.Value.Equals(c["UserId"]))
+                    {
+                        c.UserId = "";
+                    }
+                }
+
+                _DataSource.Channels.AcceptChanges();
+                SaveData();
+             }
         }
 
         private void DataView_ListChanged(object sender, ListChangedEventArgs e)
@@ -103,8 +119,8 @@ namespace StreamerBotLib.Data.MultiLive
 
                 foreach (DataTable table in _DataSource.Tables)
                 {
-                    List<DataRow> UniqueRows = new();
-                    List<DataRow> DuplicateRows = new();
+                    List<DataRow> UniqueRows = [];
+                    List<DataRow> DuplicateRows = [];
 
                     foreach (DataRow datarow in table.Rows)
                     {
@@ -131,6 +147,7 @@ namespace StreamerBotLib.Data.MultiLive
             NotifyPropertyChanged(nameof(_DataSource.MsgEndPoints));
             NotifyPropertyChanged(nameof(_DataSource.LiveStream));
 
+            UpdateChannelsForId();
         }
 
         /// <summary>
@@ -178,7 +195,7 @@ namespace StreamerBotLib.Data.MultiLive
         /// <param name="ChannelName">The name of the channel for the event.</param>
         /// <param name="dateTime">The date of the event.</param>
         /// <returns>true if the event posted. false if the date & time duplicates.</returns>
-        public bool PostStreamDate(string ChannelName, DateTime dateTime)
+        public bool PostStreamDate(string ChannelName, string UserId, DateTime dateTime)
         {
             lock (_DataSource)
             {
@@ -193,7 +210,7 @@ namespace StreamerBotLib.Data.MultiLive
                 else
                 {
                     // since we know this addition is only from a source based on the Channels, we forego null checking
-                    _DataSource.LiveStream.AddLiveStreamRow((ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{ChannelName}'").FirstOrDefault(), dateTime);
+                    _DataSource.LiveStream.AddLiveStreamRow(ChannelName, dateTime, UserId);
                     _DataSource.LiveStream.AcceptChanges();
                     NotifyPropertyChanged(nameof(_DataSource.LiveStream));
                     SaveData();
@@ -251,7 +268,7 @@ namespace StreamerBotLib.Data.MultiLive
                     if (summaryrow == null)
                     {
                         ChannelsRow UserRow = (ChannelsRow)DataSetStatic.GetRow(_DataSource.Channels, $"{_DataSource.Channels.ChannelNameColumn}='{SumNameRows.Name}'");
-                        _DataSource.SummaryLiveStream.AddSummaryLiveStreamRow(UserRow.Id, UserRow.ChannelName, SumNameRows.StreamCount, SumNameRows.ThroughDate);
+                        _DataSource.SummaryLiveStream.AddSummaryLiveStreamRow(UserRow.Id, UserRow, SumNameRows.StreamCount, SumNameRows.ThroughDate);
                     }
                     else
                     {
@@ -280,12 +297,11 @@ namespace StreamerBotLib.Data.MultiLive
         /// Retrieves the list of channel names from the Channels table.
         /// </summary>
         /// <returns>A list of strings from the Channels table.</returns>
-        public List<string> GetChannelNames()
+        public List<LiveUser> GetChannelNames()
         {
             lock (_DataSource)
             {
-                return new(from ChannelsRow c in _DataSource.Channels.Select()
-                           select c.ChannelName);
+                return new(from ChannelsRow c in _DataSource.Channels.Select() select new LiveUser(c.ChannelName, Platform.Twitch, DBNull.Value.Equals(c.UserId) ? null : c.UserId ));
             }
         }
 
@@ -306,7 +322,7 @@ namespace StreamerBotLib.Data.MultiLive
         {
             lock (_DataSource)
             {
-                List<DataTable> updated = new();
+                List<DataTable> updated = [];
                 foreach (DataRow dr in dataRows)
                 {
                     if (CheckField(dr.Table.TableName, "IsEnabled"))
@@ -354,14 +370,30 @@ namespace StreamerBotLib.Data.MultiLive
             }
         }
 
-        public void PostMonitorChannel(string UserName)
+        public void PostMonitorChannel(string UserName, string UserId)
         {
             lock (_DataSource)
             {
-                _DataSource.Channels.AddChannelsRow(UserName);
+                _DataSource.Channels.AddChannelsRow(UserName, UserId);
                 _DataSource.Channels.AcceptChanges();
                 SaveData();
                 NotifyPropertyChanged(nameof(_DataSource.Channels));
+            }
+        }
+
+        public void PostUpdatedChannelbyId(string UserName, string UserId)
+        {
+            lock (_DataSource)
+            {
+                ChannelsRow channelsRow = (ChannelsRow)_DataSource.Channels.Select($"{_DataSource.Channels.ChannelNameColumn.ColumnName}='{UserName}'").FirstOrDefault();
+
+                if (channelsRow != default && string.IsNullOrEmpty(channelsRow.UserId))
+                {
+                    channelsRow.UserId = UserId;
+                    _DataSource.Channels.AcceptChanges();
+                    SaveData();
+                    NotifyPropertyChanged(nameof(Channels));
+                }
             }
         }
 
@@ -409,7 +441,7 @@ namespace StreamerBotLib.Data.MultiLive
                 return GetTableNames().Contains(dataTable) && CheckField(dataTable, dataColumn)
                     ? (from DataRow row in _DataSource.Tables[dataTable].Rows
                        select row[dataColumn]).ToList()
-                    : (new());
+                    : ([]);
             }
         }
 
@@ -525,6 +557,11 @@ namespace StreamerBotLib.Data.MultiLive
         }
 
         public int? GetTimerCommandTime(string Cmd)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<LiveUser> GetUserIdsByName(IEnumerable<LiveUser> Users)
         {
             throw new NotImplementedException();
         }

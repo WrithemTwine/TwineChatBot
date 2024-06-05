@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Events;
 
-using System;
-
 namespace StreamerBotLib.Interfaces
 {
     /// <summary>
@@ -38,5 +36,6 @@ namespace StreamerBotLib.Interfaces
         /// </summary>
         /// <param name="Start">True to start bots, False to stop bots - based on user selection in the GUI.</param>
         public void ManageStreamOnlineOfflineStatus(bool Start);
+        void GetAllFollowers(bool OverrideUpdateFollowers = false);
     }
 }

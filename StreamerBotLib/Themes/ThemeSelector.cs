@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System.Linq;
 using System.Reflection;
 
 namespace StreamerBotLib.Themes

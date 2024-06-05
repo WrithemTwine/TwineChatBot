@@ -4,8 +4,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
@@ -26,12 +24,11 @@ namespace StreamerBotLib.Systems
     {
         internal static DataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
-        public static ObservableCollection<UserJoin> JoinCollection { get; set; } = new();
-        public static ObservableCollection<string> GiveawayCollection { get; set; } = new();
-        public static ObservableCollection<string> CurrUserJoin { get; private set; } = new();
+        public static ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
+        public static ObservableCollection<string> GiveawayCollection { get; set; } = [];
+        public static ObservableCollection<string> CurrUserJoin { get; private set; } = [];
 
         public static string Category { get; set; }
-
         /// <summary>
         /// The streamer channel monitored.
         /// </summary>
@@ -40,18 +37,17 @@ namespace StreamerBotLib.Systems
         /// The account user name of the bot account.
         /// </summary>
         public static string BotUserName { get; set; }
-
         /// <summary>
         /// Time delays to use in threads
         /// </summary>
         protected const int SecondsDelay = 2000;
 
-        protected static List<LiveUser> CurrUsers { get; private set; } = new();
-        protected static List<string> UniqueUserJoined { get; private set; } = new();
-        protected static List<string> UniqueUserChat { get; private set; } = new();
-        protected static List<string> ModUsers { get; private set; } = new();
-        protected static List<string> SubUsers { get; private set; } = new();
-        protected static List<string> VIPUsers { get; private set; } = new();
+        protected static List<LiveUser> CurrUsers { get; private set; } = [];
+        protected static List<string> UniqueUserJoined { get; private set; } = [];
+        protected static List<string> UniqueUserChat { get; private set; } = [];
+        protected static List<string> ModUsers { get; private set; } = [];
+        protected static List<string> SubUsers { get; private set; } = [];
+        protected static List<string> VIPUsers { get; private set; } = [];
 
         protected static StreamStat CurrStream { get; set; } = new();
 
@@ -59,7 +55,8 @@ namespace StreamerBotLib.Systems
         /// Returns the start of the current active online stream.
         /// </summary>
         /// <returns>The DateTime of the stream start time.</returns>
-        public DateTime GetCurrentStreamStart => CurrStream.StreamStart;
+        private static DateTime GetCurrentStreamStart => CurrStream.StreamStart;
+
         private delegate void ProcMessage(string UserName, string Message);
 
         public ActionSystem()
@@ -168,9 +165,9 @@ namespace StreamerBotLib.Systems
             DataManage.DeleteDataRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-            DataManage.PostNewAutoShoutUser(UserName);
+            DataManage.PostNewAutoShoutUser(UserName, UserId, platform);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
@@ -210,7 +207,7 @@ namespace StreamerBotLib.Systems
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>
         /// <returns>Current total chats as of now.</returns>
-        public int GetCurrentChatCount
+        public static int GetCurrentChatCount
         {
             get
             {

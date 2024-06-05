@@ -10,6 +10,7 @@
         TwitchMultiBot,
         TwitchUserBot,
         TwitchPubSub,
+        TwitchTokenBot,
         MediaOverlayServer
     }
 }

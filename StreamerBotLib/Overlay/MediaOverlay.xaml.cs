@@ -7,17 +7,12 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace StreamerBotLib.Overlay
 {
-    // TODO: test new port number or add another server to mitigate pausing videoes
-
     /// <summary>
     /// Interaction logic for MediaOverlay.xaml
     /// </summary>
@@ -79,7 +74,7 @@ namespace StreamerBotLib.Overlay
             Controller.SetTickerData(e.TickerItems, GUIData.OverlayEditStyles);
         }
 
-        public void CloseApp(bool Token = false)
+        public void CloseApp()
         {
             Close();
         }

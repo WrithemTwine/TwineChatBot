@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Win32;
+
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
@@ -7,8 +9,6 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -631,20 +631,19 @@ namespace StreamerBotLib.GUI.Windows
 
         private void FileBrowser_TextBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            TextBox saveMediaPath = (sender as TextBox);
+            TextBox saveMediaPath = sender as TextBox;
 
-            System.Windows.Forms.OpenFileDialog pickFile = new()
+            FileDialog pickFile = new OpenFileDialog()
             {
                 Multiselect = false,
                 CheckFileExists = true,
-                AutoUpgradeEnabled = true,
                 DereferenceLinks = true,
-                SupportMultiDottedExtensions = true,
                 Title = "Select media file (picture/video) for Overlay event! (needs to be viewable in a webpage)",
                 InitialDirectory = OptionFlags.MediaOverlayMRUPathSelect
             };
 
-            if (pickFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+
+            if (pickFile.ShowDialog() == true)
             {
                 saveMediaPath.Text = pickFile.FileName;
                 OptionFlags.MediaOverlayMRUPathSelect = Path.GetDirectoryName(saveMediaPath.Text);

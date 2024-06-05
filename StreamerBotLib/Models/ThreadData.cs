@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 
-using System.Threading;
-
 namespace StreamerBotLib.Models
 {
     public class ThreadData

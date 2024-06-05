@@ -50,6 +50,8 @@
         quote,
         Pluralquote,
         Pluralbe,
-        be
+        be,
+        viewrate,
+        username
     }
 }

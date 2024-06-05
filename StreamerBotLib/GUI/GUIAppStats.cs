@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Models;
 
-using System;
-
 namespace StreamerBotLib.GUI
 {
     public class GUIAppStats

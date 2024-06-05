@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Enums;
 
-using System;
 using System.Diagnostics;
 
 namespace StreamerBotLib.Models

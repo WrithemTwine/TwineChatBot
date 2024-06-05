@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Machine Learning Library
     // The Accord.NET Framework
@@ -31,7 +29,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
     /// <typeparam name="TNode">The class type for the nodes of the tree.</typeparam>
     /// 
     [Serializable]
-    public class BinaryNode<TNode> : IEquatable<TNode>, ITreeNode<TNode> // TODO: Try to remove IEquatable
+    public class BinaryNode<TNode> : IEquatable<TNode>, ITreeNode<TNode>
             where TNode : BinaryNode<TNode>
     {
         /// <summary>

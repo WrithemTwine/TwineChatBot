@@ -3,11 +3,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.CurrencyGames;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 
 namespace StreamerBotLib.Systems
 {

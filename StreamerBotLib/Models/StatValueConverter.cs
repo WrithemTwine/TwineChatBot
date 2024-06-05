@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System;
 using System.Globalization;
 using System.Windows.Data;
 

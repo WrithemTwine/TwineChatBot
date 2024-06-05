@@ -11,7 +11,6 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Server;
 using StreamerBotLib.Static;
 
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace StreamerBotLib.Overlay.Control
@@ -55,7 +54,7 @@ namespace StreamerBotLib.Overlay.Control
         /// <param name="overlayPage">An object holding the html data to send to for the alert.</param>
         public void SendAlert(OverlayPage overlayPage)
         {
-            _httpServer.SendAlert(overlayPage);
+            TwineBotWebServer.SendAlert(overlayPage);
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Sending alert, {overlayPage.OverlayType}, for display.");
 
@@ -67,7 +66,7 @@ namespace StreamerBotLib.Overlay.Control
         /// </summary>
         public void StartServer()
         {
-            _httpServer.StartServer();
+            TwineBotWebServer.StartServer();
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server started.");
 
@@ -78,7 +77,7 @@ namespace StreamerBotLib.Overlay.Control
         /// </summary>
         public void StopServer()
         {
-            _httpServer.StopServer();
+            TwineBotWebServer.StopServer();
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server stopped.");
         }
@@ -90,7 +89,7 @@ namespace StreamerBotLib.Overlay.Control
         /// <param name="items">A collection of the user selected items for the ticker.</param>
         public void SetTickerItems(IEnumerable<SelectedTickerItem> items)
         {
-            tickerFormatter.SetTickersSelected(items);
+            TickerFormatter.SetTickersSelected(items);
         }
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace StreamerBotLib.Overlay.Control
         /// <param name="overlayStyles">A collection of styles relevant to the current setup.</param>
         public void UpdateTicker(IEnumerable<OverlayStyle> overlayStyles)
         {
-            _httpServer.UpdateTicker(tickerFormatter.GetTickerPages(overlayStyles));
+            TwineBotWebServer.UpdateTicker(tickerFormatter.GetTickerPages(overlayStyles));
         }
     }
 }

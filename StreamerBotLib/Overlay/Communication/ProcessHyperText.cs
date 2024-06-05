@@ -5,10 +5,8 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace StreamerBotLib.Overlay.Communication
@@ -20,7 +18,7 @@ namespace StreamerBotLib.Overlay.Communication
     {
         private static string RefreshToken(int Duration)
         {
-            return $"<meta http-equiv=\"refresh\" content=\"{Duration}\" />";
+            return $"<meta http-equiv=\"refresh\" Content=\"{Duration}\" />";
         }
 
         public static string DefaultPage
@@ -85,7 +83,7 @@ namespace StreamerBotLib.Overlay.Communication
 
             string Msg = $"<div class=\"message\">{overlayActionType.Message}</div>";
 
-            return ProcessPage(overlayStyle.OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
+            return ProcessPage(overlayStyle.OverlayStyleText, Img + Media + Msg, (int)overlayActionType.Duration, Media != "");
         }
 
         public static OverlayPage ProcessTicker(TickerItem tickerItem, IEnumerable<OverlayStyle> overlayStyles)
@@ -225,6 +223,8 @@ namespace StreamerBotLib.Overlay.Communication
                     {
                         output = @"
     .marquee {
+        width: 180%;
+        white-space: nowrap;
         background-color: #949494;
         overflow: hidden;
         display: inline-block;
@@ -345,7 +345,7 @@ $"        animation: ticker {OptionFlags.MediaOverlayTickerMarqueeTime}s linear 
                             $"}}\n";
 
             /*
-             * https://stackoverflow.com/questions/18490026/refresh-reload-the-content-in-div-using-jquery-ajax
+             * https://stackoverflow.com/questions/18490026/refresh-reload-the-Content-in-div-using-jquery-ajax
              * 
              * https://stackoverflow.com/questions/16231359/animating-elements-sequentially-in-pure-css3-on-loop
              * 
@@ -405,7 +405,7 @@ body {
 .demo_marquee-wrap {
   --demo-marquee_space: 2rem;
   display: grid;
-  align-content: center;
+  align-Content: center;
   overflow: hidden;
   gap: var(--demo-marquee_space);
   width: 100%;
@@ -429,7 +429,7 @@ body {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-Content: space-around;
   gap: var(--demo-marquee_gap);
   min-width: 100%;
   animation: scroll var(--demo-marquee_duration) linear infinite;

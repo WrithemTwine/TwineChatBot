@@ -3,10 +3,8 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 
-using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Threading;
 
 namespace StreamerBotLib.BotClients
 {
@@ -75,6 +73,10 @@ namespace StreamerBotLib.BotClients
         }
 
         public virtual void GetAllFollowers()
+        {
+            throw new NotImplementedException();
+        }
+        public virtual void GetAllFollowers(bool OverrideUpdateFollowers = false)
         {
             throw new NotImplementedException();
         }

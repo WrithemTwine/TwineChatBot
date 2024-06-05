@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Overlay.Interfaces;
 
-using System;
-
 namespace StreamerBotLib.Overlay.Models
 {
     public class OverlayPage : IEquatable<OverlayPage>, IOverlayPageReadOnly

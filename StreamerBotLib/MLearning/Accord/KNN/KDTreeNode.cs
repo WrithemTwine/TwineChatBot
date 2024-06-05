@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Machine Learning Library
     // The Accord.NET Framework
@@ -66,7 +65,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
     /// 
     [Serializable]
     public class KDTreeNodeBase<TNode> : BinaryNode<TNode>,
-        IComparable<TNode>, IEquatable<TNode> // TODO: Try to remove IEquatable
+        IComparable<TNode>, IEquatable<TNode>
         where TNode : KDTreeNodeBase<TNode>
     {
         /// <summary>
@@ -129,7 +128,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
-        public new bool Equals(TNode other) // TODO: Try to remove IEquatable
+        public new bool Equals(TNode other)
         {
             return this == other;
         }

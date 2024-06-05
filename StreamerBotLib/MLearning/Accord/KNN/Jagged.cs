@@ -1,4 +1,4 @@
-﻿namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     /// <summary>
     ///   Jagged matrices.
@@ -68,7 +68,7 @@
 #endif
         public static T[][] OneHot<T>(int[] indices, T[][] result)
         {
-            var one = (T)System.Convert.ChangeType(1, typeof(T));
+            var one = (T)Convert.ChangeType(1, typeof(T));
             for (int i = 0; i < indices.Length; i++)
                 result[i][indices[i]] = one;
             return result;

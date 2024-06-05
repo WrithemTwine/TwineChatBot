@@ -1,7 +1,6 @@
 ﻿
 using StreamerBotLib.Themes;
 
-using System;
 using System.Windows;
 
 namespace StreamerBot

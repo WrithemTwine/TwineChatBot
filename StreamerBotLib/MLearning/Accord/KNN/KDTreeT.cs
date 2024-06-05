@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     /// <summary>
     ///   K-dimensional tree.
@@ -237,7 +235,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
 
             // The median will be located halfway in the sorted array
             var median = points[half];
-            var value = values != null ? values[half] : default(T);
+            var value = values != null ? values[half] : default;
 
             depth++;
 

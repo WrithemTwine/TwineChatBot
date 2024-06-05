@@ -1,15 +1,11 @@
 ﻿using StreamerBotLib.Culture;
-using StreamerBotLib.Data;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Resources;
 
@@ -68,7 +64,7 @@ namespace StreamerBotLib.Systems
         /// <summary>
         /// Set the DataManager to use for extracting event messages
         /// </summary>
-        public static void SetDataManager(DataManager dataManager)
+        public static void SetDataManager(IDataManageReadOnly dataManager)
         {
             _datamanager = dataManager;
         }

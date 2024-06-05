@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Overlay.Enums;
 
-using System.Collections.Generic;
-
 namespace StreamerBotLib.Overlay.Static
 {
     public static class PublicConstants

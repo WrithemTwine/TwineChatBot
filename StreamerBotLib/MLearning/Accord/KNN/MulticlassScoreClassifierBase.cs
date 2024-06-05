@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Statistics Library
     // The Accord.NET Framework
@@ -368,7 +366,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             decision = createOrReuse(input, decision);
             int value;
             Scores(input, out value, result);
-            Vector.OneHot<bool>(value, decision);
+            Vector.OneHot(value, decision);
             return result;
         }
 
@@ -377,7 +375,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             decision = createOrReuse(input, decision);
             int value;
             Scores(input, out value, result);
-            Vector.OneHot<int>(value, decision);
+            Vector.OneHot(value, decision);
             return result;
         }
 
@@ -386,7 +384,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             decision = createOrReuse(input, decision);
             int value;
             Scores(input, out value, result);
-            Vector.OneHot<double>(value, decision);
+            Vector.OneHot(value, decision);
             return result;
         }
 
@@ -581,7 +579,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             for (int i = 0; i < input.Length; i++)
             {
                 Scores(input[i], out value, result[i]);
-                decision[i] = Vector.OneHot<int>(value, decision[i]);
+                decision[i] = Vector.OneHot(value, decision[i]);
             }
             return result;
         }
@@ -593,7 +591,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
             for (int i = 0; i < input.Length; i++)
             {
                 Scores(input[i], out value, result[i]);
-                decision[i] = Vector.OneHot<double>(value, decision[i]);
+                decision[i] = Vector.OneHot(value, decision[i]);
             }
             return result;
         }
@@ -644,7 +642,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
         /// </returns>
         new public IMultilabelScoreClassifier<TInput> ToMultilabel()
         {
-            return (IMultilabelScoreClassifier<TInput>)this;
+            return this;
         }
 
         /// <summary>
@@ -655,7 +653,7 @@ namespace StreamerBotLib.MachineLearning.Accord.KNN
         /// </returns>
         public IMulticlassScoreClassifier<TInput> ToMulticlass()
         {
-            return (IMulticlassScoreClassifier<TInput>)this;
+            return this;
         }
 
         /// <summary>

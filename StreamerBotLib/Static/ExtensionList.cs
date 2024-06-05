@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace StreamerBotLib.Static
+﻿namespace StreamerBotLib.Static
 {
     public static class ExtensionList
     {
+        public static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
+
+
         /// <summary>
         /// Uniquely adds an item to the provided <paramref name="List"/>, first checking if <paramref name="List"/> contains the item.
         /// </summary>

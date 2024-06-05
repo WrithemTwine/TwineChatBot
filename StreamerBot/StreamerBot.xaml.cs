@@ -12,15 +12,11 @@ using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -31,6 +27,12 @@ using System.Windows.Threading;
 
 namespace StreamerBot
 {
+    // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment
+    // TODO: add "shoutout" user option to invoke Twitch's chat level shoutout option
+    // TODO: look at using "localhost" for the clip's referback URL to grab a clip to send to overlay-reconnect into Overlay
+
+    // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -48,7 +50,7 @@ namespace StreamerBot
         private DateTime ChannelPtRetrievalDate = DateTime.MinValue;
         private TimeSpan ChannelPtRefresh = new(0, 15, 0);
 
-        private int TwitchFollowerCurrRefreshHrs = 0;
+        private short TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
@@ -87,20 +89,17 @@ namespace StreamerBot
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
 
-            //LoaderDLLFolderPath = "./";
-
-
             InitializeComponent();
 
-            BotOps = new()
-            {
+            BotOps =
+            [
                 new(Settings.Default.TwitchChatBotAutoStart, Radio_Twitch_StartBot),
                 new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
                 new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
                 new(false, Radio_Twitch_PubSubBotStart)
-            };
+            ];
 
             SetTheme(); // adjust the theme, if user selected a different theme.
 
@@ -108,7 +107,7 @@ namespace StreamerBot
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
 
-            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<short>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
 
             ThreadManager.CreateThreadStart(ProcessWatcher);
@@ -134,26 +133,47 @@ namespace StreamerBot
         /// </summary>
         private void ConstructEvents()
         {
-            guiTwitchBot.OnBotStopped += GUI_OnBotStopped;
-            guiTwitchBot.OnBotStarted += GUI_OnBotStarted;
-            guiTwitchBot.OnBotStarted += GuiTwitchBot_GiveawayEvents;
-            guiTwitchBot.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
-            guiTwitchBot.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
-            guiTwitchBot.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
-            guiTwitchBot.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
+            GUITwitchBots.OnBotStopped += GUI_OnBotStopped;
+            GUITwitchBots.OnBotStarted += GUI_OnBotStarted;
+            GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
+            GUITwitchBots.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
+            GUITwitchBots.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
+            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
+            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
+            GUITwitchBots.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
+            GUITwitchBots.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
+            GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.AppDataDirectory = GetAppDataCWD();
-            guiAppServices.OnBotStarted += GUI_OnBotStarted;
-            guiAppServices.OnBotStopped += GUI_OnBotStopped;
+            GUIAppServices.OnBotStarted += GUI_OnBotStarted;
+            GUIAppServices.OnBotStopped += GUI_OnBotStopped;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
+            Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
 
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
+            VerifyNewVersion += StreamerBotWindow_VerifyNewVersion;
         }
+
+        /// <summary>
+        /// A running watcher thread checks for elapsed time, and raises an event when current time exceeds the 
+        /// time to check for another version; and not just when the application starts - the user can have the 
+        /// application open for weeks and would know of a new version without restarting it.
+        /// Handles the event when it's time to check for a new version.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StreamerBotWindow_VerifyNewVersion(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                // navigate to the predefined stable link.
+                WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+            });
+        }
+
 
         /// <summary>
         /// Handles a WebView GUI control navigation, when it completes. The GitHub link resolves to a 
@@ -166,16 +186,21 @@ namespace StreamerBot
         {
             string NewVersionLink = WebView2_GitHub_StableVersion.Source.ToString();
 
+            // "https://github.com/WrithemTwine/TwineChatBot/releases/tag/v.1.2.10.0"
             if (NewVersionLink != OptionFlags.GitHubCheckStable)
             {
                 OptionFlags.GitHubCheckStable = NewVersionLink;
             }
+
+            string newversion = (from s in NewVersionLink.Split('/')
+                                 select s).Last().Split('_').First();
+
             Version version = Assembly.GetEntryAssembly().GetName().Version;
-            string AppVersion = $"{version.Major}.{version.Minor}.{version.Build}";
+            string AppVersion = $"v.{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             // check if the saved link is the default, also check if the found link doesn't have the current version
             // true=> link not default and the stable version link doesn't have the current app version in it
-            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && !NewVersionLink.Contains(AppVersion))
+            if (OptionFlags.GitHubCheckStable != OptionFlags.GitHubStableLink && AppVersion.CompareTo(newversion) < 0)
             {
                 StatusBarItem_NewStableVersion.Visibility = Visibility.Visible;
             }
@@ -218,6 +243,28 @@ namespace StreamerBot
             }), null);
         }
 
+        private void GuiTwitchBot_OnBotFailedStart(object sender, BotStartStopEventArgs e)
+        {
+            _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+            {
+                ToggleInputEnabled(true);
+                RadioButton radio = e.BotName switch
+                {
+                    Bots.TwitchChatBot => Radio_Twitch_StopBot,
+                    Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
+                    Bots.TwitchFollowBot => Radio_Twitch_FollowBotStop,
+                    Bots.TwitchLiveBot => Radio_Twitch_LiveBotStop,
+                    Bots.TwitchMultiBot => Radio_MultiLiveTwitch_StopBot,
+                    Bots.TwitchPubSub => Radio_Twitch_PubSubBotStop,
+                    Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
+                    Bots.Default => throw new NotImplementedException(),
+                    Bots.TwitchUserBot => throw new NotImplementedException(),
+                    _ => throw new NotImplementedException()
+                };
+                HelperStopBot(radio);
+            }), null);
+        }
+
         private void GUI_OnBotStopped(object sender, BotStartStopEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new BotOperation(() =>
@@ -253,7 +300,10 @@ namespace StreamerBot
             {
                 _ = Dispatcher.BeginInvoke(new BotOperation(() =>
                 {
-                    (B.Item2.DataContext as IOModule)?.StartBot();
+                    if (B.Item2.IsEnabled) // is enabled is a check the credentials are added to the bot
+                    {
+                        (B.Item2.DataContext as IOModule)?.StartBot();
+                    }
                 }), null);
             }
         }
@@ -360,7 +410,7 @@ namespace StreamerBot
                 new()
                 {
                     CommandText = $"{DefaultCommand.soactive}",
-                    CommandArguments = new() { "" },
+                    CommandArguments = [""],
                     UserType = ViewerTypes.Broadcaster,
                     IsBroadcaster = true,
                     DisplayName = OptionFlags.TwitchChannelName,
@@ -383,7 +433,7 @@ namespace StreamerBot
             {
                 targetclick.IsEnabled = false;
 
-                new Thread(new ThreadStart(() =>
+                ThreadManager.CreateThreadStart(() =>
                 {
                     try
                     {
@@ -393,31 +443,43 @@ namespace StreamerBot
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                     }
-                })).Start();
+                });
             }
         }
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "User pushed the category button.");
+
             BeginUpdateCategory();
         }
         private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received an livestream started event.");
+
             SetLiveStreamActive(true);
         }
         private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received livestream stopped. Notify GUI to update appearance for offline.");
+
             SetLiveStreamActive(false);
         }
         private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received a livestream event.");
+
             BeginUpdateCategory();
         }
         private void BeginUpdateCategory()
         {
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => guiTwitchBot.GetUserGameCategory(UserName: s)));
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
+
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => GUITwitchBots.GetUserGameCategory(UserName: s)));
         }
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received update to the channel game category.");
+
             Dispatcher.Invoke(() =>
             {
                 TextBlock_CurrentCategory.Content = e.GameName;
@@ -436,14 +498,16 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
         {
-            List<RadioButton> BotOps = new()
-            {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
+
+            List<RadioButton> BotOps =
+            [
                 Radio_MultiLiveTwitch_StopBot,
                 Radio_Twitch_FollowBotStop,
                 Radio_Twitch_LiveBotStop,
                 Radio_Twitch_StopBot,
                 Radio_Twitch_ClipBotStop
-            };
+            ];
 
             Dispatcher.Invoke(() =>
             {
@@ -492,9 +556,46 @@ namespace StreamerBot
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
+
+            ToggleButton_ChooseTwitchAuth_Click(this, null);
+
             CheckFocus();
-            if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate)
+            StartAutoBots();
+
+            CheckMessageBoxes();
+            CheckBox_ManageData_Click(sender, new());
+            CheckBox_TabifySettings_Clicked(this, new());
+            CheckDebug(this, new());
+            SetVisibility(this, new());
+            CheckFocus();
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "End Window Loaded events.");
+        }
+
+        /// <summary>
+        /// Check each bot if it's enabled-the credentials are proper- and start any bot the user selected to start when the app is loaded.
+        /// Also, when the Twitch authentication token method changes, need to restart any bots if the tokens are available.
+        /// </summary>
+        private void StartAutoBots()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Attempting to start bots.");
+
+            if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate
+                && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
+            ||
+                (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
+                                                // check the bot/streamer tokens are available assigned
+                && (!OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
+                 || (OptionFlags.TwitchStreamerUseToken
+                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken))
+                   )
+                )
+            )
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
 
                 foreach (Tuple<bool, RadioButton> tuple in from Tuple<bool, RadioButton> tuple in BotOps
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
@@ -503,28 +604,34 @@ namespace StreamerBot
                     Dispatcher.BeginInvoke(new BotOperation(() =>
                     {
                         (tuple.Item2.DataContext as IOModule)?.StartBot();
-                    }), null);
+                    }));
                 }
+                BotController.InitializeHelix();
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
 
                 BeginUpdateCategory();
             }
-
-            CheckMessageBoxes();
-            CheckBox_ManageData_Click(sender, new());
-            CheckBox_TabifySettings_Clicked(this, new());
-            CheckDebug(this, new());
-            SetVisibility(this, new());
-
-            // TODO: research auto-refreshing token
         }
 
+        /// <summary>
+        /// When the user clicks the close button to the window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Closing the application. Setting flags to end threaded procedures.");
+
             WatchProcessOps = false;
             OptionFlags.IsStreamOnline = false;
             OptionFlags.ActiveToken = false;
 
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
             Controller.ExitBots();
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");
+            LogWriter.ExitLogs();
         }
 
         #endregion
@@ -578,14 +685,6 @@ namespace StreamerBot
             CheckFocus();
         }
 
-        private void CheckDebug(object sender, RoutedEventArgs e)
-        {
-            if (StackPanel_DebugLivestream != null)
-            {
-                StackPanel_DebugLivestream.Visibility = Settings.Default.DebugLiveStream ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-
         /// <summary>
         /// Manage GUI element visibility based on user selection. The intent is to add friendly protection
         /// to prevent accidentally clicking buttons and deleting, often unrecoverable, data-or the latest backup at the least.
@@ -618,7 +717,7 @@ namespace StreamerBot
             if (CheckBox_ManageFollowers.IsChecked == true)
             {
                 CheckBox_ManageUsers.IsEnabled = false;
-                if (Settings.Default.TwitchFollowerSvcAutoStart)
+                if (Settings.Default.TwitchFollowerSvcAutoStart && Radio_Twitch_FollowBotStart.IsChecked == true)
                 {
                     Dispatcher.BeginInvoke(new BotOperation(() =>
                     {
@@ -635,7 +734,7 @@ namespace StreamerBot
                 }), null);
             }
 
-            Controller.ManageDatabase();
+            BotController.ManageDatabase();
         }
 
         /// <summary>
@@ -643,30 +742,44 @@ namespace StreamerBot
         /// </summary>
         private void CheckFocus()
         {
-            List<RadioButton> radioButtons = new() { Radio_Twitch_StartBot, Radio_Twitch_FollowBotStart, Radio_Twitch_LiveBotStart, Radio_Twitch_ClipBotStart, Radio_Services_OverlayBotStart };
-
-            void SetButtons(bool value)
+            if (!OptionFlags.TwitchTokenUseAuth)
             {
-                foreach (RadioButton rb in radioButtons)
-                {
-                    rb.IsEnabled = value;
-                }
-            }
-
-            if (TB_Twitch_Channel.Text.Length != 0
-                && TB_Twitch_BotUser.Text.Length != 0
-                && TB_Twitch_ClientID.Text.Length != 0
-                && TB_Twitch_AccessToken.Text.Length != 0
-                && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0))
-            {
-                SetButtons(true);
+                SetBotRadioButtons(
+                        TB_Twitch_Channel.Text.Length != 0
+                    && TB_Twitch_BotUser.Text.Length != 0
+                    && TB_Twitch_ClientID.Text.Length != 0
+                    && TB_Twitch_AccessToken.Text.Length != 0
+                    && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= new TimeSpan(0, 0, 0)
+                    , Platform.Twitch);
             }
             else
             {
-                SetButtons(false);
+                SetBotRadioButtons(
+                    !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
+                    && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                    && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)
+                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode))
+                    , Platform.Twitch);
             }
 
-            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken : OptionFlags.TwitchBotAccessToken != "";
+            // Check if credentials are empty and we still need to allow the user to authenticate the application, but block it when successfully authenticated
+            // The authentication code bot checking clears out the auth code when there's a failure, so this checks it's enabled when
+            // both the user adds client Id & secret are available and auth code is not available (not authenticated)
+            Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = OptionFlags.TwitchAuthClientId != ""
+                                                            && OptionFlags.TwitchChannelName != ""
+                                                            && OptionFlags.TwitchAuthBotClientSecret != ""
+                                                            && OptionFlags.TwitchBotUserName != ""
+                                                            && OptionFlags.TwitchAuthBotAuthCode == "";
+
+            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchAuthStreamerClientId != ""
+                                                                    && OptionFlags.TwitchChannelName != ""
+                                                                    && OptionFlags.TwitchAuthStreamerClientSecret != ""
+                                                                    && OptionFlags.TwitchAuthStreamerAuthCode == "";
+
+            Radio_Twitch_PubSubBotStart.IsEnabled = OptionFlags.TwitchTokenUseAuth ?
+                (OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerAccessToken != "" : OptionFlags.TwitchAuthBotAccessToken != "") :
+                OptionFlags.TwitchStreamerUseToken ?
+                                                    (OptionFlags.TwitchStreamOauthToken != "" && OptionFlags.TwitchStreamerValidToken) : OptionFlags.TwitchBotAccessToken != "";
 
             // Twitch
 
@@ -678,6 +791,8 @@ namespace StreamerBot
                 Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
                 Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
+
+                Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Visible;
             }
             else
             {
@@ -687,13 +802,27 @@ namespace StreamerBot
                 Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Collapsed;
                 Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Collapsed;
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
+
+                Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Collapsed;
             }
 
             // set earliest token expiration date
 
-            List<DateTime> RefreshTokenDateExpiry = new() { OptionFlags.TwitchRefreshDate, OptionFlags.TwitchStreamerTokenDate };
+            List<DateTime> RefreshTokenDateExpiry = [OptionFlags.TwitchRefreshDate, OptionFlags.TwitchStreamerTokenDate];
             RefreshTokenDateExpiry.RemoveAll((d) => d < DateTime.Now);
-            StatusBarItem_TokenDate.Content = RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
+            StatusBarItem_TokenDate.Content = OptionFlags.TwitchTokenUseAuth ? "Auth Code Refresh" : RefreshTokenDateExpiry.Count != 0 ? RefreshTokenDateExpiry?.Min().ToShortDateString() : "None Valid";
+        }
+
+        private void SetBotRadioButtons(bool value, Platform platform)
+        {
+            foreach (RadioButton rb in
+                                        from A in BotOps
+                                        where A.Item2.Name.Contains(platform.ToString())
+                                        select A.Item2
+                                        )
+            {
+                rb.IsEnabled = value;
+            }
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -710,11 +839,15 @@ namespace StreamerBot
             TB_Twitch_AccessToken.IsEnabled = setvalue;
             TB_Twitch_BotUser.IsEnabled = setvalue;
             TB_Twitch_Channel.IsEnabled = setvalue;
+
             TB_Twitch_ClientID.IsEnabled = setvalue;
             Btn_Twitch_RefreshDate.IsEnabled = setvalue;
             Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
             Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
             Slider_TimeClipPollSeconds.IsEnabled = setvalue;
+
+            //TODO: add more textboxes to block when the bots are enabled - to prevent changes
+            //ToggleButton_TwitchToken.IsEnabled = setvalue;
         }
 
         private void TabItem_GotFocus(object sender, RoutedEventArgs e)
@@ -740,7 +873,7 @@ namespace StreamerBot
                 GBSource = (GroupBox)sender;
             }
 
-            void SetVisibility(ToggleButton box, UIElement panel)
+            static void SetVisibility(ToggleButton box, UIElement panel)
             {
                 if (panel != null)
                 {
@@ -815,6 +948,7 @@ namespace StreamerBot
         {
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
         }
+
 
         #region GitHub webpage
 
@@ -927,6 +1061,11 @@ namespace StreamerBot
             (sender as TextBox).ScrollToEnd();
         }
 
+        /// <summary>
+        /// Every time a text box changes, relative to access credentials, call the CheckFocus method, which checks the data entry for whether buttons can be enabled so the user can click them
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             CheckFocus();
@@ -943,20 +1082,22 @@ namespace StreamerBot
 
         private void BotChat_SendButton_Click(object sender, RoutedEventArgs e)
         {
-            guiTwitchBot.Send(TextBox_BotChat.Text);
+            GUITwitchBots.Send(TextBox_BotChat.Text);
             TextBox_BotChat.Text = "";
         }
 
+        private const int TwitchTokenRefreshDays = 53;
+
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(53);
+            Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
-            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(53);
+            Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
             CheckFocus();
         }
@@ -997,7 +1138,7 @@ namespace StreamerBot
                 case "DG_Users":
                     foreach (DataGridColumn dc in dg.Columns)
                     {
-                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
+                        if (dc.Header.ToString() is not "Id" and not "UserName" and not "FirstDateSeen" and not "CurrLoginDate" and not "LastDateSeen" and not "WatchTime" and not "UserId" and not "Platform")
                         {
                             Collapse(dc);
                         }
@@ -1200,7 +1341,7 @@ namespace StreamerBot
 
             foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
             {
-                BotController.AddNewAutoShoutUser(dr["UserName"].ToString());
+                BotController.AddNewAutoShoutUser(dr["UserName"].ToString(), dr["UserId"].ToString(), dr["Platform"].ToString());
             }
         }
 
@@ -1210,7 +1351,7 @@ namespace StreamerBot
 
             foreach (DataRow dr in new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)))
             {
-                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString());
+                (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMonitorChannel(dr["UserName"].ToString(), dr["UserId"].ToString());
             }
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
@@ -1229,47 +1370,6 @@ namespace StreamerBot
 
         #endregion
 
-        #region Debug Empty Stream
-
-        private DateTime DebugStreamStarted = DateTime.MinValue;
-
-        private void StartDebugStream_Click(object sender, RoutedEventArgs e)
-        {
-            if (DebugStreamStarted == DateTime.MinValue)
-            {
-                DebugStreamStarted = DateTime.Now.ToLocalTime();
-
-                string User = OptionFlags.TwitchChannelName;
-                string Category = "Microsoft Flight Simulator";
-                string ID = "7193";
-                string Title = "Testing a debug stream";
-
-                Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, true);
-
-                List<Tuple<string, string>> output = SystemsController.DataManage.GetGameCategories();
-                Random random = new();
-                Tuple<string, string> itemfound = output[random.Next(output.Count)];
-                Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
-
-                SetLiveStreamActive(true);
-            }
-
-        }
-
-        private void EndDebugStream_Click(object sender, RoutedEventArgs e)
-        {
-            if (DebugStreamStarted != DateTime.MinValue)
-            {
-                BotController.HandleOnStreamOffline();
-
-                DebugStreamStarted = DateTime.MinValue;
-
-                SetLiveStreamActive(false);
-            }
-
-        }
-
-        #endregion
 
         #region Giveaway
 
@@ -1301,7 +1401,7 @@ namespace StreamerBot
         {
             if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
             {
-                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => guiTwitchBot.GetChannelPoints(UserName: s)));
+                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => GUITwitchBots.GetChannelPoints(UserName: s)));
                 ChannelPtRetrievalDate = DateTime.Now;
             }
         }
@@ -1410,5 +1510,9 @@ namespace StreamerBot
 
         #endregion
 
+        private void TextBox_TwitchChannelBotNames_TargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            CheckFocus();
+        }
     }
 }

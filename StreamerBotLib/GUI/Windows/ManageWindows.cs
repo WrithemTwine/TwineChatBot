@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.Interfaces;
 using StreamerBotLib.Systems;
 
-using System.Collections.Generic;
 using System.Data;
 
 namespace StreamerBotLib.GUI.Windows

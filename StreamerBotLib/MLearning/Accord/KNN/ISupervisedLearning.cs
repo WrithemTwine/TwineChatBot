@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Statistics Library
     // The Accord.NET Framework

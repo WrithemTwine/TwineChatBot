@@ -1,9 +1,7 @@
 ﻿using StreamerBotLib.GUI;
 using StreamerBotLib.Static;
 
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace StreamerBotLib.Data.DataSetCommonMethods
 {

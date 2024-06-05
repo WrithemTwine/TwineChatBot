@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
+﻿using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
 namespace StreamerBotLib.Events
 {

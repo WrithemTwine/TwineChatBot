@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Interfaces;
 
-using System;
-
 namespace StreamerBotLib.BotClients
 {
     /// <summary>
@@ -12,6 +10,7 @@ namespace StreamerBotLib.BotClients
     {
         public Bots BotClientName { get; set; }
 
+        public bool IsInitialStart { get; set; }
         public bool IsStarted { get; set; }
         public bool HandlersAdded { get; set; }
         public bool IsStopped { get; set; } = true;
@@ -19,6 +18,7 @@ namespace StreamerBotLib.BotClients
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;
         public event EventHandler OnBotStopping;
+        public event EventHandler OnBotFailedStart;
 
         protected void InvokeBotStarted()
         {
@@ -33,6 +33,11 @@ namespace StreamerBotLib.BotClients
         protected void InvokeBotStopping()
         {
             OnBotStopping?.Invoke(this, new EventArgs());
+        }
+
+        protected void InvokeBotFailedStart()
+        {
+            OnBotFailedStart?.Invoke(this, new EventArgs());
         }
 
         public IOModule()

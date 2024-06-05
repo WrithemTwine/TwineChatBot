@@ -4,15 +4,10 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Interfaces;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.Overlay.Server
 {
@@ -30,23 +25,23 @@ namespace StreamerBotLib.Overlay.Server
         /// <summary>
         /// The alert pages collection.
         /// </summary>
-        private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = new();
+        private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = [];
         /// <summary>
         /// The ticker pages collection.
         /// </summary>
-        private static List<IOverlayPageReadOnly> TickerPages { get; set; } = new();
+        private static List<IOverlayPageReadOnly> TickerPages { get; set; } = [];
 
         /// <summary>
         /// Instantiate and initialize a new object.
         /// </summary>
         public TwineBotWebServer()
         {
-            static int Assign(int CheckPort)
+            static short Assign(short CheckPort)
             {
                 if (CheckPort == 0)
                 {
                     Random random = new();
-                    return ValidatePort(random.Next(1024, 65536));
+                    return ValidatePort((short)random.Next(1024, 65536));
                 }
                 else
                 {
@@ -63,7 +58,7 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         /// <param name="port">The port to check.</param>
         /// <returns>The provided port or next port determined availabe within the system.</returns>
-        public static int ValidatePort(int port)
+        public static short ValidatePort(short port)
         {
             while (!IsFree(port))
             {
@@ -91,7 +86,7 @@ namespace StreamerBotLib.Overlay.Server
         /// <summary>
         /// Adds the port prefixes and starts the HTTP server.
         /// </summary>
-        public void StartServer()
+        public static void StartServer()
         {
             HTTPListenServer.Prefixes.Clear();
             foreach (string P in PrefixGenerator.GetPrefixes())
@@ -111,7 +106,7 @@ namespace StreamerBotLib.Overlay.Server
         /// Adds an alert webpage to send out to any connected webpage.
         /// </summary>
         /// <param name="overlayPage">Contains the type of alert and the html text to send.</param>
-        public void SendAlert(IOverlayPageReadOnly overlayPage)
+        public static void SendAlert(IOverlayPageReadOnly overlayPage)
         {
             if (HTTPListenServer.IsListening)
             {
@@ -127,7 +122,7 @@ namespace StreamerBotLib.Overlay.Server
         /// Clear and replace all TickerPages when the user changes the visual ticker appearance.
         /// </summary>
         /// <param name="UpdateTickerPages">All of the new ticker pages to replace the current ticker pages.</param>
-        public void UpdateTicker(IEnumerable<IOverlayPageReadOnly> UpdateTickerPages)
+        public static void UpdateTicker(IEnumerable<IOverlayPageReadOnly> UpdateTickerPages)
         {
             lock (TickerPages)
             {
@@ -136,7 +131,7 @@ namespace StreamerBotLib.Overlay.Server
             }
         }
 
-        public void UpdateTicker(IOverlayPageReadOnly UpdateTickerPage)
+        public static void UpdateTicker(IOverlayPageReadOnly UpdateTickerPage)
         {
             lock (TickerPages)
             {
@@ -150,7 +145,7 @@ namespace StreamerBotLib.Overlay.Server
         }
 
         /// <summary>
-        /// Defines an async listener action for the http server, which then actually serves the content to any connected browsers. 
+        /// Defines an async listener action for the http server, which then actually serves the Content to any connected browsers. 
         /// Also, determines if the URL is for the tickers or alerts, and uses the respective collections for the outgoing html text.
         /// 
         /// While the bot is still active and the server is 'listening' for requests, method spins a while loop to add listeners as they
@@ -176,7 +171,7 @@ namespace StreamerBotLib.Overlay.Server
                         HttpListenerResponse response = context.Response;
                         // Construct a response.
 
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - received request, {request.RawUrl}");
+                        //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - received request, {request.RawUrl}");
 
                         byte[] buffer;
 
@@ -254,7 +249,7 @@ namespace StreamerBotLib.Overlay.Server
                         Stream output = response.OutputStream;
                         output.Write(buffer, 0, buffer.Length);
 
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - finished sending request.");
+                        //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - finished sending request.");
 
                         // must close the output stream.
                         output.Close();
@@ -279,7 +274,7 @@ namespace StreamerBotLib.Overlay.Server
                         ResponseCount++; // increase count for active listeners
                     }
                     ThreadManager.CreateThreadStart(() => ResponseListen.Invoke());
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Adding more http server listening threads, now {ResponseCount}.");
+                    //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Adding more http server listening threads, now {ResponseCount}.");
                 }
                 Thread.Sleep(200);
             }
@@ -288,7 +283,7 @@ namespace StreamerBotLib.Overlay.Server
         /// <summary>
         /// Looks like it stops the server. Then, waits for all of the server listeners to finish sending.
         /// </summary>
-        public void StopServer()
+        public static void StopServer()
         {
             if (HTTPListenServer.IsListening)
             {

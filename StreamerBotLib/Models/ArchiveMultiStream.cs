@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
     public record ArchiveMultiStream
     {

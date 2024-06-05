@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Threading;
 
 namespace SimpleTestFeature
 {
@@ -9,34 +8,16 @@ namespace SimpleTestFeature
     /// </summary>
     public partial class MainWindow : Window
     {
-        public TestText LogTest { get; set; }
-
-        private List<string> RandomStrings = new() { 
-            "This hurts, but is fun.", 
-            "Oh what a wonderful day.",
-            "Is this working well?",
-            "Haha, update it.",
-            "More random phrases.",
-            "Is this random enough?"
-        };
-        private Random random = new();
+        public static Dispatcher MainDispatcher => Dispatcher.CurrentDispatcher;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            LogTest = Resources["TestLog"] as TestText ?? new();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            LogTest.AddLog(RandomStrings[random.Next(RandomStrings.Count)]);
+            string x = "";
         }
-
-        private void Frame_TestObjectBinding_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-            (Frame_TestObjectBinding.Content as FramePage)?.SetDataContext(LogTest);
-        }
-
     }
 }

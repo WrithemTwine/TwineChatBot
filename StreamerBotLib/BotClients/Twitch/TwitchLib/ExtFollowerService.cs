@@ -1,15 +1,8 @@
 ﻿using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
-using TwitchLib.Api.Core.HttpCallHandlers;
-using TwitchLib.Api.Core.RateLimiter;
-using TwitchLib.Api.Helix;
+using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Interfaces;
 using TwitchLib.Api.Services.Events.FollowerService;
@@ -19,6 +12,12 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
     public class ExtFollowerService : ExtApiService<GetChannelFollowersResponse>
     {
         public event EventHandler<OnNewFollowersDetectedArgs> OnBulkFollowsUpdate;
+        public event EventHandler AccessTokenUnauthorized;
+
+        public void UpdateAccessToken(string accessToken)
+        {
+            _api.Settings.AccessToken = accessToken;
+        }
 
         private void BulkFollowsUpdate(string ChannelName, IEnumerable<ChannelFollower> follows)
         {
@@ -35,19 +34,22 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             try
             {
                 int MaxFollowers = 100; // use the max for bulk retrieve
-                Channels followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
-                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
+                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: [ChannelName])).Users.FirstOrDefault()?.Id;
 
-                GetChannelFollowersResponse followsResponse = await followers.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
+                GetChannelFollowersResponse followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
 
                 BulkFollowsUpdate(ChannelName, followsResponse.Data);
 
                 while (followsResponse?.Data.Length == MaxFollowers && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
                 {
-                    followsResponse = await followers.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
+                    followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
                     BulkFollowsUpdate(ChannelName, followsResponse.Data);
                     Thread.Sleep(1000);
                 }
+            }
+            catch (BadScopeException)
+            {
+                AccessTokenUnauthorized?.Invoke(this, new());
             }
             catch (Exception ex)
             {
@@ -64,24 +66,28 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <returns>An async task with a list of 'Follow' objects.</returns>
         public async Task<List<ChannelFollower>> GetAllFollowersAsync(string ChannelName)
         {
-            List<ChannelFollower> allfollows = new();
+            List<ChannelFollower> allfollows = [];
 
             try
             {
                 int MaxFollowers = 100; // use the max for bulk retrieve
-                Channels followers = new(_api.Settings, new BypassLimiter(), new TwitchHttpClient());
-                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: new() { ChannelName })).Users.FirstOrDefault()?.Id;
+                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: [ChannelName])).Users.FirstOrDefault()?.Id;
 
-                GetChannelFollowersResponse followsResponse = await followers.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
+                GetChannelFollowersResponse followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
 
                 allfollows.AddRange(followsResponse.Data);
 
                 while (followsResponse?.Data.Length == MaxFollowers && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
                 {
-                    followsResponse = await followers.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
+                    followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
                     allfollows.AddRange(followsResponse.Data);
                     Thread.Sleep(2000);
                 }
+            }
+            catch (BadScopeException)
+            {
+                AccessTokenUnauthorized?.Invoke(this, new());
+                return null;
             }
             catch (Exception ex)
             {
@@ -95,7 +101,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         // from TwitchLib: https://github.com/TwitchLib/TwitchLib.Api/blob/2ea61c70225c0c15d7def7a5808837191e33d778/TwitchLib.Api/Services/FollowerService.cs
         // modified to fit into TwineStreamer bot code structure and handle internet disconnection related exceptions
 
-        private readonly Dictionary<string, DateTime> _lastFollowerDates = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, DateTime> _lastFollowerDates = new(StringComparer.OrdinalIgnoreCase);
         private readonly bool _invokeEventsOnStartup;
 
         /// <summary>
@@ -187,7 +193,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 {
                     var existingFollowerIds = new HashSet<string>(knownFollowers.Select(f => f.UserId));
                     var latestKnownFollowerDate = _lastFollowerDates[channel];
-                    newFollowers = new List<ChannelFollower>();
+                    newFollowers = [];
 
                     foreach (var follower in latestFollowers)
                     {
@@ -233,10 +239,18 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 var resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Channels.GetChannelFollowersAsync(first: (int)param[0], broadcasterId: c), channel, QueryCountPerRequest);
                 return resultset.Data.Reverse().ToList();
             }
+            catch (BadRequestException hrEx)
+            {
+                LogWriter.LogException(hrEx, MethodBase.GetCurrentMethod().Name);
+                AccessTokenUnauthorized?.Invoke(this, new());
+                return null;
+            }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                return new();
+                AccessTokenUnauthorized?.Invoke(this, new());
+
+                return [];
             }
 
         }

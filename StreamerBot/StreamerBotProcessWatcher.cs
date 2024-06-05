@@ -1,9 +1,7 @@
 ﻿using StreamerBotLib.Static;
 
-using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,6 +18,8 @@ namespace StreamerBot
         /// </summary>
         public event EventHandler NotifyExpiredCredentials;
 
+        public event EventHandler VerifyNewVersion;
+
         /// <summary>
         /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
         /// </summary>
@@ -29,11 +29,14 @@ namespace StreamerBot
 
         private void UpdateProc(bool IsActive)
         {
-            _ = Application.Current.Dispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
+            _ = AppDispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
         }
 
         private void ProcessWatcher()
         {
+            const int NewVersionIntervalHours = 18;
+            DateTime VersionCheckDate = DateTime.Now.AddHours(NewVersionIntervalHours);
+
             const int sleep = 2000;
 
             try
@@ -47,7 +50,7 @@ namespace StreamerBot
                         IsMultiProcActive = processes.Length > 0;
                     }
 
-                    if (OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
+                    if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
                         NotifyExpiredCredentials?.Invoke(this, new());
                     }
@@ -56,6 +59,13 @@ namespace StreamerBot
                     {
                         Controller.TwitchStartUpdateAllFollowers();
                         TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
+                    }
+
+                    if (DateTime.Now >= VersionCheckDate)
+                    {
+                        VersionCheckDate.AddHours(NewVersionIntervalHours);
+
+                        VerifyNewVersion?.Invoke(this, new());
                     }
 
                     UpdateAppTime();
@@ -88,7 +98,7 @@ namespace StreamerBot
         private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox srchrs = sender as ComboBox;
-            int hrs = (int)srchrs.SelectedValue;
+            short hrs = (short)srchrs.SelectedValue;
 
             // changes the refresh time - which is already set at this point
             TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
@@ -97,7 +107,7 @@ namespace StreamerBot
 
         private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
         {
-            Controller.TwitchStartUpdateAllFollowers();
+            Controller.TwitchStartUpdateAllFollowers(true);
         }
 
         #endregion 

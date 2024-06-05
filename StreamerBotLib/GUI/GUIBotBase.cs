@@ -1,13 +1,12 @@
 ﻿using StreamerBotLib.Events;
 
-using System;
-
 namespace StreamerBotLib.GUI
 {
     public class GUIBotBase
     {
-        public event EventHandler<BotStartStopEventArgs> OnBotStarted;
-        public event EventHandler<BotStartStopEventArgs> OnBotStopped;
+        public static event EventHandler<BotStartStopEventArgs> OnBotStarted;
+        public static event EventHandler<BotStartStopEventArgs> OnBotStopped;
+        public static event EventHandler<BotStartStopEventArgs> OnBotFailedStart;
 
         protected void BotStarted(BotStartStopEventArgs e)
         {
@@ -17,6 +16,11 @@ namespace StreamerBotLib.GUI
         protected void BotStopped(BotStartStopEventArgs e)
         {
             OnBotStopped?.Invoke(this, e);
+        }
+
+        protected void BotFailedStart(BotStartStopEventArgs e)
+        {
+            OnBotFailedStart?.Invoke(this, e);
         }
     }
 }

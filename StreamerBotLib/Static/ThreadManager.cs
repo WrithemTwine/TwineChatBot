@@ -2,28 +2,22 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace StreamerBotLib.Static
 {
     public static class ThreadManager
     {
-        private static readonly List<ThreadData> CurrThreads = new();
+        private static readonly List<ThreadData> CurrThreads = [];
         private static int ClosedThreads;
 
-        private static readonly List<int> PriorityList = new();
+        private static readonly List<int> PriorityList = [];
         private static readonly int PriorityGap = 20000;
         private static readonly Dictionary<ThreadExitPriority, int> PrioritySchedule = new()
         {
-            { ThreadExitPriority.VeryHigh, 0 },
-            { ThreadExitPriority.High, 20000 },
-            { ThreadExitPriority.Normal, 40000 },
-            { ThreadExitPriority.Low, 60000 },
-            { ThreadExitPriority.VeryLow, 80000 }
+            [ThreadExitPriority.VeryHigh] = 0,
+            [ThreadExitPriority.High] = 20000,
+            [ThreadExitPriority.Normal] = 40000,
+            [ThreadExitPriority.Low] = 60000,
+            [ThreadExitPriority.VeryLow] = 80000
         };
 
 

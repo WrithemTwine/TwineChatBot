@@ -1,6 +1,4 @@
-﻿using System;
-
-using static StreamerBotLib.Data.DataSource;
+﻿using static StreamerBotLib.Data.DataSource;
 
 namespace StreamerBotLib.Models
 {
@@ -29,52 +27,24 @@ namespace StreamerBotLib.Models
             {
                 if (row != null)
                 {
-                    Usage = ColHelper<string>(row.Usage);
-                    IsEnabled = ColHelper<bool>(row.IsEnabled);
-                    SendMsgCount = ColHelper<short>(row.SendMsgCount);
-                    Permission = ColHelper<string>(row.Permission);
-                    AddMe = ColHelper<bool>(row.AddMe);
-                    Message = ColHelper<string>(row.Message);
-                    AllowParam = ColHelper<bool>(row.AllowParam);
-                    Lookupdata = ColHelper<bool>(row.lookupdata);
-                    Top = ColHelper<int>(row.top);
-                    Action = ColHelper<string>(row.action);
-                    CmdName = ColHelper<string>(row.CmdName);
-                    Table = ColHelper<string>(row.table);
-                    Key_field = ColHelper<string>(row.key_field);
-                    Data_field = ColHelper<string>(row.data_field);
-                    Currency_field = ColHelper<string>(row.currency_field);
-                    Sort = ColHelper<string>(row.sort);
+                    Usage = row.Usage;
+                    IsEnabled = row.IsEnabled;
+                    SendMsgCount = row.SendMsgCount;
+                    Permission = row.Permission;
+                    AddMe = row.AddMe;
+                    Message = row.Message;
+                    AllowParam = row.AllowParam;
+                    Lookupdata = row.lookupdata;
+                    Top = row.top;
+                    Action = row.action;
+                    CmdName = row.CmdName;
+                    Table = row.table;
+                    Key_field = row.key_field;
+                    Data_field = row.data_field;
+                    Currency_field = row.currency_field;
+                    Sort = row.sort;
                 }
             }
         }
-
-        private static T ColHelper<T>(object Data)
-        {
-            object returndata = null;
-
-            if (DBNull.Value.Equals(Data))
-            {
-                if (typeof(T) == typeof(string))
-                {
-                    returndata = "";
-                }
-                else if (typeof(T) == typeof(int) || typeof(T) == typeof(short))
-                {
-                    returndata = 0;
-                }
-                else if (typeof(T) == typeof(bool))
-                {
-                    returndata = false;
-                }
-            }
-            else
-            {
-                returndata = Data;
-            }
-
-            return (T)Convert.ChangeType(returndata, typeof(T));
-        }
-
     }
 }

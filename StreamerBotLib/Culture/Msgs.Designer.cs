@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace StreamerBotLib.Culture {
-    using System;
-    
-    
+namespace StreamerBotLib.Culture
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -1150,7 +1150,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you are enjoying the content, please hit that follow button!.
+        ///   Looks up a localized string similar to If you are enjoying the Content, please hit that follow button!.
         /// </summary>
         internal static string Msgfollow {
             get {
@@ -1510,6 +1510,15 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to refresh the access token. This can result from any of the following: the application access scopes changed; the application isn&apos;t yet approved; the account password changed; or the account&apos;s Twitch website setting disconnected the application. Please authorize the application to (re)gain access to Twitch..
+        /// </summary>
+        internal static string MsgTwitchAuthFailedAuthentication {
+            get {
+                return ResourceManager.GetString("MsgTwitchAuthFailedAuthentication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #user has returned. Welcome back!.
         /// </summary>
         internal static string Msgunlurk {
@@ -1717,7 +1726,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -f:Message -use:!intro username.
+        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -f:Message -use:!intro Username.
         /// </summary>
         internal static string Paramintro {
             get {
@@ -1852,7 +1861,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -p:Mod -f:Message -a:Post -use:!intro username message.
+        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -p:Mod -f:Message -a:Post -use:!intro Username message.
         /// </summary>
         internal static string Paramsetintro {
             get {
@@ -1870,7 +1879,7 @@ namespace StreamerBotLib.Culture {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -p:Mod -param:true -use:!so username - only mods can use !so..
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!so Username - only mods can use !so..
         /// </summary>
         internal static string Paramso {
             get {

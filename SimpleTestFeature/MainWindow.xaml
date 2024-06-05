@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleTestFeature"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Test Get Chatters" Height="450" Width="800">
     <Window.Resources>
-        <local:TestText x:Key="TestLog" x:Name="TestLog" />
+        <local:Chatters x:Name="ChatListing" x:Key="ChatListing" />
     </Window.Resources>
-    <DockPanel DataContext="{Binding Mode=OneWay, Source={StaticResource TestLog}}">
-        <Button Content="Smash Me for some Action" Width="160" Height="20" DockPanel.Dock="Top" Click="Button_Click" />
-        <TextBlock Text="{Binding LogData}" Background="#FF579EA7" Width="250" DockPanel.Dock="Left"/>
-        <Frame x:Name="Frame_TestObjectBinding" Source="pack://application:,,,/FramePage.xaml" LoadCompleted="Frame_TestObjectBinding_LoadCompleted" />
+
+    <DockPanel>
+        <Button Content="Click to Check" Height="20" Click="Button_Click" />
+        <ListBox x:Name="ListBox_ChattersList" DataContext="{StaticResource ChatListing}" ItemsSource="{Binding ChatList}" />
     </DockPanel>
 </Window>

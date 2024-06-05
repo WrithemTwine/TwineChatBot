@@ -2,9 +2,7 @@
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
+using System.Reflection;
 
 namespace StreamerBotLib.Systems
 {
@@ -169,6 +167,10 @@ namespace StreamerBotLib.Systems
 
         public bool StreamOnline(DateTime Started)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Detected a new livestream and starting up activites.");
+
+            CurrStream.Clear();
+
             OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
@@ -200,16 +202,24 @@ namespace StreamerBotLib.Systems
             return OptionFlags.ManageStreamStats && !found;
         }
 
-        public void StreamDataUpdate()
+        internal static void StreamDataUpdate()
         {
-            CurrStream.ModeratorsPresent = ModUsers.Count;
-            CurrStream.VIPsPresent = VIPUsers.Count;
-            CurrStream.SubsPresent = SubUsers.Count;
-            DataManage.PostStreamStat(CurrStream);
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Updating the current stream data to the database.");
+
+            if (OptionFlags.ManageStreamStats)
+            {
+                CurrStream.ModeratorsPresent = ModUsers.Count;
+                CurrStream.VIPsPresent = VIPUsers.Count;
+                CurrStream.SubsPresent = SubUsers.Count;
+                DataManage.PostStreamStat(CurrStream);
+            }
         }
 
         public static void StreamOffline(DateTime Stopped)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Received notice event the channel livestream is offline.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Clearing user list with stream end time, to end watchtime & currency accrual.");
+
             ClearUserList(Stopped);
 
             OptionFlags.IsStreamOnline = false;
@@ -218,11 +228,27 @@ namespace StreamerBotLib.Systems
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
 
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Gathering user stats from the recent livestream.");
+
             // setting if user wants to save Stream Stat data
             if (OptionFlags.ManageStreamStats)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Posting the final livestream stats.");
+
                 DataManage.PostStreamStat(CurrStream);
             }
+
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Wrap up clearing the stream stats.");
+
+            ClearStreamStatState();
+        }
+
+        /// <summary>
+        /// Clears stream stats and user details for a stream
+        /// </summary>
+        private static void ClearStreamStatState()
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Clear all of the stream data lists.");
 
             CurrStream.Clear();
             ModUsers.Clear();
@@ -238,6 +264,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.NewFollows++;
+                StreamDataUpdate();
             }
         }
 
@@ -246,6 +273,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.NewSubscribers++;
+                StreamDataUpdate();
             }
         }
 
@@ -254,6 +282,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.GiftSubs += Gifted;
+                StreamDataUpdate();
             }
         }
 
@@ -262,6 +291,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Bits += BitCount;
+                StreamDataUpdate();
             }
         }
 
@@ -270,6 +300,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Raids++;
+                StreamDataUpdate();
             }
         }
 
@@ -278,6 +309,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Hosted++;
+                StreamDataUpdate();
             }
         }
 
@@ -286,6 +318,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.UsersBanned++;
+                StreamDataUpdate();
             }
         }
 
@@ -294,6 +327,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.UsersTimedOut++;
+                StreamDataUpdate();
             }
         }
 
@@ -310,6 +344,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.Commands++;
+                StreamDataUpdate();
             }
         }
 
@@ -318,6 +353,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.AutomatedEvents++;
+                StreamDataUpdate();
             }
         }
 
@@ -326,6 +362,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.AutomatedCommands++;
+                StreamDataUpdate();
             }
         }
 
@@ -342,6 +379,7 @@ namespace StreamerBotLib.Systems
             lock (CurrStream)
             {
                 CurrStream.ClipsMade++;
+                StreamDataUpdate();
             }
         }
 
@@ -371,16 +409,24 @@ namespace StreamerBotLib.Systems
         /// <returns><code>-1</code>: if no update, <code>int value</code>: if counter updated</returns>
         internal int AddDeathCounter()
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Received request to update death counter.");
+
             int result = -1;
             if (!UpdateDeathCounter)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Starting a check to prevent multiple death counter updates.");
+
                 UpdateDeathCounter = true;
                 result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
 
                 ThreadManager.CreateThreadStart(() =>
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Waiting for 30 seconds to prevent another death counter update.");
+
                     Thread.Sleep(30 * 1000); // wait 30 seconds
                     UpdateDeathCounter = false; // reset flag for next update
+
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Finished the 30 seconds. Ready to accept another death counter update.");
                 });
             }
 
@@ -393,8 +439,10 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Counter">The value to update the death counter for the current category.</param>
         /// <returns>Current value of the counter after reset.</returns>
-        internal int ResetDeathCounter(int Counter)
+        internal static int ResetDeathCounter(int Counter)
         {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, $"Request to update the current {Category} death counter to {Counter}.");
+
             return DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category), true, Counter);
         }
 

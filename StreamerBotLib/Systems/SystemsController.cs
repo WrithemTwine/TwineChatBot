@@ -6,14 +6,9 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace StreamerBotLib.Systems
@@ -26,9 +21,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        // TODO: fix - "stream started and live, user clicks 'enable repeat timers', 'repeat timers' should restart"
-
-        public static DataManager DataManage { get; private set; } = new();
+        public static DataManager DataManage { get; private set; } = new DataManager();
 
         private Thread HoldNewFollowsForBulkAdd;
 
@@ -46,7 +39,7 @@ namespace StreamerBotLib.Systems
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
-        private readonly List<string> GiveawayCollectionList = new();
+        private readonly List<string> GiveawayCollectionList = [];
 
         /// <summary>
         /// Builds and initalizes the controller, instantiates all of the systems
@@ -202,12 +195,12 @@ namespace StreamerBotLib.Systems
                 {
                     // TODO: FIX - because users will be banned just for bot retrieving data
                     //RequestBanUser(Bots.TwitchChatBot, F.FromUserName, BanReasons.FollowBot);
-                    LogWriter.WriteLog(Enums.LogType.LogBotStatus, $"TwineBot would have banned {F.FromUserName}, testing experimental feature.");
+                    LogWriter.WriteLog($"TwineBot would have banned {F.FromUserName}, testing experimental feature.");
                 }
             }
             else
             {
-                List<string> UserList = new();
+                List<string> UserList = [];
 
                 foreach (Follow f in FollowList.Where(f => DataManage.PostFollower(f.FromUser, f.FollowedAt.ToLocalTime(), CurrCategory.Item2)))
                 {
@@ -305,9 +298,9 @@ namespace StreamerBotLib.Systems
             ActionSystem.DeleteRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName)
+        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
         {
-            ActionSystem.AddNewAutoShoutUser(UserName);
+            ActionSystem.AddNewAutoShoutUser(UserName, UserId, platform);
         }
 
         public static void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
@@ -347,10 +340,10 @@ namespace StreamerBotLib.Systems
         {
             bool streamstart = SystemActions.StreamOnline(CurrTime);
 
-            if (OptionFlags.ManageStreamStats)
-            {
-                BeginPostingStreamUpdates();
-            }
+            //if (OptionFlags.ManageStreamStats)
+            //{
+            //    BeginPostingStreamUpdates();
+            //}
 
             SystemActions.StartElapsedTimerThread();
 
@@ -359,21 +352,21 @@ namespace StreamerBotLib.Systems
             return streamstart;
         }
 
-        private void BeginPostingStreamUpdates()
-        {
-            ThreadManager.CreateThreadStart(() =>
-            {
-                while (OptionFlags.IsStreamOnline)
-                {
-                    AppDispatcher.BeginInvoke(new BotOperation(() =>
-                    {
-                        SystemActions.StreamDataUpdate();
-                    }), null);
+        //private void BeginPostingStreamUpdates()
+        //{
+        //    ThreadManager.CreateThreadStart(() =>
+        //    {
+        //        while (OptionFlags.IsStreamOnline)
+        //        {
+        //            AppDispatcher.BeginInvoke(new BotOperation(() =>
+        //            {
+        //                ActionSystem.StreamDataUpdate();
+        //            }), null);
 
-                    Thread.Sleep(SleepWait); // wait 6 seconds
-                }
-            });
-        }
+        //            Thread.Sleep(SleepWait); // wait 6 seconds
+        //        }
+        //    });
+        //}
 
         public static void StreamOffline(DateTime CurrTime)
         {
@@ -475,13 +468,11 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(LiveUser User)
         {
-            if ((User.UserName.ToLower(CultureInfo.CurrentCulture)
-               != ActionSystem.ChannelName.ToLower(CultureInfo.CurrentCulture)
-               && (User.UserName.ToLower(CultureInfo.CurrentCulture)
-               != ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture)))
+            if ((!User.UserName.Equals(ActionSystem.ChannelName, StringComparison.CurrentCultureIgnoreCase)
+               && (!User.UserName.Equals(ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture), StringComparison.CurrentCultureIgnoreCase)))
                || OptionFlags.MsgWelcomeStreamer)
             {
-                string msg = SystemActions.CheckWelcomeUser(User.UserName);
+                string msg = ActionSystem.CheckWelcomeUser(User.UserName);
 
                 ChannelEventActions selected = ChannelEventActions.UserJoined;
 
@@ -777,7 +768,7 @@ namespace StreamerBotLib.Systems
 
             if (GiveawayCollectionList.Count > 0)
             {
-                List<string> WinnerList = new();
+                List<string> WinnerList = [];
                 int x = 0;
                 while (x < OptionFlags.GiveawayCount)
                 {
@@ -839,7 +830,7 @@ namespace StreamerBotLib.Systems
                     {
                         foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
                         {
-                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            DiscordWebhook.SendMessage(u.Item2, null, c.Url);
                             UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to Discord
                         }
                     }

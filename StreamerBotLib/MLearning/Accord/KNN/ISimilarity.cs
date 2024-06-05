@@ -20,7 +20,7 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 
-namespace StreamerBotLib.MachineLearning.Accord.KNN
+namespace StreamerBotLib.MLearning.Accord.KNN
 {
     /// <summary>
     ///   Common interface for similarity measures.

@@ -20,7 +20,7 @@ namespace TestStreamerBot
         private const int Viewers = 80;
 
         private BotController botController = new();
-        private DataManager dataManager = SystemsController.DataManage;
+        private DataManager dataManager = (DataManager)SystemsController.DataManage;
 
         private Random Random { get; set; } = new();
 
@@ -44,12 +44,12 @@ namespace TestStreamerBot
 
                 OptionFlags.MediaOverlayEnabled = true;
                 OptionFlags.MediaOverlayChannelPoints = true;
-                OptionFlags.MediaOverlayShoutoutClips= true;
+                OptionFlags.MediaOverlayShoutoutClips = true;
 
                 Initialized = true;
 
                 botController.OutputSentToBots += BotController_OutputSentToBots;
-                       
+
                 botController.SetDispatcher(Dispatcher.CurrentDispatcher);
             }
         }
@@ -94,7 +94,7 @@ namespace TestStreamerBot
         }
 
         [Theory]
-        [InlineData("BanMeUser1","Buy follows or else")]
+        [InlineData("BanMeUser1", "Buy follows or else")]
         [InlineData("BanMeUser2", "You must buy follows or else", true)]
         [InlineData("BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
         [InlineData("BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
@@ -119,9 +119,9 @@ namespace TestStreamerBot
             // add some good/friendly users, waiting for joining
             foreach (string U in new List<string> { "DarkStreamPhantom", "Jijijava", "CuteChibiChu", "BlkbryOnline", "NewUser", "OutlawTorn14" })
             {
-                botController.HandleUserJoined(new() { new(U, Platform.Twitch )});
+                botController.HandleUserJoined(new() { new(U, Platform.Twitch) });
                 Thread.Sleep(Random.Next(10000, 80000));
-                botController.HandleMessageReceived(new() { DisplayName=U, IsSubscriber = 0 == Random.Next(0, 1), Message="Hey stud!" }, Platform.Twitch);
+                botController.HandleMessageReceived(new() { DisplayName = U, IsSubscriber = 0 == Random.Next(0, 1), Message = "Hey stud!" }, Platform.Twitch);
             }
 
             // wait a little more
@@ -134,7 +134,7 @@ namespace TestStreamerBot
             Thread.Sleep(5000);
 
             // ban before or after they join, or don't join at all
-            if(!JoinBan)
+            if (!JoinBan)
             {
                 botController.HandleUserBanned(UserName, Platform.Twitch);
                 Thread.Sleep(5000);
@@ -142,7 +142,7 @@ namespace TestStreamerBot
 
             if (Joined)
             {
-                botController.HandleUserJoined(new() { new( UserName, Platform.Twitch) });
+                botController.HandleUserJoined(new() { new(UserName, Platform.Twitch) });
                 Thread.Sleep(5000);
             }
 
@@ -229,10 +229,10 @@ namespace TestStreamerBot
 
             List<Follow> follows = new();
 
-            for(int x=0; x < Random.Next(1,20); x++)
+            for (int x = 0; x < Random.Next(1, 20); x++)
             {
                 follows.Add(new(
-                    followedAt: DateTime.Now, 
+                    followedAt: DateTime.Now,
                     fromUserName: $"IFollow{datestring}{x}",
                     fromUserId: "00112233",
                     Source: Platform.Default)
@@ -360,8 +360,8 @@ namespace TestStreamerBot
             botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, Id, Category);
 
             botController.HandleIncomingRaidData(new("Pitcy", Platform.Twitch), DateTime.Now.ToLocalTime(), "13", "Fortnite");
-            botController.HandleUserJoined(new() { new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly",Platform.Twitch) });
-            botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName="Pitcy", IsModerator = true, Message = "!followage" }, Platform.Twitch);
+            botController.HandleUserJoined(new() { new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly", Platform.Twitch) });
+            botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName = "Pitcy", IsModerator = true, Message = "!followage" }, Platform.Twitch);
 
         }
 
@@ -391,7 +391,7 @@ namespace TestStreamerBot
 
             botController.HandleGiveawayBegin(GiveawayTypes.Command, "giveaway");
 
-            foreach(string s in entrylist)
+            foreach (string s in entrylist)
             {
                 int y = 0;
                 while (y < OptionFlags.GiveawayMaxEntries)
@@ -426,7 +426,7 @@ namespace TestStreamerBot
             botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch), DateTime.Now, Random.Next(5, Viewers).ToString(), GetRandomGameIdName().GameName);
             Thread.Sleep(5000); // wait for category
 
-           // Assert.True(ActionSystem.UserChat(new(RaidUserName, Platform.Twitch)));
+            // Assert.True(ActionSystem.UserChat(new(RaidUserName, Platform.Twitch)));
 
             botController.HandleUserJoined(new() { new(RaidUserName, Platform.Twitch) });
             //Assert.False(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch)));
@@ -435,7 +435,7 @@ namespace TestStreamerBot
 
             Thread.Sleep(2000);
 
-           // Assert.False(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch))); // should be able to add the user again
+            // Assert.False(StatisticsSystem.UserChat(new(RaidUserName, Platform.Twitch))); // should be able to add the user again
 
         }
 
@@ -461,7 +461,7 @@ namespace TestStreamerBot
             botController.HandleBotEventPostNewClip(new() { TestClip });
 
             Thread.Sleep(2000);
-            
+
             Assert.False(
                 dataManager.PostClip(TestClip.ClipId, TestClip.CreatedAt, TestClip.Duration, TestClip.GameId, TestClip.Language, TestClip.Title, TestClip.Url)
                 );

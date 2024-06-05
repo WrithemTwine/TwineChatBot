@@ -4,7 +4,6 @@ using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.MultiLive;
 using StreamerBotLib.Static;
 
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
