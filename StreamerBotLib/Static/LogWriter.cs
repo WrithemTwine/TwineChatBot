@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 
@@ -19,18 +20,59 @@ namespace StreamerBotLib.Static
         private const string ExceptionLog = "ExceptionLog.txt";
         private const string DebugLogFile = "DebugLogFile.txt";
 
+        private static ConcurrentQueue<string> StatusLogData = new();
+        private static ConcurrentQueue<string> ExceptionLogData = new();
+        private static ConcurrentQueue<string> DebugLogData = new();
+
         private static bool started;
 
-        // streamwriters
-        private static readonly StreamWriter StatusLogWriter = new(StatusLog, true);
-        private static readonly StreamWriter ExceptionLogWriter = new(ExceptionLog, true);
-        private static readonly StreamWriter DebugLogFileWriter = new(DebugLogFile, true);
-
         /// <summary>
-        /// Start a flush thread, to check and flush the streamwriter every <code>StreamFlush</code> amount of time.
+        /// Start a flush thread. Refer to strings for each log file saving the messages to write to each logfile, then close the file.
         /// </summary>
         private static void StaticFlush()
         {
+            static void DataWrite()
+            {
+                if (!StatusLogData.IsEmpty)
+                {
+                    StreamWriter StatusLogWriter = new(StatusLog, true);
+                    while (!StatusLogData.IsEmpty)
+                    {
+                        if (StatusLogData.TryDequeue(out string data))
+                        {
+                            StatusLogWriter.WriteLine(data);
+                        }
+                    }
+                    StatusLogWriter.Close();
+                }
+
+                if (!ExceptionLogData.IsEmpty)
+                {
+                    StreamWriter ExceptionLogWriter = new(ExceptionLog, true);
+                    while (!ExceptionLogData.IsEmpty)
+                    {
+                        if (ExceptionLogData.TryDequeue(out string data))
+                        {
+                            ExceptionLogWriter.WriteLine(data);
+                        }
+                    }
+                    ExceptionLogWriter.Close();
+                }
+
+                if (!DebugLogData.IsEmpty)
+                {
+                    StreamWriter DebugLogFileWriter = new(DebugLogFile, true);
+                    while (!DebugLogData.IsEmpty)
+                    {
+                        if (DebugLogData.TryDequeue(out string data))
+                        {
+                            DebugLogFileWriter.WriteLine(data);
+                        }
+                    }
+                    DebugLogFileWriter.Close();
+                }
+            }
+
             if (!started)
             {
                 started = true;
@@ -41,107 +83,81 @@ namespace StreamerBotLib.Static
                         if (DateTime.Now > FlushTime)
                         {
                             FlushTime = DateTime.Now + StreamFlush;
-                            lock (StatusLog)
-                            {
-                                StatusLogWriter.Flush();
-                            }
-                            lock (ExceptionLog)
-                            {
-                                ExceptionLogWriter.Flush();
-                            }
-                            lock (DebugLogFile)
-                            {
-                                DebugLogFileWriter.Flush();
-                            }
+                            DataWrite();
                         }
-                        Thread.Sleep(500); // sleep for 10 minutes = app stays open, flush timespan
+
+                        Thread.Sleep(500);
                     }
                 });
             }
+            else if (!OptionFlags.ActiveToken)
+            {
+                DataWrite();
+            }
         }
 
         /// <summary>
-        /// Closes logs when the application exits. Be sure to call to avoid possible corrupted files.
+        /// Application shutting down, finish writing all available data.
         /// </summary>
-        public static void ExitCloseLogs()
+        public static void ExitLogs()
         {
-            lock (StatusLog)
-            {
-                StatusLogWriter.Close();
-                StatusLogWriter.Dispose();
-            }
-            lock (ExceptionLog)
-            {
-                ExceptionLogWriter.Close();
-                ExceptionLogWriter.Dispose();
-            }
-            lock (DebugLogFile)
-            {
-                DebugLogFileWriter.Close();
-                DebugLogFileWriter.Dispose();
-            }
+            StaticFlush();
         }
 
         /// <summary>
-        /// Write output to a specific log.
+        /// Write output to a specific log. Saves content to a string for writing in regular intervals.
         /// </summary>
         /// <param name="ChooseLog">Choose which log to write the data.</param>
         /// <param name="line">The line Content to write to the log.</param>
         public static void WriteLog(string line)
         {
             StaticFlush();
-            lock (StatusLog)
+            if (OptionFlags.LogBotStatus)
             {
-                if (OptionFlags.LogBotStatus)
+                try
                 {
-                    try
-                    {
-                        StatusLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
-                    }
-                    catch (ObjectDisposedException ex)
-                    {
-                        LogException(ex, "WriteLog");
-                        StreamWriter sr = new(StatusLog, true);
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
-                        sr.Close();
-                    }
+                    StatusLogData.Enqueue($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    LogException(ex, "WriteLog");
+                    StreamWriter sr = new(StatusLog, true);
+                    sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
+                    sr.Close();
                 }
             }
         }
 
         /// <summary>
-        /// Specifically log caught exceptions. Internally adds 'DateTime.Now' to the log file output.
+        /// Specifically log caught exceptions. Internally adds 'DateTime.Now' to the log file output. Saves content to a string for writing in regular intervals.
         /// </summary>
         /// <param name="ex">The exception caught in the app.</param>
         /// <param name="Method">Name of the method which caught the exception.</param>
         public static void LogException(Exception ex, string Method)
         {
             StaticFlush();
-            lock (ExceptionLog)
+            if (OptionFlags.LogExceptions)
             {
-                if (OptionFlags.LogExceptions)
+                try
                 {
-                    try
-                    {
-                        ExceptionLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
-                        ExceptionLogWriter.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
-                    }
-                    catch (ObjectDisposedException Eex)
-                    {
-                        StreamWriter sr = new(ExceptionLog, true);
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
-                        sr.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
+                    ExceptionLogData.Enqueue($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
+                    ExceptionLogData.Enqueue($"{ex.Message}\nStack Trace: {ex.StackTrace}");
+                }
+                catch (ObjectDisposedException Eex)
+                {
+                    StreamWriter sr = new(ExceptionLog, true);
+                    sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
+                    sr.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
 
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{Eex.GetType()}");
-                        sr.WriteLine($"{Eex.Message}\nStack Trace: {Eex.StackTrace}");
-                        sr.Close();
-                    }
+                    sr.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{Eex.GetType()}");
+                    sr.WriteLine($"{Eex.Message}\nStack Trace: {Eex.StackTrace}");
+                    sr.Close();
                 }
             }
         }
 
         /// <summary>
-        /// Logs the debug output for bot functions. Enabled by Settings Flags.
+        /// Logs the debug output for bot functions. Enabled by Settings Flags. Saves content to a string for writing in regular intervals.
         /// </summary>
         /// <param name="Method">The name of the method performing the current functionality.</param>
         /// <param name="debugLogTypes">The type of the current function to log. If user doesn't enable this log setting, it won't emit.</param>
@@ -188,19 +204,16 @@ namespace StreamerBotLib.Static
             };
             if (Output != "")
             {
-                lock (DebugLogFile)
+                try
                 {
-                    try
-                    {
-                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
-                    }
-                    catch (ObjectDisposedException ex)
-                    {
-                        LogException(ex, "WriteLog");
-                        StreamWriter sr = new(DebugLogFile, true);
-                        sr.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
-                        sr.Close();
-                    }
+                    DebugLogData.Enqueue($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    LogException(ex, "WriteLog");
+                    StreamWriter sr = new(DebugLogFile, true);
+                    sr.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
+                    sr.Close();
                 }
             }
         }

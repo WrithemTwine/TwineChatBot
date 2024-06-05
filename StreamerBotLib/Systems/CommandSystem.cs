@@ -169,13 +169,22 @@ namespace StreamerBotLib.Systems
 
                     if (cmd.CheckFireTime())
                     {
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"The repeat command, {cmd.Command}, is ready to activate.");
                         lock (GUI.GUIDataManagerLock.Lock) // lock it up because accessing a DataManage row
                         {
                             lock (RepeatLock)
                             {
-                                if (ComputeRepeat())
+                                try
                                 {
-                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), [], DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    if (ComputeRepeat())
+                                    {
+                                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Performing {cmd.Command}.");
+                                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), [], DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                 }
                             }
                         }
@@ -376,7 +385,6 @@ namespace StreamerBotLib.Systems
                 if (response != "" && response != "/me ")
                 {
                     OnProcessCommand(response, multi);
-
 
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
                 }
@@ -651,7 +659,8 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
             {
-                bool TryConvertInt = int.TryParse(arglist[0], out int Wager);
+                // in repeat command case, the arglist may be empty and needs capacity check
+                bool TryConvertInt = int.TryParse((arglist!=null && arglist.Count > 0 )? arglist[0] : "0", out int Wager);
 
                 if (arglist.Count == 1 && TryConvertInt)
                 {

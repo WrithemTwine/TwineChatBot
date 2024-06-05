@@ -631,7 +631,7 @@ namespace StreamerBot
             Controller.ExitBots();
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");
-            LogWriter.ExitCloseLogs();
+            LogWriter.ExitLogs();
         }
 
         #endregion
