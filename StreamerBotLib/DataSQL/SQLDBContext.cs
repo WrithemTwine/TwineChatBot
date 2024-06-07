@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#if RELEASE_KNET
+using MASES.EntityFrameworkCore.KNet;
+#endif
+
+using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Static;
@@ -53,7 +57,22 @@ namespace StreamerBotLib.DataSQL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-                optionsBuilder.UseSqlite(OptionFlags.EFCConnectStringSqlite);
+#if DEBUG || RELEASE_SQLITE
+            optionsBuilder.UseSqlite(OptionFlags.EFCConnectStringSqlite);
+#elif RELEASE_POSTGRE
+            optionsBuilder.UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL);
+#elif RELEASE_COSMOS
+            // TODO: Fix 'databasename' parameter
+            optionsBuilder.UseCosmos(OptionFlags.EFCConnectStringCostmos, null);
+#elif RELEASE_KNET
+            // TODO: Fix KNET/Apache parameters
+            optionsBuilder.UseKafkaCluster(null,null,null,null);
+#elif RELEASE_SQLSERVER
+            optionsBuilder.UseSqlServer(OptionFlags.EFCConnectStringSqlServer);
+#elif RELEASE_MYSQL
+            // TODO: Fix 'serverversion' attribute
+            optionsBuilder.UseMySql(OptionFlags.EFCConnectStringMySql, null);
+#endif
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
