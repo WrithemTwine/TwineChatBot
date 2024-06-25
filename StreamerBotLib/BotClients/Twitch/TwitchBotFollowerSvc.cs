@@ -113,6 +113,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     FollowerService = null;
+                    HandlersAdded = false;
                 }
                 return true;
             }

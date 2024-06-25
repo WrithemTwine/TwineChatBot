@@ -49,7 +49,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             StreamerAPI = StreamerApi == null ? BotAPI : new(settings: StreamerApi);
         }
 
-        private async Task<GetUsersResponse> GetUsersAsync(string UserName = null, string Id = null)
+        internal async Task<GetUsersResponse> GetUsersAsync(string UserName = null, string Id = null)
         {
             if (UserName != null)
             {

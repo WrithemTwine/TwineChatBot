@@ -64,6 +64,7 @@ switches:
         private DateTime CurrStreamStart { get; set; } = default;
 
         public event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
+        public event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
 
         public DataManagerSQL()
         {
@@ -85,6 +86,11 @@ switches:
             //    context.Dispose();
             //    context = default;
             //}
+        }
+
+        public void NotifyDataCollectionUpdated(string TableName)
+        {
+            OnDataCollectionUpdated?.Invoke(this, new(TableName));
         }
 
         #region Construct default items
@@ -422,6 +428,7 @@ switches:
 
         #endregion
 
+        #region Check_Methods
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
             lock (GUIDataManagerLock.Lock)
@@ -670,6 +677,7 @@ switches:
                 ClearDataContext();
             }
         }
+        #endregion Check_Methods
 
         public void DeleteDataRows(IEnumerable<DataRow> dataRows)
         {
@@ -724,6 +732,7 @@ switches:
             }
         }
 
+        #region Get_Methods
         public CommandData GetCommand(string cmd)
         {
             lock (GUIDataManagerLock.Lock)
@@ -1097,6 +1106,7 @@ switches:
                 return result;
             }
         }
+        #endregion Get_Methods
 
         public object[] PerformQuery(Commands row, int Top = 0)
         {
@@ -1153,6 +1163,7 @@ switches:
             }
         }
 
+        #region Post_Methods
         public bool PostCategory(string CategoryId, string newCategory)
         {
             bool found = false;
@@ -1330,6 +1341,7 @@ switches:
                 var result = !(from F in context.Followers
                                where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform
                                select F).Any();
+
                 ClearDataContext();
                 return result;
             }
@@ -1381,6 +1393,8 @@ switches:
                                 context.Followers.AddRange(tempfollow);
                             }
                         }
+
+                        NotifyDataCollectionUpdated(nameof(Followers));
 
                         lock (GUIDataManagerLock.Lock)
                         {
@@ -1504,6 +1518,7 @@ switches:
                 {
                     newuser.UserId ??= User.UserId;
                     if (newuser.Platform == default) { newuser.Platform = User.Platform; }
+                    if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
                 }
 
                 List<Models.CurrencyType> types = new(context.CurrencyType);
@@ -1609,6 +1624,8 @@ switches:
                 }
             }
         }
+
+        #endregion Post_Methods
 
         #region Clear DataBase Records 
         /// <summary>
@@ -1764,6 +1781,7 @@ switches:
                 {
                     Command.IsEnabled = Enabled;
                 }
+                NotifyDataCollectionUpdated(nameof(Commands));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1779,6 +1797,7 @@ switches:
                 {
                     webhook.IsEnabled = Enabled;
                 }
+                NotifyDataCollectionUpdated(nameof(Webhooks));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1798,6 +1817,7 @@ switches:
                 {
                     Sys.IsEnabled = Enabled;
                 }
+                NotifyDataCollectionUpdated(nameof(ChannelEvents));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1822,6 +1842,7 @@ switches:
                 {
                     Command.IsEnabled = Enabled;
                 }
+                NotifyDataCollectionUpdated(nameof(CommandsUser));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -2038,7 +2059,7 @@ switches:
                         stats.WatchTime = stats.WatchTime.Add(CurrTime - stats.Users.LastDateSeen);
                     }
                 }
-
+                NotifyDataCollectionUpdated(nameof(Models.UserStats));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -2062,6 +2083,7 @@ switches:
                 Users user = PostNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
+                NotifyDataCollectionUpdated(nameof(Models.Users));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -2083,6 +2105,7 @@ switches:
                     user.CurrLoginDate = NowSeen;
                     user.LastDateSeen = NowSeen;
                 }
+                NotifyDataCollectionUpdated(nameof(Models.Users));
                 context.SaveChanges(true);
                 ClearDataContext();
             }

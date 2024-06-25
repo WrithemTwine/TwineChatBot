@@ -12,6 +12,7 @@ using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Chat.GetChatters;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -234,8 +235,13 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     if (StreamerChannelId == null && BotChannelId == null && TwitchChannelName != null)
                     {
-                        TwitchBotUserId = GetUserId(TwitchBotUserName);
-                        TwitchChannelId = GetUserId(TwitchChannelName);
+                        GetUsersResponse BotUser = HelixApiCalls.GetUsersAsync(UserName: TwitchBotUserName).Result;
+                        TwitchBotUserId = BotUser.Users.First().Id;
+                        TwitchBotUserName = BotUser.Users.First().DisplayName;
+
+                        GetUsersResponse ChannelUser = HelixApiCalls.GetUsersAsync(UserName: TwitchChannelName).Result;
+                        TwitchChannelId = ChannelUser.Users.First().Id;
+                        TwitchChannelName = ChannelUser.Users.First().DisplayName;
                     }
                 });
             }

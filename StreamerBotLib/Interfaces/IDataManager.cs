@@ -13,6 +13,8 @@ namespace StreamerBotLib.Interfaces
     public interface IDataManager : IDataManagerReadOnly
     {
         event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
+        event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
+
         bool CheckCurrency(LiveUser User, double value, string CurrencyName);
         new bool CheckField(string table, string field);
         new bool CheckFollower(string User);

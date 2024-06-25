@@ -950,7 +950,6 @@ namespace StreamerBotLib.BotIOController
                                                             )
                                                         ),
                                                         VariableParser.BuildPlatformUrl(ChannelName, platform)
-
                                                     );
                                 Systems.UpdatedStat(StreamStatType.Discord);
                             }

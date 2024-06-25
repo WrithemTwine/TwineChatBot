@@ -1482,7 +1482,7 @@
                                     <TextBox  IsEnabled="False" Grid.Row="5" Grid.Column="2" Text="{Binding EFCConnectStringMySql}" />
 
                                     <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderKNet}" Grid.Row="6" Grid.Column="0" />
-                                    <TextBlock Grid.Row="6" Grid.Column="1">MASES-KNet</TextBlock>
+                                    <TextBlock Grid.Row="6" Grid.Column="1">MASES-KNet Apache</TextBlock>
                                     <TextBox  IsEnabled="False" Grid.Row="6" Grid.Column="2" Text="{Binding EFCConnectStringKNet}" />
                                 </Grid>
                             </GroupBox>
@@ -2233,7 +2233,7 @@
                                 <TabItem Header="Categories" x:Name="TabItem_Category">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="25" />
+                                            <RowDefinition Height="28" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -2249,6 +2249,7 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" />
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
+                                                <DataGridTextColumn Header="Stream Count" Binding="{Binding StreamCount}" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                         <Label Grid.Row="0" Grid.Column="2">

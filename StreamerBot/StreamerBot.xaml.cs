@@ -70,6 +70,7 @@ namespace StreamerBot
 
             WatchProcessOps = true;
 
+            // TODO: determine database connection strings, start if available, defer until setup parameter(s) are added
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
 
