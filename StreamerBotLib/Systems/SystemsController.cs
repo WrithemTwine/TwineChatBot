@@ -830,7 +830,7 @@ namespace StreamerBotLib.Systems
                     {
                         foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksKind.Clips))
                         {
-                            DiscordWebhook.SendMessage(u.Item2, null, c.Url);
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
                             UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to Discord
                         }
                     }
