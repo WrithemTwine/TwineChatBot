@@ -4,7 +4,7 @@ using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(Platform))]
     [Index(nameof(UserId), nameof(UserName), nameof(Platform))]
     public abstract class UserBase(string userId = null,
                                    string userName = null,

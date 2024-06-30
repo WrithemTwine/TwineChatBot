@@ -61,6 +61,7 @@ namespace StreamerBot
             guiAppServices.AppDataDirectory = GetAppDataCWD();
             GUIAppServices.OnBotStarted += GUI_OnBotStarted;
             GUIAppServices.OnBotStopped += GUI_OnBotStopped;
+            guiAppServices.MediaOverlayServer.SetOverlayWindow += MediaOverlayServer_SetOverlayWindow;
 
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
@@ -70,7 +71,6 @@ namespace StreamerBot
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
             VerifyNewVersion += StreamerBotWindow_VerifyNewVersion;
         }
-
 
         #region GitHub webpage
         /// <summary>

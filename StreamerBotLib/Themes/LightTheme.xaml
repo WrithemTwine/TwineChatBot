@@ -12,12 +12,10 @@
     <Color x:Key="FullColor">#FFFFFFFF</Color>
     <Color x:Key="ForegroundColor">#FF000000</Color>
 
-
     <SolidColorBrush x:Key="FullBackground" Color="{DynamicResource FullColor}"/>
     <SolidColorBrush x:Key="PartBackground" Color="{DynamicResource MediumColor}"/>
     <SolidColorBrush x:Key="LightBackground" Color="{DynamicResource LighterColor}"/>
     <SolidColorBrush x:Key="ForegroundText" Color="{DynamicResource ForegroundColor}"  />
-
 
     <!-- border colors -->
     <SolidColorBrush x:Key="Borders" Color="{DynamicResource MediumColor}"  />
@@ -54,7 +52,6 @@
     <!-- contextmenu coloring -->
     <SolidColorBrush x:Key="ContextMenuBackground" Color="{DynamicResource MediumColor}"/>
     <SolidColorBrush x:Key="ContextMenuForeground" Color="{DynamicResource ForegroundColor}"/>
-
 
     <!-- ListView colors -->
     <Color x:Key="ListViewControlFullColor">#FFFFFFFF</Color>
@@ -110,8 +107,6 @@
     <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
     <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Border" Color="Transparent"/>
 
-    
-    
     <!-- Checkbox colors -->
     <SolidColorBrush x:Key="CheckBoxFullBackground" Color="{DynamicResource FullColor}" />
     <SolidColorBrush x:Key="CheckBoxMedBackground" Color="{DynamicResource LighterColor}" />
@@ -148,7 +143,6 @@
     <SolidColorBrush x:Key="RadioButton.Disabled.Border" Color="{DynamicResource MediumColor}" />
     <SolidColorBrush x:Key="RadioButton.Disabled.Glyph" Color="{DynamicResource LighterColor}" />
 
-    
     <Style x:Key="{x:Type CheckBox}"
            TargetType="{x:Type CheckBox}">
 
@@ -362,7 +356,6 @@
         </Setter>
     </Style>
 
-
     <!-- Begin-ToggleButton Style for Twitch Token selecter-Begin -->
     <Color x:Key="WindowColor">#FFE8EDF9</Color>
     <Color x:Key="ContentAreaColorLight">#FFC5CBF9</Color>
@@ -381,7 +374,6 @@
 
     <Color x:Key="ControlMouseOverColor">#FF3843C4</Color>
     <Color x:Key="ControlPressedColor">#FF211AA9</Color>
-
 
     <Color x:Key="GlyphColor">#FF444444</Color>
     <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
@@ -429,7 +421,6 @@
             </GradientStopCollection>
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
-
 
     <Style x:Key="ToggleButtonTwitchTokenSelecter" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{StaticResource PartBackground}" />

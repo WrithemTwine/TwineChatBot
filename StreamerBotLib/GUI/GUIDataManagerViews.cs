@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.DataSQL;
 using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
@@ -27,32 +28,32 @@ namespace StreamerBotLib.GUI
         {
             get
             {
-               
-                    return Followers?.Count(f => f.IsFollower) ?? 0;                
+
+                return Followers?.Count(f => f.IsFollower) ?? 0;
             }
         }
 
         public int CurrUserCount
         {
             get
-            {                
-                    return Users?.Count ?? 0;                
+            {
+                return Users?.Count ?? 0;
             }
         }
 
         public int CurrBuiltInComCount
         {
             get
-            {                
-                    return Commands?.Count ?? 0;                
+            {
+                return Commands?.Count ?? 0;
             }
         }
 
         public int CurrUserComsCount
         {
             get
-            {                
-                    return CommandsUser?.Count ?? 0;                
+            {
+                return CommandsUser?.Count ?? 0;
             }
         }
 
@@ -142,103 +143,6 @@ namespace StreamerBotLib.GUI
 
             SetCommandCollection();
 
-            DataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
-        }
-
-        private void DataManager_OnDataCollectionUpdated(object sender, Events.OnDataCollectionUpdatedEventArgs e)
-        {
-            switch (e.DatabaseModelName)
-            {
-                case "BanReasons":
-                    NotifyPropertyChanged(nameof(BanReasons));
-                    break;
-                case "BanRules":
-                    NotifyPropertyChanged(nameof (BanReasons));
-                    break;
-                case "CategoryList":
-                    NotifyPropertyChanged(nameof(CategoryList));
-                    break;
-                case "ChannelEvents":
-                    NotifyPropertyChanged(nameof(ChannelEvents));
-                    break;
-                case "Clips":
-                    NotifyPropertyChanged(nameof(Clips));
-                    break;
-                case "Commands":
-                    NotifyPropertyChanged(nameof(Commands));
-                    break;
-                case "CommandsUser":
-                    NotifyPropertyChanged(nameof(CommandsUser));
-                    break;
-                case "Currency":
-                    NotifyPropertyChanged(nameof(Currency));
-                    break;
-                case "CurrencyType":
-                    NotifyPropertyChanged(nameof(CurrencyType));
-                    break;
-                case "CustomWelcome":
-                    NotifyPropertyChanged(nameof(CustomWelcome));
-                    break;
-                case "Followers":
-                    NotifyPropertyChanged(nameof(Followers));
-                    NotifyPropertyChanged(nameof(CurrFollowers));
-                    NotifyPropertyChanged(nameof(Users));
-                    break;
-                case "GameDeadCounter":
-                    NotifyPropertyChanged(nameof(GameDeadCounter));
-                    break;
-                case "GiveawayUserData":
-                    NotifyPropertyChanged(nameof(GiveawayUserData));
-                    break;
-                case "InRaidData":
-                    NotifyPropertyChanged(nameof(InRaidData));
-                    break;
-                case "LearnMsgs":
-                    NotifyPropertyChanged(nameof(LearnMsgs));
-                    break;
-                case "ModeratorApprove":
-                    NotifyPropertyChanged(nameof(ModeratorApprove));
-                    break;
-                case "MultiChannels":
-                    NotifyPropertyChanged(nameof(MultiChannels));
-                    break;
-                case "MultiLiveStreams":
-                    NotifyPropertyChanged(nameof(MultiLiveStreams));
-                    break;
-                case "MultiMsgEndPoints":
-                    NotifyPropertyChanged(nameof(MultiMsgEndPoints));
-                    break;
-                case "MultiSummaryLiveStreams":
-                    NotifyPropertyChanged(nameof(MultiSummaryLiveStreams));
-                    break;
-                case "OutRaidData":
-                    NotifyPropertyChanged(nameof(OutRaidData));
-                    break;
-                case "OverlayServices":
-                    NotifyPropertyChanged(nameof(OverlayServices));
-                    break;
-                case "OverlayTicker":
-                    NotifyPropertyChanged(nameof(OverlayTicker));
-                    break;
-                case "Quotes":
-                    NotifyPropertyChanged(nameof(Quotes));
-                    break;
-                case "ShoutOuts":
-                    NotifyPropertyChanged(nameof(ShoutOuts));
-                    break;
-                case "StreamStats":
-                    NotifyPropertyChanged(nameof(StreamStats));
-                    break;
-                case "Users" or "UserStats":
-                   NotifyPropertyChanged(nameof(Users));
-                    NotifyPropertyChanged(nameof(UserStats));
-                    break;
-                case "Webhooks":
-                    NotifyPropertyChanged(nameof(Webhooks));
-                    break;
-                case null:
-                    break;
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -247,10 +151,7 @@ namespace StreamerBotLib.GUI
         /// Notifies a property changed for the GUI to refresh.
         /// </summary>
         /// <param name="propertyName">Name of the property which updated values.</param>
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Handles when a data table view changes, to update the GUI and refresh the status bar item counts.

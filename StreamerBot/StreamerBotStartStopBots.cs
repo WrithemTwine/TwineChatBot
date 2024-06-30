@@ -1,15 +1,92 @@
-﻿using StreamerBotLib.BotClients;
+﻿using Microsoft.Extensions.Options;
+
+using StreamerBotLib.BotClients;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Overlay;
+using StreamerBotLib.Static;
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
+        private MediaOverlayPage MediaOverlayPage = null;
+        private MediaOverlay MediaOverlay = null;
+
+        private void RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        { // actually attached to "PreviewMouseLeftButtonDown" to perform before starting the bot, as this determination is needed before trying to use MediaOverlayPage object
+            CheckBox_MediaOverlayEmbedGUI.IsEnabled = false;
+            string TabName = "TabItem_Bot_MediaOverlay_GUI";
+            if (OptionFlags.MediaOverlayEmbedGUI)
+            {
+                Frame OverlayFrame = new()
+                {
+                    Source = new("pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml"),
+                    IsManipulationEnabled = true,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch
+                };
+
+                OverlayFrame.Loaded += MediaOverlayServer_Loaded;
+
+                TabItem OverlayTab = new()
+                {
+                    Name = TabName,
+                    Header = "Overlay",
+                    Content = OverlayFrame
+                };
+
+                TabControl_Bots_Content.Items.Add(OverlayTab);
+            }
+            else
+            {
+                object OverlayTab = null;
+
+                foreach (var T in TabControl_Bots_Content.Items)
+                {
+                    if (((TabItem)T).Name == TabName)
+                    {
+                        OverlayTab = T;
+                    }
+                }
+
+                if (OverlayTab != null)
+                {
+                    TabControl_Bots_Content.Items.Remove(OverlayTab);
+                }
+
+                MediaOverlay = new();
+                MediaOverlay.Show();
+            }
+        }
+
+        private void RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            CheckBox_MediaOverlayEmbedGUI.IsEnabled = true;
+        }
+
+        private void MediaOverlayServer_Loaded(object sender, RoutedEventArgs e)
+        {
+            MediaOverlayPage = (MediaOverlayPage)((Frame)sender).Content;
+        }
+
+        private void MediaOverlayServer_SetOverlayWindow(object sender, SetOverlayWindowEventArgs e)
+        {
+            if (OptionFlags.MediaOverlayEmbedGUI)
+            {
+                e.SetOverlay(MediaOverlayPage);
+            }
+            else
+            {
+                e.SetOverlay(MediaOverlay);
+            }
+        }
+
         private void GUI_OnBotStarted(object sender, BotStartStopEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new BotOperation(() =>

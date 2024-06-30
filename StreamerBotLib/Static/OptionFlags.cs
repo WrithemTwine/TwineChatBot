@@ -658,6 +658,15 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayEnabled; set => Settings.Default.MediaOverlayEnabled = value;
         }
+
+        /// <summary>
+        /// Choose whether to show Media Overlay Services in a separate window or within the main window
+        /// </summary>
+        public static bool MediaOverlayEmbedGUI
+        {
+            get => Settings.Default.MediaOverlayEmbedGUI; set => Settings.Default.MediaOverlayEmbedGUI = value;
+        }
+
         /// <summary>
         /// Enable the Media Overlay (Twitch) channel points redemption for an overlay action.
         /// </summary>

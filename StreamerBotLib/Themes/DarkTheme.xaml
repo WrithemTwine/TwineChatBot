@@ -7,12 +7,10 @@
     <Color x:Key="FullColor">#FF1E1E1E</Color>
     <Color x:Key="ForegroundColor">#FFCCCCCC</Color>
 
-
     <SolidColorBrush x:Key="FullBackground" Color="{DynamicResource FullColor}"/>
     <SolidColorBrush x:Key="PartBackground" Color="{DynamicResource MediumColor}"/>
     <SolidColorBrush x:Key="LightBackground" Color="{DynamicResource LighterColor}"/>
     <SolidColorBrush x:Key="ForegroundText" Color="{DynamicResource ForegroundColor}"  />
-
 
     <!-- border colors -->
     <SolidColorBrush x:Key="Borders" Color="{DynamicResource MediumColor}"  />
@@ -140,7 +138,6 @@
     <SolidColorBrush x:Key="RadioButton.Disabled.Border" Color="{DynamicResource MediumColor}" />
     <SolidColorBrush x:Key="RadioButton.Disabled.Glyph" Color="{DynamicResource LighterColor}" />
 
-    
     <Style x:Key="{x:Type CheckBox}"
            TargetType="{x:Type CheckBox}">
 
@@ -296,7 +293,6 @@
         </Setter>
     </Style>
 
-
     <Style TargetType="{x:Type RadioButton}">
         <Setter Property="Margin" Value="10,5,0,5" />
         <Setter Property="Padding" Value="2,0,0,0" />
@@ -363,8 +359,6 @@
         </Setter>
     </Style>
 
-    
-    
     <Color x:Key="WindowColor">#FFE8EDF9</Color>
     <Color x:Key="ContentAreaColorLight">#FFC5CBF9</Color>
     <Color x:Key="ContentAreaColorDark">#FF7381F9</Color>
@@ -382,7 +376,6 @@
 
     <Color x:Key="ControlMouseOverColor">#FF3843C4</Color>
     <Color x:Key="ControlPressedColor">#FF211AA9</Color>
-
 
     <Color x:Key="GlyphColor">#FF444444</Color>
     <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>

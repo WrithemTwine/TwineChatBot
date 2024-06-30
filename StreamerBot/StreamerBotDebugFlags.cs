@@ -34,16 +34,18 @@ namespace StreamerBot
                 string ID = "7193";
                 string Title = "Testing a debug stream";
 
-                Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, Debug: true);
+                ThreadManager.CreateThreadStart(() =>
+                {
+                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, Debug: true);
 
-                List<Tuple<string, string>> output = SystemsController.DataManage.GetGameCategories();
-                Random random = new();
-                Tuple<string, string> itemfound = output[random.Next(output.Count)];
-                Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
+                    List<Tuple<string, string>> output = SystemsController.DataManage.GetGameCategories();
+                    Random random = new();
+                    Tuple<string, string> itemfound = output[random.Next(output.Count)];
+                    Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
+                });
 
                 SetLiveStreamActive(true);
             }
-
         }
 
         private void EndDebugStream_Click(object sender, RoutedEventArgs e)

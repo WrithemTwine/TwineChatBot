@@ -276,7 +276,7 @@
         </StatusBar>
         <TabControl DockPanel.Dock="Top" TabStripPlacement="Left">
             <TabItem Header="Bots">
-                <TabControl>
+                <TabControl x:Name="TabControl_Bots_Content">
                     <TabItem Header="Start Bots">
                         <DockPanel>
                             <Expander DockPanel.Dock="Top" Header="Bot Usage Info" IsExpanded="{Binding ExpanderBotUsageInfo, Mode=OneWay}">
@@ -307,10 +307,10 @@
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
                                                     <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked">
+                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown" Checked="Radio_Twitch_LiveBotStart_Checked">
                                                     <TextBlock>Start Live Monitor Bot</TextBlock>
                                                 </RadioButton>
-                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked">
+                                                <RadioButton DataContext="{Binding TwitchLiveMonitor, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_LiveBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown" Checked="Radio_Twitch_LiveBotStop_Checked">
                                                     <TextBlock>Stop Live Monitor Bot</TextBlock>
                                                 </RadioButton>
                                                 <Label x:Name="Label_TwitchMultiLive_Error" Visibility="Collapsed" Height="Auto">
@@ -349,12 +349,12 @@
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchAddFollowersStart, Mode=TwoWay}" ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
                                                 <TextBlock TextWrapping="Wrap">Enable adding all followers when bot starts.</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" >
+                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown" >
                                                 <TextBlock>
                                                     Start Follower Service Bot
                                                 </TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                            <RadioButton DataContext="{Binding TwitchFollower, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_FollowBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>
                                                     Stop Follower Service Bot
                                                 </TextBlock>
@@ -385,10 +385,10 @@
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchChatBotAutoStart}" LostFocus="Settings_LostFocus" >
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StartBot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown" >
+                                            <RadioButton DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StartBot" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown" >
                                                 <TextBlock>Start Chat Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StopBot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown" >
+                                            <RadioButton DataContext="{Binding TwitchChat, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_StopBot" IsChecked="True" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown" >
                                                 <TextBlock>Stop Chat Service Bot</TextBlock>
                                             </RadioButton>
                                             <Label x:Name="Label_TwitchChat_Error" Visibility="Collapsed" Height="Auto">
@@ -417,10 +417,10 @@
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown">
+                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Start Clip Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Stop Clip Service Bot</TextBlock>
                                             </RadioButton>
                                             <Label x:Name="Label_TwitchClip_Error" Visibility="Collapsed" Height="Auto">
@@ -453,10 +453,10 @@
                                                 <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchPubSubOnlineMode}" >
                                                     <TextBlock>Enable PubSub to start when Stream is Live and stop when Stream is not Live.</TextBlock>
                                                 </CheckBox>
-                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown">
+                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                     <TextBlock>Start PubSub Service Bot</TextBlock>
                                                 </RadioButton>
-                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                                <RadioButton DataContext="{Binding TwitchBotPubSub, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_PubSubBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
                                                     <TextBlock>Stop PubSub Service Bot</TextBlock>
                                                 </RadioButton>
                                             </WrapPanel>
@@ -480,13 +480,20 @@
                                             <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
                                                 <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
                                             </Label>
+                                            <CheckBox x:Name="CheckBox_MediaOverlayEmbedGUI" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayEmbedGUI}">
+                                                <TextBlock>Put Overlay window in tab here</TextBlock>
+                                            </CheckBox>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMoustLeftButtonDown">
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonUp"
+                                           PreviewMouseLeftButtonUp="RadioButton_StartBot_PreviewMouseLeftButtonDown"
+                                                         >
                                                 <TextBlock>Start Overlay Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMoustLeftButtonDown">
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown"
+                                           PreviewMouseLeftButtonUp="RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonUp"
+                                                         >
                                                 <TextBlock>Stop Overlay Service Bot</TextBlock>
                                             </RadioButton>
                                             <Label x:Name="Label_OverlayServer_Error" Visibility="Collapsed" Height="Auto">
@@ -507,7 +514,8 @@
                             </ScrollViewer>
                         </DockPanel>
                     </TabItem>
-                    <TabItem  Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
+                    
+<TabItem  Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
                         <TabItem.Resources>
                             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
                                 <Setter Property="Width" Value="120" />
@@ -1587,7 +1595,7 @@
                                         <TextBlock Grid.Row="0" Grid.ColumnSpan="3" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
-                                        <DataGrid Grid.Row="1" Grid.Column="0"  Margin="5" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="False" CanUserAddRows="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                                        <DataGrid x:Name="DG_Mod_BanReasons" Grid.Row="1" Grid.Column="0"  Margin="5" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="False" CanUserAddRows="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="Msg Type" ItemsSource="{Binding Source={StaticResource EnumMsgTypes}}" SelectedItemBinding="{Binding MsgType}" />
@@ -1602,7 +1610,7 @@
                                             more tolerable than new arrivals, options provided for to help with this.
                                         </TextBlock>
 
-                                        <DataGrid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
+                                        <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id}" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="ModAction" ItemsSource="{Binding Source={StaticResource EnumModActions}}" SelectedItemBinding="{Binding ModAction}" />
@@ -1612,7 +1620,7 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
 
-                                        <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" ItemsSource="{Binding LearnMsgs}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False">
+                                        <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" ItemsSource="{Binding LearnMsgs}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="Msg Type" ItemsSource="{Binding Source={StaticResource EnumMsgTypes}}" SelectedItemBinding="{Binding MsgType}" />
@@ -1676,14 +1684,14 @@
 
                                         <DockPanel x:Name="DockPanel_UserData_Followers" Grid.Row="0" Grid.Column="2">
                                             <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
-                                            <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers}" ContextMenuOpening="DG_Edit_ContextMenuOpening"  CanUserAddRows="False" IsReadOnly="True">
+                                            <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers}" ContextMenuOpening="DG_Edit_ContextMenuOpening"  CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True">
                                                 <DataGrid.Columns>
                                                     <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" SortMemberPath="UserId" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding IsFollower}" />
-                                                    <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}" SortMemberPath="FollowedDate" />
-                                                    <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" SortMemberPath="StatusChangeDate" SortDirection="Descending" />
+                                                    <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}" />
+                                                    <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </DockPanel>
@@ -1706,7 +1714,7 @@
                                             <Button Width="250" Height="20" Content="Shout these Users if in Chat" ToolTip="The 'soactive' command needs to be enabled." Margin="10,10,10,10" Click="ShoutUsers_Click"/>
                                         </StackPanel>
 
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" >
+                                        <DataGrid x:Name="DG_User_Shoutouts" Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                 <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
@@ -1912,7 +1920,7 @@
                                         </DockPanel>
 
                                         <TextBlock Grid.Row="0" Grid.Column="1">Results of prior Giveaways recorded here! <LineBreak /> Data management is enabled or disabled in the Options tab.</TextBlock>
-                                        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True" >
+                                        <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                                                 <DataGridTemplateColumn Header="Date Time" SortMemberPath="DateTime" CellTemplate="{Binding Source={StaticResource DateGiveawayTemplate}}" CellEditingTemplate="{Binding Source={StaticResource EditDateGiveawayTemplate}}" />
@@ -1926,7 +1934,7 @@
                                     <Grid>
                                         <DockPanel Grid.Row="0" Grid.Column="0">
                                             <Label Content="User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" DockPanel.Dock="Top" />
-                                            <DataGrid ItemsSource="{Binding Quotes, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True">
+                                            <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding Quotes, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Number" Binding="{Binding Number}" />
                                                     <DataGridTextColumn Header="Quote" Binding="{Binding Quote}" />
@@ -2114,7 +2122,7 @@
                                                 </StackPanel>
                                             </GroupBox>
                                         </WrapPanel>
-                                        <DataGrid x:Name="DataGrid_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayServices, Mode=OneWay}" CanUserAddRows="True" CanUserDeleteRows="True" >
+                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayServices, Mode=OneWay}" CanUserAddRows="True" CanUserDeleteRows="True" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource IntConverter}}" />
@@ -2133,7 +2141,7 @@
                                 <TabItem Header="Ticker">
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
-                                        <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding OverlayTicker, Mode=OneWay}" CanUserDeleteRows="False">
+                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding OverlayTicker, Mode=OneWay}" CanUserDeleteRows="False">
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Ticker Name" ItemsSource="{Binding Source={StaticResource EnumOverlayTickerItem}}" SelectedItemBinding="{Binding TickerName}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -2155,10 +2163,10 @@
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DataGrid_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding StreamStats}" >
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding StreamStats}" >
                                             <DataGrid.Columns>
-                                                <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" />
-                                                <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" SortMemberPath="StreamEnd" />
+                                                <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" SortDirection="Descending" />
+                                                <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" />
                                                 <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, Converter={StaticResource IntConverter}}" />
                                                 <DataGridTextColumn Header="New Subs" Binding="{Binding NewSubscribers, Converter={StaticResource IntConverter}}" />
                                                 <DataGridTextColumn Header="Gift Subs" Binding="{Binding GiftSubs, Converter={StaticResource IntConverter}}" />

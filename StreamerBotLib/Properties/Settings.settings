@@ -602,5 +602,8 @@
     <Setting Name="EFCConnectStringKNet" Type="System.String" Scope="User">
       <Value Profile="(Default)">Server={server_address};Database=TwineStreamerBotdb;UserId={username};Password={password};</Value>
     </Setting>
+    <Setting Name="MediaOverlayEmbedGUI" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

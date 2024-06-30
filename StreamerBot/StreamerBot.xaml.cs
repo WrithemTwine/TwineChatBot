@@ -30,7 +30,7 @@ namespace StreamerBot
     // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for OverlayWindow.xaml
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
@@ -102,6 +102,9 @@ namespace StreamerBot
             StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             ConstructEvents();
+
+            // TODO: if datamanager loaded later, move this-connects event to database manager
+            DataManagerLoaded();
         }
 
         #region Bot_Ops
@@ -583,7 +586,7 @@ namespace StreamerBot
 
         #region Data side
 
-        private void RadioButton_StartBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void RadioButton_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if ((sender as RadioButton).IsEnabled)
             {
@@ -594,7 +597,7 @@ namespace StreamerBot
             }
         }
 
-        private void RadioButton_StopBot_PreviewMoustLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void RadioButton_StopBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if ((sender as RadioButton).IsEnabled)
             {
@@ -657,6 +660,5 @@ namespace StreamerBot
         {
             CheckFocus();
         }
-
     }
 }

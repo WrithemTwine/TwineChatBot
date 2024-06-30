@@ -48,6 +48,10 @@ namespace StreamerBotLib.BotClients
         /// Send ticker item updates to the server.
         /// </summary>
         public event EventHandler<UpdatedTickerItemsEventArgs> SendTickerToServer;
+        /// <summary>
+        /// Sets the OverlayPage to use with the overlay service
+        /// </summary>
+        public event EventHandler<SetOverlayWindowEventArgs> SetOverlayWindow;
 
         /// <summary>
         /// flag to pause alert processing
@@ -241,7 +245,8 @@ namespace StreamerBotLib.BotClients
         #endregion
 
 #elif UseGUIDLL
-        private MainWindow OverlayWindow;
+        private MediaOverlayPage OverlayPage;
+        private MediaOverlay OverlayWindow;
 
         /// <summary>
         /// Build and initialize object.
@@ -254,6 +259,21 @@ namespace StreamerBotLib.BotClients
             IsStopped = true;
 
             BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty.ToString() });
+        }
+
+        public void SetOverlayWindowGUI(object window)
+        {
+            if (OptionFlags.MediaOverlayEmbedGUI)
+            {
+                OverlayPage = (MediaOverlayPage)window;
+            }
+            else
+            {
+                OverlayWindow = (MediaOverlay)window;
+                OverlayPage = (MediaOverlayPage)((System.Windows.Controls.Frame)((System.Windows.Window)window).Content).Content;
+            
+                OverlayWindow.AddVisibilityEvent(OverlayWindow_UserHideWindow);
+            }
         }
 
         public void ManageStreamOnlineOfflineStatus(bool Start)
@@ -281,11 +301,11 @@ namespace StreamerBotLib.BotClients
             IsStopped = false;
             IsStarted = true;
 
-            if (OverlayWindow == null)
+            if (OverlayPage == null)
             {
-                OverlayWindow = new(OverlayWindow_UserHideWindow);
-                SendOverlayToServer += OverlayWindow.GetOverlayActionReceivedHandler();
-                SendTickerToServer += OverlayWindow.GetupdatedTickerReceivedHandler();
+                SetOverlayWindow?.Invoke(this, new() { SetOverlay = SetOverlayWindowGUI });
+                SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
+                SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
             }
 
             if (!AlertsThreadStarted)
@@ -295,7 +315,6 @@ namespace StreamerBotLib.BotClients
 
             InvokeBotStarted();
 
-            OverlayWindow.Show();
             return IsStarted;
         }
 
@@ -322,14 +341,14 @@ namespace StreamerBotLib.BotClients
             IsStarted = false;
             IsStopped = true;
 
-            SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
-            SendTickerToServer -= OverlayWindow?.GetupdatedTickerReceivedHandler();
+            SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
+            SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
 
             if (!WindowClosing)
             {
                 OverlayWindow?.CloseApp();
             }
-            OverlayWindow = null;
+            OverlayPage = null;
 
             InvokeBotStopped();
 

@@ -19,7 +19,7 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         /// <param name="UriList">The POST Uris collection of webhooks.</param>
         /// <param name="Msg">The message to send.</param>
-        public static void SendMessage(Uri uri, string Msg, string itemurl)
+        public static void SendMessage(Uri uri, string Msg, string itemurl = null)
         {
             JsonContent content = JsonContent.Create(
                 new WebhookJSON(Msg,
