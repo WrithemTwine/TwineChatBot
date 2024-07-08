@@ -127,8 +127,6 @@ namespace StreamerBotLib.Interfaces
         void StartBulkFollowers();
         void SummarizeStreamData();
         void SummarizeStreamData(ArchiveMultiStream archiveRecord);
-        new bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
-        new bool TestOutRaidData(string HostedChannel, DateTime dateTime);
         void UpdateCurrency(List<string> Users, DateTime dateTime);
         void UpdateFollowers(IEnumerable<Follow> follows);
         new List<LearnMsgRecord> UpdateLearnedMsgs();

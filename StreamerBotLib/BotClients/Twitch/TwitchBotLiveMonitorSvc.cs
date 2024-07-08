@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System.Reflection;
@@ -72,8 +70,8 @@ namespace StreamerBotLib.BotClients.Twitch
             //{
             //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Found livestream instance, updating the token.");
 
-                //    LiveStreamMonitor.UpdateToken(TwitchAccessToken);
-                //}
+            //    LiveStreamMonitor.UpdateToken(TwitchAccessToken);
+            //}
         }
 
         private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)

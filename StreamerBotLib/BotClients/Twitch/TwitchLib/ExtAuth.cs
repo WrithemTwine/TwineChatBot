@@ -25,7 +25,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         public string GetAuthorizationCodeUrl(string redirectUri, IEnumerable<string> scopes, bool forceVerify = false, string state = null, string clientId = null)
         {
             if (string.IsNullOrWhiteSpace(clientId ?? Settings.ClientId))
+            {
                 throw new BadParameterException("The clientId is not valid. It is not allowed to be null, empty or filled with whitespaces.");
+            }
 
             return $"https://id.twitch.tv/oauth2/authorize?{Helpers.BuildQueryString(new()
             {

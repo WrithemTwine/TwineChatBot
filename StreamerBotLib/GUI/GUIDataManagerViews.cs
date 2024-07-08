@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.DataSQL;
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;

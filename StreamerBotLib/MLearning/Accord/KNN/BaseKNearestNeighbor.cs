@@ -87,8 +87,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             set
             {
                 if (value <= 0)
+                {
                     throw new ArgumentOutOfRangeException("value",
                         "The value for k should be greater than zero and less than total number of input points.");
+                }
 
                 k = value;
             }
@@ -218,27 +220,39 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         internal static void CheckArgs(int k, TInput[] inputs, int[] outputs, IDistance<TInput> distance, double[] weights)
         {
             if (inputs == null)
+            {
                 throw new ArgumentNullException("inputs");
+            }
 
             if (outputs == null)
+            {
                 throw new ArgumentNullException("inputs");
+            }
 
             if (inputs.Length != outputs.Length)
+            {
                 throw new DimensionMismatchException("outputs",
                     "The number of input vectors should match the number of corresponding output labels");
+            }
 
             if (k <= 0 || k > inputs.Length)
+            {
                 throw new ArgumentOutOfRangeException("k", "The value for k should be greater than zero and less than total number of input points.");
+            }
 
             if (distance == null)
+            {
                 throw new ArgumentNullException("distance");
+            }
         }
 
         internal int GetNumberOfInputs(TInput[] x)
         {
             var first = x[0] as IList;
             if (first == null)
+            {
                 return 0;
+            }
 
             int length = first.Count;
 
@@ -246,7 +260,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 IList l = x[i] as IList;
                 if (l == null || l.Count != length)
+                {
                     return 0;
+                }
             }
 
             return length;

@@ -61,7 +61,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TNode : BinaryNode<TNode>, new()
         {
             if (tree.Root == null)
+            {
                 yield break;
+            }
 
             var queue = new Queue<TNode>(new[] { tree.Root });
 
@@ -70,13 +72,19 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 TNode current = queue.Dequeue();
 
                 if (current != null)
+                {
                     yield return current;
+                }
 
                 if (current.Left != null)
+                {
                     queue.Enqueue(current.Left);
+                }
 
                 if (current.Right != null)
+                {
                     queue.Enqueue(current.Right);
+                }
             }
         }
 
@@ -88,7 +96,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TNode : BinaryNode<TNode>, new()
         {
             if (tree.Root == null)
+            {
                 yield break;
+            }
 
             var stack = new Stack<TNode>();
 
@@ -118,7 +128,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TNode : BinaryNode<TNode>, new()
         {
             if (tree.Root == null)
+            {
                 yield break;
+            }
 
             var stack = new Stack<TNode>();
 
@@ -148,7 +160,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TNode : BinaryNode<TNode>, new()
         {
             if (tree.Root == null)
+            {
                 yield break;
+            }
 
             var stack = new Stack<TNode>(new[] { tree.Root });
 
@@ -161,9 +175,13 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 if (previous == current || previous.Left == current || previous.Right == current)
                 {
                     if (current.Left != null)
+                    {
                         stack.Push(current.Left);
+                    }
                     else if (current.Right != null)
+                    {
                         stack.Push(current.Right);
+                    }
                     else
                     {
                         yield return stack.Pop();
@@ -172,7 +190,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 else if (current.Left == previous)
                 {
                     if (current.Right != null)
+                    {
                         stack.Push(current.Right);
+                    }
                     else
                     {
                         yield return stack.Pop();
@@ -199,7 +219,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TNode : BinaryNode<TNode>
         {
             if (tree.Root == null)
+            {
                 yield break;
+            }
 
             var stack = new Stack<TNode>();
             stack.Push(tree.Root);
@@ -209,13 +231,19 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 TNode node = stack.Pop();
 
                 if (node != null)
+                {
                     yield return node;
+                }
 
                 if (node.Left != null)
+                {
                     stack.Push(node.Left);
+                }
 
                 if (node.Right != null)
+                {
                     stack.Push(node.Right);
+                }
             }
         }
 
@@ -227,7 +255,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TNode : TreeNode<TNode>
         {
             if (tree.Root == null)
+            {
                 yield break;
+            }
 
             TNode node = tree.Root;
 
@@ -238,7 +268,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 if (node.IsLeaf)
                 {
                     while (node.Next == null && node.Parent != null)
+                    {
                         node = node.Parent;
+                    }
+
                     node = node.Next;
                 }
                 else

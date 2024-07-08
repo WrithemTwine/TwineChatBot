@@ -94,7 +94,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public override string ToString()
         {
             if (Position == null)
+            {
                 return "(null)";
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.Append("(");
@@ -102,7 +104,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 sb.Append(Position[i]);
                 if (i < Position.Length - 1)
+                {
                     sb.Append(",");
+                }
             }
             sb.Append(")");
 

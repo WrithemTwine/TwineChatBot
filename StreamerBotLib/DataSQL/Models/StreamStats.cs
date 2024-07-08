@@ -26,7 +26,7 @@ namespace StreamerBotLib.DataSQL.Models
                              int channelPtCount = 0,
                              int channelChallenge = 0,
                              int maxUsers = 0,
-                             string category = default) : EntityBase
+                             string category = "") : EntityBase
     {
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;

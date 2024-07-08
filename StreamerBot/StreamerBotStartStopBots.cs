@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Overlay;

@@ -3,8 +3,6 @@
 using StreamerBotLib.Enums;
 
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
-using System.Windows.Data;
 
 namespace StreamerBotLib.DataSQL.Models
 {

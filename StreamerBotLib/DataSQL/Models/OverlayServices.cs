@@ -16,7 +16,8 @@ namespace StreamerBotLib.DataSQL.Models
                                  string userName = null,
                                  bool useChatMsg = false,
                                  string message = null,
-                                 string imageFile = null) : EntityBase
+                                 string imageFile = null,
+                                 string mediaFile = null) : EntityBase
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;
@@ -28,6 +29,6 @@ namespace StreamerBotLib.DataSQL.Models
         public bool UseChatMsg { get; set; } = useChatMsg;
         public string Message { get; set; } = message;
         public string ImageFile { get; set; } = imageFile;
-        public string MediaFile { get; set; }
+        public string MediaFile { get; set; } = mediaFile;
     }
 }

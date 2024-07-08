@@ -341,8 +341,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>A list of Chatters detailing the current viewers of the channel.</returns>
         public List<Chatter> GetChatters()
         {
-                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
-         
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 string channelId = TwitchChannelId, botId = TwitchBotUserId;

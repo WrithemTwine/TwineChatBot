@@ -62,9 +62,15 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             get
             {
                 if (Parent == null)
+                {
                     return null;
+                }
+
                 if (Index + 1 >= Parent.Children.Length)
+                {
                     return null;
+                }
+
                 return Parent.Children[Index + 1];
             }
         }
@@ -78,7 +84,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             get
             {
                 if (Index == 0)
+                {
                     return null;
+                }
+
                 return Parent.Children[Index - 1];
             }
         }

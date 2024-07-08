@@ -51,7 +51,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public IEnumerator<TNode> GetEnumerator()
         {
             foreach (var node in Traverse(TreeTraversal.DepthFirst))
+            {
                 yield return node;
+            }
         }
 
         /// <summary>

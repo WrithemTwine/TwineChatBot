@@ -39,10 +39,10 @@
             <local:DebugFlags x:Name="DebugFlags" x:Key="DebugFlags" />
 
             <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
-                <!--<MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
+                <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
                 <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
                 <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
-                <Separator x:Name="DataGridContextMenu_Separator1" />-->
+                <Separator x:Name="DataGridContextMenu_Separator1" />
                 <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
                 <MenuItem x:Name="DataGridContextMenu_LiveMonitor" Header="Add User to LiveMonitor list" ToolTip="Does not Duplicate, 100 max" Visibility="Collapsed" Click="MenuItem_LiveMonitorClick"/>
                 <Separator x:Name="DataGridContextMenu_Separator2" />

@@ -137,10 +137,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             base(api, checkIntervalInSeconds)
         {
             if (queryCountPerRequest < 1 || queryCountPerRequest > 100)
+            {
                 throw new ArgumentException("Twitch doesn't support less than 1 or more than 100 followers per request.", nameof(queryCountPerRequest));
+            }
 
             if (cacheSize < queryCountPerRequest)
+            {
                 throw new ArgumentException($"The cache size must be at least the size of the {nameof(queryCountPerRequest)} parameter.", nameof(cacheSize));
+            }
 
             QueryCountPerRequest = queryCountPerRequest;
             CacheSize = cacheSize;
@@ -169,7 +173,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         public async Task UpdateLatestFollowersAsync(bool callEvents = true)
         {
             if (ChannelsToMonitor == null)
+            {
                 return;
+            }
 
             foreach (var channel in ChannelsToMonitor)
             {
@@ -177,7 +183,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 var latestFollowers = await GetLatestFollowersAsync(channel);
 
                 if (latestFollowers.Count == 0)
+                {
                     return;
+                }
 
                 if (!KnownFollowers.TryGetValue(channel, out var knownFollowers))
                 {
@@ -186,7 +194,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     _lastFollowerDates[channel] = DateTime.Parse(latestFollowers.Last().FollowedAt);
 
                     if (!_invokeEventsOnStartup)
+                    {
                         return;
+                    }
                 }
                 else
                 {
@@ -196,9 +206,15 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
                     foreach (var follower in latestFollowers)
                     {
-                        if (!existingFollowerIds.Add(follower.UserId)) continue;
+                        if (!existingFollowerIds.Add(follower.UserId))
+                        {
+                            continue;
+                        }
 
-                        if (DateTime.Parse(follower.FollowedAt) < latestKnownFollowerDate) continue;
+                        if (DateTime.Parse(follower.FollowedAt) < latestKnownFollowerDate)
+                        {
+                            continue;
+                        }
 
                         newFollowers.Add(follower);
                         latestKnownFollowerDate = DateTime.Parse(follower.FollowedAt);
@@ -210,16 +226,22 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
                     // prune cache so we don't use too much space unnecessarily
                     if (knownFollowers.Count > CacheSize)
+                    {
                         knownFollowers.RemoveRange(0, knownFollowers.Count - CacheSize);
+                    }
 
                     if (newFollowers.Count <= 0)
+                    {
                         return;
+                    }
 
                     _lastFollowerDates[channel] = latestKnownFollowerDate;
                 }
 
                 if (!callEvents)
+                {
                     return;
+                }
 
                 OnNewFollowersDetected?.Invoke(this, new OnNewFollowersDetectedArgs { Channel = channel, NewFollowers = newFollowers });
             }

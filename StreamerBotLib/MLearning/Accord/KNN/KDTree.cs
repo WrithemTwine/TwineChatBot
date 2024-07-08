@@ -72,10 +72,14 @@
             IMetric<double[]> distance, bool inPlace = false)
         {
             if (values == null)
+            {
                 throw new ArgumentNullException("values");
+            }
 
             if (distance == null)
+            {
                 throw new ArgumentNullException("distance");
+            }
 
             int leaves;
 

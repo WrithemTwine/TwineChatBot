@@ -114,7 +114,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             T[] result = new T[length];
             for (int i = 0; i < Indices.Length; i++)
+            {
                 result[Indices[i]] = Values[i];
+            }
+
             return result;
         }
 
@@ -146,7 +149,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 int j = Array.IndexOf(Indices, i);
                 if (j >= 0)
+                {
                     return Values[j];
+                }
+
                 return default;
             }
             set
@@ -216,7 +222,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 for (int i = Indices.Length - 1; i >= 0; i--)
                 {
                     if (!Values[i].Equals(zero))
+                    {
                         return Indices[i] + 1;
+                    }
                 }
 
                 return 0;
@@ -271,7 +279,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public void CopyTo(T[] array, int arrayIndex)
         {
             for (int i = 0; i < indices.Length; i++)
+            {
                 array[arrayIndex + indices[i]] = values[i];
+            }
         }
 
         int ICollection<T>.Count
@@ -292,13 +302,17 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             foreach (T t in ToDense())
+            {
                 yield return t;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             foreach (T t in ToDense())
+            {
                 yield return t;
+            }
         }
 
         int IList.Add(object value)
@@ -355,7 +369,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         void ICollection.CopyTo(Array array, int index)
         {
             for (int i = 0; i < indices.Length; i++)
+            {
                 array.SetValue(values[i], index + indices[i]);
+            }
         }
 
         int ICollection.Count
@@ -401,7 +417,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 sb.Append(":");
                 sb.AppendFormat(formatProvider, "{0:" + format + "}", Values[i]);
                 if (i < Indices.Length - 1)
+                {
                     sb.Append(" ");
+                }
             }
             return sb.ToString();
         }
@@ -417,7 +435,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             for (int i = 0; i < Indices.Length; i++)
             {
                 if (Indices[i] != i)
+                {
                     return false;
+                }
             }
 
             return true;

@@ -77,7 +77,10 @@
             set
             {
                 if (value.Length != 2)
+                {
                     throw new ArgumentException("The array must have length 2.", "value");
+                }
+
                 Left = value[0];
                 Right = value[1];
             }

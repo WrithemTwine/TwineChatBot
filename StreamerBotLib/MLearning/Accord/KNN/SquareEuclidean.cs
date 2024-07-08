@@ -240,10 +240,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             }
 
             for (; i < x.Values.Length; i++)
+            {
                 sum += x.Values[i] * x.Values[i];
+            }
 
             for (; j < y.Values.Length; j++)
+            {
                 sum += y.Values[j] * y.Values[j];
+            }
 
             return sum;
         }

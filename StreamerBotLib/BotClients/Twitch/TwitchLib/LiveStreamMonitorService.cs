@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System.Net.Http;
 using System.Reflection;
 
 using TwitchLib.Api.Core.Exceptions;
@@ -53,7 +52,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             base(api, checkIntervalInSeconds)
         {
             if (maxStreamRequestCountPerRequest < 1 || maxStreamRequestCountPerRequest > 100)
+            {
                 throw new ArgumentException("Twitch doesn't support less than 1 or more than 100 streams per request.", nameof(maxStreamRequestCountPerRequest));
+            }
 
             MaxStreamRequestCountPerRequest = maxStreamRequestCountPerRequest;
 
@@ -136,7 +137,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             LiveStreams[channel] = liveStream;
 
             if (!callEvents)
+            {
                 return;
+            }
 
             if (!wasAlreadyLive)
             {
@@ -153,12 +156,16 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             var wasAlreadyLive = LiveStreams.TryGetValue(channel, out var cachedLiveStream);
 
             if (!wasAlreadyLive)
+            {
                 return;
+            }
 
             LiveStreams.Remove(channel);
 
             if (!callEvents)
+            {
                 return;
+            }
 
             OnStreamOffline?.Invoke(this, new OnStreamOfflineArgs { Channel = channel, Stream = cachedLiveStream });
         }
@@ -179,7 +186,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                         [selectedSet.Count, selectedSet, _api.Settings.AccessToken]);
 
                 if (resultset.Streams == null)
+                {
                     continue;
+                }
 
                 livestreamers.AddRange(resultset.Streams);
             }

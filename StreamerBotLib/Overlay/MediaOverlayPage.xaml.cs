@@ -26,8 +26,8 @@ namespace StreamerBotLib.Overlay
         {
             Controller = new();
 
-            InitializeComponent(); 
-            
+            InitializeComponent();
+
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
 

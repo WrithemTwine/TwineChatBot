@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTestFeature", "Simple
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaintainStreamerBotLib", "MaintainStreamerBotLib\MaintainStreamerBotLib.csproj", "{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildDatabaseMeta", "BuildDatabaseMeta\BuildDatabaseMeta.csproj", "{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,22 @@ Global
 		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Release_SqlServer|Any CPU.ActiveCfg = Release_SqlServer|Any CPU
 		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_Cosmos|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_Cosmos|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_KNet|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_KNet|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_MySql|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_MySql|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_PostGre|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_PostGre|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_Sqlite|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_Sqlite|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_SqlServer|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release_SqlServer|Any CPU.Build.0 = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

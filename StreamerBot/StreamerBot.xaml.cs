@@ -3,7 +3,6 @@ using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
-using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
@@ -35,7 +34,6 @@ namespace StreamerBot
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
         internal static BotController Controller { get; private set; }
-        private ManageWindows PopupWindows { get; set; } = new();
 
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
@@ -660,5 +658,6 @@ namespace StreamerBot
         {
             CheckFocus();
         }
+
     }
 }

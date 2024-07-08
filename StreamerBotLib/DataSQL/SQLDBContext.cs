@@ -100,7 +100,7 @@ namespace StreamerBotLib.DataSQL
                 .HasForeignKey<MultiChannels>(m => new { m.UserId, m.UserName, m.Platform });
 
             modelBuilder.Entity<Users>()
-                .HasOne(s => s.MultiSummaryLiveStream)
+                .HasOne(s => s.MultiSummaryLiveStreams)
                 .WithOne(u => u.Users)
                 .HasForeignKey<MultiSummaryLiveStreams>(s => new { s.UserId, s.UserName, s.Platform });
 

@@ -14,6 +14,5 @@ namespace StreamerBotLib.DataSQL.Models
         public int Id { get; set; } = id;
         public MsgTypes MsgType { get; set; } = msgType;
         public Enums.BanReasons BanReason { get; set; } = banReason;
-
     }
 }

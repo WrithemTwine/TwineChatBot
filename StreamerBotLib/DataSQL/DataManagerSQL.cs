@@ -1022,8 +1022,8 @@ switches:
             {
                 BuildDataContext();
                 Tuple<string, int, List<string>> result = (from R in context.Commands
-                                                       where R.RepeatTimer > 0
-                                                       select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
+                                                           where R.RepeatTimer > 0
+                                                           select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
                 ClearDataContext();
                 return result;
             }
@@ -1035,8 +1035,8 @@ switches:
             {
                 BuildDataContext();
                 List<Tuple<string, int, List<string>>> result = new(from R in context.Commands
-                                                                where R.RepeatTimer > 0
-                                                                select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)));
+                                                                    where R.RepeatTimer > 0
+                                                                    select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)));
                 ClearDataContext();
                 return result;
             }
@@ -1211,7 +1211,7 @@ switches:
                       where (C.ClipId == ClipId)
                       select C).Any())
                 {
-                    context.Clips.Add(new(ClipId, CreatedAt, Title, GameId, Language, (float)Duration, Url));
+                    context.Clips.Add(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, language: Language, duration: (float)Duration, url: Url));
                     context.SaveChanges(true);
                     result = true;
                 }
@@ -1231,10 +1231,10 @@ switches:
                       where Com.CmdName == cmd
                       select Com).Any())
                 {
-                    context.CommandsUser.Add(new(cmd, Params.AddMe, Params.Permission,
-                    Params.IsEnabled, Params.Message, Params.Timer, Params.RepeatMsg, new[] { Params.Category },
-                    Params.AllowParam, Params.Usage, Params.LookupData, Params.Table, GetKey(Params.Table),
-                    Params.Field, Params.Currency, Params.Unit, Params.Action, Params.Top, Params.Sort));
+                    context.CommandsUser.Add(new(cmdName: cmd, addMe: Params.AddMe, permission: Params.Permission,
+                    isEnabled: Params.IsEnabled, message: Params.Message, repeatTimer: Params.Timer, sendMsgCount: Params.RepeatMsg, category: [Params.Category],
+                    allowParam: Params.AllowParam, usage: Params.Usage, lookupData: Params.LookupData, table: Params.Table, keyField: GetKey(Params.Table),
+                    dataField: Params.Field, currencyField: Params.Currency, unit: Params.Unit, action: Params.Action, top: Params.Top, sort: Params.Sort));
 
                     context.SaveChanges(true);
                     result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
@@ -1267,7 +1267,7 @@ switches:
                         {
                             if (!(from C in context.Currency where (C.User == U && C.CurrencyName == t.CurrencyName) select C).Any())
                             {
-                                context.Currency.Add(new(t.CurrencyName, U.UserName, 0));
+                                context.Currency.Add(new(userName: U.UserName, value: 0, currencyName: t.CurrencyName));
                             }
                         }
                     }
@@ -1417,7 +1417,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                context.GiveawayUserData.Add(new(dateTime, userName: DisplayName));
+                context.GiveawayUserData.Add(new(dateTime: dateTime, userName: DisplayName));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1527,7 +1527,7 @@ switches:
                 {
                     if (!(from UC in context.Currency where (UC.UserName == newuser.UserName && UC.CurrencyName == t.CurrencyName) select UC).Any())
                     {
-                        context.Currency.Add(new(t.CurrencyName, newuser.UserName, 0));
+                        context.Currency.Add(new(userName: newuser.UserName, value: 0, currencyName: t.CurrencyName));
                     }
                 }
 
@@ -1535,7 +1535,7 @@ switches:
                       where (US.UserId == User.UserId && US.UserName == User.UserName && US.Platform == User.Platform)
                       select US).Any())
                 {
-                    context.UserStats.Add(new(User.UserId, User.UserName, User.Platform));
+                    context.UserStats.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform));
                 }
 
                 return newuser;
@@ -1562,7 +1562,7 @@ switches:
                 short opennum = (from Q in context.Quotes select Q.Number)
                     .IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
 
-                context.Quotes.Add(new(opennum, Text));
+                context.Quotes.Add(new(number: opennum, quote: Text));
                 context.SaveChanges(true);
                 ClearDataContext();
                 return opennum;
@@ -1765,6 +1765,7 @@ switches:
             }
         }
 
+        #region Set_IsEnabled Methods
         public void SetBuiltInCommandsEnabled(bool Enabled)
         {
             lock (GUIDataManagerLock.Lock)
@@ -1848,6 +1849,8 @@ switches:
             }
         }
 
+        #endregion     
+
         public void StartBulkFollowers()
         {
             lock (GUIDataManagerLock.Lock)
@@ -1903,48 +1906,6 @@ switches:
                 BulkFollowerUpdate = false;
                 context.SaveChanges(true);
                 ClearDataContext();
-            }
-        }
-
-        /// <summary>
-        /// Provides check for test code; checks if there's a record for the provided channel, date, viewer count, and game name.
-        /// </summary>
-        /// <param name="user">The user bringing in the raid.</param>
-        /// <param name="time">The time the user raided.</param>
-        /// <param name="viewers">The viewers they brought.</param>
-        /// <param name="gamename">The category the raiding stream had at the raid time.</param>
-        /// <returns><code>true: when record is found.</code>
-        /// <code>false: when record is not found.</code></returns>
-        public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                BuildDataContext();
-                var result = (from I in context.InRaidData
-                              where (I.UserName == user && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
-                              select I).Any();
-                ClearDataContext();
-                return result;
-            }
-        }
-
-        /// <summary>
-        /// Provides check for test code; checks if there's a record for the provided channel and date.
-        /// </summary>
-        /// <param name="HostedChannel">The channel raided.</param>
-        /// <param name="dateTime">The date & time of the raid.</param>
-        /// <returns><code>true: when record is found.</code>
-        /// <code>false: when record is not found.</code></returns>
-        public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                BuildDataContext();
-                var result = (from O in context.OutRaidData
-                              where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
-                              select O).Any();
-                ClearDataContext();
-                return result;
             }
         }
 
@@ -2046,7 +2007,7 @@ switches:
 
                     if (stats == default)
                     {
-                        stats = context.UserStats.Add(new(L.UserId, L.UserName, L.Platform)).Entity;
+                        stats = context.UserStats.Add(new(userId: L.UserId, userName: L.UserName, platform: L.Platform)).Entity;
                     }
 
                     if (stats.Users.LastDateSeen < CurrStreamStart)
@@ -2323,5 +2284,51 @@ switches:
 
             LearnMsgChanged = true;
         }
+
+        #region Test Method Verification
+
+        /// <summary>
+        /// Provides check for test code; checks if there's a record for the provided channel, date, viewer count, and game name.
+        /// </summary>
+        /// <param name="user">The user bringing in the raid.</param>
+        /// <param name="time">The time the user raided.</param>
+        /// <param name="viewers">The viewers they brought.</param>
+        /// <param name="gamename">The category the raiding stream had at the raid time.</param>
+        /// <returns><code>true: when record is found.</code>
+        /// <code>false: when record is not found.</code></returns>
+        public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                var result = (from I in context.InRaidData
+                              where (I.UserName == user && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
+                              select I).Any();
+                ClearDataContext();
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Provides check for test code; checks if there's a record for the provided channel and date.
+        /// </summary>
+        /// <param name="HostedChannel">The channel raided.</param>
+        /// <param name="dateTime">The date & time of the raid.</param>
+        /// <returns><code>true: when record is found.</code>
+        /// <code>false: when record is not found.</code></returns>
+        public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                var result = (from O in context.OutRaidData
+                              where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
+                              select O).Any();
+                ClearDataContext();
+                return result;
+            }
+        }
+
+        #endregion
     }
 }

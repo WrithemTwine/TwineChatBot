@@ -1,6 +1,5 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
-using static StreamerBotLib.DataSQL.Import.DataSource;
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.Models
 {

@@ -3,9 +3,9 @@
 namespace StreamerBotLib.DataSQL.Models
 {
     [Index(nameof(UserName), nameof(CurrencyName), IsUnique = false)]
-    public class Currency(string currencyName,
-                          string userName = null,
-                          double value = 0) : CurrencyBase(currencyName)
+    public class Currency(string userName = null,
+                          double value = 0,
+                          string currencyName = "") : CurrencyBase(currencyName)
     {
         public string UserName { get; set; } = userName;
         public double Value { get; set; } = value;

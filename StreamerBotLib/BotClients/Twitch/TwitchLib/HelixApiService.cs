@@ -1,7 +1,4 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Core;
@@ -27,7 +24,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <summary>
         /// (Key=Username, Value=UserId); one username has a single Id, one Id might have multiple usernames
         /// </summary>
-        private ConcurrentDictionary<string,string> CacheUserIds = new();
+        private ConcurrentDictionary<string, string> CacheUserIds = new();
 
         public event EventHandler UnauthorizedToken;
 

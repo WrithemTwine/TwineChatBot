@@ -200,7 +200,7 @@ namespace StreamerBotLib.BotClients
 
             if (TwitchLiveMonitor.IsStarted && !TwitchLiveMonitor.HandlersAdded)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, 
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots,
                     $"Adding event handlers to Livestream object, with instance date: {TwitchLiveMonitor.LiveStreamMonitor.InstanceDate}.");
 
                 TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;

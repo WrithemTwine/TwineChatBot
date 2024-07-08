@@ -271,7 +271,7 @@ namespace StreamerBotLib.BotClients
             {
                 OverlayWindow = (MediaOverlay)window;
                 OverlayPage = (MediaOverlayPage)((System.Windows.Controls.Frame)((System.Windows.Window)window).Content).Content;
-            
+
                 OverlayWindow.AddVisibilityEvent(OverlayWindow_UserHideWindow);
             }
         }

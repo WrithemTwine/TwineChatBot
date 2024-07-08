@@ -2,11 +2,11 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    public class MultiSummaryLiveStreams(string userId = null,
+    public class MultiSummaryLiveStreams(int streamCount = 0,
+                                        DateTime throughDate = default,
+                                        string userId = null,
                                         string userName = null,
-                                        Platform platform = Platform.Default,
-                                        int streamCount = 0,
-                                        DateTime throughDate = default) : UserBase(userId, userName, platform)
+                                        Platform platform = Platform.Default) : UserBase(userId, userName, platform)
     {
         public int StreamCount { get; set; } = streamCount;
         public DateTime ThroughDate { get; set; } = throughDate;

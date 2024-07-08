@@ -182,7 +182,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 // Compute all distances
                 for (int i = 0; i < Inputs.Length; i++)
+                {
                     d[i] = Distance.Distance(input, Inputs[i]);
+                }
             }
             else
             {

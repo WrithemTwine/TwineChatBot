@@ -73,7 +73,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public virtual IEnumerator<TNode> GetEnumerator()
         {
             if (Root == null)
+            {
                 yield break;
+            }
 
             var stack = new Stack<TNode>(new[] { Root });
 
@@ -84,10 +86,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 yield return current;
 
                 if (current.Left != null)
+                {
                     stack.Push(current.Left);
+                }
 
                 if (current.Right != null)
+                {
                     stack.Push(current.Right);
+                }
             }
         }
 

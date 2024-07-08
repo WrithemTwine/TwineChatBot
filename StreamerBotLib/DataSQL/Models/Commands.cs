@@ -3,9 +3,6 @@
 using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
-using System.Globalization;
-using System.Windows.Data;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CmdName))]

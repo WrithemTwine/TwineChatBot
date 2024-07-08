@@ -64,7 +64,7 @@ namespace StreamerBotLib.Systems
             {
                 foreach (string O in OverlayActionColumnPairs.Keys)
                 {
-                    OverlayActionPairs.Add(O, DataManage.GetOverlayActions(Enum.Parse<OverlayTypes>(O), OverlayActionColumnPairs[O],null).ConvertAll((i) => i.ToString()));
+                    OverlayActionPairs.Add(O, DataManage.GetOverlayActions(Enum.Parse<OverlayTypes>(O), OverlayActionColumnPairs[O], null).ConvertAll((i) => i.ToString()));
                 }
             }
             //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });

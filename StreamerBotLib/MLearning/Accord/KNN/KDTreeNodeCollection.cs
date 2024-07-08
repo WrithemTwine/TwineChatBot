@@ -94,7 +94,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             get
             {
                 if (count == 0)
+                {
                     throw new InvalidOperationException();
+                }
+
                 return distances[0];
             }
         }
@@ -109,10 +112,15 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             get
             {
                 if (count == 0)
+                {
                     throw new InvalidOperationException();
+                }
 
                 if (count == 1)
+                {
                     return distances[0];
+                }
+
                 return distances[1];
             }
         }
@@ -126,10 +134,15 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             get
             {
                 if (count == 0)
+                {
                     return null;
+                }
 
                 if (count == 1)
+                {
                     return positions[0];
+                }
+
                 return positions[1];
             }
         }
@@ -143,7 +156,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             get
             {
                 if (count == 0)
+                {
                     return null;
+                }
 
                 return positions[0];
             }
@@ -159,7 +174,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public KDTreeNodeCollection(int size)
         {
             if (size <= 0)
+            {
                 throw new ArgumentOutOfRangeException("size");
+            }
 
             Capacity = size;
             distances = new double[size];
@@ -285,7 +302,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public void Clear()
         {
             for (int i = 0; i < positions.Length; i++)
+            {
                 positions[i] = null;
+            }
 
             count = 0;
         }
@@ -336,7 +355,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public IEnumerator<NodeDistance<TNode>> GetEnumerator()
         {
             for (int i = 0; i < count; i++)
+            {
                 yield return new NodeDistance<TNode>(positions[i], distances[i]);
+            }
 
             yield break;
         }
@@ -374,7 +395,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             int i = Array.IndexOf(positions, item.Node);
 
             if (i == -1)
+            {
                 return false;
+            }
 
             return distances[i] == item.Distance;
         }
@@ -394,7 +417,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             int index = arrayIndex;
 
             foreach (var pair in this)
+            {
                 array[index++] = pair;
+            }
         }
 
         /// <summary>
@@ -425,7 +450,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             // If we have no items in the queue.
             if (count == 0)
+            {
                 throw new InvalidOperationException("The collection is empty.");
+            }
 
             // If we have one item, remove the min.
             if (count == 1)
@@ -450,7 +477,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             // Check for errors.
             if (count == 0)
+            {
                 throw new InvalidOperationException("The collection is empty.");
+            }
 
             // Remove the min
             count--;
@@ -468,14 +497,18 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
             // If it is the only element, nothing to do.
             if (u == 0)
+            {
                 return;
+            }
 
             // If it is the second element, sort with it's pair.
             if (u == 1)
             {
                 // Swap if less than paired item.
                 if (distances[u] < distances[u - 1])
+                {
                     swap(u, u - 1);
+                }
             }
 
             // If it is on the max side, 
@@ -589,7 +622,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 {
                     // Check if we need to swap with th parent.
                     if (distances[c - 1] > distances[p])
+                    {
                         swap(p, c - 1);
+                    }
+
                     break;
                 }
 
@@ -601,7 +637,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                     {
                         // Swap with the parent.
                         if (distances[c + 1] > distances[p])
+                        {
                             swap(p, c + 1);
+                        }
+
                         break;
                     }
                 }

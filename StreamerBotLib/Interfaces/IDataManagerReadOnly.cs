@@ -21,8 +21,6 @@ namespace StreamerBotLib.Interfaces
         List<Tuple<string, int, List<string>>> GetTimerCommands();
         string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
         List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
-        bool TestInRaidData(string user, DateTime time, string viewers, string gamename);
-        bool TestOutRaidData(string HostedChannel, DateTime dateTime);
         List<LearnMsgRecord> UpdateLearnedMsgs();
         List<string> GetTableFields(string TableName);
         List<string> GetTableNames();
