@@ -486,13 +486,19 @@
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonUp"
-                                           PreviewMouseLeftButtonUp="RadioButton_StartBot_PreviewMouseLeftButtonDown"
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
+                                                         x:Name="Radio_Services_OverlayBotStart" 
+                                                         IsEnabled="False" 
+                                                         PreviewMouseLeftButtonDown="RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonDown"
+                                                         PreviewMouseLeftButtonUp="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                          >
                                                 <TextBlock>Start Overlay Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" x:Name="Radio_Services_OverlayBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown"
-                                           PreviewMouseLeftButtonUp="RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonUp"
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
+                                                         x:Name="Radio_Services_OverlayBotStop" 
+                                                         IsEnabled="False" IsChecked="True" 
+                                                         PreviewMouseLeftButtonDown="RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonDown"
+                                                         PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown"
                                                          >
                                                 <TextBlock>Stop Overlay Service Bot</TextBlock>
                                             </RadioButton>

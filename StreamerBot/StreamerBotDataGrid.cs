@@ -165,23 +165,33 @@ namespace StreamerBot
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DGOpenEditWindow(item, item.Items);
+        }
 
-            Type CurrDGModel = item.Items.SourceCollection.GetType().GetGenericArguments()[0];
-
+        private void DGOpenEditWindow(DataGrid item, ItemCollection items = null)
+        {
             TableMeta tableMeta = new();
-            tableMeta.SetNewEntity(CurrDGModel);
 
-            PopupWindows.AddNewItem(tableMeta, item.Items);
+            if (item.Name is "DG_OverlayService_Actions" or "DG_ModApprove")
+            {
+                PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
+            }
+
+            if (items != null)
+            {
+                Type CurrDGModel = item.Items.SourceCollection.GetType().GetGenericArguments()[0];
+                PopupWindows.AddNewItem(tableMeta.SetNewEntity(CurrDGModel), item.Items);
+            }
+            else
+            {
+                PopupWindows.EditExistingItem(tableMeta.SetExistingEntity(item.SelectedItem));
+            }
         }
 
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
-
-            TableMeta tableMeta = new();
-            tableMeta.SetExistingEntity(item.SelectedItem);
-
-            PopupWindows.EditExistingItem(tableMeta);
+            DGOpenEditWindow(item);
         }
 
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)

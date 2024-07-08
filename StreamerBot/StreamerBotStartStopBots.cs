@@ -16,7 +16,7 @@ namespace StreamerBot
         private MediaOverlayPage MediaOverlayPage = null;
         private MediaOverlay MediaOverlay = null;
 
-        private void RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         { // actually attached to "PreviewMouseLeftButtonDown" to perform before starting the bot, as this determination is needed before trying to use MediaOverlayPage object
             CheckBox_MediaOverlayEmbedGUI.IsEnabled = false;
             string TabName = "TabItem_Bot_MediaOverlay_GUI";
@@ -63,7 +63,7 @@ namespace StreamerBot
             }
         }
 
-        private void RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             CheckBox_MediaOverlayEmbedGUI.IsEnabled = true;
         }

@@ -146,16 +146,20 @@ namespace BuildDatabaseMeta
                 $"\r\n" +
                 $"        private object DataEntity;\r\n" +
                 $"\r\n" +
-                $"        public void SetNewEntity(Type Entity)\r\n" +
+                $"        public TableMeta SetNewEntity(Type Entity)\r\n" +
                 $"        {{\r\n" +
                 $"            {NewEntity}" +
+                $"            \r\n" +
+                $"            return this;\r\n" +
                 $"        }}\r\n" +
                 $"\r\n" +
-                $"        public void SetExistingEntity(object Entity)\r\n" +
+                $"        public TableMeta SetExistingEntity(object Entity)\r\n" +
                 $"        {{\r\n" +
                 $"            DataEntity = Entity;\r\n" +
                 $"\r\n" +
                 $"            {ExistingEntity}" +
+                $"            \r\n" +
+                $"            return this;\r\n" +
                 $"        }}\r\n" +
                 $"\r\n" +
                 $"        public object GetUpdatedEntity(IDatabaseTableMeta Update)\r\n" +

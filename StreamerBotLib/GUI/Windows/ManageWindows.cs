@@ -19,7 +19,7 @@ namespace StreamerBotLib.GUI.Windows
 
         public ManageWindows() { }
 
-#if EDIT_EFC
+
         public void AddNewItem(TableMeta tableMeta, ItemCollection CurrItem)
         {
             Curr = CurrItem;
@@ -61,7 +61,16 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-#else
+        public void SetTableData(Dictionary<string, List<string>> SourceData)
+        {
+            TableDataPairs.Clear();
+            foreach (var D in SourceData)
+            {
+                TableDataPairs.Add(D.Key, D.Value);
+            }
+        }
+
+#if !EDIT_EFC
         public void DataGridAddNewItem(IDataManagerReadOnly dataManageReadOnly, DataTable dataTable)
         {
             DataGridOpenRowWindow(dataManageReadOnly, dataTable);
@@ -70,15 +79,6 @@ namespace StreamerBotLib.GUI.Windows
         public void DataGridEditItem(IDataManagerReadOnly dataManageReadOnly, DataTable dataTable, DataRow dataRow)
         {
             DataGridOpenRowWindow(dataManageReadOnly, dataTable, dataRow);
-        }
-
-        public void SetTableData(Dictionary<string, List<string>> SourceData)
-        {
-            TableDataPairs.Clear();
-            foreach (var D in SourceData)
-            {
-                TableDataPairs.Add(D.Key, D.Value);
-            }
         }
 
         private void DataGridOpenRowWindow(IDataManagerReadOnly dataManageReadOnly, DataTable dataTable, DataRow dataRow = null)

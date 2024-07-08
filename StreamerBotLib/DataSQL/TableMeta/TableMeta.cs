@@ -8,7 +8,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
 
         private object DataEntity;
 
-        public void SetNewEntity(Type Entity)
+        public TableMeta SetNewEntity(Type Entity)
         {
             if (Entity == typeof(Models.BanReasons))
             {
@@ -126,9 +126,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks(new Models.Webhooks());
             }
+
+            return this;
         }
 
-        public void SetExistingEntity(object Entity)
+        public TableMeta SetExistingEntity(object Entity)
         {
             DataEntity = Entity;
 
@@ -248,6 +250,8 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks((Models.Webhooks)Entity);
             }
+
+            return this;
         }
 
         public object GetUpdatedEntity(IDatabaseTableMeta Update)
