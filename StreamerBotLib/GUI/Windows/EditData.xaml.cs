@@ -11,7 +11,9 @@ using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
 using System.ComponentModel;
+using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -27,7 +29,6 @@ namespace StreamerBotLib.GUI.Windows
     {
         private bool IsClosing;
         private bool AddedStringEvent;
-
         private IDataManagerReadOnly DataManage { get; set; }
         private bool IsNewRow { get; set; }
         private List<EditPopupTime> DateList { get; set; } = [];
@@ -46,6 +47,8 @@ namespace StreamerBotLib.GUI.Windows
         private ComboBox OverlayTypeElement;
         private ComboBox OverlayActionTypeElement;
         private const string OverlayTypeName = "ComboBox_OverlayType";
+
+        private IDatabaseTableMeta CurrData;
 
         private Dictionary<string, List<string>> MediaOverlayEventActions { get; set; } = new();
 
@@ -83,11 +86,12 @@ namespace StreamerBotLib.GUI.Windows
         /// <param name="dataRow">An existing row of data. If null, specifies the user is adding a new data row.</param>
         public void LoadData(IDatabaseTableMeta databaseTableMeta, bool NewRow)
         {
+            CurrData = databaseTableMeta;
+
             Title = NewRow ? $"Add new {databaseTableMeta.GetType().Name} Row" : $"Edit {databaseTableMeta.GetType().Name} Row";
 
             const int NameWidth = 150;
             IsNewRow = NewRow;
-            //SaveDataRow = dataRow ?? dataTable.NewRow();
 
             bool CheckLockTable = databaseTableMeta.TableName is "Commands" or "ChannelEvents";
 
@@ -891,7 +895,53 @@ namespace StreamerBotLib.GUI.Windows
 
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                Dictionary<string, string> SaveData = [];
 
+                foreach (StackPanel data in ListBox_DataList.Items)
+                {
+                    string name = ((Label)((StackPanel)data.Children[0]).Children[0]).Content.ToString();
+                    string result = ConvertBack(data.Children[1]);
+
+                    SaveData.Add(name, result);
+                }
+
+                lock (CurrData)
+                {
+                    if (CurrData.TableName == "OverlayServices")
+                    {
+                        try
+                        {
+                            SaveData["MediaFile"] = FileCopy(SaveData["MediaFile"], SaveData["OverlayType"]) ?? (string)CurrData.Values["MediaFile"];
+                            SaveData["ImageFile"] = FileCopy(SaveData["ImageFile"], SaveData["OverlayType"]) ?? (string)CurrData.Values["ImageFile"];
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        }
+                    }
+
+                    foreach (string K in CurrData.Values.Keys)
+                    {
+                        CurrData.Values[K] = SaveData[K];
+                    }
+
+                    if (IsNewRow) // if this row is new, we have to add it to the DataTable, and not just modify it.
+                    {
+                        AddNewRow?.Invoke(this, new(CurrData));
+                    }
+                    else
+                    {
+                        UpdatedRow?.Invoke(this, new(CurrData));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            Close();
         }
 
         /// <summary>
@@ -1004,8 +1054,7 @@ namespace StreamerBotLib.GUI.Windows
                 ActionNameElement.ItemsSource = MediaOverlayEventActions[ActionType.SelectedValue.ToString()];
             }
         }
-
-
+        
         public void SetOverlayActions(Dictionary<string, List<string>> keyValuePairs)
         {
             MediaOverlayEventActions.Clear();
