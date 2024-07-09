@@ -481,7 +481,10 @@
                                                 <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
                                             </Label>
                                             <CheckBox x:Name="CheckBox_MediaOverlayEmbedGUI" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayEmbedGUI}">
-                                                <TextBlock>Put Overlay window in tab here</TextBlock>
+                                                <StackPanel>
+                                                    <TextBlock>Put Overlay window in tab here</TextBlock>
+                                                    <TextBlock FontSize="10">(Stop to change setting)</TextBlock>
+                                                </StackPanel>
                                             </CheckBox>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
@@ -994,10 +997,10 @@
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
                                     <GroupBox Header="Select App Theme">
                                         <StackPanel Orientation="Vertical">
-                                            <RadioButton IsChecked="{Binding ThemeLight}" Checked="RadioButton_Theme_Checked">
+                                            <RadioButton x:Name="RadioButton_Theme_Light" IsChecked="{Binding ThemeLight}" Checked="RadioButton_Theme_Checked">
                                                 <TextBlock>Light Theme</TextBlock>
                                             </RadioButton>
-                                            <RadioButton IsChecked="{Binding ThemeDark}" Checked="RadioButton_Theme_Checked">
+                                            <RadioButton x:Name="RadioButton_Theme_Dark" IsChecked="{Binding ThemeDark}" Checked="RadioButton_Theme_Checked">
                                                 <TextBlock>Dark Theme</TextBlock>
                                             </RadioButton>
                                         </StackPanel>
@@ -1516,7 +1519,7 @@
                                             </GroupBox>
                                             -->
             </TabItem>
-            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
+            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Margin="-2,1,0,-2" VerticalAlignment="Stretch" d:LayoutOverrides="Height">
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">

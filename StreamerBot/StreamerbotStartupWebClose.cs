@@ -33,6 +33,11 @@ namespace StreamerBot
             }
         }
 
+        private void SetDatabaseChoice()
+        {
+           
+        }
+
         /// <summary>
         /// Get the application current working directory
         /// </summary>

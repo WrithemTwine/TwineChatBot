@@ -65,6 +65,7 @@ namespace StreamerBot
             StartBotDate = DateTime.Now;
 
             CheckSettings();
+            SetDatabaseChoice();
 
             WatchProcessOps = true;
 
@@ -101,7 +102,6 @@ namespace StreamerBot
 
             ConstructEvents();
 
-            // TODO: if datamanager loaded later, move this-connects event to database manager
             DataManagerLoaded();
         }
 

@@ -1,0 +1,63 @@
+﻿<Window x:Class="StreamerBotLib.GUI.Windows.ChooseDatabase"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StreamerBotLib.GUI.Windows"
+        mc:Ignorable="d"
+        Title="Choose Storage Database" Height="900" Width="1200">
+    <DockPanel ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <TextBlock DockPanel.Dock="Top" FontSize="20" HorizontalAlignment="Center">
+            <Underline>Information:</Underline> <LineBreak />
+            - Please read carefully should you choose to switch database files and/or database providers. <LineBreak />
+            - The data storage for this chatbot is now using "Entity Framework Core" (EFC) provided through Microsoft's .NET. <LineBreak />
+            - The first startup of a chosen database provider will import the existing xml data file.<LineBreak />
+            - The GitHub zipped download binaries are named for each database provider supported in EFC 8. Each package
+            contains the necessary .dll files to operate the database provider (and aren't combined into the single file binary-all
+            of the required .dll files are packed into the .exe file except native DLL files currently not bundled through the
+            current .NET publishing procedure).<LineBreak />
+            *Caution* the zip files are named for the different databases, while the .exe file has the same name to utilize user settings, 
+            including data storage and visual/operation options.<LineBreak />
+             - The new EFC functionality requires an initial setup of database connection variables, as summarized 
+            in the following sections. <LineBreak />
+            <LineBreak />
+            <Underline>Continue using the same Database Provider and Same Database:</Underline><LineBreak />
+            - This will be the easiest option to both describe and for the user to maintain.<LineBreak />
+            - User provides the connection variables below related to the chosen database provider.<LineBreak />
+            - The application will setup the database schema through either initial default data or importing 
+            the prior application datastore file.<LineBreak />
+            - Once the previous datastore xml diffgram import completes, user can delete or move the data file, since it is no longer needed
+            and won't be updated.<LineBreak />
+            <LineBreak />
+            <Underline>Maybe change database providers, while keeping the same database per database provider:</Underline><LineBreak />
+            - Different database providers will have different connection variables, and will not access databases saved from
+            different providers.<LineBreak /> 
+            - This application initially and likely in the future will not support transferring data between
+            different database providers. A user is responsible for transferring data between databases, or using the last data snapshot
+            of the prior application datastore xml file to load an older data version.<LineBreak />
+            - Upon first use for a new database provider, The application will setup the database schema through either initial default 
+            data or importing the prior application datastore file.<LineBreak />
+            - Once the previous datastore xml diffgram import completes, user can keep the file to import the same data snapshot
+            into a new database provider file or delete/move the file outside of the application directory to next time load initial
+            default data into the new database.<LineBreak />
+            <LineBreak />
+            <Underline>Maybe changing database providers, maybe change databases within same database provider:</Underline><LineBreak />
+            - User provides the connection variables below related to the chosen database provider.<LineBreak />
+            - The application will setup the database schema through either initial default data or importing 
+            the prior application datastore file.<LineBreak />
+            - Once the previous datastore xml diffgram import completes, user can delete or move the data file, since it is no longer needed
+            and won't be updated.<LineBreak />
+            - After this initial setup, a user can change the connection variables in <Label>"Options->Database"</Label> with 
+            the following consequences: <LineBreak />
+              1: User is responsible for relocating the database data to a new specified database; including a different database provider. <LineBreak />
+              2: User can also keep the datastore xml file snapshot from the prior application version, which will import into the new
+            database provider configuration, not including any newly generated data: <LineBreak />
+              3: Starting a new EFC database provider will show this setup procedure again and setup the database 
+            schema through either initial default data or importing the snapshot xml datastore file. <LineBreak />
+
+        </TextBlock>
+        <StackPanel x:Name="StackPanel_ChooseDB" DockPanel.Dock="Top">
+            
+        </StackPanel>
+    </DockPanel>
+</Window>

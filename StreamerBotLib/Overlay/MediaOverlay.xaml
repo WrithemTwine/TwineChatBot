@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:StreamerBotLib.Overlay"
         mc:Ignorable="d"
         Height="550" Width="510" 
-        Title="Media Overlay Service">
+        Title="Media Overlay Service" Loaded="Window_Loaded">
 
         <Frame Source="pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml" IsManipulationEnabled="True" />
 

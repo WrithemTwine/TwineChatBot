@@ -59,6 +59,8 @@ namespace StreamerBot
                 }
 
                 MediaOverlay = new();
+                RadioButton_Theme_Light.Checked += MediaOverlay.WindowThemeChanged;
+                RadioButton_Theme_Dark.Checked += MediaOverlay.WindowThemeChanged;
                 MediaOverlay.Show();
             }
         }

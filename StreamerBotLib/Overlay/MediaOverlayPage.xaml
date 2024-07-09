@@ -14,10 +14,6 @@
       Title="MediaOverlayPage">
     <Page.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary x:Name="ResourceThemeDictionary" Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
             <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
             <M:SelectedTickerItems x:Name="TickerSelectedItems" x:Key="TickerSelectedItems" />
             <DataTemplate x:Key="OverlayTypeStatTemplate">
