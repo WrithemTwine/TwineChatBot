@@ -62,16 +62,19 @@ namespace StreamerBotLib.DataSQL
 #elif RELEASE_POSTGRE
             optionsBuilder.UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL);
 #elif RELEASE_COSMOS
-            // TODO: Fix 'databasename' parameter
-            optionsBuilder.UseCosmos(OptionFlags.EFCConnectStringCostmos, null);
+            optionsBuilder.UseCosmos(OptionFlags.EFCConnectStringCosmos, OptionFlags.EFCDbNameCosmos);
 #elif RELEASE_KNET
-            // TODO: Fix KNET/Apache parameters
-            optionsBuilder.UseKafkaCluster(null,null,null,null);
+            optionsBuilder.UseKafkaCluster(
+                OptionFlags.EFCKNetApplicationId, 
+                OptionFlags.EFCDbNameKNet, 
+                OptionFlags.EFCKNetBootstrapServers
+                );
 #elif RELEASE_SQLSERVER
             optionsBuilder.UseSqlServer(OptionFlags.EFCConnectStringSqlServer);
 #elif RELEASE_MYSQL
-            // TODO: Fix 'serverversion' attribute
-            optionsBuilder.UseMySql(OptionFlags.EFCConnectStringMySql, null);
+            optionsBuilder.UseMySql(
+                OptionFlags.EFCConnectStringMySql, 
+                ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql));
 #endif
         }
 

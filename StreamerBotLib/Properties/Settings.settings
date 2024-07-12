@@ -570,7 +570,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="EFCDatabaseProviderSqlite" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="EFCDatabaseProviderCosmos" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -599,11 +599,20 @@
     <Setting Name="EFCConnectStringMySql" Type="System.String" Scope="User">
       <Value Profile="(Default)">server=localhost;database=TwineStreamerBotdb;user=user;password=password</Value>
     </Setting>
-    <Setting Name="EFCConnectStringKNet" Type="System.String" Scope="User">
+    <Setting Name="EFCDbNameKNet" Type="System.String" Scope="User">
       <Value Profile="(Default)">Server={server_address};Database=TwineStreamerBotdb;UserId={username};Password={password};</Value>
     </Setting>
     <Setting Name="MediaOverlayEmbedGUI" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="EFCDbNameCosmos" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TwineStreamerBot</Value>
+    </Setting>
+    <Setting Name="EFCKNetBootstrapServers" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="EFCKNetApplicationId" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

@@ -4,44 +4,80 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamerBotLib.GUI.Windows"
+        xmlns:s="clr-namespace:StreamerBotLib.Properties"
         mc:Ignorable="d"
-        Title="Choose Storage Database" Height="900" Width="1200">
+        DataContext="{Binding Source={x:Static s:Settings.Default}}"
+        Title="Choose Storage Database" SizeToContent="WidthAndHeight" MaxWidth="800">
     <DockPanel ScrollViewer.VerticalScrollBarVisibility="Auto">
-        <TextBlock DockPanel.Dock="Top" FontSize="20" HorizontalAlignment="Center">
-            <Underline>Information:</Underline> <LineBreak />
-            - Please read carefully should you choose to switch database files and/or database providers. <LineBreak />
-            - The data storage for this chatbot is now using "Entity Framework Core" (EFC) provided through Microsoft's .NET. <LineBreak />
-            - The first startup of a chosen database provider will import the existing xml data file.<LineBreak />
-            - The GitHub zipped download binaries are named for each database provider supported in EFC 8. Each package
+        <TabControl TabStripPlacement="Left" DockPanel.Dock="Top" Height="300">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Padding" Value="10" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Information">
+                <TextBlock>
+                    <Underline>Information:</Underline>
+                    <LineBreak />
+                    - Please read carefully should you choose to switch database files and/or database providers.
+                    <LineBreak />
+                    - The data storage for this chatbot is now using "Entity Framework Core" (EFC) provided through Microsoft's .NET.
+                    <LineBreak />
+                    - The first startup of a chosen database provider will import the existing xml data file.
+                    <LineBreak />
+                    - The GitHub zipped download binaries are named for each database provider supported in EFC 8. Each package
             contains the necessary .dll files to operate the database provider (and aren't combined into the single file binary-all
             of the required .dll files are packed into the .exe file except native DLL files currently not bundled through the
-            current .NET publishing procedure).<LineBreak />
-            *Caution* the zip files are named for the different databases, while the .exe file has the same name to utilize user settings, 
-            including data storage and visual/operation options.<LineBreak />
-             - The new EFC functionality requires an initial setup of database connection variables, as summarized 
-            in the following sections. <LineBreak />
-            <LineBreak />
-            <Underline>Continue using the same Database Provider and Same Database:</Underline><LineBreak />
-            - This will be the easiest option to both describe and for the user to maintain.<LineBreak />
-            - User provides the connection variables below related to the chosen database provider.<LineBreak />
-            - The application will setup the database schema through either initial default data or importing 
-            the prior application datastore file.<LineBreak />
-            - Once the previous datastore xml diffgram import completes, user can delete or move the data file, since it is no longer needed
-            and won't be updated.<LineBreak />
-            <LineBreak />
-            <Underline>Maybe change database providers, while keeping the same database per database provider:</Underline><LineBreak />
-            - Different database providers will have different connection variables, and will not access databases saved from
-            different providers.<LineBreak /> 
-            - This application initially and likely in the future will not support transferring data between
+            current .NET publishing procedure).
+                    <LineBreak />
+                    *Caution* the zip files are named for the different databases, while the .exe file has the same name to utilize user settings, 
+            including data storage and visual/operation options.
+                    <LineBreak />
+                    - The new EFC functionality requires an initial setup of database connection variables, as summarized 
+            in the following sections.
+                    <LineBreak />
+                </TextBlock>
+            </TabItem>
+            <TabItem Header="Same Provider DB">
+                <TextBlock>
+                    <Underline>Continue using the same Database Provider and Same Database:</Underline>
+                    <LineBreak />
+                    - This will be the easiest option to both describe and for the user to maintain.
+                    <LineBreak />
+                    - User provides the connection variables below related to the chosen database provider.
+                    <LineBreak />
+                    - The application will setup the database schema through either initial default data or importing 
+            the prior application datastore file.
+                    <LineBreak />
+                    - Once the previous datastore xml diffgram import completes, user can delete or move the data file, since it is no longer needed
+            and won't be updated.
+                    <LineBreak />
+                </TextBlock>
+            </TabItem>
+            <TabItem Header="Diff Provider Same DB">
+                <TextBlock><Underline>
+                    Maybe change database providers, while keeping the same database per database provider:</Underline>
+                <LineBreak />
+                - Different database providers will have different connection variables, and will not access databases saved from
+            different providers.
+                <LineBreak />
+                - This application initially and likely in the future will not support transferring data between
             different database providers. A user is responsible for transferring data between databases, or using the last data snapshot
-            of the prior application datastore xml file to load an older data version.<LineBreak />
-            - Upon first use for a new database provider, The application will setup the database schema through either initial default 
-            data or importing the prior application datastore file.<LineBreak />
-            - Once the previous datastore xml diffgram import completes, user can keep the file to import the same data snapshot
+            of the prior application datastore xml file to load an older data version.
+                <LineBreak />
+                - Upon first use for a new database provider, The application will setup the database schema through either initial default 
+            data or importing the prior application datastore file.
+                <LineBreak />
+                - Once the previous datastore xml diffgram import completes, user can keep the file to import the same data snapshot
             into a new database provider file or delete/move the file outside of the application directory to next time load initial
-            default data into the new database.<LineBreak />
-            <LineBreak />
-            <Underline>Maybe changing database providers, maybe change databases within same database provider:</Underline><LineBreak />
+            default data into the new database.
+                <LineBreak />
+                </TextBlock>
+            </TabItem>
+            <TabItem Header="Change Provider Change DB">
+                <TextBlock>
+                    <Underline>Maybe changing database providers, maybe change databases within same database provider:</Underline><LineBreak />
             - User provides the connection variables below related to the chosen database provider.<LineBreak />
             - The application will setup the database schema through either initial default data or importing 
             the prior application datastore file.<LineBreak />
@@ -54,10 +90,91 @@
             database provider configuration, not including any newly generated data: <LineBreak />
               3: Starting a new EFC database provider will show this setup procedure again and setup the database 
             schema through either initial default data or importing the snapshot xml datastore file. <LineBreak />
+                </TextBlock>
+            </TabItem>
+        </TabControl>
 
-        </TextBlock>
-        <StackPanel x:Name="StackPanel_ChooseDB" DockPanel.Dock="Top">
-            
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="Button_Apply" Content="Apply" Margin="10" Padding="3" Click="Button_ApplyClick" />
+            <Button x:Name="Button_Exit" Content="Exit" Margin="10" Padding="3" Click="Button_ExitClick" />
+        </StackPanel>
+
+        <StackPanel x:Name="StackPanel_ChooseDB" DockPanel.Dock="Top" Margin="15" >
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="Width" Value="100" />
+                </Style>
+                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Setter Property="Width" Value="400" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+                <Style TargetType="{x:Type StackPanel}" >
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </StackPanel.Resources>
+
+            <TextBlock Width="Auto">The data strings below are generally formatted for the Entity Framework Core 8 requirement. These strings are supplied as is to the Entity Framework Core database constructor to connect the database. The spaces and layout per the documentation strings needs to be maintained here or the database will fail to load (and would require editing the connection strings (Options->Database) and restarting this bot to connect to the database).</TextBlock>
+
+            <StackPanel x:Name="StackPanel_Sqlite" Orientation="Vertical" Visibility="Collapsed" >
+                <TextBlock Width="500">Database: Sqlite</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Connect String:</TextBlock>
+                    <TextBox x:Name="TextBox_SqliteConnect" Text="{Binding EFCConnectStringSqlite}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="StackPanel_SQLServer" Orientation="Vertical" Visibility="Collapsed" >
+                <TextBlock Width="500">Database: SQL Server</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Connect String:</TextBlock>
+                    <TextBox x:Name="TextBox_SQLServerConnect" Text="{Binding EFCConnectStringSqlServer}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="StackPanel_Cosmos" Orientation="Vertical" Visibility="Collapsed" >
+                <TextBlock Width="500">Database: Cosmos</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Connect String:</TextBlock>
+                    <TextBox x:Name="TextBox_CosmosConnect" Text="{Binding EFCConnectStringCosmos}" TextWrapping="Wrap" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Database Name:</TextBlock>
+                    <TextBox x:Name="TextBox_CosmosDatabaseName" Text="{Binding EFCDbNameCosmos}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="StackPanel_PostgreSQL" Orientation="Vertical" Visibility="Collapsed" >
+                <TextBlock Width="500">Database: PostgreSQL</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Connect String:</TextBlock>
+                    <TextBox x:Name="TextBox_PostgreSQLConnect" Text="{Binding EFCConnectStringPostgreSQL}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="StackPanel_MySQL" Orientation="Vertical" Visibility="Collapsed" >
+                <TextBlock Width="500">Database: MySQL</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Connect String:</TextBlock>
+                    <TextBox x:Name="TextBox_MySqlConnect" Text="{Binding EFCConnectStringMySql}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="StackPanel_KNet" Orientation="Vertical" Visibility="Collapsed" >
+                <TextBlock Width="500">Database: MASES-KNet-Apache</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Bootstrap Server:</TextBlock>
+                    <TextBox x:Name="TextBox_KNetBootstrapServers" Text="{Binding EFCKNetBootstrapServers}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Application Id:</TextBlock>
+                    <TextBox x:Name="TextBox_KNetApplicationId" Text="{Binding EFCKNetApplicationId}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Database Name:</TextBlock>
+                    <TextBox x:Name="TextBox_KNetDatabaseName" Text="{Binding EFCDbNameKNet}" TextChanged="TextBox_TextChanged" />
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
     </DockPanel>
 </Window>

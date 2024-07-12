@@ -25,95 +25,98 @@ namespace StreamerBot
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            switch (e.DatabaseModelName)
+            Dispatcher.BeginInvoke(new Action(() =>
             {
-                case "BanReasons":
-                    DG_Mod_BanReasons.Items.Refresh();
-                    break;
-                case "BanRules":
-                    DG_Mod_BanRules.Items.Refresh();
-                    break;
-                case "CategoryList":
-                    DG_CategoryList.Items.Refresh();
-                    break;
-                case "ChannelEvents":
-                    DG_CommonMsgs.Items.Refresh();
-                    break;
-                case "Clips":
-                    DG_Clips.Items.Refresh();
-                    break;
-                case "Commands":
-                    DG_BuiltInCommands.Items.Refresh();
-                    break;
-                case "CommandsUser":
-                    DG_UserDefinedCommands.Items.Refresh();
-                    break;
-                case "Currency":
-                    DG_CurrencyAccrual.Items.Refresh();
-                    break;
-                case "CurrencyType":
-                    DG_Currency.Items.Refresh();
-                    break;
-                case "CustomWelcome":
-                    DG_CustomWelcome.Items.Refresh();
-                    break;
-                case "Followers":
-                    DG_Followers.Items.Refresh();
-                    break;
-                case "GameDeadCounter":
-                    DG_DeathCounter.Items.Refresh();
-                    break;
-                case "GiveawayUserData":
-                    DG_User_Giveaway.Items.Refresh();
-                    break;
-                case "InRaidData":
-                    DG_InRaids.Items.Refresh();
-                    break;
-                case "LearnMsgs":
-                    DG_Mod_LearnMsgs.Items.Refresh();
-                    break;
-                case "ModeratorApprove":
-                    DG_ModApprove.Items.Refresh();
-                    break;
-                case "MultiChannels":
+                switch (e.DatabaseModelName)
+                {
+                    case "BanReasons":
+                        DG_Mod_BanReasons.Items.Refresh();
+                        break;
+                    case "BanRules":
+                        DG_Mod_BanRules.Items.Refresh();
+                        break;
+                    case "CategoryList":
+                        DG_CategoryList.Items.Refresh();
+                        break;
+                    case "ChannelEvents":
+                        DG_CommonMsgs.Items.Refresh();
+                        break;
+                    case "Clips":
+                        DG_Clips.Items.Refresh();
+                        break;
+                    case "Commands":
+                        DG_BuiltInCommands.Items.Refresh();
+                        break;
+                    case "CommandsUser":
+                        DG_UserDefinedCommands.Items.Refresh();
+                        break;
+                    case "Currency":
+                        DG_CurrencyAccrual.Items.Refresh();
+                        break;
+                    case "CurrencyType":
+                        DG_Currency.Items.Refresh();
+                        break;
+                    case "CustomWelcome":
+                        DG_CustomWelcome.Items.Refresh();
+                        break;
+                    case "Followers":
+                        DG_Followers.Items.Refresh();
+                        break;
+                    case "GameDeadCounter":
+                        DG_DeathCounter.Items.Refresh();
+                        break;
+                    case "GiveawayUserData":
+                        DG_User_Giveaway.Items.Refresh();
+                        break;
+                    case "InRaidData":
+                        DG_InRaids.Items.Refresh();
+                        break;
+                    case "LearnMsgs":
+                        DG_Mod_LearnMsgs.Items.Refresh();
+                        break;
+                    case "ModeratorApprove":
+                        DG_ModApprove.Items.Refresh();
+                        break;
+                    case "MultiChannels":
 
-                    break;
-                case "MultiLiveStreams":
+                        break;
+                    case "MultiLiveStreams":
 
-                    break;
-                case "MultiMsgEndPoints":
+                        break;
+                    case "MultiMsgEndPoints":
 
-                    break;
-                case "MultiSummaryLiveStreams":
+                        break;
+                    case "MultiSummaryLiveStreams":
 
-                    break;
-                case "OutRaidData":
-                    DG_OutRaids.Items.Refresh();
-                    break;
-                case "OverlayServices":
-                    DG_OverlayService_Actions.Items.Refresh();
-                    break;
-                case "OverlayTicker":
-                    DG_OverlayService_Ticker.Items.Refresh();
-                    break;
-                case "Quotes":
-                    DG_User_Quotes.Items.Refresh();
-                    break;
-                case "ShoutOuts":
-                    DG_User_Shoutouts.Items.Refresh();
-                    break;
-                case "StreamStats":
-                    DG_StreamData_Stats.Items.Refresh();
-                    break;
-                case "Users" or "UserStats":
-                    DG_Users.Items.Refresh();
-                    break;
-                case "Webhooks":
-                    DG_Webhooks.Items.Refresh();
-                    break;
-                case null:
-                    break;
-            }
+                        break;
+                    case "OutRaidData":
+                        DG_OutRaids.Items.Refresh();
+                        break;
+                    case "OverlayServices":
+                        DG_OverlayService_Actions.Items.Refresh();
+                        break;
+                    case "OverlayTicker":
+                        DG_OverlayService_Ticker.Items.Refresh();
+                        break;
+                    case "Quotes":
+                        DG_User_Quotes.Items.Refresh();
+                        break;
+                    case "ShoutOuts":
+                        DG_User_Shoutouts.Items.Refresh();
+                        break;
+                    case "StreamStats":
+                        DG_StreamData_Stats.Items.Refresh();
+                        break;
+                    case "Users" or "UserStats":
+                        DG_Users.Items.Refresh();
+                        break;
+                    case "Webhooks":
+                        DG_Webhooks.Items.Refresh();
+                        break;
+                    case null:
+                        break;
+                }
+            }));
         }
 
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)

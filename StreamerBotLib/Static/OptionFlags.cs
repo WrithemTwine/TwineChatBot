@@ -900,51 +900,78 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Holds user selection for an EF Core database provider
         /// </summary>
-        public static bool EFCDatabaseProviderSqlServer => Settings.Default.EFCDatabaseProviderSqlServer;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderSqlite => Settings.Default.EFCDatabaseProviderSqlite;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderCosmos => Settings.Default.EFCDatabaseProviderCosmos;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderPostgreSQL => Settings.Default.EFCDatabaseProviderPostgreSQL;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderMySql => Settings.Default.EFCDatabaseProviderMySql;
-        /// <summary>
-        /// Holds user selection for an EF Core database provider
-        /// </summary>
-        public static bool EFCDatabaseProviderKNet => Settings.Default.EFCDatabaseProviderKNet;
+        public static bool EFCDatabaseProviderSqlite
+        {
+            get => Settings.Default.EFCDatabaseProviderSqlite; set => Settings.Default.EFCDatabaseProviderSqlite = value;
+        }
+
         /// <summary>
         /// Holds the user modified connection string for access through the database provider
         /// </summary>
         public static string EFCConnectStringSqlite => Settings.Default.EFCConnectStringSqlite;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlServer
+        {
+            get => Settings.Default.EFCDatabaseProviderSqlServer; set => Settings.Default.EFCDatabaseProviderSqlServer = value;
+        }
         /// <summary>
         /// Holds the user modified connection string for access through the database provider
         /// </summary>
         public static string EFCConnectStringSqlServer => Settings.Default.EFCConnectStringSqlServer;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderCosmos
+        {
+            get => Settings.Default.EFCDatabaseProviderCosmos; set => Settings.Default.EFCDatabaseProviderCosmos = value;
+        }
         /// <summary>
         /// Holds the user modified connection string for access through the database provider
         /// </summary>
-        public static string EFCConnectStringCostmos => Settings.Default.EFCConnectStringCosmos;
+        public static string EFCConnectStringCosmos => Settings.Default.EFCConnectStringCosmos;
+        public static string EFCDbNameCosmos => Settings.Default.EFCDbNameCosmos;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderPostgreSQL
+        {
+            get => Settings.Default.EFCDatabaseProviderPostgreSQL; set => Settings.Default.EFCDatabaseProviderPostgreSQL = value;
+        }
         /// <summary>
         /// Holds the user modified connection string for access through the database provider
         /// </summary>
         public static string EFCConnectStringPostgreSQL => Settings.Default.EFCConnectStringPostgreSQL;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderMySql
+        {
+            get => Settings.Default.EFCDatabaseProviderMySql; set => Settings.Default.EFCDatabaseProviderMySql = value;
+        }
         /// <summary>
         /// Holds the user modified connection string for access through the database provider
         /// </summary>
         public static string EFCConnectStringMySql => Settings.Default.EFCConnectStringMySql;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderKNet
+        {
+            get => Settings.Default.EFCDatabaseProviderKNet; set => Settings.Default.EFCDatabaseProviderKNet = value;
+        }
         /// <summary>
         /// Holds the user modified connection string for access through the database provider
         /// </summary>
-        public static string EFCConnectStringKNet => Settings.Default.EFCConnectStringKNet;
+        public static string EFCDbNameKNet => Settings.Default.EFCDbNameKNet;
+        public static string EFCKNetApplicationId => Settings.Default.EFCKNetApplicationId;
+        public static string EFCKNetBootstrapServers => Settings.Default.EFCKNetBootstrapServers;
 
         #endregion
 

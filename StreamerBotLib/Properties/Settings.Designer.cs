@@ -2293,7 +2293,7 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool EFCDatabaseProviderSqlite {
             get {
                 return ((bool)(this["EFCDatabaseProviderSqlite"]));
@@ -2419,12 +2419,12 @@ namespace StreamerBotLib.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Server={server_address};Database=TwineStreamerBotdb;UserId={username};Password={p" +
             "assword};")]
-        public string EFCConnectStringKNet {
+        public string EFCDbNameKNet {
             get {
-                return ((string)(this["EFCConnectStringKNet"]));
+                return ((string)(this["EFCDbNameKNet"]));
             }
             set {
-                this["EFCConnectStringKNet"] = value;
+                this["EFCDbNameKNet"] = value;
             }
         }
         
@@ -2437,6 +2437,42 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["MediaOverlayEmbedGUI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("TwineStreamerBot")]
+        public string EFCDbNameCosmos {
+            get {
+                return ((string)(this["EFCDbNameCosmos"]));
+            }
+            set {
+                this["EFCDbNameCosmos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EFCKNetBootstrapServers {
+            get {
+                return ((string)(this["EFCKNetBootstrapServers"]));
+            }
+            set {
+                this["EFCKNetBootstrapServers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EFCKNetApplicationId {
+            get {
+                return ((string)(this["EFCKNetApplicationId"]));
+            }
+            set {
+                this["EFCKNetApplicationId"] = value;
             }
         }
     }

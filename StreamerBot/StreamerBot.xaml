@@ -523,8 +523,8 @@
                             </ScrollViewer>
                         </DockPanel>
                     </TabItem>
-                    
-<TabItem  Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
+
+                    <TabItem  Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
                         <TabItem.Resources>
                             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
                                 <Setter Property="Width" Value="120" />
@@ -1444,70 +1444,107 @@
                         </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Database">
-                        <DockPanel HorizontalAlignment="Left">
-                            <GroupBox Header="Choose Database Provider" DockPanel.Dock="Top" Width="700">
-                                <Grid>
+                        <DockPanel x:Name="DockPanel_Options_DB" HorizontalAlignment="Left">
+                            <GroupBox Header="Choose Database Provider" DockPanel.Dock="Top" MinWidth="700" Width="800">
+                                <Grid ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="100*" />
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="110" />
                                         <ColumnDefinition Width="500*" />
                                         <ColumnDefinition Width="10" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="35" />
+                                        <RowDefinition Height="3" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="3" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="3" />
                                         <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
-                                        <RowDefinition Height="30*" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="3" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="3" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="3" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="20*" />
+                                        <RowDefinition Height="20*" />
                                     </Grid.RowDefinitions>
                                     <Grid.Resources>
                                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                                             <Setter Property="Padding" Value="1" />
-                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="VerticalAlignment" Value="Top" />
                                             <Setter Property="TextWrapping" Value="Wrap" />
+                                            <Setter Property="Margin" Value="3" />
                                         </Style>
                                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="VerticalAlignment" Value="Top" />
                                         </Style>
                                     </Grid.Resources>
 
-                                    <TextBlock Grid.Column="1" Grid.ColumnSpan="3">Current implementation is only Sqlite.</TextBlock>
+                                    <!--
+                                    <TextBlock Grid.Row="0" Grid.Column="0">Initial Setup</TextBlock>
+                                    <CheckBox IsChecked="{Binding EFCDatabaseProviderSqlite}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <CheckBox IsChecked="{Binding EFCDatabaseProviderSqlServer}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <CheckBox IsChecked="{Binding EFCDatabaseProviderCosmos}" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <CheckBox IsChecked="{Binding EFCDatabaseProviderPostgreSQL}" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <CheckBox IsChecked="{Binding EFCDatabaseProviderMySql}" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <CheckBox IsChecked="{Binding EFCDatabaseProviderKNet}" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    -->
 
-                                    <RadioButton IsChecked="{Binding EFCDatabaseProviderSqlite}" Grid.Row="1" Grid.Column="0" />
-                                    <TextBlock Grid.Row="1" Grid.Column="1">Sqlite</TextBlock>
-                                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding EFCConnectStringSqlite}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center">Database</TextBlock>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">Connection Variables</TextBlock>
+                                    <TextBlock Grid.Row="0" Grid.Column="2">Input Data</TextBlock>
+                                    <Separator Grid.Row="1" Grid.ColumnSpan="3" Width="Auto" VerticalContentAlignment="Bottom" />
 
-                                    <RadioButton IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderSqlServer}" Grid.Row="2" Grid.Column="0" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1">Sql Server</TextBlock>
-                                    <TextBox  IsEnabled="False" Grid.Row="2" Grid.Column="2" Text="{Binding EFCConnectStringSqlServer}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0">Sqlite</TextBlock>
+                                    <TextBlock Grid.Row="2" Grid.Column="1">Connect String:</TextBlock>
+                                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding EFCConnectStringSqlite}" />
+                                    <Separator Grid.Row="3" Grid.ColumnSpan="3" Width="Auto" VerticalContentAlignment="Bottom" />
 
-                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderCosmos}" Grid.Row="3" Grid.Column="0" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1">Cosmos</TextBlock>
-                                    <TextBox  IsEnabled="False" Grid.Row="3" Grid.Column="2" Text="{Binding EFCConnectStringCosmos}" />
 
-                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderPostgreSQL}" Grid.Row="4" Grid.Column="0" />
-                                    <TextBlock Grid.Row="4" Grid.Column="1">PostgreSQL</TextBlock>
-                                    <TextBox  IsEnabled="False" Grid.Row="4" Grid.Column="2" Text="{Binding EFCConnectStringPostgreSQL}" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0">Sql Server</TextBlock>
+                                    <TextBlock Grid.Row="4" Grid.Column="1">Connect String:</TextBlock>
+                                    <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding EFCConnectStringSqlServer}" />
+                                    <Separator Grid.Row="5" Grid.ColumnSpan="3" Width="Auto" VerticalContentAlignment="Bottom" />
 
-                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderMySql}" Grid.Row="5" Grid.Column="0" />
-                                    <TextBlock Grid.Row="5" Grid.Column="1">MySql</TextBlock>
-                                    <TextBox  IsEnabled="False" Grid.Row="5" Grid.Column="2" Text="{Binding EFCConnectStringMySql}" />
 
-                                    <RadioButton  IsEnabled="False" IsChecked="{Binding EFCDatabaseProviderKNet}" Grid.Row="6" Grid.Column="0" />
-                                    <TextBlock Grid.Row="6" Grid.Column="1">MASES-KNet Apache</TextBlock>
-                                    <TextBox  IsEnabled="False" Grid.Row="6" Grid.Column="2" Text="{Binding EFCConnectStringKNet}" />
+                                    <TextBlock Grid.Row="6" Grid.RowSpan="2" Grid.Column="0">Cosmos</TextBlock>
+                                    <TextBlock Grid.Row="6" Grid.Column="1">Connect String:</TextBlock>
+                                    <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding EFCConnectStringCosmos}"/>
+                                    <TextBlock Grid.Row="7" Grid.Column="1">Database Name:</TextBlock>
+                                    <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding EFCDbNameCosmos}" />
+                                    <Separator Grid.Row="8" Grid.ColumnSpan="3" Width="Auto" VerticalContentAlignment="Bottom" />
+
+
+                                    <TextBlock Grid.Row="9" Grid.Column="0">PostgreSQL</TextBlock>
+                                    <TextBlock Grid.Row="9" Grid.Column="1">Connect String:</TextBlock>
+                                    <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding EFCConnectStringPostgreSQL}" />
+                                    <Separator Grid.Row="10" Grid.ColumnSpan="3" Width="Auto" VerticalContentAlignment="Bottom" />
+
+
+                                    <TextBlock Grid.Row="11" Grid.Column="0">MySql</TextBlock>
+                                    <TextBlock Grid.Row="11" Grid.Column="1">Connect String:</TextBlock>
+                                    <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding EFCConnectStringMySql}" />
+                                    <Separator Grid.Row="12" Grid.ColumnSpan="3" Width="Auto" VerticalContentAlignment="Bottom" />
+
+
+                                    <TextBlock Grid.Row="13" Grid.RowSpan="3" Grid.Column="0">MASES-KNet Apache</TextBlock>
+                                    <TextBlock Grid.Row="13" Grid.Column="1">Bootstrap Server:</TextBlock>
+                                    <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding EFCKNetBootstrapServers}" />
+                                    <TextBlock Grid.Row="14" Grid.Column="1">Application Id:</TextBlock>
+                                    <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding EFCKNetApplicationId}" />
+                                    <TextBlock Grid.Row="15" Grid.Column="1">Database Name:</TextBlock>
+                                    <TextBox Grid.Row="15" Grid.Column="2"  Text="{Binding EFCDbNameKNet}" />
                                 </Grid>
                             </GroupBox>
                         </DockPanel>
                     </TabItem>
                 </TabControl>
-                <!-- Settings Template                                
-                                            <GroupBox Header="Twitch -">
+                <!-- Settings Template
+                <GroupBox Header="Twitch -">
                                                 <StackPanel>
                                                     <CheckBox IsChecked="{Binding AutoShout, Mode=TwoWay}" >
                                                         <TextBlock>Auto </TextBlock>
@@ -1590,12 +1627,12 @@
                                 </TabItem>
                                 <TabItem Header="Msg Mod">
                                     <Grid>
-                                         <Grid.RowDefinitions>
+                                        <Grid.RowDefinitions>
                                             <RowDefinition Height="90" />
                                             <RowDefinition Height="150" />
                                             <RowDefinition Height="100*" />
                                         </Grid.RowDefinitions>
-                                       <Grid.ColumnDefinitions>
+                                        <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="300" />
                                             <ColumnDefinition Width="700*" />
                                             <ColumnDefinition Width="520" />

@@ -4,6 +4,7 @@ using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
+using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
@@ -35,7 +36,35 @@ namespace StreamerBot
 
         private void SetDatabaseChoice()
         {
-           
+            ChooseDatabase chooseDatabase = new();
+            chooseDatabase.ExitApp += ChooseDatabase_ExitApp;
+            
+            if(!
+#if DEBUG || RELEASE_SQLITE
+            OptionFlags.EFCDatabaseProviderSqlite
+#elif RELEASE_POSTGRE
+            OptionFlags.EFCDatabaseProviderPostgreSQL
+#elif RELEASE_SQLSERVER
+            OptionFlags.EFCDatabaseProviderSqlServer
+#elif RELEASE_KNET
+            OptionFlags.EFCDatabaseProviderKNet
+#elif RELEASE_COSMOS
+            OptionFlags.EFCDatabaseProviderCosmos
+#elif RELEASE_MYSQL
+            OptionFlags.EFCDatabaseProviderMySql
+#endif
+            )
+            {
+                chooseDatabase.ShowDialog();
+            }
+        }
+
+        private void ChooseDatabase_ExitApp(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Close();
+            });
         }
 
         /// <summary>
@@ -199,7 +228,6 @@ namespace StreamerBot
         }
 
         #endregion
-
 
     }
 }
