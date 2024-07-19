@@ -756,9 +756,9 @@ namespace StreamerBot
             {
                 SetBotRadioButtons(
                     !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
-                    && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken))
                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)
-                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode))
+                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode))
                     , Platform.Twitch);
             }
 
