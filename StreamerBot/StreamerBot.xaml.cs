@@ -783,7 +783,7 @@ namespace StreamerBot
 
             // Twitch
 
-            if (TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
+            if (OptionFlags.TwitchBotUserName != OptionFlags.TwitchChannelName)
             {
                 GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
                 TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
