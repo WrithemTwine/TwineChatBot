@@ -1556,7 +1556,7 @@
                                             </GroupBox>
                                             -->
             </TabItem>
-            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" Margin="-2,1,0,-2" VerticalAlignment="Stretch" d:LayoutOverrides="Height">
+            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}"  VerticalAlignment="Stretch" d:LayoutOverrides="Height">
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">

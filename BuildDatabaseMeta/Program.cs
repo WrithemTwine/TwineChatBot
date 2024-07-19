@@ -1,4 +1,6 @@
-﻿using System;
+﻿using StreamerBotLib.DataSQL.Models;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,7 +60,7 @@ namespace BuildDatabaseMeta
 
                     foreach (PropertyInfo p in table.GetProperties())
                     {
-                        if (p.Name != "Item" && !FileNames.Contains(p.Name) && !p.PropertyType.ToString().Contains(".Models."))
+                        if (p.Name != "Item" && ((!FileNames.Contains(p.Name) && !p.PropertyType.ToString().Contains(".Models.")) || p.Name == "UserStats"))
                         {
                             string PropName = p.PropertyType.Name.Contains("ICollection") ? $"ICollection<{p.PropertyType.GenericTypeArguments[0].FullName}>" : p.PropertyType.FullName;
 
@@ -66,7 +68,10 @@ namespace BuildDatabaseMeta
                             {
                                 props.Add($"              {{ \"{p.Name}\", typeof({PropName}) }}");
                                 values.Add($"                 {{ \"{p.Name}\", tableData.{p.Name} }}");
-                                entity.Add($"                                          ({PropName})Values[\"{p.Name}\"]");
+
+                                string newEntity = (PropName.Contains("Int") || PropName.Contains("int")) ? $"Convert.To{PropName.Replace("System.","")}(Values[\"{p.Name}\"])" : $"({PropName})Values[\"{p.Name}\"]";
+
+                                entity.Add($"                                          {newEntity}");
                                 param.Add($"        public {PropName} {p.Name} => ({PropName})Values[\"{p.Name}\"];");
                                 copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
                                                 $"            {{\r\n" +

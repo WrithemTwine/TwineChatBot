@@ -162,27 +162,28 @@ namespace StreamerBotLib.GUI.Windows
 
                     break;
                 case PopupEditTableDataType.comboenum:
-                    List<string> enumlist = new();
+                    List<string> enumlist = [];
 
-                    Dictionary<string, Array> ColEnums =
-                        new()
-                        {
-                            { "Permission", Enum.GetValues(typeof(ViewerTypes)) },
-                            { "ViewerTypes", Enum.GetValues(typeof(ViewerTypes)) },
-                            { "Kind", Enum.GetValues(typeof(WebhooksKind)) },
-                            { "action", Enum.GetValues(typeof(CommandAction)) },
-                            { "sort", Enum.GetValues(typeof(CommandSort)) },
-                            { "ModAction", Enum.GetValues(typeof(ModActions)) },
-                            { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
-                            { "BanReason", Enum.GetValues(typeof(BanReasons)) },
-                            { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
-                            { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
-                            { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
-                            { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) },
-                            {"Platform", Enum.GetValues(typeof(Platform)) }
-                        };
+                    //Dictionary<string, Array> ColEnums =
+                    //    new()
+                    //    {
+                    //        { "Permission", Enum.GetValues(typeof(ViewerTypes)) },
+                    //        { "ViewerTypes", Enum.GetValues(typeof(ViewerTypes)) },
+                    //        { "Kind", Enum.GetValues(typeof(WebhooksKind)) },
+                    //        { "action", Enum.GetValues(typeof(CommandAction)) },
+                    //        { "sort", Enum.GetValues(typeof(CommandSort)) },
+                    //        { "ModAction", Enum.GetValues(typeof(ModActions)) },
+                    //        { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
+                    //        { "BanReason", Enum.GetValues(typeof(BanReasons)) },
+                    //        { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
+                    //        { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
+                    //        { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
+                    //        { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) },
+                    //        { "Platform", Enum.GetValues(typeof(Platform)) }
+                    //    };
 
-                    foreach (var E in ColEnums[dataColumnName])
+                    //foreach (var E in ColEnums[dataColumnName])
+                    foreach( var E in Enum.GetValues(ColumnType))
                     {
                         enumlist.Add(E.ToString());
                     }
@@ -393,7 +394,7 @@ namespace StreamerBotLib.GUI.Windows
                 default:
                     dataout = new TextBox()
                     {
-                        Text = datavalue.ToString(),
+                        Text = datavalue?.ToString(),
                         VerticalAlignment = VerticalAlignment.Center,
                         Width = ValueWidth,
                         TextWrapping = TextWrapping.Wrap
