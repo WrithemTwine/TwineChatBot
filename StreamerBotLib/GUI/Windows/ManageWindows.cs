@@ -37,7 +37,7 @@ namespace StreamerBotLib.GUI.Windows
             EditDataWindow = new(ActionSystem.DataManage);
             EditDataWindow.AddNewRow += EditDataWindow_AddNewRow;
             EditDataWindow.UpdatedRow += EditDataWindow_UpdatedRow;
-            
+
             if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
             {
                 EditDataWindow.SetOverlayActions(TableDataPairs);
@@ -50,6 +50,7 @@ namespace StreamerBotLib.GUI.Windows
         private void EditDataWindow_AddNewRow(object sender, Events.AddNewRowEventArgs e)
         {
             Curr.Add(e.NewRow.GetModelEntity());
+
         }
 
         private void EditDataWindow_UpdatedRow(object sender, Events.UpdatedDataRowArgs e)

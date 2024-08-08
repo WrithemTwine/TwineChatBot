@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace StreamerBotLib.BotClients
@@ -33,7 +34,7 @@ namespace StreamerBotLib.BotClients
 
             if (!JobThread) // check if job thread is running
             {
-                ThreadManager.CreateThreadStart(SendDataAsync);
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, SendDataAsync);
 
                 lock (DataJobs)
                 {

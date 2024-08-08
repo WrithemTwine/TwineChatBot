@@ -695,7 +695,7 @@
                                                     <StackPanel Orientation="Horizontal" Margin="10">
 
                                                         <Label Content="Channel Name" />
-                                                        <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"   TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" />
+                                                        <TextBox x:Name="TB_Twitch_Channel" Text="{Binding TwitchChannelName}" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" TextChanged="TextBox_TextChanged" TextInput="TextBox_TextChanged" LostFocus="TextBox_TextChanged" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10,0">
                                                         <Label Content="Token Scope" />
@@ -706,7 +706,7 @@
                                                     <TextBlock Width="300" Text="* This Chat Bot only supports communicating to one channel through the Channel Name." TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Bot User Name" />
-                                                        <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" SourceUpdated="TextBox_SourceUpdated"  TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" />
+                                                        <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}"  SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" TextChanged="TextBox_TextChanged" TextInput="TextBox_TextChanged" LostFocus="TextBox_TextChanged" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Button x:Name="Btn_Twitch_RefreshDate" Content="Refresh Due Date" Width="110" ToolTip="Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed." Click="RefreshButton_Click" LostFocus="Settings_LostFocus" />
@@ -817,11 +817,8 @@
                                                         <Paragraph>
                                                             To authorize the application:
                                                             <LineBreak />
-                                                            In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the application (checked box) or your default browser (unchecked box). 
-                                                                Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application
-                                                                browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't 
-                                                                adapt to the account associated with the authorization. Meaning-if you are authorizing the bot access, your browser/Twitch may
-                                                                prompt you to authorize the application with your streamer account (current login).
+                                                            In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the 
+application (checked box) or your default browser (unchecked box). Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't adapt to the account associated with the authorization. Meaning-if you are authorizing the bot access, your browser/Twitch may prompt you to authorize the application with your streamer account (current login).
                                                             <LineBreak />
                                                             The browser will go to a blank looking or broken looking webpage. This is alright. The application intercepted the response from Twitch to save the provided access code, the user doesn't need to manually paste them.
                                                             <LineBreak />

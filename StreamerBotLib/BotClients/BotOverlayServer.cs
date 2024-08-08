@@ -13,6 +13,8 @@ using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
+using System.Reflection;
+
 namespace StreamerBotLib.BotClients
 {
     /*
@@ -294,7 +296,7 @@ namespace StreamerBotLib.BotClients
         /// <summary>
         /// Probably starts the bot.
         /// </summary>
-        /// <returns>True, the bot has ProcessFollowQueuestarted.</returns>
+        /// <returns>True, the bot has started.</returns>
         public override bool StartBot()
         {
             WindowClosing = false;
@@ -310,7 +312,7 @@ namespace StreamerBotLib.BotClients
 
             if (!AlertsThreadStarted)
             {
-                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
             }
 
             InvokeBotStarted();
@@ -366,7 +368,7 @@ namespace StreamerBotLib.BotClients
         {
             lock (SendAlerts)
             {
-                SendAlerts.Enqueue(ThreadManager.CreateThread(() => SendAlert(e.OverlayAction)));
+                SendAlerts.Enqueue(ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () => SendAlert(e.OverlayAction)));
                 NotifyActionQueueChanged();
             }
         }
@@ -414,7 +416,7 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         private void ProcessAlerts()
         {
-            AlertsThreadStarted = true; // flag, this loop has ProcessFollowQueuestarted
+            AlertsThreadStarted = true; // flag, this loop has started
             while (IsStarted)
             {
                 lock (SendAlerts)

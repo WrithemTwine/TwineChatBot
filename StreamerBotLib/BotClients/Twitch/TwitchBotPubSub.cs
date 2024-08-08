@@ -172,7 +172,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Connected = true;
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 lock (this)
                 {
@@ -221,7 +221,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Stopped = true;
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 lock (this)
                 {

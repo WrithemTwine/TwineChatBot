@@ -4,6 +4,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Configuration;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -34,7 +35,7 @@ namespace StreamerBot
                 string ID = "7193";
                 string Title = "Testing a debug stream";
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, Debug: true);
 

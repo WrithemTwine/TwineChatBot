@@ -2,6 +2,8 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 
+using System.Reflection;
+
 namespace StreamerBotLib.Static
 {
     public static class ThreadManager
@@ -62,6 +64,8 @@ namespace StreamerBotLib.Static
                         ClosedThreads++;
                         ToRemove.Add(t);
                         Changed = true;
+
+                        LogWriter.DebugLog(t.CallingSource, DebugLogTypes.ThreadManager, $"ThreadManager thread for {t.CallingSource} now closed/ended.");
                     }
 
                     foreach (ThreadData R in ToRemove)
@@ -89,9 +93,10 @@ namespace StreamerBotLib.Static
         /// <param name="waitState">Whether to "Wait" or "Close" the Thread when application is exiting.</param>
         /// <param name="Priority">The relative order of the Thread priority, 1-Highest Priority, 2+ in descending priority; 0 is neutral priority. The Highest Priority threads are waited on first when exiting.</param>
         /// <returns>The created Thread.</returns>
-        public static Thread CreateThread(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
+        public static Thread CreateThread(string CallMethodName, Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            ThreadData threadData = CreateThreadData(action, waitState, Priority);
+            ThreadData threadData = CreateThreadData(CallMethodName, action, waitState, Priority);
+            LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager generating a thread for {CallMethodName}, to start soon.");
             return threadData.ThreadItem;
         }
 
@@ -102,11 +107,10 @@ namespace StreamerBotLib.Static
         /// <param name="waitState">Whether to "Wait" or "Close" the Thread when application is exiting.</param>
         /// <param name="Priority">The relative order of the Thread priority, 1-Highest Priority, 2+ in descending priority; 0 is neutral priority. The Highest Priority threads are waited on first when exiting.</param>
         /// <returns>A new ThreadData object data bundle.</returns>
-        private static ThreadData CreateThreadData(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
+        private static ThreadData CreateThreadData(string CallMethodName, Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            ThreadData threadData = new() { ThreadItem = new Thread(new ThreadStart(action)), CloseState = waitState, ThreadPriority = GetThreadPriority(Priority) };
+            ThreadData threadData = new() { ThreadItem = new Thread(new ThreadStart(action)), CloseState = waitState, ThreadPriority = GetThreadPriority(Priority), CallingSource = CallMethodName };
             ThreadAdd(threadData);
-
             return threadData;
         }
 
@@ -116,20 +120,21 @@ namespace StreamerBotLib.Static
         /// <param name="action">The action to perform in the thread.</param>
         /// <param name="waitState">Whether to "Wait" or "Close" the Thread when application is exiting.</param>
         /// <param name="Priority">The relative order of the Thread priority, 1-Highest Priority, 2+ in descending priority; 0 is neutral priority. The Highest Priority threads are waited on first when exiting.</param>
-        public static void CreateThreadStart(Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
+        public static void CreateThreadStart(string CallMethodName, Action action, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            ThreadData threadData = CreateThreadData(action, waitState, Priority);
+            ThreadData threadData = CreateThreadData(CallMethodName, action, waitState, Priority);
+            LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager starting a thread for {CallMethodName}.");
             threadData.ThreadItem.Start();
         }
 
         private static ThreadData CreateThreadData(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            return CreateThreadData(() => task.Start(), waitState, Priority);
+            return CreateThreadData(MethodBase.GetCurrentMethod().Name, () => task.Start(), waitState, Priority);
         }
 
         public static void CreateThreadStart(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
         {
-            CreateThreadStart(() => task.Start(), waitState, Priority);
+            CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => task.Start(), waitState, Priority);
         }
 
         private static int GetThreadPriority(ThreadExitPriority threadExitPriority)
@@ -191,15 +196,17 @@ namespace StreamerBotLib.Static
                         if (t.CloseState == ThreadWaitStates.Wait)
                         {
                             t.ThreadItem.Join();
+                            LogWriter.DebugLog(t.CallingSource, DebugLogTypes.ThreadManager, $"ThreadManager Exit joined with {t.CallingSource} thread.");
                         }
                         else if (t.CloseState == ThreadWaitStates.Close)
                         {
+                            LogWriter.DebugLog(t.CallingSource, DebugLogTypes.ThreadManager, $"ThreadManager already closed {t.CallingSource} thread.");
                             // t.ThreadItem.Interrupt();
                         }
                     }
                 }
-
             }
+            LogWriter.DebugLog("Exit", DebugLogTypes.ThreadManager, "Closed all threads started through ThreadManager.");
         }
     }
 }

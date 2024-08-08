@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -39,36 +36,36 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.BanRules(
-                                          Convert.ToInt32(Values["Id"]), 
-                                          (StreamerBotLib.Enums.ViewerTypes)Values["ViewerTypes"], 
-                                          (StreamerBotLib.Enums.MsgTypes)Values["MsgType"], 
-                                          (StreamerBotLib.Enums.ModActions)Values["ModAction"], 
+                                          Convert.ToInt32(Values["Id"]),
+                                          (StreamerBotLib.Enums.ViewerTypes)Values["ViewerTypes"],
+                                          (StreamerBotLib.Enums.MsgTypes)Values["MsgType"],
+                                          (StreamerBotLib.Enums.ModActions)Values["ModAction"],
                                           Convert.ToInt32(Values["TimeoutSeconds"])
 );
         }
         public void CopyUpdates(Models.BanRules modelData)
         {
-          if (modelData.Id != Id)
+            if (modelData.Id != Id)
             {
                 modelData.Id = Id;
             }
 
-          if (modelData.ViewerTypes != ViewerTypes)
+            if (modelData.ViewerTypes != ViewerTypes)
             {
                 modelData.ViewerTypes = ViewerTypes;
             }
 
-          if (modelData.MsgType != MsgType)
+            if (modelData.MsgType != MsgType)
             {
                 modelData.MsgType = MsgType;
             }
 
-          if (modelData.ModAction != ModAction)
+            if (modelData.ModAction != ModAction)
             {
                 modelData.ModAction = ModAction;
             }
 
-          if (modelData.TimeoutSeconds != TimeoutSeconds)
+            if (modelData.TimeoutSeconds != TimeoutSeconds)
             {
                 modelData.TimeoutSeconds = TimeoutSeconds;
             }

@@ -101,10 +101,10 @@ namespace StreamerBotLib.DataSQL.Import
             if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
             {
                 SaveThreadStarted = true;
-                ThreadManager.CreateThreadStart(PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
             }
 
-            lock (SaveTasks) // lock the Queue, block thread if currently save task has ProcessFollowQueuestarted
+            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
             {
                 SaveTasks.Enqueue(new(() =>
                 {

@@ -127,7 +127,7 @@ namespace StreamerBotLib.Systems
                     {
                         LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"OverlaySystem - action, {FoundAction.ActionValue} {FoundAction.OverlayType}, is a shoutout.");
 
-                        ThreadManager.CreateThreadStart(() =>
+                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                         {
                             ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
                             OnGetChannelClipsEvent(new() { ChannelName = UserName, CallBackResult = UserShout.FoundChannelClips });

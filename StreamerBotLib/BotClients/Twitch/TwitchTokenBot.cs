@@ -22,7 +22,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private bool TokenRenewalStarted;
         private bool AbortRenewToken;
 
-        private readonly string TokenLock = "lock";
+        private const string TokenLock = "lock";
 
         /// <summary>
         /// The upcoming expiration date of the token. This token is for accessing Twitch through the bot account.
@@ -62,7 +62,7 @@ namespace StreamerBotLib.BotClients.Twitch
             AuthBot = new(apiSettings, new BypassLimiter(), new TwitchHttpClient(null));
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 CheckToken();
             });
@@ -98,7 +98,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (!TokenRenewalStarted)
             {
                 TokenRenewalStarted = true;
-                ThreadManager.CreateThreadStart(RenewToken);
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, RenewToken);
             }
         }
 
@@ -138,14 +138,14 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (OptionFlags.TwitchTokenUseAuth)
                 {
-                    StartBot(); // ensure bot is ProcessFollowQueuestarted
+                    StartBot(); // ensure bot is started
                 }
                 else
                 {
                     StopBot();
                 }
 
-                if (IsStarted) // only calculate if bot is ProcessFollowQueuestarted, meaning the User is using this operation mode.
+                if (IsStarted) // only calculate if bot is started, meaning the User is using this operation mode.
                 {
                     lock (TokenLock)
                     {

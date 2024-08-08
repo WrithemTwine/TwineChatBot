@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -30,18 +27,18 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Quotes(
-                                          Convert.ToInt16(Values["Number"]), 
+                                          Convert.ToInt16(Values["Number"]),
                                           (System.String)Values["Quote"]
 );
         }
         public void CopyUpdates(Models.Quotes modelData)
         {
-          if (modelData.Number != Number)
+            if (modelData.Number != Number)
             {
                 modelData.Number = Number;
             }
 
-          if (modelData.Quote != Quote)
+            if (modelData.Quote != Quote)
             {
                 modelData.Quote = Quote;
             }

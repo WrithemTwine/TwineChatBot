@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -48,54 +45,54 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Followers(
-                                          (System.Boolean)Values["IsFollower"], 
-                                          (System.DateTime)Values["FollowedDate"], 
-                                          (System.DateTime)Values["StatusChangeDate"], 
-                                          (System.String)Values["Category"], 
-                                          (System.DateTime)Values["AddDate"], 
-                                          (System.String)Values["UserId"], 
-                                          (System.String)Values["UserName"], 
+                                          (System.Boolean)Values["IsFollower"],
+                                          (System.DateTime)Values["FollowedDate"],
+                                          (System.DateTime)Values["StatusChangeDate"],
+                                          (System.String)Values["Category"],
+                                          (System.DateTime)Values["AddDate"],
+                                          (System.String)Values["UserId"],
+                                          (System.String)Values["UserName"],
                                           (StreamerBotLib.Enums.Platform)Values["Platform"]
 );
         }
         public void CopyUpdates(Models.Followers modelData)
         {
-          if (modelData.IsFollower != IsFollower)
+            if (modelData.IsFollower != IsFollower)
             {
                 modelData.IsFollower = IsFollower;
             }
 
-          if (modelData.FollowedDate != FollowedDate)
+            if (modelData.FollowedDate != FollowedDate)
             {
                 modelData.FollowedDate = FollowedDate;
             }
 
-          if (modelData.StatusChangeDate != StatusChangeDate)
+            if (modelData.StatusChangeDate != StatusChangeDate)
             {
                 modelData.StatusChangeDate = StatusChangeDate;
             }
 
-          if (modelData.Category != Category)
+            if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }
 
-          if (modelData.AddDate != AddDate)
+            if (modelData.AddDate != AddDate)
             {
                 modelData.AddDate = AddDate;
             }
 
-          if (modelData.UserId != UserId)
+            if (modelData.UserId != UserId)
             {
                 modelData.UserId = UserId;
             }
 
-          if (modelData.UserName != UserName)
+            if (modelData.UserName != UserName)
             {
                 modelData.UserName = UserName;
             }
 
-          if (modelData.Platform != Platform)
+            if (modelData.Platform != Platform)
             {
                 modelData.Platform = Platform;
             }

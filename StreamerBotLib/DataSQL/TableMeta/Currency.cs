@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -33,24 +30,24 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Currency(
-                                          (System.String)Values["UserName"], 
-                                          (System.Double)Values["Value"], 
+                                          (System.String)Values["UserName"],
+                                          (System.Double)Values["Value"],
                                           (System.String)Values["CurrencyName"]
 );
         }
         public void CopyUpdates(Models.Currency modelData)
         {
-          if (modelData.UserName != UserName)
+            if (modelData.UserName != UserName)
             {
                 modelData.UserName = UserName;
             }
 
-          if (modelData.Value != Value)
+            if (modelData.Value != Value)
             {
                 modelData.Value = Value;
             }
 
-          if (modelData.CurrencyName != CurrencyName)
+            if (modelData.CurrencyName != CurrencyName)
             {
                 modelData.CurrencyName = CurrencyName;
             }

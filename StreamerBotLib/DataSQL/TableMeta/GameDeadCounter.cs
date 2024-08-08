@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -33,24 +30,24 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.GameDeadCounter(
-                                          (System.String)Values["CategoryId"], 
-                                          (System.String)Values["Category"], 
+                                          (System.String)Values["CategoryId"],
+                                          (System.String)Values["Category"],
                                           Convert.ToInt32(Values["Counter"])
 );
         }
         public void CopyUpdates(Models.GameDeadCounter modelData)
         {
-          if (modelData.CategoryId != CategoryId)
+            if (modelData.CategoryId != CategoryId)
             {
                 modelData.CategoryId = CategoryId;
             }
 
-          if (modelData.Category != Category)
+            if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }
 
-          if (modelData.Counter != Counter)
+            if (modelData.Counter != Counter)
             {
                 modelData.Counter = Counter;
             }

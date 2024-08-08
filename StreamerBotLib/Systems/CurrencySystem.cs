@@ -29,7 +29,7 @@ namespace StreamerBotLib.Systems
 
                 try
                 {
-                    ThreadManager.CreateThreadStart(() =>
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                     {
                         while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                         {
@@ -58,7 +58,7 @@ namespace StreamerBotLib.Systems
                 WatchStarted = true;
                 try
                 {
-                    ThreadManager.CreateThreadStart(() =>
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                     {
                         // watch time accruing only works when stream is online <- i.e. watched!
                         while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
@@ -100,7 +100,7 @@ namespace StreamerBotLib.Systems
                         }
                         )), cmdrow.SendMsgCount, cmdrow);
 
-                    ThreadManager.CreateThreadStart(() => GameBlackJackStart());
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => GameBlackJackStart());
                     GameCurrBlackJack = new();
 
                     GameBlackJackCurrency = cmdrow.Currency_field;

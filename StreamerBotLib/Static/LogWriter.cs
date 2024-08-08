@@ -2,6 +2,8 @@
 
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace StreamerBotLib.Static
 {
@@ -21,10 +23,14 @@ namespace StreamerBotLib.Static
 
         private static bool started;
 
+        private static StringBuilder StatusLogSB = new();
+        private static StringBuilder ExceptionLogSB = new();
+        private static StringBuilder DebugLogSB = new();
+
         // streamwriters
-        private static readonly StreamWriter StatusLogWriter = new(StatusLog, true);
-        private static readonly StreamWriter ExceptionLogWriter = new(ExceptionLog, true);
-        private static readonly StreamWriter DebugLogFileWriter = new(DebugLogFile, true);
+        private static StreamWriter StatusLogWriter;
+        private static StreamWriter ExceptionLogWriter;
+        private static StreamWriter DebugLogFileWriter;
 
         /// <summary>
         /// Start a flush thread, to check and flush the streamwriter every <code>StreamFlush</code> amount of time.
@@ -34,7 +40,7 @@ namespace StreamerBotLib.Static
             if (!started)
             {
                 started = true;
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     while (OptionFlags.ActiveToken)
                     {
@@ -43,15 +49,24 @@ namespace StreamerBotLib.Static
                             FlushTime = DateTime.Now + StreamFlush;
                             lock (StatusLog)
                             {
-                                StatusLogWriter.Flush();
+                                StatusLogWriter = new(StatusLog, true);
+                                StatusLogWriter.Write(StatusLogSB);
+                                StatusLogSB.Clear();
+                                StatusLogWriter.Close();
                             }
                             lock (ExceptionLog)
                             {
-                                ExceptionLogWriter.Flush();
+                                ExceptionLogWriter = new(ExceptionLog, true);
+                                ExceptionLogWriter.Write(ExceptionLogSB);
+                                ExceptionLogSB.Clear();
+                                ExceptionLogWriter.Close();
                             }
                             lock (DebugLogFile)
                             {
-                                DebugLogFileWriter.Flush();
+                                DebugLogFileWriter = new(DebugLogFile, true);
+                                DebugLogFileWriter.Write(DebugLogSB);
+                                DebugLogSB.Clear();
+                                DebugLogFileWriter.Close();
                             }
                         }
                         Thread.Sleep(500); // sleep for 10 minutes = app stays open, flush timespan
@@ -67,18 +82,24 @@ namespace StreamerBotLib.Static
         {
             lock (StatusLog)
             {
+                StatusLogWriter = new(StatusLog, true);
+                StatusLogWriter.Write(StatusLogSB);
+                StatusLogSB.Clear();
                 StatusLogWriter.Close();
-                StatusLogWriter.Dispose();
             }
             lock (ExceptionLog)
             {
+                ExceptionLogWriter = new(ExceptionLog, true);
+                ExceptionLogWriter.Write(ExceptionLogSB);
+                ExceptionLogSB.Clear();
                 ExceptionLogWriter.Close();
-                ExceptionLogWriter.Dispose();
             }
             lock (DebugLogFile)
             {
+                DebugLogFileWriter = new(DebugLogFile, true);
+                DebugLogFileWriter.Write(DebugLogSB);
+                DebugLogSB.Clear();
                 DebugLogFileWriter.Close();
-                DebugLogFileWriter.Dispose();
             }
         }
 
@@ -96,7 +117,7 @@ namespace StreamerBotLib.Static
                 {
                     try
                     {
-                        StatusLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
+                        StatusLogSB.AppendLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{line}");
                     }
                     catch (ObjectDisposedException ex)
                     {
@@ -123,8 +144,8 @@ namespace StreamerBotLib.Static
                 {
                     try
                     {
-                        ExceptionLogWriter.WriteLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
-                        ExceptionLogWriter.WriteLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
+                        ExceptionLogSB.AppendLine($"{DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}-{Method}-{ex.GetType()}");
+                        ExceptionLogSB.AppendLine($"{ex.Message}\nStack Trace: {ex.StackTrace}");
                     }
                     catch (ObjectDisposedException Eex)
                     {
@@ -192,7 +213,7 @@ namespace StreamerBotLib.Static
                 {
                     try
                     {
-                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
+                        DebugLogSB.AppendLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
                     }
                     catch (ObjectDisposedException ex)
                     {

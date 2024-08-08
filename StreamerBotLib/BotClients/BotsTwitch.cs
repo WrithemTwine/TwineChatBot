@@ -88,7 +88,7 @@ namespace StreamerBotLib.BotClients
 
         /// <summary>
         /// Retrieves a property within the Helix, and creates a new API object.
-        /// The use case is: access tokens ready to go at the GUI level, no bots are auto-ProcessFollowQueuestarted 
+        /// The use case is: access tokens ready to go at the GUI level, no bots are auto-started 
         /// (would otherwise create a new Helix api object) upon app start, and there's a category 
         /// update in the GUI - creates a null exception.
         /// </summary>
@@ -629,7 +629,7 @@ namespace StreamerBotLib.BotClients
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchLiveBot, "Getting a list of all current viewers in the stream to register in the system.");
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     InvokeBotEvent(this, BotEvents.TwitchExistingUsers, new StreamerOnExistingUserDetectedArgs()
                     {
@@ -693,7 +693,7 @@ namespace StreamerBotLib.BotClients
             RegisterHandlers();
 
             // start thread to retrieve all clips
-            BulkLoadClips = ThreadManager.CreateThread(ProcessClips);
+            BulkLoadClips = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ProcessClips);
             MultiThreadOps.Add(BulkLoadClips);
             BulkLoadClips.Start();
         }
@@ -715,7 +715,7 @@ namespace StreamerBotLib.BotClients
         public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
-            ThreadManager.CreateThreadStart(() => ProcessChannelClips(ReturnData));
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessChannelClips(ReturnData));
         }
 
         /// <summary>
@@ -763,7 +763,7 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Received request to start the Twitch auth code approval process.");
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Asking Twitch Token Bot to create the " +
                     "authorization URL for the user to approve this application access to their account.");
@@ -826,7 +826,7 @@ namespace StreamerBotLib.BotClients
             if (!HttpStarted)
             {
                 // start an http listener to receive auth code
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     HttpStarted = true;
                     HttpListener httpListener = new();
@@ -989,7 +989,7 @@ namespace StreamerBotLib.BotClients
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Processing request to update all followers to " +
                     "the streamer's channel.");
 
-                BulkLoadFollows = ThreadManager.CreateThread(() =>
+                BulkLoadFollows = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     string ChannelName = TwitchBotsBase.TwitchChannelName;
 
@@ -1090,7 +1090,7 @@ namespace StreamerBotLib.BotClients
 
             if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
             {
-                RaidLoop = ThreadManager.CreateThread(() =>
+                RaidLoop = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Start to wait on the raid.");
 

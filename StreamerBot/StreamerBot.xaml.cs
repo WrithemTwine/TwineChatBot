@@ -94,7 +94,7 @@ namespace StreamerBot
             ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<short>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
 
-            ThreadManager.CreateThreadStart(ProcessWatcher);
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, ProcessWatcher);
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -155,7 +155,7 @@ namespace StreamerBot
             {
                 targetclick.IsEnabled = false;
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     try
                     {
@@ -388,7 +388,7 @@ namespace StreamerBot
 
             // Twitch
 
-            if (TB_Twitch_Channel.Text != TB_Twitch_BotUser.Text)
+            if (OptionFlags.TwitchChannelName != OptionFlags.TwitchBotUserName)
             {
                 GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
                 TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;

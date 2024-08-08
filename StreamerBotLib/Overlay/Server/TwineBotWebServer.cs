@@ -94,7 +94,7 @@ namespace StreamerBotLib.Overlay.Server
                 HTTPListenServer.Prefixes.Add(P);
             }
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 HTTPListenServer.Start();
                 ProcessPages = new(() => ServerSendAlerts());
@@ -273,7 +273,7 @@ namespace StreamerBotLib.Overlay.Server
                     {
                         ResponseCount++; // increase count for active listeners
                     }
-                    ThreadManager.CreateThreadStart(() => ResponseListen.Invoke());
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ResponseListen.Invoke());
                     //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Adding more http server listening threads, now {ResponseCount}.");
                 }
                 Thread.Sleep(200);

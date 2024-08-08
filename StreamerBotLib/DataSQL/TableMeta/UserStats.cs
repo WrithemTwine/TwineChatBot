@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -48,54 +45,54 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.UserStats(
-                                          (System.TimeSpan)Values["WatchTime"], 
-                                          Convert.ToInt32(Values["ChannelChat"]), 
-                                          Convert.ToInt32(Values["CallCommands"]), 
-                                          Convert.ToInt32(Values["RewardRedeems"]), 
-                                          Convert.ToInt32(Values["ClipsCreated"]), 
-                                          (System.String)Values["UserId"], 
-                                          (System.String)Values["UserName"], 
+                                          (System.TimeSpan)Values["WatchTime"],
+                                          Convert.ToInt32(Values["ChannelChat"]),
+                                          Convert.ToInt32(Values["CallCommands"]),
+                                          Convert.ToInt32(Values["RewardRedeems"]),
+                                          Convert.ToInt32(Values["ClipsCreated"]),
+                                          (System.String)Values["UserId"],
+                                          (System.String)Values["UserName"],
                                           (StreamerBotLib.Enums.Platform)Values["Platform"]
 );
         }
         public void CopyUpdates(Models.UserStats modelData)
         {
-          if (modelData.WatchTime != WatchTime)
+            if (modelData.WatchTime != WatchTime)
             {
                 modelData.WatchTime = WatchTime;
             }
 
-          if (modelData.ChannelChat != ChannelChat)
+            if (modelData.ChannelChat != ChannelChat)
             {
                 modelData.ChannelChat = ChannelChat;
             }
 
-          if (modelData.CallCommands != CallCommands)
+            if (modelData.CallCommands != CallCommands)
             {
                 modelData.CallCommands = CallCommands;
             }
 
-          if (modelData.RewardRedeems != RewardRedeems)
+            if (modelData.RewardRedeems != RewardRedeems)
             {
                 modelData.RewardRedeems = RewardRedeems;
             }
 
-          if (modelData.ClipsCreated != ClipsCreated)
+            if (modelData.ClipsCreated != ClipsCreated)
             {
                 modelData.ClipsCreated = ClipsCreated;
             }
 
-          if (modelData.UserId != UserId)
+            if (modelData.UserId != UserId)
             {
                 modelData.UserId = UserId;
             }
 
-          if (modelData.UserName != UserName)
+            if (modelData.UserName != UserName)
             {
                 modelData.UserName = UserName;
             }
 
-          if (modelData.Platform != Platform)
+            if (modelData.Platform != Platform)
             {
                 modelData.Platform = Platform;
             }

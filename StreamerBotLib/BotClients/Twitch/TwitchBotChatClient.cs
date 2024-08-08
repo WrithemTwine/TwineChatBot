@@ -111,7 +111,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Detected new access token. Updating and reseting TwitchChatClient.");
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     try
                     {
@@ -310,7 +310,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     CreateClient();
                     if (Connected = Connect())
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about ProcessFollowQueuestarted bot.");
+                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Connection complete. Notifying GUI about started bot.");
 
                         IsStarted = true;
                         IsStopped = false;
@@ -342,7 +342,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 if (IsStarted)
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a ProcessFollowQueuestarted bot, now stopping the chat bot.");
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Found a started bot, now stopping the chat bot.");
 
                     InvokeBotStopping();
                     IsStarted = false;
@@ -468,10 +468,9 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns></returns>
         public override bool ExitBot()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Exiting the chat bot.");
-
             if (TwitchChat != null && TwitchChat.IsConnected)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Exiting the chat bot.");
                 StopBot();
                 TwitchChat = null;
             }

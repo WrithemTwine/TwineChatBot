@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -81,120 +78,120 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.CommandsUser(
-                                          (System.String)Values["CmdName"], 
-                                          (System.Boolean)Values["AddMe"], 
-                                          (StreamerBotLib.Enums.ViewerTypes)Values["Permission"], 
-                                          (System.Boolean)Values["IsEnabled"], 
-                                          (System.String)Values["Message"], 
-                                          Convert.ToInt32(Values["RepeatTimer"]), 
-                                          Convert.ToInt16(Values["SendMsgCount"]), 
-                                          (ICollection<System.String>)Values["Category"], 
-                                          (System.Boolean)Values["AllowParam"], 
-                                          (System.String)Values["Usage"], 
-                                          (System.Boolean)Values["LookupData"], 
-                                          (System.String)Values["Table"], 
-                                          (System.String)Values["KeyField"], 
-                                          (System.String)Values["DataField"], 
-                                          (System.String)Values["CurrencyField"], 
-                                          (System.String)Values["Unit"], 
-                                          (StreamerBotLib.Enums.CommandAction)Values["Action"], 
-                                          Convert.ToInt32(Values["Top"]), 
+                                          (System.String)Values["CmdName"],
+                                          (System.Boolean)Values["AddMe"],
+                                          (StreamerBotLib.Enums.ViewerTypes)Values["Permission"],
+                                          (System.Boolean)Values["IsEnabled"],
+                                          (System.String)Values["Message"],
+                                          Convert.ToInt32(Values["RepeatTimer"]),
+                                          Convert.ToInt16(Values["SendMsgCount"]),
+                                          (ICollection<System.String>)Values["Category"],
+                                          (System.Boolean)Values["AllowParam"],
+                                          (System.String)Values["Usage"],
+                                          (System.Boolean)Values["LookupData"],
+                                          (System.String)Values["Table"],
+                                          (System.String)Values["KeyField"],
+                                          (System.String)Values["DataField"],
+                                          (System.String)Values["CurrencyField"],
+                                          (System.String)Values["Unit"],
+                                          (StreamerBotLib.Enums.CommandAction)Values["Action"],
+                                          Convert.ToInt32(Values["Top"]),
                                           (StreamerBotLib.Enums.CommandSort)Values["Sort"]
 );
         }
         public void CopyUpdates(Models.CommandsUser modelData)
         {
-          if (modelData.CmdName != CmdName)
+            if (modelData.CmdName != CmdName)
             {
                 modelData.CmdName = CmdName;
             }
 
-          if (modelData.AddMe != AddMe)
+            if (modelData.AddMe != AddMe)
             {
                 modelData.AddMe = AddMe;
             }
 
-          if (modelData.Permission != Permission)
+            if (modelData.Permission != Permission)
             {
                 modelData.Permission = Permission;
             }
 
-          if (modelData.IsEnabled != IsEnabled)
+            if (modelData.IsEnabled != IsEnabled)
             {
                 modelData.IsEnabled = IsEnabled;
             }
 
-          if (modelData.Message != Message)
+            if (modelData.Message != Message)
             {
                 modelData.Message = Message;
             }
 
-          if (modelData.RepeatTimer != RepeatTimer)
+            if (modelData.RepeatTimer != RepeatTimer)
             {
                 modelData.RepeatTimer = RepeatTimer;
             }
 
-          if (modelData.SendMsgCount != SendMsgCount)
+            if (modelData.SendMsgCount != SendMsgCount)
             {
                 modelData.SendMsgCount = SendMsgCount;
             }
 
-          if (modelData.Category != Category)
+            if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }
 
-          if (modelData.AllowParam != AllowParam)
+            if (modelData.AllowParam != AllowParam)
             {
                 modelData.AllowParam = AllowParam;
             }
 
-          if (modelData.Usage != Usage)
+            if (modelData.Usage != Usage)
             {
                 modelData.Usage = Usage;
             }
 
-          if (modelData.LookupData != LookupData)
+            if (modelData.LookupData != LookupData)
             {
                 modelData.LookupData = LookupData;
             }
 
-          if (modelData.Table != Table)
+            if (modelData.Table != Table)
             {
                 modelData.Table = Table;
             }
 
-          if (modelData.KeyField != KeyField)
+            if (modelData.KeyField != KeyField)
             {
                 modelData.KeyField = KeyField;
             }
 
-          if (modelData.DataField != DataField)
+            if (modelData.DataField != DataField)
             {
                 modelData.DataField = DataField;
             }
 
-          if (modelData.CurrencyField != CurrencyField)
+            if (modelData.CurrencyField != CurrencyField)
             {
                 modelData.CurrencyField = CurrencyField;
             }
 
-          if (modelData.Unit != Unit)
+            if (modelData.Unit != Unit)
             {
                 modelData.Unit = Unit;
             }
 
-          if (modelData.Action != Action)
+            if (modelData.Action != Action)
             {
                 modelData.Action = Action;
             }
 
-          if (modelData.Top != Top)
+            if (modelData.Top != Top)
             {
                 modelData.Top = Top;
             }
 
-          if (modelData.Sort != Sort)
+            if (modelData.Sort != Sort)
             {
                 modelData.Sort = Sort;
             }

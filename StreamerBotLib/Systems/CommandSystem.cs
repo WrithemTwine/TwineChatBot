@@ -52,7 +52,7 @@ namespace StreamerBotLib.Systems
             if (ElapsedThread == null || !ElapsedThread.IsAlive)
             {
                 ChatBotStarted = true;
-                ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
+                ElapsedThread = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ElapsedCommandTimers);
                 ElapsedThread.Start();
             }
         }
@@ -94,7 +94,7 @@ namespace StreamerBotLib.Systems
                     {
                         if (RepeatList.UniqueAdd(item))
                         {
-                            ThreadManager.CreateThreadStart(() => RepeatCmd(item));
+                            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => RepeatCmd(item));
                         }
                         else
                         {
@@ -346,7 +346,7 @@ namespace StreamerBotLib.Systems
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Now checking if the user is on the shout list.");
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 foreach (LiveUser U in CurrActiveUsers)
                 {
@@ -561,7 +561,7 @@ namespace StreamerBotLib.Systems
             {
                 string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@", "") : User.UserName;
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     DateTime created = BotController.GetUserAccountAge(ParamUser, User.Platform);
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -773,7 +773,7 @@ namespace StreamerBotLib.Systems
 
                     if (cmdrow.Message.Contains(MsgVars.category.ToString()))
                     {
-                        ThreadManager.CreateThreadStart(() =>
+                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                         {
                             lock (GUI.GUIDataManagerLock.Lock)
                             {

@@ -4,7 +4,6 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
@@ -94,7 +93,7 @@ namespace StreamerBotLib.GUI.Windows
 
                 object datavalue = databaseTableMeta.Values[dataColumn];
 
-                UIElement dataout = Convert(datavalue, dataColumn, databaseTableMeta.TableName, databaseTableMeta.Meta[dataColumn], CheckLockTable);
+                UIElement dataout = Convert(datavalue ?? "", dataColumn, databaseTableMeta.TableName, databaseTableMeta.Meta[dataColumn], CheckLockTable);
 
                 // Check after adding "dataout" via Convert() whether we added the string counting event - add labels to hold the string count value
                 if (AddedStringEvent)
@@ -183,7 +182,7 @@ namespace StreamerBotLib.GUI.Windows
                     //    };
 
                     //foreach (var E in ColEnums[dataColumnName])
-                    foreach( var E in Enum.GetValues(ColumnType))
+                    foreach (var E in Enum.GetValues(ColumnType))
                     {
                         enumlist.Add(E.ToString());
                     }
@@ -606,7 +605,7 @@ namespace StreamerBotLib.GUI.Windows
                 ActionNameElement.ItemsSource = MediaOverlayEventActions[ActionType.SelectedValue.ToString()];
             }
         }
-        
+
         public void SetOverlayActions(Dictionary<string, List<string>> keyValuePairs)
         {
             MediaOverlayEventActions.Clear();

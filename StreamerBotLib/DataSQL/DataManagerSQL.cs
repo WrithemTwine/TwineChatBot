@@ -71,6 +71,11 @@ switches:
             context = dbContextFactory.CreateDbContext();
         }
 
+        public void Exit()
+        {
+            context.Dispose();
+        }
+
         private void BuildDataContext()
         {
             if (context == default)
@@ -1358,7 +1363,7 @@ switches:
             {
                 ProcessFollowQueuestarted = true;
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     SystemsController.AppDispatcher.BeginInvoke(() =>
                     {
@@ -1394,7 +1399,6 @@ switches:
                             }
                         }
 
-                        NotifyDataCollectionUpdated(nameof(Followers));
 
                         lock (GUIDataManagerLock.Lock)
                         {
@@ -1407,6 +1411,8 @@ switches:
                         {
                             StopBulkFollows();
                         }
+
+                        NotifyDataCollectionUpdated(nameof(Followers));
                     });
                 });
             }

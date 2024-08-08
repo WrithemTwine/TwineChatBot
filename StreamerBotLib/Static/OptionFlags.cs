@@ -28,7 +28,7 @@ namespace StreamerBotLib.Static
         public static bool IsStreamOnline { get; set; } = false;
 
         /// <summary>
-        /// Flags whether the streamer channel ProcessFollowQueuestarted a raid - could be anyone based on command rights
+        /// Flags whether the streamer channel started a raid - could be anyone based on command rights
         /// </summary>
         public static bool TwitchOutRaidStarted { get; set; } = false;
         /// <summary>
@@ -247,7 +247,7 @@ namespace StreamerBotLib.Static
         public static bool UserPartyStop => Settings.Default.UserPartyStop;
 
         /// <summary>
-        /// Specifies if the MultiLive bot autostarts when application opens, standalone app isn't running, and LiveMonitor bot is ProcessFollowQueuestarted.
+        /// Specifies if the MultiLive bot autostarts when application opens, standalone app isn't running, and LiveMonitor bot is started.
         /// </summary>
         public static bool TwitchMultiLiveAutoStart => Settings.Default.TwitchMultiLiveAutoStart;
 
@@ -976,9 +976,9 @@ namespace StreamerBotLib.Static
         #endregion
 
         /// <summary>
-        /// Sets whether the "Join Party" list is ProcessFollowQueuestarted or not, and refreshes the settings.
+        /// Sets whether the "Join Party" list is started or not, and refreshes the settings.
         /// </summary>
-        /// <param name="Start">Whether the party is ProcessFollowQueuestarted.</param>
+        /// <param name="Start">Whether the party is started.</param>
         public static void SetParty(bool Start = true)
         {
             Settings.Default.UserPartyStart = Start;

@@ -18,5 +18,10 @@ namespace StreamerBotLib.Models
         /// Priority for ordering the threads; 1-5 is high-priority; 100-120 is low priority; 0 is neutral priority.
         /// </summary>
         public int ThreadPriority;
+
+        /// <summary>
+        /// The method calling for a new thread
+        /// </summary>
+        public string CallingSource;
     }
 }

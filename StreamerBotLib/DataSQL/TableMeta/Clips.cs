@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -45,48 +42,48 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Clips(
-                                          Convert.ToInt32(Values["ClipId"]), 
-                                          (System.DateTime)Values["CreatedAt"], 
-                                          (System.String)Values["Title"], 
-                                          (System.String)Values["CategoryId"], 
-                                          (System.String)Values["Language"], 
-                                          (System.Single)Values["Duration"], 
+                                          Convert.ToInt32(Values["ClipId"]),
+                                          (System.DateTime)Values["CreatedAt"],
+                                          (System.String)Values["Title"],
+                                          (System.String)Values["CategoryId"],
+                                          (System.String)Values["Language"],
+                                          (System.Single)Values["Duration"],
                                           (System.String)Values["Url"]
 );
         }
         public void CopyUpdates(Models.Clips modelData)
         {
-          if (modelData.ClipId != ClipId)
+            if (modelData.ClipId != ClipId)
             {
                 modelData.ClipId = ClipId;
             }
 
-          if (modelData.CreatedAt != CreatedAt)
+            if (modelData.CreatedAt != CreatedAt)
             {
                 modelData.CreatedAt = CreatedAt;
             }
 
-          if (modelData.Title != Title)
+            if (modelData.Title != Title)
             {
                 modelData.Title = Title;
             }
 
-          if (modelData.CategoryId != CategoryId)
+            if (modelData.CategoryId != CategoryId)
             {
                 modelData.CategoryId = CategoryId;
             }
 
-          if (modelData.Language != Language)
+            if (modelData.Language != Language)
             {
                 modelData.Language = Language;
             }
 
-          if (modelData.Duration != Duration)
+            if (modelData.Duration != Duration)
             {
                 modelData.Duration = Duration;
             }
 
-          if (modelData.Url != Url)
+            if (modelData.Url != Url)
             {
                 modelData.Url = Url;
             }

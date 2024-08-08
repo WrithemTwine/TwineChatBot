@@ -9,6 +9,8 @@ using StreamerBotLib.Systems;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace StreamerBot
 {
@@ -27,6 +29,29 @@ namespace StreamerBot
             if (!string.IsNullOrEmpty(OptionFlags.TwitchChannelName) && !string.IsNullOrEmpty(OptionFlags.TwitchBotUserName))
             {
                 StreamerBotLib.BotIOController.BotController.CheckTwitchChannelBotIds();
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Twitch_AuthCode_Button_AuthorizeBot != null)
+            {
+                CheckFocus();
+            }
+        }
+        private void TextBox_TextChanged(object sender, TextCompositionEventArgs e)
+        {
+            if (Twitch_AuthCode_Button_AuthorizeBot != null)
+            {
+                CheckFocus();
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, RoutedEventArgs e)
+        {
+            if (Twitch_AuthCode_Button_AuthorizeBot != null)
+            {
+                CheckFocus();
             }
         }
 

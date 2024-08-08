@@ -38,8 +38,8 @@ namespace StreamerBot
         {
             ChooseDatabase chooseDatabase = new();
             chooseDatabase.ExitApp += ChooseDatabase_ExitApp;
-            
-            if(!
+
+            if (!
 #if DEBUG || RELEASE_SQLITE
             OptionFlags.EFCDatabaseProviderSqlite
 #elif RELEASE_POSTGRE

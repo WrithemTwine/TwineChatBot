@@ -231,7 +231,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (HelixApiCalls != null)
             {
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     if (StreamerChannelId == null && BotChannelId == null && TwitchChannelName != null)
                     {

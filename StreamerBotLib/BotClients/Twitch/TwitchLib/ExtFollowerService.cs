@@ -167,7 +167,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         }
 
         /// <summary>
-        /// Updates the followerservice with the latest followers. Automatically called internally when service is ProcessFollowQueuestarted.
+        /// Updates the followerservice with the latest followers. Automatically called internally when service is started.
         /// </summary>
         /// <param name="callEvents">Whether to invoke the update events or not.</param>
         public async Task UpdateLatestFollowersAsync(bool callEvents = true)

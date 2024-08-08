@@ -175,7 +175,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         private void BeginProcMsgs()
         {
-            // TODO: set option to stop messages immediately, and wait until ProcessFollowQueuestarted again to send them
+            // TODO: set option to stop messages immediately, and wait until started again to send them
             // until the ProcessOps is false to stop operations, only run until the operations queue is empty
             while ((OptionFlags.ActiveToken || Operations.Count > 0) && StartedChatBots.Count > 0)
             {
@@ -505,7 +505,7 @@ namespace StreamerBotLib.BotIOController
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Found the stream is online.");
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     if (bots == Platform.Twitch || bots == Platform.Default)
                     {
@@ -1015,7 +1015,7 @@ namespace StreamerBotLib.BotIOController
 
             if (StartedChatBots.Count == 1 && args == null)
             {
-                SendThread = ThreadManager.CreateThread(BeginProcMsgs, Priority: ThreadExitPriority.Normal);
+                SendThread = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, BeginProcMsgs, Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
                 Systems.NotifyBotStart();
             }

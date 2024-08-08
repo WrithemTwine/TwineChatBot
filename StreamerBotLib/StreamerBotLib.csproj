@@ -66,11 +66,11 @@
 	<ItemGroup>
 		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.3.0" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="8.0.6" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.6" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.6" Condition="'$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -79,7 +79,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'" />
-		<PackageReference Include="System.Drawing.Common" Version="8.0.6" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.7" />
 		<PackageReference Include="TwitchLib.Api" Version="3.9.0" />
 		<PackageReference Include="TwitchLib.Api.Core" Version="3.9.0" />
 		<PackageReference Include="TwitchLib.Api.Helix" Version="3.9.0" />

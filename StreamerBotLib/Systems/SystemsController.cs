@@ -80,6 +80,7 @@ namespace StreamerBotLib.Systems
         public void Exit()
         {
             ProcessMsgs?.Join();
+            ((DataManagerSQL)DataManage).Exit();
         }
 
         #region Chatbot
@@ -120,7 +121,7 @@ namespace StreamerBotLib.Systems
             // prevent starting another thread
             if (ProcessMsgs == null || !ProcessMsgs.IsAlive)
             {
-                ProcessMsgs = ThreadManager.CreateThread(ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
+                ProcessMsgs = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
                 ProcessMsgs.Start();
             }
 
@@ -406,7 +407,7 @@ namespace StreamerBotLib.Systems
         {
             try
             {
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     AppDispatcher.BeginInvoke(new BotOperation(() =>
                     {
@@ -715,7 +716,7 @@ namespace StreamerBotLib.Systems
         }
 
         /// <summary>
-        /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be ProcessFollowQueuestarted through <code>BeginGiveaway()</code>.
+        /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be started through <code>BeginGiveaway()</code>.
         /// </summary>
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(string DisplayName)
@@ -814,7 +815,7 @@ namespace StreamerBotLib.Systems
                         foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksSource.Discord, WebhooksKind.Clips))
                         {
                             // TODO: add into database->enable adding data
-                            DiscordWebhook.SendMessage(u.Item2, c.Url, null);
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
                             UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to WebHooks
                         }
                     }

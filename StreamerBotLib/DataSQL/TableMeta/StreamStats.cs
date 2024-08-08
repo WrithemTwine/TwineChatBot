@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -93,144 +90,144 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.StreamStats(
-                                          (System.DateTime)Values["StreamStart"], 
-                                          (System.DateTime)Values["StreamEnd"], 
-                                          Convert.ToInt32(Values["NewFollows"]), 
-                                          Convert.ToInt32(Values["NewSubscribers"]), 
-                                          Convert.ToInt32(Values["GiftSubs"]), 
-                                          Convert.ToInt32(Values["Bits"]), 
-                                          Convert.ToInt32(Values["Raids"]), 
-                                          Convert.ToInt32(Values["Hosted"]), 
-                                          Convert.ToInt32(Values["UsersBanned"]), 
-                                          Convert.ToInt32(Values["UsersTimedOut"]), 
-                                          Convert.ToInt32(Values["ModeratorsPresent"]), 
-                                          Convert.ToInt32(Values["SubsPresent"]), 
-                                          Convert.ToInt32(Values["VIPsPresent"]), 
-                                          Convert.ToInt32(Values["TotalChats"]), 
-                                          Convert.ToInt32(Values["CommandsMsgs"]), 
-                                          Convert.ToInt32(Values["AutomatedEvents"]), 
-                                          Convert.ToInt32(Values["AutomatedCommands"]), 
-                                          Convert.ToInt32(Values["WebhookMsgs"]), 
-                                          Convert.ToInt32(Values["ClipsMade"]), 
-                                          Convert.ToInt32(Values["ChannelPtCount"]), 
-                                          Convert.ToInt32(Values["ChannelChallenge"]), 
-                                          Convert.ToInt32(Values["MaxUsers"]), 
+                                          (System.DateTime)Values["StreamStart"],
+                                          (System.DateTime)Values["StreamEnd"],
+                                          Convert.ToInt32(Values["NewFollows"]),
+                                          Convert.ToInt32(Values["NewSubscribers"]),
+                                          Convert.ToInt32(Values["GiftSubs"]),
+                                          Convert.ToInt32(Values["Bits"]),
+                                          Convert.ToInt32(Values["Raids"]),
+                                          Convert.ToInt32(Values["Hosted"]),
+                                          Convert.ToInt32(Values["UsersBanned"]),
+                                          Convert.ToInt32(Values["UsersTimedOut"]),
+                                          Convert.ToInt32(Values["ModeratorsPresent"]),
+                                          Convert.ToInt32(Values["SubsPresent"]),
+                                          Convert.ToInt32(Values["VIPsPresent"]),
+                                          Convert.ToInt32(Values["TotalChats"]),
+                                          Convert.ToInt32(Values["CommandsMsgs"]),
+                                          Convert.ToInt32(Values["AutomatedEvents"]),
+                                          Convert.ToInt32(Values["AutomatedCommands"]),
+                                          Convert.ToInt32(Values["WebhookMsgs"]),
+                                          Convert.ToInt32(Values["ClipsMade"]),
+                                          Convert.ToInt32(Values["ChannelPtCount"]),
+                                          Convert.ToInt32(Values["ChannelChallenge"]),
+                                          Convert.ToInt32(Values["MaxUsers"]),
                                           (System.String)Values["Category"]
 );
         }
         public void CopyUpdates(Models.StreamStats modelData)
         {
-          if (modelData.StreamStart != StreamStart)
+            if (modelData.StreamStart != StreamStart)
             {
                 modelData.StreamStart = StreamStart;
             }
 
-          if (modelData.StreamEnd != StreamEnd)
+            if (modelData.StreamEnd != StreamEnd)
             {
                 modelData.StreamEnd = StreamEnd;
             }
 
-          if (modelData.NewFollows != NewFollows)
+            if (modelData.NewFollows != NewFollows)
             {
                 modelData.NewFollows = NewFollows;
             }
 
-          if (modelData.NewSubscribers != NewSubscribers)
+            if (modelData.NewSubscribers != NewSubscribers)
             {
                 modelData.NewSubscribers = NewSubscribers;
             }
 
-          if (modelData.GiftSubs != GiftSubs)
+            if (modelData.GiftSubs != GiftSubs)
             {
                 modelData.GiftSubs = GiftSubs;
             }
 
-          if (modelData.Bits != Bits)
+            if (modelData.Bits != Bits)
             {
                 modelData.Bits = Bits;
             }
 
-          if (modelData.Raids != Raids)
+            if (modelData.Raids != Raids)
             {
                 modelData.Raids = Raids;
             }
 
-          if (modelData.Hosted != Hosted)
+            if (modelData.Hosted != Hosted)
             {
                 modelData.Hosted = Hosted;
             }
 
-          if (modelData.UsersBanned != UsersBanned)
+            if (modelData.UsersBanned != UsersBanned)
             {
                 modelData.UsersBanned = UsersBanned;
             }
 
-          if (modelData.UsersTimedOut != UsersTimedOut)
+            if (modelData.UsersTimedOut != UsersTimedOut)
             {
                 modelData.UsersTimedOut = UsersTimedOut;
             }
 
-          if (modelData.ModeratorsPresent != ModeratorsPresent)
+            if (modelData.ModeratorsPresent != ModeratorsPresent)
             {
                 modelData.ModeratorsPresent = ModeratorsPresent;
             }
 
-          if (modelData.SubsPresent != SubsPresent)
+            if (modelData.SubsPresent != SubsPresent)
             {
                 modelData.SubsPresent = SubsPresent;
             }
 
-          if (modelData.VIPsPresent != VIPsPresent)
+            if (modelData.VIPsPresent != VIPsPresent)
             {
                 modelData.VIPsPresent = VIPsPresent;
             }
 
-          if (modelData.TotalChats != TotalChats)
+            if (modelData.TotalChats != TotalChats)
             {
                 modelData.TotalChats = TotalChats;
             }
 
-          if (modelData.CommandsMsgs != CommandsMsgs)
+            if (modelData.CommandsMsgs != CommandsMsgs)
             {
                 modelData.CommandsMsgs = CommandsMsgs;
             }
 
-          if (modelData.AutomatedEvents != AutomatedEvents)
+            if (modelData.AutomatedEvents != AutomatedEvents)
             {
                 modelData.AutomatedEvents = AutomatedEvents;
             }
 
-          if (modelData.AutomatedCommands != AutomatedCommands)
+            if (modelData.AutomatedCommands != AutomatedCommands)
             {
                 modelData.AutomatedCommands = AutomatedCommands;
             }
 
-          if (modelData.WebhookMsgs != WebhookMsgs)
+            if (modelData.WebhookMsgs != WebhookMsgs)
             {
                 modelData.WebhookMsgs = WebhookMsgs;
             }
 
-          if (modelData.ClipsMade != ClipsMade)
+            if (modelData.ClipsMade != ClipsMade)
             {
                 modelData.ClipsMade = ClipsMade;
             }
 
-          if (modelData.ChannelPtCount != ChannelPtCount)
+            if (modelData.ChannelPtCount != ChannelPtCount)
             {
                 modelData.ChannelPtCount = ChannelPtCount;
             }
 
-          if (modelData.ChannelChallenge != ChannelChallenge)
+            if (modelData.ChannelChallenge != ChannelChallenge)
             {
                 modelData.ChannelChallenge = ChannelChallenge;
             }
 
-          if (modelData.MaxUsers != MaxUsers)
+            if (modelData.MaxUsers != MaxUsers)
             {
                 modelData.MaxUsers = MaxUsers;
             }
 
-          if (modelData.Category != Category)
+            if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }

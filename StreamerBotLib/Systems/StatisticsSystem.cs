@@ -414,7 +414,7 @@ namespace StreamerBotLib.Systems
                 UpdateDeathCounter = true;
                 result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Waiting for 30 seconds to prevent another death counter update.");
 
