@@ -22,6 +22,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private static HelixApiService HelixApiCalls;
 
+   
         /// <summary>
         /// Contains the Helix API utilizing the Channel-Streamer access token
         /// </summary>
@@ -37,6 +38,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 return HelixApiService.StreamerAPI;
             }
         }
+   
         /// <summary>
         /// Contains the Helix API utilizing the Bot account access token
         /// </summary>

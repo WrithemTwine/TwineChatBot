@@ -6,7 +6,7 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(ClipId), nameof(CategoryId))]
     [Index(nameof(ClipId), nameof(CreatedAt), nameof(CategoryId))]
-    public class Clips(int clipId = 0,
+    public class Clips(string clipId = "0",
                        DateTime createdAt = default,
                        string title = null,
                        string categoryId = null,
@@ -14,7 +14,7 @@ namespace StreamerBotLib.DataSQL.Models
                        float duration = 0,
                        string url = null) : EntityBase
     {
-        public int ClipId { get; set; } = clipId;
+        public string ClipId { get; set; } = clipId;
         public DateTime CreatedAt { get; set; } = createdAt;
         public string Title { get; set; } = title;
         public string CategoryId { get; set; } = categoryId;

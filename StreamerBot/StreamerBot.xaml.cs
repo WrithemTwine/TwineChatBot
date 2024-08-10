@@ -28,6 +28,9 @@ namespace StreamerBot
 
     // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
 
+
+    // TODO: correct "MediaOverlayServer" bot starting with "all bots" -but doesn't properly get started
+
     /// <summary>
     /// Interaction logic for OverlayWindow.xaml
     /// </summary>
@@ -54,12 +57,6 @@ namespace StreamerBot
         /// </summary>
         private List<Tuple<bool, RadioButton>> BotOps { get; }
 
-        #region delegates
-        private delegate void RefreshBotOp(Button targetclick, Action<string> InvokeMethod);
-        private delegate void BotOperation();
-
-        #endregion
-
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
@@ -81,7 +78,7 @@ namespace StreamerBot
                 new(Settings.Default.TwitchFollowerSvcAutoStart, Radio_Twitch_FollowBotStart),
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Radio_Twitch_ClipBotStart),
-                new(OptionFlags.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
+                new(Settings.Default.MediaOverlayAutoStart, Radio_Services_OverlayBotStart),
                 new(false, Radio_Twitch_PubSubBotStart)
             ];
 
@@ -422,7 +419,7 @@ namespace StreamerBot
         {
             foreach (RadioButton rb in
                                         from A in BotOps
-                                        where A.Item2.Name.Contains(platform.ToString())
+                                       // where A.Item2.Name.Contains(platform.ToString())
                                         select A.Item2
                                         )
             {

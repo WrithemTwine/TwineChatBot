@@ -4,6 +4,7 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Overlay;
 using StreamerBotLib.Static;
 
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,8 +17,8 @@ namespace StreamerBot
         private MediaOverlayPage MediaOverlayPage = null;
         private MediaOverlay MediaOverlay = null;
 
-        private void RadioButton_MediaOverlayServer_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        { // actually attached to "PreviewMouseLeftButtonDown" to perform before starting the bot, as this determination is needed before trying to use MediaOverlayPage object
+        private void PrepareMediaOverlayServerWindow()
+        {
             CheckBox_MediaOverlayEmbedGUI.IsEnabled = false;
             string TabName = "TabItem_Bot_MediaOverlay_GUI";
             if (OptionFlags.MediaOverlayEmbedGUI)
@@ -77,14 +78,24 @@ namespace StreamerBot
 
         private void MediaOverlayServer_SetOverlayWindow(object sender, SetOverlayWindowEventArgs e)
         {
-            if (OptionFlags.MediaOverlayEmbedGUI)
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
-                e.SetOverlay(MediaOverlayPage);
-            }
-            else
-            {
-                e.SetOverlay(MediaOverlay);
-            }
+                while (MediaOverlayPage == null && MediaOverlay == null)
+                {
+                    Thread.Sleep(100);
+                }
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (OptionFlags.MediaOverlayEmbedGUI)
+                    {
+                        e.SetOverlay(MediaOverlayPage);
+                    }
+                    else
+                    {
+                        e.SetOverlay(MediaOverlay);
+                    }
+                }), null);
+            });
         }
 
         private void GUI_OnBotStarted(object sender, BotStartStopEventArgs e)
@@ -111,6 +122,7 @@ namespace StreamerBot
                         Bots.TwitchUserBot => throw new NotImplementedException(),
                         _ => throw new NotImplementedException()
                     };
+
                     HelperStartBot(radio);
 
                     if (e.BotName == Bots.MediaOverlayServer)
@@ -174,13 +186,15 @@ namespace StreamerBot
         {
             foreach (var B in BotOps)
             {
-                _ = Dispatcher.BeginInvoke(new BotOperation(() =>
+                if (B.Item2 == Radio_Services_OverlayBotStart)
                 {
-                    if (B.Item2.IsEnabled) // is enabled is a check the credentials are added to the bot
-                    {
-                        (B.Item2.DataContext as IOModule)?.StartBot();
-                    }
-                }), null);
+                    PrepareMediaOverlayServerWindow();
+                }
+
+                if (B.Item2.IsEnabled) // isenabled is a check the credentials are added to the bot
+                {
+                    DispatchStartBot(B.Item2.DataContext as IOModule);
+                }
             }
         }
 
@@ -193,10 +207,7 @@ namespace StreamerBot
         {
             foreach (var B in BotOps)
             {
-                _ = Dispatcher.BeginInvoke(new BotOperation(() =>
-                {
-                    (B.Item2.DataContext as IOModule)?.StopBot();
-                }), null);
+                DispatchStopBot(B.Item2.DataContext as IOModule);
             }
         }
 

@@ -1206,7 +1206,7 @@ switches:
             return found;
         }
 
-        public bool PostClip(int ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url)
+        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url)
         {
             lock (GUIDataManagerLock.Lock)
             {

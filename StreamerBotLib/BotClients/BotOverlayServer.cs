@@ -11,6 +11,7 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
 using System.Reflection;
@@ -276,6 +277,8 @@ namespace StreamerBotLib.BotClients
 
                 OverlayWindow.AddVisibilityEvent(OverlayWindow_UserHideWindow);
             }
+            SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
+            SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
         }
 
         public void ManageStreamOnlineOfflineStatus(bool Start)
@@ -305,9 +308,7 @@ namespace StreamerBotLib.BotClients
 
             if (OverlayPage == null)
             {
-                SetOverlayWindow?.Invoke(this, new() { SetOverlay = SetOverlayWindowGUI });
-                SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
-                SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
+                SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
             }
 
             if (!AlertsThreadStarted)
@@ -475,7 +476,6 @@ namespace StreamerBotLib.BotClients
         }
 
         #endregion
-
 
         #region unused interface
         public override bool Send(string s)

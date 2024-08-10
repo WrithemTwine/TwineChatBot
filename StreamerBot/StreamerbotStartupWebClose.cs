@@ -36,9 +36,6 @@ namespace StreamerBot
 
         private void SetDatabaseChoice()
         {
-            ChooseDatabase chooseDatabase = new();
-            chooseDatabase.ExitApp += ChooseDatabase_ExitApp;
-
             if (!
 #if DEBUG || RELEASE_SQLITE
             OptionFlags.EFCDatabaseProviderSqlite
@@ -55,6 +52,8 @@ namespace StreamerBot
 #endif
             )
             {
+                ChooseDatabase chooseDatabase = new();
+                chooseDatabase.ExitApp += ChooseDatabase_ExitApp;
                 chooseDatabase.ShowDialog();
             }
         }
@@ -195,10 +194,7 @@ namespace StreamerBot
                                                            where tuple.Item1 && tuple.Item2.IsEnabled
                                                            select tuple)
                 {
-                    Dispatcher.BeginInvoke(new BotOperation(() =>
-                    {
-                        (tuple.Item2.DataContext as IOModule)?.StartBot();
-                    }));
+                    DispatchStartBot(tuple.Item2.DataContext as IOModule);
                 }
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");

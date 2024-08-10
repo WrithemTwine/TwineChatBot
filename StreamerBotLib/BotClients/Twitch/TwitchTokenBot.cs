@@ -62,10 +62,7 @@ namespace StreamerBotLib.BotClients.Twitch
             AuthBot = new(apiSettings, new BypassLimiter(), new TwitchHttpClient(null));
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
-            {
-                CheckToken();
-            });
+            StartBot();
 
             twitchTokenBot = this;
         }
@@ -136,7 +133,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             try
             {
-                if (OptionFlags.TwitchTokenUseAuth)
+                if (OptionFlags.TwitchTokenUseAuth && !IsStarted)
                 {
                     StartBot(); // ensure bot is started
                 }

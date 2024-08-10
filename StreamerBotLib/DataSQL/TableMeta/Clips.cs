@@ -4,7 +4,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Clips : IDatabaseTableMeta
     {
-        public System.Int32 ClipId => (System.Int32)Values["ClipId"];
+        public System.String ClipId => (System.String)Values["ClipId"];
         public System.DateTime CreatedAt => (System.DateTime)Values["CreatedAt"];
         public System.String Title => (System.String)Values["Title"];
         public System.String CategoryId => (System.String)Values["CategoryId"];
@@ -31,7 +31,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         }
         public Dictionary<string, Type> Meta => new()
         {
-              { "ClipId", typeof(System.Int32) },
+              { "ClipId", typeof(System.String) },
               { "CreatedAt", typeof(System.DateTime) },
               { "Title", typeof(System.String) },
               { "CategoryId", typeof(System.String) },
@@ -42,7 +42,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Clips(
-                                          Convert.ToInt32(Values["ClipId"]),
+                                         (System.String)Values["ClipId"],
                                           (System.DateTime)Values["CreatedAt"],
                                           (System.String)Values["Title"],
                                           (System.String)Values["CategoryId"],

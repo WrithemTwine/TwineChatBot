@@ -76,85 +76,85 @@ namespace StreamerBotLib.DataSQL.Import
             }
         }
 
-        protected void EndLoadData(DataTableCollection dataTables)
-        {
-            foreach (DataTable table in dataTables)
-            {
-                table.EndLoadData();
-            }
+        //protected void EndLoadData(DataTableCollection dataTables)
+        //{
+        //    foreach (DataTable table in dataTables)
+        //    {
+        //        table.EndLoadData();
+        //    }
 
-        }
+        //}
 
-        protected void SaveData(Action<Stream, XmlWriteMode> WriteXML, Action<string, XmlWriteMode> StringWriteXML, object Lock, Action<MemoryStream> TestDataSource)
-        {
-            int CurrMins = DateTime.Now.Minute;
-            bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
+        //protected void SaveData(Action<Stream, XmlWriteMode> WriteXML, Action<string, XmlWriteMode> StringWriteXML, object Lock, Action<MemoryStream> TestDataSource)
+        //{
+        //    int CurrMins = DateTime.Now.Minute;
+        //    bool IsBackup = CurrMins >= BackupSaveToken * BackupSaveIntervalMins && CurrMins < (BackupSaveToken + 1) % BackupHrInterval * BackupSaveIntervalMins;
 
-            if (IsBackup)
-            {
-                lock (BackupDataFileXML)
-                {
-                    BackupSaveToken = CurrMins / BackupSaveIntervalMins % BackupHrInterval;
+        //    if (IsBackup)
+        //    {
+        //        lock (BackupDataFileXML)
+        //        {
+        //            BackupSaveToken = CurrMins / BackupSaveIntervalMins % BackupHrInterval;
 
-                }
-            }
-            if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
-            {
-                SaveThreadStarted = true;
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
-            }
+        //        }
+        //    }
+        //    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
+        //    {
+        //        SaveThreadStarted = true;
+        //        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
+        //    }
 
-            lock (SaveTasks) // lock the Queue, block thread if currently save task has started
-            {
-                SaveTasks.Enqueue(new(() =>
-                {
-                    lock (Lock)
-                    {
-                        try
-                        {
-                            MemoryStream SaveDataMS = new();  // new memory stream
-                            WriteXML(SaveDataMS, XmlWriteMode.DiffGram); // save the database to the memory stream
-                            TestDataSource(SaveDataMS);
-                            StringWriteXML(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
+        //    lock (SaveTasks) // lock the Queue, block thread if currently save task has started
+        //    {
+        //        SaveTasks.Enqueue(new(() =>
+        //        {
+        //            lock (Lock)
+        //            {
+        //                try
+        //                {
+        //                    MemoryStream SaveDataMS = new();  // new memory stream
+        //                    WriteXML(SaveDataMS, XmlWriteMode.DiffGram); // save the database to the memory stream
+        //                    TestDataSource(SaveDataMS);
+        //                    StringWriteXML(DataFileName, XmlWriteMode.DiffGram); // write the valid data to file
 
-                            // determine if current time is within a certain time frame, and perform the save
-                            if (IsBackup)
-                            {
-                                // write backup file
-                                StringWriteXML(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                        }
-                    }
-                }));
-            }
+        //                    // determine if current time is within a certain time frame, and perform the save
+        //                    if (IsBackup)
+        //                    {
+        //                        // write backup file
+        //                        StringWriteXML(BackupDataFileXML, XmlWriteMode.DiffGram); // write the valid data to file
+        //                    }
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+        //                }
+        //            }
+        //        }));
+        //    }
 
-        }
+        //}
 
-        protected void PerformSaveOp()
-        {
-#if LogDataManager_Actions
-            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
-#endif
+//        protected void PerformSaveOp()
+//        {
+//#if LogDataManager_Actions
+//            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
+//#endif
 
-            if (OptionFlags.ActiveToken) // don't sleep if exiting app
-            {
-                Thread.Sleep(SaveThreadWait);
-            }
+//            if (OptionFlags.ActiveToken) // don't sleep if exiting app
+//            {
+//                Thread.Sleep(SaveThreadWait);
+//            }
 
-            lock (SaveTasks) // in case save actions arrive during save try
-            {
-                if (SaveTasks.Count >= 1)
-                {
-                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
-                }
-                SaveTasks.Clear();
-            }
-            SaveThreadStarted = false; // indicate start another thread to save data
-        }
+//            lock (SaveTasks) // in case save actions arrive during save try
+//            {
+//                if (SaveTasks.Count >= 1)
+//                {
+//                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
+//                }
+//                SaveTasks.Clear();
+//            }
+//            SaveThreadStarted = false; // indicate start another thread to save data
+//        }
 
 
     }
