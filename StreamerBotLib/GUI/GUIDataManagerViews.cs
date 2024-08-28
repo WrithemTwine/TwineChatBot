@@ -141,7 +141,6 @@ namespace StreamerBotLib.GUI
             Commands.CollectionChanged += DataGrid_CollectionChanged;
 
             SetCommandCollection();
-
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

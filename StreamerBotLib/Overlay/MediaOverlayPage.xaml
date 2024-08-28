@@ -1,17 +1,17 @@
 ﻿<Page x:Class="StreamerBotLib.Overlay.MediaOverlayPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-       xmlns:local="clr-namespace:StreamerBotLib.Overlay"
-     xmlns:Data="clr-namespace:StreamerBotLib.Overlay.GUI"
-        xmlns:Prop="clr-namespace:StreamerBotLib.Properties"
-        xmlns:M ="clr-namespace:StreamerBotLib.Overlay.Models"
-      mc:Ignorable="d" 
-
-      UseLayoutRounding="True" 
-     SnapsToDevicePixels="True" 
-      Title="MediaOverlayPage">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:StreamerBotLib.Overlay"
+    xmlns:Data="clr-namespace:StreamerBotLib.Overlay.GUI"
+    xmlns:Prop="clr-namespace:StreamerBotLib.Properties"
+    xmlns:M ="clr-namespace:StreamerBotLib.Overlay.Models"
+    mc:Ignorable="d" 
+    LostFocus="TabItem_Links_LostFocus"
+    UseLayoutRounding="True" 
+    SnapsToDevicePixels="True" 
+    Title="MediaOverlayPage">
     <Page.Resources>
         <ResourceDictionary>
             <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
@@ -24,16 +24,7 @@
                     </StackPanel>
                 </StatusBarItem>
             </DataTemplate>
-            <DataTemplate x:Key="PageLinksTemplate">
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="90" Content="{Binding OverlayType}" />
-                        <TextBox Width="400" Text="{Binding OverlayHyperText}" IsReadOnly="True" IsReadOnlyCaretVisible="False" PreviewMouseLeftButtonUp="TextBox_PreviewMouseLeftButtonUp" VerticalContentAlignment="Center" Padding="2,0" />
-                    </StackPanel>
-                </ListViewItem>
-            </DataTemplate>
         </ResourceDictionary>
-
     </Page.Resources>
 
     <DockPanel>
@@ -153,11 +144,28 @@
             </TabItem>
             <TabItem x:Name="TabItem_Links" Header="Links">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server.</TextBlock>
-                    <ListView DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
-                              ItemsSource="{Binding OverlayLinks}" 
-                              ItemTemplate="{Binding Mode=OneWay, Source={StaticResource PageLinksTemplate}}" 
-                               />
+                    <DockPanel.Resources>
+                        <ContextMenu x:Key="OverlayLink_Menu">
+                            <MenuItem Header="Copy Link" Click="OverlayLink_Click" />
+                        </ContextMenu>
+                    </DockPanel.Resources>
+                    <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server. (Click link button to copy.)</TextBlock>
+                    <TextBlock x:Name="TextBlock_OverlayLink_Msg_Copied" DockPanel.Dock="Top" Foreground="{DynamicResource BrightGo}" Visibility="Hidden">Link copied!</TextBlock>
+                    <ListView x:Name="ListView_OverlayLink_List" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
+                              ItemsSource="{Binding OverlayLinks}"
+                              ContextMenu="{StaticResource OverlayLink_Menu}">
+                        <ListView.Resources>
+                            <DataTemplate x:Key="OverlayLink">
+                                <Button Content="{Binding OverlayHyperText}" Click="OverlayLink_Click" />
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn Header="Type" DisplayMemberBinding="{Binding OverlayType}" />
+                                <GridViewColumn Header="Link" CellTemplate="{StaticResource OverlayLink}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </DockPanel>
             </TabItem>
             <TabItem Header="Overlay Styles" >

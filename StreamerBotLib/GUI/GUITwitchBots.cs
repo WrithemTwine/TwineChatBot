@@ -19,22 +19,20 @@ namespace StreamerBotLib.GUI
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        public static TwitchBotChatClient TwitchChat { get; private set; }
-        public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
-        public static TwitchBotClipSvc TwitchClip { get; private set; }
-        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
-        public static TwitchBotPubSub TwitchBotPubSub { get; private set; }
+        public static TwitchBotChatClient TwitchChat { get; private set; } = BotsTwitch.TwitchBotChatClient;
+        public static TwitchBotFollowerSvc TwitchFollower { get; private set; }= BotsTwitch.TwitchFollower;
+        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = BotsTwitch.TwitchLiveMonitor;
+        public static TwitchBotClipSvc TwitchClip { get; private set; } = BotsTwitch.TwitchBotClipSvc;
+        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = BotsTwitch.TwitchBotUserSvc;
+        public static TwitchBotPubSub TwitchBotPubSub { get; private set; } = BotsTwitch.TwitchBotPubSub;
 
         public GUITwitchBots()
         {
-            TwitchChat = BotsTwitch.TwitchBotChatClient;
-            TwitchFollower = BotsTwitch.TwitchFollower;
-            TwitchClip = BotsTwitch.TwitchBotClipSvc;
-            TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
-            TwitchBotUserSvc = BotsTwitch.TwitchBotUserSvc;
-            TwitchBotPubSub = BotsTwitch.TwitchBotPubSub;
+            BotsTwitch.IsInitialized += BotsTwitch_IsInitialized;
+        }
 
+        private void BotsTwitch_IsInitialized(object sender, EventArgs e)
+        {
             TwitchChat.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchChat.OnBotStopped += TwitchBot_OnBotStopped;
             TwitchChat.OnBotFailedStart += TwitchBot_OnBotFailedStart;

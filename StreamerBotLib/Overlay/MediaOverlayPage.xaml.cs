@@ -30,6 +30,7 @@ namespace StreamerBotLib.Overlay
 
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
+            
 
             GUIData = (GUIData)Resources["GUIAppData"];
 
@@ -269,5 +270,31 @@ namespace StreamerBotLib.Overlay
             // refresh the styles presented in the GUI, due to the duration change
             BuildStylePages();
         }
+
+        private void OverlayLink_Click(object sender, RoutedEventArgs e)
+        {
+            int x = 0;
+            int max = 2;
+            while (x < max)
+            {
+                try
+                {
+                    Clipboard.SetText(((Button)sender).Content.ToString());
+                    x = max;
+                }
+                catch
+                {
+                    x++;
+                    Thread.Sleep(2);
+                }
+            }
+            TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
+        }
+
+        private void TabItem_Links_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Hidden;
+        }
+
     }
 }

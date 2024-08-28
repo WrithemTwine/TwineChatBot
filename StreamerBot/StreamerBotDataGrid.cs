@@ -139,8 +139,8 @@ namespace StreamerBot
             if (sender.GetType() == typeof(DataGrid))
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
-                bool FoundIsEnabled = SystemsController.CheckField(((DataGrid)sender).ItemsSource.GetType().BaseType.GetGenericArguments()[0].Name, "IsEnabled");
-
+                bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => c.Header == "IsEnabled").Any();
+                    
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))

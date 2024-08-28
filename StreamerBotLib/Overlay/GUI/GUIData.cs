@@ -34,13 +34,13 @@ namespace StreamerBotLib.Overlay.GUI
         /// </summary>
         public GUIData()
         {
-            OverlayStats = new()
-            {
+            OverlayStats =
+            [
 #if DEBUG
                 new() { OverlayType = OverlayTypes.ChannelPoints.ToString(), OverlayCount = 5 },
                 new() { OverlayCount=10, OverlayType=OverlayTypes.ChannelEvents.ToString() }
 #endif
-            };
+            ];
 
 #if DEBUG_
             OverlayEditStyles.Add(new OverlayStyle(OverlayTypes.None.ToString()));

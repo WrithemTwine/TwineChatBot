@@ -4,15 +4,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        xmlns:core="clr-namespace:System;assembly=mscorlib" 
-        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
-        xmlns:OEnums="clr-namespace:StreamerBotLib.Overlay.Enums;assembly=StreamerBotLib"
-        xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
         xmlns:local="clr-namespace:StreamerBot"
-        xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
         xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models;assembly=StreamerBotLib"
+        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
+        xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
+        xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
-        xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
+        xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib" 
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="Streamer Bot Manager" 
         Top="{Binding GUITop, Source={x:Static s:Settings.Default}, Mode=TwoWay}"
@@ -27,7 +26,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
-            <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
             <GUI:GUIAppStats x:Name="AppStats" x:Key="AppStats" />
             <GUI:GUIAppServices x:Name="AppServices" x:Key="AppServices" />
             <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
@@ -40,11 +38,14 @@
 
             <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
                 <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
-                <MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />
-                <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
+                <!--<MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />-->
+                <MenuItem x:Name="DataGridContextMenu_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick" 
+                          ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
                 <Separator x:Name="DataGridContextMenu_Separator1" />
-                <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
-                <MenuItem x:Name="DataGridContextMenu_LiveMonitor" Header="Add User to LiveMonitor list" ToolTip="Does not Duplicate, 100 max" Visibility="Collapsed" Click="MenuItem_LiveMonitorClick"/>
+                <MenuItem x:Name="DataGridContextMenu_AutoShout" Header="Add User to AutoShout list" ToolTip="Does not Duplicate" 
+                          Visibility="Collapsed" Click="MenuItem_AutoShoutClick"/>
+                <MenuItem x:Name="DataGridContextMenu_LiveMonitor" Header="Add User to LiveMonitor list" 
+                          ToolTip="Does not Duplicate, 100 max" Visibility="Collapsed" Click="MenuItem_LiveMonitorClick"/>
                 <Separator x:Name="DataGridContextMenu_Separator2" />
                 <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
@@ -53,90 +54,6 @@
             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
                 <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
             </Style>
-
-            <ObjectDataProvider x:Key="EnumWebhooksSource" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:WebhooksSource" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumWebhooksKind" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:WebhooksKind" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumPlatform" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:Platform" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumBanReasons" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:BanReasons" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumViewerTypes" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:ViewerTypes" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumCommandAction" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:CommandAction" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumCommandSort" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:CommandSort" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumMsgTypes" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:MsgTypes" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumBanReason" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:BanReasons" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumModActions" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:ModActions" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumModActionType" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:ModActionType" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumModPerformType" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="Enums:ModPerformType" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumOverlayTickerItem" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="OEnums:OverlayTickerItem" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
-
-            <ObjectDataProvider x:Key="EnumOverlayServiceTypes" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="OEnums:OverlayTypes" />
-                </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
@@ -1552,7 +1469,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             </GroupBox>
                                             -->
             </TabItem>
-            <TabItem Header="Data" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}"  VerticalAlignment="Stretch" d:LayoutOverrides="Height">
+            <TabItem Header="Data" VerticalAlignment="Stretch" d:LayoutOverrides="Height">
                 <DockPanel>
                     <TabControl>
                         <TabItem Header="Variables">
@@ -1580,8 +1497,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                     <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_DiscordWebhooks_Click" />
                                     <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
                                 </StackPanel>
-                                <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" ItemsSource="{Binding Webhooks}"
-                                          CanUserAddRows="True" IsReadOnly="False"
+                                <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}" CanUserDeleteRows="True" IsReadOnly="False"
                                           ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
@@ -1610,7 +1526,8 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <LineBreak />
                                             The default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".<LineBreak />
                                         </TextBlock>
-                                        <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top" ItemsSource="{Binding ModeratorApprove}" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                        <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ModeratorApprove_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening"                                                       CanUserDeleteRows="True"
+                                                     >
                                             <DataGrid.Columns>
                                                 <DataGridCheckBoxColumn Header="Is Enabled" Binding="{Binding IsEnabled}" />
                                                 <DataGridComboBoxColumn Header="ModActionType" SelectedItemBinding="{Binding ModActionType}" ItemsSource="{Binding Source={StaticResource EnumModActionType}}" />
@@ -1637,7 +1554,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <TextBlock Grid.Row="0" Grid.ColumnSpan="3" MinWidth="150">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified. <LineBreak />
                                 This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment. <LineBreak /> <Run Foreground="Red">Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</Run></TextBlock>
 
-                                        <DataGrid x:Name="DG_Mod_BanReasons" Grid.Row="1" Grid.Column="0"  Margin="5" ItemsSource="{Binding BanReasons}" CanUserDeleteRows="False" CanUserAddRows="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                                        <DataGrid x:Name="DG_Mod_BanReasons" Grid.Row="1" Grid.Column="0"  Margin="5" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanReasons_CVS}}" CanUserDeleteRows="False" CanUserAddRows="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="Msg Type" ItemsSource="{Binding Source={StaticResource EnumMsgTypes}}" SelectedItemBinding="{Binding MsgType}" />
@@ -1652,7 +1569,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             more tolerable than new arrivals, options provided for to help with this.
                                         </TextBlock>
 
-                                        <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" ItemsSource="{Binding BanRules}" CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
+                                        <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanRules_CVS}}" CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id}" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="ModAction" ItemsSource="{Binding Source={StaticResource EnumModActions}}" SelectedItemBinding="{Binding ModAction}" />
@@ -1662,7 +1579,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             </DataGrid.Columns>
                                         </DataGrid>
 
-                                        <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" ItemsSource="{Binding LearnMsgs}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False">
+                                        <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_LearnMsgs_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="Msg Type" ItemsSource="{Binding Source={StaticResource EnumMsgTypes}}" SelectedItemBinding="{Binding MsgType}" />
@@ -1706,7 +1623,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 </Button>
                                                 <Button x:Name="Button_ClearWatchTime" Content="Reset All WatchTime" Height="20" Width="120" Click="Button_ClearWatchTime_Click" Margin="15,0,15,0" />
                                             </StackPanel>
-                                            <DataGrid x:Name="DG_Users" ItemsSource="{Binding Users}" ContextMenuOpening="DG_Edit_ContextMenuOpening" CanUserDeleteRows="True" IsReadOnly="True" FrozenColumnCount="3">
+                                            <DataGrid x:Name="DG_Users" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Users_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="True" FrozenColumnCount="3">
                                                 <DataGrid.Columns>
                                                     <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
@@ -1714,7 +1631,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding Followers.IsFollower}" />
                                                     <DataGridTemplateColumn Header="First Seen" CellTemplate="{Binding Source={StaticResource DateFirstSeenTemplate}}" SortMemberPath="FirstDateSeen" />
                                                     <DataGridTemplateColumn Header="Current Login" CellTemplate="{Binding Source={StaticResource DateCurrentLoginTemplate}}" SortMemberPath="CurrLoginDate" />
-                                                    <DataGridTemplateColumn Header="Last Seen" CellTemplate="{Binding Source={StaticResource DateLastSeenTemplate}}" SortMemberPath="LastDateSeen" />
+                                                    <DataGridTemplateColumn Header="Last Seen" CellTemplate="{Binding Source={StaticResource DateLastSeenTemplate}}" SortMemberPath="LastDateSeen" SortDirection="Descending" />
                                                     <DataGridTextColumn Header="Watch Time" Binding="{Binding UserStats.WatchTime}" />
                                                     <DataGridTextColumn Header="Commands" Binding="{Binding UserStats.CallCommands, StringFormat={}{0:#,#}}" />
                                                     <DataGridTextColumn Header="Chats" Binding="{Binding UserStats.ChannelChat, StringFormat={}{0:#,#}}" />
@@ -1726,14 +1643,15 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel x:Name="DockPanel_UserData_Followers" Grid.Row="0" Grid.Column="2">
                                             <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
-                                            <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Followers}" ContextMenuOpening="DG_Edit_ContextMenuOpening"  CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True">
+                                            <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Follows_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                                                      CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True" RowDetailsTemplate="{StaticResource DG_RowDetailDT_Followers}" >
                                                 <DataGrid.Columns>
                                                     <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" SortMemberPath="UserId" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding IsFollower}" />
-                                                    <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}" />
-                                                    <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" />
+                                                    <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}"  SortMemberPath="FollowedDate" SortDirection="Descending" />
+                                                    <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" SortMemberPath="StatusChangeDate" SortDirection="Descending" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </DockPanel>
@@ -1756,7 +1674,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <Button Width="250" Height="20" Content="Shout these Users if in Chat" ToolTip="The 'soactive' command needs to be enabled." Margin="10,10,10,10" Click="ShoutUsers_Click"/>
                                         </StackPanel>
 
-                                        <DataGrid x:Name="DG_User_Shoutouts" Grid.Row="1" ItemsSource="{Binding ShoutOuts, Mode=OneWay}" >
+                                        <DataGrid x:Name="DG_User_Shoutouts" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ShoutOuts_CVS}}"                                                       CanUserDeleteRows="True">
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                 <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
@@ -1765,7 +1683,8 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         </DataGrid>
 
                                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Specify a custom message per UserName, tied to Welcome Message options - first appearance or first message. Otherwise, system falls back onto default." />
-                                        <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding CustomWelcome, Mode=OneWay}">
+                                        <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CustomWelcome_CVS}}"                                                       CanUserDeleteRows="True"
+                                                      >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                 <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
@@ -1793,7 +1712,8 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                     <TextBlock Width="744">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</TextBlock>
                                                 </Label>
                                                 <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" Content="Clear All Currency Values" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
-                                                <DataGrid x:Name="DG_Currency" ItemsSource="{Binding CurrencyType, Mode=OneWay}" Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
+                                                <DataGrid x:Name="DG_Currency" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CurrencyType_CVS}}" Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening"                                                       CanUserDeleteRows="True"
+                                                      >
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="CurrencyName" Binding="{Binding CurrencyName}" />
                                                         <DataGridTextColumn Header="Accure Amt" Binding="{Binding AccrueAmt, StringFormat={}{0:#,#}}" />
@@ -1801,7 +1721,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                         <DataGridTextColumn Header="Max Value" Binding="{Binding MaxValue, StringFormat={}{0:#,#}}" />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
-                                                <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Currency, Mode=OneWay}" Grid.Row="1" Grid.Column="2" >
+                                                <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Currency_CVS}}" Grid.Row="1" Grid.Column="2" >
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                         <DataGridTextColumn Header="Currency Name" Binding="{Binding CurrencyName}" />
@@ -1962,7 +1882,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         </DockPanel>
 
                                         <TextBlock Grid.Row="0" Grid.Column="1">Results of prior Giveaways recorded here! <LineBreak /> Data management is enabled or disabled in the Options tab.</TextBlock>
-                                        <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" ItemsSource="{Binding GiveawayUserData, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True" >
+                                        <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GiveawayUserData_CVS}}" IsReadOnly="False"  CanUserDeleteRows="True" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                                                 <DataGridTemplateColumn Header="Date Time" SortMemberPath="DateTime" CellTemplate="{Binding Source={StaticResource DateGiveawayTemplate}}" CellEditingTemplate="{Binding Source={StaticResource EditDateGiveawayTemplate}}" />
@@ -1976,7 +1896,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                     <Grid>
                                         <DockPanel Grid.Row="0" Grid.Column="0">
                                             <Label Content="User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" DockPanel.Dock="Top" />
-                                            <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding Quotes, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True">
+                                            <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Number" Binding="{Binding Number}" />
                                                     <DataGridTextColumn Header="Quote" Binding="{Binding Quote}" />
@@ -2004,7 +1924,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <Button x:Name="Button_SystemEvents_Disabled" Width="80" Content="Disable All" Click="Button_SystemEvents_Click" />
                                     </StackPanel>
                                 </StackPanel>
-                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding ChannelEvents, Mode=OneWay}"  Grid.Row="1" Grid.Column="2" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
+                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ChannelEvents_CVS}}"  Grid.Row="1" Grid.Column="2" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                     <DataGrid.ToolTip>
                                         <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;."/></TextBlock>
                                     </DataGrid.ToolTip>
@@ -2014,7 +1934,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
                                         <DataGridTextColumn Header="Send Msg" Binding="{Binding RepeatMsg}" />
                                         <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="250" />
-                                        <DataGridTextColumn Header="Variables" Binding="{Binding Commands}" />
+                                        <DataGridTextColumn Header="Variables" Binding="{Binding Commands}" IsReadOnly="True" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -2049,9 +1969,13 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel Grid.Row="1">
                                             <Label DockPanel.Dock="Top" Content="Built-in Commands:" />
-                                            <DataGrid DockPanel.Dock="Top" x:Name="DG_BuiltInCommands" ItemsSource="{Binding Commands, Mode=OneWay}" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" FrozenColumnCount="4" >
+                                            <DataGrid DockPanel.Dock="Top" x:Name="DG_BuiltInCommands" 
+                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Commands_CVS}}" 
+                                                      CanUserDeleteRows="False" 
+                                                      ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                                                      FrozenColumnCount="4" >
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" />
+                                                    <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" IsReadOnly="True" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
                                                     <DataGridComboBoxColumn Header="Permission" ItemsSource="{Binding Source={StaticResource EnumViewerTypes}}" SelectedItemBinding="{Binding Permission}" />
@@ -2092,7 +2016,16 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel Grid.Row="1">
                                             <Label DockPanel.Dock="Top" Content="User-Defined Commands:" />
-                                            <DataGrid x:Name="DG_UserDefinedCommands" DockPanel.Dock="Top" ItemsSource="{Binding CommandsUser, Mode=OneWay}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="True" FrozenColumnCount="4">
+                                            <DataGrid x:Name="DG_UserDefinedCommands" 
+                                                      DockPanel.Dock="Top" 
+                                                      DataContext="{Binding}"
+                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CommandsUser_CVS}}" 
+                                                      ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                                                      FrozenColumnCount="4" 
+                                                      IsSynchronizedWithCurrentItem="True"
+                                                      CanUserDeleteRows="True"
+                                                       
+                                                      >
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
@@ -2164,7 +2097,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 </StackPanel>
                                             </GroupBox>
                                         </WrapPanel>
-                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding OverlayServices, Mode=OneWay}" CanUserAddRows="True" CanUserDeleteRows="True" >
+                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}"   CanUserDeleteRows="True" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource IntConverter}}" />
@@ -2183,7 +2116,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                 <TabItem Header="Ticker">
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
-                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding OverlayTicker, Mode=OneWay}" CanUserDeleteRows="False">
+                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}" CanUserDeleteRows="False">
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Ticker Name" ItemsSource="{Binding Source={StaticResource EnumOverlayTickerItem}}" SelectedItemBinding="{Binding TickerName}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -2205,7 +2138,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding StreamStats}" >
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" >
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" SortDirection="Descending" />
                                                 <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" />
@@ -2256,7 +2189,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel x:Name="DockPanel_StreamData_Raids_Incoming" Grid.Row="0" Grid.Column="0">
                                             <TextBlock DockPanel.Dock="Top">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
-                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding InRaidData, Mode=OneWay}" IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True">
+                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
@@ -2270,7 +2203,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel x:Name="DockPanel_StreamData_Raids_Outgoing" Grid.Row="0" Grid.Column="2">
                                             <TextBlock DockPanel.Dock="Top">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
-                                            <DataGrid x:Name="DG_OutRaids" ItemsSource="{Binding OutRaidData, Mode=OneWay}" CanUserAddRows="True" CanUserDeleteRows="True" IsReadOnly="False">
+                                            <DataGrid x:Name="DG_OutRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}"   CanUserDeleteRows="True" IsReadOnly="False">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                     <DataGridTextColumn Header="To Channel" Binding="{Binding ChannelRaided}" />
@@ -2295,7 +2228,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <Label Grid.Row="0" Grid.Column="0">
                                             <TextBlock>Streaming Categories (Deleting categories may delete related data)</TextBlock>
                                         </Label>
-                                        <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding CategoryList, Mode=OneWay}" IsReadOnly="True" CanUserDeleteRows="True" >
+                                        <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" IsReadOnly="True" CanUserDeleteRows="True" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" />
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
@@ -2305,7 +2238,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <Label Grid.Row="0" Grid.Column="2">
                                             <TextBlock>Death Counter per Category</TextBlock>
                                         </Label>
-                                        <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding GameDeadCounter, Mode=OneWay}" CanUserAddRows="False" CanUserDeleteRows="False">
+                                        <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" CanUserAddRows="False" CanUserDeleteRows="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Counter" Binding="{Binding Counter}" />
@@ -2323,7 +2256,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="Clip List"/>
-                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Clips, Mode=OneWay}" Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True">
+                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="ClipId" Binding="{Binding ClipId}" />
                                                 <DataGridTextColumn Header="Category" Binding="{Binding CategoryList.Category}" />

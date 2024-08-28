@@ -4,7 +4,7 @@ namespace StreamerBotLib.DataSQL.Models
 {
     public class CommandsUser(string cmdName = null,
                           bool addMe = false,
-                          ViewerTypes permission = default,
+                          ViewerTypes permission = ViewerTypes.Viewer,
                           bool isEnabled = false,
                           string message = null,
                           int repeatTimer = 0,

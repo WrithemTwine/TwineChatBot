@@ -1,5 +1,9 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
     <Style TargetType="{x:Type DataGrid}">
         <Setter Property="AlternationCount" Value="1" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
@@ -8,6 +12,7 @@
         <Setter Property="Background" Value="{DynamicResource PartBackground}" />
         <Setter Property="RowBackground" Value="{DynamicResource DataGridBackground}" />
         <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternateColor}"/>
+        <Setter Property="CanUserAddRows" Value="False" />
 
         <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
@@ -29,13 +34,11 @@
         </Setter>
     </Style>
 
+    <!--#region DataGrid DateTime templates -->
     <DataTemplate x:Key="DateFirstSeenTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -43,10 +46,7 @@
     <DataTemplate x:Key="DateCurrentLoginTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -54,10 +54,7 @@
     <DataTemplate x:Key="DateLastSeenTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -65,10 +62,7 @@
     <DataTemplate x:Key="DateFollowedTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -76,10 +70,7 @@
     <DataTemplate x:Key="DateStatusChangedTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -87,10 +78,7 @@
     <DataTemplate x:Key="DateGiveawayTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding DateTime, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding DateTime, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding DateTime, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -102,10 +90,7 @@
     <DataTemplate x:Key="DateInRaidTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -117,10 +102,7 @@
     <DataTemplate x:Key="DateOutRaidTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -132,10 +114,7 @@
     <DataTemplate x:Key="DateClipCreatedTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -143,31 +122,117 @@
     <DataTemplate x:Key="DateStreamStartTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-    
+
     <DataTemplate x:Key="EditStreamStartTemplate">
         <DatePicker SelectedDate="{Binding StreamStart}" />
     </DataTemplate>
-    
+
     <DataTemplate x:Key="DateStreamEndTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:MMM dd, yyyy}}" />
-            </Border>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:HH:mm.ss}}"/>
+                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-    
+
     <DataTemplate x:Key="EditStreamEndTemplate">
         <DatePicker SelectedDate="{Binding StreamEnd}" />
     </DataTemplate>
+
+    <DataTemplate x:Key="DateLiveTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding LiveDate, StringFormat={}{0:d}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditLiveDateTemplate">
+        <DatePicker SelectedDate="{Binding LiveDate}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateThroughTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:d}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditThroughDateTemplate">
+        <DatePicker SelectedDate="{Binding ThroughDate}" />
+    </DataTemplate>
+    <!--#endregion-->
+
+    <!--#region DataGrid RowDetail DataTemplates -->
+    <DataTemplate x:Key="DG_RowDetailDT_Followers">
+        <Border BorderThickness="2">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,1">
+                    <TextBlock>Category when Followed:</TextBlock>
+                    <TextBlock Text="{Binding Category}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,1">
+                    <TextBlock>Followed Date:</TextBlock>
+                    <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:F}}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,1">
+                    <TextBlock>Status Changed Date:</TextBlock>
+                    <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:F}}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_Commands">
+
+    </DataTemplate>
+    <!--#endregion-->
+
+    <!--#region DataGrid SelectionViews for Sorting & Grouping table rows -->
+
+    <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
+
+    <CollectionViewSource x:Key="DG_BanReasons_CVS" Source="{Binding BanReasons, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_BanRules_CVS" Source="{Binding BanRules, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CategoryList_CVS" Source="{Binding CategoryList, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ChannelEvents_CVS" Source="{Binding ChannelEvents, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Clips_CVS" Source="{Binding Clips, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Commands_CVS" Source="{Binding Commands, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CommandsUser_CVS" Source="{Binding CommandsUser, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}" />
     
+    <CollectionViewSource x:Key="DG_Follows_CVS" Source="{Binding Followers, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="FollowedDate" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    
+    <CollectionViewSource x:Key="DG_GameDeadCounter_CVS" Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiMsgEndPoints_CVS" Source="{Binding MultiMsgEndPoints, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OutRaidData_CVS" Source="{Binding OutRaidData, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Quotes_CVS" Source="{Binding Quotes, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ShoutOuts_CVS" Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_StreamStats_CVS" Source="{Binding StreamStats, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_UserStats_CVS" Source="{Binding UserStats, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
+    
+    <!--#endregion-->
+
 </ResourceDictionary>

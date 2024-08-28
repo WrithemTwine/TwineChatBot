@@ -585,10 +585,7 @@ namespace StreamerBot
         {
             if ((sender as RadioButton).IsEnabled)
             {
-                Dispatcher.BeginInvoke(new BotOperation(() =>
-                {
-                    ((sender as RadioButton).DataContext as IOModule)?.StartBot();
-                }), null);
+                DispatchStartBot((sender as RadioButton).DataContext as IOModule);
             }
         }
 
@@ -596,10 +593,7 @@ namespace StreamerBot
         {
             if ((sender as RadioButton).IsEnabled)
             {
-                Dispatcher.BeginInvoke(new BotOperation(() =>
-                {
-                    ((sender as RadioButton).DataContext as IOModule)?.StopBot();
-                }), null);
+                DispatchStopBot((sender as RadioButton).DataContext as IOModule);
             }
         }
 
@@ -655,6 +649,5 @@ namespace StreamerBot
         {
             CheckFocus();
         }
-
     }
 }

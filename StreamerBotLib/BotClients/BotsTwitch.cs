@@ -23,6 +23,8 @@ namespace StreamerBotLib.BotClients
 {
     public class BotsTwitch : BotsBase
     {
+        // TODO:review "Clips" service for not capturing clips during 'current' stream and instead, in the 'next stream', finding and sending messages about new clips
+
         internal static TwitchTokenBot TwitchTokenBot { get; private set; }
         public static TwitchBotChatClient TwitchBotChatClient { get; private set; }
         public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
@@ -39,6 +41,7 @@ namespace StreamerBotLib.BotClients
 
         public static event EventHandler<EventArgs> RaidCompleted;
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
+        public static event EventHandler<EventArgs> IsInitialized;
 
         public BotsTwitch()
         {
@@ -84,6 +87,8 @@ namespace StreamerBotLib.BotClients
 
 
             CheckStreamerBotIds();
+
+            IsInitialized?.Invoke(this, new());
         }
 
         /// <summary>

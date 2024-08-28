@@ -259,7 +259,7 @@ namespace StreamerBotLib.GUI.Windows
                         if (dataColumnName == "Category")
                         {
                             List<CheckBox> CBcombocollection = new();
-                            List<string> selection = [.. ((string)datavalue).Split(", ")];
+                            List<string> selection = (List<string>)datavalue;
                             foreach (Tuple<string, string> tuple in DataManage.GetGameCategories())
                             {
                                 CheckBox item = new()
@@ -414,11 +414,11 @@ namespace StreamerBotLib.GUI.Windows
             //}
 
             if (LockedTable && (dataColumnName is
-                "Id" or "CmdName" or "AllowParam"
+                "CmdName" or "AllowParam"
                 or "Usage" or "lookupdata" or "table"
                 or "key_field" or "data_field"
                 or "unit" or "action"
-                or "top" or "Name"))
+                or "top" or "Name") || (dataColumnName is "Id") )
             {
                 dataout.IsEnabled = false;
             }
