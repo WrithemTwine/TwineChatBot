@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Static;
+﻿using StreamerBotLib.Static;
 
 using System.Data;
 using System.IO;

@@ -2138,10 +2138,11 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" >
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" Loaded="DG_StreamData_Stats_Loaded" >
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" SortDirection="Descending" />
-                                                <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" />
+                                                <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" SortMemberPath="StreamEnd" />
+                                                <DataGridTemplateColumn Header="Duration" CellTemplate="{StaticResource StreamDurationTemplate}" SortMemberPath="Duration" />
                                                 <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, Converter={StaticResource IntConverter}}" />
                                                 <DataGridTextColumn Header="New Subs" Binding="{Binding NewSubscribers, Converter={StaticResource IntConverter}}" />
                                                 <DataGridTextColumn Header="Gift Subs" Binding="{Binding GiftSubs, Converter={StaticResource IntConverter}}" />

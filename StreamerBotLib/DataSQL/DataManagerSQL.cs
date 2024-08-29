@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+using StreamerBotLib.DataSQL.Import;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
@@ -69,6 +70,17 @@ switches:
         public DataManagerSQL()
         {
             context = dbContextFactory.CreateDbContext();
+
+            if (!OptionFlags.EFCDataImportDataGram)
+            {
+                ImportDataSources importDataSources = new(true); // load the primary database data
+                importDataSources.ConvertData(context); // convert primary database 
+                importDataSources = new(false); // load the multilive datafile
+                importDataSources.ConvertData(context); // convert data loaded from the multilive file
+                context.SaveChanges(true);
+
+                OptionFlags.EFCDataImportDataGram = true;
+            }
         }
 
         public void Exit()
@@ -1565,7 +1577,7 @@ switches:
             {
                 BuildDataContext();
                 List<Quotes> quotes = new(from Q in context.Quotes select Q);
-                short opennum = (from Q in context.Quotes select Q.Number)
+                int opennum = (from Q in context.Quotes select Q.Number)
                     .IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
 
                 context.Quotes.Add(new(number: opennum, quote: Text));

@@ -143,6 +143,10 @@
         <DatePicker SelectedDate="{Binding StreamEnd}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="StreamDurationTemplate">
+        <TextBlock Text="{Binding Duration, StringFormat={}{0:g}}" />
+    </DataTemplate>
+
     <DataTemplate x:Key="DateLiveTemplate">
         <StackPanel>
             <Border BorderThickness="1">
@@ -171,16 +175,22 @@
     <!--#region DataGrid RowDetail DataTemplates -->
     <DataTemplate x:Key="DG_RowDetailDT_Followers">
         <Border BorderThickness="2">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,1">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
                     <TextBlock>Category when Followed:</TextBlock>
                     <TextBlock Text="{Binding Category}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,1">
+                <StackPanel>
                     <TextBlock>Followed Date:</TextBlock>
                     <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:F}}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,1">
+                <StackPanel>
                     <TextBlock>Status Changed Date:</TextBlock>
                     <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:F}}" />
                 </StackPanel>
@@ -191,7 +201,50 @@
     <DataTemplate x:Key="DG_RowDetailDT_Commands">
 
     </DataTemplate>
-    <!--#endregion-->
+
+    <DataTemplate x:Key="DG_RowDetailDT_MultiWebhooks">
+        <Border BorderThickness="1">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
+                    <TextBlock>Server NickName: </TextBlock>
+                    <TextBox Text="{Binding Server}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Webhook URL: </TextBlock>
+                    <TextBox Width="150" Text="{Binding Webhook}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_MultiChannelNames">
+        <Border BorderThickness="1">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
+                    <TextBlock>Follower to You: </TextBlock>
+                    <CheckBox IsChecked="{Binding Users.Followers.IsFollower}" IsEnabled="False" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Followed Date: </TextBlock>
+                    <TextBlock Text="{Binding Users.Followers.FollowedDate, StringFormat={}{0:F}}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+        <!--#endregion-->
 
     <!--#region DataGrid SelectionViews for Sorting & Grouping table rows -->
 
@@ -219,9 +272,23 @@
     <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_MultiMsgEndPoints_CVS" Source="{Binding MultiMsgEndPoints, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiMsgEndPoints_CVS" Source="{Binding MultiMsgEndPoints, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="Server" />
+            <scm:SortDescription PropertyName="Kind" />
+        </CollectionViewSource.SortDescriptions>
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="Kind" />
+            <PropertyGroupDescription PropertyName="AddEveryone" />
+            <PropertyGroupDescription PropertyName="Enabled" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_OutRaidData_CVS" Source="{Binding OutRaidData, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}" />

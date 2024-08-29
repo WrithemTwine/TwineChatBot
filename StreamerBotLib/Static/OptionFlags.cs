@@ -18,6 +18,16 @@ namespace StreamerBotLib.Static
         /// Indicates database xml file successfully loaded.
         /// </summary>
         public static bool MultiDataLoaded { get; set; } = false;
+
+        /// <summary>
+        /// Flag to specify the prior XML Datagram file imported into the database
+        /// </summary>
+        public static bool EFCDataImportDataGram
+        {
+            get => Settings.Default.EFCDataImportDataGram;
+            set => Settings.Default.EFCDataImportDataGram = value;
+        }
+
         /// <summary>
         /// The app-wide token to keep threads running, setting it false indicates it's all shut down to close the application.
         /// </summary>

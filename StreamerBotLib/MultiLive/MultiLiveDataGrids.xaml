@@ -55,7 +55,7 @@
         </StackPanel>
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiMsgEndPoints_CVS}}" >
+                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiMsgEndPoints_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
                 <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
@@ -63,14 +63,13 @@
                 <DataGridComboBoxColumn Header="Webhook Source" SelectedItemBinding="{Binding WebhooksSource}" ItemsSource="{Binding Source={StaticResource EnumWebhooksSource}}" />
                 <DataGridComboBoxColumn Header="Kind" SelectedItemBinding="{Binding Kind}" ItemsSource="{Binding Source={StaticResource EnumWebhooksKind}}" />
                 <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="250" MaxWidth="250" />
-                <DataGridTextColumn Header="Webhook" Binding="{Binding Webhook}" Width="250" MaxWidth="250" />
             </DataGrid.Columns>
         </DataGrid>
 
         <DockPanel Grid.Column="2" Grid.Row="2"  >
             <Label DockPanel.Dock="Top">Monitored Channels</Label>
             <DataGrid x:Name="DG_Multi_ChannelNames" DockPanel.Dock="Top"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiChannels_CVS}}">
+                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiChannels_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiChannelNames}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                     <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />

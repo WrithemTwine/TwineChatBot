@@ -649,5 +649,6 @@ namespace StreamerBot
         {
             CheckFocus();
         }
+
     }
 }

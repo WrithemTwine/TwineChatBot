@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(StreamStart))]
@@ -30,6 +32,10 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public TimeSpan Duration { get; private set; }
+
         public int NewFollows { get; set; } = newFollows;
         public int NewSubscribers { get; set; } = newSubscribers;
         public int GiftSubs { get; set; } = giftSubs;

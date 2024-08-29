@@ -7,6 +7,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -234,6 +235,18 @@ namespace StreamerBot
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
             SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
+        }
+
+        #endregion
+
+        #region Calculated Columns
+
+        private void DG_StreamData_Stats_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataColumn StatDuration = new() { ColumnName = "Duration" };
+            StatDuration.Expression = "StreamEnd - StreamStart";
+
+            
         }
 
         #endregion

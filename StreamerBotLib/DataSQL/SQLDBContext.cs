@@ -121,6 +121,9 @@ namespace StreamerBotLib.DataSQL
                 .Property(i => i.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<StreamStats>()
+                .Property(p => p.Duration)
+                .HasComputedColumnSql("[StreamEnd] - [StreamStart]", stored: true);
         }
 
         public SQLDBContext()
