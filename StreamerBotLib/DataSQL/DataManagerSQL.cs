@@ -73,9 +73,7 @@ switches:
 
             if (!OptionFlags.EFCDataImportDataGram)
             {
-                ImportDataSources importDataSources = new(true); // load the primary database data
-                importDataSources.ConvertData(context); // convert primary database 
-                importDataSources = new(false); // load the multilive datafile
+                ImportDataSources importDataSources = new(); // load the primary database data
                 importDataSources.ConvertData(context); // convert data loaded from the multilive file
                 context.SaveChanges(true);
 

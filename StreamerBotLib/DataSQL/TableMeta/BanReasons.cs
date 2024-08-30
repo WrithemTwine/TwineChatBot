@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -30,27 +33,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.BanReasons(
-                                          Convert.ToInt32(Values["Id"]),
-                                          (StreamerBotLib.Enums.MsgTypes)Values["MsgType"],
-                                          (StreamerBotLib.Enums.BanReasons)Values["BanReason"]
+
 );
         }
         public void CopyUpdates(Models.BanReasons modelData)
         {
-            if (modelData.Id != Id)
-            {
-                modelData.Id = Id;
-            }
-
-            if (modelData.MsgType != MsgType)
-            {
-                modelData.MsgType = MsgType;
-            }
-
-            if (modelData.BanReason != BanReason)
-            {
-                modelData.BanReason = BanReason;
-            }
 
         }
     }

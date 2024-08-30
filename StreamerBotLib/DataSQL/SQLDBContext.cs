@@ -57,6 +57,9 @@ namespace StreamerBotLib.DataSQL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            // these flags build the different connections to specific databases
+            // for splitting code to each release build package
+
 #if DEBUG || RELEASE_SQLITE
             optionsBuilder.UseSqlite(OptionFlags.EFCConnectStringSqlite);
 #elif RELEASE_POSTGRE
@@ -82,40 +85,84 @@ namespace StreamerBotLib.DataSQL
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<CategoryList>()
-                .HasOne(g => g.GameDeadCounter)
-                .WithOne(c => c.CategoryList)
-                .HasForeignKey<GameDeadCounter>(c => new { c.CategoryId, c.Category });
+            modelBuilder.Entity<GameDeadCounter>()
+                .HasOne(c => c.CategoryList)
+                .WithOne(g => g.GameDeadCounter)
+                .HasForeignKey<CategoryList>(c => new { c.CategoryId, c.Category })
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Clips>()
+                .HasOne(c => c.CategoryList)
+                .WithMany(c => c.Clips)
+                .HasPrincipalKey(c => new { c.CategoryId })
+                .HasForeignKey(c => new { c.CategoryId });
+
+            modelBuilder.Entity<Followers>()
+                .HasOne(c => c.CategoryList)
+                .WithMany(c => c.Followers)
+                .HasPrincipalKey(c => new { c.Category })
+                .HasForeignKey(c => new { c.Category });
+
+            modelBuilder.Entity<InRaidData>()
+                .HasOne(c => c.CategoryList)
+                .WithMany(c => c.InRaidData)
+                .HasPrincipalKey(c => new { c.Category })
+                .HasForeignKey(c => new { c.Category });
+
+            modelBuilder.Entity<CurrencyType>()
+                .HasMany(c => c.Currency)
+                .WithOne(c => c.CurrencyType)
+                .HasForeignKey(c => new { c.CurrencyName })
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Followers>()
+                .HasOne(u => u.Users)
+                .WithOne(f => f.Followers)
+                .HasForeignKey<Users>(u => new { u.UserId, u.UserName, u.Platform });
 
             modelBuilder.Entity<Users>()
-                .HasOne(f => f.Followers)
-                .WithOne(u => u.Users)
-                .HasForeignKey<Followers>(f => new { f.UserId, f.UserName, f.Platform });
+                .HasMany(u => u.Currency)
+                .WithOne(c => c.User)
+                .HasPrincipalKey(u => new { u.UserName })
+                .HasForeignKey(u => new { u.UserName })
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Users>()
-                .HasOne(w => w.CustomWelcome)
-                .WithOne(u => u.Users)
-                .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.UserName, w.Platform });
+            modelBuilder.Entity<CustomWelcome>()
+                .HasOne(u => u.Users)
+                .WithOne(w => w.CustomWelcome)
+                .HasForeignKey<Users>(w => new { w.UserId, w.UserName, w.Platform });
 
-            modelBuilder.Entity<Users>()
-                .HasOne(m => m.MultiChannels)
-                .WithOne(u => u.Users)
-                .HasForeignKey<MultiChannels>(m => new { m.UserId, m.UserName, m.Platform });
+            modelBuilder.Entity<InRaidData>()
+                .HasOne(u => u.User)
+                .WithMany(r => r.InRaidData)
+                .HasForeignKey(f => new { f.UserId, f.UserName, f.Platform });
 
-            modelBuilder.Entity<Users>()
-                .HasOne(s => s.MultiSummaryLiveStreams)
-                .WithOne(u => u.Users)
-                .HasForeignKey<MultiSummaryLiveStreams>(s => new { s.UserId, s.UserName, s.Platform });
+            modelBuilder.Entity<MultiChannels>()
+                .HasOne(u => u.Users)
+                .WithOne(m => m.MultiChannels)
+                .HasForeignKey<Users>(m => new { m.UserId, m.UserName, m.Platform });
 
-            modelBuilder.Entity<Users>()
-                .HasOne(o => o.ShoutOuts)
-                .WithOne(u => u.Users)
-                .HasForeignKey<ShoutOuts>(o => new { o.UserId, o.UserName, o.Platform });
+            modelBuilder.Entity<MultiLiveStreams>()
+                .HasOne(u => u.Users)
+                .WithMany(m => m.MultiLiveStreams)
+                .HasPrincipalKey(u => new { u.UserId, u.UserName, u.Platform })
+                .HasForeignKey(u => new { u.UserId, u.UserName, u.Platform });
+
+            modelBuilder.Entity<MultiSummaryLiveStreams>()
+                .HasOne(u => u.Users)
+                .WithOne(s => s.MultiSummaryLiveStreams)
+                .HasForeignKey<Users>(s => new { s.UserId, s.UserName, s.Platform });
+
+            modelBuilder.Entity<ShoutOuts>()
+                .HasOne(u => u.Users)
+                .WithOne(u => u.ShoutOuts)
+                .HasForeignKey<Users>(u => new { u.UserId, u.UserName, u.Platform });
 
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
                 .WithOne(u => u.Users)
-                .HasForeignKey<UserStats>(s => new { s.UserId, s.UserName, s.Platform });
+                .HasForeignKey<UserStats>(s => new { s.UserId, s.UserName, s.Platform })
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<LearnMsgs>()
                 .Property(i => i.Id)

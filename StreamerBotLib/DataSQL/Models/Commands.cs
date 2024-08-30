@@ -48,8 +48,6 @@ namespace StreamerBotLib.DataSQL.Models
         public CommandSort Sort { get; set; } = sort;
 
 
-        public ICollection<CategoryList> CategoryList { get; } = new List<CategoryList>();
-
         public static Commands GetCommands(CommandData commandData)
         {
             return new(

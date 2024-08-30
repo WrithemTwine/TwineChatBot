@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -33,33 +36,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.CurrencyType(
-                                          (System.Double)Values["AccrueAmt"],
-                                          Convert.ToInt32(Values["Seconds"]),
-                                          Convert.ToInt32(Values["MaxValue"]),
-                                          (System.String)Values["CurrencyName"]
+
 );
         }
         public void CopyUpdates(Models.CurrencyType modelData)
         {
-            if (modelData.AccrueAmt != AccrueAmt)
-            {
-                modelData.AccrueAmt = AccrueAmt;
-            }
-
-            if (modelData.Seconds != Seconds)
-            {
-                modelData.Seconds = Seconds;
-            }
-
-            if (modelData.MaxValue != MaxValue)
-            {
-                modelData.MaxValue = MaxValue;
-            }
-
-            if (modelData.CurrencyName != CurrencyName)
-            {
-                modelData.CurrencyName = CurrencyName;
-            }
 
         }
     }

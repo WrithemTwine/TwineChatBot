@@ -1,7 +1,10 @@
-﻿using StreamerBotLib.Enums;
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
     public class MultiSummaryLiveStreams(int streamCount = 0,
                                         DateTime throughDate = default,
                                         string userId = null,

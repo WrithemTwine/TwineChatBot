@@ -8,8 +8,8 @@ namespace StreamerBotLib.DataSQL.Import
 {
     internal class BaseDataManager
     {
-        protected readonly string DataFileName;
-        protected readonly string BackupDataFileXML;
+        protected string DataFileName;
+        protected string BackupDataFileXML;
 
         protected readonly Queue<Task> SaveTasks = new();
         protected bool SaveThreadStarted = false;
@@ -19,7 +19,7 @@ namespace StreamerBotLib.DataSQL.Import
         protected const int MaxLogLength = 8000;
         protected int BackupSaveToken = 0;
 
-        public BaseDataManager(string DataFileXMLName)
+        public void InitializeFileUsed(string DataFileXMLName)
         {
             DataFileName = FormatFileName(DataFileXMLName);
             BackupDataFileXML = FormatFileName($"Backup_{DataFileXMLName}");

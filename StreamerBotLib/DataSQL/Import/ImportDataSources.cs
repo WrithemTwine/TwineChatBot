@@ -25,18 +25,14 @@ namespace StreamerBotLib.DataSQL.Import
         private static readonly string MultiDataFileXML = "MultiChatbotData.xml";
         private readonly MultiDataSource _MultiDataSource;
 
-        public ImportDataSources(bool useMainFile) : base(useMainFile ? DataFileXML : MultiDataFileXML)
+        public ImportDataSources()
         {
-            if (useMainFile)
-            {
-                _DataSource = new();
-                LoadData();
-            }
-            else
-            {
-                _MultiDataSource = new();
-                MultiLoadData();
-            }
+            InitializeFileUsed(DataFileXML);
+            _DataSource = new();
+            LoadData();
+            InitializeFileUsed(MultiDataFileXML);
+            _MultiDataSource = new();
+            MultiLoadData();
         }
 
         /// <summary>
@@ -151,6 +147,8 @@ namespace StreamerBotLib.DataSQL.Import
         {
 
             #region added
+
+            /*
             //ChannelEvents
 
             //UserBase
@@ -172,8 +170,6 @@ namespace StreamerBotLib.DataSQL.Import
             //OutRaidData
             //ShoutOuts
 
-
-
             //CategoryList
             //GameDeadCounter
             //Clips
@@ -191,6 +187,7 @@ namespace StreamerBotLib.DataSQL.Import
             //MultiLiveStreams
             //MultiMsgEndPoints
             //MultiSummaryLiveStreams
+            */
 
             #endregion
 
@@ -200,7 +197,7 @@ namespace StreamerBotLib.DataSQL.Import
 
                 #region Channel Events
 
-                context.ChannelEvents.AddRange(from CE in (_DataSource.ChannelEvents)
+                context.ChannelEvents.AddRange(from CE in _DataSource.ChannelEvents
                                                select new ChannelEvents(
                                                    name: Enum.Parse<ChannelEventActions>( CE.Name),
                                                    repeatMsg: CE.RepeatMsg,
@@ -214,30 +211,42 @@ namespace StreamerBotLib.DataSQL.Import
 
                 #region Users
 
-                context.Users.AddRange(from U in (_DataSource.Users)
+                context.Users.AddRange(from U in _DataSource.Users
+                                       where !(DBNull.Value.Equals(U.UserId)) && (U.UserId != null)
                                        select new Users(
-                                                               firstDateSeen: U.FirstDateSeen,
-                                                               currLoginDate: U.CurrLoginDate,
-                                                               lastDateSeen: U.LastDateSeen,
-                                                               userId: U.UserId,
-                                                               userName: U.UserName,
-                                                               platform: Enum.Parse<Platform>(U.Platform))
-
+                                                    firstDateSeen: U.FirstDateSeen,
+                                                    currLoginDate: U.CurrLoginDate,
+                                                    lastDateSeen: U.LastDateSeen,
+                                                    userId: U.UserId,
+                                                    userName: U.UserName,
+                                                    platform: Enum.Parse<Platform>(U.Platform))
                                        );
-                context.UserStats.AddRange(from U in (_DataSource.Users)
+
+                context.UserStats.AddRange(from U in _DataSource.Users
+                                           where !(DBNull.Value.Equals(U.UserId)) && (U.UserId != null)
                                            select new UserStats(
-                                               watchTime: U.WatchTime,
-                                           userId: U.UserId,
-                                           userName: U.UserName,
-                                           platform: Enum.Parse<Platform>(U.Platform)
+                                                watchTime: U.WatchTime,
+                                                channelChat: 0,
+                                                callCommands: 0,
+                                                rewardRedeems: 0,
+                                                clipsCreated: 0,
+                                                userId: U.UserId,
+                                                userName: U.UserName,
+                                                platform: Platform.Twitch
                                            ));
-                context.CustomWelcome.AddRange(from CW in (_DataSource.CustomWelcome)
+
+                context.CustomWelcome.AddRange(from CW in _DataSource.CustomWelcome
+                                               let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{CW.UserName}'").First()).UserId
+                                               where uId is not null
                                                select new CustomWelcome(
                                                    message: CW.Message,
+                                                   userId: uId,
                                                    userName: CW.UserName,
                                                    platform: Platform.Twitch
                                                    ));
-                context.Followers.AddRange(from F in (_DataSource.Followers)
+
+                context.Followers.AddRange(from F in _DataSource.Followers
+                                           where !(DBNull.Value.Equals(F.UserId)) && (F.UserId != null)
                                            select new Followers(
                                                     isFollower: F.IsFollower,
                                                     followedDate: F.FollowedDate,
@@ -248,31 +257,41 @@ namespace StreamerBotLib.DataSQL.Import
                                                     userName: F.UserName,
                                                     platform: Enum.Parse<Platform>(F.Platform)
                                                ));
-                context.GiveawayUserData.AddRange(from G in (_DataSource.GiveawayUserData)
+
+                context.GiveawayUserData.AddRange(from G in _DataSource.GiveawayUserData
+                                                  let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{G.DisplayName}'").First()).UserId
+                                                  where uId is not null
                                                   select new GiveawayUserData(
                                                       dateTime: G.DateTime,
+                                                      userId: uId,
                                                       userName: G.DisplayName,
                                                       platform: Platform.Twitch
                                                       ));
 
-                context.InRaidData.AddRange(from IR in (_DataSource.InRaidData)
+                context.InRaidData.AddRange(from IR in _DataSource.InRaidData
+                                            let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{IR.UserName}'").FirstOrDefault())?.UserId
+                                            where uId is not null
                                             select new InRaidData(
                                                 viewerCount: Convert.ToInt32(IR.ViewerCount),
                                                 raidDate: IR.DateTime,
                                                 category: IR.Category,
+                                                userId: uId,
                                                 userName: IR.UserName,
                                                 platform: Platform.Twitch
                                                 ));
-                context.OutRaidData.AddRange(from OR in (_DataSource.OutRaidData)
+
+                context.OutRaidData.AddRange(from OR in _DataSource.OutRaidData
                                              select new OutRaidData(
                                                  id: OR.Id,
                                                  channelRaided: OR.ChannelRaided,
                                                  raidDate: OR.DateTime
                                                  ));
 
-                context.ShoutOuts.AddRange(from S in (_DataSource.ShoutOuts)
+                context.ShoutOuts.AddRange(from S in _DataSource.ShoutOuts
+                                           let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{S.UserName}'").FirstOrDefault())?.UserId
+                                           where (uId != null)
                                            select new ShoutOuts(
-                                               userId: S.UserId,
+                                               userId: uId,
                                                userName: S.UserName,
                                                platform: Enum.Parse<Platform>(S.Platform)
                                                ));
@@ -281,15 +300,17 @@ namespace StreamerBotLib.DataSQL.Import
 
                 #region Currency
 
-                context.CurrencyType.AddRange(from CT in (_DataSource.CurrencyType)
-                                              select new Models.CurrencyType( 
+                context.CurrencyType.AddRange(from CT in _DataSource.CurrencyType
+                                              select new Models.CurrencyType(
                                                 accrueAmt: CT.AccrueAmt,
                                                 seconds: (int)CT.Seconds,
                                                 maxValue: CT.MaxValue,
                                                 currencyName: CT.CurrencyName
                                                ));
 
-                context.Currency.AddRange(from C in (_DataSource.Currency)
+                context.Currency.AddRange(from C in _DataSource.Currency
+                                          let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{C.UserName}'").First()).UserId
+                                          where uId is not null
                                           select new Currency(
                                               userName: C.UserName,
                                               value: C.Value,
@@ -300,21 +321,24 @@ namespace StreamerBotLib.DataSQL.Import
 
                 #region Category & GameDeadCounter & Clips & Quotes & Overlay Data & Webhooks & StreamStats
 
-                context.CategoryList.AddRange(from CL in (_DataSource.CategoryList)
+                context.CategoryList.AddRange(from CL in _DataSource.CategoryList
+                                              where (CL.CategoryId != null) || (CL.Category == "All")
                                               select new CategoryList(
-                                                  categoryId: CL.CategoryId,
+                                                  categoryId: CL.Category == "All" ? "0" : CL.CategoryId,
                                                   category: CL.Category,
                                                   streamCount: CL.StreamCount
                                                   )
                                               );
 
-                context.GameDeadCounter.AddRange(from GDC in (_DataSource.GameDeadCounter)
+                context.GameDeadCounter.AddRange(from GDC in _DataSource.GameDeadCounter
+                                                 let CI = ((CategoryListRow)(_DataSource.CategoryList.Select($"[Category] = '{GDC.Category}'")).First()).CategoryId
                                                  select new GameDeadCounter(
+                                                     categoryId: CI,
                                                      category: GDC.Category,
                                                      counter: GDC.Counter
                                                  ));
 
-                context.Clips.AddRange(from C in (_DataSource.Clips)
+                context.Clips.AddRange(from C in _DataSource.Clips
                                        select new Clips(
                                            clipId: C.Id,
                                            createdAt: C.CreatedAt,
@@ -326,19 +350,19 @@ namespace StreamerBotLib.DataSQL.Import
                                            )
                                         );
 
-                context.Quotes.AddRange(from Q in (_DataSource.Quotes)
+                context.Quotes.AddRange(from Q in _DataSource.Quotes
                                         select new Quotes(
                                             number: Q.Number,
                                             quote: Q.Quote
                                             )
                                          );
 
-                context.OverlayServices.AddRange(from OS in (_DataSource.OverlayServices)
+                context.OverlayServices.AddRange(from OS in _DataSource.OverlayServices
                                                  select new OverlayServices(
                                                        id: OS.Id,
                                                        isEnabled: OS.IsEnabled,
                                                        duration: OS.Duration,
-                                                       overlayType: Enum.Parse<OverlayTypes>(OS.OverlayType ),
+                                                       overlayType: Enum.Parse<OverlayTypes>(OS.OverlayType),
                                                        overlayAction: OS.OverlayAction,
                                                        userName: OS.UserName,
                                                        useChatMsg: OS.UseChatMsg,
@@ -348,13 +372,13 @@ namespace StreamerBotLib.DataSQL.Import
                                                      )
                                                   );
 
-                context.OverlayTicker.AddRange(from OT in (_DataSource.OverlayTicker)
+                context.OverlayTicker.AddRange(from OT in _DataSource.OverlayTicker
                                                select new OverlayTicker(
                                                    tickerName: Enum.Parse<OverlayTickerItem>(OT.TickerName),
                                                    userName: OT.UserName
                                                    ));
 
-                context.Webhooks.AddRange(from W in (_DataSource.Discord)
+                context.Webhooks.AddRange(from W in _DataSource.Discord
                                           select new Webhooks(
                                               isEnabled: W.IsEnabled,
                                               webhooksSource: WebhooksSource.Discord,
@@ -364,7 +388,7 @@ namespace StreamerBotLib.DataSQL.Import
                                               webhook: new(W.Webhook)
                                               ));
 
-                context.StreamStats.AddRange(from S in (_DataSource.StreamStats)
+                context.StreamStats.AddRange(from S in _DataSource.StreamStats
                                              select new StreamStats(
                                                  streamStart: S.StreamStart,
                                                  streamEnd: S.StreamEnd,
@@ -387,26 +411,26 @@ namespace StreamerBotLib.DataSQL.Import
                                                  clipsMade: S.ClipsMade,
                                                  channelPtCount: S.ChannelPtCount,
                                                  channelChallenge: S.ChannelChallenge,
-                                                 maxUsers: S.MaxUsers                                                 
+                                                 maxUsers: S.MaxUsers
                                                  ));
 
                 #endregion
 
                 #region Ban & Approve & LearnMsgs
 
-                context.BanReasons.AddRange(from BR in (_DataSource.BanReasons)
+                context.BanReasons.AddRange(from BR in _DataSource.BanReasons
                         select new Models.BanReasons(
                             msgType: Enum.Parse<MsgTypes>(BR.MsgType), 
                             banReason: Enum.Parse<Enums.BanReasons>(BR.BanReason)) );
                 
-                context.BanRules.AddRange(from BR in (_DataSource.BanRules)
+                context.BanRules.AddRange(from BR in _DataSource.BanRules
                         select new BanRules(
                             viewerTypes: Enum.Parse<ViewerTypes>(BR.ViewerTypes),
                             msgType: Enum.Parse<MsgTypes>(BR.MsgType),
                             modAction: Enum.Parse<ModActions>(BR.ModAction),
                             timeoutSeconds: Convert.ToInt32(BR.TimeoutSeconds)));
 
-                context.ModeratorApprove.AddRange(from MA in (_DataSource.ModeratorApprove)
+                context.ModeratorApprove.AddRange(from MA in _DataSource.ModeratorApprove
                         select new ModeratorApprove(
                             isEnabled: MA.IsEnabled,
                             modActionType: Enum.Parse<ModActionType>(MA.ModActionType),
@@ -414,7 +438,7 @@ namespace StreamerBotLib.DataSQL.Import
                             modPerformAction: MA.ModPerformAction,
                             modPerformType: Enum.Parse<ModPerformType>(MA.ModPerformType)));
 
-                context.LearnMsgs.AddRange(from LM in (_DataSource.LearnMsgs)
+                context.LearnMsgs.AddRange(from LM in _DataSource.LearnMsgs
                        select new LearnMsgs(
                             msgType: Enum.Parse<MsgTypes>(LM.MsgType),
                             teachingMsg: LM.TeachingMsg));
@@ -423,7 +447,7 @@ namespace StreamerBotLib.DataSQL.Import
 
                 #region Commands
 
-                context.Commands.AddRange(from C in (_DataSource.Commands)
+                context.Commands.AddRange(from C in _DataSource.Commands
                                           where Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
                                           select new Commands(
                                               cmdName: C.CmdName,
@@ -447,7 +471,7 @@ namespace StreamerBotLib.DataSQL.Import
                                               sort: Enum.Parse<CommandSort>(C.sort))
                                           );
 
-                context.CommandsUser.AddRange(from C in (_DataSource.Commands)
+                context.CommandsUser.AddRange(from C in _DataSource.Commands
                                               where !Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
                                               select new CommandsUser(
                                               cmdName: C.CmdName,
@@ -479,27 +503,37 @@ namespace StreamerBotLib.DataSQL.Import
                 #region Multi data
 
                 context.MultiChannels.AddRange(from U in (_MultiDataSource.Channels)
+                                               where !(DBNull.Value.Equals(U.UserId)) && (U.UserId != null)
                                                select new MultiChannels(
                                                    userId: U.UserId,
                                                    userName: U.ChannelName,
                                                    platform: Platform.Twitch));
+
                 context.MultiLiveStreams.AddRange(from L in (_MultiDataSource.LiveStream)
+                                                  where !(DBNull.Value.Equals(L.UserId)) && (L.UserId != null)
                                                   select new MultiLiveStreams(
                                                       liveDate: L.LiveDate,
                                                       userId: L.UserId,
                                                       userName: L.ChannelName,
                                                       platform: Platform.Twitch));
-                context.MultiMsgEndPoints.AddRange(from E in (_MultiDataSource.MsgEndPoints)
+
+                context.MultiMsgEndPoints.AddRange(from E in _MultiDataSource.MsgEndPoints
                                                    select new MultiMsgEndPoints(
-                                                   isEnabled: E.IsEnabled,
-                                                   webhooksSource: Enum.Parse<WebhooksSource>(E.Type),
-                                                   webhook: new(E.URL),
-                                                   server: E.Server,
-                                                   kind: WebhooksKind.Live,
-                                                   addEveryone: false)
+                                                           isEnabled: E.IsEnabled,
+                                                           webhooksSource: Enum.Parse<WebhooksSource>(E.Type),
+                                                           webhook: new(E.URL),
+                                                           server: E.Server,
+                                                           kind: WebhooksKind.Live,
+                                                           addEveryone: false
+                                                   )
                                                    );
+
+
                 context.MultiSummaryLiveStreams.AddRange(from S in (_MultiDataSource.SummaryLiveStream)
+                                                         let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{S.ChannelName}'").FirstOrDefault())?.UserId
+                                                         where uId is not null
                                                          select new MultiSummaryLiveStreams(
+                                                             userId: uId,
                                                              userName: S.ChannelName,
                                                              streamCount: S.StreamCount,
                                                              throughDate: S.ThroughDate)

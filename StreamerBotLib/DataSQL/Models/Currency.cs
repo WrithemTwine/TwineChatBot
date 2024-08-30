@@ -2,16 +2,18 @@
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [Index(nameof(UserName), nameof(CurrencyName), IsUnique = false)]
+    [PrimaryKey(nameof(UserName), nameof(CurrencyName))]
+    [Index(nameof(UserName), nameof(CurrencyName), IsUnique = true)]
     public class Currency(string userName = null,
                           double value = 0,
-                          string currencyName = "") : CurrencyBase(currencyName)
+                          string currencyName = "") : EntityBase
     {
         public string UserName { get; set; } = userName;
         public double Value { get; set; } = value;
+        public string CurrencyName { get; set; } = currencyName;
 
-        public Users User { get; set; }
-        public CurrencyType CurrencyType { get; set; }
+        public Users? User { get; set; }
+        public CurrencyType? CurrencyType { get; set; }
 
         public static Currency operator +(Currency lhs, Currency rhs)
         {

@@ -69,12 +69,19 @@ namespace BuildDatabaseMeta
 
                                 string newEntity = (PropName.Contains("Int") || PropName.Contains("int")) ? $"Convert.To{PropName.Replace("System.", "")}(Values[\"{p.Name}\"])" : $"({PropName})Values[\"{p.Name}\"]";
 
-                                entity.Add($"                                          {newEntity}");
+                                if ((p.Name != "Duration") && name == "StreamStats" ) // ignore "Duration" column as it is computed
+                                {
+                                    entity.Add($"                                          {newEntity}");
+                                }
                                 param.Add($"        public {PropName} {p.Name} => ({PropName})Values[\"{p.Name}\"];");
-                                copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
+
+                                if ((p.Name != "Duration") && name == "StreamStats") // ignore "Duration" column as it is computed
+                                {
+                                    copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
                                                 $"            {{\r\n" +
                                                 $"                modelData.{p.Name} = {p.Name};\r\n" +
                                                 $"            }}\r\n");
+                                }
                             }
                         }
                     }

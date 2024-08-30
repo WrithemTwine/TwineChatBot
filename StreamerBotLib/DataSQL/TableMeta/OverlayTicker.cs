@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -27,21 +30,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.OverlayTicker(
-                                          (StreamerBotLib.Overlay.Enums.OverlayTickerItem)Values["TickerName"],
-                                          (System.String)Values["UserName"]
+
 );
         }
         public void CopyUpdates(Models.OverlayTicker modelData)
         {
-            if (modelData.TickerName != TickerName)
-            {
-                modelData.TickerName = TickerName;
-            }
-
-            if (modelData.UserName != UserName)
-            {
-                modelData.UserName = UserName;
-            }
 
         }
     }
