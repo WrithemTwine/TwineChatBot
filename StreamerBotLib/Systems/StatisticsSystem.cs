@@ -149,9 +149,9 @@ namespace StreamerBotLib.Systems
 
         #region Incoming Raids
 
-        public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName, Platform platform)
+        public static void PostIncomingRaid(LiveUser liveUser, DateTime RaidTime, string Viewers, string GameName)
         {
-            DataManage.PostInRaidData(UserName, RaidTime, int.Parse(Viewers), GameName, platform);
+            DataManage.PostInRaidData(liveUser, RaidTime, int.Parse(Viewers), GameName);
         }
 
         #endregion

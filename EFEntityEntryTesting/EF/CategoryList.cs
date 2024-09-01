@@ -1,29 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Static;
-
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StreamerBotLib.DataSQL.Models
+namespace EFEntityEntryTesting.EF
 {
     [PrimaryKey(nameof(CategoryId), nameof(Category))]
     [Index(nameof(CategoryId), nameof(Category), IsUnique = true)]
     public class CategoryList(string categoryId = null,
                               string category = null,
-                              int streamCount = 0) : EntityBase
+                              int streamCount = 0)
     {
+        [Column(Order = 1)]
         public string CategoryId { get; set; } = categoryId;
 
         /// <summary>
         /// Formatted with escape characters
         /// </summary>
-        public string Category { get; set; } = FormatData.AddEscapeFormat(category);
+        [Column(Order = 2)]
+        public string Category { get; set; } = category;
 
+        [Column(Order = 3)]
         public int StreamCount { get; set; } = streamCount;
 
-        public GameDeadCounter GameDeadCounter { get; set; }
-
-        public ICollection<Followers> Followers { get; } = [];
-        
     }
 }

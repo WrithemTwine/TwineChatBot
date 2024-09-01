@@ -2260,7 +2260,6 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="ClipId" Binding="{Binding ClipId}" />
-                                                <DataGridTextColumn Header="Category" Binding="{Binding CategoryList.Category}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />
                                                 <DataGridTemplateColumn Header="Created At" CellTemplate="{StaticResource DateClipCreatedTemplate}" SortDirection="Descending" SortMemberPath="CreatedAt" />
                                                 <DataGridTextColumn Header="Language" Binding="{Binding Language}" />

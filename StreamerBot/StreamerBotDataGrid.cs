@@ -140,7 +140,7 @@ namespace StreamerBot
             if (sender.GetType() == typeof(DataGrid))
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
-                bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => c.Header == "IsEnabled").Any();
+                bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "IsEnabled").Any();
                     
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {

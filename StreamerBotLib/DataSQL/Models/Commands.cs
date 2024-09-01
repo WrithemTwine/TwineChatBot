@@ -3,6 +3,8 @@
 using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
+using TwitchLib.Client.Models;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CmdName))]
@@ -11,6 +13,7 @@ namespace StreamerBotLib.DataSQL.Models
                           bool addMe = false,
                           ViewerTypes permission = ViewerTypes.Viewer,
                           bool isEnabled = false,
+                          bool announce = false,
                           string message = null,
                           int repeatTimer = 0,
                           short sendMsgCount = 0,
@@ -31,6 +34,7 @@ namespace StreamerBotLib.DataSQL.Models
         public bool AddMe { get; set; } = addMe;
         public ViewerTypes Permission { get; set; } = permission;
         public bool IsEnabled { get; set; } = isEnabled;
+        public bool Announce { get; set; } = announce;
         public string Message { get; set; } = message;
         public int RepeatTimer { get; set; } = repeatTimer;
         public short SendMsgCount { get; set; } = sendMsgCount;

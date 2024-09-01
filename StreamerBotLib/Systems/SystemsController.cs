@@ -641,7 +641,7 @@ namespace StreamerBotLib.Systems
             }
             if (OptionFlags.ManageRaidData)
             {
-                ActionSystem.PostIncomingRaid(User.UserName, RaidTime, Viewers, GameName, User.Platform);
+                ActionSystem.PostIncomingRaid(User, RaidTime, Viewers, GameName);
             }
             if (OptionFlags.ManageOverlayTicker)
             {

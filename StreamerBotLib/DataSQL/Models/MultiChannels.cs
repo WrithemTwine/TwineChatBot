@@ -9,6 +9,8 @@ namespace StreamerBotLib.DataSQL.Models
                                string userName = null,
                                Platform platform = Platform.Default) : UserBase(userId, userName, platform)
     {
-        public Users? Users { get; set; }
+        public ICollection<MultiLiveStreams> MultiLiveStreams { get; } = [];
+
+        public MultiSummaryLiveStreams? MultiSummaryLiveStreams { get; set; }
     }
 }

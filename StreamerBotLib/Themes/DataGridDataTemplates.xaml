@@ -278,6 +278,7 @@
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
+ 
     <CollectionViewSource x:Key="DG_MultiMsgEndPoints_CVS" Source="{Binding MultiMsgEndPoints, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="Server" />
@@ -286,7 +287,7 @@
         <CollectionViewSource.GroupDescriptions>
             <PropertyGroupDescription PropertyName="Kind" />
             <PropertyGroupDescription PropertyName="AddEveryone" />
-            <PropertyGroupDescription PropertyName="Enabled" />
+            <PropertyGroupDescription PropertyName="IsEnabled" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />

@@ -78,7 +78,12 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies whether to record bot status messages in the log file.
         /// </summary>
-        public static bool LogBotStatus => Settings.Default.LogBotStatus;
+        public static bool LogBotStatus
+        {
+            get => Settings.Default.LogBotStatus;
+            set => Settings.Default.LogBotStatus = value;
+        }
+
         /// <summary>
         /// Specifies whether to record exceptions during bot operation.
         /// </summary>

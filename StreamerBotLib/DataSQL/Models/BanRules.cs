@@ -16,7 +16,6 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public int Id { get; set; } = id;
         public ViewerTypes ViewerTypes { get; set; } = viewerTypes;
-        [ForeignKey(nameof(BanReasons))]
         public MsgTypes MsgType { get; set; } = msgType;
         public ModActions ModAction { get; set; } = modAction;
         public int TimeoutSeconds { get; set; } = timeoutSeconds;

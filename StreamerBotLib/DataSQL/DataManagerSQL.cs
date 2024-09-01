@@ -73,11 +73,16 @@ switches:
 
             if (!OptionFlags.EFCDataImportDataGram)
             {
+                bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status
+
+                OptionFlags.LogBotStatus = true; // force logging operations to status during import
+
                 ImportDataSources importDataSources = new(); // load the primary database data
-                importDataSources.ConvertData(context); // convert data loaded from the multilive file
+                importDataSources.ConvertData(context, this); // convert data loaded from main and multilive data files
                 context.SaveChanges(true);
 
-                OptionFlags.EFCDataImportDataGram = true;
+                OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
+             //   OptionFlags.EFCDataImportDataGram = true;
             }
         }
 
@@ -1179,7 +1184,7 @@ switches:
         }
 
         #region Post_Methods
-        public bool PostCategory(string CategoryId, string newCategory)
+        public bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0)
         {
             bool found = false;
             if (string.IsNullOrEmpty(CategoryId) && string.IsNullOrEmpty(newCategory))
@@ -1196,7 +1201,7 @@ switches:
                                                  select CL).FirstOrDefault();
                     if (categoryList == default)
                     {
-                        context.CategoryList.Add(new(categoryId: CategoryId, category: newCategory));
+                        context.CategoryList.Add(new(categoryId: CategoryId, category: newCategory, streamCount: StreamCount == 0 ? 0 : StreamCount));
                         found = true;
                     }
                     else
@@ -1439,12 +1444,12 @@ switches:
             }
         }
 
-        public void PostInRaidData(string user, DateTime time, int viewers, string gamename, Platform platform)
+        public void PostInRaidData(LiveUser user, DateTime time, int viewers, string gamename)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                context.InRaidData.Add(new(userName: user, raidDate: time, viewerCount: viewers, category: gamename, platform: platform));
+                context.InRaidData.Add(new(userId: user.UserId, userName: user.UserName, raidDate: time, viewerCount: viewers, category: gamename, platform: user.Platform));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1519,6 +1524,11 @@ switches:
                 context.SaveChanges(true);
                 ClearDataContext();
             }
+        }
+
+        public void PostNewAutoShoutUser(LiveUser liveUser)
+        {
+            PostNewAutoShoutUser(liveUser.UserName, liveUser.UserId, liveUser.Platform);
         }
 
         private Users PostNewUser(LiveUser User, DateTime FirstSeen)

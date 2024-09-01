@@ -115,6 +115,8 @@ namespace StreamerBotLib.GUI
             Currency = DataManager.GetCurrencyLocalObservable();
             CurrencyType = DataManager.GetCurrencyTypeLocalObservable();
             CustomWelcome = DataManager.GetCustomWelcomeLocalObservable();
+            Users = DataManager.GetUsersLocalObservable();
+            UserStats = DataManager.GetUserStatsLocalObservable();
             Followers = DataManager.GetFollowersLocalObservable();
             GameDeadCounter = DataManager.GetGameDeadCounterLocalObservable();
             GiveawayUserData = DataManager.GetGiveawayUserDataLocalObservable();
@@ -131,8 +133,6 @@ namespace StreamerBotLib.GUI
             Quotes = DataManager.GetQuotesLocalObservable();
             ShoutOuts = DataManager.GetShoutOutsLocalObservable();
             StreamStats = DataManager.GetStreamStatsLocalObservable();
-            Users = DataManager.GetUsersLocalObservable();
-            UserStats = DataManager.GetUserStatsLocalObservable();
             Webhooks = DataManager.GetWebhooksLocalObservable();
 
             Users.CollectionChanged += DataGrid_CollectionChanged;

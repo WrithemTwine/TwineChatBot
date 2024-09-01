@@ -13,6 +13,6 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public DateTime LiveDate { get; set; } = liveDate;
 
-        public Users? Users { get; set; }
+        public MultiChannels MultiChannels { get; set; }
     }
 }

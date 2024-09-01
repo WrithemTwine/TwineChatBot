@@ -2,10 +2,18 @@
 using MASES.EntityFrameworkCore.KNet;
 #endif
 
+#define DEBUG_LOG // rename to DEBUG_LOG to enable the debug log
+
 using Microsoft.EntityFrameworkCore;
+
+#if DEBUG_LOG
+using Microsoft.Extensions.Logging;
+#endif
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Static;
+
+using System.IO;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -55,13 +63,24 @@ namespace StreamerBotLib.DataSQL
         public DbSet<MultiLiveStreams> MultiLiveStreams { get; set; }
         #endregion
 
+#if DEBUG_LOG
+        StreamWriter DebugLog = new("DebugLog_efc_sqlite.txt") { AutoFlush = true };
+#endif
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // these flags build the different connections to specific databases
             // for splitting code to each release build package
 
+
 #if DEBUG || RELEASE_SQLITE
-            optionsBuilder.UseSqlite(OptionFlags.EFCConnectStringSqlite);
+            optionsBuilder
+                .UseSqlite(OptionFlags.EFCConnectStringSqlite)
+#if DEBUG_LOG
+                .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
+#endif  
+                ;
+
 #elif RELEASE_POSTGRE
             optionsBuilder.UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL);
 #elif RELEASE_COSMOS
@@ -79,90 +98,75 @@ namespace StreamerBotLib.DataSQL
                 OptionFlags.EFCConnectStringMySql, 
                 ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql));
 #endif
+
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<GameDeadCounter>()
-                .HasOne(c => c.CategoryList)
-                .WithOne(g => g.GameDeadCounter)
-                .HasForeignKey<CategoryList>(c => new { c.CategoryId, c.Category })
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CategoryList>()
+                .HasOne(c => c.GameDeadCounter)
+                .WithOne(g => g.CategoryList)
+                .HasForeignKey<GameDeadCounter>(c => new { c.CategoryId, c.Category })
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
 
-            modelBuilder.Entity<Clips>()
-                .HasOne(c => c.CategoryList)
-                .WithMany(c => c.Clips)
-                .HasPrincipalKey(c => new { c.CategoryId })
-                .HasForeignKey(c => new { c.CategoryId });
+            modelBuilder.Entity<CategoryList>()
+                .HasMany(c => c.Followers)
+                .WithOne(c => c.CategoryList)
+                .HasPrincipalKey(c => c.Category)
+                .HasForeignKey(c => c.Category);
 
-            modelBuilder.Entity<Followers>()
-                .HasOne(c => c.CategoryList)
-                .WithMany(c => c.Followers)
-                .HasPrincipalKey(c => new { c.Category })
-                .HasForeignKey(c => new { c.Category });
-
-            modelBuilder.Entity<InRaidData>()
-                .HasOne(c => c.CategoryList)
-                .WithMany(c => c.InRaidData)
-                .HasPrincipalKey(c => new { c.Category })
-                .HasForeignKey(c => new { c.Category });
-
-            modelBuilder.Entity<CurrencyType>()
-                .HasMany(c => c.Currency)
-                .WithOne(c => c.CurrencyType)
+            modelBuilder.Entity<Currency>()
+                .HasOne(c => c.CurrencyType)
+                .WithMany(c => c.Currency)
                 .HasForeignKey(c => new { c.CurrencyName })
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Followers>()
-                .HasOne(u => u.Users)
-                .WithOne(f => f.Followers)
-                .HasForeignKey<Users>(u => new { u.UserId, u.UserName, u.Platform });
+            modelBuilder.Entity<Users>()
+                .HasOne(u => u.Followers)
+                .WithOne(f => f.Users)
+                .HasForeignKey<Followers>(u => new { u.UserId, u.UserName, u.Platform });
 
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.Currency)
                 .WithOne(c => c.User)
-                .HasPrincipalKey(u => new { u.UserName })
-                .HasForeignKey(u => new { u.UserName })
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(u => new { u.UserId, u.UserName, u.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
 
-            modelBuilder.Entity<CustomWelcome>()
-                .HasOne(u => u.Users)
-                .WithOne(w => w.CustomWelcome)
-                .HasForeignKey<Users>(w => new { w.UserId, w.UserName, w.Platform });
+            modelBuilder.Entity<Users>()
+                .HasOne(u => u.CustomWelcome)
+                .WithOne(w => w.Users)
+                .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.UserName, w.Platform })
+                .IsRequired(false);
 
-            modelBuilder.Entity<InRaidData>()
-                .HasOne(u => u.User)
-                .WithMany(r => r.InRaidData)
-                .HasForeignKey(f => new { f.UserId, f.UserName, f.Platform });
-
-            modelBuilder.Entity<MultiChannels>()
-                .HasOne(u => u.Users)
-                .WithOne(m => m.MultiChannels)
-                .HasForeignKey<Users>(m => new { m.UserId, m.UserName, m.Platform });
-
-            modelBuilder.Entity<MultiLiveStreams>()
-                .HasOne(u => u.Users)
-                .WithMany(m => m.MultiLiveStreams)
-                .HasPrincipalKey(u => new { u.UserId, u.UserName, u.Platform })
-                .HasForeignKey(u => new { u.UserId, u.UserName, u.Platform });
-
-            modelBuilder.Entity<MultiSummaryLiveStreams>()
-                .HasOne(u => u.Users)
-                .WithOne(s => s.MultiSummaryLiveStreams)
-                .HasForeignKey<Users>(s => new { s.UserId, s.UserName, s.Platform });
-
-            modelBuilder.Entity<ShoutOuts>()
-                .HasOne(u => u.Users)
-                .WithOne(u => u.ShoutOuts)
-                .HasForeignKey<Users>(u => new { u.UserId, u.UserName, u.Platform });
+            modelBuilder.Entity<Users>()
+                .HasOne(u => u.ShoutOuts)
+                .WithOne(u => u.Users)
+                .HasForeignKey<ShoutOuts>(u => new { u.UserId, u.UserName, u.Platform })
+                .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
                 .WithOne(u => u.Users)
                 .HasForeignKey<UserStats>(s => new { s.UserId, s.UserName, s.Platform })
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
+            modelBuilder.Entity<MultiChannels>()
+                .HasMany(m => m.MultiLiveStreams)
+                .WithOne(m => m.MultiChannels)
+                .HasForeignKey(m => new { m.UserId, m.UserName, m.Platform })
+                .IsRequired(true);
+
+            modelBuilder.Entity<MultiChannels>()
+                .HasOne(m => m.MultiSummaryLiveStreams)
+                .WithOne(m => m.MultiChannels)
+                .HasForeignKey<MultiSummaryLiveStreams>(m => new { m.UserId, m.UserName, m.Platform })
+                .IsRequired(true);
 
             modelBuilder.Entity<LearnMsgs>()
                 .Property(i => i.Id)
@@ -172,7 +176,7 @@ namespace StreamerBotLib.DataSQL
                 .Property(p => p.Duration)
                 .HasComputedColumnSql("[StreamEnd] - [StreamStart]", stored: true);
         }
-
+        
         public SQLDBContext()
         {
             ChangeTracker.LazyLoadingEnabled = false;

@@ -92,14 +92,14 @@ namespace StreamerBotLib.Interfaces
         void Initialize();
         object[] PerformQuery(Commands row, int Top = 0);
         object PerformQuery(Commands row, string ParamValue);
-        bool PostCategory(string CategoryId, string newCategory);
+        bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0);
         bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url);
         string PostCommand(string cmd, CommandParams Params);
         void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName);
         int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1);
         bool PostFollower(Follow follow);
         void PostGiveawayData(string DisplayName, DateTime dateTime);
-        void PostInRaidData(string user, DateTime time, int viewers, string gamename, Platform platform);
+        public void PostInRaidData(LiveUser user, DateTime time, int viewers, string gamename);
         void PostLearnMsgsRow(string Message, MsgTypes MsgType);
         bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform);
         void PostMonitorChannel(IEnumerable<LiveUser> liveUsers);

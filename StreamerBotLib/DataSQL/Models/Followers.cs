@@ -22,7 +22,7 @@ namespace StreamerBotLib.DataSQL.Models
         public string Category { get; set; } = category;
         public DateTime AddDate { get; set; } = addDate;
 
-        public Users? Users { get; set; }
+        public Users Users { get; set; }
         public CategoryList? CategoryList { get; set; }
     }
 }
