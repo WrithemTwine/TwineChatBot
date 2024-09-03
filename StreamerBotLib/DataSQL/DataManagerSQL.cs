@@ -21,6 +21,8 @@ using System.Data;
 using System.Globalization;
 using System.Reflection;
 
+using static StreamerBotLib.DataSQL.Import.DataSource;
+
 namespace StreamerBotLib.DataSQL
 {
     /*
@@ -82,7 +84,7 @@ switches:
                 context.SaveChanges(true);
 
                 OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
-             //   OptionFlags.EFCDataImportDataGram = true;
+                OptionFlags.EFCDataImportDataGram = true;
             }
         }
 
@@ -2201,6 +2203,13 @@ switches:
                 bool result = (from P in context.MultiLiveStreams where (P.UserId == userid && P.UserName == username && P.LiveDate == onDate) select P).Any();
                 if (!result)
                 {
+                    //var channeldata = (from C in context.MultiChannels where (userid == C.UserId) select C).FirstOrDefault();
+                    //if ( channeldata == null || (!string.Equals(channeldata.UserName, username, StringComparison.OrdinalIgnoreCase)) )
+                    //{ // add missing updated user names to channels to ensure relation integrity
+                        
+                    //    context.MultiChannels.Add(new(userid, username, platform: Platform.Twitch));
+                    //}
+
                     context.MultiLiveStreams.Add(new(userId: userid, userName: username, platform: platform, liveDate: onDate));
                     context.SaveChanges(true);
                 }

@@ -25,6 +25,7 @@ namespace StreamerBotLib.GUI.Windows
             ProgressBar_TotalProgress.Value = e.CurrentProgressAmount;
         }
 
+
         public void HandleImportCompleted(object sender, EventArgs e)
         {
             ProgressBar_TotalProgress.Value = ProgressBar_TotalProgress.Maximum;

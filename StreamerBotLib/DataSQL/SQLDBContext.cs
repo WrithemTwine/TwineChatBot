@@ -2,7 +2,7 @@
 using MASES.EntityFrameworkCore.KNet;
 #endif
 
-#define DEBUG_LOG // rename to DEBUG_LOG to enable the debug log
+#define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
 
 using Microsoft.EntityFrameworkCore;
 

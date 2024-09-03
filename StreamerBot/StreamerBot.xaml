@@ -1723,6 +1723,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 </DataGrid>
                                                 <DataGrid x:Name="DG_CurrencyAccrual" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Currency_CVS}}" Grid.Row="1" Grid.Column="2" >
                                                     <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                                                         <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                         <DataGridTextColumn Header="Currency Name" Binding="{Binding CurrencyName}" />
                                                         <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat={}{0:#,#}}" />

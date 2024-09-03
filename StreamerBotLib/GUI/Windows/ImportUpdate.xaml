@@ -15,7 +15,7 @@
             <TextBlock Text="All table row data: " />
             <TextBlock Name="TextBlock_RowCount" />
         </StackPanel>
-        <StackPanel Margin="10" DockPanel.Dock="Top" Orientation="Horizontal">
+        <StackPanel Margin="10" DockPanel.Dock="Top" Orientation="Horizontal" Visibility="Collapsed">
             <TextBlock Text="Current Progress: " />
             <ProgressBar x:Name="ProgressBar_TotalProgress" VerticalAlignment="Top" Margin="5" Height="10" MinWidth="200" Width="auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
         </StackPanel>
