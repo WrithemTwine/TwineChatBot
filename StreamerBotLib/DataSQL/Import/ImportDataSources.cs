@@ -452,7 +452,8 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding User-defined Commands data.");
             if ((from C in _DataSource.Commands
                  where !Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
-                 select C).Count() > 0) {
+                 select C).Count() > 0)
+            {
                 context.CommandsUser.AddRange(from C in _DataSource.Commands
                                               where !Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
                                               select new CommandsUser(
@@ -489,7 +490,8 @@ namespace StreamerBotLib.DataSQL.Import
 
             LogWriter.WriteLog("Adding Multilive Channel data.");
 
-            if (_MultiDataSource.Channels.Count > 0) {
+            if (_MultiDataSource.Channels.Count > 0)
+            {
                 foreach (ChannelsRow U in _MultiDataSource.Channels)
                 {
                     UsersRow usersRow = (from R in _DataSource.Users

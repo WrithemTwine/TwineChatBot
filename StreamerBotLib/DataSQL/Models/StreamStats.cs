@@ -6,8 +6,34 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(StreamStart))]
     [Index(nameof(StreamStart), IsDescending = [true])]
-    public class StreamStats(DateTime streamStart = default,
-                             DateTime streamEnd = default,
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class StreamStats(
+        DateTime streamStart,
+    DateTime streamEnd,
+                             int newFollows,
+                             int newSubscribers,
+                             int giftSubs,
+                             int bits,
+                             int raids,
+                             int hosted,
+                             int usersBanned,
+                             int usersTimedOut,
+                             int moderatorsPresent,
+                             int subsPresent,
+                             int vIPsPresent,
+                             int totalChats,
+                             int commandsMsgs,
+                             int automatedEvents,
+                             int automatedCommands,
+                             int webhookMsgs,
+                             int clipsMade,
+                             int channelPtCount,
+                             int channelChallenge,
+                             int maxUsers,
+                             string category)
+#else
+public class StreamStats(DateTime streamStart = default,
+    DateTime streamEnd = default,
                              int newFollows = 0,
                              int newSubscribers = 0,
                              int giftSubs = 0,
@@ -28,13 +54,16 @@ namespace StreamerBotLib.DataSQL.Models
                              int channelPtCount = 0,
                              int channelChallenge = 0,
                              int maxUsers = 0,
-                             string category = "") : EntityBase
+                             string category = "") 
+#endif
+ : EntityBase
     {
+
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public TimeSpan Duration { get; private set; }
+        public TimeSpan Duration { get; private set; } = streamEnd - streamStart;
 
         public int NewFollows { get; set; } = newFollows;
         public int NewSubscribers { get; set; } = newSubscribers;

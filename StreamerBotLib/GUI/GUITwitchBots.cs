@@ -20,7 +20,7 @@ namespace StreamerBotLib.GUI
         /// Specifically Twitch Lib chat bot.
         /// </summary>
         public static TwitchBotChatClient TwitchChat { get; private set; } = BotsTwitch.TwitchBotChatClient;
-        public static TwitchBotFollowerSvc TwitchFollower { get; private set; }= BotsTwitch.TwitchFollower;
+        public static TwitchBotFollowerSvc TwitchFollower { get; private set; } = BotsTwitch.TwitchFollower;
         public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; } = BotsTwitch.TwitchLiveMonitor;
         public static TwitchBotClipSvc TwitchClip { get; private set; } = BotsTwitch.TwitchBotClipSvc;
         public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; } = BotsTwitch.TwitchBotUserSvc;
@@ -28,11 +28,13 @@ namespace StreamerBotLib.GUI
 
         public GUITwitchBots()
         {
-            BotsTwitch.IsInitialized += BotsTwitch_IsInitialized;
-        }
+            TwitchChat = BotsTwitch.TwitchBotChatClient;
+            TwitchFollower = BotsTwitch.TwitchFollower;
+            TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
+            TwitchClip = BotsTwitch.TwitchBotClipSvc;
+            TwitchBotUserSvc = BotsTwitch.TwitchBotUserSvc;
+            TwitchBotPubSub = BotsTwitch.TwitchBotPubSub;
 
-        private void BotsTwitch_IsInitialized(object sender, EventArgs e)
-        {
             TwitchChat.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchChat.OnBotStopped += TwitchBot_OnBotStopped;
             TwitchChat.OnBotFailedStart += TwitchBot_OnBotFailedStart;

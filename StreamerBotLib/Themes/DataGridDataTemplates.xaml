@@ -207,16 +207,16 @@
             <StackPanel Orientation="Vertical">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
-                    <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Margin" Value="0,3" />
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
                 </StackPanel.Resources>
                 <StackPanel>
-                    <TextBlock>Server NickName: </TextBlock>
+                    <TextBlock>Server NickName:</TextBlock>
                     <TextBox Text="{Binding Server}" />
                 </StackPanel>
                 <StackPanel>
-                    <TextBlock>Webhook URL: </TextBlock>
+                    <TextBlock>Webhook URL:</TextBlock>
                     <TextBox Width="150" Text="{Binding Webhook}" />
                 </StackPanel>
             </StackPanel>
@@ -232,19 +232,57 @@
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
                 </StackPanel.Resources>
+                <TextBlock>Summary Data, if available:<LineBreak />
+                (use archive tab to compact daily data)</TextBlock>
                 <StackPanel>
-                    <TextBlock>Follower to You: </TextBlock>
-                    <CheckBox IsChecked="{Binding Users.Followers.IsFollower}" IsEnabled="False" />
+                    <TextBlock>Through Date:</TextBlock>
+                    <TextBlock Text="{Binding MultiSummaryLiveStreams.ThroughDate, FallbackValue=1/1/1900}" />
                 </StackPanel>
                 <StackPanel>
-                    <TextBlock>Followed Date: </TextBlock>
-                    <TextBlock Text="{Binding Users.Followers.FollowedDate, StringFormat={}{0:F}}" />
+                    <TextBlock>Number of Streams:</TextBlock>
+                    <TextBlock Text="{Binding MultiSummaryLiveStreams.StreamCount, FallbackValue=0, StringFormat={}{0:N0}}" />
                 </StackPanel>
             </StackPanel>
         </Border>
     </DataTemplate>
 
-        <!--#endregion-->
+    <DataTemplate x:Key="DG_RowDetailDT_Users">
+        <Border BorderThickness="1">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="250" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0">First Date seen:</TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0">Current Login:</TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+                <TextBlock Grid.Row="2" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="0">Commands called:</TextBlock>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:#,#}}" />
+                <TextBlock Grid.Row="4" Grid.Column="0">Chats:</TextBlock>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:#,#}}" />
+                <TextBlock Grid.Row="5" Grid.Column="0">Clips created:</TextBlock>
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:#,#}}" />
+                <TextBlock Grid.Row="6" Grid.Column="0">Channel Point Rewards:</TextBlock>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:#,#}}" />
+
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <!--#endregion-->
 
     <!--#region DataGrid SelectionViews for Sorting & Grouping table rows -->
 
@@ -260,13 +298,13 @@
     <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}" />
-    
+
     <CollectionViewSource x:Key="DG_Follows_CVS" Source="{Binding Followers, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="FollowedDate" Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    
+
     <CollectionViewSource x:Key="DG_GameDeadCounter_CVS" Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}" />
@@ -278,7 +316,7 @@
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
- 
+
     <CollectionViewSource x:Key="DG_MultiMsgEndPoints_CVS" Source="{Binding MultiMsgEndPoints, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="Server" />
@@ -300,7 +338,7 @@
     <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_UserStats_CVS" Source="{Binding UserStats, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
-    
+
     <!--#endregion-->
 
 </ResourceDictionary>

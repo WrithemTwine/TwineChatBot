@@ -7,11 +7,20 @@ using System.Diagnostics.CodeAnalysis;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform), nameof(LiveDate))]
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class MultiLiveStreams(DateTime liveDate,
+                                 string userId,
+                                 string userName,
+                                 Platform platform
+                                 )
+#else
     public class MultiLiveStreams(DateTime liveDate = default,
                                  string userId = null,
                                  string userName = null,
                                  Platform platform = Platform.Default
-                                 ) : UserBase(userId, userName, platform), IEqualityComparer<MultiLiveStreams>
+                                 )
+#endif
+ : UserBase(userId, userName, platform), IEqualityComparer<MultiLiveStreams>
     {
         public DateTime LiveDate { get; set; } = liveDate;
 

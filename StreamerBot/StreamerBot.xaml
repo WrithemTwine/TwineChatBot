@@ -1599,9 +1599,9 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition MinWidth="200" Width="*" />
+                                            <ColumnDefinition MinWidth="150" Width="200*" />
                                             <ColumnDefinition Width="5" />
-                                            <ColumnDefinition MinWidth="150" Width="600" />
+                                            <ColumnDefinition MinWidth="200" Width="200*" />
                                         </Grid.ColumnDefinitions>
 
                                         <!-- Follow this children format and add eventhandler to perform tabification of datagrids when user enables option -->
@@ -1623,20 +1623,18 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 </Button>
                                                 <Button x:Name="Button_ClearWatchTime" Content="Reset All WatchTime" Height="20" Width="120" Click="Button_ClearWatchTime_Click" Margin="15,0,15,0" />
                                             </StackPanel>
-                                            <DataGrid x:Name="DG_Users" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Users_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="True" FrozenColumnCount="3">
+                                            <DataGrid x:Name="DG_Users" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Users_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="True" RowDetailsTemplate="{StaticResource DG_RowDetailDT_Users}">
                                                 <DataGrid.Columns>
                                                     <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding Followers.IsFollower}" />
-                                                    <DataGridTemplateColumn Header="First Seen" CellTemplate="{Binding Source={StaticResource DateFirstSeenTemplate}}" SortMemberPath="FirstDateSeen" />
-                                                    <DataGridTemplateColumn Header="Current Login" CellTemplate="{Binding Source={StaticResource DateCurrentLoginTemplate}}" SortMemberPath="CurrLoginDate" />
-                                                    <DataGridTemplateColumn Header="Last Seen" CellTemplate="{Binding Source={StaticResource DateLastSeenTemplate}}" SortMemberPath="LastDateSeen" SortDirection="Descending" />
+
+                                                    <DataGridTemplateColumn Header="Last Seen" 
+                                                                            CellTemplate="{Binding Source={StaticResource DateLastSeenTemplate}}" 
+                                                                            SortMemberPath="LastDateSeen" 
+                                                                            SortDirection="Descending" />
                                                     <DataGridTextColumn Header="Watch Time" Binding="{Binding UserStats.WatchTime}" />
-                                                    <DataGridTextColumn Header="Commands" Binding="{Binding UserStats.CallCommands, StringFormat={}{0:#,#}}" />
-                                                    <DataGridTextColumn Header="Chats" Binding="{Binding UserStats.ChannelChat, StringFormat={}{0:#,#}}" />
-                                                    <DataGridTextColumn Header="Clips" Binding="{Binding UserStats.ClipsCreated, StringFormat={}{0:#,#}}" />
-                                                    <DataGridTextColumn Header="Pt Rewards" Binding="{Binding UserStats.RewardRedeems, StringFormat={}{0:#,#}}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </DockPanel>
@@ -1646,12 +1644,12 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <DataGrid x:Name="DG_Followers" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Follows_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True" RowDetailsTemplate="{StaticResource DG_RowDetailDT_Followers}" >
                                                 <DataGrid.Columns>
-                                                    <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" SortMemberPath="UserId" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding IsFollower}" />
                                                     <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}"  SortMemberPath="FollowedDate" SortDirection="Descending" />
                                                     <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" SortMemberPath="StatusChangeDate" SortDirection="Descending" />
+                                                    <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </DockPanel>
@@ -1875,7 +1873,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                          AncestorType={x:Type ListViewItem}}, 
                                          Converter={StaticResource IndexConverter}}"
                                                                         />
-                                                        <GridViewColumn Header="Entrant" Width="200" DisplayMemberBinding="{Binding Mode=OneWay}" />
+                                                        <GridViewColumn Header="Entrant" Width="200" DisplayMemberBinding="{Binding UserName, Mode=OneWay}" />
                                                     </GridView>
                                                 </ListView.View>
                                             </ListView>

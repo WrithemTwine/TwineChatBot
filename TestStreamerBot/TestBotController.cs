@@ -94,11 +94,11 @@ namespace TestStreamerBot
         }
 
         [Theory]
-        [InlineData("BanMeUser1", "Buy follows or else")]
-        [InlineData("BanMeUser2", "You must buy follows or else", true)]
-        [InlineData("BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
-        [InlineData("BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
-        public void TestUserBanned(string UserName, string Msg, bool Joined = false, bool JoinBan = false)
+        [InlineData("12345", "BanMeUser1", "Buy follows or else")]
+        [InlineData("124856", "BanMeUser2", "You must buy follows or else", true)]
+        [InlineData("9381984","BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
+        [InlineData("4985973","BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
+        public void TestUserBanned(string UserId, string UserName, string Msg, bool Joined = false, bool JoinBan = false)
         {
             Initialize();
 
@@ -136,7 +136,7 @@ namespace TestStreamerBot
             // ban before or after they join, or don't join at all
             if (!JoinBan)
             {
-                botController.HandleUserBanned(UserName, Platform.Twitch);
+                botController.HandleUserBanned(UserId, UserName, Platform.Twitch);
                 Thread.Sleep(5000);
             }
 
@@ -161,12 +161,12 @@ namespace TestStreamerBot
         }
 
         [Theory]
-        [InlineData("DarkStreamPhantom", false, 4)]
-        public void TestBeingHost(string ChannelHost, bool AutoHosted, int Viewers)
+        [InlineData("12345","DarkStreamPhantom", false, 4)]
+        public void TestBeingHost(string UserId, string ChannelHost, bool AutoHosted, int Viewers)
         {
             Initialize();
 
-            botController.HandleBeingHosted(ChannelHost, AutoHosted, Viewers);
+            botController.HandleBeingHosted(UserId, ChannelHost, AutoHosted, Viewers);
         }
 
         [Theory]

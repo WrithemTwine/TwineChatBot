@@ -204,7 +204,7 @@ namespace StreamerBot
 
             foreach (object R in item.SelectedItems)
             {
-                item.Items.Remove(R);
+                 // TODO: fix menu delete click - item.ItemsSource.
             }
         }
 

@@ -303,14 +303,15 @@ namespace StreamerBotLib.Systems
                 else
                 {
                     AddApprovalRequest($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
-                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
+                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
                     result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
                 }
             }
             else
             {
                 // parse commands, either built-in or custom
-                result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi);
+                result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi);
+                DataManage.UpdateStats(DBUserStats.Commands, cmdMessage.UserId, source);
             }
 
             FormatResult(result, multi, cmdrow);
@@ -790,8 +791,8 @@ namespace StreamerBotLib.Systems
                                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
                                 CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
-                                    Action: DefaultCommand.so.ToString(),
-                                    UserName: User.UserName, UserMsg: tempHTMLResponse);
+                                    Action: DefaultCommand.so.ToString(), 
+                                    User, UserMsg: tempHTMLResponse);
                             }
                         });
 
@@ -812,7 +813,7 @@ namespace StreamerBotLib.Systems
 
             if (result != "")
             {
-                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, UserName: User.UserName, UserMsg: tempHTMLResponse);
+                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, User, UserMsg: tempHTMLResponse);
             }
 
             result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;

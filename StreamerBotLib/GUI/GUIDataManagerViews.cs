@@ -22,7 +22,7 @@ namespace StreamerBotLib.GUI
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = [];
-        public ObservableCollection<string> GiveawayCollection { get; set; }
+        public ObservableCollection<LiveUser> GiveawayCollection { get; set; }
         public int CurrFollowers
         {
             get

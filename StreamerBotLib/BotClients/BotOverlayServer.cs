@@ -11,7 +11,6 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
-using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
 
 using System.Reflection;

@@ -30,7 +30,7 @@ namespace StreamerBotLib.Overlay
 
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
-            
+
 
             GUIData = (GUIData)Resources["GUIAppData"];
 

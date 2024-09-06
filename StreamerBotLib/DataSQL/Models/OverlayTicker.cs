@@ -6,8 +6,14 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(TickerName))]
     [Index(nameof(TickerName))]
-    public class OverlayTicker(OverlayTickerItem tickerName = default, string userName = null) : EntityBase
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class OverlayTicker(OverlayTickerItem tickerName, string userName)
+#else
+ public class OverlayTicker(OverlayTickerItem tickerName = default, string userName = null)
+#endif
+    : EntityBase
     {
+
         public OverlayTickerItem TickerName { get; set; } = tickerName;
         public string UserName { get; set; } = userName;
     }

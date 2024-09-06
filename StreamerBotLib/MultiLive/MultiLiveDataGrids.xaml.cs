@@ -29,6 +29,8 @@ namespace StreamerBotLib.MultiLive
             InitializeComponent();
         }
 
+        // TODO: 'summary archive' combo box throws null exception
+
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Right-click menu is clicked.");

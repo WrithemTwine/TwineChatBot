@@ -133,27 +133,27 @@ namespace StreamerBotLib.DataSQL.Import
 
         //}
 
-//        protected void PerformSaveOp()
-//        {
-//#if LogDataManager_Actions
-//            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
-//#endif
+        //        protected void PerformSaveOp()
+        //        {
+        //#if LogDataManager_Actions
+        //            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
+        //#endif
 
-//            if (OptionFlags.ActiveToken) // don't sleep if exiting app
-//            {
-//                Thread.Sleep(SaveThreadWait);
-//            }
+        //            if (OptionFlags.ActiveToken) // don't sleep if exiting app
+        //            {
+        //                Thread.Sleep(SaveThreadWait);
+        //            }
 
-//            lock (SaveTasks) // in case save actions arrive during save try
-//            {
-//                if (SaveTasks.Count >= 1)
-//                {
-//                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
-//                }
-//                SaveTasks.Clear();
-//            }
-//            SaveThreadStarted = false; // indicate start another thread to save data
-//        }
+        //            lock (SaveTasks) // in case save actions arrive during save try
+        //            {
+        //                if (SaveTasks.Count >= 1)
+        //                {
+        //                    SaveTasks.Dequeue().Start(); // only run 1 of the save tasks
+        //                }
+        //                SaveTasks.Clear();
+        //            }
+        //            SaveThreadStarted = false; // indicate start another thread to save data
+        //        }
 
 
     }

@@ -2,16 +2,22 @@
 
 using StreamerBotLib.Static;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CategoryId), nameof(Category))]
     [Index(nameof(CategoryId), nameof(Category), IsUnique = true)]
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class CategoryList(string categoryId,
+                              string category,
+                              int streamCount)
+#else
     public class CategoryList(string categoryId = null,
                               string category = null,
-                              int streamCount = 0) : EntityBase
+                              int streamCount = 0)
+#endif
+        : EntityBase
     {
+
         public string CategoryId { get; set; } = categoryId;
 
         /// <summary>
@@ -24,6 +30,6 @@ namespace StreamerBotLib.DataSQL.Models
         public GameDeadCounter GameDeadCounter { get; set; }
 
         public ICollection<Followers> Followers { get; } = [];
-        
+
     }
 }

@@ -9,5 +9,8 @@
         public string Language { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }
+
+        public string FromUserId { get; set; }
+        public string FromUserName { get; set; }
     }
 }

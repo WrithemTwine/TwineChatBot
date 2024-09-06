@@ -2,15 +2,21 @@
 
 using StreamerBotLib.Enums;
 
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class MultiChannels(string userId,
+                               string userName,
+                               Platform platform)
+#else
     public class MultiChannels(string userId = null,
                                string userName = null,
-                               Platform platform = Platform.Default) : UserBase(userId, userName, platform), IEqualityComparer<MultiChannels>
+                               Platform platform = Platform.Default)
+#endif
+ : UserBase(userId, userName, platform), IEqualityComparer<MultiChannels>
     {
         public ICollection<MultiLiveStreams> MultiLiveStreams { get; } = [];
 

@@ -9,6 +9,28 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CmdName))]
     [Index(nameof(CmdName), IsUnique = true)]
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class Commands(string cmdName,
+                          bool addMe,
+                          ViewerTypes permission,
+                          bool isEnabled,
+                          bool announce,
+                          string message,
+                          int repeatTimer,
+                          short sendMsgCount,
+                          ICollection<string> category,
+                          bool allowParam,
+                          string usage,
+                          bool lookupData,
+                          string table,
+                          string keyField,
+                          string dataField,
+                          string currencyField,
+                          string unit,
+                          CommandAction action,
+                          int top,
+                          CommandSort sort)
+#else
     public class Commands(string cmdName = null,
                           bool addMe = false,
                           ViewerTypes permission = ViewerTypes.Viewer,
@@ -28,8 +50,11 @@ namespace StreamerBotLib.DataSQL.Models
                           string unit = null,
                           CommandAction action = default,
                           int top = 0,
-                          CommandSort sort = default) : EntityBase
+                          CommandSort sort = default)
+#endif
+    : EntityBase
     {
+
         public string CmdName { get; set; } = cmdName;
         public bool AddMe { get; set; } = addMe;
         public ViewerTypes Permission { get; set; } = permission;

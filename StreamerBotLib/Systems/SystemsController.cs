@@ -38,7 +38,7 @@ namespace StreamerBotLib.Systems
         private delegate void BotOperation();
 
         private bool GiveawayStarted = false;
-        private readonly List<string> GiveawayCollectionList = [];
+        private readonly List<LiveUser> GiveawayCollectionList = [];
 
         /// <summary>
         /// Builds and initalizes the controller, instantiates all of the systems
@@ -201,7 +201,7 @@ namespace StreamerBotLib.Systems
                                 string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
                                 SendMessage(message);
 
-                                SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUserName, UserMsg: message);
+                                SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUser, UserMsg: message);
                             }
                         }
 
@@ -220,7 +220,7 @@ namespace StreamerBotLib.Systems
                     {
                         string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) }));
                         SendMessage(message);
-                        SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), UserMsg: message);
+                        SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), null, UserMsg: message);
 
                         i++;
                     }
@@ -331,7 +331,7 @@ namespace StreamerBotLib.Systems
 
             SystemActions.StartElapsedTimerThread();
 
-            SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Live.ToString());
+            SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Live.ToString(), null);
 
             return streamstart;
         }
@@ -488,7 +488,7 @@ namespace StreamerBotLib.Systems
                     , Repeat: Multi);
                 }
 
-                SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, selected.ToString(), User.UserName);
+                SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, selected.ToString(), User);
             }
 
             if (OptionFlags.AutoShout)
@@ -505,6 +505,8 @@ namespace StreamerBotLib.Systems
 
         public void MessageReceived(CmdMessage MsgReceived, LiveUser User)
         {
+            UpdateUserStats(DBUserStats.Chats, User.UserId, User.Platform);
+
             MsgReceived.UserType = ActionSystem.ParsePermission(MsgReceived);
 
             if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
@@ -584,7 +586,7 @@ namespace StreamerBotLib.Systems
                             UpdatedStat(StreamStatType.AutoEvents);
                         }
 
-                        SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits.ToString(), MsgReceived.DisplayName);
+                        SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits.ToString(), User, MsgReceived.DisplayName);
                     }));
                 }
 
@@ -629,7 +631,7 @@ namespace StreamerBotLib.Systems
                         SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
                     }
 
-                    SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid.ToString(), User.UserName);
+                    SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid.ToString(), User);
 
                     UpdatedStat(StreamStatType.Raids, StreamStatType.AutoEvents);
 
@@ -700,6 +702,11 @@ namespace StreamerBotLib.Systems
             UpdatedStat(StreamStatType.AutoCommands);
         }
 
+        public void UpdateUserStats(DBUserStats dBUserStats, string userId, Platform platform)
+        {
+            DataManage.UpdateStats(dBUserStats, userId, platform);
+        }
+
         #endregion
 
         #region Giveaway
@@ -719,16 +726,16 @@ namespace StreamerBotLib.Systems
         /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be started through <code>BeginGiveaway()</code>.
         /// </summary>
         /// <param name="DisplayName"></param>
-        public void ManageGiveaway(string DisplayName)
+        public void ManageGiveaway(LiveUser User)
         {
-            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == DisplayName).Count < OptionFlags.GiveawayMaxEntries) || GiveawayCollectionList.UniqueAdd(DisplayName)))
+            if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == User).Count < OptionFlags.GiveawayMaxEntries) || GiveawayCollectionList.UniqueAdd(User)))
             {
-                ActionSystem.GiveawayCollection.Add(DisplayName);
+                ActionSystem.GiveawayCollection.Add(User);
             }
 
-            while (GiveawayCollectionList.FindAll((e) => e == DisplayName).Count > OptionFlags.GiveawayMaxEntries)
+            while (GiveawayCollectionList.FindAll((e) => e == User).Count > OptionFlags.GiveawayMaxEntries)
             {
-                GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == DisplayName));
+                GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == User));
             }
         }
 
@@ -752,11 +759,11 @@ namespace StreamerBotLib.Systems
 
             if (GiveawayCollectionList.Count > 0)
             {
-                List<string> WinnerList = [];
+                List<LiveUser> WinnerList = [];
                 int x = 0;
                 while (x < OptionFlags.GiveawayCount)
                 {
-                    string winner = GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)];
+                    LiveUser winner = GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)];
                     GiveawayCollectionList.RemoveAll((w) => w == winner);
                     WinnerList.Add(winner);
                     // DisplayName += (OptionFlags.GiveawayCount > 1 && x > 0 ? ", " : "") + winner;
@@ -777,7 +784,7 @@ namespace StreamerBotLib.Systems
                                 }
                                 )));
 
-                    foreach (string W in WinnerList)
+                    foreach (LiveUser W in WinnerList)
                     {
                         SystemActions.CheckForOverlayEvent(OverlayTypes.Giveaway, OverlayTypes.Giveaway.ToString(), W);
                     }
@@ -855,14 +862,14 @@ namespace StreamerBotLib.Systems
             SystemActions.SetChannelRewardList(RewardList);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
-            CheckForOverlayEvent(overlayType, enumvalue.ToString(), UserName, UserMsg, ProvidedURL, UrlDuration);
+            CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
-            SystemActions.CheckForOverlayEvent(overlayType, Action, UserName, UserMsg, ProvidedURL, UrlDuration);
+            SystemActions.CheckForOverlayEvent(overlayType, Action, User, UserMsg, ProvidedURL, UrlDuration);
         }
 
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)

@@ -21,8 +21,6 @@ using System.Data;
 using System.Globalization;
 using System.Reflection;
 
-using static StreamerBotLib.DataSQL.Import.DataSource;
-
 namespace StreamerBotLib.DataSQL
 {
     /*
@@ -1223,7 +1221,7 @@ switches:
             return found;
         }
 
-        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url)
+        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -1549,22 +1547,28 @@ switches:
                     if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
                 }
 
-                List<Models.CurrencyType> types = new(context.CurrencyType);
-
-                foreach (Models.CurrencyType t in types)
-                {
-                    if (!(from UC in context.Currency where (UC.UserName == newuser.UserName && UC.CurrencyName == t.CurrencyName) select UC).Any())
-                    {
-                        context.Currency.Add(new(userName: newuser.UserName, value: 0, currencyName: t.CurrencyName));
-                    }
-                }
-
                 if (!(from US in context.UserStats
                       where (US.UserId == User.UserId && US.UserName == User.UserName && US.Platform == User.Platform)
                       select US).Any())
                 {
                     context.UserStats.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform));
                 }
+
+                context.SaveChanges(true);
+
+                foreach (Models.CurrencyType t in context.CurrencyType)
+                {
+                    Currency curr = (from UC in context.Currency
+                                     where (UC.UserId == newuser.UserId && UC.CurrencyName == t.CurrencyName)
+                                     select UC).FirstOrDefault();
+
+                    if (curr == null)
+                    {
+                        context.Currency.Add(new(userId: newuser.UserId, userName: newuser.UserName, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
+                    }
+                }
+
+                context.SaveChanges(true);
 
                 return newuser;
             }
@@ -1832,6 +1836,7 @@ switches:
             }
         }
 
+        [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
         public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
         {
             throw new NotImplementedException();
@@ -2206,7 +2211,7 @@ switches:
                     //var channeldata = (from C in context.MultiChannels where (userid == C.UserId) select C).FirstOrDefault();
                     //if ( channeldata == null || (!string.Equals(channeldata.UserName, username, StringComparison.OrdinalIgnoreCase)) )
                     //{ // add missing updated user names to channels to ensure relation integrity
-                        
+
                     //    context.MultiChannels.Add(new(userid, username, platform: Platform.Twitch));
                     //}
 
@@ -2285,7 +2290,7 @@ switches:
                     else
                     {
                         context.MultiSummaryLiveStreams.Add(new(
-                            userId: GroupedStreams.sumrow.UserId, userName: GroupedStreams.sumrow.UserName,
+                            userId: GroupedStreams.sumrow.UserId, userName: GroupedStreams.sumrow.UserName, platform: GroupedStreams.sumrow.Platform,
                             streamCount: GroupedStreams.livestreamrow.StreamCount, throughDate: GroupedStreams.livestreamrow.ThroughDate));
                     }
                 }
@@ -2301,6 +2306,41 @@ switches:
                 SummarizeStreamData();
 
                 ClearDataContext();
+            }
+        }
+
+        #endregion
+
+        #region Update User Stats
+
+        public void UpdateStats(DBUserStats Stat, string userId, Platform platform)
+        {
+            if (userId != null)
+            {
+                UserStats userStats = (from U in context.UserStats
+                                       where U.UserId == userId && U.Platform == platform
+                                       select U).FirstOrDefault();
+
+                if (userStats != null)
+                {
+                    switch (Stat)
+                    {
+                        case DBUserStats.Commands:
+                            userStats.CallCommands++;
+                            break;
+                        case DBUserStats.Clips:
+                            userStats.ClipsCreated++;
+                            break;
+                        case DBUserStats.Chats:
+                            userStats.ChannelChat++;
+                            break;
+                        case DBUserStats.ChannelRewards:
+                            userStats.RewardRedeems++;
+                            break;
+                    }
+                }
+
+                context.SaveChanges(true);
             }
         }
 

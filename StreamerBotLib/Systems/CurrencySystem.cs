@@ -100,8 +100,8 @@ namespace StreamerBotLib.Systems
                         }
                         )), cmdrow.SendMsgCount, cmdrow);
 
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => GameBlackJackStart());
                     GameCurrBlackJack = new();
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => GameBlackJackStart());
 
                     GameBlackJackCurrency = cmdrow.Currency_field;
                     lock (GameCurrBlackJackAnswer)
@@ -163,7 +163,7 @@ namespace StreamerBotLib.Systems
                     {
                         new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                         new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
-                    })));
+                    })), 0);
 
                 int WaitTime = 30000; // 30 seconds in milliseconds
 
@@ -187,7 +187,7 @@ namespace StreamerBotLib.Systems
                                     new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                                     new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
                                     }
-                                )));
+                                )), 0);
                             int ThreadWait = 0;
                             while (ThreadWait < WaitTime && GameCurrBlackJackAnswer.Count == 0)
                             {
@@ -219,11 +219,11 @@ namespace StreamerBotLib.Systems
 
                             if (CurrCardCount == BlackJack.BlackJackWin)
                             {
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}");
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}", 0);
                             }
                             else if (CurrCardCount > BlackJack.BlackJackWin)
                             {
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}");
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}", 0);
                             }
                         }
                     }

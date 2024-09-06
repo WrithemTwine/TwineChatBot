@@ -418,7 +418,7 @@ namespace StreamerBotLib.GUI.Windows
                 or "Usage" or "lookupdata" or "table"
                 or "key_field" or "data_field"
                 or "unit" or "action"
-                or "top" or "Name") || (dataColumnName is "Id") )
+                or "top" or "Name") || (dataColumnName is "Id"))
             {
                 dataout.IsEnabled = false;
             }

@@ -25,7 +25,7 @@ namespace StreamerBotLib.Systems
         internal static IDataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
-        public static ObservableCollection<string> GiveawayCollection { get; set; } = [];
+        public static ObservableCollection<LiveUser> GiveawayCollection { get; set; } = [];
         public static ObservableCollection<string> CurrUserJoin { get; private set; } = [];
 
         public static string Category { get; set; }
@@ -185,7 +185,7 @@ namespace StreamerBotLib.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName);
         }
 
         /// <summary>

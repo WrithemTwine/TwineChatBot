@@ -41,7 +41,6 @@ namespace StreamerBotLib.BotClients
 
         public static event EventHandler<EventArgs> RaidCompleted;
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
-        public static event EventHandler<EventArgs> IsInitialized;
 
         public BotsTwitch()
         {
@@ -87,8 +86,6 @@ namespace StreamerBotLib.BotClients
 
 
             CheckStreamerBotIds();
-
-            IsInitialized?.Invoke(this, new());
         }
 
         /// <summary>

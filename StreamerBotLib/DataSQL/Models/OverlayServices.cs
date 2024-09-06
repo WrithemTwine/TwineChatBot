@@ -8,7 +8,19 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(OverlayType), nameof(OverlayAction))]
-    public class OverlayServices(int id = 0,
+#if DEBUG_EFMODELS_NODEFAULTPARAM
+    public class OverlayServices(int id,
+                                 bool isEnabled,
+                                 int duration,
+                                 OverlayTypes overlayType,
+                                 string overlayAction,
+                                 string userName,
+                                 bool useChatMsg,
+                                 string message,
+                                 string imageFile,
+                                 string mediaFile)
+#else
+   public class OverlayServices(int id = 0,
                                  bool isEnabled = false,
                                  int duration = 0,
                                  OverlayTypes overlayType = default,
@@ -17,8 +29,11 @@ namespace StreamerBotLib.DataSQL.Models
                                  bool useChatMsg = false,
                                  string message = null,
                                  string imageFile = null,
-                                 string mediaFile = null) : EntityBase
+                                 string mediaFile = null)
+#endif
+  : EntityBase
     {
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; } = id;
         public bool IsEnabled { get; set; } = isEnabled;

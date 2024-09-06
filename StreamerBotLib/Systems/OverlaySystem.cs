@@ -96,14 +96,19 @@ namespace StreamerBotLib.Systems
             NewOverlayEvent?.Invoke(this, e);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, string UserName = null, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
-            List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType, Action, UserName);
+            List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType, Action, User?.UserName);
             OverlayActionType FoundAction = null;
 
-            if (UserName != null && overlayActionTypes.Count > 0)
+            if (overlayType == OverlayTypes.ChannelPoints)
             {
-                FoundAction = overlayActionTypes.Find(x => x.UserName == UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
+                DataManage.UpdateStats(DBUserStats.ChannelRewards, User.UserId, User.Platform);
+            }
+
+            if (User.UserName != null && overlayActionTypes.Count > 0)
+            {
+                FoundAction = overlayActionTypes.Find(x => x.UserName == User.UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Determined {FoundAction?.OverlayType} {FoundAction?.ActionValue} as the matching Overlay action.");
             }
@@ -130,7 +135,7 @@ namespace StreamerBotLib.Systems
                         ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                         {
                             ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
-                            OnGetChannelClipsEvent(new() { ChannelName = UserName, CallBackResult = UserShout.FoundChannelClips });
+                            OnGetChannelClipsEvent(new() { ChannelName = User.UserName, CallBackResult = UserShout.FoundChannelClips });
 
                             while (!UserShout.Finish) // keep thread open until Clips bot gives a response
                             {

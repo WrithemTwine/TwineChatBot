@@ -397,13 +397,22 @@ namespace StreamerBotLib.BotClients.Twitch
                 string tempSend = s;
 
                 string prefix = (s.StartsWith("/me ") ? "/me " : "");
-
-                while (tempSend.Length > SingleChatLength)
+                if(tempSend.StartsWith(prefix))
                 {
-                    string temp = tempSend[..SingleChatLength];
-                    string AddSend = temp[..(temp.LastIndexOf(' ') - 1)];
-                    newSendMsg.Add(AddSend);
-                    tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
+                    tempSend = tempSend.Remove(0, prefix.Length);
+                }
+
+                while (tempSend.Length > (SingleChatLength - prefix.Length)) // removed prefix, account for prefix within total allowable chat length size
+                {
+                    int foundsend = SingleChatLength - prefix.Length; // search for blank space less the prefix
+
+                    while(tempSend[foundsend] != ' ') // find the earlier blank space to not break up a word
+                    {
+                        foundsend--;
+                    }
+
+                    newSendMsg.Add(prefix + tempSend[..foundsend]); // add prefix if intended
+                    tempSend = tempSend.Remove(0,foundsend); // skip what we've already processed
                 }
 
                 if (tempSend.Length > 0)

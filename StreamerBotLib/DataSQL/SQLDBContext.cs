@@ -13,8 +13,6 @@ using Microsoft.Extensions.Logging;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Static;
 
-using System.IO;
-
 namespace StreamerBotLib.DataSQL
 {
     public class SQLDBContext : DbContext
@@ -176,7 +174,7 @@ namespace StreamerBotLib.DataSQL
                 .Property(p => p.Duration)
                 .HasComputedColumnSql("[StreamEnd] - [StreamStart]", stored: true);
         }
-        
+
         public SQLDBContext()
         {
             ChangeTracker.LazyLoadingEnabled = false;

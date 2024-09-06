@@ -93,7 +93,7 @@ namespace StreamerBotLib.Interfaces
         object[] PerformQuery(Commands row, int Top = 0);
         object PerformQuery(Commands row, string ParamValue);
         bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0);
-        bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url);
+        bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName);
         string PostCommand(string cmd, CommandParams Params);
         void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName);
         int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1);
@@ -131,6 +131,7 @@ namespace StreamerBotLib.Interfaces
         void UpdateFollowers(IEnumerable<Follow> follows);
         new List<LearnMsgRecord> UpdateLearnedMsgs();
         void UpdateOverlayTicker(OverlayTickerItem item, string name);
+        void UpdateStats(DBUserStats Stat, string userId, Platform platform);
         void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime);
         void UpdateWatchTime(LiveUser User, DateTime CurrTime);
         void UserJoined(LiveUser User, DateTime NowSeen);
