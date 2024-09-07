@@ -4,7 +4,7 @@ using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(Platform))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Users(
                        DateTime firstDateSeen,
@@ -21,14 +21,16 @@ namespace StreamerBotLib.DataSQL.Models
                        string userName = null,
                        Platform platform = Platform.Default)
 #endif
- : UserBase(userId, userName, platform)
+ : UserBase(userId, platform)
     {
+        public string UserName { get; set; } = userName;
         public DateTime FirstDateSeen { get; set; } = firstDateSeen;
         public DateTime CurrLoginDate { get; set; } = currLoginDate;
         public DateTime LastDateSeen { get; set; } = lastDateSeen;
 
         public ICollection<Currency> Currency { get; } = [];
-        public Followers? Followers { get; set; }
+        public ICollection<Followers> Followers { get; } = [];
+        public ICollection<GiveawayUserData> GiveawayUserData { get; } = [];
         public ShoutOuts? ShoutOuts { get; set; }
         public CustomWelcome? CustomWelcome { get; set; }
         public UserStats UserStats { get; set; }

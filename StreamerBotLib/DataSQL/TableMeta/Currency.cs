@@ -1,12 +1,16 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Currency : IDatabaseTableMeta
     {
-        public System.String UserName => (System.String)Values["UserName"];
         public System.Double Value => (System.Double)Values["Value"];
         public System.String CurrencyName => (System.String)Values["CurrencyName"];
+        public System.String UserId => (System.String)Values["UserId"];
+        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
 
         public Dictionary<string, object> Values { get; }
 
@@ -16,16 +20,18 @@ namespace StreamerBotLib.DataSQL.TableMeta
         {
             Values = new()
             {
-                 { "UserName", tableData.UserName },
                  { "Value", tableData.Value },
-                 { "CurrencyName", tableData.CurrencyName }
+                 { "CurrencyName", tableData.CurrencyName },
+                 { "UserId", tableData.UserId },
+                 { "Platform", tableData.Platform }
             };
         }
         public Dictionary<string, Type> Meta => new()
         {
-              { "UserName", typeof(System.String) },
               { "Value", typeof(System.Double) },
-              { "CurrencyName", typeof(System.String) }
+              { "CurrencyName", typeof(System.String) },
+              { "UserId", typeof(System.String) },
+              { "Platform", typeof(StreamerBotLib.Enums.Platform) }
         };
         public object GetModelEntity()
         {

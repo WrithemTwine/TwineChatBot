@@ -494,36 +494,38 @@ namespace StreamerBotLib.DataSQL.Import
             {
                 foreach (ChannelsRow U in _MultiDataSource.Channels)
                 {
-                    UsersRow usersRow = (from R in _DataSource.Users
-                                         where string.Equals(R.UserName, U.ChannelName, StringComparison.OrdinalIgnoreCase)
-                                         select R).FirstOrDefault();
+                    //UsersRow usersRow = (from R in _DataSource.Users
+                    //                     where string.Equals(R.UserName, U.ChannelName, StringComparison.OrdinalIgnoreCase)
+                    //                     select R).FirstOrDefault();
 
-                    if (!(DBNull.Value.Equals(U.UserId)) && (U.UserId != null) && usersRow != null)
+                    MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == U.UserId select MC).FirstOrDefault();
+
+                    if (!(DBNull.Value.Equals(U.UserId)) && (U.UserId != null) && currUser == null)
                     {
                         context.MultiChannels.Add(new(userId: U.UserId,
-                                                   userName: usersRow.UserName,
+                                                   userName: U.ChannelName,
                                                    platform: Platform.Twitch));
                     }
                     else
                     {
                         LogWriter.WriteLog($"Found invalid or mismatched userId or userName, could not import: {ConvertDataRow(U, _MultiDataSource.Channels.Columns.Count)}");
                     }
+                    context.SaveChanges(true);
                 }
             }
 
-            context.SaveChanges(true);
 
             CurrentTotalProgress += _MultiDataSource.Channels.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             // post multilive stream data
 
-            StreamWriter multilive = new("debug_MultiLiveStream.txt") { AutoFlush = true };
+            //StreamWriter multilive = new("debug_MultiLiveStream.txt") { AutoFlush = true };
 
             LogWriter.WriteLog("Adding Multilive Livestream data.");
 
-            List<MultiChannels> multiChannels = [];
-            List<MultiLiveStreams> multiLiveStreams = [];
+            //List<MultiChannels> multiChannels = [];
+            //List<MultiLiveStreams> multiLiveStreams = [];
 
             if (_MultiDataSource.LiveStream.Count > 0)
             {
@@ -540,30 +542,36 @@ namespace StreamerBotLib.DataSQL.Import
                                                  where C.UserId == L.UserId
                                                  select C).FirstOrDefault();
 
-                    if (channelsRow != null && !string.Equals(channelsRow.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase))
+                    //if (channelsRow != null) // && !string.Equals(channelsRow.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase))
+                    //{
+                    //    if(channelsRow.UserName != L.ChannelName)
+                    //    {
+                    //        channelsRow.UserName = L.ChannelName;
+                    //    }
+                    //    //MultiChannels currChannel = new(L.UserId, L.ChannelName, Platform.Twitch);
+                    //    MultiLiveStreams currMultiLive = new(userId: usersRow.UserId, platform: Platform.Twitch, liveDate: L.LiveDate);
+                    //    //multiChannels.UniqueAdd(currChannel, currChannel);
+                    //    //multiLiveStreams.UniqueAdd(currMultiLive, currMultiLive);
+                    //}
+                    if (channelsRow != null) // (founddata.Any() || usersRow != null) && !DBNull.Value.Equals(usersRow.UserId) && !DBNull.Value.Equals(usersRow.UserName)) // only add if we can find user ID in multilive channel table
                     {
-                        MultiChannels currChannel = new(L.UserId, L.ChannelName, Platform.Twitch);
-                        MultiLiveStreams currMultiLive = new(userId: usersRow.UserId, userName: usersRow.UserName, platform: Platform.Twitch, liveDate: L.LiveDate);
-                        multiChannels.UniqueAdd(currChannel, currChannel);
-                        multiLiveStreams.UniqueAdd(currMultiLive, currMultiLive);
+                        if (channelsRow.UserName != L.ChannelName)
+                        {
+                            channelsRow.UserName = L.ChannelName;
+                        }
+                        //multilive.WriteLine(ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count));
+                        dataManagerSQL.PostMultiStreamDate(userid: channelsRow.UserId, username: channelsRow.UserName, platform: Platform.Twitch, onDate: L.LiveDate);
                     }
                     else
                     {
-                        if ((founddata.Any() || usersRow != null) && !DBNull.Value.Equals(usersRow.UserId) && !DBNull.Value.Equals(usersRow.UserName)) // only add if we can find user ID in multilive channel table
-                        {
-                            multilive.WriteLine(ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count));
-                            dataManagerSQL.PostMultiStreamDate(userid: usersRow.UserId, username: usersRow.UserName, platform: Platform.Twitch, onDate: L.LiveDate);
-                        }
-                        else
-                        {
-                            LogWriter.WriteLog($"Found invalid or mismatched userId or userName, could not import: {ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count)}");
-                        }
+                        LogWriter.WriteLog($"Found invalid or mismatched userId or userName, could not import: {ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count)}");
                     }
+                    context.SaveChanges(true);
                 }
             }
 
-            if (multiChannels.Count > 0) { context.MultiChannels.AddRange(multiChannels); }
-            if (multiLiveStreams.Count > 0) { context.MultiLiveStreams.AddRange(multiLiveStreams); }
+            //if (multiChannels.Count > 0) { context.MultiChannels.AddRange(multiChannels); }
+            //if (multiLiveStreams.Count > 0) { context.MultiLiveStreams.AddRange(multiLiveStreams); }
 
             CurrentTotalProgress += _MultiDataSource.LiveStream.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
@@ -597,14 +605,14 @@ namespace StreamerBotLib.DataSQL.Import
                                      where C.UserName == S.ChannelName
                                      select C);
 
-                    UsersRow usersRow = (from U in _DataSource.Users
-                                         where string.Equals(U.UserName, S.ChannelName, StringComparison.OrdinalIgnoreCase)
-                                         select U).FirstOrDefault();
+                    //UsersRow usersRow = (from U in _DataSource.Users
+                    //                     where string.Equals(U.UserName, S.ChannelName, StringComparison.OrdinalIgnoreCase)
+                    //                     select U).FirstOrDefault();
 
-                    if (founddata.Any() || usersRow != null)
+                    if (founddata.Any() )
                     {
                         context.MultiSummaryLiveStreams.Add(new MultiSummaryLiveStreams(streamCount: S.StreamCount, throughDate: S.ThroughDate,
-                            userId: usersRow.UserId, userName: usersRow.UserName, platform: Platform.Twitch));
+                            userId: founddata.First().UserId, platform: Platform.Twitch));
                     }
                     else
                     {
@@ -624,26 +632,44 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding Users and UserStats data.");
 
             if (_DataSource.Users.Count > 0)
-            {
+            { 
                 foreach (UsersRow U in _DataSource.Users)
                 {
                     if (!(DBNull.Value.Equals(U.UserId)) && (U.UserId != null))
                     {
-                        context.Users.Add(new(firstDateSeen: U.FirstDateSeen,
-                                              currLoginDate: U.CurrLoginDate,
-                                              lastDateSeen: U.LastDateSeen,
-                                              userId: U.UserId,
-                                              userName: U.UserName,
-                                              platform: Platform.Twitch));
+                        Users CurrUser = (from CU in context.Users where U.UserId == CU.UserId select CU).FirstOrDefault();
 
-                        context.UserStats.Add(new(watchTime: U.WatchTime, userId: U.UserId, userName: U.UserName, platform: Platform.Twitch));
+                        if (CurrUser != null)
+                        {
+                            if (CurrUser.FirstDateSeen < U.FirstDateSeen)
+                            {
+                                CurrUser.UserName = U.UserName;
+                                CurrUser.LastDateSeen = U.LastDateSeen;
+                            }
+
+                            CurrUser.UserStats.WatchTime += U.WatchTime; // don't bother with other user stats during import, these stats were not previously established 
+                        }
+                        else
+                        {
+                            context.Users.Add(new(firstDateSeen: U.FirstDateSeen,
+                                                  currLoginDate: U.CurrLoginDate,
+                                                  lastDateSeen: U.LastDateSeen,
+                                                  userId: U.UserId,
+                                                  userName: U.UserName,
+                                                  platform: Platform.Twitch));
+
+                            context.UserStats.Add(new(watchTime: U.WatchTime, userId: U.UserId, platform: Platform.Twitch));
+                        }
                     }
                     else
                     {
                         LogWriter.WriteLog($"Could not import users row: {ConvertDataRow(U, _DataSource.Users.Columns.Count)}");
                     }
+
+                    context.SaveChanges(true);
                 }
             }
+
 
             CurrentTotalProgress += _DataSource.Users.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
@@ -659,7 +685,6 @@ namespace StreamerBotLib.DataSQL.Import
                     {
                         context.CustomWelcome.Add(new(message: CW.Message,
                                                    userId: usersRow.UserId,
-                                                   userName: CW.UserName,
                                                    platform: Platform.Twitch));
                     }
                     else
@@ -696,16 +721,25 @@ namespace StreamerBotLib.DataSQL.Import
             {
                 foreach (CurrencyRow C in _DataSource.Currency)
                 {
-                    UsersRow usersRow = (UsersRow)_DataSource.Users.Select($"[UserName]='{C.UserName}'").FirstOrDefault();
-
-                    if (usersRow != null && !string.IsNullOrEmpty(usersRow.UserId))
+                    if (C.UsersRow != null && !string.IsNullOrEmpty(C.UsersRow.UserId))
                     {
-                        context.Currency.Add(new Currency(usersRow.UserId, C.UserName, Platform.Twitch, (!DBNull.Value.Equals(C.Value) && !string.IsNullOrEmpty(C.Value.ToString())) ? C.Value : 0, C.CurrencyName));
+                        Users CurrUser = (from U in context.Users where C.UsersRow.UserId == U.UserId select U).FirstOrDefault();
+                        Currency CurrCurrency = (from CU in context.Currency where CU.UserId == CurrUser.UserId select CU).FirstOrDefault();
+
+                        if (CurrCurrency == null)
+                        {
+                            context.Currency.Add(new Currency(CurrUser.UserId, Platform.Twitch, (!DBNull.Value.Equals(C.Value) && !string.IsNullOrEmpty(C.Value.ToString())) ? C.Value : 0, C.CurrencyName));
+                        }
+                        else
+                        {
+                            CurrCurrency.Value += C.Value;
+                        }
                     }
                     else
                     {
                         LogWriter.WriteLog($"Could not import row: {ConvertDataRow(C, _DataSource.Currency.Columns.Count)}");
                     }
+                    context.SaveChanges(true);
                 }
             }
 
@@ -816,7 +850,6 @@ namespace StreamerBotLib.DataSQL.Import
                                                   select new GiveawayUserData(
                                                       dateTime: G.DateTime,
                                                       userId: uId,
-                                                      userName: G.DisplayName,
                                                       platform: Platform.Twitch
                                                       ));
             }
@@ -846,7 +879,7 @@ namespace StreamerBotLib.DataSQL.Import
                             username = usersRow.UserName;
                         }
 
-                        dataManagerSQL.PostNewAutoShoutUser(username, usersRow.UserId, Platform.Twitch);
+                        dataManagerSQL.PostNewAutoShoutUser(usersRow.UserId, Platform.Twitch);
                     }
                 }
             }

@@ -84,7 +84,7 @@
                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
+                        <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
                         <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateLiveTemplate}" CellEditingTemplate="{StaticResource EditLiveDateTemplate}" SortMemberPath="LiveDate" />
                         <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                     </DataGrid.Columns>
@@ -92,12 +92,12 @@
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
-                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}">
+                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="User Id" Binding="{Binding Users.UserId}" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding Users.UserName}" />
+                        <DataGridTextColumn Header="User Id" Binding="{Binding MultiChannels.UserId}" />
+                        <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
                         <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateThroughTemplate}" CellEditingTemplate="{StaticResource EditThroughDateTemplate}" SortMemberPath="ThroughDate" />
-                        <DataGridTextColumn Header="Streams" Binding="{Binding StreamCount}" />
+                        <DataGridTextColumn Header="Streams" Binding="{Binding StreamCount, StringFormat={}{0:N0}}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>

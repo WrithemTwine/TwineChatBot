@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -8,6 +11,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public System.Boolean AddMe => (System.Boolean)Values["AddMe"];
         public StreamerBotLib.Enums.ViewerTypes Permission => (StreamerBotLib.Enums.ViewerTypes)Values["Permission"];
         public System.Boolean IsEnabled => (System.Boolean)Values["IsEnabled"];
+        public System.Boolean Announce => (System.Boolean)Values["Announce"];
         public System.String Message => (System.String)Values["Message"];
         public System.Int32 RepeatTimer => (System.Int32)Values["RepeatTimer"];
         public System.Int16 SendMsgCount => (System.Int16)Values["SendMsgCount"];
@@ -36,6 +40,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "AddMe", tableData.AddMe },
                  { "Permission", tableData.Permission },
                  { "IsEnabled", tableData.IsEnabled },
+                 { "Announce", tableData.Announce },
                  { "Message", tableData.Message },
                  { "RepeatTimer", tableData.RepeatTimer },
                  { "SendMsgCount", tableData.SendMsgCount },
@@ -59,6 +64,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "AddMe", typeof(System.Boolean) },
               { "Permission", typeof(StreamerBotLib.Enums.ViewerTypes) },
               { "IsEnabled", typeof(System.Boolean) },
+              { "Announce", typeof(System.Boolean) },
               { "Message", typeof(System.String) },
               { "RepeatTimer", typeof(System.Int32) },
               { "SendMsgCount", typeof(System.Int16) },

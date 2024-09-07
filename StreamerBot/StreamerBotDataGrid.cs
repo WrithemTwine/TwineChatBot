@@ -214,14 +214,14 @@ namespace StreamerBot
 
             foreach (UserBase dr in new List<UserBase>(item.SelectedItems.Cast<UserBase>().Select(DRV => DRV)))
             {
-                BotController.AddNewAutoShoutUser(dr.UserName, dr.UserId, dr.Platform);
+                BotController.AddNewAutoShoutUser(dr.UserId, dr.Platform);
             }
         }
 
         private void MenuItem_LiveMonitorClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
-            Controller.Systems.AddNewMonitorChannel(new List<LiveUser>(item.SelectedItems.Cast<UserBase>().Select(DRV => new LiveUser(DRV.UserName, DRV.Platform, DRV.UserId))));
+            Controller.Systems.AddNewMonitorChannel(new List<LiveUser>(item.SelectedItems.Cast<Users>().Select(DRV => new LiveUser(DRV.UserName, DRV.Platform, DRV.UserId))));
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {

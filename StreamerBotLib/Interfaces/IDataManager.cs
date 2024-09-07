@@ -98,13 +98,13 @@ namespace StreamerBotLib.Interfaces
         void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName);
         int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1);
         bool PostFollower(Follow follow);
-        void PostGiveawayData(string DisplayName, DateTime dateTime);
+        void PostGiveawayData(string UserId, DateTime dateTime);
         public void PostInRaidData(LiveUser user, DateTime time, int viewers, string gamename);
         void PostLearnMsgsRow(string Message, MsgTypes MsgType);
         bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform);
         void PostMonitorChannel(IEnumerable<LiveUser> liveUsers);
         bool PostMultiStreamDate(string userid, string username, Platform platform, DateTime onDate);
-        void PostNewAutoShoutUser(string UserName, string UserId, Platform platform);
+        void PostNewAutoShoutUser(string UserId, Platform platform);
         void PostOutgoingRaid(string HostedChannel, DateTime dateTime);
         int PostQuote(string Text);
         bool PostStream(DateTime StreamStart);

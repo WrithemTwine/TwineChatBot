@@ -342,12 +342,12 @@ namespace StreamerBotLib.BotIOController
         /// Insert a new AutoShoutUser entry into the database.
         /// </summary>
         /// <param name="UserName">The username to add into the database for the autoshout table.</param>
-        public static void AddNewAutoShoutUser(string UserName, string Userid, Platform platform)
+        public static void AddNewAutoShoutUser(string Userid, Platform platform)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
-                $"request to add= {UserName} =to the database.");
+                $"request to add= {Userid} =to the database.");
 
-            SystemsController.AddNewAutoShoutUser(UserName, Userid, platform);
+            SystemsController.AddNewAutoShoutUser(Userid, platform);
         }
 
         #endregion
@@ -885,7 +885,7 @@ namespace StreamerBotLib.BotIOController
 
             if (PostedLive)
             {
-                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(username, Platform.Twitch, CurrTime);
+                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(userid, Platform.Twitch, CurrTime);
 
                 if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                 {

@@ -390,9 +390,9 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="User">The user to check.</param>
         /// <returns>The user's welcome message, or empty string if it's not found.</returns>
-        public static string CheckWelcomeUser(string User)
+        public static string CheckWelcomeUser(string UserId)
         {
-            return DataManage.CheckWelcomeUser(User);
+            return DataManage.CheckWelcomeUser(UserId);
         }
 
         private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)

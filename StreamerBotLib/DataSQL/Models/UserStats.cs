@@ -4,7 +4,7 @@ using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(Platform))]
 
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class UserStats(
@@ -24,10 +24,9 @@ namespace StreamerBotLib.DataSQL.Models
                            int rewardRedeems = 0,
                            int clipsCreated = 0,
                            string userId = null,
-                           string userName = null,
                            Platform platform = Platform.Default)
 #endif
-     : UserBase(userId, userName, platform)
+     : UserBase(userId, platform)
     {
         public TimeSpan WatchTime { get; set; } = watchTime == default ? new(0, 0, 0) : watchTime;
         public int ChannelChat { get; set; } = channelChat;
@@ -35,7 +34,7 @@ namespace StreamerBotLib.DataSQL.Models
         public int RewardRedeems { get; set; } = rewardRedeems;
         public int ClipsCreated { get; set; } = clipsCreated;
 
-        public Users? Users { get; set; }
+        public Users? User { get; set; }
 
         public static UserStats operator +(UserStats userStats, UserStats otherStats)
         {

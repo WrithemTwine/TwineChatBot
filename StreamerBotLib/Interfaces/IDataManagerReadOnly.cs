@@ -38,7 +38,7 @@ namespace StreamerBotLib.Interfaces
         bool GetMultiChannelName(string UserName, Platform platform);
         List<string> GetMultiChannelNames(Platform platform);
         List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks();
-        bool CheckMultiStreamDate(string ChannelName, Platform platform, DateTime dateTime);
+        bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime);
         LiveUser GetUser(string UserName);
     }
 }

@@ -2,16 +2,18 @@
 using MASES.EntityFrameworkCore.KNet;
 #endif
 
-#define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
+#define DEBUG_LOG // rename to DEBUG_LOG to enable the debug log
 
 using Microsoft.EntityFrameworkCore;
 
 #if DEBUG_LOG
 using Microsoft.Extensions.Logging;
+using System.IO;
 #endif
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Static;
+
 
 namespace StreamerBotLib.DataSQL
 {
@@ -124,46 +126,49 @@ namespace StreamerBotLib.DataSQL
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Users>()
-                .HasOne(u => u.Followers)
-                .WithOne(f => f.Users)
-                .HasForeignKey<Followers>(u => new { u.UserId, u.UserName, u.Platform });
+                .HasMany(u => u.Followers)
+                .WithMany(f => f.User);
 
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.Currency)
                 .WithOne(c => c.User)
-                .HasForeignKey(u => new { u.UserId, u.UserName, u.Platform })
+                .HasForeignKey(u => new { u.UserId, u.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.CustomWelcome)
                 .WithOne(w => w.Users)
-                .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.UserName, w.Platform })
+                .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.Platform })
                 .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.ShoutOuts)
-                .WithOne(u => u.Users)
-                .HasForeignKey<ShoutOuts>(u => new { u.UserId, u.UserName, u.Platform })
+                .WithOne(u => u.User)
+                .HasForeignKey<ShoutOuts>(u => new { u.UserId, u.Platform })
                 .IsRequired(false);
 
             modelBuilder.Entity<Users>()
+                .HasMany(u => u.GiveawayUserData)
+                .WithOne(g => g.Users);
+
+            modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
-                .WithOne(u => u.Users)
-                .HasForeignKey<UserStats>(s => new { s.UserId, s.UserName, s.Platform })
+                .WithOne(u => u.User)
+                .HasForeignKey<UserStats>(s => new { s.UserId,  s.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             modelBuilder.Entity<MultiChannels>()
                 .HasMany(m => m.MultiLiveStreams)
                 .WithOne(m => m.MultiChannels)
-                .HasForeignKey(m => new { m.UserId, m.UserName, m.Platform })
+                .HasForeignKey(m => new { m.UserId, m.Platform })
                 .IsRequired(true);
 
             modelBuilder.Entity<MultiChannels>()
                 .HasOne(m => m.MultiSummaryLiveStreams)
                 .WithOne(m => m.MultiChannels)
-                .HasForeignKey<MultiSummaryLiveStreams>(m => new { m.UserId, m.UserName, m.Platform })
+                .HasForeignKey<MultiSummaryLiveStreams>(m => new { m.UserId, m.Platform })
                 .IsRequired(true);
 
             modelBuilder.Entity<LearnMsgs>()

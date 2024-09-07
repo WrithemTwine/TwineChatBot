@@ -27,16 +27,16 @@ namespace StreamerBotLib.DataSQL.Models
                            string userName = null,
                            Platform platform = Platform.Default) 
 #endif
-        : UserBase(userId, userName, platform)
+        : UserBase(userId, platform)
     {
-
+        public string UserName { get; set; } = userName;
         public bool IsFollower { get; set; } = isFollower;
         public DateTime FollowedDate { get; set; } = followedDate;
         public DateTime StatusChangeDate { get; set; } = statusChangeDate;
         public string Category { get; set; } = category;
         public DateTime AddDate { get; set; } = addDate;
 
-        public Users Users { get; set; }
+        public ICollection<Users> User { get; } = [];
         public CategoryList? CategoryList { get; set; }
     }
 }

@@ -4,8 +4,8 @@ using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform), nameof(CurrencyName))]
-    [Index(nameof(UserName), nameof(CurrencyName), IsUnique = true)]
+    [PrimaryKey(nameof(UserId), nameof(Platform), nameof(CurrencyName))]
+    [Index(nameof(UserId), nameof(CurrencyName), IsUnique = true)]
 
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Currency(
@@ -17,12 +17,11 @@ namespace StreamerBotLib.DataSQL.Models
 #else
     public class Currency(
         string userId = null,
-        string userName = null,
         Platform platform = default,
                           double value = 0,
                           string currencyName = "") 
 #endif
-        : UserBase(userId: userId, userName: userName, platform: platform)
+        : UserBase(userId: userId, platform: platform)
     {
         public double Value { get; set; } = value;
         public string CurrencyName { get; set; } = currencyName;

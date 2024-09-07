@@ -4,19 +4,17 @@ using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(Platform))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class ShoutOuts(string userId,
     string userName,
                            Platform platform)
 #else
     public class ShoutOuts(string userId = null,
-    string userName = null,
                            Platform platform = Platform.Default)
 #endif
- : UserBase(userId, userName, platform)
+ : UserBase(userId, platform)
     {
-
-        public Users? Users { get; set; }
+        public Users? User { get; set; }
     }
 }

@@ -455,7 +455,7 @@ switches:
             {
                 BuildDataContext();
                 var result = (from C in context.Currency
-                              where (C.UserName == User.UserName && C.CurrencyName == CurrencyName)
+                              where (C.UserId == User.UserId && C.CurrencyName == CurrencyName)
                               select C.Value).FirstOrDefault() >= value;
                 ClearDataContext();
                 return result;
@@ -629,14 +629,14 @@ switches:
         /// </summary>
         /// <param name="User">The user to check for a welcome message.</param>
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
-        public string CheckWelcomeUser(string User)
+        public string CheckWelcomeUser(string UserId)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
 
                 string result = (from s in context.CustomWelcome
-                                 where s.UserName == User
+                                 where s.UserId == UserId
                                  select s.Message).FirstOrDefault() ?? "";
                 ClearDataContext();
                 return result;
@@ -1136,9 +1136,9 @@ switches:
 
                 IEnumerable<object> output = row.Table switch
                 {
-                    nameof(Currency) => (from C in context.Currency where C.CurrencyName == row.CurrencyField orderby C.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
+                    nameof(Currency) => (from C in context.Currency where C.CurrencyName == row.CurrencyField orderby C.User.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
                     nameof(Followers) => (from F in context.Followers orderby F.UserName select F),
-                    nameof(UserStats) => (from US in context.UserStats orderby US.UserName select new Tuple<object, object>(US[row.KeyField], US[row.DataField])),
+                    nameof(UserStats) => (from US in context.UserStats orderby US.User.UserName select new Tuple<object, object>(US[row.KeyField], US[row.DataField])),
                     _ => [""]
                 };
 
@@ -1165,10 +1165,10 @@ switches:
 
                 object output = row.Table switch
                 {
-                    nameof(Currency) => (from C in context.Currency where (C.UserName == ParamValue && C.CurrencyName == row.CurrencyField) select C[row.DataField ?? "Value"]).FirstOrDefault(),
-                    nameof(CustomWelcome) => (from W in context.CustomWelcome where W.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
+                    nameof(Currency) => (from C in context.Currency where (C.User.UserName == ParamValue && C.CurrencyName == row.CurrencyField) select C[row.DataField ?? "Value"]).FirstOrDefault(),
+                    nameof(CustomWelcome) => (from W in context.CustomWelcome where W.Users.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
                     nameof(Followers) => (from F in context.Followers where F.UserName == ParamValue select F).FirstOrDefault(),
-                    nameof(UserStats) => (from US in context.UserStats where US.UserName == ParamValue select US[row.DataField]).FirstOrDefault(),
+                    nameof(UserStats) => (from US in context.UserStats where US.User.UserName == ParamValue select US[row.DataField]).FirstOrDefault(),
                     nameof(Commands) => (from C in context.Commands where C.CmdName == ParamValue select C[row.DataField]).FirstOrDefault(),
                     _ => ""
                 };
@@ -1287,7 +1287,7 @@ switches:
                         {
                             if (!(from C in context.Currency where (C.User == U && C.CurrencyName == t.CurrencyName) select C).Any())
                             {
-                                context.Currency.Add(new(userName: U.UserName, value: 0, currencyName: t.CurrencyName));
+                                context.Currency.Add(new(userId: U.UserId, value: 0, currencyName: t.CurrencyName));
                             }
                         }
                     }
@@ -1304,7 +1304,7 @@ switches:
             {
                 BuildDataContext();
                 Currency currency = (from C in context.Currency
-                                     where (C.CurrencyName == CurrencyName && C.UserName == User.UserName)
+                                     where (C.CurrencyName == CurrencyName && C.UserId == User.UserId)
                                      select C).FirstOrDefault();
                 if (currency != default)
                 {
@@ -1395,11 +1395,13 @@ switches:
                                 {
                                     var user = PostNewUser(f.FromUser, f.FollowedAt);
 
-                                    if (user.Followers != null)
+                                    Followers currFollow = (from UF in context.Followers where UF.UserId == f.FromUserId && UF.UserName == f.FromUserName && UF.Platform == f.FromUser.Platform select UF).FirstOrDefault();
+
+                                    if (currFollow != null)
                                     {
-                                        user.Followers.IsFollower = true;
-                                        user.Followers.FollowedDate = f.FollowedAt;
-                                        user.Followers.Category ??= f.Category;
+                                        currFollow.IsFollower = true;
+                                        currFollow.FollowedDate = f.FollowedAt;
+                                        currFollow.Category ??= f.Category;
                                     }
                                     else
                                     {
@@ -1433,12 +1435,12 @@ switches:
             }
         }
 
-        public void PostGiveawayData(string DisplayName, DateTime dateTime)
+        public void PostGiveawayData(string UserId, DateTime dateTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                context.GiveawayUserData.Add(new(dateTime: dateTime, userName: DisplayName));
+                context.GiveawayUserData.Add(new(dateTime: dateTime, userId: UserId));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1449,7 +1451,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                context.InRaidData.Add(new(userId: user.UserId, userName: user.UserName, raidDate: time, viewerCount: viewers, category: gamename, platform: user.Platform));
+                context.InRaidData.Add(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename, platform: user.Platform));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -1477,8 +1479,8 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.UserName == CurrUser select uCu;
-                IEnumerable<Currency> srcCurrency = from sCu in context.Currency where sCu.UserName == SourceUser select sCu;
+                IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.User.UserName == CurrUser select uCu;
+                IEnumerable<Currency> srcCurrency = from sCu in context.Currency where sCu.User.UserName == SourceUser select sCu;
 
                 foreach ((Currency UC, Currency SC) in (from U in userCurrency
                                                         from S in srcCurrency
@@ -1489,8 +1491,8 @@ switches:
                 }
                 context.Currency.RemoveRange(srcCurrency);
 
-                UserStats currUserstat = (from Cu in context.UserStats where (Cu.UserName == CurrUser && Cu.Platform == platform) select Cu).FirstOrDefault();
-                UserStats sourceUser = (from Su in context.UserStats where (Su.UserName == SourceUser && Su.Platform == platform) select Su).FirstOrDefault();
+                UserStats currUserstat = (from Cu in context.UserStats where (Cu.User.UserName == CurrUser && Cu.Platform == platform) select Cu).FirstOrDefault();
+                UserStats sourceUser = (from Su in context.UserStats where (Su.User.UserName == SourceUser && Su.Platform == platform) select Su).FirstOrDefault();
 
                 bool result;
                 if (currUserstat != default && sourceUser != default)
@@ -1512,14 +1514,14 @@ switches:
             }
         }
 
-        public void PostNewAutoShoutUser(string UserName, string UserId, Platform platform)
+        public void PostNewAutoShoutUser(string UserId, Platform platform)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                if (!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.UserName == UserName && SO.Platform == platform) select SO).Any())
+                if (!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.Platform == platform) select SO).Any())
                 {
-                    context.ShoutOuts.Add(new(userId: UserId, userName: UserName, platform: platform));
+                    context.ShoutOuts.Add(new(userId: UserId, platform: platform));
                 }
                 context.SaveChanges(true);
                 ClearDataContext();
@@ -1528,7 +1530,7 @@ switches:
 
         public void PostNewAutoShoutUser(LiveUser liveUser)
         {
-            PostNewAutoShoutUser(liveUser.UserName, liveUser.UserId, liveUser.Platform);
+            PostNewAutoShoutUser(liveUser.UserId, liveUser.Platform);
         }
 
         private Users PostNewUser(LiveUser User, DateTime FirstSeen)
@@ -1548,10 +1550,10 @@ switches:
                 }
 
                 if (!(from US in context.UserStats
-                      where (US.UserId == User.UserId && US.UserName == User.UserName && US.Platform == User.Platform)
+                      where (US.UserId == User.UserId && US.Platform == User.Platform)
                       select US).Any())
                 {
-                    context.UserStats.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform));
+                    context.UserStats.Add(new(userId: User.UserId, platform: User.Platform, watchTime: new(0,0,0)));
                 }
 
                 context.SaveChanges(true);
@@ -1564,7 +1566,7 @@ switches:
 
                     if (curr == null)
                     {
-                        context.Currency.Add(new(userId: newuser.UserId, userName: newuser.UserName, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
+                        context.Currency.Add(new(userId: newuser.UserId, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
                     }
                 }
 
@@ -1650,7 +1652,7 @@ switches:
                 BuildDataContext();
                 if (!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
                 {
-                    context.CustomWelcome.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform, message: WelcomeMsg));
+                    context.CustomWelcome.Add(new(userId: User.UserId, platform: User.Platform, message: WelcomeMsg));
                     context.SaveChanges(true);
                     ClearDataContext();
                 }
@@ -2035,22 +2037,22 @@ switches:
                 foreach (LiveUser L in Users)
                 {
                     UserStats stats = (from S in context.UserStats
-                                       where (S.UserId == L.UserId && S.UserName == L.UserName && S.Platform == L.Platform)
+                                       where (S.UserId == L.UserId && S.Platform == L.Platform)
                                        select S).FirstOrDefault();
 
                     if (stats == default)
                     {
-                        stats = context.UserStats.Add(new(userId: L.UserId, userName: L.UserName, platform: L.Platform)).Entity;
+                        stats = context.UserStats.Add(new(userId: L.UserId, platform: L.Platform)).Entity;
                     }
 
-                    if (stats.Users.LastDateSeen < CurrStreamStart)
+                    if (stats.User.LastDateSeen < CurrStreamStart)
                     {
-                        stats.Users.LastDateSeen = CurrStreamStart;
+                        stats.User.LastDateSeen = CurrStreamStart;
                     }
 
-                    if (CurrTime > stats.Users.LastDateSeen && CurrTime > CurrStreamStart)
+                    if (CurrTime > stats.User.LastDateSeen && CurrTime > CurrStreamStart)
                     {
-                        stats.WatchTime = stats.WatchTime.Add(CurrTime - stats.Users.LastDateSeen);
+                        stats.WatchTime = stats.WatchTime.Add(CurrTime - stats.User.LastDateSeen);
                     }
                 }
                 NotifyDataCollectionUpdated(nameof(Models.UserStats));
@@ -2130,12 +2132,12 @@ switches:
         private bool IsLiveStreamUpdated = false;
         public string MultiLiveStatusLog { get; private set; } = "";
 
-        public bool CheckMultiStreamDate(string ChannelName, Platform platform, DateTime dateTime)
+        public bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                var result = (from P in context.MultiLiveStreams where (P.UserName == ChannelName && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
+                var result = (from P in context.MultiLiveStreams where (P.UserId == UserId && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
                 ClearDataContext();
                 return result;
             }
@@ -2205,7 +2207,15 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                bool result = (from P in context.MultiLiveStreams where (P.UserId == userid && P.UserName == username && P.LiveDate == onDate) select P).Any();
+
+                MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == userid select MC).FirstOrDefault();
+
+                if(currUser.UserName != username) // update username if it's changed
+                {
+                    currUser.UserName = username;
+                }
+
+                bool result = (from P in context.MultiLiveStreams where (P.UserId == userid && P.LiveDate == onDate) select P).Any();
                 if (!result)
                 {
                     //var channeldata = (from C in context.MultiChannels where (userid == C.UserId) select C).FirstOrDefault();
@@ -2215,7 +2225,7 @@ switches:
                     //    context.MultiChannels.Add(new(userid, username, platform: Platform.Twitch));
                     //}
 
-                    context.MultiLiveStreams.Add(new(userId: userid, userName: username, platform: platform, liveDate: onDate));
+                    context.MultiLiveStreams.Add(new(userId: userid, platform: platform, liveDate: onDate));
                     context.SaveChanges(true);
                 }
                 ClearDataContext();
@@ -2264,23 +2274,23 @@ switches:
                                         group MLS by
                                         new
                                         {
-                                            name = MLS.UserName,
                                             date = MLS.LiveDate,
                                             platform = MLS.Platform,
                                             userid = MLS.UserId
                                         } into GroupedMLS
                                         select new ArchiveMultiStream()
                                         {
-                                            Name = new(GroupedMLS.Key.name, GroupedMLS.Key.platform, GroupedMLS.Key.userid),
+                                            UserId = GroupedMLS.Key.userid,
+                                            Platform = GroupedMLS.Key.platform,
                                             ThroughDate = GroupedMLS.MaxBy(G => GroupedMLS.Key.date).LiveDate,
                                             StreamCount = (int)GroupedMLS.Count()
                                         });
 
                 foreach (var GroupedStreams in
                     (from archive in multiLiveStreams
-                     join sumlive in context.MultiSummaryLiveStreams on archive.Name.UserName equals sumlive.UserName into GroupedSum
+                     join sumlive in context.MultiSummaryLiveStreams on archive.UserId equals sumlive.UserId into GroupedSum
                      from G in GroupedSum.DefaultIfEmpty()
-                     select new { username = archive.Name, livestreamrow = archive, sumrow = G }))
+                     select new { userId = archive.UserId, platform = archive.Platform, livestreamrow = archive, sumrow = G }))
                 {
                     if (GroupedStreams != default)
                     {
@@ -2290,7 +2300,7 @@ switches:
                     else
                     {
                         context.MultiSummaryLiveStreams.Add(new(
-                            userId: GroupedStreams.sumrow.UserId, userName: GroupedStreams.sumrow.UserName, platform: GroupedStreams.sumrow.Platform,
+                            userId: GroupedStreams.sumrow.UserId, platform: GroupedStreams.sumrow.Platform,
                             streamCount: GroupedStreams.livestreamrow.StreamCount, throughDate: GroupedStreams.livestreamrow.ThroughDate));
                     }
                 }
@@ -2371,13 +2381,13 @@ switches:
         /// <param name="gamename">The category the raiding stream had at the raid time.</param>
         /// <returns><code>true: when record is found.</code>
         /// <code>false: when record is not found.</code></returns>
-        public bool TestInRaidData(string user, DateTime time, string viewers, string gamename)
+        public bool TestInRaidData(string userId, DateTime time, string viewers, string gamename)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
                 var result = (from I in context.InRaidData
-                              where (I.UserName == user && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
+                              where (I.UserId == userId && I.RaidDate == time && I.ViewerCount.ToString() == viewers && I.Category == gamename)
                               select I).Any();
                 ClearDataContext();
                 return result;

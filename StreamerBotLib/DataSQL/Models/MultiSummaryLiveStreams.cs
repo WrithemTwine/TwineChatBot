@@ -4,7 +4,7 @@ using StreamerBotLib.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(Platform))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class MultiSummaryLiveStreams(int streamCount,
                                         DateTime throughDate,
@@ -15,10 +15,9 @@ namespace StreamerBotLib.DataSQL.Models
     public class MultiSummaryLiveStreams(int streamCount = 0,
                                         DateTime throughDate = default,
                                         string userId = null,
-                                        string userName = null,
                                         Platform platform = Platform.Default)
 #endif
- : UserBase(userId, userName, platform)
+ : UserBase(userId, platform)
     {
 
         public int StreamCount { get; set; } = streamCount;

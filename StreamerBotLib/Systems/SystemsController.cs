@@ -282,9 +282,9 @@ namespace StreamerBotLib.Systems
             ActionSystem.DeleteRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName, string UserId, Platform platform)
+        public static void AddNewAutoShoutUser(string UserId, Platform platform)
         {
-            ActionSystem.AddNewAutoShoutUser(UserName, UserId, platform);
+            ActionSystem.AddNewAutoShoutUser(UserId, platform);
         }
 
         public static void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
@@ -456,7 +456,7 @@ namespace StreamerBotLib.Systems
                && (!User.UserName.Equals(ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture), StringComparison.CurrentCultureIgnoreCase)))
                || OptionFlags.MsgWelcomeStreamer)
             {
-                string msg = ActionSystem.CheckWelcomeUser(User.UserName);
+                string msg = ActionSystem.CheckWelcomeUser(User.UserId);
 
                 ChannelEventActions selected = ChannelEventActions.UserJoined;
 
@@ -767,6 +767,10 @@ namespace StreamerBotLib.Systems
                     GiveawayCollectionList.RemoveAll((w) => w == winner);
                     WinnerList.Add(winner);
                     // DisplayName += (OptionFlags.GiveawayCount > 1 && x > 0 ? ", " : "") + winner;
+                    if (OptionFlags.ManageGiveawayUsers)
+                    {
+                        DataManage.PostGiveawayData(winner.UserId, DateTime.Now.ToLocalTime());
+                    }
                     x++;
                 }
 
@@ -789,10 +793,6 @@ namespace StreamerBotLib.Systems
                         SystemActions.CheckForOverlayEvent(OverlayTypes.Giveaway, OverlayTypes.Giveaway.ToString(), W);
                     }
 
-                    if (OptionFlags.ManageGiveawayUsers)
-                    {
-                        DataManage.PostGiveawayData(DisplayName, DateTime.Now.ToLocalTime());
-                    }
                 }
             }
         }

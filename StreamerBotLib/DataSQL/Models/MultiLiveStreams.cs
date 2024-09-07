@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform), nameof(LiveDate))]
+    [PrimaryKey(nameof(UserId), nameof(Platform), nameof(LiveDate))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class MultiLiveStreams(DateTime liveDate,
                                  string userId,
@@ -16,11 +16,10 @@ namespace StreamerBotLib.DataSQL.Models
 #else
     public class MultiLiveStreams(DateTime liveDate = default,
                                  string userId = null,
-                                 string userName = null,
                                  Platform platform = Platform.Default
                                  )
 #endif
- : UserBase(userId, userName, platform), IEqualityComparer<MultiLiveStreams>
+ : UserBase(userId, platform), IEqualityComparer<MultiLiveStreams>
     {
         public DateTime LiveDate { get; set; } = liveDate;
 
@@ -28,12 +27,12 @@ namespace StreamerBotLib.DataSQL.Models
 
         public bool Equals(MultiLiveStreams x, MultiLiveStreams y)
         {
-            return (x.UserId == y.UserId && x.UserName == y.UserName && x.LiveDate == y.LiveDate);
+            return (x.UserId == y.UserId && x.Platform == y.Platform && x.LiveDate == y.LiveDate);
         }
 
         public int GetHashCode([DisallowNull] MultiLiveStreams obj)
         {
-            return (obj.UserId + obj.UserName + obj.LiveDate).GetHashCode();
+            return (obj.UserId + obj.Platform + obj.LiveDate).GetHashCode();
         }
     }
 }

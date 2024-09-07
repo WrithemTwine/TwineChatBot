@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -7,7 +10,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public System.Int32 StreamCount => (System.Int32)Values["StreamCount"];
         public System.DateTime ThroughDate => (System.DateTime)Values["ThroughDate"];
         public System.String UserId => (System.String)Values["UserId"];
-        public System.String UserName => (System.String)Values["UserName"];
         public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
 
         public Dictionary<string, object> Values { get; }
@@ -21,7 +23,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "StreamCount", tableData.StreamCount },
                  { "ThroughDate", tableData.ThroughDate },
                  { "UserId", tableData.UserId },
-                 { "UserName", tableData.UserName },
                  { "Platform", tableData.Platform }
             };
         }
@@ -30,7 +31,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "StreamCount", typeof(System.Int32) },
               { "ThroughDate", typeof(System.DateTime) },
               { "UserId", typeof(System.String) },
-              { "UserName", typeof(System.String) },
               { "Platform", typeof(StreamerBotLib.Enums.Platform) }
         };
         public object GetModelEntity()

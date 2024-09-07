@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(Platform))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class MultiChannels(string userId,
                                string userName,
@@ -16,8 +16,10 @@ namespace StreamerBotLib.DataSQL.Models
                                string userName = null,
                                Platform platform = Platform.Default)
 #endif
- : UserBase(userId, userName, platform), IEqualityComparer<MultiChannels>
+ : UserBase(userId, platform), IEqualityComparer<MultiChannels>
     {
+        public string UserName { get; set; } = userName;
+
         public ICollection<MultiLiveStreams> MultiLiveStreams { get; } = [];
 
         public MultiSummaryLiveStreams? MultiSummaryLiveStreams { get; set; }
