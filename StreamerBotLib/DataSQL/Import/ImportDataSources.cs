@@ -228,52 +228,39 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.ChannelEvents.Count > 0)
             {
-                context.ChannelEvents.AddRange(from CE in _DataSource.ChannelEvents
-                                               select new ChannelEvents(
-                                                   name: Enum.Parse<ChannelEventActions>(CE.Name),
-                                                   repeatMsg: CE.RepeatMsg,
-                                                   addMe: CE.AddMe,
-                                                   isEnabled: CE.IsEnabled,
-                                                   message: CE.Message,
-                                                   commands: CE.Commands
-                                                   ));
+                foreach (ChannelEventsRow CE in _DataSource.ChannelEvents)
+                {
+
+                    if (!(from C in context.ChannelEvents where C.Name == Enum.Parse<ChannelEventActions>(CE.Name) select C).Any())
+                    {
+                        context.ChannelEvents.Add(new ChannelEvents(
+                                                           name: Enum.Parse<ChannelEventActions>(CE.Name),
+                                                           repeatMsg: CE.RepeatMsg,
+                                                           addMe: CE.AddMe,
+                                                           isEnabled: CE.IsEnabled,
+                                                           message: CE.Message,
+                                                           commands: CE.Commands
+                                                           ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.ChannelEvents.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
-            LogWriter.WriteLog("Adding InRaid data.");
-
-            if (_DataSource.InRaidData.Count > 0)
-            {
-                foreach (InRaidDataRow A in from IR in _DataSource.InRaidData
-                                            select IR)
-                {
-                    string uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{A.UserName}'").FirstOrDefault())?.UserId;
-
-                    if (string.IsNullOrEmpty(uId))
-                    {
-                        LogWriter.WriteLog($"Did not import for null user Id: {ConvertDataRow(A, _DataSource.InRaidData.Columns.Count)}");
-                    }
-                    else
-                    {
-                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), A.Category);
-                    }
-                }
-            }
-
-            CurrentTotalProgress += _DataSource.InRaidData.Rows.Count;
-            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
-
-
             LogWriter.WriteLog("Adding OutRaid data.");
             if (_DataSource.OutRaidData.Count > 0)
             {
-                context.OutRaidData.AddRange(from OR in _DataSource.OutRaidData
-                                             select new OutRaidData(
-                                                 channelRaided: OR.ChannelRaided,
-                                                 raidDate: OR.DateTime
-                                                 ));
+                foreach (OutRaidDataRow OR in _DataSource.OutRaidData)
+                {
+                    if (!(from O in context.OutRaidData where OR.ChannelRaided == O.ChannelRaided && O.RaidDate == OR.DateTime select O).Any())
+                    {
+                        context.OutRaidData.Add(new OutRaidData(
+                                                         channelRaided: OR.ChannelRaided,
+                                                         raidDate: OR.DateTime
+                                                         ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.OutRaidData.Rows.Count;
@@ -283,17 +270,22 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding clips data.");
             if (_DataSource.Clips.Count > 0)
             {
-                context.Clips.AddRange(from C in _DataSource.Clips
-                                       select new Clips(
-                                           clipId: C.Id,
-                                           createdAt: C.CreatedAt,
-                                           title: C.Title,
-                                           categoryId: C.GameId,
-                                           language: C.Language,
-                                           duration: (float)C.Duration,
-                                           url: C.Url
-                                           )
-                                        );
+                foreach (ClipsRow C in _DataSource.Clips)
+                {
+                    if (!(from CR in context.Clips where CR.ClipId == C.Id && CR.CreatedAt == C.CreatedAt select CR).Any())
+                    {
+                        context.Clips.Add(new Clips(
+                                                   clipId: C.Id,
+                                                   createdAt: C.CreatedAt,
+                                                   title: C.Title,
+                                                   categoryId: C.GameId,
+                                                   language: C.Language,
+                                                   duration: (float)C.Duration,
+                                                   url: C.Url
+                                                   )
+                                                );
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.Clips.Rows.Count;
@@ -303,20 +295,25 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding OverlayServices data.");
             if (_DataSource.OverlayServices.Count > 0)
             {
-                context.OverlayServices.AddRange(from OS in _DataSource.OverlayServices
-                                                 select new OverlayServices(
-                                                       id: OS.Id,
-                                                       isEnabled: OS.IsEnabled,
-                                                       duration: OS.Duration,
-                                                       overlayType: Enum.Parse<OverlayTypes>(OS.OverlayType),
-                                                       overlayAction: OS.OverlayAction,
-                                                       userName: OS.UserName,
-                                                       useChatMsg: OS.UseChatMsg,
-                                                       message: OS.Message,
-                                                       imageFile: OS.ImageFile,
-                                                       mediaFile: OS.MediaFile
-                                                     )
-                                                  );
+                foreach (OverlayServicesRow OS in _DataSource.OverlayServices)
+                {
+                    if (!(from O in context.OverlayServices where O.Id == OS.Id select O).Any())
+                    {
+                        context.OverlayServices.Add(new OverlayServices(
+                                                               id: OS.Id,
+                                                               isEnabled: OS.IsEnabled,
+                                                               duration: OS.Duration,
+                                                               overlayType: Enum.Parse<OverlayTypes>(OS.OverlayType),
+                                                               overlayAction: OS.OverlayAction,
+                                                               userName: OS.UserName,
+                                                               useChatMsg: OS.UseChatMsg,
+                                                               message: OS.Message,
+                                                               imageFile: OS.ImageFile,
+                                                               mediaFile: OS.MediaFile
+                                                             )
+                                                          );
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.OverlayServices.Rows.Count;
@@ -325,11 +322,16 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding OverlayTicker data.");
             if (_DataSource.OverlayTicker.Count > 0)
             {
-                context.OverlayTicker.AddRange(from OT in _DataSource.OverlayTicker
-                                               select new OverlayTicker(
-                                                   tickerName: Enum.Parse<OverlayTickerItem>(OT.TickerName),
-                                                   userName: OT.UserName
-                                                   ));
+                foreach (OverlayTickerRow OT in _DataSource.OverlayTicker)
+                {
+                    if (!(from T in context.OverlayTicker where T.TickerName == Enum.Parse<OverlayTickerItem>(OT.TickerName) select T).Any())
+                    {
+                        context.OverlayTicker.Add(new OverlayTicker(
+                                                           tickerName: Enum.Parse<OverlayTickerItem>(OT.TickerName),
+                                                           userName: OT.UserName
+                                                           ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.OverlayTicker.Rows.Count;
@@ -338,12 +340,17 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding Quotes data.");
             if (_DataSource.Quotes.Count > 0)
             {
-                context.Quotes.AddRange(from Q in _DataSource.Quotes
-                                        select new Quotes(
-                                            number: Q.Number,
-                                            quote: Q.Quote
-                                            )
-                                         );
+                foreach (QuotesRow Q in _DataSource.Quotes)
+                {
+                    if (!(from Quote in context.Quotes where Quote.Number == Q.Number select Quote).Any())
+                    {
+                        context.Quotes.Add(new Quotes(
+                                                    number: Q.Number,
+                                                    quote: Q.Quote
+                                                    )
+                                                 );
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.Quotes.Rows.Count;
@@ -352,15 +359,20 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding Webhooks data.");
             if (_DataSource.Discord.Count > 0)
             {
-                context.Webhooks.AddRange(from W in _DataSource.Discord
-                                          select new Webhooks(
-                                              isEnabled: W.IsEnabled,
-                                              webhooksSource: WebhooksSource.Discord,
-                                              server: W.Server,
-                                              kind: Enum.Parse<WebhooksKind>(W.Kind),
-                                              addEveryone: W.AddEveryone,
-                                              webhook: new(W.Webhook)
-                                              ));
+                foreach (DiscordRow W in _DataSource.Discord)
+                {
+                    if (!(from WH in context.Webhooks where W.Server == WH.Server && new Uri(W.Webhook) == WH.Webhook select WH).Any())
+                    {
+                        context.Webhooks.Add(new Webhooks(
+                                                      isEnabled: W.IsEnabled,
+                                                      webhooksSource: WebhooksSource.Discord,
+                                                      server: W.Server,
+                                                      kind: Enum.Parse<WebhooksKind>(W.Kind),
+                                                      addEveryone: W.AddEveryone,
+                                                      webhook: new(W.Webhook)
+                                                      ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.Discord.Rows.Count;
@@ -369,10 +381,17 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding BanReasons data.");
             if (_DataSource.BanReasons.Count > 0)
             {
-                context.BanReasons.AddRange(from BR in _DataSource.BanReasons
-                                            select new Models.BanReasons(
-                                                msgType: Enum.Parse<MsgTypes>(BR.MsgType),
-                                                banReason: Enum.Parse<Enums.BanReasons>(BR.BanReason)));
+                foreach (BanReasonsRow BR in _DataSource.BanReasons)
+                {
+                    if (!(from B in context.BanReasons
+                          where Enum.Parse<MsgTypes>(BR.MsgType) == B.MsgType && Enum.Parse<Enums.BanReasons>(BR.BanReason) == B.BanReason
+                          select B).Any())
+                    {
+                        context.BanReasons.Add(new Models.BanReasons(
+                                                        msgType: Enum.Parse<MsgTypes>(BR.MsgType),
+                                                        banReason: Enum.Parse<Enums.BanReasons>(BR.BanReason)));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.BanReasons.Rows.Count;
@@ -381,12 +400,22 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding BanRules data.");
             if (_DataSource.BanRules.Count > 0)
             {
-                context.BanRules.AddRange(from BR in _DataSource.BanRules
-                                          select new BanRules(
-                                              viewerTypes: Enum.Parse<ViewerTypes>(BR.ViewerTypes),
-                                              msgType: Enum.Parse<MsgTypes>(BR.MsgType),
-                                              modAction: Enum.Parse<ModActions>(BR.ModAction),
-                                              timeoutSeconds: Convert.ToInt32(BR.TimeoutSeconds)));
+                foreach (BanRulesRow BR in _DataSource.BanRules)
+                {
+                    if (!(from B in context.BanRules
+                          where
+                             Enum.Parse<ViewerTypes>(BR.ViewerTypes) == B.ViewerTypes &&
+                             Enum.Parse<MsgTypes>(BR.MsgType) == B.MsgType &&
+                             Enum.Parse<ModActions>(BR.ModAction) == B.ModAction
+                          select B).Any())
+                    {
+                        context.BanRules.Add(new BanRules(
+                                                      viewerTypes: Enum.Parse<ViewerTypes>(BR.ViewerTypes),
+                                                      msgType: Enum.Parse<MsgTypes>(BR.MsgType),
+                                                      modAction: Enum.Parse<ModActions>(BR.ModAction),
+                                                      timeoutSeconds: Convert.ToInt32(BR.TimeoutSeconds)));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.BanRules.Rows.Count;
@@ -395,13 +424,24 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding ModeratorApprove data.");
             if (_DataSource.ModeratorApprove.Count > 0)
             {
-                context.ModeratorApprove.AddRange(from MA in _DataSource.ModeratorApprove
-                                                  select new ModeratorApprove(
-                                                      isEnabled: MA.IsEnabled,
-                                                      modActionType: Enum.Parse<ModActionType>(MA.ModActionType),
-                                                      modActionName: MA.ModActionName,
-                                                      modPerformAction: MA.ModPerformAction,
-                                                      modPerformType: Enum.Parse<ModPerformType>(MA.ModPerformType)));
+                foreach (ModeratorApproveRow MA in _DataSource.ModeratorApprove)
+                {
+                    if (!(from M in context.ModeratorApprove
+                          where
+                         MA.ModActionName == M.ModActionName
+                         && Enum.Parse<ModActionType>(MA.ModActionType) == M.ModActionType
+                         && MA.ModPerformAction == M.ModPerformAction
+                         && Enum.Parse<ModPerformType>(MA.ModPerformType) == M.ModPerformType
+                          select M).Any())
+                    {
+                        context.ModeratorApprove.Add(new ModeratorApprove(
+                                                         isEnabled: MA.IsEnabled,
+                                                         modActionType: Enum.Parse<ModActionType>(MA.ModActionType),
+                                                         modActionName: MA.ModActionName,
+                                                         modPerformAction: MA.ModPerformAction,
+                                                         modPerformType: Enum.Parse<ModPerformType>(MA.ModPerformType)));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.ModeratorApprove.Rows.Count;
@@ -410,53 +450,80 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding LearnMsgs data.");
             if (_DataSource.LearnMsgs.Count > 0)
             {
-                context.LearnMsgs.AddRange(from LM in _DataSource.LearnMsgs
-                                           select new LearnMsgs(
-                                                msgType: Enum.Parse<MsgTypes>(LM.MsgType),
-                                                teachingMsg: LM.TeachingMsg));
+                foreach (LearnMsgsRow LM in _DataSource.LearnMsgs)
+                {
+                    if (!(from L in context.LearnMsgs where L.MsgType == Enum.Parse<MsgTypes>(LM.MsgType) && L.TeachingMsg == LM.TeachingMsg select L).Any())
+                    {
+                        context.LearnMsgs.Add(new LearnMsgs(
+                                                        msgType: Enum.Parse<MsgTypes>(LM.MsgType),
+                                                        teachingMsg: LM.TeachingMsg));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.LearnMsgs.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
+#if DEBUG
+            StreamWriter DebugCom = new("debug_commands.txt") { AutoFlush = true };
+            DebugCom.WriteLine("Now adding Commands to database.");
+#endif
+
+            // TODO: fix why user commands are joining default command table
+
+
             LogWriter.WriteLog("Adding Default Commands data.");
-            if ((from C in _DataSource.Commands
-                 where Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
-                 select C).Count() > 0)
+            foreach (CommandsRow C in (from C in _DataSource.Commands
+                                       where Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName)
+                                       select C))
             {
-                context.Commands.AddRange(from C in _DataSource.Commands
-                                          where Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
-                                          select new Commands(
-                                              cmdName: C.CmdName,
-                                              addMe: C.AddMe,
-                                              permission: Enum.Parse<ViewerTypes>(C.Permission),
-                                              isEnabled: C.IsEnabled,
-                                              message: C.Message,
-                                              repeatTimer: C.RepeatTimer,
-                                              sendMsgCount: C.SendMsgCount,
-                                              category: C.Category.Split(","),
-                                              allowParam: C.AllowParam,
-                                              usage: C.Usage,
-                                              lookupData: C.lookupdata,
-                                              table: C.table,
-                                              keyField: C.key_field,
-                                              dataField: C.data_field,
-                                              currencyField: C.currency_field,
-                                              unit: C.unit,
-                                              action: Enum.Parse<CommandAction>(C.action),
-                                              top: C.top,
-                                              sort: Enum.Parse<CommandSort>(C.sort))
-                                          );
+                if (!(from DC in context.Commands where C.CmdName == DC.CmdName select DC).Any())
+                {
+#if DEBUG
+                    DebugCom.WriteLine($"Now adding {C.CmdName}");
+#endif   
+                    context.Commands.Add(new Commands(
+                cmdName: C.CmdName,
+                                                  addMe: C.AddMe,
+                                                  permission: Enum.Parse<ViewerTypes>(C.Permission),
+                                                  isEnabled: C.IsEnabled,
+                                                  message: C.Message,
+                                                  repeatTimer: C.RepeatTimer,
+                                                  sendMsgCount: C.SendMsgCount,
+                                                  category: new List<string>(C.Category.Split(",")),
+                                                  allowParam: C.AllowParam,
+                                                  usage: C.Usage,
+                                                  lookupData: C.lookupdata,
+                                                  table: C.table,
+                                                  keyField: C.key_field,
+                                                  dataField: C.data_field,
+                                                  currencyField: C.currency_field,
+                                                  unit: C.unit,
+                                                  action: Enum.Parse<CommandAction>(C.action),
+                                                  top: C.top,
+                                                  sort: Enum.Parse<CommandSort>(C.sort))
+                                              );
+                }
+                context.SaveChanges(true);
             }
 
             LogWriter.WriteLog("Adding User-defined Commands data.");
-            if ((from C in _DataSource.Commands
-                 where !Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
-                 select C).Count() > 0)
+
+#if DEBUG
+            DebugCom.WriteLine("Now adding User-Defined Commands to database.");
+#endif
+
+            foreach (CommandsRow C in (from C in _DataSource.Commands
+                                       where !(Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName))
+                                       select C))
             {
-                context.CommandsUser.AddRange(from C in _DataSource.Commands
-                                              where !Enum.GetNames<DefaultCommand>().Contains(C.CmdName)
-                                              select new CommandsUser(
+
+                if (!(from CR in context.CommandsUser where C.CmdName == CR.CmdName select CR).Any())
+                {
+#if DEBUG
+                    DebugCom.WriteLine($"Now adding {C.CmdName}");
+#endif
+                    context.CommandsUser.Add(new CommandsUser(
                                               cmdName: C.CmdName,
                                               addMe: C.AddMe,
                                               permission: Enum.Parse<ViewerTypes>(C.Permission),
@@ -464,7 +531,7 @@ namespace StreamerBotLib.DataSQL.Import
                                               message: C.Message,
                                               repeatTimer: C.RepeatTimer,
                                               sendMsgCount: C.SendMsgCount,
-                                              category: C.Category.Split(","),
+                                              category: new List<string>(C.Category.Split(",")),
                                               allowParam: C.AllowParam,
                                               usage: C.Usage,
                                               lookupData: C.lookupdata,
@@ -477,11 +544,13 @@ namespace StreamerBotLib.DataSQL.Import
                                               top: C.top,
                                               sort: Enum.Parse<CommandSort>(C.sort))
                           );
+                }
+                context.SaveChanges(true);
             }
+
 
             CurrentTotalProgress += _DataSource.Commands.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
-
 
             #endregion
 
@@ -500,7 +569,7 @@ namespace StreamerBotLib.DataSQL.Import
 
                     MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == U.UserId select MC).FirstOrDefault();
 
-                    if (!(DBNull.Value.Equals(U.UserId)) && (U.UserId != null) && currUser == null)
+                    if (!(DBNull.Value.Equals(U["UserId"])) && (U.UserId != null) && currUser == null)
                     {
                         context.MultiChannels.Add(new(userId: U.UserId,
                                                    userName: U.ChannelName,
@@ -520,58 +589,45 @@ namespace StreamerBotLib.DataSQL.Import
 
             // post multilive stream data
 
-            //StreamWriter multilive = new("debug_MultiLiveStream.txt") { AutoFlush = true };
-
             LogWriter.WriteLog("Adding Multilive Livestream data.");
-
-            //List<MultiChannels> multiChannels = [];
-            //List<MultiLiveStreams> multiLiveStreams = [];
 
             if (_MultiDataSource.LiveStream.Count > 0)
             {
                 foreach (LiveStreamRow L in _MultiDataSource.LiveStream)
                 {
-                    var founddata = (from C in context.MultiChannels
-                                     where C.UserId == L.UserId
-                                     select C);
-
-                    UsersRow usersRow = (from U in _DataSource.Users
-                                         where string.Equals(U.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase)
-                                         select U).FirstOrDefault();
-                    MultiChannels channelsRow = (from C in context.MultiChannels
-                                                 where C.UserId == L.UserId
-                                                 select C).FirstOrDefault();
-
-                    //if (channelsRow != null) // && !string.Equals(channelsRow.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase))
-                    //{
-                    //    if(channelsRow.UserName != L.ChannelName)
-                    //    {
-                    //        channelsRow.UserName = L.ChannelName;
-                    //    }
-                    //    //MultiChannels currChannel = new(L.UserId, L.ChannelName, Platform.Twitch);
-                    //    MultiLiveStreams currMultiLive = new(userId: usersRow.UserId, platform: Platform.Twitch, liveDate: L.LiveDate);
-                    //    //multiChannels.UniqueAdd(currChannel, currChannel);
-                    //    //multiLiveStreams.UniqueAdd(currMultiLive, currMultiLive);
-                    //}
-                    if (channelsRow != null) // (founddata.Any() || usersRow != null) && !DBNull.Value.Equals(usersRow.UserId) && !DBNull.Value.Equals(usersRow.UserName)) // only add if we can find user ID in multilive channel table
+                    if (!(from LS in context.MultiLiveStreams
+                          join MC in context.MultiChannels on LS.UserId equals MC.UserId
+                          where MC.UserName == L.ChannelName && LS.LiveDate == L.LiveDate
+                          select LS
+                         ).Any())
                     {
-                        if (channelsRow.UserName != L.ChannelName)
+                        var founddata = (from C in context.MultiChannels
+                                         where C.UserId == L.UserId
+                                         select C);
+
+                        UsersRow usersRow = (from U in _DataSource.Users
+                                             where string.Equals(U.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase)
+                                             select U).FirstOrDefault();
+                        MultiChannels channelsRow = (from C in context.MultiChannels
+                                                     where C.UserId == L.UserId
+                                                     select C).FirstOrDefault();
+
+                        if (channelsRow != null) // (founddata.Any() || usersRow != null) && !DBNull.Value.Equals(usersRow.UserId) && !DBNull.Value.Equals(usersRow.UserName)) // only add if we can find user ID in multilive channel table
                         {
-                            channelsRow.UserName = L.ChannelName;
+                            if (channelsRow.UserName != L.ChannelName)
+                            {
+                                channelsRow.UserName = L.ChannelName;
+                            }
+                            dataManagerSQL.PostMultiStreamDate(userid: channelsRow.UserId, username: channelsRow.UserName, platform: Platform.Twitch, onDate: L.LiveDate);
                         }
-                        //multilive.WriteLine(ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count));
-                        dataManagerSQL.PostMultiStreamDate(userid: channelsRow.UserId, username: channelsRow.UserName, platform: Platform.Twitch, onDate: L.LiveDate);
+                        else
+                        {
+                            LogWriter.WriteLog($"Found invalid or mismatched userId or userName, could not import: {ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count)}");
+                        }
+                        context.SaveChanges(true);
                     }
-                    else
-                    {
-                        LogWriter.WriteLog($"Found invalid or mismatched userId or userName, could not import: {ConvertDataRow(L, _MultiDataSource.LiveStream.Columns.Count)}");
-                    }
-                    context.SaveChanges(true);
                 }
             }
-
-            //if (multiChannels.Count > 0) { context.MultiChannels.AddRange(multiChannels); }
-            //if (multiLiveStreams.Count > 0) { context.MultiLiveStreams.AddRange(multiLiveStreams); }
 
             CurrentTotalProgress += _MultiDataSource.LiveStream.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
@@ -580,16 +636,28 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_MultiDataSource.MsgEndPoints.Count > 0)
             {
-                context.MultiMsgEndPoints.AddRange(from E in _MultiDataSource.MsgEndPoints
-                                                   select new MultiMsgEndPoints(
-                                                           isEnabled: E.IsEnabled,
-                                                           webhooksSource: Enum.Parse<WebhooksSource>(E.Type),
-                                                           webhook: new(E.URL),
-                                                           server: E.Server,
-                                                           kind: WebhooksKind.Live,
-                                                           addEveryone: false
-                                                   )
-                                                       );
+                foreach (MsgEndPointsRow E in _MultiDataSource.MsgEndPoints)
+                {
+                    {
+                        if (!(from M in context.MultiMsgEndPoints
+                              where
+                             M.Webhook == new Uri(E.URL)
+                             && M.Server == E.Server
+                             && M.WebhooksSource == Enum.Parse<WebhooksSource>(E.Type)
+                              select M).Any())
+                        {
+                            context.MultiMsgEndPoints.Add(new MultiMsgEndPoints(
+                                                                   isEnabled: E.IsEnabled,
+                                                                   webhooksSource: Enum.Parse<WebhooksSource>(E.Type),
+                                                                   webhook: new(E.URL),
+                                                                   server: E.Server,
+                                                                   kind: WebhooksKind.Live,
+                                                                   addEveryone: false
+                                                           )
+                                                               );
+                        }
+                    }
+                }
             }
 
             CurrentTotalProgress += _MultiDataSource.MsgEndPoints.Rows.Count;
@@ -601,22 +669,23 @@ namespace StreamerBotLib.DataSQL.Import
             {
                 foreach (SummaryLiveStreamRow S in _MultiDataSource.SummaryLiveStream)
                 {
-                    var founddata = (from C in context.MultiChannels
-                                     where C.UserName == S.ChannelName
-                                     select C);
-
-                    //UsersRow usersRow = (from U in _DataSource.Users
-                    //                     where string.Equals(U.UserName, S.ChannelName, StringComparison.OrdinalIgnoreCase)
-                    //                     select U).FirstOrDefault();
-
-                    if (founddata.Any() )
+                    if (!(from MS in context.MultiSummaryLiveStreams
+                          where S.ChannelsRow.UserId == MS.UserId
+                          select MS).Any())
                     {
-                        context.MultiSummaryLiveStreams.Add(new MultiSummaryLiveStreams(streamCount: S.StreamCount, throughDate: S.ThroughDate,
-                            userId: founddata.First().UserId, platform: Platform.Twitch));
-                    }
-                    else
-                    {
-                        LogWriter.WriteLog($"Could not import summary data for row: {ConvertDataRow(S, _MultiDataSource.SummaryLiveStream.Columns.Count)}");
+                        var founddata = (from C in context.MultiChannels
+                                         where C.UserName == S.ChannelName
+                                         select C);
+
+                        if (founddata.Any())
+                        {
+                            context.MultiSummaryLiveStreams.Add(new MultiSummaryLiveStreams(streamCount: S.StreamCount, throughDate: S.ThroughDate,
+                                userId: founddata.First().UserId, platform: Platform.Twitch));
+                        }
+                        else
+                        {
+                            LogWriter.WriteLog($"Could not import summary data for row: {ConvertDataRow(S, _MultiDataSource.SummaryLiveStream.Columns.Count)}");
+                        }
                     }
                 }
             }
@@ -632,22 +701,29 @@ namespace StreamerBotLib.DataSQL.Import
             LogWriter.WriteLog("Adding Users and UserStats data.");
 
             if (_DataSource.Users.Count > 0)
-            { 
+            {
                 foreach (UsersRow U in _DataSource.Users)
                 {
-                    if (!(DBNull.Value.Equals(U.UserId)) && (U.UserId != null))
+                    if (!(DBNull.Value.Equals(U["UserId"])) && (U.UserId != null))
                     {
                         Users CurrUser = (from CU in context.Users where U.UserId == CU.UserId select CU).FirstOrDefault();
 
                         if (CurrUser != null)
                         {
-                            if (CurrUser.FirstDateSeen < U.FirstDateSeen)
+                            if (CurrUser.FirstDateSeen < U.FirstDateSeen || CurrUser.Follower?.IsFollower == true)
                             {
                                 CurrUser.UserName = U.UserName;
                                 CurrUser.LastDateSeen = U.LastDateSeen;
                             }
 
-                            CurrUser.UserStats.WatchTime += U.WatchTime; // don't bother with other user stats during import, these stats were not previously established 
+                            if (!(from US in context.UserStats where US.UserId == CurrUser.UserId select US).Any())
+                            {
+                                context.UserStats.Add(new(watchTime: U.WatchTime, userId: U.UserId, platform: Platform.Twitch));
+                            }
+                            else if (CurrUser.UserStats != null)
+                            {
+                                CurrUser.UserStats.WatchTime += U.WatchTime; // don't bother with other user stats during import, these stats were not previously established 
+                            }
                         }
                         else
                         {
@@ -670,6 +746,28 @@ namespace StreamerBotLib.DataSQL.Import
                 }
             }
 
+            LogWriter.WriteLog("Adding InRaid data.");
+
+            if (_DataSource.InRaidData.Count > 0)
+            {
+                foreach (InRaidDataRow A in from IR in _DataSource.InRaidData
+                                            select IR)
+                {
+                    string uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{A.UserName}'").FirstOrDefault())?.UserId;
+
+                    if (string.IsNullOrEmpty(uId))
+                    {
+                        LogWriter.WriteLog($"Did not import for null user Id: {ConvertDataRow(A, _DataSource.InRaidData.Columns.Count)}");
+                    }
+                    else if (!(from I in context.InRaidData where I.UserId == uId && I.RaidDate == A.DateTime select I).Any())
+                    {
+                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), A.Category);
+                    }
+                }
+            }
+
+            CurrentTotalProgress += _DataSource.InRaidData.Rows.Count;
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             CurrentTotalProgress += _DataSource.Users.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
@@ -681,7 +779,8 @@ namespace StreamerBotLib.DataSQL.Import
                 foreach (CustomWelcomeRow CW in _DataSource.CustomWelcome)
                 {
                     UsersRow usersRow = ((UsersRow)_DataSource.Users.Select($"[UserName]='{CW.UserName}'").FirstOrDefault());
-                    if (usersRow != null && !string.IsNullOrEmpty(usersRow.UserId))
+                    if (usersRow != null && !string.IsNullOrEmpty(usersRow.UserId) &&
+                        !(from C in context.CustomWelcome where C.UserId == usersRow.UserId select C).Any())
                     {
                         context.CustomWelcome.Add(new(message: CW.Message,
                                                    userId: usersRow.UserId,
@@ -703,13 +802,18 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.CurrencyType.Count > 0)
             {
-                context.CurrencyType.AddRange(from CT in _DataSource.CurrencyType
-                                              select new Models.CurrencyType(
-                                                accrueAmt: CT.AccrueAmt,
-                                                seconds: (int)CT.Seconds,
-                                                maxValue: CT.MaxValue,
-                                                currencyName: CT.CurrencyName
-                                               ));
+                foreach (CurrencyTypeRow CT in _DataSource.CurrencyType)
+                {
+                    if (!(from C in context.CurrencyType where C.CurrencyName == CT.CurrencyName select C).Any())
+                    {
+                        context.CurrencyType.Add(new Models.CurrencyType(
+                                                        accrueAmt: CT.AccrueAmt,
+                                                        seconds: (int)CT.Seconds,
+                                                        maxValue: CT.MaxValue,
+                                                        currencyName: CT.CurrencyName
+                                                       ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.CurrencyType.Rows.Count;
@@ -728,9 +832,9 @@ namespace StreamerBotLib.DataSQL.Import
 
                         if (CurrCurrency == null)
                         {
-                            context.Currency.Add(new Currency(CurrUser.UserId, Platform.Twitch, (!DBNull.Value.Equals(C.Value) && !string.IsNullOrEmpty(C.Value.ToString())) ? C.Value : 0, C.CurrencyName));
+                            context.Currency.Add(new Currency(CurrUser.UserId, Platform.Twitch, (!DBNull.Value.Equals(C["Value"]) && !string.IsNullOrEmpty(C.Value.ToString())) ? C.Value : 0, C.CurrencyName));
                         }
-                        else
+                        else if (CurrCurrency.Value != C.Value)
                         {
                             CurrCurrency.Value += C.Value;
                         }
@@ -754,13 +858,21 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.CategoryList.Count > 0)
             {
-                context.CategoryList.AddRange(from CL in _DataSource.CategoryList
-                                              where (CL.CategoryId != null) || (CL.Category == "All")
-                                              select new CategoryList(
-                                                  categoryId: CL.Category == "All" ? "0" : string.IsNullOrEmpty(CL.CategoryId) ? "missing" : CL.CategoryId,
-                                                  category: CL.Category,
-                                                  streamCount: CL.StreamCount)
-                                                  );
+                foreach (CategoryListRow CL in _DataSource.CategoryList)
+                {
+                    if (!(from C in context.CategoryList
+                          where
+                         (!DBNull.Value.Equals(CL["CategoryId"]) && C.CategoryId == CL.CategoryId)
+                         || (!DBNull.Value.Equals(CL["Category"]) && C.Category == CL.Category)
+                          select C).Any())
+                    {
+                        context.CategoryList.Add(new CategoryList(
+                                                     categoryId: CL.Category == "All" ? "0" : string.IsNullOrEmpty(CL.CategoryId) ? "missing" : CL.CategoryId,
+                                                     category: CL.Category,
+                                                     streamCount: CL.StreamCount)
+                                                          );
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.CategoryList.Rows.Count;
@@ -770,13 +882,19 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.GameDeadCounter.Count > 0)
             {
-                context.GameDeadCounter.AddRange(from GDC in _DataSource.GameDeadCounter
-                                                 let CI = ((CategoryListRow)(_DataSource.CategoryList.Select($"[Category] = '{GDC.Category}'")).First()).CategoryId
-                                                 select new GameDeadCounter(
-                                                     categoryId: CI,
-                                                     category: GDC.Category,
-                                                     counter: GDC.Counter
-                                                 ));
+                foreach (GameDeadCounterRow GDC in _DataSource.GameDeadCounter)
+                {
+                    string CI = ((CategoryListRow)(_DataSource.CategoryList.Select($"[Category] = '{GDC.Category}'")).First()).CategoryId;
+                    var GameDC = (from G in context.GameDeadCounter where G.CategoryId == CI select G);
+                    if (!GameDC.Any())
+                    {
+                        context.GameDeadCounter.Add(new GameDeadCounter(
+                                                             categoryId: CI,
+                                                             category: GDC.Category,
+                                                             counter: GDC.Counter
+                                                         ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.GameDeadCounter.Rows.Count;
@@ -786,31 +904,36 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.StreamStats.Count > 0)
             {
-                context.StreamStats.AddRange(from S in _DataSource.StreamStats
-                                             select new StreamStats(
-                                                 streamStart: S.StreamStart,
-                                                 streamEnd: S.StreamEnd,
-                                                 newFollows: S.NewFollows,
-                                                 newSubscribers: S.NewSubscribers,
-                                                 giftSubs: S.GiftSubs,
-                                                 bits: (int)S.Bits,
-                                                 raids: S.Raids,
-                                                 hosted: S.Hosted,
-                                                 usersBanned: S.UsersBanned,
-                                                 usersTimedOut: S.UsersTimedOut,
-                                                 moderatorsPresent: S.ModeratorsPresent,
-                                                 subsPresent: S.SubsPresent,
-                                                 vIPsPresent: S.VIPsPresent,
-                                                 totalChats: S.TotalChats,
-                                                 commandsMsgs: S.Commands,
-                                                 automatedEvents: S.AutomatedEvents,
-                                                 automatedCommands: S.AutomatedCommands,
-                                                 webhookMsgs: S.DiscordMsgs,
-                                                 clipsMade: S.ClipsMade,
-                                                 channelPtCount: S.ChannelPtCount,
-                                                 channelChallenge: S.ChannelChallenge,
-                                                 maxUsers: S.MaxUsers
-                                                 ));
+                foreach (StreamStatsRow S in _DataSource.StreamStats)
+                {
+                    if (!(from SS in context.StreamStats where S.StreamStart == SS.StreamStart && S.StreamEnd == SS.StreamEnd select SS).Any())
+                    {
+                        context.StreamStats.Add(new StreamStats(
+                                                         streamStart: S.StreamStart,
+                                                         streamEnd: S.StreamEnd,
+                                                         newFollows: S.NewFollows,
+                                                         newSubscribers: S.NewSubscribers,
+                                                         giftSubs: S.GiftSubs,
+                                                         bits: (int)S.Bits,
+                                                         raids: S.Raids,
+                                                         hosted: S.Hosted,
+                                                         usersBanned: S.UsersBanned,
+                                                         usersTimedOut: S.UsersTimedOut,
+                                                         moderatorsPresent: S.ModeratorsPresent,
+                                                         subsPresent: S.SubsPresent,
+                                                         vIPsPresent: S.VIPsPresent,
+                                                         totalChats: S.TotalChats,
+                                                         commandsMsgs: S.Commands,
+                                                         automatedEvents: S.AutomatedEvents,
+                                                         automatedCommands: S.AutomatedCommands,
+                                                         webhookMsgs: S.DiscordMsgs,
+                                                         clipsMade: S.ClipsMade,
+                                                         channelPtCount: S.ChannelPtCount,
+                                                         channelChallenge: S.ChannelChallenge,
+                                                         maxUsers: S.MaxUsers
+                                                         ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.StreamStats.Rows.Count;
@@ -818,24 +941,69 @@ namespace StreamerBotLib.DataSQL.Import
 
             #endregion
 
+#if DEBUG
+            StreamWriter DebugFollow = new("debug_followers.txt") { AutoFlush = true };
 
+#endif
             LogWriter.WriteLog("Adding Followers data.");
 
             if (_DataSource.Followers.Count > 0)
             {
-                context.Followers.AddRange(from F in _DataSource.Followers
-                                           where !(DBNull.Value.Equals(F.UserId)) && (F.UserId != null) && (!string.IsNullOrEmpty(F.Category))
-                                           select new Followers(
-                                                    isFollower: F.IsFollower,
-                                                    followedDate: F.FollowedDate,
-                                                    statusChangeDate: F.StatusChangeDate,
-                                                    category: F.Category,
-                                                    addDate: F.FollowedDate,
-                                                    userId: F.UserId,
-                                                    userName: F.UserName,
-                                                    platform: Enum.Parse<Platform>(F.Platform)
-                                               ));
+                foreach (FollowersRow F in _DataSource.Followers)
+                {
+                    if (!(from CF in context.Followers where F.UserId == CF.UserId && CF.User.UserName == F.UserName select CF).Any()
+                        && !(from OF in context.OldFollowUsers where OF.UserId == F.UserId && OF.UserName == F.UserName select OF).Any())
+                    {
+                        Users currUser = (from U in context.Users where U.UserId == F.UserId && U.Platform == Enum.Parse<Platform>(F.Platform) select U).FirstOrDefault();
+                        if (!(DBNull.Value.Equals(F["UserId"])) && !DBNull.Value.Equals(F["Platform"]) && !string.IsNullOrEmpty(F.UserId) && currUser != null)
+                        {
+                            if (F.IsFollower)
+                            {
+                                if (currUser.UserName != F.UserName)
+                                {
+                                    currUser.UserName = F.UserName;
+                                }
+
+                                context.Followers.Add(new(
+                                                        isFollower: F.IsFollower,
+                                                        followedDate: F.FollowedDate,
+                                                        statusChangeDate: F.StatusChangeDate,
+                                                        category: F.Category == "N/A" ? "All" : F.Category,
+                                                        addDate: F.FollowedDate,
+                                                        userId: F.UserId,
+                                                        platform: Enum.Parse<Platform>(F.Platform)
+                                                    ));
+#if DEBUG
+                                DebugFollow.WriteLine($"Now added {F.UserId} {F.UserName} to context.Followers.");
+#endif   
+                            }
+                            else
+                            {
+                                context.OldFollowUsers.Add(new(
+                                                            isFollower: F.IsFollower,
+                                                            followedDate: F.FollowedDate,
+                                                            statusChangeDate: F.StatusChangeDate,
+                                                            category: F.Category == "N/A" ? "All" : F.Category,
+                                                            addDate: F.FollowedDate,
+                                                            userId: F.UserId,
+                                                            userName: F.UserName,
+                                                            platform: Enum.Parse<Platform>(F.Platform)
+                                                    ));
+#if DEBUG
+                                DebugFollow.WriteLine($"Now added {F.UserId} {F.UserName} to context.OldFollowUsers.");
+#endif
+                            }
+                            context.SaveChanges(true);
+                        }
+                        else
+                        {
+                            LogWriter.WriteLog($"Could not import data row: {ConvertDataRow(F, _DataSource.Followers.Columns.Count)}");
+                        }
+                    }
+                }
             }
+
+            context.SaveChanges(true);
 
             CurrentTotalProgress += _DataSource.Followers.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
@@ -844,14 +1012,18 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.GiveawayUserData.Count > 0)
             {
-                context.GiveawayUserData.AddRange(from G in _DataSource.GiveawayUserData
-                                                  let uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{G.DisplayName}'").First()).UserId
-                                                  where uId is not null
-                                                  select new GiveawayUserData(
-                                                      dateTime: G.DateTime,
-                                                      userId: uId,
-                                                      platform: Platform.Twitch
-                                                      ));
+                foreach (GiveawayUserDataRow G in _DataSource.GiveawayUserData)
+                {
+                    string uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{G.DisplayName}'").First()).UserId;
+                    if (!(from GUD in context.GiveawayUserData where G.DateTime == GUD.DateTime && GUD.UserId == uId select GUD).Any())
+                    {
+                        context.GiveawayUserData.AddRange(new GiveawayUserData(
+                                                              dateTime: G.DateTime,
+                                                              userId: uId,
+                                                              platform: Platform.Twitch
+                                                              ));
+                    }
+                }
             }
 
             CurrentTotalProgress += _DataSource.GiveawayUserData.Rows.Count;
@@ -859,27 +1031,30 @@ namespace StreamerBotLib.DataSQL.Import
 
             LogWriter.WriteLog("Adding ShoutOuts data.");
 
+#if DEBUG
+            StreamWriter DebugShoutOuts = new("debug_shoutouts.txt") { AutoFlush = true };
+#endif
             if (_DataSource.ShoutOuts.Count > 0)
             {
                 foreach (ShoutOutsRow S in _DataSource.ShoutOuts)
                 {
-                    UsersRow usersRow = (from U in _DataSource.Users
-                                         where string.Equals(U.UserName, S.UserName, StringComparison.OrdinalIgnoreCase)
-                                         select U).FirstOrDefault();
+#if DEBUG
 
-                    if (usersRow == null || DBNull.Value.Equals(usersRow.UserId) || string.IsNullOrEmpty(usersRow.UserId))
+                    DebugShoutOuts.WriteLine($"Now adding row {{DBNull.Value.Equals(S[\"UserId\"]) ? \"Null\" : S.UserId}} {S.UserName}");
+#endif
+                    if (!DBNull.Value.Equals(S["UserId"]))
                     {
-                        LogWriter.WriteLog($"Could not import data row: {ConvertDataRow(S, _DataSource.ShoutOuts.Columns.Count)}");
-                    }
-                    else
-                    {
-                        string username = S.UserName;
-                        if (usersRow.UserId == S.UserId && !string.Equals(usersRow.UserName, S.UserName, StringComparison.Ordinal))
+                        UsersRow currUser = (from U in _DataSource.Users
+                                             where string.Equals(U.UserName, S.UserName, StringComparison.OrdinalIgnoreCase)
+                                             select U).FirstOrDefault();
+                        if (currUser != null)
                         {
-                            username = usersRow.UserName;
+                            dataManagerSQL.PostNewAutoShoutUser(currUser.UserId, Platform.Twitch);
                         }
-
-                        dataManagerSQL.PostNewAutoShoutUser(usersRow.UserId, Platform.Twitch);
+                        else
+                        {
+                            LogWriter.WriteLog($"Could not import data row: {ConvertDataRow(S, _DataSource.ShoutOuts.Columns.Count)}");
+                        }
                     }
                 }
             }

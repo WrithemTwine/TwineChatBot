@@ -63,7 +63,7 @@ public class StreamStats(DateTime streamStart = default,
         public DateTime StreamEnd { get; set; } = streamEnd;
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public TimeSpan Duration { get; private set; } = streamEnd - streamStart;
+        public TimeSpan Duration { get; private set; } //= streamEnd - streamStart;
 
         public int NewFollows { get; set; } = newFollows;
         public int NewSubscribers { get; set; } = newSubscribers;

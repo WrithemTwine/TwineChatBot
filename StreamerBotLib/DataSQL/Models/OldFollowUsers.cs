@@ -2,13 +2,14 @@
 
 using StreamerBotLib.Enums;
 
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
     [Index(nameof(StatusChangeDate), nameof(UserId), nameof(FollowedDate), IsDescending = [true, false, true])]
-    [DebuggerDisplay("UserId={UserId}, UserName={F.User.UserName}, IsFollower={IsFollower}")]
+    [DebuggerDisplay("UserId={UserId}, UserName={UserName}, IsFollower={IsFollower}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Followers(
                            bool isFollower,
@@ -20,26 +21,39 @@ namespace StreamerBotLib.DataSQL.Models
                            string userName,
                            Platform platform)
 #else
-    public class Followers(
+    public class OldFollowUsers(
                            bool isFollower = false,
                            DateTime followedDate = default,
                            DateTime statusChangeDate = default,
                            string category = null,
                            DateTime addDate = default,
                            string userId = null,
+                           string userName = null,
                            Platform platform = Platform.Default) 
 #endif
-        : UserBase(userId, platform)
     {
+        public OldFollowUsers(Followers followers, DateTime statusChangeDate) : this()
+        {
+            Platform = followers.Platform;
+            UserId = followers.UserId;
+            UserName = followers.User.UserName;
+            IsFollower = followers.IsFollower;
+            FollowedDate = followers.FollowedDate;
+            StatusChangeDate = statusChangeDate;
+            Category = followers.Category;
+            AddDate = followers.AddDate;
+        }
+
+        public string UserId { get; set; } = userId;
+        public Platform Platform { get; set; } = platform;
+
+        public string UserName { get; set; } = userName;
         public bool IsFollower { get; set; } = isFollower;
         public DateTime FollowedDate { get; set; } = followedDate;
         public DateTime StatusChangeDate { get; set; } = statusChangeDate;
         public string Category { get; set; } = category;
         public DateTime AddDate { get; set; } = addDate;
 
-        public Users? User { get; set; }
-        public CategoryList? CategoryList { get; set; }
-
-        //public ICollection<OldFollowUsers> OldFollowUsers { get; } = [];
+        //public Followers? Followers { get; set; }
     }
 }

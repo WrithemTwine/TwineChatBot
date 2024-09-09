@@ -1,10 +1,15 @@
-﻿#if RELEASE_KNET
+﻿#if DEBUG
+#define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
+#endif
+
+#if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
 #endif
 
-#define DEBUG_LOG // rename to DEBUG_LOG to enable the debug log
-
 using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.DiscriminatorEnums;
+
 
 #if DEBUG_LOG
 using Microsoft.Extensions.Logging;
@@ -21,6 +26,7 @@ namespace StreamerBotLib.DataSQL
     {
         #region User Data
         public DbSet<Followers> Followers { get; set; }
+        public DbSet<OldFollowUsers> OldFollowUsers { get; set; }
         public DbSet<Currency> Currency { get; set; }
         public DbSet<CustomWelcome> CustomWelcome { get; set; }
         public DbSet<GiveawayUserData> GiveawayUserData { get; set; }
@@ -126,10 +132,6 @@ namespace StreamerBotLib.DataSQL
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Users>()
-                .HasMany(u => u.Followers)
-                .WithMany(f => f.User);
-
-            modelBuilder.Entity<Users>()
                 .HasMany(u => u.Currency)
                 .WithOne(c => c.User)
                 .HasForeignKey(u => new { u.UserId, u.Platform })
@@ -138,7 +140,7 @@ namespace StreamerBotLib.DataSQL
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.CustomWelcome)
-                .WithOne(w => w.Users)
+                .WithOne(w => w.User)
                 .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.Platform })
                 .IsRequired(false);
 
@@ -159,6 +161,16 @@ namespace StreamerBotLib.DataSQL
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
+            modelBuilder.Entity<Users>()
+                .HasOne(u => u.Follower)
+                .WithOne(f => f.User)
+                .HasForeignKey<Followers>(f => new { f.UserId, f.Platform });
+
+            //modelBuilder.Entity<Followers>()
+            //    .HasMany(f => f.OldFollowUsers)
+            //    .WithOne(f => f.Followers)
+            //    .HasForeignKey(f => new {f.UserId, f.Platform });
+
             modelBuilder.Entity<MultiChannels>()
                 .HasMany(m => m.MultiLiveStreams)
                 .WithOne(m => m.MultiChannels)
@@ -177,7 +189,19 @@ namespace StreamerBotLib.DataSQL
 
             modelBuilder.Entity<StreamStats>()
                 .Property(p => p.Duration)
-                .HasComputedColumnSql("[StreamEnd] - [StreamStart]", stored: true);
+                .HasComputedColumnSql("StreamEnd - StreamStart", stored: true);
+
+            // Discriminators for Type-Per-Hierarchy -entity derived types will coalesce in base table
+            // discriminators distinguish between base type and other derived types
+            modelBuilder.Entity<Commands>()
+                .HasDiscriminator(c => c.commandtype)
+                .HasValue<Commands>(CommandTypes.builtin.ToString())
+                .HasValue<CommandsUser>(CommandTypes.user.ToString());
+
+            modelBuilder.Entity<Webhooks>()
+                .HasDiscriminator(w => w.DataSource)
+                .HasValue<Webhooks>(WebhookDataSource.primary.ToString())
+                .HasValue<MultiMsgEndPoints>(WebhookDataSource.multilive.ToString());
         }
 
         public SQLDBContext()

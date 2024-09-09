@@ -568,7 +568,10 @@ namespace StreamerBotLib.BotClients
 
             RegisterHandlers();
 
-            GetAllFollowers();
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            {
+                GetAllFollowers();
+            });
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)

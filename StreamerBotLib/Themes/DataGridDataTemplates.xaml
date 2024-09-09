@@ -270,13 +270,13 @@
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
                 <TextBlock Grid.Row="2" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
                 <TextBlock Grid.Row="3" Grid.Column="0">Commands called:</TextBlock>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:#,#}}" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
                 <TextBlock Grid.Row="4" Grid.Column="0">Chats:</TextBlock>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:#,#}}" />
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
                 <TextBlock Grid.Row="5" Grid.Column="0">Clips created:</TextBlock>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:#,#}}" />
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
                 <TextBlock Grid.Row="6" Grid.Column="0">Channel Point Rewards:</TextBlock>
-                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:#,#}}" />
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
 
             </Grid>
         </Border>
@@ -329,6 +329,7 @@
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OldFollowUsers_CVS" Source="{Binding OldFollowUsers, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_OutRaidData_CVS" Source="{Binding OutRaidData, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
@@ -338,6 +339,7 @@
     <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_UserStats_CVS" Source="{Binding UserStats, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
+
 
     <!--#endregion-->
 

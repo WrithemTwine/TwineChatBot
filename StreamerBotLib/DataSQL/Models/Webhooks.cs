@@ -37,5 +37,7 @@ namespace StreamerBotLib.DataSQL.Models
         public WebhooksKind Kind { get; set; } = kind;
         public bool AddEveryone { get; set; } = addEveryone;
         public Uri Webhook { get; set; } = webhook;
+
+        public string DataSource { get; set; }
     }
 }

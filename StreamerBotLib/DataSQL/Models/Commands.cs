@@ -3,12 +3,13 @@
 using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
-using TwitchLib.Client.Models;
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CmdName))]
     [Index(nameof(CmdName), IsUnique = true)]
+    [DebuggerDisplay("Command = {CmdName}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Commands(string cmdName,
                           bool addMe,
@@ -54,7 +55,6 @@ namespace StreamerBotLib.DataSQL.Models
 #endif
     : EntityBase
     {
-
         public string CmdName { get; set; } = cmdName;
         public bool AddMe { get; set; } = addMe;
         public ViewerTypes Permission { get; set; } = permission;
@@ -75,6 +75,7 @@ namespace StreamerBotLib.DataSQL.Models
         public CommandAction Action { get; set; } = action;
         public int Top { get; set; } = top;
         public CommandSort Sort { get; set; } = sort;
+        public string commandtype { get; set; }
 
 
         public static Commands GetCommands(CommandData commandData)
@@ -99,5 +100,14 @@ namespace StreamerBotLib.DataSQL.Models
                 );
         }
     }
+
+    //public static class ExtendCommands
+    //{
+    //    public static IEnumerable<T> Union<T,S>(this IEnumerable<T> first, IEnumerable<S> second) 
+    //    {
+            
+    //    }
+
+    //}
 
 }

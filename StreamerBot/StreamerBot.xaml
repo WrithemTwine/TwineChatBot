@@ -1628,7 +1628,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                     <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
-                                                    <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding Followers.IsFollower}" />
+                                                    <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding Follower.IsFollower}" />
 
                                                     <DataGridTemplateColumn Header="Last Seen" 
                                                                             CellTemplate="{Binding Source={StaticResource DateLastSeenTemplate}}" 
@@ -1645,7 +1645,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                       CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True" RowDetailsTemplate="{StaticResource DG_RowDetailDT_Followers}" >
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" SortMemberPath="UserId" />
-                                                    <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
+                                                    <DataGridTextColumn Header="UserName" Binding="{Binding User.UserName}" />
                                                     <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding IsFollower}" />
                                                     <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}"  SortMemberPath="FollowedDate" SortDirection="Descending" />
                                                     <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" SortMemberPath="StatusChangeDate" SortDirection="Descending" />
@@ -1654,6 +1654,15 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             </DataGrid>
                                         </DockPanel>
                                     </Grid>
+                                </TabItem>
+                                <TabItem Header="Old Follows">
+                                    <DockPanel>
+
+                                        <DataGrid x:Name="DG_OldFollowUsers" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OldFollowUsers_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                                                      CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="True">
+                                            
+                                        </DataGrid>
+                                    </DockPanel>
                                 </TabItem>
                                 <TabItem Header="Auto-SO">
                                     <Grid>
@@ -1952,7 +1961,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <Label Content="A value to the right permits access with the leftward values, e.g. selecting 'VIP' allows 'VIP, Mod, Broadcaster' access rights. "/>
                                     </StackPanel>
                                 </TabItem>
-                                <TabItem Header="Built-In">
+                                <TabItem Header="All">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -1974,6 +1983,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       FrozenColumnCount="4" >
                                                 <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Type" Binding="{Binding commandtype}" />
                                                     <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" IsReadOnly="True" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
@@ -2026,6 +2036,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                        
                                                       >
                                                 <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Type" Binding="{Binding commandtype}" />
                                                     <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
@@ -2137,7 +2148,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" Loaded="DG_StreamData_Stats_Loaded" >
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" SortDirection="Descending" />
                                                 <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" SortMemberPath="StreamEnd" />
@@ -2193,7 +2204,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
-                                                    <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
+                                                    <DataGridTextColumn Header="UserName" Binding="{Binding User.UserName}" />
                                                     <DataGridTemplateColumn Header="Raid Date" CellTemplate="{StaticResource DateInRaidTemplate}" CellEditingTemplate="{StaticResource EditInRaidTemplate}" SortMemberPath="RaidDate" SortDirection="Descending" />
                                                     <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
                                                     <DataGridTextColumn Header="Viewer Count" Binding="{Binding ViewerCount}" />

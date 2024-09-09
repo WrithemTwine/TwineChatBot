@@ -1,7 +1,12 @@
 ﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Models;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
+    [DebuggerDisplay("Command = {CmdName}")]
+
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class CommandsUser(string cmdName,
                           bool addMe,
@@ -45,7 +50,7 @@ namespace StreamerBotLib.DataSQL.Models
                           int top = 0,
                           CommandSort sort = default)
 #endif
- : Commands(cmdName,
+  : Commands(cmdName,
                            addMe,
                            permission,
                            isEnabled,
@@ -65,7 +70,30 @@ namespace StreamerBotLib.DataSQL.Models
                            action,
                            top,
                            sort)
-    {
- 
+    { 
+    
+
+        public static CommandsUser GetCommands(CommandData commandData)
+        {
+            return new(
+                cmdName: commandData.CmdName,
+                addMe: commandData.AddMe,
+                permission: commandData.Permission,
+                isEnabled: commandData.IsEnabled,
+                message: commandData.Message,
+                sendMsgCount: commandData.SendMsgCount,
+                allowParam: commandData.AllowParam,
+                usage: commandData.Usage,
+                lookupData: commandData.Lookupdata,
+                table: commandData.Table,
+                keyField: commandData.Key_field,
+                dataField: commandData.Data_field,
+                currencyField: commandData.Currency_field,
+                action: commandData.Action,
+                top: commandData.Top,
+                sort: commandData.Sort
+                );
+        }
+
     }
 }

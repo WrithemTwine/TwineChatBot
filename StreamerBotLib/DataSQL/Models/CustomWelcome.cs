@@ -21,6 +21,6 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public string Message { get; set; } = message;
 
-        public Users? Users { get; set; }
+        public Users? User { get; set; }
     }
 }

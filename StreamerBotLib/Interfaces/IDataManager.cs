@@ -64,6 +64,7 @@ namespace StreamerBotLib.Interfaces
         ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable();
         ObservableCollection<MultiSummaryLiveStreams> GetMultiSummaryLiveStreamsLocalObservable();
         string GetNewestFollower();
+        ObservableCollection<OldFollowUsers> GetOldFollowUsersLocalObservable();
         ObservableCollection<OutRaidData> GetOutRaidDataLocalObservable();
         Dictionary<string, List<string>> GetOverlayActions();
         List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username);

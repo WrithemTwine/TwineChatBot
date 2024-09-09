@@ -26,5 +26,6 @@ namespace StreamerBotLib.DataSQL.Models
         public int ViewerCount { get; set; } = viewerCount;
         public DateTime RaidDate { get; set; } = raidDate;
         public string Category { get; set; } = category;
+        public Users? User { get; set; }
     }
 }

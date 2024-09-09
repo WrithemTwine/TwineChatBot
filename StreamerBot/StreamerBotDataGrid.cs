@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.BotIOController;
+using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.Events;
@@ -7,10 +8,10 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
 
 using System.Data;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 namespace StreamerBot
 {
@@ -241,15 +242,37 @@ namespace StreamerBot
 
         #region Calculated Columns
 
-        private void DG_StreamData_Stats_Loaded(object sender, RoutedEventArgs e)
-        {
-            DataColumn StatDuration = new() { ColumnName = "Duration" };
-            StatDuration.Expression = "StreamEnd - StreamStart";
+        //private void DG_StreamData_Stats_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    DataColumn StatDuration = new() { ColumnName = "Duration" };
+        //    StatDuration.Expression = "StreamEnd - StreamStart";
+        //}
 
-            
-        }
 
         #endregion
 
+        #region DataGrid Item Filters
+
+        private void DG_Webhooks_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            if (DG_Webhooks.ItemsSource != null)
+            {
+                // DataGrid filter events
+                (DG_Webhooks.ItemsSource as CollectionViewSource).Filter += DG_Webhooks_CVS_Filter;
+            }
+        }
+
+        private void DG_Webhooks_CVS_Filter(object sender, FilterEventArgs e)
+        {
+            Webhooks t = e.Item as Webhooks;
+            if (t != null)
+            {
+                if (t.DataSource == WebhookDataSource.multilive.ToString())
+                    e.Accepted = false;
+                else
+                    e.Accepted = true;
+            }
+        } 
+        #endregion
     }
 }

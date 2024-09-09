@@ -2,9 +2,12 @@
 
 using StreamerBotLib.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [DebuggerDisplay("UserId={UserId}, UserName={UserName}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Users(
                        DateTime firstDateSeen,
@@ -29,8 +32,8 @@ namespace StreamerBotLib.DataSQL.Models
         public DateTime LastDateSeen { get; set; } = lastDateSeen;
 
         public ICollection<Currency> Currency { get; } = [];
-        public ICollection<Followers> Followers { get; } = [];
         public ICollection<GiveawayUserData> GiveawayUserData { get; } = [];
+        public Followers? Follower { get; set; }
         public ShoutOuts? ShoutOuts { get; set; }
         public CustomWelcome? CustomWelcome { get; set; }
         public UserStats UserStats { get; set; }

@@ -59,6 +59,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<ChannelEvents> ChannelEvents { get; private set; }
         public ObservableCollection<Users> Users { get; private set; }
         public ObservableCollection<Followers> Followers { get; private set; }
+        public ObservableCollection<OldFollowUsers> OldFollowUsers { get; private set; }
         public ObservableCollection<Webhooks> Webhooks { get; private set; }
         public ObservableCollection<Currency> Currency { get; private set; }
         public ObservableCollection<CurrencyType> CurrencyType { get; private set; }
@@ -127,6 +128,7 @@ namespace StreamerBotLib.GUI
             MultiLiveStreams = DataManager.GetMultiLiveStreamsLocalObservable();
             MultiMsgEndPoints = DataManager.GetMultiMsgEndPointsLocalObservable();
             MultiSummaryLiveStreams = DataManager.GetMultiSummaryLiveStreamsLocalObservable();
+            OldFollowUsers = DataManager.GetOldFollowUsersLocalObservable();
             OutRaidData = DataManager.GetOutRaidDataLocalObservable();
             OverlayServices = DataManager.GetOverlayServicesLocalObservable();
             OverlayTicker = DataManager.GetOverlayTickerLocalObservable();

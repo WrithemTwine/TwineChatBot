@@ -106,7 +106,7 @@ namespace StreamerBotLib.Systems
                 DataManage.UpdateStats(DBUserStats.ChannelRewards, User.UserId, User.Platform);
             }
 
-            if (User.UserName != null && overlayActionTypes.Count > 0)
+            if (User?.UserName != null && overlayActionTypes.Count > 0)
             {
                 FoundAction = overlayActionTypes.Find(x => x.UserName == User.UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
 

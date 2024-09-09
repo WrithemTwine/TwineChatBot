@@ -400,6 +400,11 @@ switches:
             context.MultiSummaryLiveStreams.Load(); return context.MultiSummaryLiveStreams.Local.ToObservableCollection();
         }
 
+        public ObservableCollection<OldFollowUsers> GetOldFollowUsersLocalObservable()
+        {
+            context.OldFollowUsers.Load(); return context.OldFollowUsers.Local.ToObservableCollection();
+        }
+
         public ObservableCollection<OutRaidData> GetOutRaidDataLocalObservable()
         {
             context.OutRaidData.Load(); return context.OutRaidData.Local.ToObservableCollection();
@@ -490,7 +495,7 @@ switches:
             {
                 BuildDataContext();
                 var result = (from f in context.Followers
-                              where (f.IsFollower && f.UserName == User && (ToDateTime == default || f.FollowedDate < ToDateTime))
+                              where (f.IsFollower && (ToDateTime == default || f.FollowedDate < ToDateTime))
                               select f).Any();
                 ClearDataContext();
                 return result;
@@ -758,9 +763,12 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                CommandData result = new((from Com in (context.Commands.Union(context.CommandsUser))
-                                          where Com.CmdName == cmd
-                                          select Com).FirstOrDefault());
+
+                List<Commands> commands = new( from C in context.Commands where C.CmdName == cmd select C);
+                //List<CommandsUser> commandsUser = new(from CU in context.CommandsUser where CU.CmdName == cmd select CU);
+
+                CommandData result = (commands != null) ? new(commands.First()) : null;// commandsUser != null ? new(commandsUser.First()) : null;
+
                 ClearDataContext();
                 return result;
             }
@@ -881,7 +889,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                string result = (from F in context.Followers orderby F.FollowedDate descending select F).FirstOrDefault().UserName;
+                string result = (from F in context.Followers orderby F.FollowedDate descending select F).FirstOrDefault().User.UserName;
                 ClearDataContext();
                 return result;
             }
@@ -1137,7 +1145,7 @@ switches:
                 IEnumerable<object> output = row.Table switch
                 {
                     nameof(Currency) => (from C in context.Currency where C.CurrencyName == row.CurrencyField orderby C.User.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
-                    nameof(Followers) => (from F in context.Followers orderby F.UserName select F),
+                    nameof(Followers) => (from F in context.Followers orderby F.User.UserName select F),
                     nameof(UserStats) => (from US in context.UserStats orderby US.User.UserName select new Tuple<object, object>(US[row.KeyField], US[row.DataField])),
                     _ => [""]
                 };
@@ -1166,8 +1174,8 @@ switches:
                 object output = row.Table switch
                 {
                     nameof(Currency) => (from C in context.Currency where (C.User.UserName == ParamValue && C.CurrencyName == row.CurrencyField) select C[row.DataField ?? "Value"]).FirstOrDefault(),
-                    nameof(CustomWelcome) => (from W in context.CustomWelcome where W.Users.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
-                    nameof(Followers) => (from F in context.Followers where F.UserName == ParamValue select F).FirstOrDefault(),
+                    nameof(CustomWelcome) => (from W in context.CustomWelcome where W.User.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
+                    nameof(Followers) => (from F in context.Followers where F.User.UserName == ParamValue select F).FirstOrDefault(),
                     nameof(UserStats) => (from US in context.UserStats where US.User.UserName == ParamValue select US[row.DataField]).FirstOrDefault(),
                     nameof(Commands) => (from C in context.Commands where C.CmdName == ParamValue select C[row.DataField]).FirstOrDefault(),
                     _ => ""
@@ -1354,6 +1362,7 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
+                currtime = DateTime.Now.ToLocalTime();
                 BuildDataContext();
                 followsQueue.Enqueue([follow]);
                 PostFollowsQueue();
@@ -1382,7 +1391,6 @@ switches:
                 {
                     SystemsController.AppDispatcher.BeginInvoke(() =>
                     {
-                        DateTime currTime = DateTime.Now.ToLocalTime();
                         //Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
                         BuildDataContext();
 
@@ -1395,7 +1403,9 @@ switches:
                                 {
                                     var user = PostNewUser(f.FromUser, f.FollowedAt);
 
-                                    Followers currFollow = (from UF in context.Followers where UF.UserId == f.FromUserId && UF.UserName == f.FromUserName && UF.Platform == f.FromUser.Platform select UF).FirstOrDefault();
+                                    Followers currFollow = (from UF in context.Followers 
+                                                            where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform 
+                                                            select UF).FirstOrDefault();
 
                                     if (currFollow != null)
                                     {
@@ -1406,14 +1416,20 @@ switches:
                                     else
                                     {
                                         tempfollow.Add(new Followers(userId: f.FromUser.UserId,
-                                                                            userName: f.FromUser.UserName, platform: f.FromUser.Platform,
+                                                                            platform: f.FromUser.Platform,
                                                                             isFollower: true, followedDate: f.FollowedAt,
-                                                                            statusChangeDate: f.FollowedAt, addDate: currTime,
+                                                                            statusChangeDate: f.FollowedAt, addDate: currtime,
                                                                             category: f.Category));
                                     }
                                 }
                                 context.Followers.AddRange(tempfollow);
                             }
+                            lock (GUIDataManagerLock.Lock)
+                            {
+                                context.SaveChanges(true);
+                            }
+                            NotifyDataCollectionUpdated(nameof(Followers));
+                            NotifyDataCollectionUpdated("CurrFollowers");
                         }
 
 
@@ -1537,10 +1553,12 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                Users newuser = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Platform) select U).FirstOrDefault();
+                Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).FirstOrDefault();
                 if (newuser == default)
                 {
-                    newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName, platform: User.Platform, firstDateSeen: FirstSeen, currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
+                    newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
+                                                    platform: User.Platform, firstDateSeen: FirstSeen,
+                                                    currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
                 }
                 else
                 {
@@ -1884,13 +1902,15 @@ switches:
             }
         }
 
-        #endregion     
+        #endregion
 
+        private DateTime currtime;
         public void StartBulkFollowers()
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BulkFollowerUpdate = true;
+                currtime = DateTime.Now.ToLocalTime();
                 BuildDataContext();
                 foreach (Followers F in context.Followers)
                 {
@@ -1905,7 +1925,6 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                DateTime currtime = DateTime.Now.ToLocalTime();
                 BuildDataContext();
 
                 if (OptionFlags.TwitchPruneNonFollowers)
@@ -1914,28 +1933,24 @@ switches:
                 }
                 else // if pruning followers, there won't be multiple 'UserId' records
                 {
-                    List<string> FollowUserIds = [];
-                    FollowUserIds.UniqueAddRange(from f in context.Followers select f.UserId);
-
-                    foreach (string Id in FollowUserIds)
+                    foreach (Followers F in (from OF in context.Followers where !OF.IsFollower select OF))
                     {
-                        var UF = (from F in context.Followers where F.UserId == Id orderby F.AddDate descending select F);
-
-                        if (UF.Count() == 1 && UF.First().StatusChangeDate != UF.First().FollowedDate)
+                        if (!(from OFU in context.OldFollowUsers where OFU.UserId == F.UserId select OFU).Any())
                         {
-                            UF.First().StatusChangeDate = UF.First().FollowedDate;
-                        }
-                        else if (UF.Count() > 1)
-                        { // adjust the status change date to the current time
-                            List<Followers> currUser = new(UF.Take(2));
-
-                            if (currUser[0].StatusChangeDate != currUser[1].StatusChangeDate)
-                            { // only change when the dates are different, show user which records change
-                                currUser[0].StatusChangeDate = currtime;
-                                currUser[1].StatusChangeDate = currtime;
-                            }
+                            context.OldFollowUsers.Add(new OldFollowUsers(F, currtime));
                         }
                     }
+                    context.SaveChanges(true);
+
+                    foreach (OldFollowUsers OF in context.OldFollowUsers)
+                    {
+                        Followers currFollow = (from F in context.Followers where F.UserId == OF.UserId && F.Platform == OF.Platform select F).FirstOrDefault();
+                        if(currFollow != null)
+                        {
+                            currFollow.StatusChangeDate = currtime;
+                        }
+                    }
+
                 }
                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
                 BulkFollowerUpdate = false;
@@ -1963,16 +1978,19 @@ switches:
         {
             lock (GUIDataManagerLock.Lock)
             {
-                TimeSpan clock = CurrTime - User.LastDateSeen;
-                foreach (Currency currency in User.Currency)
+                if (User != null)
                 {
-                    currency.Value =
-                        Math.Min(
-                            currency.CurrencyType.MaxValue,
-                            Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
-                        );
+                    TimeSpan clock = CurrTime - User.LastDateSeen;
+                    foreach (Currency currency in User.Currency)
+                    {
+                        currency.Value =
+                            Math.Min(
+                                currency.CurrencyType.MaxValue,
+                                Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
+                            );
+                    }
+                    User.LastDateSeen = CurrTime;
                 }
-                User.LastDateSeen = CurrTime;
             }
         }
 

@@ -90,6 +90,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new MultiSummaryLiveStreams(new Models.MultiSummaryLiveStreams());
             }
+            else if (Entity == typeof(Models.OldFollowUsers))
+            {
+                CurrEntity = new OldFollowUsers(new Models.OldFollowUsers());
+            }
             else if (Entity == typeof(Models.OutRaidData))
             {
                 CurrEntity = new OutRaidData(new Models.OutRaidData());
@@ -213,6 +217,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (Entity.GetType() == typeof(Models.MultiSummaryLiveStreams))
             {
                 CurrEntity = new MultiSummaryLiveStreams((Models.MultiSummaryLiveStreams)Entity);
+            }
+            else if (Entity.GetType() == typeof(Models.OldFollowUsers))
+            {
+                CurrEntity = new OldFollowUsers((Models.OldFollowUsers)Entity);
             }
             else if (Entity.GetType() == typeof(Models.OutRaidData))
             {
@@ -354,6 +362,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (DataEntity.GetType() == typeof(Models.MultiSummaryLiveStreams))
             {
                 ((MultiSummaryLiveStreams)Update).CopyUpdates((Models.MultiSummaryLiveStreams)DataEntity);
+                return DataEntity;
+            }
+            else if (DataEntity.GetType() == typeof(Models.OldFollowUsers))
+            {
+                ((OldFollowUsers)Update).CopyUpdates((Models.OldFollowUsers)DataEntity);
                 return DataEntity;
             }
             else if (DataEntity.GetType() == typeof(Models.OutRaidData))
