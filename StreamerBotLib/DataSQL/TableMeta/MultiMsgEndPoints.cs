@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -17,9 +14,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
 
         public Dictionary<string, object> Values { get; }
 
-        public string TableName { get; } = "MultiMsgEndPoints";
+        public string TableName { get; } = "MultiWebhooks";
 
-        public MultiMsgEndPoints(Models.MultiMsgEndPoints tableData)
+        public MultiMsgEndPoints(Models.MultiWebhooks tableData)
         {
             Values = new()
             {
@@ -44,11 +41,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
         };
         public object GetModelEntity()
         {
-            return new Models.MultiMsgEndPoints(
+            return new Models.MultiWebhooks(
 
 );
         }
-        public void CopyUpdates(Models.MultiMsgEndPoints modelData)
+        public void CopyUpdates(Models.MultiWebhooks modelData)
         {
 
         }

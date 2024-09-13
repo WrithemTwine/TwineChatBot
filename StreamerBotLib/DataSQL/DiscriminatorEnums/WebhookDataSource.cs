@@ -2,7 +2,8 @@
 {
     public enum WebhookDataSource
     {
-        primary,
-        multilive
+        Base,
+        Channel,
+        MultiLive
     }
 }

@@ -16,7 +16,7 @@ namespace StreamerBotLib.DataSQL.Models
                                   Platform platform = Platform.Default)
 #endif 
         : UserBase(userId, platform)
-    {        
+    {
         public DateTime DateTime { get; set; } = dateTime;
         public Users Users { get; set; }
     }

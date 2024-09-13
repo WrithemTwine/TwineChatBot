@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Import;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
@@ -17,6 +18,7 @@ using StreamerBotLib.Systems;
 
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
@@ -88,6 +90,7 @@ switches:
 
         public void Exit()
         {
+            context.SaveChanges(true);
             context.Dispose();
         }
 
@@ -231,7 +234,7 @@ switches:
                 foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
                 {
                     DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
-                }
+                } 
 
                 // add each of the social commands
                 foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
@@ -239,13 +242,22 @@ switches:
                     DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
                 }
 
-                context.Commands.AddRange(from C in (from key in DefCommandsDictionary.ExceptBy(context.Commands.Select((C) => C.CmdName), c => c.Key)
+                if (context.CommandsBase.Any())
+                {
+                    foreach (Commands C in from C in context.Commands select C)
+                    {
+                        DefCommandsDictionary.Remove(C.CmdName);
+                    }
+                }
+
+                context.Commands.AddRange(from C in (from key in DefCommandsDictionary
                                                      let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
                                                      select (key.Key, param))
                                           select new Commands(cmdName: C.Key,
                                                      addMe: false,
                                                      permission: C.param.Permission,
                                                      isEnabled: C.param.IsEnabled,
+                                                     announce: false,
                                                      message: DefCommandsDictionary[C.Key].Item1,
                                                      repeatTimer: C.param.Timer,
                                                      sendMsgCount: C.param.RepeatMsg,
@@ -390,9 +402,9 @@ switches:
             context.MultiLiveStreams.Load(); return context.MultiLiveStreams.Local.ToObservableCollection();
         }
 
-        public ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable()
+        public ObservableCollection<MultiWebhooks> GetMultiWebhooksLocalObservable()
         {
-            context.MultiMsgEndPoints.Load(); return context.MultiMsgEndPoints.Local.ToObservableCollection();
+            context.MultiWebhooks.Load(); return context.MultiWebhooks.Local.ToObservableCollection();
         }
 
         public ObservableCollection<MultiSummaryLiveStreams> GetMultiSummaryLiveStreamsLocalObservable()
@@ -717,7 +729,7 @@ switches:
             {
                 BuildDataContext();
                 Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
-                Commands EditCom = (from C in context.Commands
+                CommandsBase EditCom = (from C in context.CommandsBase
                                     where C.CmdName == cmd
                                     select C).FirstOrDefault();
 
@@ -764,11 +776,26 @@ switches:
             {
                 BuildDataContext();
 
-                List<Commands> commands = new( from C in context.Commands where C.CmdName == cmd select C);
+                CommandsBase commands = (from C in context.CommandsBase where C.CmdName == cmd select C).FirstOrDefault();
                 //List<CommandsUser> commandsUser = new(from CU in context.CommandsUser where CU.CmdName == cmd select CU);
+                if (commands != null)
+                {
+                    commands.Calls++;
+                }
 
-                CommandData result = (commands != null) ? new(commands.First()) : null;// commandsUser != null ? new(commandsUser.First()) : null;
+                CommandData result = (commands != null) ? new(commands) : null;// commandsUser != null ? new(commandsUser.First()) : null;
 
+                ClearDataContext();
+                return result;
+            }
+        }
+
+        public string GetCommandString()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                string result = string.Join(", ", GetCommandList());
                 ClearDataContext();
                 return result;
             }
@@ -776,21 +803,13 @@ switches:
 
         public IEnumerable<string> GetCommandList()
         {
-            BuildDataContext();
-            IEnumerable<string> result = GetCommands().Split(", ");
-            ClearDataContext();
-            return result;
-        }
-
-        public string GetCommands()
-        {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                string result = string.Join(", ", (from Com in (context.Commands.Union(context.CommandsUser))
-                                                   where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
-                                                   orderby Com.CmdName
-                                                   select $"!{Com.CmdName}"));
+                var result = (from Com in (context.CommandsBase)
+                              where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
+                              orderby Com.CmdName
+                              select $"!{Com.CmdName}");
                 ClearDataContext();
                 return result;
             }
@@ -1128,7 +1147,9 @@ switches:
             {
                 BuildDataContext();
                 List<Tuple<bool, Uri>> result = new(from W in context.Webhooks
-                                                    where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
+                                                    where (W.WebhooksSource == webhooksSource
+                                                    && W.Kind == webhooks && W.DataSource == WebhookDataSource.Channel
+                                                    && W.IsEnabled == true)
                                                     select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
                 ClearDataContext();
                 return result;
@@ -1136,7 +1157,7 @@ switches:
         }
         #endregion Get_Methods
 
-        public object[] PerformQuery(Commands row, int Top = 0)
+        public object[] PerformQuery(CommandsBase row, int Top = 0)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -1165,7 +1186,7 @@ switches:
             }
         }
 
-        public object PerformQuery(Commands row, string ParamValue)
+        public object PerformQuery(CommandsBase row, string ParamValue)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -1177,7 +1198,7 @@ switches:
                     nameof(CustomWelcome) => (from W in context.CustomWelcome where W.User.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
                     nameof(Followers) => (from F in context.Followers where F.User.UserName == ParamValue select F).FirstOrDefault(),
                     nameof(UserStats) => (from US in context.UserStats where US.User.UserName == ParamValue select US[row.DataField]).FirstOrDefault(),
-                    nameof(Commands) => (from C in context.Commands where C.CmdName == ParamValue select C[row.DataField]).FirstOrDefault(),
+                    nameof(CommandsBase) => (from C in context.CommandsBase where C.CmdName == ParamValue select C[row.DataField]).FirstOrDefault(),
                     _ => ""
                 };
 
@@ -1255,7 +1276,7 @@ switches:
             {
                 string result;
                 BuildDataContext();
-                if (!(from Com in (context.Commands.Union(context.CommandsUser))
+                if (!(from Com in context.CommandsBase
                       where Com.CmdName == cmd
                       select Com).Any())
                 {
@@ -1376,6 +1397,26 @@ switches:
             }
         }
 
+        public IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                currtime = DateTime.Now.ToLocalTime();
+                BuildDataContext();
+
+                List<Follow> ReturnList = new(from F in follows
+                                          join DF in context.Followers on F.FromUserId equals DF.UserId
+                                          where DF.UserId is null
+                                          select F);
+
+                followsQueue.Enqueue(follows);
+                PostFollowsQueue();
+                ClearDataContext();
+
+                return ReturnList;
+            }
+        }
+
         private static bool ProcessFollowQueuestarted = false;
 
         /// <summary>
@@ -1391,7 +1432,6 @@ switches:
                 {
                     SystemsController.AppDispatcher.BeginInvoke(() =>
                     {
-                        //Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
                         BuildDataContext();
 
                         while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
@@ -1403,8 +1443,8 @@ switches:
                                 {
                                     var user = PostNewUser(f.FromUser, f.FollowedAt);
 
-                                    Followers currFollow = (from UF in context.Followers 
-                                                            where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform 
+                                    Followers currFollow = (from UF in context.Followers
+                                                            where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
                                                             select UF).FirstOrDefault();
 
                                     if (currFollow != null)
@@ -1440,7 +1480,7 @@ switches:
                         ClearDataContext();
                         ProcessFollowQueuestarted = false;
 
-                        if (BulkFollowerUpdate)
+                        if (!BulkFollowerUpdate)
                         {
                             StopBulkFollows();
                         }
@@ -1549,6 +1589,112 @@ switches:
             PostNewAutoShoutUser(liveUser.UserId, liveUser.Platform);
         }
 
+        public void PostNewData(TableMeta.TableMeta tableMeta)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                switch (tableMeta.CurrEntity.TableName)
+                {
+                    case "BanReasons":
+                        context.BanReasons.Add((Models.BanReasons)tableMeta.DataEntity);
+                        break;
+                    case "BanRules":
+                        context.BanRules.Add((BanRules)tableMeta.DataEntity);
+                        break;
+                    case "CategoryList":
+                        context.CategoryList.Add((CategoryList)tableMeta.DataEntity);
+                        break;
+                    case "ChannelEvents":
+                        context.ChannelEvents.Add((ChannelEvents)tableMeta.DataEntity);
+                        break;
+                    case "Clips":
+                        context.Clips.Add((Clips)tableMeta.DataEntity);
+                        break;
+                    case "Commands":
+                        context.Commands.Add((Commands)tableMeta.DataEntity);
+                        break;
+                    case "CommandsBase":
+                        context.CommandsBase.Add((CommandsBase)tableMeta.DataEntity);
+                        break;
+                    case "CommandsUser":
+                        context.CommandsUser.Add((CommandsUser)tableMeta.DataEntity);
+                        break;
+                    case "Currency":
+                        context.Currency.Add((Currency)tableMeta.DataEntity);
+                        break;
+                    case "CurrencyType":
+                        context.CurrencyType.Add((Models.CurrencyType)tableMeta.DataEntity);
+                        break;
+                    case "CustomWelcome":
+                        context.CustomWelcome.Add((CustomWelcome)tableMeta.DataEntity);
+                        break;
+                    case "Followers":
+                        context.Followers.Add((Followers)tableMeta.DataEntity);
+                        break;
+                    case "GameDeadCounter":
+                        context.GameDeadCounter.Add((GameDeadCounter)tableMeta.DataEntity);
+                        break;
+                    case "GiveawayUserData":
+                        context.GiveawayUserData.Add((GiveawayUserData)tableMeta.DataEntity);
+                        break;
+                    case "InRaidData":
+                        context.InRaidData.Add((InRaidData)tableMeta.DataEntity);
+                        break;
+                    case "LearnMsgs":
+                        context.LearnMsgs.Add((LearnMsgs)tableMeta.DataEntity);
+                        break;
+                    case "ModeratorApprove":
+                        context.ModeratorApprove.Add((ModeratorApprove)tableMeta.DataEntity);
+                        break;
+                    case "MultiChannels":
+                        context.MultiChannels.Add((MultiChannels)tableMeta.DataEntity);
+                        break;
+                    case "MultiLiveStreams":
+                        context.MultiLiveStreams.Add((MultiLiveStreams)tableMeta.DataEntity);
+                        break;
+                    case "MultiSummaryLiveStreams":
+                        context.MultiSummaryLiveStreams.Add((MultiSummaryLiveStreams)tableMeta.DataEntity);
+                        break;
+                    case "MultiWebhooks":
+                        context.MultiWebhooks.Add((MultiWebhooks)tableMeta.DataEntity);
+                        break;
+                    case "OldFollowUsers":
+                        context.OldFollowUsers.Add((OldFollowUsers)tableMeta.DataEntity);
+                        break;
+                    case "OutRaidData":
+                        context.OutRaidData.Add((OutRaidData)tableMeta.DataEntity);
+                        break;
+                    case "OverlayServices":
+                        context.OverlayServices.Add((OverlayServices)tableMeta.DataEntity);
+                        break;
+                    case "OverlayTicker":
+                        context.OverlayTicker.Add((OverlayTicker)tableMeta.DataEntity);
+                        break;
+                    case "Quotes":
+                        context.Quotes.Add((Quotes)tableMeta.DataEntity);
+                        break;
+                    case "ShoutOuts":
+                        context.ShoutOuts.Add((ShoutOuts)tableMeta.DataEntity);
+                        break;
+                    case "StreamStats":
+                        context.StreamStats.Add((StreamStats)tableMeta.DataEntity);
+                        break;
+                    case "Users":
+                        context.Users.Add((Users)tableMeta.DataEntity);
+                        break;
+                    case "UserStats":
+                        context.UserStats.Add((UserStats)tableMeta.DataEntity);
+                        break;
+                    case "Webhooks":
+                        context.Webhooks.Add((Webhooks)tableMeta.DataEntity);
+                        break;
+                    case "WebhooksBase":
+                        context.WebhooksBase.Add((WebhooksBase)tableMeta.DataEntity);
+                        break;
+                }
+            }
+        }
+
         private Users PostNewUser(LiveUser User, DateTime FirstSeen)
         {
             lock (GUIDataManagerLock.Lock)
@@ -1571,7 +1717,7 @@ switches:
                       where (US.UserId == User.UserId && US.Platform == User.Platform)
                       select US).Any())
                 {
-                    context.UserStats.Add(new(userId: User.UserId, platform: User.Platform, watchTime: new(0,0,0)));
+                    context.UserStats.Add(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
                 }
 
                 context.SaveChanges(true);
@@ -1786,10 +1932,10 @@ switches:
                 BuildDataContext();
                 bool found = false;
 
-                Commands cmd = (from C in context.Commands where C.CmdName == command select C).FirstOrDefault();
+                CommandsUser cmd = (from C in context.CommandsUser where C.CmdName == command select C).FirstOrDefault();
                 if (cmd != default)
                 {
-                    context.Commands.Remove(cmd);
+                    context.CommandsUser.Remove(cmd);
                     found = true;
                 }
                 context.SaveChanges(true);
@@ -1921,6 +2067,11 @@ switches:
             }
         }
 
+        public void NotifyStopBulkFollowers()
+        {
+            BulkFollowerUpdate = false;
+        }
+
         private void StopBulkFollows()
         {
             lock (GUIDataManagerLock.Lock)
@@ -1945,7 +2096,7 @@ switches:
                     foreach (OldFollowUsers OF in context.OldFollowUsers)
                     {
                         Followers currFollow = (from F in context.Followers where F.UserId == OF.UserId && F.Platform == OF.Platform select F).FirstOrDefault();
-                        if(currFollow != null)
+                        if (currFollow != null)
                         {
                             currFollow.StatusChangeDate = currtime;
                         }
@@ -1953,12 +2104,11 @@ switches:
 
                 }
                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
-                BulkFollowerUpdate = false;
                 context.SaveChanges(true);
+                NotifyDataCollectionUpdated(nameof(Followers));
                 ClearDataContext();
             }
         }
-
 
         public void UpdateCurrency(List<string> Users, DateTime dateTime)
         {
@@ -1996,12 +2146,15 @@ switches:
 
         public void UpdateFollowers(IEnumerable<Follow> follows)
         {
-            if (follows.Any())
+            lock (GUIDataManagerLock.Lock)
             {
-                lock (followsQueue)
+                if (follows.Any())
                 {
-                    followsQueue.Enqueue(follows);
-                    PostFollowsQueue();
+                    lock (followsQueue)
+                    {
+                        followsQueue.Enqueue(follows);
+                        PostFollowsQueue();
+                    }
                 }
             }
         }
@@ -2193,7 +2346,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                List<Tuple<WebhooksSource, Uri>> result = new(from W in context.MultiMsgEndPoints where W.IsEnabled select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook));
+                List<Tuple<WebhooksSource, Uri>> result = new(from W in context.MultiWebhooks where W.IsEnabled select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook));
                 ClearDataContext();
                 return result;
             }
@@ -2228,7 +2381,7 @@ switches:
 
                 MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == userid select MC).FirstOrDefault();
 
-                if(currUser.UserName != username) // update username if it's changed
+                if (currUser.UserName != username) // update username if it's changed
                 {
                     currUser.UserName = username;
                 }
@@ -2343,32 +2496,35 @@ switches:
 
         public void UpdateStats(DBUserStats Stat, string userId, Platform platform)
         {
-            if (userId != null)
+            lock (GUIDataManagerLock.Lock)
             {
-                UserStats userStats = (from U in context.UserStats
-                                       where U.UserId == userId && U.Platform == platform
-                                       select U).FirstOrDefault();
-
-                if (userStats != null)
+                if (userId != null)
                 {
-                    switch (Stat)
-                    {
-                        case DBUserStats.Commands:
-                            userStats.CallCommands++;
-                            break;
-                        case DBUserStats.Clips:
-                            userStats.ClipsCreated++;
-                            break;
-                        case DBUserStats.Chats:
-                            userStats.ChannelChat++;
-                            break;
-                        case DBUserStats.ChannelRewards:
-                            userStats.RewardRedeems++;
-                            break;
-                    }
-                }
+                    UserStats userStats = (from U in context.UserStats
+                                           where U.UserId == userId && U.Platform == platform
+                                           select U).FirstOrDefault();
 
-                context.SaveChanges(true);
+                    if (userStats != null)
+                    {
+                        switch (Stat)
+                        {
+                            case DBUserStats.Commands:
+                                userStats.CallCommands++;
+                                break;
+                            case DBUserStats.Clips:
+                                userStats.ClipsCreated++;
+                                break;
+                            case DBUserStats.Chats:
+                                userStats.ChannelChat++;
+                                break;
+                            case DBUserStats.ChannelRewards:
+                                userStats.RewardRedeems++;
+                                break;
+                        }
+                    }
+
+                    context.SaveChanges(true);
+                }
             }
         }
 
@@ -2433,5 +2589,17 @@ switches:
         }
 
         #endregion
+
+        public void GUIRowEditSave()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+
+                context.SaveChanges(true);
+
+                ClearDataContext();
+            }
+        }
     }
 }

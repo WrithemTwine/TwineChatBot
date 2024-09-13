@@ -48,9 +48,10 @@ namespace StreamerBotLib.DataSQL.Models
                           string unit = null,
                           CommandAction action = default,
                           int top = 0,
-                          CommandSort sort = default)
+                          CommandSort sort = default,
+                          int calls = 0)
 #endif
-  : Commands(cmdName,
+  : CommandsBase(cmdName,
                            addMe,
                            permission,
                            isEnabled,
@@ -69,31 +70,8 @@ namespace StreamerBotLib.DataSQL.Models
                            unit,
                            action,
                            top,
-                           sort)
-    { 
-    
-
-        public static CommandsUser GetCommands(CommandData commandData)
-        {
-            return new(
-                cmdName: commandData.CmdName,
-                addMe: commandData.AddMe,
-                permission: commandData.Permission,
-                isEnabled: commandData.IsEnabled,
-                message: commandData.Message,
-                sendMsgCount: commandData.SendMsgCount,
-                allowParam: commandData.AllowParam,
-                usage: commandData.Usage,
-                lookupData: commandData.Lookupdata,
-                table: commandData.Table,
-                keyField: commandData.Key_field,
-                dataField: commandData.Data_field,
-                currencyField: commandData.Currency_field,
-                action: commandData.Action,
-                top: commandData.Top,
-                sort: commandData.Sort
-                );
-        }
-
+                           sort,
+                           calls)
+    {
     }
 }

@@ -12,7 +12,7 @@ namespace StreamerBotLib.DataSQL.Models
     string userName,
                                    Platform platform)
 #else
-public abstract class UserBase(string userId = null,
+    public abstract class UserBase(string userId = null,
                                Platform platform = default)
 #endif
  : EntityBase

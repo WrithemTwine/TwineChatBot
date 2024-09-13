@@ -38,7 +38,7 @@
     <DataTemplate x:Key="DateFirstSeenTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
+                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -173,6 +173,7 @@
     <!--#endregion-->
 
     <!--#region DataGrid RowDetail DataTemplates -->
+
     <DataTemplate x:Key="DG_RowDetailDT_Followers">
         <Border BorderThickness="2">
             <StackPanel Orientation="Vertical">
@@ -198,8 +199,88 @@
         </Border>
     </DataTemplate>
 
-    <DataTemplate x:Key="DG_RowDetailDT_Commands">
+    <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
+        <Border BorderThickness="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="10" />
 
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" /> <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat={}{0:N0}}"/>
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
+                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
+                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
+                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
+                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
+                <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
+                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
+                <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
+                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
+                <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat={}{0:N0}}" />
+            </Grid>
+        </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="DG_RowDetailDT_MultiWebhooks">
@@ -291,13 +372,33 @@
     <CollectionViewSource x:Key="DG_BanReasons_CVS" Source="{Binding BanReasons, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_BanRules_CVS" Source="{Binding BanRules, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_CategoryList_CVS" Source="{Binding CategoryList, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_ChannelEvents_CVS" Source="{Binding ChannelEvents, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ChannelEvents_CVS" Source="{Binding ChannelEvents, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="Name" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_Clips_CVS" Source="{Binding Clips, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_Commands_CVS" Source="{Binding Commands, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_CommandsUser_CVS" Source="{Binding CommandsUser, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Commands_CVS" Source="{Binding Commands, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="CmdName"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_CommandsUser_CVS" Source="{Binding CommandsUser, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="CmdName"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="User.UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="User.UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
 
     <CollectionViewSource x:Key="DG_Follows_CVS" Source="{Binding Followers, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
@@ -307,7 +408,11 @@
 
     <CollectionViewSource x:Key="DG_GameDeadCounter_CVS" Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}">
@@ -317,7 +422,7 @@
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
 
-    <CollectionViewSource x:Key="DG_MultiMsgEndPoints_CVS" Source="{Binding MultiMsgEndPoints, Source={StaticResource DataViews}}">
+    <CollectionViewSource x:Key="DG_MultiWebhooks_CVS" Source="{Binding MultiWebhooks, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="Server" />
             <scm:SortDescription PropertyName="Kind" />
@@ -335,12 +440,20 @@
     <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_Quotes_CVS" Source="{Binding Quotes, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_ShoutOuts_CVS" Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_StreamStats_CVS" Source="{Binding StreamStats, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_StreamStats_CVS" Source="{Binding StreamStats, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="StreamStart" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="LastDateSeen" Direction="Descending" />
+            <scm:SortDescription PropertyName="UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_UserStats_CVS" Source="{Binding UserStats, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
 
-
     <!--#endregion-->
-
+    
 </ResourceDictionary>

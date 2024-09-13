@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.Interfaces;
 
-using System;
 using System.Windows.Controls;
 
 namespace StreamerBot
@@ -20,7 +19,6 @@ namespace StreamerBot
                 {
                     PrepareMediaOverlayServerWindow();
                 }
-
                 (sender)?.StartBot();
             }));
         }

@@ -13,52 +13,32 @@ namespace StreamerBotLib.GUI.Windows
 
         private TableMeta CurrTableRow { get; set; }
 
-        private ItemCollection Curr { get; set; }
-
         public ManageWindows() { }
 
 
-        public void AddNewItem(TableMeta tableMeta, ItemCollection CurrItem)
+        public void AddNewItem(TableMeta tableMeta)
         {
-            Curr = CurrItem;
             CurrTableRow = tableMeta;
-            OpenDataGridRowWindow();
+            OpenDataGridRowWindow(true);
         }
 
         public void EditExistingItem(TableMeta tableMeta)
         {
-            Curr = null;
             CurrTableRow = tableMeta;
-            OpenDataGridRowWindow();
+            OpenDataGridRowWindow(false);
         }
 
-        private void OpenDataGridRowWindow()
+        private void OpenDataGridRowWindow(bool NewRow)
         {
             EditDataWindow = new(ActionSystem.DataManage);
-            EditDataWindow.AddNewRow += EditDataWindow_AddNewRow;
-            EditDataWindow.UpdatedRow += EditDataWindow_UpdatedRow;
 
             if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
             {
                 EditDataWindow.SetOverlayActions(TableDataPairs);
             }
 
-            EditDataWindow.LoadData(CurrTableRow.CurrEntity, Curr != null);
+            EditDataWindow.LoadData(CurrTableRow.CurrEntity, NewRow);
             EditDataWindow.Show();
-        }
-
-        private void EditDataWindow_AddNewRow(object sender, Events.AddNewRowEventArgs e)
-        {
-            Curr.Add(e.NewRow.GetModelEntity());
-
-        }
-
-        private void EditDataWindow_UpdatedRow(object sender, Events.UpdatedDataRowArgs e)
-        {
-            if (e.RowChanged)
-            {
-                CurrTableRow.GetUpdatedEntity(e.UpdatedData);
-            }
         }
 
         public void SetTableData(Dictionary<string, List<string>> SourceData)

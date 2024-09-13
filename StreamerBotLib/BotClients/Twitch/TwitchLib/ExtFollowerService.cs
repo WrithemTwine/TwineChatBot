@@ -12,6 +12,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
     public class ExtFollowerService : ExtApiService<GetChannelFollowersResponse>
     {
         public event EventHandler<OnNewFollowersDetectedArgs> OnBulkFollowsUpdate;
+        public event EventHandler BulkFollowsCompleted;
         public event EventHandler AccessTokenUnauthorized;
 
         public void UpdateAccessToken(string accessToken)
@@ -29,34 +30,39 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// </summary>
         /// <param name="ChannelName">The channel to retrieve the followers</param>
         /// <returns>An async task with a list of 'Follow' objects.</returns>
-        public async Task<bool> GetAllFollowersBulkAsync(string ChannelName)
+        public void GetAllFollowersBulkAsync(string ChannelName)
         {
-            try
+            Task.Run(async () =>
             {
-                int MaxFollowers = 100; // use the max for bulk retrieve
-                string channelId = (await _api.Helix.Users.GetUsersAsync(logins: [ChannelName])).Users.FirstOrDefault()?.Id;
-
-                GetChannelFollowersResponse followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
-
-                BulkFollowsUpdate(ChannelName, followsResponse.Data);
-
-                while (followsResponse?.Data.Length == MaxFollowers && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
+                try
                 {
-                    followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
-                    BulkFollowsUpdate(ChannelName, followsResponse.Data);
-                    Thread.Sleep(1000);
-                }
-            }
-            catch (BadScopeException)
-            {
-                AccessTokenUnauthorized?.Invoke(this, new());
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
+                    int MaxFollowers = 100; // use the max for bulk retrieve
+                    string channelId = (await _api.Helix.Users.GetUsersAsync(logins: [ChannelName])).Users.FirstOrDefault()?.Id;
 
-            return true;
+                    List<ChannelFollower> ResponseList = [];
+
+                    GetChannelFollowersResponse followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(first: MaxFollowers, broadcasterId: channelId);
+
+                    ResponseList.AddRange(followsResponse.Data);
+
+                    while (followsResponse?.Data.Length == MaxFollowers && followsResponse?.Pagination.Cursor != null) // loop until the last response is less than 100; each retrieval provides 100 items at a time
+                    {
+                        followsResponse = await _api.Helix.Channels.GetChannelFollowersAsync(after: followsResponse.Pagination.Cursor, first: MaxFollowers, broadcasterId: channelId);
+                        ResponseList.AddRange(followsResponse.Data);
+                        Thread.Sleep(200);
+                    }
+                    BulkFollowsUpdate(ChannelName, ResponseList);
+                }
+                catch (BadScopeException)
+                {
+                    AccessTokenUnauthorized?.Invoke(this, new());
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
+                BulkFollowsCompleted?.Invoke(this, new());
+            });
         }
 
         /// <summary>

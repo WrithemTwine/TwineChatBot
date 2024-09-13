@@ -128,9 +128,9 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Retrieve all followers to the streamer's channel and add to the database.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> GetAllFollowersBulkAsync()
+        public void GetAllFollowersBulkAsync()
         {
-            return await FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
+            FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
         }
 
         /// <summary>

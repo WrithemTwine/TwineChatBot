@@ -5,7 +5,7 @@ using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    internal class Webhooks : IDatabaseTableMeta
+    internal class MultiWebhooks : IDatabaseTableMeta
     {
         public System.Int32 Id => (System.Int32)Values["Id"];
         public System.Boolean IsEnabled => (System.Boolean)Values["IsEnabled"];
@@ -18,9 +18,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
 
         public Dictionary<string, object> Values { get; }
 
-        public string TableName { get; } = "Webhooks";
+        public string TableName { get; } = "MultiWebhooks";
 
-        public Webhooks(Models.Webhooks tableData)
+        public MultiWebhooks(Models.MultiWebhooks tableData)
         {
             Values = new()
             {
@@ -47,11 +47,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
         };
         public object GetModelEntity()
         {
-            return new Models.Webhooks(
+            return new Models.MultiWebhooks(
 
 );
         }
-        public void CopyUpdates(Models.Webhooks modelData)
+        public void CopyUpdates(Models.MultiWebhooks modelData)
         {
 
         }

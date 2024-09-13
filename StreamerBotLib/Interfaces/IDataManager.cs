@@ -40,7 +40,7 @@ namespace StreamerBotLib.Interfaces
         ObservableCollection<Clips> GetClipsLocalObservable();
         new CommandData GetCommand(string cmd);
         new IEnumerable<string> GetCommandList();
-        new string GetCommands();
+        new string GetCommandString();
         ObservableCollection<Commands> GetCommandsLocalObservable();
         ObservableCollection<CommandsUser> GetCommandsUserLocalObservable();
         ObservableCollection<Currency> GetCurrencyLocalObservable();
@@ -61,7 +61,7 @@ namespace StreamerBotLib.Interfaces
         ObservableCollection<ModeratorApprove> GetModeratorApproveLocalObservable();
         ObservableCollection<MultiChannels> GetMultiChannelsLocalObservable();
         ObservableCollection<MultiLiveStreams> GetMultiLiveStreamsLocalObservable();
-        ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable();
+        ObservableCollection<MultiWebhooks> GetMultiWebhooksLocalObservable();
         ObservableCollection<MultiSummaryLiveStreams> GetMultiSummaryLiveStreamsLocalObservable();
         string GetNewestFollower();
         ObservableCollection<OldFollowUsers> GetOldFollowUsersLocalObservable();
@@ -91,8 +91,8 @@ namespace StreamerBotLib.Interfaces
         new List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
         ObservableCollection<Webhooks> GetWebhooksLocalObservable();
         void Initialize();
-        object[] PerformQuery(Commands row, int Top = 0);
-        object PerformQuery(Commands row, string ParamValue);
+        object[] PerformQuery(CommandsBase row, int Top = 0);
+        object PerformQuery(CommandsBase row, string ParamValue);
         bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0);
         bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName);
         string PostCommand(string cmd, CommandParams Params);
@@ -138,6 +138,8 @@ namespace StreamerBotLib.Interfaces
         void UserJoined(LiveUser User, DateTime NowSeen);
         void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen);
         void UserLeft(LiveUser User, DateTime LastSeen);
-
+        void NotifyStopBulkFollowers();
+        IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows);
+        void GUIRowEditSave();
     }
 }

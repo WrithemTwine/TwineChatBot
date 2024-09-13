@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.Events;
@@ -85,7 +84,7 @@ namespace StreamerBot
                     case "MultiLiveStreams":
 
                         break;
-                    case "MultiMsgEndPoints":
+                    case "MultiWebhooks":
 
                         break;
                     case "MultiSummaryLiveStreams":
@@ -142,7 +141,7 @@ namespace StreamerBot
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
                 bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "IsEnabled").Any();
-                    
+
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
@@ -170,11 +169,42 @@ namespace StreamerBot
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
+
             DGOpenEditWindow(item, item.Items);
         }
 
         private void DGOpenEditWindow(DataGrid item, ItemCollection items = null)
         {
+            Type SqlModel = item.Name switch
+            {
+                nameof(DG_BuiltInCommands) => typeof(Commands),
+                nameof(DG_CategoryList) => typeof(CategoryList),
+                nameof(DG_Clips) => typeof(Clips),
+                nameof(DG_Currency) => typeof(Currency),
+                nameof(DG_CurrencyAccrual) => typeof(CurrencyType),
+                nameof(DG_CustomWelcome) => typeof(CustomWelcome),
+                nameof(DG_DeathCounter) => typeof(GameDeadCounter),
+                nameof(DG_Followers) => typeof(Followers),
+                nameof(DG_InRaids) => typeof(InRaidData),
+                nameof(DG_ModApprove) => typeof(ModeratorApprove),
+                nameof(DG_Mod_BanReasons) => typeof(BanReasons),
+                nameof(DG_Mod_BanRules) => typeof(BanRules),
+                nameof(DG_Mod_LearnMsgs) => typeof(LearnedMessage),
+                nameof(DG_OldFollowUsers) => typeof(OldFollowUsers),
+                nameof(DG_OutRaids) => typeof(OutRaidData),
+                nameof(DG_OverlayService_Actions) => typeof(OverlayServices),
+                nameof(DG_OverlayService_Ticker) => typeof(OverlayTicker),
+                nameof(DG_StreamData_Stats) => typeof(StreamStats),
+                nameof(DG_UserDefinedCommands) => typeof(CommandsUser),
+                nameof(DG_Users) => typeof(Users),
+                nameof(DG_User_Giveaway) => typeof(GiveawayUserData),
+                nameof(DG_User_Quotes) => typeof(Quotes),
+                nameof(DG_User_Shoutouts) => typeof(ShoutOuts),
+                nameof(DG_Webhooks) => typeof(Webhooks),
+                _ => typeof(object)
+            };
+
             TableMeta tableMeta = new();
 
             if (item.Name is "DG_OverlayService_Actions" or "DG_ModApprove")
@@ -182,15 +212,16 @@ namespace StreamerBot
                 PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
             }
 
-            if (items != null)
-            {
-                Type CurrDGModel = item.Items.SourceCollection.GetType().GetGenericArguments()[0];
-                PopupWindows.AddNewItem(tableMeta.SetNewEntity(CurrDGModel), item.Items);
-            }
-            else
-            {
-                PopupWindows.EditExistingItem(tableMeta.SetExistingEntity(item.SelectedItem));
-            }
+            PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
+   
+            //if (items != null)
+            //{
+            //    Type CurrDGModel = item.Items.SourceCollection.GetType().GetGenericArguments()[0];
+            //}
+            //else
+            //{
+            //    PopupWindows.EditExistingItem(tableMeta.SetExistingEntity(item.SelectedItem));
+            //}
         }
 
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
@@ -205,7 +236,7 @@ namespace StreamerBot
 
             foreach (object R in item.SelectedItems)
             {
-                 // TODO: fix menu delete click - item.ItemsSource.
+                // TODO: fix menu delete click - item.ItemsSource.
             }
         }
 
@@ -240,39 +271,13 @@ namespace StreamerBot
 
         #endregion
 
-        #region Calculated Columns
+        #region DataGrid Item editing
 
-        //private void DG_StreamData_Stats_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    DataColumn StatDuration = new() { ColumnName = "Duration" };
-        //    StatDuration.Expression = "StreamEnd - StreamStart";
-        //}
-
-
-        #endregion
-
-        #region DataGrid Item Filters
-
-        private void DG_Webhooks_SourceUpdated(object sender, DataTransferEventArgs e)
+        private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            if (DG_Webhooks.ItemsSource != null)
-            {
-                // DataGrid filter events
-                (DG_Webhooks.ItemsSource as CollectionViewSource).Filter += DG_Webhooks_CVS_Filter;
-            }
+            Controller.Systems.GUISaveDataGridEdits();
         }
 
-        private void DG_Webhooks_CVS_Filter(object sender, FilterEventArgs e)
-        {
-            Webhooks t = e.Item as Webhooks;
-            if (t != null)
-            {
-                if (t.DataSource == WebhookDataSource.multilive.ToString())
-                    e.Accepted = false;
-                else
-                    e.Accepted = true;
-            }
-        } 
         #endregion
     }
 }

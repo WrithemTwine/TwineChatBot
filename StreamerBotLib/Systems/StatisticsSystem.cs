@@ -339,7 +339,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
-                CurrStream.CommandsMsgs++;
+                CurrStream.CommandMsgs++;
             }
         }
 

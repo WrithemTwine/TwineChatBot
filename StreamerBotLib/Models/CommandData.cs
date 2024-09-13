@@ -9,6 +9,7 @@ namespace StreamerBotLib.Models
         public bool IsEnabled { get; }
         public short SendMsgCount { get; }
         public ViewerTypes Permission { get; }
+        public bool Announce { get; }
         public bool AddMe { get; }
         public string Message { get; }
         public bool AllowParam { get; }
@@ -22,7 +23,7 @@ namespace StreamerBotLib.Models
         public string Currency_field { get; }
         public CommandSort Sort { get; }
 
-        public CommandData(Commands row)
+        public CommandData(CommandsBase row)
         {
             lock (GUI.GUIDataManagerLock.Lock)
             {
@@ -32,6 +33,7 @@ namespace StreamerBotLib.Models
                     IsEnabled = row.IsEnabled;
                     SendMsgCount = row.SendMsgCount;
                     Permission = row.Permission;
+                    Announce = row.Announce; 
                     AddMe = row.AddMe;
                     Message = row.Message;
                     AllowParam = row.AllowParam;

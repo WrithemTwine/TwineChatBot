@@ -22,7 +22,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public System.Int32 SubsPresent => (System.Int32)Values["SubsPresent"];
         public System.Int32 VIPsPresent => (System.Int32)Values["VIPsPresent"];
         public System.Int32 TotalChats => (System.Int32)Values["TotalChats"];
-        public System.Int32 CommandsMsgs => (System.Int32)Values["CommandsMsgs"];
+        public System.Int32 CommandMsgs => (System.Int32)Values["CommandMsgs"];
         public System.Int32 AutomatedEvents => (System.Int32)Values["AutomatedEvents"];
         public System.Int32 AutomatedCommands => (System.Int32)Values["AutomatedCommands"];
         public System.Int32 WebhookMsgs => (System.Int32)Values["WebhookMsgs"];
@@ -55,7 +55,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "SubsPresent", tableData.SubsPresent },
                  { "VIPsPresent", tableData.VIPsPresent },
                  { "TotalChats", tableData.TotalChats },
-                 { "CommandsMsgs", tableData.CommandsMsgs },
+                 { "CommandMsgs", tableData.CommandMsgs },
                  { "AutomatedEvents", tableData.AutomatedEvents },
                  { "AutomatedCommands", tableData.AutomatedCommands },
                  { "WebhookMsgs", tableData.WebhookMsgs },
@@ -83,7 +83,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "SubsPresent", typeof(System.Int32) },
               { "VIPsPresent", typeof(System.Int32) },
               { "TotalChats", typeof(System.Int32) },
-              { "CommandsMsgs", typeof(System.Int32) },
+              { "CommandMsgs", typeof(System.Int32) },
               { "AutomatedEvents", typeof(System.Int32) },
               { "AutomatedCommands", typeof(System.Int32) },
               { "WebhookMsgs", typeof(System.Int32) },
@@ -110,7 +110,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                                           Convert.ToInt32(Values["SubsPresent"]), 
                                           Convert.ToInt32(Values["VIPsPresent"]), 
                                           Convert.ToInt32(Values["TotalChats"]), 
-                                          Convert.ToInt32(Values["CommandsMsgs"]), 
+                                          Convert.ToInt32(Values["CommandMsgs"]), 
                                           Convert.ToInt32(Values["AutomatedEvents"]), 
                                           Convert.ToInt32(Values["AutomatedCommands"]), 
                                           Convert.ToInt32(Values["WebhookMsgs"]), 
@@ -193,9 +193,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 modelData.TotalChats = TotalChats;
             }
 
-          if (modelData.CommandsMsgs != CommandsMsgs)
+          if (modelData.CommandMsgs != CommandMsgs)
             {
-                modelData.CommandsMsgs = CommandsMsgs;
+                modelData.CommandMsgs = CommandMsgs;
             }
 
           if (modelData.AutomatedEvents != AutomatedEvents)

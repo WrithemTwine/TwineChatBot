@@ -27,7 +27,7 @@ namespace StreamerBotLib.DataSQL.Models
                            string category = null,
                            DateTime addDate = default,
                            string userId = null,
-                           Platform platform = Platform.Default) 
+                           Platform platform = Platform.Default)
 #endif
         : UserBase(userId, platform)
     {

@@ -11,7 +11,7 @@ namespace StreamerBotLib.DataSQL.Models
                                    bool addEveryone,
                                    Uri webhook)
 #else
-    public class MultiMsgEndPoints(int id = 0,
+    public class MultiWebhooks(int id = 0,
                                    bool isEnabled = false,
                                    WebhooksSource webhooksSource = WebhooksSource.Discord,
                                    string server = null,
@@ -19,7 +19,7 @@ namespace StreamerBotLib.DataSQL.Models
                                    bool addEveryone = false,
                                    Uri webhook = default)
 #endif
- : Webhooks(id, isEnabled, webhooksSource, server, kind, addEveryone, webhook)
+    : WebhooksBase(id, isEnabled, webhooksSource, server, kind, addEveryone, webhook)
     {
 
     }

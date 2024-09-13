@@ -15,7 +15,6 @@ using System.Reflection;
 using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
@@ -584,6 +583,11 @@ namespace StreamerBotLib.BotIOController
             HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
         }
 
+        public void TwitchStopBulkFollowers()
+        {
+            HandleBotEventStopBulkFollowers();
+        }
+
         /// <summary>
         /// Convert from Twitch Follower objects to generic "Models.Follow" objects.
         /// </summary>
@@ -725,7 +729,7 @@ namespace StreamerBotLib.BotIOController
         public void TwitchCommunitySubscription(OnCommunitySubscriptionArgs e)
         {
             HandleCommunitySubscription(
-                new(e.GiftedSubscription.DisplayName, Platform.Twitch, e.GiftedSubscription.UserId ),
+                new(e.GiftedSubscription.DisplayName, Platform.Twitch, e.GiftedSubscription.UserId),
                 e.GiftedSubscription.MsgParamSenderCount,
                 e.GiftedSubscription.MsgParamSubPlan.ToString());
         }
@@ -856,6 +860,11 @@ namespace StreamerBotLib.BotIOController
         public static void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
         {
             SystemsController.UpdateFollowers(follows);
+        }
+
+        public static void HandleBotEventStopBulkFollowers()
+        {
+            SystemsController.StopBulkFollowers();
         }
 
         #endregion

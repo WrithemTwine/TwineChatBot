@@ -1506,7 +1506,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <DataGridComboBoxColumn Header="Webhook Source" SelectedItemBinding="{Binding WebhooksSource}" ItemsSource="{Binding Source={StaticResource EnumWebhooksSource}}" />
                                         <DataGridComboBoxColumn Header="Kind" SelectedItemBinding="{Binding Kind}" ItemsSource="{Binding Source={StaticResource EnumWebhooksKind}}" />
                                         <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="250" MaxWidth="250" />
-                                        <DataGridTextColumn Header="Webhook" Binding="{Binding Webhook}" Width="250" MaxWidth="250" />
+                                        <DataGridTextColumn Header="Webhook" Binding="{Binding Webhook}" Width="150" MaxWidth="200" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </DockPanel>
@@ -1646,7 +1646,6 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" SortMemberPath="UserId" />
                                                     <DataGridTextColumn Header="UserName" Binding="{Binding User.UserName}" />
-                                                    <DataGridCheckBoxColumn Header="Is Follower" Binding="{Binding IsFollower}" />
                                                     <DataGridTemplateColumn Header="Followed Date" CellTemplate="{Binding Source={StaticResource DateFollowedTemplate}}"  SortMemberPath="FollowedDate" SortDirection="Descending" />
                                                     <DataGridTemplateColumn Header="Status Changed" CellTemplate="{Binding Source={StaticResource DateStatusChangedTemplate}}" SortMemberPath="StatusChangeDate" SortDirection="Descending" />
                                                     <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
@@ -1660,7 +1659,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DataGrid x:Name="DG_OldFollowUsers" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OldFollowUsers_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       CanUserAddRows="False" CanUserDeleteRows="True" AutoGenerateColumns="True">
-                                            
+
                                         </DataGrid>
                                     </DockPanel>
                                 </TabItem>
@@ -1961,7 +1960,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         <Label Content="A value to the right permits access with the leftward values, e.g. selecting 'VIP' allows 'VIP, Mod, Broadcaster' access rights. "/>
                                     </StackPanel>
                                 </TabItem>
-                                <TabItem Header="All">
+                                <TabItem Header="Built-In">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -1981,10 +1980,10 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                       ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Commands_CVS}}" 
                                                       CanUserDeleteRows="False" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
-                                                      FrozenColumnCount="4" >
+                                                      FrozenColumnCount="4" RowEditEnding="DataGrid_RowEditEnding" >
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Type" Binding="{Binding commandtype}" />
                                                     <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" IsReadOnly="True" />
+                                                    <DataGridTextColumn Header="Times Called" Binding="{Binding Calls, StringFormat={}{0:N0}}" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
                                                     <DataGridComboBoxColumn Header="Permission" ItemsSource="{Binding Source={StaticResource EnumViewerTypes}}" SelectedItemBinding="{Binding Permission}" />
@@ -2036,8 +2035,8 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                        
                                                       >
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Type" Binding="{Binding commandtype}" />
                                                     <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" />
+                                                    <DataGridTextColumn Header="Times Called" Binding="{Binding Calls, StringFormat={}{0:N0}}" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
                                                     <DataGridComboBoxColumn Header="Permission" ItemsSource="{Binding Source={StaticResource EnumViewerTypes}}" SelectedItemBinding="{Binding Permission}" />
@@ -2148,31 +2147,33 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}">
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" SortDirection="Descending" />
                                                 <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" SortMemberPath="StreamEnd" />
                                                 <DataGridTemplateColumn Header="Duration" CellTemplate="{StaticResource StreamDurationTemplate}" SortMemberPath="Duration" />
-                                                <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="New Subs" Binding="{Binding NewSubscribers, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Gift Subs" Binding="{Binding GiftSubs, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Bits" Binding="{Binding Bits, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Raids" Binding="{Binding Raids, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Hosted" Binding="{Binding Hosted, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Users Banned" Binding="{Binding UsersBanned, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Users TimedOut" Binding="{Binding UsersTimedOut, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Mods Present" Binding="{Binding ModeratorsPresent, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Subs Present" Binding="{Binding SubsPresent, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="VIPs Present" Binding="{Binding VIPsPresent, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Total Chats" Binding="{Binding TotalChats, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Cmd Msgs" Binding="{Binding CommandsMsgs, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Auto Events" Binding="{Binding AutomatedEvents, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Auto Commands" Binding="{Binding AutomatedCommands, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Webhook Msgs" Binding="{Binding WebhookMsgs, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Clips Made" Binding="{Binding ClipsMade, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Channel Pt Count" Binding="{Binding ChannelPtCount, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Channel Challenge" Binding="{Binding ChannelChallenge, Converter={StaticResource IntConverter}}" />
-                                                <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, Converter={StaticResource IntConverter}}" />
+                                                <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="New Subs" Binding="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Gift Subs" Binding="{Binding GiftSubs, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Bits" Binding="{Binding Bits, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Raids" Binding="{Binding Raids, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Hosted" Binding="{Binding Hosted, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Users Banned" Binding="{Binding UsersBanned, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Users TimedOut" Binding="{Binding UsersTimedOut, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Mods Present" Binding="{Binding ModeratorsPresent, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Subs Present" Binding="{Binding SubsPresent, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="VIPs Present" Binding="{Binding VIPsPresent, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Total Chats" Binding="{Binding TotalChats, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Cmd Msgs" Binding="{Binding CommandsMsgs, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Auto Events" Binding="{Binding AutomatedEvents, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Auto Commands" Binding="{Binding AutomatedCommands, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Webhook Msgs" Binding="{Binding WebhookMsgs, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Clips Made" Binding="{Binding ClipsMade, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Channel Pt Count" Binding="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Channel Challenge" Binding="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
+
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
                                             </DataGrid.Columns>
                                         </DataGrid>

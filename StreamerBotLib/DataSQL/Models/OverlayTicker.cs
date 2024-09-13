@@ -9,7 +9,7 @@ namespace StreamerBotLib.DataSQL.Models
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class OverlayTicker(OverlayTickerItem tickerName, string userName)
 #else
- public class OverlayTicker(OverlayTickerItem tickerName = default, string userName = null)
+    public class OverlayTicker(OverlayTickerItem tickerName = default, string userName = null)
 #endif
     : EntityBase
     {

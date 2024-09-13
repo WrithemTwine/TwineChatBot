@@ -19,7 +19,7 @@ namespace StreamerBotLib.DataSQL.Models
         string userId = null,
         Platform platform = default,
                           double value = 0,
-                          string currencyName = "") 
+                          string currencyName = "")
 #endif
         : UserBase(userId: userId, platform: platform)
     {

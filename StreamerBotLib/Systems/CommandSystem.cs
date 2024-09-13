@@ -568,7 +568,7 @@ namespace StreamerBotLib.Systems
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.user,ParamUser),
-                        new(MsgVars.date, FormatData.FormatTimes(created))
+                        new(MsgVars.date, created == DateTime.MinValue ? "not found" : FormatData.FormatTimes(created))
                     });
 
                     OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));
@@ -626,7 +626,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
             {
-                result = DataManage.GetCommands();
+                result = DataManage.GetCommandString();
             }
             // capture all of the join queue commands
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)
@@ -791,7 +791,7 @@ namespace StreamerBotLib.Systems
                                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
                                 CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
-                                    Action: DefaultCommand.so.ToString(), 
+                                    Action: DefaultCommand.so.ToString(),
                                     User, UserMsg: tempHTMLResponse);
                             }
                         });
@@ -816,7 +816,9 @@ namespace StreamerBotLib.Systems
                 CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, User, UserMsg: tempHTMLResponse);
             }
 
+            result ??= "";
             result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;
+
             multi = cmdrow.SendMsgCount;
 
             return result;
@@ -902,7 +904,7 @@ namespace StreamerBotLib.Systems
 
                 default:
                     {
-                        object querydata = DataManage.PerformQuery(Commands.GetCommands(CommData), paramvalue);
+                        object querydata = DataManage.PerformQuery(CommandsBase.GetCommands(CommData), paramvalue);
 
                         string output = "";
                         if (querydata.GetType() == typeof(string))

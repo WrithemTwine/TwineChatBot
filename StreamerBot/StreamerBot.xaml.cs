@@ -20,8 +20,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-using static System.Net.WebRequestMethods;
-
 namespace StreamerBot
 {
     // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment
@@ -71,6 +69,9 @@ namespace StreamerBot
             // TODO: determine database connection strings, start if available, defer until setup parameter(s) are added
             Controller = new();
             Controller.SetDispatcher(AppDispatcher);
+
+            //GUIDataManagerViews.DataViewsLoaded += StreamerBotWindow_DataViewsLoaded;
+
             InitializeComponent();
 
             BotOps =
@@ -420,7 +421,7 @@ namespace StreamerBot
         {
             foreach (RadioButton rb in
                                         from A in BotOps
-                                       // where A.Item2.Name.Contains(platform.ToString())
+                                            // where A.Item2.Name.Contains(platform.ToString())
                                         select A.Item2
                                         )
             {
@@ -650,5 +651,6 @@ namespace StreamerBot
         {
             CheckFocus();
         }
+
     }
 }

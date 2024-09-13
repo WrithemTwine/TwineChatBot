@@ -55,7 +55,7 @@
         </StackPanel>
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiMsgEndPoints_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" >
+                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiWebhooks_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
                 <DataGridCheckBoxColumn Header="IsEnabled" Binding="{Binding IsEnabled}" />

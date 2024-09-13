@@ -78,6 +78,7 @@ namespace StreamerBotLib.GUI.Windows
             CurrData = databaseTableMeta;
 
             Title = NewRow ? $"Add new {databaseTableMeta.GetType().Name} Row" : $"Edit {databaseTableMeta.GetType().Name} Row";
+            Button_Cancel.Visibility = NewRow ? Visibility.Visible : Visibility.Collapsed;
 
             const int NameWidth = 150;
             IsNewRow = NewRow;
@@ -259,7 +260,7 @@ namespace StreamerBotLib.GUI.Windows
                         if (dataColumnName == "Category")
                         {
                             List<CheckBox> CBcombocollection = new();
-                            List<string> selection = (List<string>)datavalue;
+                            List<string> selection = [(string)datavalue];
                             foreach (Tuple<string, string> tuple in DataManage.GetGameCategories())
                             {
                                 CheckBox item = new()
@@ -444,7 +445,7 @@ namespace StreamerBotLib.GUI.Windows
             UpdatePropertyChanged(nameof(DataFieldElement));
         }
 
-        private void ApplyButton_Click(object sender, RoutedEventArgs e)
+        private void Button_OKClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -480,12 +481,14 @@ namespace StreamerBotLib.GUI.Windows
 
                     if (IsNewRow) // if this row is new, we have to add it to the DataTable, and not just modify it.
                     {
-                        AddNewRow?.Invoke(this, new(CurrData));
+                        //AddNewRow?.Invoke(this, new(CurrData));
+
+
                     }
-                    else
-                    {
-                        UpdatedRow?.Invoke(this, new(CurrData));
-                    }
+                    //else
+                    //{
+                    //    UpdatedRow?.Invoke(this, new(CurrData));
+                    //}
                 }
             }
             catch (Exception ex)
