@@ -8,6 +8,7 @@
         TwitchBeingHosted,
         TwitchBulkPostFollowers,
         TwitchStartBulkFollowers,
+        TwitchStopBulkFollowers,
         TwitchCommunitySubscription,
         TwitchGiftSubscription,
         TwitchNewSubscriber,

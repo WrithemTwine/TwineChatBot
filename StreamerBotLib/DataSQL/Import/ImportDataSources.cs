@@ -216,7 +216,7 @@ namespace StreamerBotLib.DataSQL.Import
 
             //MultiChannels
             //MultiLiveStreams
-            //MultiMsgEndPoints
+            //MultiWebhooks
             //MultiSummaryLiveStreams
             */
 
@@ -469,9 +469,6 @@ namespace StreamerBotLib.DataSQL.Import
             DebugCom.WriteLine("Now adding Commands to database.");
 #endif
 
-            // TODO: fix why user commands are joining default command table
-
-
             LogWriter.WriteLog("Adding Default Commands data.");
             foreach (CommandsRow C in (from C in _DataSource.Commands
                                        where Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName)
@@ -646,7 +643,7 @@ namespace StreamerBotLib.DataSQL.Import
                              && M.WebhooksSource == Enum.Parse<WebhooksSource>(E.Type)
                               select M).Any())
                         {
-                            context.MultiMsgEndPoints.Add(new MultiMsgEndPoints(
+                            context.MultiMsgEndPoints.Add(new MultiWebhooks(
                                                                    isEnabled: E.IsEnabled,
                                                                    webhooksSource: Enum.Parse<WebhooksSource>(E.Type),
                                                                    webhook: new(E.URL),
@@ -923,7 +920,7 @@ namespace StreamerBotLib.DataSQL.Import
                                                          subsPresent: S.SubsPresent,
                                                          vIPsPresent: S.VIPsPresent,
                                                          totalChats: S.TotalChats,
-                                                         commandsMsgs: S.Commands,
+                                                         commandMsgs: S.Commands,
                                                          automatedEvents: S.AutomatedEvents,
                                                          automatedCommands: S.AutomatedCommands,
                                                          webhookMsgs: S.DiscordMsgs,

@@ -161,6 +161,10 @@ namespace StreamerBotLib.Systems
             AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, e.LastFollowerUserName);
         }
 
+        public static void StopBulkFollowers()
+        {
+            DataManage.NotifyStopBulkFollowers();
+        }
 
         private delegate void ProcFollowDelegate();
 
@@ -186,7 +190,7 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = [];
 
-                foreach (Follow f in FollowList.Where(DataManage.PostFollower))
+                foreach (Follow f in DataManage.PostFollowers(FollowList))
                 {
                     if (OptionFlags.ManageFollowers)
                     {

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Import;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
@@ -390,7 +391,7 @@ switches:
             context.MultiLiveStreams.Load(); return context.MultiLiveStreams.Local.ToObservableCollection();
         }
 
-        public ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable()
+        public ObservableCollection<MultiWebhooks> GetMultiWebhooksLocalObservable()
         {
             context.MultiMsgEndPoints.Load(); return context.MultiMsgEndPoints.Local.ToObservableCollection();
         }
@@ -764,11 +765,26 @@ switches:
             {
                 BuildDataContext();
 
-                List<Commands> commands = new( from C in context.Commands where C.CmdName == cmd select C);
+                CommandsBase commands = (from C in context.CommandsBase where C.CmdName == cmd select C).FirstOrDefault();
                 //List<CommandsUser> commandsUser = new(from CU in context.CommandsUser where CU.CmdName == cmd select CU);
+                if (commands != null)
+                {
+                    commands.Calls++;
+                }
 
-                CommandData result = (commands != null) ? new(commands.First()) : null;// commandsUser != null ? new(commandsUser.First()) : null;
+                CommandData result = (commands != null) ? new(commands) : null;// commandsUser != null ? new(commandsUser.First()) : null;
 
+                ClearDataContext();
+                return result;
+            }
+        }
+
+        public string GetCommandString()
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                string result = string.Join(", ", GetCommandList());
                 ClearDataContext();
                 return result;
             }
@@ -776,21 +792,13 @@ switches:
 
         public IEnumerable<string> GetCommandList()
         {
-            BuildDataContext();
-            IEnumerable<string> result = GetCommands().Split(", ");
-            ClearDataContext();
-            return result;
-        }
-
-        public string GetCommands()
-        {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                string result = string.Join(", ", (from Com in (context.Commands.Union(context.CommandsUser))
-                                                   where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
-                                                   orderby Com.CmdName
-                                                   select $"!{Com.CmdName}"));
+                var result = (from Com in (context.CommandsBase)
+                              where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
+                              orderby Com.CmdName
+                              select $"!{Com.CmdName}");
                 ClearDataContext();
                 return result;
             }
@@ -1128,7 +1136,9 @@ switches:
             {
                 BuildDataContext();
                 List<Tuple<bool, Uri>> result = new(from W in context.Webhooks
-                                                    where (W.WebhooksSource == webhooksSource && W.Kind == webhooks)
+                                                    where (W.WebhooksSource == webhooksSource
+                                                    && W.Kind == webhooks && W.DataSource == WebhookDataSource.Channel
+                                                    && W.IsEnabled == true)
                                                     select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
                 ClearDataContext();
                 return result;
@@ -1255,7 +1265,7 @@ switches:
             {
                 string result;
                 BuildDataContext();
-                if (!(from Com in (context.Commands.Union(context.CommandsUser))
+                if (!(from Com in context.CommandsBase
                       where Com.CmdName == cmd
                       select Com).Any())
                 {
@@ -1376,6 +1386,26 @@ switches:
             }
         }
 
+        public IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                currtime = DateTime.Now.ToLocalTime();
+                BuildDataContext();
+
+                List<Follow> ReturnList = new(from F in follows
+                                          join DF in context.Followers on F.FromUserId equals DF.UserId
+                                          where DF.UserId is null
+                                          select F);
+
+                followsQueue.Enqueue(follows);
+                PostFollowsQueue();
+                ClearDataContext();
+
+                return ReturnList;
+            }
+        }
+
         private static bool ProcessFollowQueuestarted = false;
 
         /// <summary>
@@ -1391,7 +1421,6 @@ switches:
                 {
                     SystemsController.AppDispatcher.BeginInvoke(() =>
                     {
-                        //Thread.Sleep(1000); // wait some to stay inside while loop for lots of followers at one time
                         BuildDataContext();
 
                         while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
@@ -1403,8 +1432,8 @@ switches:
                                 {
                                     var user = PostNewUser(f.FromUser, f.FollowedAt);
 
-                                    Followers currFollow = (from UF in context.Followers 
-                                                            where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform 
+                                    Followers currFollow = (from UF in context.Followers
+                                                            where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
                                                             select UF).FirstOrDefault();
 
                                     if (currFollow != null)
@@ -1440,7 +1469,7 @@ switches:
                         ClearDataContext();
                         ProcessFollowQueuestarted = false;
 
-                        if (BulkFollowerUpdate)
+                        if (!BulkFollowerUpdate)
                         {
                             StopBulkFollows();
                         }
@@ -1571,7 +1600,7 @@ switches:
                       where (US.UserId == User.UserId && US.Platform == User.Platform)
                       select US).Any())
                 {
-                    context.UserStats.Add(new(userId: User.UserId, platform: User.Platform, watchTime: new(0,0,0)));
+                    context.UserStats.Add(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
                 }
 
                 context.SaveChanges(true);
@@ -1786,10 +1815,10 @@ switches:
                 BuildDataContext();
                 bool found = false;
 
-                Commands cmd = (from C in context.Commands where C.CmdName == command select C).FirstOrDefault();
+                CommandsUser cmd = (from C in context.CommandsUser where C.CmdName == command select C).FirstOrDefault();
                 if (cmd != default)
                 {
-                    context.Commands.Remove(cmd);
+                    context.CommandsUser.Remove(cmd);
                     found = true;
                 }
                 context.SaveChanges(true);
@@ -1921,6 +1950,11 @@ switches:
             }
         }
 
+        public void NotifyStopBulkFollowers()
+        {
+            BulkFollowerUpdate = false;
+        }
+
         private void StopBulkFollows()
         {
             lock (GUIDataManagerLock.Lock)
@@ -1945,7 +1979,7 @@ switches:
                     foreach (OldFollowUsers OF in context.OldFollowUsers)
                     {
                         Followers currFollow = (from F in context.Followers where F.UserId == OF.UserId && F.Platform == OF.Platform select F).FirstOrDefault();
-                        if(currFollow != null)
+                        if (currFollow != null)
                         {
                             currFollow.StatusChangeDate = currtime;
                         }
@@ -1953,12 +1987,11 @@ switches:
 
                 }
                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
-                BulkFollowerUpdate = false;
                 context.SaveChanges(true);
+                NotifyDataCollectionUpdated(nameof(Followers));
                 ClearDataContext();
             }
         }
-
 
         public void UpdateCurrency(List<string> Users, DateTime dateTime)
         {
@@ -1996,12 +2029,15 @@ switches:
 
         public void UpdateFollowers(IEnumerable<Follow> follows)
         {
-            if (follows.Any())
+            lock (GUIDataManagerLock.Lock)
             {
-                lock (followsQueue)
+                if (follows.Any())
                 {
-                    followsQueue.Enqueue(follows);
-                    PostFollowsQueue();
+                    lock (followsQueue)
+                    {
+                        followsQueue.Enqueue(follows);
+                        PostFollowsQueue();
+                    }
                 }
             }
         }
@@ -2228,7 +2264,7 @@ switches:
 
                 MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == userid select MC).FirstOrDefault();
 
-                if(currUser.UserName != username) // update username if it's changed
+                if (currUser.UserName != username) // update username if it's changed
                 {
                     currUser.UserName = username;
                 }
@@ -2343,32 +2379,35 @@ switches:
 
         public void UpdateStats(DBUserStats Stat, string userId, Platform platform)
         {
-            if (userId != null)
+            lock (GUIDataManagerLock.Lock)
             {
-                UserStats userStats = (from U in context.UserStats
-                                       where U.UserId == userId && U.Platform == platform
-                                       select U).FirstOrDefault();
-
-                if (userStats != null)
+                if (userId != null)
                 {
-                    switch (Stat)
-                    {
-                        case DBUserStats.Commands:
-                            userStats.CallCommands++;
-                            break;
-                        case DBUserStats.Clips:
-                            userStats.ClipsCreated++;
-                            break;
-                        case DBUserStats.Chats:
-                            userStats.ChannelChat++;
-                            break;
-                        case DBUserStats.ChannelRewards:
-                            userStats.RewardRedeems++;
-                            break;
-                    }
-                }
+                    UserStats userStats = (from U in context.UserStats
+                                           where U.UserId == userId && U.Platform == platform
+                                           select U).FirstOrDefault();
 
-                context.SaveChanges(true);
+                    if (userStats != null)
+                    {
+                        switch (Stat)
+                        {
+                            case DBUserStats.Commands:
+                                userStats.CallCommands++;
+                                break;
+                            case DBUserStats.Clips:
+                                userStats.ClipsCreated++;
+                                break;
+                            case DBUserStats.Chats:
+                                userStats.ChannelChat++;
+                                break;
+                            case DBUserStats.ChannelRewards:
+                                userStats.RewardRedeems++;
+                                break;
+                        }
+                    }
+
+                    context.SaveChanges(true);
+                }
             }
         }
 

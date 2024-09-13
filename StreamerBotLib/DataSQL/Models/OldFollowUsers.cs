@@ -2,7 +2,6 @@
 
 using StreamerBotLib.Enums;
 
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
@@ -29,7 +28,7 @@ namespace StreamerBotLib.DataSQL.Models
                            DateTime addDate = default,
                            string userId = null,
                            string userName = null,
-                           Platform platform = Platform.Default) 
+                           Platform platform = Platform.Default)
 #endif
     {
         public OldFollowUsers(Followers followers, DateTime statusChangeDate) : this()

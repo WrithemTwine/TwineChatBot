@@ -22,7 +22,7 @@ namespace StreamerBotLib.Models
                             int subsPresent = 0,
                             int vIPsPresent = 0,
                             int totalChats = 0,
-                            int commandsMsgs = 0,
+                            int commandMsgs = 0,
                             int automatedEvents = 0,
                             int automatedCommands = 0,
                             int webhookMsgs = 0,
@@ -47,7 +47,7 @@ namespace StreamerBotLib.Models
               streamStats.SubsPresent,
               streamStats.VIPsPresent,
               streamStats.TotalChats,
-              streamStats.CommandsMsgs,
+              streamStats.CommandMsgs,
               streamStats.AutomatedEvents,
               streamStats.AutomatedCommands,
               streamStats.WebhookMsgs,
@@ -70,7 +70,7 @@ namespace StreamerBotLib.Models
         public int SubsPresent { get; set; } = subsPresent;
         public int VIPsPresent { get; set; } = vIPsPresent;
         public int TotalChats { get; set; } = totalChats;
-        public int CommandsMsgs { get; set; } = commandsMsgs;
+        public int CommandMsgs { get; set; } = commandMsgs;
         public int AutomatedEvents { get; set; } = automatedEvents;
         public int AutomatedCommands { get; set; } = automatedCommands;
         public int WebhookMsgs { get; set; } = webhookMsgs;
@@ -107,7 +107,7 @@ namespace StreamerBotLib.Models
             SubsPresent = streamStatsRow.SubsPresent;
             VIPsPresent = streamStatsRow.VIPsPresent;
             TotalChats = streamStatsRow.TotalChats;
-            CommandsMsgs = streamStatsRow.Commands;
+            CommandMsgs = streamStatsRow.Commands;
             AutomatedCommands = streamStatsRow.AutomatedCommands;
             WebhookMsgs = streamStatsRow.DiscordMsgs;
             ClipsMade = streamStatsRow.ClipsMade;
@@ -132,7 +132,7 @@ namespace StreamerBotLib.Models
             SubsPresent = 0;
             VIPsPresent = 0;
             TotalChats = 0;
-            CommandsMsgs = 0;
+            CommandMsgs = 0;
             AutomatedEvents = 0;
             AutomatedCommands = 0;
             WebhookMsgs = 0;

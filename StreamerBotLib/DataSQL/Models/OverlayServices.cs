@@ -20,7 +20,7 @@ namespace StreamerBotLib.DataSQL.Models
                                  string imageFile,
                                  string mediaFile)
 #else
-   public class OverlayServices(int id = 0,
+    public class OverlayServices(int id = 0,
                                  bool isEnabled = false,
                                  int duration = 0,
                                  OverlayTypes overlayType = default,

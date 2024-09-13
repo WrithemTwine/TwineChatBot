@@ -7,7 +7,7 @@ namespace StreamerBotLib.DataSQL.Models
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Quotes(int number, string quote)
 #else
-public class Quotes(int number = 0, string quote = null)
+    public class Quotes(int number = 0, string quote = null)
 #endif
      : EntityBase
     {

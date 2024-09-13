@@ -53,17 +53,20 @@ namespace StreamerBotLib.DataSQL
         public DbSet<Quotes> Quotes { get; set; }
         public DbSet<StreamStats> StreamStats { get; set; }
         public DbSet<Webhooks> Webhooks { get; set; }
+
+        public DbSet<WebhooksBase> WebhooksBase { get; set; }
         #endregion
 
         #region Stream Action Data
         public DbSet<ChannelEvents> ChannelEvents { get; set; }
+        public DbSet<CommandsBase> CommandsBase { get; set; }
         public DbSet<Commands> Commands { get; set; }
         public DbSet<CommandsUser> CommandsUser { get; set; }
         public DbSet<ModeratorApprove> ModeratorApprove { get; set; }
         #endregion
 
         #region MultiLive Data
-        public DbSet<MultiMsgEndPoints> MultiMsgEndPoints { get; set; }
+        public DbSet<MultiWebhooks> MultiMsgEndPoints { get; set; }
         public DbSet<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; set; }
         public DbSet<MultiChannels> MultiChannels { get; set; }
         public DbSet<MultiLiveStreams> MultiLiveStreams { get; set; }
@@ -157,7 +160,7 @@ namespace StreamerBotLib.DataSQL
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
                 .WithOne(u => u.User)
-                .HasForeignKey<UserStats>(s => new { s.UserId,  s.Platform })
+                .HasForeignKey<UserStats>(s => new { s.UserId, s.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
@@ -187,21 +190,19 @@ namespace StreamerBotLib.DataSQL
                 .Property(i => i.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<StreamStats>()
-                .Property(p => p.Duration)
-                .HasComputedColumnSql("StreamEnd - StreamStart", stored: true);
-
             // Discriminators for Type-Per-Hierarchy -entity derived types will coalesce in base table
             // discriminators distinguish between base type and other derived types
-            modelBuilder.Entity<Commands>()
-                .HasDiscriminator(c => c.commandtype)
-                .HasValue<Commands>(CommandTypes.builtin.ToString())
-                .HasValue<CommandsUser>(CommandTypes.user.ToString());
+            modelBuilder.Entity<CommandsBase>()
+                .HasDiscriminator(c => c.Commandtype)
+                .HasValue<CommandsBase>(CommandTypes.Base)
+                .HasValue<Commands>(CommandTypes.BuiltIn)
+                .HasValue<CommandsUser>(CommandTypes.User);
 
-            modelBuilder.Entity<Webhooks>()
+            modelBuilder.Entity<WebhooksBase>()
                 .HasDiscriminator(w => w.DataSource)
-                .HasValue<Webhooks>(WebhookDataSource.primary.ToString())
-                .HasValue<MultiMsgEndPoints>(WebhookDataSource.multilive.ToString());
+                .HasValue<WebhooksBase>(WebhookDataSource.Base)
+                .HasValue<Webhooks>(WebhookDataSource.Channel)
+                .HasValue<MultiWebhooks>(WebhookDataSource.MultiLive);
         }
 
         public SQLDBContext()

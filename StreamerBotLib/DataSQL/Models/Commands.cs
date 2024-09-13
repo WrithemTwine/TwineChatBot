@@ -1,15 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
-
-using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-    [PrimaryKey(nameof(CmdName))]
-    [Index(nameof(CmdName), IsUnique = true)]
-    [DebuggerDisplay("Command = {CmdName}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Commands(string cmdName,
                           bool addMe,
@@ -37,7 +30,7 @@ namespace StreamerBotLib.DataSQL.Models
                           ViewerTypes permission = ViewerTypes.Viewer,
                           bool isEnabled = false,
                           bool announce = false,
-                          string message = null,
+                          string message = "",
                           int repeatTimer = 0,
                           short sendMsgCount = 0,
                           ICollection<string> category = null,
@@ -51,33 +44,31 @@ namespace StreamerBotLib.DataSQL.Models
                           string unit = null,
                           CommandAction action = default,
                           int top = 0,
-                          CommandSort sort = default)
+                          CommandSort sort = default,
+                          int calls = 0)
 #endif
-    : EntityBase
+    : CommandsBase(cmdName,
+                           addMe,
+                           permission,
+                           isEnabled,
+                           announce,
+                           message,
+                           repeatTimer,
+                           sendMsgCount,
+                           category,
+                           allowParam,
+                           usage,
+                           lookupData,
+                           table,
+                           keyField,
+                           dataField,
+                           currencyField,
+                           unit,
+                           action,
+                           top,
+                           sort,
+                           calls)
     {
-        public string CmdName { get; set; } = cmdName;
-        public bool AddMe { get; set; } = addMe;
-        public ViewerTypes Permission { get; set; } = permission;
-        public bool IsEnabled { get; set; } = isEnabled;
-        public bool Announce { get; set; } = announce;
-        public string Message { get; set; } = message;
-        public int RepeatTimer { get; set; } = repeatTimer;
-        public short SendMsgCount { get; set; } = sendMsgCount;
-        public ICollection<string> Category { get; set; } = category;
-        public bool AllowParam { get; set; } = allowParam;
-        public string Usage { get; set; } = usage;
-        public bool LookupData { get; set; } = lookupData;
-        public string Table { get; set; } = table;
-        public string KeyField { get; set; } = keyField;
-        public string DataField { get; set; } = dataField;
-        public string CurrencyField { get; set; } = currencyField;
-        public string Unit { get; set; } = unit;
-        public CommandAction Action { get; set; } = action;
-        public int Top { get; set; } = top;
-        public CommandSort Sort { get; set; } = sort;
-        public string commandtype { get; set; }
-
-
         public static Commands GetCommands(CommandData commandData)
         {
             return new(
@@ -100,14 +91,4 @@ namespace StreamerBotLib.DataSQL.Models
                 );
         }
     }
-
-    //public static class ExtendCommands
-    //{
-    //    public static IEnumerable<T> Union<T,S>(this IEnumerable<T> first, IEnumerable<S> second) 
-    //    {
-            
-    //    }
-
-    //}
-
 }

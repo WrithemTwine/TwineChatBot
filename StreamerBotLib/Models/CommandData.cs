@@ -22,7 +22,7 @@ namespace StreamerBotLib.Models
         public string Currency_field { get; }
         public CommandSort Sort { get; }
 
-        public CommandData(Commands row)
+        public CommandData(CommandsBase row)
         {
             lock (GUI.GUIDataManagerLock.Lock)
             {

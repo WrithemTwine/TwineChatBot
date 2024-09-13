@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.Events;
@@ -85,7 +84,7 @@ namespace StreamerBot
                     case "MultiLiveStreams":
 
                         break;
-                    case "MultiMsgEndPoints":
+                    case "MultiWebhooks":
 
                         break;
                     case "MultiSummaryLiveStreams":
@@ -142,7 +141,7 @@ namespace StreamerBot
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
                 bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "IsEnabled").Any();
-                    
+
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
@@ -205,7 +204,7 @@ namespace StreamerBot
 
             foreach (object R in item.SelectedItems)
             {
-                 // TODO: fix menu delete click - item.ItemsSource.
+                // TODO: fix menu delete click - item.ItemsSource.
             }
         }
 
@@ -240,39 +239,38 @@ namespace StreamerBot
 
         #endregion
 
-        #region Calculated Columns
-
-        //private void DG_StreamData_Stats_Loaded(object sender, RoutedEventArgs e)
+        #region DataGrid Item Filters
+        //private void StreamerBotWindow_DataViewsLoaded(object sender, EventArgs e)
         //{
-        //    DataColumn StatDuration = new() { ColumnName = "Duration" };
-        //    StatDuration.Expression = "StreamEnd - StreamStart";
+        //    (Resources["DG_Webhooks_CVS"] as CollectionViewSource).Filter += DG_Webhooks_CVS_Filter;
+        //    (Resources["DG_MultiMsgEndPoints_CVS"] as CollectionViewSource).Filter += DG_MultiMsgEndPoints_CVS_Filter;
+
         //}
 
+        //private void DG_Webhooks_CVS_Filter(object sender, FilterEventArgs e)
+        //{
+        //    Webhooks t = e.Item as Webhooks;
+        //    if (t != null)
+        //    {
+        //        if (t.DataSource == WebhookDataSource.MultiLive)
+        //            e.Accepted = false;
+        //        else
+        //            e.Accepted = true;
+        //    }
+        //}
 
-        #endregion
+        //private void DG_MultiMsgEndPoints_CVS_Filter(object sender, FilterEventArgs e)
+        //{
+        //    Webhooks t = e.Item as Webhooks;
+        //    if (t != null)
+        //    {
+        //        if (t.DataSource == WebhookDataSource.Channel)
+        //            e.Accepted = false;
+        //        else
+        //            e.Accepted = true;
+        //    }
+        //}
 
-        #region DataGrid Item Filters
-
-        private void DG_Webhooks_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-            if (DG_Webhooks.ItemsSource != null)
-            {
-                // DataGrid filter events
-                (DG_Webhooks.ItemsSource as CollectionViewSource).Filter += DG_Webhooks_CVS_Filter;
-            }
-        }
-
-        private void DG_Webhooks_CVS_Filter(object sender, FilterEventArgs e)
-        {
-            Webhooks t = e.Item as Webhooks;
-            if (t != null)
-            {
-                if (t.DataSource == WebhookDataSource.multilive.ToString())
-                    e.Accepted = false;
-                else
-                    e.Accepted = true;
-            }
-        } 
         #endregion
     }
 }

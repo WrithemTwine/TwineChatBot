@@ -76,7 +76,7 @@ namespace StreamerBotLib.MultiLive
         //    if (sender.GetType() == typeof(DataGrid))
         //    {
         //        //bool FoundAddEdit = ((DataGrid)sender).Name == "DG_Multi_WebHooks" || (((DataGrid)sender).Name == "DG_Multi_ChannelNames");
-        //        bool FoundIsEnabled = typeof(MultiMsgEndPoints) == ((sender as DataGrid).ItemsSource).GetType();
+        //        bool FoundIsEnabled = typeof(MultiWebhooks) == ((sender as DataGrid).ItemsSource).GetType();
 
         //        foreach (var M in ((ContextMenu)Resources["DataGrid_Multi_ContextMenu"]).Items)
         //        {
@@ -154,13 +154,13 @@ namespace StreamerBotLib.MultiLive
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to enabled.");
 
-            IEnumerable<MultiMsgEndPoints> item = (IEnumerable<MultiMsgEndPoints>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
+            IEnumerable<MultiWebhooks> item = (IEnumerable<MultiWebhooks>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
             SetMultiChannelIsEnabled(item, true);
         }
 
-        private static void SetMultiChannelIsEnabled(IEnumerable<MultiMsgEndPoints> item, bool IsEnabled)
+        private static void SetMultiChannelIsEnabled(IEnumerable<MultiWebhooks> item, bool IsEnabled)
         {
-            foreach (MultiMsgEndPoints msgEndPoints in item)
+            foreach (MultiWebhooks msgEndPoints in item)
             {
                 msgEndPoints.IsEnabled = IsEnabled;
             }
@@ -170,7 +170,7 @@ namespace StreamerBotLib.MultiLive
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to disabled.");
 
-            IEnumerable<MultiMsgEndPoints> item = (IEnumerable<MultiMsgEndPoints>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
+            IEnumerable<MultiWebhooks> item = (IEnumerable<MultiWebhooks>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
             SetMultiChannelIsEnabled(item, false);
         }
 

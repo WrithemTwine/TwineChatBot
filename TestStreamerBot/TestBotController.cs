@@ -96,8 +96,8 @@ namespace TestStreamerBot
         [Theory]
         [InlineData("12345", "BanMeUser1", "Buy follows or else")]
         [InlineData("124856", "BanMeUser2", "You must buy follows or else", true)]
-        [InlineData("9381984","BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
-        [InlineData("4985973","BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
+        [InlineData("9381984", "BanMeUser3", "You're an idiot if you don't buy follows or else", false, true)]
+        [InlineData("4985973", "BanMeUser4", "Screw you if you don't buy follows or else", true, true)]
         public void TestUserBanned(string UserId, string UserName, string Msg, bool Joined = false, bool JoinBan = false)
         {
             Initialize();
@@ -161,7 +161,7 @@ namespace TestStreamerBot
         }
 
         [Theory]
-        [InlineData("12345","DarkStreamPhantom", false, 4)]
+        [InlineData("12345", "DarkStreamPhantom", false, 4)]
         public void TestBeingHost(string UserId, string ChannelHost, bool AutoHosted, int Viewers)
         {
             Initialize();

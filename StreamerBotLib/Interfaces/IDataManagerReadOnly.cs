@@ -32,13 +32,13 @@ namespace StreamerBotLib.Interfaces
         bool CheckUser(LiveUser User, DateTime ToDateTime);
         string GetUserId(LiveUser User);
         IEnumerable<string> GetKeys(string Table);
-        IEnumerable<string> GetCommandList();
-        string GetCommands();
         int GetTimerCommandTime(string Cmd);
         bool GetMultiChannelName(string UserName, Platform platform);
         List<string> GetMultiChannelNames(Platform platform);
         List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks();
         bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime);
         LiveUser GetUser(string UserName);
+        string GetCommandString();
+        IEnumerable<string> GetCommandList();
     }
 }

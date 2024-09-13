@@ -32,7 +32,7 @@ namespace StreamerBotLib.DataSQL.Models
                              int maxUsers,
                              string category)
 #else
-public class StreamStats(DateTime streamStart = default,
+    public class StreamStats(DateTime streamStart = default,
     DateTime streamEnd = default,
                              int newFollows = 0,
                              int newSubscribers = 0,
@@ -46,7 +46,7 @@ public class StreamStats(DateTime streamStart = default,
                              int subsPresent = 0,
                              int vIPsPresent = 0,
                              int totalChats = 0,
-                             int commandsMsgs = 0,
+                             int commandMsgs = 0,
                              int automatedEvents = 0,
                              int automatedCommands = 0,
                              int webhookMsgs = 0,
@@ -54,7 +54,7 @@ public class StreamStats(DateTime streamStart = default,
                              int channelPtCount = 0,
                              int channelChallenge = 0,
                              int maxUsers = 0,
-                             string category = "") 
+                             string category = "")
 #endif
  : EntityBase
     {
@@ -62,9 +62,7 @@ public class StreamStats(DateTime streamStart = default,
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public TimeSpan Duration { get; private set; } //= streamEnd - streamStart;
-
+        public TimeSpan Duration => (StreamEnd - StreamStart);
         public int NewFollows { get; set; } = newFollows;
         public int NewSubscribers { get; set; } = newSubscribers;
         public int GiftSubs { get; set; } = giftSubs;
@@ -77,7 +75,7 @@ public class StreamStats(DateTime streamStart = default,
         public int SubsPresent { get; set; } = subsPresent;
         public int VIPsPresent { get; set; } = vIPsPresent;
         public int TotalChats { get; set; } = totalChats;
-        public int CommandsMsgs { get; set; } = commandsMsgs;
+        public int CommandMsgs { get; set; } = commandMsgs;
         public int AutomatedEvents { get; set; } = automatedEvents;
         public int AutomatedCommands { get; set; } = automatedCommands;
         public int WebhookMsgs { get; set; } = webhookMsgs;
@@ -103,7 +101,7 @@ public class StreamStats(DateTime streamStart = default,
             SubsPresent = streamStat.SubsPresent;
             VIPsPresent = streamStat.VIPsPresent;
             TotalChats = streamStat.TotalChats;
-            CommandsMsgs = streamStat.CommandsMsgs;
+            CommandMsgs = streamStat.CommandMsgs;
             AutomatedEvents = streamStat.AutomatedEvents;
             AutomatedCommands = streamStat.AutomatedCommands;
             WebhookMsgs = streamStat.WebhookMsgs;

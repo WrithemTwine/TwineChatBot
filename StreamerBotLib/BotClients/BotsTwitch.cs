@@ -196,6 +196,7 @@ namespace StreamerBotLib.BotClients
 
                 TwitchFollower.FollowerService.OnNewFollowersDetected += FollowerService_OnNewFollowersDetected;
                 TwitchFollower.FollowerService.OnBulkFollowsUpdate += FollowerService_OnBulkFollowsUpdate;
+                TwitchFollower.FollowerService.BulkFollowsCompleted += FollowerService_BulkFollowsCompleted;
 
                 TwitchFollower.HandlersAdded = true;
             }
@@ -230,7 +231,6 @@ namespace StreamerBotLib.BotClients
             }
 
         }
-
 
         public static void CheckStreamerBotIds()
         {
@@ -568,10 +568,7 @@ namespace StreamerBotLib.BotClients
 
             RegisterHandlers();
 
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
-            {
-                GetAllFollowers();
-            });
+            GetAllFollowers();
         }
 
         private void FollowerService_OnNewFollowersDetected(object sender, OnNewFollowersDetectedArgs e)
@@ -994,31 +991,25 @@ namespace StreamerBotLib.BotClients
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Processing request to update all followers to " +
                     "the streamer's channel.");
 
-                BulkLoadFollows = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () =>
+                string ChannelName = TwitchBotsBase.TwitchChannelName;
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Prepare to bulk-add Twitch followers.");
+
+                InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, null);
+
+                try
                 {
-                    string ChannelName = TwitchBotsBase.TwitchChannelName;
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Started the bulk-add " +
+                        "process for the followers of the Twitch streamer channel.");
 
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Prepare to bulk-add Twitch followers.");
+                    TwitchFollower.GetAllFollowersBulkAsync();
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
 
-                    InvokeBotEvent(this, BotEvents.TwitchStartBulkFollowers, null);
-
-                    try
-                    {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Started the bulk-add " +
-                            "process for the followers of the Twitch streamer channel.");
-
-                        _ = TwitchFollower.GetAllFollowersBulkAsync().Result;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    }
-
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Wrap up bulk-add Twitch followers.");
-
-                });
-                MultiThreadOps.Add(BulkLoadFollows);
-                BulkLoadFollows.Start();
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Wrap up bulk-add Twitch followers.");
             }
         }
 
@@ -1033,6 +1024,11 @@ namespace StreamerBotLib.BotClients
                 {
                     NewFollowers = e.NewFollowers
                 });
+        }
+
+        private void FollowerService_BulkFollowsCompleted(object sender, EventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
         }
 
         private List<Clip> ClipList { get; set; }

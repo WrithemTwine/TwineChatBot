@@ -21,10 +21,10 @@ namespace EFEntityEntryTesting.EF
             _context.Quotes.Add(new(2, "We added data."));
             _context.SaveChanges();
 
-            _context.CategoryList.AddRange( from C in new List<CategoryList> ([new("0", "All", 0),
+            _context.CategoryList.AddRange(from C in new List<CategoryList>([new("0", "All", 0),
                                                 new("156894","FakeId",0),
                                                 new("938493","FakeGame",0)])
-                                            select C);
+                                           select C);
             _context.SaveChanges();
         }
     }

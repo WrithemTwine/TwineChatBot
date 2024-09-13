@@ -82,13 +82,13 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new MultiLiveStreams(new Models.MultiLiveStreams());
             }
-            else if (Entity == typeof(Models.MultiMsgEndPoints))
-            {
-                CurrEntity = new MultiMsgEndPoints(new Models.MultiMsgEndPoints());
-            }
             else if (Entity == typeof(Models.MultiSummaryLiveStreams))
             {
                 CurrEntity = new MultiSummaryLiveStreams(new Models.MultiSummaryLiveStreams());
+            }
+            else if (Entity == typeof(Models.MultiWebhooks))
+            {
+                CurrEntity = new MultiWebhooks(new Models.MultiWebhooks());
             }
             else if (Entity == typeof(Models.OldFollowUsers))
             {
@@ -130,7 +130,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks(new Models.Webhooks());
             }
-            
+
             return this;
         }
 
@@ -210,13 +210,13 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new MultiLiveStreams((Models.MultiLiveStreams)Entity);
             }
-            else if (Entity.GetType() == typeof(Models.MultiMsgEndPoints))
-            {
-                CurrEntity = new MultiMsgEndPoints((Models.MultiMsgEndPoints)Entity);
-            }
             else if (Entity.GetType() == typeof(Models.MultiSummaryLiveStreams))
             {
                 CurrEntity = new MultiSummaryLiveStreams((Models.MultiSummaryLiveStreams)Entity);
+            }
+            else if (Entity.GetType() == typeof(Models.MultiWebhooks))
+            {
+                CurrEntity = new MultiWebhooks((Models.MultiWebhooks)Entity);
             }
             else if (Entity.GetType() == typeof(Models.OldFollowUsers))
             {
@@ -258,7 +258,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks((Models.Webhooks)Entity);
             }
-            
+
             return this;
         }
 
@@ -354,14 +354,14 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 ((MultiLiveStreams)Update).CopyUpdates((Models.MultiLiveStreams)DataEntity);
                 return DataEntity;
             }
-            else if (DataEntity.GetType() == typeof(Models.MultiMsgEndPoints))
-            {
-                ((MultiMsgEndPoints)Update).CopyUpdates((Models.MultiMsgEndPoints)DataEntity);
-                return DataEntity;
-            }
             else if (DataEntity.GetType() == typeof(Models.MultiSummaryLiveStreams))
             {
                 ((MultiSummaryLiveStreams)Update).CopyUpdates((Models.MultiSummaryLiveStreams)DataEntity);
+                return DataEntity;
+            }
+            else if (DataEntity.GetType() == typeof(Models.MultiWebhooks))
+            {
+                ((MultiWebhooks)Update).CopyUpdates((Models.MultiWebhooks)DataEntity);
                 return DataEntity;
             }
             else if (DataEntity.GetType() == typeof(Models.OldFollowUsers))

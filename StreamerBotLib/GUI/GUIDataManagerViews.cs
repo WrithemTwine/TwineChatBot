@@ -84,7 +84,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<UserStats> UserStats { get; private set; }
 
         #region MultiLive Collections
-        public ObservableCollection<MultiMsgEndPoints> MultiMsgEndPoints { get; private set; }
+        public ObservableCollection<MultiWebhooks> MultiMsgEndPoints { get; private set; }
         public ObservableCollection<MultiChannels> MultiChannels { get; private set; }
         public ObservableCollection<MultiLiveStreams> MultiLiveStreams { get; private set; }
         public ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
@@ -93,6 +93,8 @@ namespace StreamerBotLib.GUI
         public string MultiLiveStatusLog => DataManager.MultiLiveStatusLog;
         #endregion
         #endregion
+
+        public static event EventHandler<EventArgs> DataViewsLoaded;
 
         public GUIDataManagerViews()
         {
@@ -126,7 +128,7 @@ namespace StreamerBotLib.GUI
             ModeratorApprove = DataManager.GetModeratorApproveLocalObservable();
             MultiChannels = DataManager.GetMultiChannelsLocalObservable();
             MultiLiveStreams = DataManager.GetMultiLiveStreamsLocalObservable();
-            MultiMsgEndPoints = DataManager.GetMultiMsgEndPointsLocalObservable();
+            MultiMsgEndPoints = DataManager.GetMultiWebhooksLocalObservable();
             MultiSummaryLiveStreams = DataManager.GetMultiSummaryLiveStreamsLocalObservable();
             OldFollowUsers = DataManager.GetOldFollowUsersLocalObservable();
             OutRaidData = DataManager.GetOutRaidDataLocalObservable();
@@ -143,6 +145,8 @@ namespace StreamerBotLib.GUI
             Commands.CollectionChanged += DataGrid_CollectionChanged;
 
             SetCommandCollection();
+
+            DataViewsLoaded?.Invoke(this, new());
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

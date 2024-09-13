@@ -30,7 +30,7 @@ namespace StreamerBotLib.Static
 
         // streamwriters
         private static StreamWriter StatusLogWriter = new(StatusLog, true) { AutoFlush = true };
-        private static StreamWriter ExceptionLogWriter = new(ExceptionLog, true) {AutoFlush = true };
+        private static StreamWriter ExceptionLogWriter = new(ExceptionLog, true) { AutoFlush = true };
         private static StreamWriter DebugLogFileWriter = new(DebugLogFile, true) { AutoFlush = true };
 
         /// <summary>

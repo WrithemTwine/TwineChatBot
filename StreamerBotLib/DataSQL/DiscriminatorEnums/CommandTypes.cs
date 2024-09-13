@@ -2,7 +2,8 @@
 {
     public enum CommandTypes
     {
-        builtin,
-        user
+        Base,
+        BuiltIn,
+        User
     }
 }

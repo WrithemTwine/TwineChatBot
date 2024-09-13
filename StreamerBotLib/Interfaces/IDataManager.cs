@@ -40,7 +40,7 @@ namespace StreamerBotLib.Interfaces
         ObservableCollection<Clips> GetClipsLocalObservable();
         new CommandData GetCommand(string cmd);
         new IEnumerable<string> GetCommandList();
-        new string GetCommands();
+        new string GetCommandString();
         ObservableCollection<Commands> GetCommandsLocalObservable();
         ObservableCollection<CommandsUser> GetCommandsUserLocalObservable();
         ObservableCollection<Currency> GetCurrencyLocalObservable();
@@ -61,7 +61,7 @@ namespace StreamerBotLib.Interfaces
         ObservableCollection<ModeratorApprove> GetModeratorApproveLocalObservable();
         ObservableCollection<MultiChannels> GetMultiChannelsLocalObservable();
         ObservableCollection<MultiLiveStreams> GetMultiLiveStreamsLocalObservable();
-        ObservableCollection<MultiMsgEndPoints> GetMultiMsgEndPointsLocalObservable();
+        ObservableCollection<MultiWebhooks> GetMultiWebhooksLocalObservable();
         ObservableCollection<MultiSummaryLiveStreams> GetMultiSummaryLiveStreamsLocalObservable();
         string GetNewestFollower();
         ObservableCollection<OldFollowUsers> GetOldFollowUsersLocalObservable();
@@ -138,6 +138,7 @@ namespace StreamerBotLib.Interfaces
         void UserJoined(LiveUser User, DateTime NowSeen);
         void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen);
         void UserLeft(LiveUser User, DateTime LastSeen);
-
+        void NotifyStopBulkFollowers();
+        IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows);
     }
 }
