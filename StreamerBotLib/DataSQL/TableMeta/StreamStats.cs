@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -123,72 +120,72 @@ namespace StreamerBotLib.DataSQL.TableMeta
         }
         public void CopyUpdates(Models.StreamStats modelData)
         {
-          if (modelData.StreamStart != StreamStart)
+            if (modelData.StreamStart != StreamStart)
             {
                 modelData.StreamStart = StreamStart;
             }
 
-          if (modelData.StreamEnd != StreamEnd)
+            if (modelData.StreamEnd != StreamEnd)
             {
                 modelData.StreamEnd = StreamEnd;
             }
 
-          if (modelData.NewFollows != NewFollows)
+            if (modelData.NewFollows != NewFollows)
             {
                 modelData.NewFollows = NewFollows;
             }
 
-          if (modelData.NewSubscribers != NewSubscribers)
+            if (modelData.NewSubscribers != NewSubscribers)
             {
                 modelData.NewSubscribers = NewSubscribers;
             }
 
-          if (modelData.GiftSubs != GiftSubs)
+            if (modelData.GiftSubs != GiftSubs)
             {
                 modelData.GiftSubs = GiftSubs;
             }
 
-          if (modelData.Bits != Bits)
+            if (modelData.Bits != Bits)
             {
                 modelData.Bits = Bits;
             }
 
-          if (modelData.Raids != Raids)
+            if (modelData.Raids != Raids)
             {
                 modelData.Raids = Raids;
             }
 
-          if (modelData.Hosted != Hosted)
+            if (modelData.Hosted != Hosted)
             {
                 modelData.Hosted = Hosted;
             }
 
-          if (modelData.UsersBanned != UsersBanned)
+            if (modelData.UsersBanned != UsersBanned)
             {
                 modelData.UsersBanned = UsersBanned;
             }
 
-          if (modelData.UsersTimedOut != UsersTimedOut)
+            if (modelData.UsersTimedOut != UsersTimedOut)
             {
                 modelData.UsersTimedOut = UsersTimedOut;
             }
 
-          if (modelData.ModeratorsPresent != ModeratorsPresent)
+            if (modelData.ModeratorsPresent != ModeratorsPresent)
             {
                 modelData.ModeratorsPresent = ModeratorsPresent;
             }
 
-          if (modelData.SubsPresent != SubsPresent)
+            if (modelData.SubsPresent != SubsPresent)
             {
                 modelData.SubsPresent = SubsPresent;
             }
 
-          if (modelData.VIPsPresent != VIPsPresent)
+            if (modelData.VIPsPresent != VIPsPresent)
             {
                 modelData.VIPsPresent = VIPsPresent;
             }
 
-          if (modelData.TotalChats != TotalChats)
+            if (modelData.TotalChats != TotalChats)
             {
                 modelData.TotalChats = TotalChats;
             }
@@ -198,42 +195,42 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 modelData.CommandMsgs = CommandMsgs;
             }
 
-          if (modelData.AutomatedEvents != AutomatedEvents)
+            if (modelData.AutomatedEvents != AutomatedEvents)
             {
                 modelData.AutomatedEvents = AutomatedEvents;
             }
 
-          if (modelData.AutomatedCommands != AutomatedCommands)
+            if (modelData.AutomatedCommands != AutomatedCommands)
             {
                 modelData.AutomatedCommands = AutomatedCommands;
             }
 
-          if (modelData.WebhookMsgs != WebhookMsgs)
+            if (modelData.WebhookMsgs != WebhookMsgs)
             {
                 modelData.WebhookMsgs = WebhookMsgs;
             }
 
-          if (modelData.ClipsMade != ClipsMade)
+            if (modelData.ClipsMade != ClipsMade)
             {
                 modelData.ClipsMade = ClipsMade;
             }
 
-          if (modelData.ChannelPtCount != ChannelPtCount)
+            if (modelData.ChannelPtCount != ChannelPtCount)
             {
                 modelData.ChannelPtCount = ChannelPtCount;
             }
 
-          if (modelData.ChannelChallenge != ChannelChallenge)
+            if (modelData.ChannelChallenge != ChannelChallenge)
             {
                 modelData.ChannelChallenge = ChannelChallenge;
             }
 
-          if (modelData.MaxUsers != MaxUsers)
+            if (modelData.MaxUsers != MaxUsers)
             {
                 modelData.MaxUsers = MaxUsers;
             }
 
-          if (modelData.Category != Category)
+            if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }

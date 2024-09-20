@@ -130,7 +130,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks(new Models.Webhooks());
             }
-            
+
             return this;
         }
 
@@ -258,7 +258,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks((Models.Webhooks)Entity);
             }
-            
+
             return this;
         }
 
