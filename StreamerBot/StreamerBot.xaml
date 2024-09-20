@@ -33,6 +33,7 @@
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <SqlModels:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
             <SqlModels:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
+            <SqlModels:CategoryConverter x:Name="CategoryConverter" x:Key="CategoryConverter" />
             <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
             <local:DebugFlags x:Name="DebugFlags" x:Key="DebugFlags" />
 
@@ -1992,7 +1993,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                     <DataGridCheckBoxColumn Header="Param" Binding="{Binding AllowParam}" />
                                                     <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="250" />
                                                     <DataGridTextColumn Header="Repeat Timer" Binding="{Binding RepeatTimer, Converter={StaticResource IntConverter}}" />
-                                                    <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
+                                                    <DataGridTextColumn Header="Category" Binding="{Binding Category, Converter={StaticResource CategoryConverter}, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
                                                     <DataGridCheckBoxColumn Header="Lookup Data" Binding="{Binding LookupData}" />
                                                     <DataGridTextColumn Header="Table" Binding="{Binding Table}" />
                                                     <DataGridTextColumn Header="KeyField" Binding="{Binding KeyField}" />
