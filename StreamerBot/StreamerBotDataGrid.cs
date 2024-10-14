@@ -10,7 +10,6 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 
 namespace StreamerBot
 {
@@ -52,10 +51,10 @@ namespace StreamerBot
                         DG_UserDefinedCommands.Items.Refresh();
                         break;
                     case "Currency":
-                        DG_CurrencyAccrual.Items.Refresh();
+                        DG_Currency.Items.Refresh();
                         break;
                     case "CurrencyType":
-                        DG_Currency.Items.Refresh();
+                        DG_CurrencyType.Items.Refresh();
                         break;
                     case "CustomWelcome":
                         DG_CustomWelcome.Items.Refresh();
@@ -141,6 +140,18 @@ namespace StreamerBot
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
                 bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "IsEnabled").Any();
+                bool FoundAddItem = ((DataGrid)sender).Name is 
+                       "DG_CurrencyType"
+                    or "DG_CustomWelcome"
+                    or "DG_InRaids"
+                    or "DG_Mod_LearnMsgs"
+                    or "DG_ModApprove"
+                    or "DG_OutRaids"
+                    or "DG_OverlayService_Actions"
+                    or "DG_User_Quotes"
+                    or "DG_User_Shoutouts"
+                    or "DG_UserDefinedCommands"
+                    or "DG_Webhooks";
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
@@ -153,6 +164,10 @@ namespace StreamerBot
                         else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
                         {
                             ((MenuItem)M).IsEnabled = FoundIsEnabled;
+                        }
+                        else if (((MenuItem)M).Name is "DataGridContextMenu_AddItem")
+                        {
+                            ((MenuItem)M).Visibility = FoundAddItem ? Visibility.Visible : Visibility.Collapsed;
                         }
                     }
                     else if (M.GetType() == typeof(Separator))
@@ -171,18 +186,18 @@ namespace StreamerBot
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
 
-            DGOpenEditWindow(item, item.Items);
+            DGOpenEditWindow(item);
         }
 
-        private void DGOpenEditWindow(DataGrid item, ItemCollection items = null)
+        private void DGOpenEditWindow(DataGrid item)
         {
             Type SqlModel = item.Name switch
             {
                 nameof(DG_BuiltInCommands) => typeof(Commands),
                 nameof(DG_CategoryList) => typeof(CategoryList),
                 nameof(DG_Clips) => typeof(Clips),
+                nameof(DG_CurrencyType) => typeof(CurrencyType),
                 nameof(DG_Currency) => typeof(Currency),
-                nameof(DG_CurrencyAccrual) => typeof(CurrencyType),
                 nameof(DG_CustomWelcome) => typeof(CustomWelcome),
                 nameof(DG_DeathCounter) => typeof(GameDeadCounter),
                 nameof(DG_Followers) => typeof(Followers),
@@ -213,15 +228,6 @@ namespace StreamerBot
             }
 
             PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
-   
-            //if (items != null)
-            //{
-            //    Type CurrDGModel = item.Items.SourceCollection.GetType().GetGenericArguments()[0];
-            //}
-            //else
-            //{
-            //    PopupWindows.EditExistingItem(tableMeta.SetExistingEntity(item.SelectedItem));
-            //}
         }
 
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)

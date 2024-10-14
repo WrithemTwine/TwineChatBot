@@ -4,30 +4,30 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class StreamStats : IDatabaseTableMeta
     {
-        public System.DateTime StreamStart => (System.DateTime)Values["StreamStart"];
-        public System.DateTime StreamEnd => (System.DateTime)Values["StreamEnd"];
-        public System.TimeSpan Duration => (System.TimeSpan)Values["Duration"];
-        public System.Int32 NewFollows => (System.Int32)Values["NewFollows"];
-        public System.Int32 NewSubscribers => (System.Int32)Values["NewSubscribers"];
-        public System.Int32 GiftSubs => (System.Int32)Values["GiftSubs"];
-        public System.Int32 Bits => (System.Int32)Values["Bits"];
-        public System.Int32 Raids => (System.Int32)Values["Raids"];
-        public System.Int32 Hosted => (System.Int32)Values["Hosted"];
-        public System.Int32 UsersBanned => (System.Int32)Values["UsersBanned"];
-        public System.Int32 UsersTimedOut => (System.Int32)Values["UsersTimedOut"];
-        public System.Int32 ModeratorsPresent => (System.Int32)Values["ModeratorsPresent"];
-        public System.Int32 SubsPresent => (System.Int32)Values["SubsPresent"];
-        public System.Int32 VIPsPresent => (System.Int32)Values["VIPsPresent"];
-        public System.Int32 TotalChats => (System.Int32)Values["TotalChats"];
-        public System.Int32 CommandMsgs => (System.Int32)Values["CommandMsgs"];
-        public System.Int32 AutomatedEvents => (System.Int32)Values["AutomatedEvents"];
-        public System.Int32 AutomatedCommands => (System.Int32)Values["AutomatedCommands"];
-        public System.Int32 WebhookMsgs => (System.Int32)Values["WebhookMsgs"];
-        public System.Int32 ClipsMade => (System.Int32)Values["ClipsMade"];
-        public System.Int32 ChannelPtCount => (System.Int32)Values["ChannelPtCount"];
-        public System.Int32 ChannelChallenge => (System.Int32)Values["ChannelChallenge"];
-        public System.Int32 MaxUsers => (System.Int32)Values["MaxUsers"];
-        public System.String Category => (System.String)Values["Category"];
+        public System.DateTime StreamStart { get => (System.DateTime)Values["StreamStart"]; set => Values["StreamStart"] = value; }
+        public System.DateTime StreamEnd { get => (System.DateTime)Values["StreamEnd"]; set => Values["StreamEnd"] = value; }
+        public System.TimeSpan Duration { get => (System.TimeSpan)Values["Duration"]; set => Values["Duration"] = value; }
+        public System.Int32 NewFollows { get => (System.Int32)Values["NewFollows"]; set => Values["NewFollows"] = value; }
+        public System.Int32 NewSubscribers { get => (System.Int32)Values["NewSubscribers"]; set => Values["NewSubscribers"] = value; }
+        public System.Int32 GiftSubs { get => (System.Int32)Values["GiftSubs"]; set => Values["GiftSubs"] = value; }
+        public System.Int32 Bits { get => (System.Int32)Values["Bits"]; set => Values["Bits"] = value; }
+        public System.Int32 Raids { get => (System.Int32)Values["Raids"]; set => Values["Raids"] = value; }
+        public System.Int32 Hosted { get => (System.Int32)Values["Hosted"]; set => Values["Hosted"] = value; }
+        public System.Int32 UsersBanned { get => (System.Int32)Values["UsersBanned"]; set => Values["UsersBanned"] = value; }
+        public System.Int32 UsersTimedOut { get => (System.Int32)Values["UsersTimedOut"]; set => Values["UsersTimedOut"] = value; }
+        public System.Int32 ModeratorsPresent { get => (System.Int32)Values["ModeratorsPresent"]; set => Values["ModeratorsPresent"] = value; }
+        public System.Int32 SubsPresent { get => (System.Int32)Values["SubsPresent"]; set => Values["SubsPresent"] = value; }
+        public System.Int32 VIPsPresent { get => (System.Int32)Values["VIPsPresent"]; set => Values["VIPsPresent"] = value; }
+        public System.Int32 TotalChats { get => (System.Int32)Values["TotalChats"]; set => Values["TotalChats"] = value; }
+        public System.Int32 CommandMsgs { get => (System.Int32)Values["CommandMsgs"]; set => Values["CommandMsgs"] = value; }
+        public System.Int32 AutomatedEvents { get => (System.Int32)Values["AutomatedEvents"]; set => Values["AutomatedEvents"] = value; }
+        public System.Int32 AutomatedCommands { get => (System.Int32)Values["AutomatedCommands"]; set => Values["AutomatedCommands"] = value; }
+        public System.Int32 WebhookMsgs { get => (System.Int32)Values["WebhookMsgs"]; set => Values["WebhookMsgs"] = value; }
+        public System.Int32 ClipsMade { get => (System.Int32)Values["ClipsMade"]; set => Values["ClipsMade"] = value; }
+        public System.Int32 ChannelPtCount { get => (System.Int32)Values["ChannelPtCount"]; set => Values["ChannelPtCount"] = value; }
+        public System.Int32 ChannelChallenge { get => (System.Int32)Values["ChannelChallenge"]; set => Values["ChannelChallenge"] = value; }
+        public System.Int32 MaxUsers { get => (System.Int32)Values["MaxUsers"]; set => Values["MaxUsers"] = value; }
+        public ICollection<System.String> Category { get => (ICollection<System.String>)Values["Category"]; set => Values["Category"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -88,35 +88,35 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "ChannelPtCount", typeof(System.Int32) },
               { "ChannelChallenge", typeof(System.Int32) },
               { "MaxUsers", typeof(System.Int32) },
-              { "Category", typeof(System.String) }
+              { "Category", typeof(ICollection<System.String>) }
         };
         public object GetModelEntity()
         {
             return new Models.StreamStats(
-                                          (System.DateTime)Values["StreamStart"], 
-                                          (System.DateTime)Values["StreamEnd"], 
-                                          Convert.ToInt32(Values["NewFollows"]), 
-                                          Convert.ToInt32(Values["NewSubscribers"]), 
-                                          Convert.ToInt32(Values["GiftSubs"]), 
-                                          Convert.ToInt32(Values["Bits"]), 
-                                          Convert.ToInt32(Values["Raids"]), 
-                                          Convert.ToInt32(Values["Hosted"]), 
-                                          Convert.ToInt32(Values["UsersBanned"]), 
-                                          Convert.ToInt32(Values["UsersTimedOut"]), 
-                                          Convert.ToInt32(Values["ModeratorsPresent"]), 
-                                          Convert.ToInt32(Values["SubsPresent"]), 
-                                          Convert.ToInt32(Values["VIPsPresent"]), 
-                                          Convert.ToInt32(Values["TotalChats"]), 
-                                          Convert.ToInt32(Values["CommandMsgs"]), 
-                                          Convert.ToInt32(Values["AutomatedEvents"]), 
-                                          Convert.ToInt32(Values["AutomatedCommands"]), 
-                                          Convert.ToInt32(Values["WebhookMsgs"]), 
-                                          Convert.ToInt32(Values["ClipsMade"]), 
-                                          Convert.ToInt32(Values["ChannelPtCount"]), 
-                                          Convert.ToInt32(Values["ChannelChallenge"]), 
-                                          Convert.ToInt32(Values["MaxUsers"]), 
-                                          (System.String)Values["Category"]
-);
+            streamStart: StreamStart,
+            streamEnd: StreamEnd,
+            newFollows: Convert.ToInt32(NewFollows),
+            newSubscribers: Convert.ToInt32(NewSubscribers),
+            giftSubs: Convert.ToInt32(GiftSubs),
+            bits: Convert.ToInt32(Bits),
+            raids: Convert.ToInt32(Raids),
+            hosted: Convert.ToInt32(Hosted),
+            usersBanned: Convert.ToInt32(UsersBanned),
+            usersTimedOut: Convert.ToInt32(UsersTimedOut),
+            moderatorsPresent: Convert.ToInt32(ModeratorsPresent),
+            subsPresent: Convert.ToInt32(SubsPresent),
+            vIPsPresent: Convert.ToInt32(VIPsPresent),
+            totalChats: Convert.ToInt32(TotalChats),
+            commandMsgs: Convert.ToInt32(CommandMsgs),
+            automatedEvents: Convert.ToInt32(AutomatedEvents),
+            automatedCommands: Convert.ToInt32(AutomatedCommands),
+            webhookMsgs: Convert.ToInt32(WebhookMsgs),
+            clipsMade: Convert.ToInt32(ClipsMade),
+            channelPtCount: Convert.ToInt32(ChannelPtCount),
+            channelChallenge: Convert.ToInt32(ChannelChallenge),
+            maxUsers: Convert.ToInt32(MaxUsers),
+            category: Category
+        );
         }
         public void CopyUpdates(Models.StreamStats modelData)
         {
@@ -190,7 +190,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 modelData.TotalChats = TotalChats;
             }
 
-          if (modelData.CommandMsgs != CommandMsgs)
+            if (modelData.CommandMsgs != CommandMsgs)
             {
                 modelData.CommandMsgs = CommandMsgs;
             }

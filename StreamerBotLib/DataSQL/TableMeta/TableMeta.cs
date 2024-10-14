@@ -8,6 +8,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
 
         public object DataEntity { get; private set; }
 
+
         public TableMeta SetNewEntity(Type Entity)
         {
             if (Entity == typeof(Models.BanReasons))

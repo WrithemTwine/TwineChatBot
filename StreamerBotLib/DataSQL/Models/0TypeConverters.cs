@@ -104,12 +104,12 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return  (List<string>)value;
+            return (List<string>)value ?? [];
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return string.Join(", ",((List<string>)value));
+            return string.Join(", ", ((List<string>)value));
         }
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -119,7 +119,8 @@ namespace StreamerBotLib.DataSQL.Models
             if (Data.Count > 1 && Data.Contains("All"))
             {
                 return new(false, "All or other categories, not both.");
-            } else
+            }
+            else
             {
                 return new(true, "Successful.");
             }

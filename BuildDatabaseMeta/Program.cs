@@ -34,6 +34,8 @@ namespace BuildDatabaseMeta
                 List<string> entity = [];
                 List<string> param = [];
                 List<string> copyparam = [];
+                List<string> getNew = [];
+                List<string> copyEntity = [];
 
                 if (!name.Contains("Base"))
                 {
@@ -67,21 +69,17 @@ namespace BuildDatabaseMeta
                                 props.Add($"              {{ \"{p.Name}\", typeof({PropName}) }}");
                                 values.Add($"                 {{ \"{p.Name}\", tableData.{p.Name} }}");
 
-                                string newEntity = (PropName.Contains("Int") || PropName.Contains("int")) ? $"Convert.To{PropName.Replace("System.", "")}(Values[\"{p.Name}\"])" : $"({PropName})Values[\"{p.Name}\"]";
+                                string newEntity = (PropName.Contains("Int") || PropName.Contains("int")) ? $"Convert.To{PropName.Replace("System.", "")}({p.Name})" : $"{p.Name}";
 
-                                if ((p.Name != "Duration") && name == "StreamStats") // ignore "Duration" column as it is computed
+                                if (p.Name != "Duration" && p.Name != "Id" && p.Name != "Commandtype" && p.Name != "DataSource") // ignore "Duration" column as it is computed
                                 {
-                                    entity.Add($"                                          {newEntity}");
-                                }
-                                param.Add($"        public {PropName} {p.Name} => ({PropName})Values[\"{p.Name}\"];");
-
-                                if ((p.Name != "Duration") && name == "StreamStats") // ignore "Duration" column as it is computed
-                                {
-                                    copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
+                                        copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
                                                 $"            {{\r\n" +
                                                 $"                modelData.{p.Name} = {p.Name};\r\n" +
                                                 $"            }}\r\n");
+                                        entity.Add($"            {p.Name.ToLower()[0]}{p.Name[1..]}: {newEntity}");
                                 }
+                                param.Add($"        public {PropName} {p.Name} {{ get => ({PropName})Values[\"{p.Name}\"]; set => Values[\"{p.Name}\"] = value; }}");
                             }
                         }
                     }
@@ -128,7 +126,7 @@ namespace BuildDatabaseMeta
             $"        {{\r\n" +
             $"            return new Models.{classname}(\r\n" +
             $"{entity}\r\n" +
-            $");\r\n" +
+            $"        );\r\n" +
             $"        }}\r\n" +
             $"" +
             $"        public void CopyUpdates(Models.{classname} modelData)\r\n" +
@@ -154,7 +152,7 @@ namespace BuildDatabaseMeta
                 $"    {{\r\n" +
                 $"        internal IDatabaseTableMeta CurrEntity;\r\n" +
                 $"\r\n" +
-                $"        private object DataEntity;\r\n" +
+                $"        public object DataEntity {{ get; private set; }}\r\n\r\n" +
                 $"\r\n" +
                 $"        public TableMeta SetNewEntity(Type Entity)\r\n" +
                 $"        {{\r\n" +

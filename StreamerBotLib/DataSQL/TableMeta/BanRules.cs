@@ -4,11 +4,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class BanRules : IDatabaseTableMeta
     {
-        public System.Int32 Id => (System.Int32)Values["Id"];
-        public StreamerBotLib.Enums.ViewerTypes ViewerTypes => (StreamerBotLib.Enums.ViewerTypes)Values["ViewerTypes"];
-        public StreamerBotLib.Enums.MsgTypes MsgType => (StreamerBotLib.Enums.MsgTypes)Values["MsgType"];
-        public StreamerBotLib.Enums.ModActions ModAction => (StreamerBotLib.Enums.ModActions)Values["ModAction"];
-        public System.Int32 TimeoutSeconds => (System.Int32)Values["TimeoutSeconds"];
+        public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }
+        public StreamerBotLib.Enums.ViewerTypes ViewerTypes { get => (StreamerBotLib.Enums.ViewerTypes)Values["ViewerTypes"]; set => Values["ViewerTypes"] = value; }
+        public StreamerBotLib.Enums.MsgTypes MsgType { get => (StreamerBotLib.Enums.MsgTypes)Values["MsgType"]; set => Values["MsgType"] = value; }
+        public StreamerBotLib.Enums.ModActions ModAction { get => (StreamerBotLib.Enums.ModActions)Values["ModAction"]; set => Values["ModAction"] = value; }
+        public System.Int32 TimeoutSeconds { get => (System.Int32)Values["TimeoutSeconds"]; set => Values["TimeoutSeconds"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -36,11 +36,33 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.BanRules(
-
-);
+            viewerTypes: ViewerTypes,
+            msgType: MsgType,
+            modAction: ModAction,
+            timeoutSeconds: Convert.ToInt32(TimeoutSeconds)
+        );
         }
         public void CopyUpdates(Models.BanRules modelData)
         {
+            if (modelData.ViewerTypes != ViewerTypes)
+            {
+                modelData.ViewerTypes = ViewerTypes;
+            }
+
+            if (modelData.MsgType != MsgType)
+            {
+                modelData.MsgType = MsgType;
+            }
+
+            if (modelData.ModAction != ModAction)
+            {
+                modelData.ModAction = ModAction;
+            }
+
+            if (modelData.TimeoutSeconds != TimeoutSeconds)
+            {
+                modelData.TimeoutSeconds = TimeoutSeconds;
+            }
 
         }
     }

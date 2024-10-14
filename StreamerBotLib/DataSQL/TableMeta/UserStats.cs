@@ -4,13 +4,13 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class UserStats : IDatabaseTableMeta
     {
-        public System.TimeSpan WatchTime => (System.TimeSpan)Values["WatchTime"];
-        public System.Int32 ChannelChat => (System.Int32)Values["ChannelChat"];
-        public System.Int32 CallCommands => (System.Int32)Values["CallCommands"];
-        public System.Int32 RewardRedeems => (System.Int32)Values["RewardRedeems"];
-        public System.Int32 ClipsCreated => (System.Int32)Values["ClipsCreated"];
-        public System.String UserId => (System.String)Values["UserId"];
-        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
+        public System.TimeSpan WatchTime { get => (System.TimeSpan)Values["WatchTime"]; set => Values["WatchTime"] = value; }
+        public System.Int32 ChannelChat { get => (System.Int32)Values["ChannelChat"]; set => Values["ChannelChat"] = value; }
+        public System.Int32 CallCommands { get => (System.Int32)Values["CallCommands"]; set => Values["CallCommands"] = value; }
+        public System.Int32 RewardRedeems { get => (System.Int32)Values["RewardRedeems"]; set => Values["RewardRedeems"] = value; }
+        public System.Int32 ClipsCreated { get => (System.Int32)Values["ClipsCreated"]; set => Values["ClipsCreated"] = value; }
+        public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
+        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -42,11 +42,51 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.UserStats(
-
-);
+            watchTime: WatchTime,
+            channelChat: Convert.ToInt32(ChannelChat),
+            callCommands: Convert.ToInt32(CallCommands),
+            rewardRedeems: Convert.ToInt32(RewardRedeems),
+            clipsCreated: Convert.ToInt32(ClipsCreated),
+            userId: UserId,
+            platform: Platform
+        );
         }
         public void CopyUpdates(Models.UserStats modelData)
         {
+            if (modelData.WatchTime != WatchTime)
+            {
+                modelData.WatchTime = WatchTime;
+            }
+
+            if (modelData.ChannelChat != ChannelChat)
+            {
+                modelData.ChannelChat = ChannelChat;
+            }
+
+            if (modelData.CallCommands != CallCommands)
+            {
+                modelData.CallCommands = CallCommands;
+            }
+
+            if (modelData.RewardRedeems != RewardRedeems)
+            {
+                modelData.RewardRedeems = RewardRedeems;
+            }
+
+            if (modelData.ClipsCreated != ClipsCreated)
+            {
+                modelData.ClipsCreated = ClipsCreated;
+            }
+
+            if (modelData.UserId != UserId)
+            {
+                modelData.UserId = UserId;
+            }
+
+            if (modelData.Platform != Platform)
+            {
+                modelData.Platform = Platform;
+            }
 
         }
     }

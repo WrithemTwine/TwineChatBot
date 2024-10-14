@@ -4,10 +4,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class MultiSummaryLiveStreams : IDatabaseTableMeta
     {
-        public System.Int32 StreamCount => (System.Int32)Values["StreamCount"];
-        public System.DateTime ThroughDate => (System.DateTime)Values["ThroughDate"];
-        public System.String UserId => (System.String)Values["UserId"];
-        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
+        public System.Int32 StreamCount { get => (System.Int32)Values["StreamCount"]; set => Values["StreamCount"] = value; }
+        public System.DateTime ThroughDate { get => (System.DateTime)Values["ThroughDate"]; set => Values["ThroughDate"] = value; }
+        public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
+        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -33,11 +33,33 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.MultiSummaryLiveStreams(
-
-);
+            streamCount: Convert.ToInt32(StreamCount),
+            throughDate: ThroughDate,
+            userId: UserId,
+            platform: Platform
+        );
         }
         public void CopyUpdates(Models.MultiSummaryLiveStreams modelData)
         {
+            if (modelData.StreamCount != StreamCount)
+            {
+                modelData.StreamCount = StreamCount;
+            }
+
+            if (modelData.ThroughDate != ThroughDate)
+            {
+                modelData.ThroughDate = ThroughDate;
+            }
+
+            if (modelData.UserId != UserId)
+            {
+                modelData.UserId = UserId;
+            }
+
+            if (modelData.Platform != Platform)
+            {
+                modelData.Platform = Platform;
+            }
 
         }
     }

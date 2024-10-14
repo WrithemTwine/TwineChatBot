@@ -18,7 +18,6 @@ using StreamerBotLib.Systems;
 
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
@@ -234,7 +233,7 @@ switches:
                 foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
                 {
                     DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
-                } 
+                }
 
                 // add each of the social commands
                 foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
@@ -730,8 +729,8 @@ switches:
                 BuildDataContext();
                 Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
                 CommandsBase EditCom = (from C in context.CommandsBase
-                                    where C.CmdName == cmd
-                                    select C).FirstOrDefault();
+                                        where C.CmdName == cmd
+                                        select C).FirstOrDefault();
 
                 if (EditCom != default)
                 {
@@ -1213,6 +1212,172 @@ switches:
         }
 
         #region Post_Methods
+
+        public void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                try
+                {
+                    // show all, but GUI access-controls will prevent these certain tables from having new rows (channel events doesn't need a new row for another event, except API driven and application will already update it)
+                    if (tableMeta.TableName == "BanReasons")
+                    {
+                        context.BanReasons.Add((Models.BanReasons)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("BanReasons");
+                    }
+                    else if (tableMeta.TableName == "BanRules")
+                    {
+                        context.BanRules.Add((Models.BanRules)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("BanRules");
+                    }
+                    else if (tableMeta.TableName == "CategoryList")
+                    {
+                        context.CategoryList.Add((Models.CategoryList)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("CategoryList");
+                    }
+                    else if (tableMeta.TableName == "ChannelEvents")
+                    {
+                        context.ChannelEvents.Add((Models.ChannelEvents)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("ChannelEvents");
+                    }
+                    else if (tableMeta.TableName == "Clips")
+                    {
+                        context.Clips.Add((Models.Clips)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Clips");
+                    }
+                    else if (tableMeta.TableName == "Commands")
+                    {
+                        context.Commands.Add((Models.Commands)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Commands");
+                    }
+                    else if (tableMeta.TableName == "CommandsUser")
+                    {
+                        context.CommandsUser.Add((Models.CommandsUser)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("CommandsUser");
+                    }
+                    else if (tableMeta.TableName == "Currency")
+                    {
+                        context.Currency.Add((Models.Currency)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Currency");
+                    }
+                    else if (tableMeta.TableName == "CurrencyType")
+                    {
+                        context.CurrencyType.Add((Models.CurrencyType)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("CurrencyType");
+                    }
+                    else if (tableMeta.TableName == "CustomWelcome")
+                    {
+                        context.CustomWelcome.Add((Models.CustomWelcome)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("CustomWelcome");
+                    }
+                    else if (tableMeta.TableName == "Followers")
+                    {
+                        context.Followers.Add((Models.Followers)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Followers");
+                    }
+                    else if (tableMeta.TableName == "GameDeadCounter")
+                    {
+                        context.GameDeadCounter.Add((Models.GameDeadCounter)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("GameDeadCounter");
+                    }
+                    else if (tableMeta.TableName == "GiveawayUserData")
+                    {
+                        context.GiveawayUserData.Add((Models.GiveawayUserData)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("GiveawayUserData");
+                    }
+                    else if (tableMeta.TableName == "InRaidData")
+                    {
+                        context.InRaidData.Add((Models.InRaidData)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("InRaidData");
+                    }
+                    else if (tableMeta.TableName == "LearnMsgs")
+                    {
+                        context.LearnMsgs.Add((Models.LearnMsgs)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("LearnMsgs");
+                    }
+                    else if (tableMeta.TableName == "ModeratorApprove")
+                    {
+                        context.ModeratorApprove.Add((Models.ModeratorApprove)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("ModeratorApprove");
+                    }
+                    else if (tableMeta.TableName == "MultiChannels")
+                    {
+                        context.MultiChannels.Add((Models.MultiChannels)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("MultiChannels");
+                    }
+                    else if (tableMeta.TableName == "MultiLiveStreams")
+                    {
+                        context.MultiLiveStreams.Add((Models.MultiLiveStreams)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("MultiLiveStreams");
+                    }
+                    else if (tableMeta.TableName == "MultiSummaryLiveStreams")
+                    {
+                        context.MultiSummaryLiveStreams.Add((Models.MultiSummaryLiveStreams)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("MultiSummaryLiveStreams");
+                    }
+                    else if (tableMeta.TableName == "MultiWebhooks")
+                    {
+                        context.MultiWebhooks.Add((Models.MultiWebhooks)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("MultiWebhooks");
+                    }
+                    else if (tableMeta.TableName == "OldFollowUsers")
+                    {
+                        context.OldFollowUsers.Add((Models.OldFollowUsers)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("OldFollowUsers");
+                    }
+                    else if (tableMeta.TableName == "OutRaidData")
+                    {
+                        context.OutRaidData.Add((Models.OutRaidData)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("OutRaidData");
+                    }
+                    else if (tableMeta.TableName == "OverlayServices")
+                    {
+                        context.OverlayServices.Add((Models.OverlayServices)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("OverlayServices");
+                    }
+                    else if (tableMeta.TableName == "OverlayTicker")
+                    {
+                        context.OverlayTicker.Add((Models.OverlayTicker)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("OverlayTicker");
+                    }
+                    else if (tableMeta.TableName == "Quotes")
+                    {
+                        context.Quotes.Add((Models.Quotes)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Quotes");
+                    }
+                    else if (tableMeta.TableName == "ShoutOuts")
+                    {
+                        context.ShoutOuts.Add((Models.ShoutOuts)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("ShoutOuts");
+                    }
+                    else if (tableMeta.TableName == "StreamStats")
+                    {
+                        context.StreamStats.Add((Models.StreamStats)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("StreamStats");
+                    }
+                    else if (tableMeta.TableName == "Users")
+                    {
+                        context.Users.Add((Models.Users)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Users");
+                    }
+                    else if (tableMeta.TableName == "UserStats")
+                    {
+                        context.UserStats.Add((Models.UserStats)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("UserStats");
+                    }
+                    else if (tableMeta.TableName == "Webhooks")
+                    {
+                        context.Webhooks.Add((Models.Webhooks)tableMeta.GetModelEntity());
+                        NotifyDataCollectionUpdated("Webhooks");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                }
+            }
+        }
+
         public bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0)
         {
             bool found = false;
@@ -1405,9 +1570,9 @@ switches:
                 BuildDataContext();
 
                 List<Follow> ReturnList = new(from F in follows
-                                          join DF in context.Followers on F.FromUserId equals DF.UserId
-                                          where DF.UserId is null
-                                          select F);
+                                              join DF in context.Followers on F.FromUserId equals DF.UserId
+                                              where DF.UserId is null
+                                              select F);
 
                 followsQueue.Enqueue(follows);
                 PostFollowsQueue();
@@ -1772,7 +1937,7 @@ switches:
         /// </summary>
         /// <param name="StreamStart">The time of stream start.</param>
         /// <returns><code>true: for posting a new stream start;</code> <code>false: when a stream start date row already exists</code></returns>
-        public bool PostStream(DateTime StreamStart)
+        public bool PostStream(DateTime StreamStart, string Category)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -2283,7 +2448,7 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                Users user = (from U in context.Users where (U.UserName == User.UserName && U.Platform == User.Platform) select U).FirstOrDefault();
+                Users user = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).FirstOrDefault();
                 if (user != default)
                 {
                     UpdateWatchTime(User, LastSeen);
@@ -2596,7 +2761,7 @@ switches:
             {
                 BuildDataContext();
 
-                context.SaveChanges(true);
+                context.SaveChanges(true); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
 
                 ClearDataContext();
             }

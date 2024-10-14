@@ -306,6 +306,10 @@ namespace StreamerBotLib.Systems
             return DataManage.GetWebhooks(source, webhooksKind);
         }
 
+        internal static void DataGridUpdatedRow(object sender, AddNewRowEventArgs e)
+        {
+            DataManage.PostDataGridGUIAddRow(e.NewRow);
+        }
 
         #endregion
 
@@ -907,7 +911,7 @@ namespace StreamerBotLib.Systems
         #endregion
 
         #region GUI
-        
+
         public void GUISaveDataGridEdits()
         {
             DataManage.GUIRowEditSave();

@@ -1,4 +1,4 @@
-﻿  #if DEBUG
+﻿#if DEBUG
 #define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
 #endif
 

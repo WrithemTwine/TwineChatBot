@@ -4,9 +4,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class LearnMsgs : IDatabaseTableMeta
     {
-        public System.Int32 Id => (System.Int32)Values["Id"];
-        public StreamerBotLib.Enums.MsgTypes MsgType => (StreamerBotLib.Enums.MsgTypes)Values["MsgType"];
-        public System.String TeachingMsg => (System.String)Values["TeachingMsg"];
+        public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }
+        public StreamerBotLib.Enums.MsgTypes MsgType { get => (StreamerBotLib.Enums.MsgTypes)Values["MsgType"]; set => Values["MsgType"] = value; }
+        public System.String TeachingMsg { get => (System.String)Values["TeachingMsg"]; set => Values["TeachingMsg"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -30,11 +30,21 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.LearnMsgs(
-
-);
+            msgType: MsgType,
+            teachingMsg: TeachingMsg
+        );
         }
         public void CopyUpdates(Models.LearnMsgs modelData)
         {
+            if (modelData.MsgType != MsgType)
+            {
+                modelData.MsgType = MsgType;
+            }
+
+            if (modelData.TeachingMsg != TeachingMsg)
+            {
+                modelData.TeachingMsg = TeachingMsg;
+            }
 
         }
     }

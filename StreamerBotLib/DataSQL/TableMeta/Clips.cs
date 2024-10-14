@@ -4,13 +4,13 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Clips : IDatabaseTableMeta
     {
-        public System.String ClipId => (System.String)Values["ClipId"];
-        public System.DateTime CreatedAt => (System.DateTime)Values["CreatedAt"];
-        public System.String Title => (System.String)Values["Title"];
-        public System.String CategoryId => (System.String)Values["CategoryId"];
-        public System.String Language => (System.String)Values["Language"];
-        public System.Single Duration => (System.Single)Values["Duration"];
-        public System.String Url => (System.String)Values["Url"];
+        public System.String ClipId { get => (System.String)Values["ClipId"]; set => Values["ClipId"] = value; }
+        public System.DateTime CreatedAt { get => (System.DateTime)Values["CreatedAt"]; set => Values["CreatedAt"] = value; }
+        public System.String Title { get => (System.String)Values["Title"]; set => Values["Title"] = value; }
+        public System.String CategoryId { get => (System.String)Values["CategoryId"]; set => Values["CategoryId"] = value; }
+        public System.String Language { get => (System.String)Values["Language"]; set => Values["Language"] = value; }
+        public System.Single Duration { get => (System.Single)Values["Duration"]; set => Values["Duration"] = value; }
+        public System.String Url { get => (System.String)Values["Url"]; set => Values["Url"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -42,11 +42,45 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Clips(
-
-);
+            clipId: ClipId,
+            createdAt: CreatedAt,
+            title: Title,
+            categoryId: CategoryId,
+            language: Language,
+            url: Url
+        );
         }
         public void CopyUpdates(Models.Clips modelData)
         {
+            if (modelData.ClipId != ClipId)
+            {
+                modelData.ClipId = ClipId;
+            }
+
+            if (modelData.CreatedAt != CreatedAt)
+            {
+                modelData.CreatedAt = CreatedAt;
+            }
+
+            if (modelData.Title != Title)
+            {
+                modelData.Title = Title;
+            }
+
+            if (modelData.CategoryId != CategoryId)
+            {
+                modelData.CategoryId = CategoryId;
+            }
+
+            if (modelData.Language != Language)
+            {
+                modelData.Language = Language;
+            }
+
+            if (modelData.Url != Url)
+            {
+                modelData.Url = Url;
+            }
 
         }
     }

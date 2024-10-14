@@ -4,14 +4,14 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Webhooks : IDatabaseTableMeta
     {
-        public System.Int32 Id => (System.Int32)Values["Id"];
-        public System.Boolean IsEnabled => (System.Boolean)Values["IsEnabled"];
-        public StreamerBotLib.Enums.WebhooksSource WebhooksSource => (StreamerBotLib.Enums.WebhooksSource)Values["WebhooksSource"];
-        public System.String Server => (System.String)Values["Server"];
-        public StreamerBotLib.Enums.WebhooksKind Kind => (StreamerBotLib.Enums.WebhooksKind)Values["Kind"];
-        public System.Boolean AddEveryone => (System.Boolean)Values["AddEveryone"];
-        public System.Uri Webhook => (System.Uri)Values["Webhook"];
-        public StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource DataSource => (StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource)Values["DataSource"];
+        public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }
+        public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
+        public StreamerBotLib.Enums.WebhooksSource WebhooksSource { get => (StreamerBotLib.Enums.WebhooksSource)Values["WebhooksSource"]; set => Values["WebhooksSource"] = value; }
+        public System.String Server { get => (System.String)Values["Server"]; set => Values["Server"] = value; }
+        public StreamerBotLib.Enums.WebhooksKind Kind { get => (StreamerBotLib.Enums.WebhooksKind)Values["Kind"]; set => Values["Kind"] = value; }
+        public System.Boolean AddEveryone { get => (System.Boolean)Values["AddEveryone"]; set => Values["AddEveryone"] = value; }
+        public System.Uri Webhook { get => (System.Uri)Values["Webhook"]; set => Values["Webhook"] = value; }
+        public StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource DataSource { get => (StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource)Values["DataSource"]; set => Values["DataSource"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -45,11 +45,45 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Webhooks(
-
-);
+            isEnabled: IsEnabled,
+            webhooksSource: WebhooksSource,
+            server: Server,
+            kind: Kind,
+            addEveryone: AddEveryone,
+            webhook: Webhook
+        );
         }
         public void CopyUpdates(Models.Webhooks modelData)
         {
+            if (modelData.IsEnabled != IsEnabled)
+            {
+                modelData.IsEnabled = IsEnabled;
+            }
+
+            if (modelData.WebhooksSource != WebhooksSource)
+            {
+                modelData.WebhooksSource = WebhooksSource;
+            }
+
+            if (modelData.Server != Server)
+            {
+                modelData.Server = Server;
+            }
+
+            if (modelData.Kind != Kind)
+            {
+                modelData.Kind = Kind;
+            }
+
+            if (modelData.AddEveryone != AddEveryone)
+            {
+                modelData.AddEveryone = AddEveryone;
+            }
+
+            if (modelData.Webhook != Webhook)
+            {
+                modelData.Webhook = Webhook;
+            }
 
         }
     }

@@ -5,8 +5,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:StreamerBotLib.Models"
     x:Class="StreamerBotLib.GUI.Windows.EditData"
-        mc:Ignorable="d"
-        Title="Edit DataGrid" Height="250" Width="450" MinHeight="250" MaxHeight="800" MaxWidth="550" SnapsToDevicePixels="True" Closing="Window_Closing" SizeToContent="WidthAndHeight" UseLayoutRounding="True" Topmost="True">
+    mc:Ignorable="d"
+    Title="Edit DataGrid" 
+    Height="250" Width="450" MinHeight="250" 
+    MaxHeight="800" MaxWidth="550" 
+    SnapsToDevicePixels="True" 
+    Closing="Window_Closing" 
+    SizeToContent="WidthAndHeight" 
+    UseLayoutRounding="True" 
+    Topmost="True">
+    <Window.Resources>
+        <DataTemplate x:Key="CategoryCheckBox" DataType="ListBox">
+            <CheckBox Content="{Binding Item1}" IsChecked="{Binding Item2}" Checked="EditData_Category_Checked" Unchecked="EditData_Category_Checked" />
+        </DataTemplate>
+    </Window.Resources>
 
     <DockPanel LastChildFill="True">
         <StackPanel DockPanel.Dock="Top">

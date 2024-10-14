@@ -6,8 +6,6 @@ using StreamerBotLib.Models;
 
 using System.Diagnostics;
 
-using TwitchLib.Client.Models;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CmdName))]

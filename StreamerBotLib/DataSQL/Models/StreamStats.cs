@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using System.ComponentModel.DataAnnotations.Schema;
+using StreamerBotLib.Static;
 
 namespace StreamerBotLib.DataSQL.Models
 {
@@ -54,7 +54,7 @@ namespace StreamerBotLib.DataSQL.Models
                              int channelPtCount = 0,
                              int channelChallenge = 0,
                              int maxUsers = 0,
-                             string category = "")
+                             ICollection<string> category = null)
 #endif
  : EntityBase
     {
@@ -83,7 +83,7 @@ namespace StreamerBotLib.DataSQL.Models
         public int ChannelPtCount { get; set; } = channelPtCount;
         public int ChannelChallenge { get; set; } = channelChallenge;
         public int MaxUsers { get; set; } = maxUsers;
-        public string Category { get; set; } = category;
+        public ICollection<string> Category { get; set; } = category ?? [];
 
         public void Update(StreamerBotLib.Models.StreamStat streamStat)
         {
@@ -109,7 +109,7 @@ namespace StreamerBotLib.DataSQL.Models
             ChannelPtCount = streamStat.ChannelPtCount;
             ChannelChallenge = streamStat.ChannelChallenge;
             MaxUsers = streamStat.MaxUsers;
-            Category = streamStat.Category;
+            Category.UniqueAdd(streamStat.Category);
         }
     }
 }

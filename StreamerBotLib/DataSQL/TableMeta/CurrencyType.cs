@@ -4,10 +4,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class CurrencyType : IDatabaseTableMeta
     {
-        public System.Double AccrueAmt => (System.Double)Values["AccrueAmt"];
-        public System.Int32 Seconds => (System.Int32)Values["Seconds"];
-        public System.Int32 MaxValue => (System.Int32)Values["MaxValue"];
-        public System.String CurrencyName => (System.String)Values["CurrencyName"];
+        public System.Double AccrueAmt { get => (System.Double)Values["AccrueAmt"]; set => Values["AccrueAmt"] = value; }
+        public System.Int32 Seconds { get => (System.Int32)Values["Seconds"]; set => Values["Seconds"] = value; }
+        public System.Int32 MaxValue { get => (System.Int32)Values["MaxValue"]; set => Values["MaxValue"] = value; }
+        public System.String CurrencyName { get => (System.String)Values["CurrencyName"]; set => Values["CurrencyName"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -33,11 +33,33 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.CurrencyType(
-
-);
+            accrueAmt: AccrueAmt,
+            seconds: Convert.ToInt32(Seconds),
+            maxValue: Convert.ToInt32(MaxValue),
+            currencyName: CurrencyName
+        );
         }
         public void CopyUpdates(Models.CurrencyType modelData)
         {
+            if (modelData.AccrueAmt != AccrueAmt)
+            {
+                modelData.AccrueAmt = AccrueAmt;
+            }
+
+            if (modelData.Seconds != Seconds)
+            {
+                modelData.Seconds = Seconds;
+            }
+
+            if (modelData.MaxValue != MaxValue)
+            {
+                modelData.MaxValue = MaxValue;
+            }
+
+            if (modelData.CurrencyName != CurrencyName)
+            {
+                modelData.CurrencyName = CurrencyName;
+            }
 
         }
     }

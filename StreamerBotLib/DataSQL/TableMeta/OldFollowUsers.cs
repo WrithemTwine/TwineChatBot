@@ -4,14 +4,14 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class OldFollowUsers : IDatabaseTableMeta
     {
-        public System.String UserId => (System.String)Values["UserId"];
-        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
-        public System.String UserName => (System.String)Values["UserName"];
-        public System.Boolean IsFollower => (System.Boolean)Values["IsFollower"];
-        public System.DateTime FollowedDate => (System.DateTime)Values["FollowedDate"];
-        public System.DateTime StatusChangeDate => (System.DateTime)Values["StatusChangeDate"];
-        public System.String Category => (System.String)Values["Category"];
-        public System.DateTime AddDate => (System.DateTime)Values["AddDate"];
+        public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
+        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
+        public System.String UserName { get => (System.String)Values["UserName"]; set => Values["UserName"] = value; }
+        public System.Boolean IsFollower { get => (System.Boolean)Values["IsFollower"]; set => Values["IsFollower"] = value; }
+        public System.DateTime FollowedDate { get => (System.DateTime)Values["FollowedDate"]; set => Values["FollowedDate"] = value; }
+        public System.DateTime StatusChangeDate { get => (System.DateTime)Values["StatusChangeDate"]; set => Values["StatusChangeDate"] = value; }
+        public System.String Category { get => (System.String)Values["Category"]; set => Values["Category"] = value; }
+        public System.DateTime AddDate { get => (System.DateTime)Values["AddDate"]; set => Values["AddDate"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -45,11 +45,57 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.OldFollowUsers(
-
-);
+            userId: UserId,
+            platform: Platform,
+            userName: UserName,
+            isFollower: IsFollower,
+            followedDate: FollowedDate,
+            statusChangeDate: StatusChangeDate,
+            category: Category,
+            addDate: AddDate
+        );
         }
         public void CopyUpdates(Models.OldFollowUsers modelData)
         {
+            if (modelData.UserId != UserId)
+            {
+                modelData.UserId = UserId;
+            }
+
+            if (modelData.Platform != Platform)
+            {
+                modelData.Platform = Platform;
+            }
+
+            if (modelData.UserName != UserName)
+            {
+                modelData.UserName = UserName;
+            }
+
+            if (modelData.IsFollower != IsFollower)
+            {
+                modelData.IsFollower = IsFollower;
+            }
+
+            if (modelData.FollowedDate != FollowedDate)
+            {
+                modelData.FollowedDate = FollowedDate;
+            }
+
+            if (modelData.StatusChangeDate != StatusChangeDate)
+            {
+                modelData.StatusChangeDate = StatusChangeDate;
+            }
+
+            if (modelData.Category != Category)
+            {
+                modelData.Category = Category;
+            }
+
+            if (modelData.AddDate != AddDate)
+            {
+                modelData.AddDate = AddDate;
+            }
 
         }
     }

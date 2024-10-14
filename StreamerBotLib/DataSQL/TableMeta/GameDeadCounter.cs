@@ -4,9 +4,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class GameDeadCounter : IDatabaseTableMeta
     {
-        public System.String CategoryId => (System.String)Values["CategoryId"];
-        public System.String Category => (System.String)Values["Category"];
-        public System.Int32 Counter => (System.Int32)Values["Counter"];
+        public System.String CategoryId { get => (System.String)Values["CategoryId"]; set => Values["CategoryId"] = value; }
+        public System.String Category { get => (System.String)Values["Category"]; set => Values["Category"] = value; }
+        public System.Int32 Counter { get => (System.Int32)Values["Counter"]; set => Values["Counter"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -30,11 +30,27 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.GameDeadCounter(
-
-);
+            categoryId: CategoryId,
+            category: Category,
+            counter: Convert.ToInt32(Counter)
+        );
         }
         public void CopyUpdates(Models.GameDeadCounter modelData)
         {
+            if (modelData.CategoryId != CategoryId)
+            {
+                modelData.CategoryId = CategoryId;
+            }
+
+            if (modelData.Category != Category)
+            {
+                modelData.Category = Category;
+            }
+
+            if (modelData.Counter != Counter)
+            {
+                modelData.Counter = Counter;
+            }
 
         }
     }

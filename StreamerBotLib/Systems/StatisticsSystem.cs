@@ -186,7 +186,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
-                    DataManage.PostStream(CurrStream.StreamStart);
+                    DataManage.PostStream(CurrStream.StreamStart, Category);
 
                     found = false;
                 }

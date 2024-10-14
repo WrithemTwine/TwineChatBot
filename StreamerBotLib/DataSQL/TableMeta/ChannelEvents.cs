@@ -4,11 +4,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class ChannelEvents : IDatabaseTableMeta
     {
-        public StreamerBotLib.Enums.ChannelEventActions Name => (StreamerBotLib.Enums.ChannelEventActions)Values["Name"];
-        public System.Int16 RepeatMsg => (System.Int16)Values["RepeatMsg"];
-        public System.Boolean AddMe => (System.Boolean)Values["AddMe"];
-        public System.Boolean IsEnabled => (System.Boolean)Values["IsEnabled"];
-        public System.String Message => (System.String)Values["Message"];
+        public StreamerBotLib.Enums.ChannelEventActions Name { get => (StreamerBotLib.Enums.ChannelEventActions)Values["Name"]; set => Values["Name"] = value; }
+        public System.Int16 RepeatMsg { get => (System.Int16)Values["RepeatMsg"]; set => Values["RepeatMsg"] = value; }
+        public System.Boolean AddMe { get => (System.Boolean)Values["AddMe"]; set => Values["AddMe"] = value; }
+        public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
+        public System.String Message { get => (System.String)Values["Message"]; set => Values["Message"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -36,11 +36,39 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.ChannelEvents(
-
-);
+            name: Name,
+            repeatMsg: Convert.ToInt16(RepeatMsg),
+            addMe: AddMe,
+            isEnabled: IsEnabled,
+            message: Message
+        );
         }
         public void CopyUpdates(Models.ChannelEvents modelData)
         {
+            if (modelData.Name != Name)
+            {
+                modelData.Name = Name;
+            }
+
+            if (modelData.RepeatMsg != RepeatMsg)
+            {
+                modelData.RepeatMsg = RepeatMsg;
+            }
+
+            if (modelData.AddMe != AddMe)
+            {
+                modelData.AddMe = AddMe;
+            }
+
+            if (modelData.IsEnabled != IsEnabled)
+            {
+                modelData.IsEnabled = IsEnabled;
+            }
+
+            if (modelData.Message != Message)
+            {
+                modelData.Message = Message;
+            }
 
         }
     }

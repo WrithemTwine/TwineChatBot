@@ -4,8 +4,8 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class OverlayTicker : IDatabaseTableMeta
     {
-        public StreamerBotLib.Overlay.Enums.OverlayTickerItem TickerName => (StreamerBotLib.Overlay.Enums.OverlayTickerItem)Values["TickerName"];
-        public System.String UserName => (System.String)Values["UserName"];
+        public StreamerBotLib.Overlay.Enums.OverlayTickerItem TickerName { get => (StreamerBotLib.Overlay.Enums.OverlayTickerItem)Values["TickerName"]; set => Values["TickerName"] = value; }
+        public System.String UserName { get => (System.String)Values["UserName"]; set => Values["UserName"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -27,11 +27,21 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.OverlayTicker(
-
-);
+            tickerName: TickerName,
+            userName: UserName
+        );
         }
         public void CopyUpdates(Models.OverlayTicker modelData)
         {
+            if (modelData.TickerName != TickerName)
+            {
+                modelData.TickerName = TickerName;
+            }
+
+            if (modelData.UserName != UserName)
+            {
+                modelData.UserName = UserName;
+            }
 
         }
     }

@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Models;
 
 namespace StreamerBotLib.DataSQL.Models
 {

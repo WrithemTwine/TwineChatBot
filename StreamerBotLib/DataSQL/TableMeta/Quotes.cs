@@ -4,8 +4,8 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Quotes : IDatabaseTableMeta
     {
-        public System.Int32 Number => (System.Int32)Values["Number"];
-        public System.String Quote => (System.String)Values["Quote"];
+        public System.Int32 Number { get => (System.Int32)Values["Number"]; set => Values["Number"] = value; }
+        public System.String Quote { get => (System.String)Values["Quote"]; set => Values["Quote"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -27,11 +27,21 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Quotes(
-
-);
+            number: Convert.ToInt32(Number),
+            quote: Quote
+        );
         }
         public void CopyUpdates(Models.Quotes modelData)
         {
+            if (modelData.Number != Number)
+            {
+                modelData.Number = Number;
+            }
+
+            if (modelData.Quote != Quote)
+            {
+                modelData.Quote = Quote;
+            }
 
         }
     }

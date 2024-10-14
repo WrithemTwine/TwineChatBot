@@ -4,8 +4,8 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class ShoutOuts : IDatabaseTableMeta
     {
-        public System.String UserId => (System.String)Values["UserId"];
-        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
+        public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
+        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -27,11 +27,21 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.ShoutOuts(
-
-);
+            userId: UserId,
+            platform: Platform
+        );
         }
         public void CopyUpdates(Models.ShoutOuts modelData)
         {
+            if (modelData.UserId != UserId)
+            {
+                modelData.UserId = UserId;
+            }
+
+            if (modelData.Platform != Platform)
+            {
+                modelData.Platform = Platform;
+            }
 
         }
     }

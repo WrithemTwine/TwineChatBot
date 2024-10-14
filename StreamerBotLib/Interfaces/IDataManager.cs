@@ -108,7 +108,6 @@ namespace StreamerBotLib.Interfaces
         void PostNewAutoShoutUser(string UserId, Platform platform);
         void PostOutgoingRaid(string HostedChannel, DateTime dateTime);
         int PostQuote(string Text);
-        bool PostStream(DateTime StreamStart);
         void PostStreamStat(StreamStat streamStat);
         void PostUserCustomWelcome(LiveUser User, string WelcomeMsg);
         void RemoveAllFollowers();
@@ -141,5 +140,8 @@ namespace StreamerBotLib.Interfaces
         void NotifyStopBulkFollowers();
         IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows);
         void GUIRowEditSave();
+        bool PostStream(DateTime StreamStart, string Category);
+
+        void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta);
     }
 }

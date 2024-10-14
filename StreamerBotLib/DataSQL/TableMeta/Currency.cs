@@ -4,10 +4,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Currency : IDatabaseTableMeta
     {
-        public System.Double Value => (System.Double)Values["Value"];
-        public System.String CurrencyName => (System.String)Values["CurrencyName"];
-        public System.String UserId => (System.String)Values["UserId"];
-        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
+        public System.Double Value { get => (System.Double)Values["Value"]; set => Values["Value"] = value; }
+        public System.String CurrencyName { get => (System.String)Values["CurrencyName"]; set => Values["CurrencyName"] = value; }
+        public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
+        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -33,11 +33,33 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Currency(
-
-);
+            value: Value,
+            currencyName: CurrencyName,
+            userId: UserId,
+            platform: Platform
+        );
         }
         public void CopyUpdates(Models.Currency modelData)
         {
+            if (modelData.Value != Value)
+            {
+                modelData.Value = Value;
+            }
+
+            if (modelData.CurrencyName != CurrencyName)
+            {
+                modelData.CurrencyName = CurrencyName;
+            }
+
+            if (modelData.UserId != UserId)
+            {
+                modelData.UserId = UserId;
+            }
+
+            if (modelData.Platform != Platform)
+            {
+                modelData.Platform = Platform;
+            }
 
         }
     }

@@ -33,7 +33,7 @@ namespace StreamerBotLib.Models
                     IsEnabled = row.IsEnabled;
                     SendMsgCount = row.SendMsgCount;
                     Permission = row.Permission;
-                    Announce = row.Announce; 
+                    Announce = row.Announce;
                     AddMe = row.AddMe;
                     Message = row.Message;
                     AllowParam = row.AllowParam;

@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.Systems;
 
-using System.Windows.Controls;
-
 namespace StreamerBotLib.GUI.Windows
 {
     public class ManageWindows
@@ -14,7 +12,6 @@ namespace StreamerBotLib.GUI.Windows
         private TableMeta CurrTableRow { get; set; }
 
         public ManageWindows() { }
-
 
         public void AddNewItem(TableMeta tableMeta)
         {
@@ -31,6 +28,7 @@ namespace StreamerBotLib.GUI.Windows
         private void OpenDataGridRowWindow(bool NewRow)
         {
             EditDataWindow = new(ActionSystem.DataManage);
+            EditDataWindow.AddNewRow += SystemsController.DataGridUpdatedRow; // hookup adding a new row to a table
 
             if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
             {

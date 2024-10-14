@@ -214,10 +214,6 @@ namespace StreamerBotLib.BotIOController
 
                 TwitchStreamOffline();
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending an exit to the data system.");
-
-                Systems.Exit();
-
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the the channel.");
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
@@ -229,6 +225,8 @@ namespace StreamerBotLib.BotIOController
                     bot.StopBots();
                 }
 
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending an exit to the data system.");
+                Systems.Exit();
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
             }
             catch (Exception ex)

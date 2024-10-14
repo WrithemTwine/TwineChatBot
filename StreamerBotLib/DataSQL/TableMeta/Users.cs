@@ -4,12 +4,12 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Users : IDatabaseTableMeta
     {
-        public System.String UserName => (System.String)Values["UserName"];
-        public System.DateTime FirstDateSeen => (System.DateTime)Values["FirstDateSeen"];
-        public System.DateTime CurrLoginDate => (System.DateTime)Values["CurrLoginDate"];
-        public System.DateTime LastDateSeen => (System.DateTime)Values["LastDateSeen"];
-        public System.String UserId => (System.String)Values["UserId"];
-        public StreamerBotLib.Enums.Platform Platform => (StreamerBotLib.Enums.Platform)Values["Platform"];
+        public System.String UserName { get => (System.String)Values["UserName"]; set => Values["UserName"] = value; }
+        public System.DateTime FirstDateSeen { get => (System.DateTime)Values["FirstDateSeen"]; set => Values["FirstDateSeen"] = value; }
+        public System.DateTime CurrLoginDate { get => (System.DateTime)Values["CurrLoginDate"]; set => Values["CurrLoginDate"] = value; }
+        public System.DateTime LastDateSeen { get => (System.DateTime)Values["LastDateSeen"]; set => Values["LastDateSeen"] = value; }
+        public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
+        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -39,11 +39,45 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Users(
-
-);
+            userName: UserName,
+            firstDateSeen: FirstDateSeen,
+            currLoginDate: CurrLoginDate,
+            lastDateSeen: LastDateSeen,
+            userId: UserId,
+            platform: Platform
+        );
         }
         public void CopyUpdates(Models.Users modelData)
         {
+            if (modelData.UserName != UserName)
+            {
+                modelData.UserName = UserName;
+            }
+
+            if (modelData.FirstDateSeen != FirstDateSeen)
+            {
+                modelData.FirstDateSeen = FirstDateSeen;
+            }
+
+            if (modelData.CurrLoginDate != CurrLoginDate)
+            {
+                modelData.CurrLoginDate = CurrLoginDate;
+            }
+
+            if (modelData.LastDateSeen != LastDateSeen)
+            {
+                modelData.LastDateSeen = LastDateSeen;
+            }
+
+            if (modelData.UserId != UserId)
+            {
+                modelData.UserId = UserId;
+            }
+
+            if (modelData.Platform != Platform)
+            {
+                modelData.Platform = Platform;
+            }
 
         }
     }

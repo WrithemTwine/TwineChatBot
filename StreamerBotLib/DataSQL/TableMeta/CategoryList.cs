@@ -4,9 +4,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class CategoryList : IDatabaseTableMeta
     {
-        public System.String CategoryId => (System.String)Values["CategoryId"];
-        public System.String Category => (System.String)Values["Category"];
-        public System.Int32 StreamCount => (System.Int32)Values["StreamCount"];
+        public System.String CategoryId { get => (System.String)Values["CategoryId"]; set => Values["CategoryId"] = value; }
+        public System.String Category { get => (System.String)Values["Category"]; set => Values["Category"] = value; }
+        public System.Int32 StreamCount { get => (System.Int32)Values["StreamCount"]; set => Values["StreamCount"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -30,11 +30,27 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.CategoryList(
-
-);
+            categoryId: CategoryId,
+            category: Category,
+            streamCount: Convert.ToInt32(StreamCount)
+        );
         }
         public void CopyUpdates(Models.CategoryList modelData)
         {
+            if (modelData.CategoryId != CategoryId)
+            {
+                modelData.CategoryId = CategoryId;
+            }
+
+            if (modelData.Category != Category)
+            {
+                modelData.Category = Category;
+            }
+
+            if (modelData.StreamCount != StreamCount)
+            {
+                modelData.StreamCount = StreamCount;
+            }
 
         }
     }
