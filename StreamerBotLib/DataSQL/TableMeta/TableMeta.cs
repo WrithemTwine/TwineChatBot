@@ -263,6 +263,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
             return this;
         }
 
+        /// <summary>
+        /// Provide IDatabaseTableMeta <paramref name="Update"/> object with current values and update the DataEntity property.
+        /// </summary>
+        /// <param name="Update">Contains any updated values to update the managed data entity.</param>
+        /// <returns>The "DataEntity" object containing the newer <paramref name="Update"/> values.</returns>
         public object GetUpdatedEntity(IDatabaseTableMeta Update)
         {
             if (DataEntity.GetType() == typeof(Models.BanReasons))

@@ -25,7 +25,7 @@
             <TextBlock TextWrapping="Wrap" Margin="5,0,0,0">
                 - This feature is currently in testing. Please report any complications.<LineBreak />
                 - Ensure dates are formatted properly, the way presented.<LineBreak />
-                - A red box means the date isn't formatted properly.<LineBreak />
+                - A red box means the date or item isn't formatted properly.<LineBreak />
                 - When specifying media files, *DO NOT* exceed 2GB limit per file.<LineBreak />
                 - The data field name on the left shows character count for text fields. The Twitch chat bot will split messages exceeding the 500 character limit per message.
             </TextBlock>

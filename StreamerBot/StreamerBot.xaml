@@ -1498,8 +1498,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                     <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_DiscordWebhooks_Click" />
                                     <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
                                 </StackPanel>
-                                <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}" CanUserDeleteRows="True" IsReadOnly="False"
-                                          ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
+                                <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}" CanUserDeleteRows="True" IsReadOnly="False" ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
                                         <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
@@ -1572,7 +1571,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanRules_CVS}}" CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening"  RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Id}" Binding="{Binding Id}" />
+                                                <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="ModAction" ItemsSource="{Binding Source={StaticResource EnumModActions}}" SelectedItemBinding="{Binding ModAction}" />
                                                 <DataGridComboBoxColumn Header="MsgType" ItemsSource="{Binding Source={StaticResource EnumMsgTypes}}" SelectedItemBinding="{Binding MsgType}" />
                                                 <DataGridTextColumn Header="Timeout Secs" Binding="{Binding TimeoutSeconds, Converter={StaticResource TimeoutSecConvert}}" />
@@ -1903,7 +1902,8 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                 <TabItem Header="Quotes">
                                     <Grid>
                                         <DockPanel Grid.Row="0" Grid.Column="0">
-                                            <Label Content="User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" DockPanel.Dock="Top" />
+                                            <TextBlock DockPanel.Dock="Top">"User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" <LineBreak />
+                                            When adding a new row, ensure "Number" doesn't duplicate in the list.</TextBlock>
                                             <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                                       RowEditEnding="DataGrid_RowEditEnding" >
@@ -2109,7 +2109,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                 </StackPanel>
                                             </GroupBox>
                                         </WrapPanel>
-                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}"   CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}" CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource IntConverter}}" />
@@ -2128,7 +2128,8 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                 <TabItem Header="Ticker">
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
-                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}" CanUserDeleteRows="False" RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}" CanUserDeleteRows="False" 
+                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Ticker Name" ItemsSource="{Binding Source={StaticResource EnumOverlayTickerItem}}" SelectedItemBinding="{Binding TickerName}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -2150,7 +2151,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" CellTemplate="{StaticResource DateStreamStartTemplate}" CellEditingTemplate="{StaticResource EditStreamStartTemplate}" SortMemberPath="StreamStart" SortDirection="Descending" />
                                                 <DataGridTemplateColumn Header="Stream End" CellTemplate="{StaticResource DateStreamEndTemplate}" CellEditingTemplate="{StaticResource EditStreamEndTemplate}" SortMemberPath="StreamEnd" />
@@ -2204,7 +2205,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel x:Name="DockPanel_StreamData_Raids_Incoming" Grid.Row="0" Grid.Column="0">
                                             <TextBlock DockPanel.Dock="Top">This table saves incoming raids to your channel, so you can show them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
-                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" >
+                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                                                     <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
@@ -2218,7 +2219,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
 
                                         <DockPanel x:Name="DockPanel_StreamData_Raids_Outgoing" Grid.Row="0" Grid.Column="2">
                                             <TextBlock DockPanel.Dock="Top">This table saves outgoing raids from your channel, so you know the channels you've raided and can spread the love.</TextBlock>
-                                            <DataGrid x:Name="DG_OutRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}"   CanUserDeleteRows="True" IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" >
+                                            <DataGrid x:Name="DG_OutRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}"   CanUserDeleteRows="True" IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                     <DataGridTextColumn Header="To Channel" Binding="{Binding ChannelRaided}" />
@@ -2231,7 +2232,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                 <TabItem Header="Categories" x:Name="TabItem_Category">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="28" />
+                                            <RowDefinition Height="50" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -2241,19 +2242,21 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                         </Grid.ColumnDefinitions>
 
                                         <Label Grid.Row="0" Grid.Column="0">
-                                            <TextBlock>Streaming Categories (Deleting categories may delete related data)</TextBlock>
+                                            <TextBlock>Streaming Categories (Deleting categories may delete related data)<LineBreak />
+                                                       Categories with (') are adjusted for data storage and query reasons
+                                            </TextBlock>
                                         </Label>
-                                        <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" IsReadOnly="True" CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" IsReadOnly="True" CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" />
-                                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" />
+                                                <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Stream Count" Binding="{Binding StreamCount}" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                         <Label Grid.Row="0" Grid.Column="2">
                                             <TextBlock>Death Counter per Category</TextBlock>
                                         </Label>
-                                        <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" CanUserAddRows="False" CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" CanUserAddRows="False" CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Counter" Binding="{Binding Counter}" />
@@ -2271,7 +2274,7 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="Clip List"/>
-                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="ClipId" Binding="{Binding ClipId}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />

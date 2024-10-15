@@ -39,7 +39,7 @@ namespace StreamerBotLib.Interfaces
         ObservableCollection<ChannelEvents> GetChannelEventsLocalObservable();
         ObservableCollection<Clips> GetClipsLocalObservable();
         new CommandData GetCommand(string cmd);
-        new IEnumerable<string> GetCommandList();
+        new IEnumerable<string> GetCommandList(bool prefix = true);
         new string GetCommandString();
         ObservableCollection<Commands> GetCommandsLocalObservable();
         ObservableCollection<CommandsUser> GetCommandsUserLocalObservable();
@@ -59,6 +59,7 @@ namespace StreamerBotLib.Interfaces
         new IEnumerable<string> GetKeys(string Table);
         ObservableCollection<LearnMsgs> GetLearnMsgsLocalObservable();
         ObservableCollection<ModeratorApprove> GetModeratorApproveLocalObservable();
+        new ObservableCollection<ArchiveMultiStream> GetCleanupList();
         ObservableCollection<MultiChannels> GetMultiChannelsLocalObservable();
         ObservableCollection<MultiLiveStreams> GetMultiLiveStreamsLocalObservable();
         ObservableCollection<MultiWebhooks> GetMultiWebhooksLocalObservable();

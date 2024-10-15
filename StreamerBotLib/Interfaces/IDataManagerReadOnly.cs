@@ -39,6 +39,7 @@ namespace StreamerBotLib.Interfaces
         bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime);
         LiveUser GetUser(string UserName);
         string GetCommandString();
-        IEnumerable<string> GetCommandList();
+        IEnumerable<string> GetCommandList(bool prefix = true);
+        ObservableCollection<ArchiveMultiStream> GetCleanupList();
     }
 }

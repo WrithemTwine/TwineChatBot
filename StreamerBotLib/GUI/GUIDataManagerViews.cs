@@ -89,7 +89,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<MultiLiveStreams> MultiLiveStreams { get; private set; }
         public ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
 
-        public ObservableCollection<ArchiveMultiStream> CleanupList => DataManager.CleanupList;
+        public ObservableCollection<ArchiveMultiStream> CleanupList => DataManager.GetCleanupList();
         public string MultiLiveStatusLog => DataManager.MultiLiveStatusLog;
         #endregion
         #endregion

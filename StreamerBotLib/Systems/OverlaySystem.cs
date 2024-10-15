@@ -57,16 +57,11 @@ namespace StreamerBotLib.Systems
             {
                 // if there are no channel point rewards, the streamers credentials may need to be loaded or there aren't any channel points
                 { OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : ["None or Not Loaded!"] },
-                { OverlayTypes.Giveaway.ToString(), [OverlayTypes.Giveaway.ToString()] }
+                { OverlayTypes.Giveaway.ToString(), [OverlayTypes.Giveaway.ToString()] },
+                { OverlayTypes.Commands.ToString(), new(DataManage.GetCommandList(false)) },
+                { OverlayTypes.ChannelEvents.ToString(), new(Enum.GetNames<ChannelEventActions>()) }
             };
 
-            lock (GUI.GUIDataManagerLock.Lock)
-            {
-                foreach (string O in OverlayActionColumnPairs.Keys)
-                {
-                    OverlayActionPairs.Add(O, DataManage.GetOverlayActions(Enum.Parse<OverlayTypes>(O), OverlayActionColumnPairs[O], null).ConvertAll((i) => i.ToString()));
-                }
-            }
             //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
 
             foreach (string K in OverlayActionPairs.Keys)

@@ -11,7 +11,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public StreamerBotLib.Enums.WebhooksKind Kind { get => (StreamerBotLib.Enums.WebhooksKind)Values["Kind"]; set => Values["Kind"] = value; }
         public System.Boolean AddEveryone { get => (System.Boolean)Values["AddEveryone"]; set => Values["AddEveryone"] = value; }
         public System.Uri Webhook { get => (System.Uri)Values["Webhook"]; set => Values["Webhook"] = value; }
-        public StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource DataSource { get => (StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource)Values["DataSource"]; set => Values["DataSource"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -27,8 +26,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "Server", tableData.Server },
                  { "Kind", tableData.Kind },
                  { "AddEveryone", tableData.AddEveryone },
-                 { "Webhook", tableData.Webhook },
-                 { "DataSource", tableData.DataSource }
+                 { "Webhook", tableData.Webhook }
             };
         }
         public Dictionary<string, Type> Meta => new()
@@ -39,8 +37,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "Server", typeof(System.String) },
               { "Kind", typeof(StreamerBotLib.Enums.WebhooksKind) },
               { "AddEveryone", typeof(System.Boolean) },
-              { "Webhook", typeof(System.Uri) },
-              { "DataSource", typeof(StreamerBotLib.DataSQL.DiscriminatorEnums.WebhookDataSource) }
+              { "Webhook", typeof(System.Uri) }
         };
         public object GetModelEntity()
         {

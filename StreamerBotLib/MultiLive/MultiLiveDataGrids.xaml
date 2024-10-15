@@ -13,6 +13,14 @@
       Title="MultiLiveDataGrids" SnapsToDevicePixels="True" UseLayoutRounding="True" 
       Background="{DynamicResource FullBackground}"
       >
+    <Page.Resources>
+        <ContextMenu x:Key="DataGrid_Multi_ContextMenu" Name="DataGrid_Multi_ContextMenu">
+            <MenuItem x:Name="DataGridContextMenu_Multi_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
+            <MenuItem x:Name="DataGridContextMenu_Multi_EditItem" Header="Edit Selected Row" />
+            <MenuItem x:Name="DataGridContextMenu_Multi_DeleteItems" Header="Delete Selected Row(s)" 
+                      ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
+        </ContextMenu>
+    </Page.Resources>
 
     <Grid x:Name="Grid_MultiUserLiveMonitor" DataContext="{Binding}">
         <Grid.RowDefinitions>
@@ -55,7 +63,11 @@
         </StackPanel>
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiWebhooks_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" >
+                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiWebhooks_CVS}}" 
+                  RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" 
+                  ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                  ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
+                  CanUserDeleteRows="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
                 <DataGridCheckBoxColumn Header="IsEnabled" Binding="{Binding IsEnabled}" />
@@ -69,7 +81,11 @@
         <DockPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" >
             <Label DockPanel.Dock="Top">Monitored Channels</Label>
             <DataGrid x:Name="DG_Multi_ChannelNames" DockPanel.Dock="Top"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiChannels_CVS}}" RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiChannelNames}">
+                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiChannels_CVS}}" 
+                      RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiChannelNames}" 
+                      ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                      ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
+                      CanUserDeleteRows="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                     <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -81,7 +97,9 @@
         <TabControl Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" >
             <TabItem Header="Daily Data" x:Name="TabItem_DailyData">
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
-                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}">
+                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}" 
+                          ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                          CanUserDeleteRows="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                         <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
@@ -92,7 +110,9 @@
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
-                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}">
+                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}" 
+                          ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                          CanUserDeleteRows="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding MultiChannels.UserId}" />
                         <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
@@ -118,7 +138,7 @@
                             </TextBlock>
                             <ComboBox x:Name="ComboBox_SummarizeLive_List" Height="32"
                                       MaxDropDownHeight="400" VerticalAlignment="Top" VerticalContentAlignment="Center" 
-                                      ItemsSource="{Binding CleanupList}" DropDownOpened="ComboBox_DropDownOpened" 
+                                      ItemsSource="{Binding CleanupList, Mode=OneWay, Source={StaticResource DataViews}}" DropDownOpened="ComboBox_DropDownOpened" 
                                       IsReadOnly="True" IsSynchronizedWithCurrentItem="True" 
                                       SelectionChanged="ComboBox_SelectionChanged">
                                 <ComboBox.ItemTemplate>

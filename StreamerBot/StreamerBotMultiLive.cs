@@ -16,6 +16,9 @@ namespace StreamerBot
         {
             (MultiLive_Data.Content as MultiLiveDataGrids).DataContext = Resources["DataViews"] as GUIDataManagerViews;
             SetMultiLiveActive();
+
+            // attach datagrid refresh when data tables change contents (different rows do an auto refresh, row content changes do not auto refresh)
+            SystemsController.DataManage.OnDataCollectionUpdated += (MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated;
         }
 
         private const string MultiLiveName = "MultiUserLiveBot";

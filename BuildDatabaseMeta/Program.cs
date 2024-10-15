@@ -60,7 +60,7 @@ namespace BuildDatabaseMeta
 
                     foreach (PropertyInfo p in table.GetProperties())
                     {
-                        if (p.Name != "Item" && ((!FileNames.Contains(p.Name) && !p.PropertyType.ToString().Contains(".Models.")) || p.Name == "UserStats"))
+                        if (p.Name != "Item" && p.Name != "DataSource" && p.Name != "Commandtype" && ((!FileNames.Contains(p.Name) && !p.PropertyType.ToString().Contains(".Models.")) || p.Name == "UserStats"))
                         {
                             string PropName = p.PropertyType.Name.Contains("ICollection") ? $"ICollection<{p.PropertyType.GenericTypeArguments[0].FullName}>" : p.PropertyType.FullName;
 
@@ -73,11 +73,11 @@ namespace BuildDatabaseMeta
 
                                 if (p.Name != "Duration" && p.Name != "Id" && p.Name != "Commandtype" && p.Name != "DataSource") // ignore "Duration" column as it is computed
                                 {
-                                        copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
-                                                $"            {{\r\n" +
-                                                $"                modelData.{p.Name} = {p.Name};\r\n" +
-                                                $"            }}\r\n");
-                                        entity.Add($"            {p.Name.ToLower()[0]}{p.Name[1..]}: {newEntity}");
+                                    copyparam.Add($"          if (modelData.{p.Name} != {p.Name})\r\n" +
+                                            $"            {{\r\n" +
+                                            $"                modelData.{p.Name} = {p.Name};\r\n" +
+                                            $"            }}\r\n");
+                                    entity.Add($"            {p.Name.ToLower()[0]}{p.Name[1..]}: {newEntity}");
                                 }
                                 param.Add($"        public {PropName} {p.Name} {{ get => ({PropName})Values[\"{p.Name}\"]; set => Values[\"{p.Name}\"] = value; }}");
                             }

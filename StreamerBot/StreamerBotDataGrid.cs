@@ -140,7 +140,7 @@ namespace StreamerBot
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
                 bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "IsEnabled").Any();
-                bool FoundAddItem = ((DataGrid)sender).Name is 
+                bool FoundAddItem = ((DataGrid)sender).Name is
                        "DG_CurrencyType"
                     or "DG_CustomWelcome"
                     or "DG_InRaids"
@@ -169,10 +169,14 @@ namespace StreamerBot
                         {
                             ((MenuItem)M).Visibility = FoundAddItem ? Visibility.Visible : Visibility.Collapsed;
                         }
+                        else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItems")
+                        {
+                            ((MenuItem)M).Visibility = ((DataGrid)sender).CanUserDeleteRows ? Visibility.Visible : Visibility.Collapsed;
+                        }
                     }
                     else if (M.GetType() == typeof(Separator))
                     {
-                        if (((Separator)M).Name == "DataGridContextMenu_Separator")
+                        if (((Separator)M).Name == "DataGridContextMenu_Separator1")
                         {
                             ((Separator)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
                         }

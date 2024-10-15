@@ -896,7 +896,7 @@ namespace StreamerBotLib.Systems
 
         public static void MultiSummarize(MultiLiveSummarizeEventArgs multiLiveSummarizeEventArgs)
         {
-            if (multiLiveSummarizeEventArgs.Data != null)
+            if (multiLiveSummarizeEventArgs.Data == null)
             {
                 DataManage.SummarizeStreamData();
                 multiLiveSummarizeEventArgs.CallbackAction.Invoke();

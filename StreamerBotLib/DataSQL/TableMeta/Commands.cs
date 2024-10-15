@@ -24,7 +24,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public StreamerBotLib.Enums.CommandAction Action { get => (StreamerBotLib.Enums.CommandAction)Values["Action"]; set => Values["Action"] = value; }
         public System.Int32 Top { get => (System.Int32)Values["Top"]; set => Values["Top"] = value; }
         public StreamerBotLib.Enums.CommandSort Sort { get => (StreamerBotLib.Enums.CommandSort)Values["Sort"]; set => Values["Sort"] = value; }
-        public StreamerBotLib.DataSQL.DiscriminatorEnums.CommandTypes Commandtype { get => (StreamerBotLib.DataSQL.DiscriminatorEnums.CommandTypes)Values["Commandtype"]; set => Values["Commandtype"] = value; }
         public System.Int32 Calls { get => (System.Int32)Values["Calls"]; set => Values["Calls"] = value; }
 
         public Dictionary<string, object> Values { get; }
@@ -55,7 +54,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "Action", tableData.Action },
                  { "Top", tableData.Top },
                  { "Sort", tableData.Sort },
-                 { "Commandtype", tableData.Commandtype },
                  { "Calls", tableData.Calls }
             };
         }
@@ -81,7 +79,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "Action", typeof(StreamerBotLib.Enums.CommandAction) },
               { "Top", typeof(System.Int32) },
               { "Sort", typeof(StreamerBotLib.Enums.CommandSort) },
-              { "Commandtype", typeof(StreamerBotLib.DataSQL.DiscriminatorEnums.CommandTypes) },
               { "Calls", typeof(System.Int32) }
         };
         public object GetModelEntity()

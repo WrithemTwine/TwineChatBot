@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
+using System.Linq;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -800,7 +801,7 @@ switches:
             }
         }
 
-        public IEnumerable<string> GetCommandList()
+        public IEnumerable<string> GetCommandList(bool prefix = true)
         {
             lock (GUIDataManagerLock.Lock)
             {
@@ -808,7 +809,7 @@ switches:
                 var result = (from Com in (context.CommandsBase)
                               where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
                               orderby Com.CmdName
-                              select $"!{Com.CmdName}");
+                              select $"{(prefix ? "!" : "") }{Com.CmdName}");
                 ClearDataContext();
                 return result;
             }
@@ -2468,6 +2469,11 @@ switches:
         private bool IsLiveStreamUpdated = false;
         public string MultiLiveStatusLog { get; private set; } = "";
 
+        public ObservableCollection<ArchiveMultiStream> GetCleanupList()
+        {
+            return CleanupList;
+        }
+
         public bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
             lock (GUIDataManagerLock.Lock)
@@ -2583,12 +2589,12 @@ switches:
                     List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
 
                     foreach (var A in (from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
-                    {
-                        ThroughDate = uniqueDate,
-                        StreamCount = (int)(from DateTime dates in AllDates
-                                            where dates.Date <= uniqueDate
-                                            select dates).Count()
-                    })
+                                            {
+                                                ThroughDate = uniqueDate,
+                                                StreamCount = (from DateTime dates in AllDates
+                                                               where dates.Date <= uniqueDate
+                                                               select dates).Count()
+                                            })
                                        select M))
                     {
                         CleanupList.Add(A);
@@ -2605,45 +2611,36 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                var multiLiveStreams = (from MLS in context.MultiLiveStreams
-                                        where MLS.LiveDate <= archiveRecord.ThroughDate.Date
-                                        group MLS by
-                                        new
-                                        {
-                                            date = MLS.LiveDate,
-                                            platform = MLS.Platform,
-                                            userid = MLS.UserId
-                                        } into GroupedMLS
-                                        select new ArchiveMultiStream()
-                                        {
-                                            UserId = GroupedMLS.Key.userid,
-                                            Platform = GroupedMLS.Key.platform,
-                                            ThroughDate = GroupedMLS.MaxBy(G => GroupedMLS.Key.date).LiveDate,
-                                            StreamCount = (int)GroupedMLS.Count()
-                                        });
 
-                foreach (var GroupedStreams in
-                    (from archive in multiLiveStreams
-                     join sumlive in context.MultiSummaryLiveStreams on archive.UserId equals sumlive.UserId into GroupedSum
-                     from G in GroupedSum.DefaultIfEmpty()
-                     select new { userId = archive.UserId, platform = archive.Platform, livestreamrow = archive, sumrow = G }))
+                List<MultiLiveStreams> ArchiveRecords = new(from LS in context.MultiLiveStreams
+                                                            where LS.LiveDate <= archiveRecord.ThroughDate.Date
+                                                            select LS);
+                List<string> UniqueUserIds = [];
+                UniqueUserIds.UniqueAddRange(from LS in ArchiveRecords
+                                             select LS.UserId);
+                foreach (var (userId, CurrUser, MaxDate, CurrSummaryLiveStream) in from string userId in UniqueUserIds
+                                                                                   let CurrUser = new List<MultiLiveStreams>(from AR in ArchiveRecords
+                                                                                                      where AR.UserId == userId
+                                                                                                      select AR)
+                                                                                   let MaxDate = (from D in CurrUser
+                                                                                                  select D.LiveDate).Max()
+                                                                                   let CurrSummaryLiveStream = (from M in context.MultiSummaryLiveStreams
+                                                                                                                where M.UserId == userId
+                                                                                                                select M).FirstOrDefault()
+                                                                                   select (userId, CurrUser, MaxDate, CurrSummaryLiveStream))
                 {
-                    if (GroupedStreams != default)
+                    if (CurrSummaryLiveStream == default)
                     {
-                        GroupedStreams.sumrow.ThroughDate = GroupedStreams.livestreamrow.ThroughDate;
-                        GroupedStreams.sumrow.StreamCount += GroupedStreams.livestreamrow.StreamCount;
+                        context.MultiSummaryLiveStreams.Add(new(CurrUser.Count, MaxDate, userId, CurrUser.First().Platform));
                     }
                     else
                     {
-                        context.MultiSummaryLiveStreams.Add(new(
-                            userId: GroupedStreams.sumrow.UserId, platform: GroupedStreams.sumrow.Platform,
-                            streamCount: GroupedStreams.livestreamrow.StreamCount, throughDate: GroupedStreams.livestreamrow.ThroughDate));
+                        CurrSummaryLiveStream.ThroughDate = MaxDate;
+                        CurrSummaryLiveStream.StreamCount += CurrUser.Count;
                     }
                 }
 
-                context.MultiLiveStreams.RemoveRange((from MLS in context.MultiLiveStreams
-                                                      where MLS.LiveDate <= archiveRecord.ThroughDate.Date
-                                                      select MLS));
+                context.MultiLiveStreams.RemoveRange(ArchiveRecords);
 
                 IsLiveStreamUpdated = true;
 

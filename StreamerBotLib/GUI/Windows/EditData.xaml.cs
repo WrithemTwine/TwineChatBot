@@ -2,6 +2,8 @@
 
 //#define XAML_AddEdit
 
+// TODO: fix Overlay rows, when "overlay type !is 'channel points', the OverlayAction combo is empty
+
 using Microsoft.Win32;
 
 using StreamerBotLib.DataSQL.Models;
@@ -34,6 +36,7 @@ namespace StreamerBotLib.GUI.Windows
         private IDataManagerReadOnly DataManage { get; set; }
         private bool IsNewRow { get; set; }
         private const int ValueWidth = 325;
+        private const int LabelWidth = 150;
         private List<EditPopupTime> DateList { get; set; } = [];
 
         private ListBox CategoryListView;
@@ -71,7 +74,8 @@ namespace StreamerBotLib.GUI.Windows
                     { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
                     { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
                     { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) },
-                    { "Platform", Enum.GetValues(typeof(Platform)) }
+                    { "Platform", Enum.GetValues(typeof(Platform)) },
+                    { "WebhooksSource", Enum.GetValues(typeof(WebhooksSource)) }
                 };
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -104,7 +108,6 @@ namespace StreamerBotLib.GUI.Windows
         internal event EventHandler<AddNewRowEventArgs> AddNewRow;
         //internal event EventHandler<UpdatedDataRowArgs> UpdatedRow;
 
-
 #if EFC_AddEdit
 
         /// <summary>
@@ -123,214 +126,231 @@ namespace StreamerBotLib.GUI.Windows
 
             foreach (string Data in CurrData.Values.Keys)
             {
-                stringCounter = false;
-                /*
-                        // each datatable column w/value
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical"> // data label section
-                            <TextBlock>Data</TextBlock> // Data => key name
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock>Current Chars:</TextBlock>
-                                <TextBlock />
+                if (Data != "Id")
+                {
+                    stringCounter = false;
+                    /*
+                            // each datatable column w/value
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical"> // data label section
+                                <TextBlock>Data</TextBlock> // Data => key name
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>Current Chars:</TextBlock>
+                                    <TextBlock />
+                                </StackPanel>
                             </StackPanel>
+                            // <UIElement /> - data element
                         </StackPanel>
-                        // <UIElement /> - data element
-                    </StackPanel>
-                */
+                    */
 
-                UIElement valueElement = null;  // outer element right-side
+                    UIElement valueElement = null;  // outer element right-side
 
-                // instantiate valueElement; -include text counter if 'string'
+                    // instantiate valueElement; -include text counter if 'string'
 
-                if (Data is "ImageFile" or "MediaFile")
-                {
-                    valueElement = new TextBox()
+                    if (Data is "ImageFile" or "MediaFile")
                     {
-                        ToolTip = "Paste full path to file, double-click to browse to file.",
-                        MinWidth = 200
-                    };
+                        valueElement = new TextBox()
+                        {
+                            ToolTip = "Paste full path to file, double-click to browse to file.",
+                            MinWidth = 200
+                        };
 
-                    Binding filepath = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((TextBox)valueElement).SetBinding(TextBox.TextProperty, filepath);
+                        Binding filepath = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((TextBox)valueElement).SetBinding(TextBox.TextProperty, filepath);
 
-                    ((TextBox)valueElement).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
-                }
-                else if (ColEnums.ContainsKey(Data))
-                {
-                    valueElement = new ComboBox();
-
-                    Binding selectedItem = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, selectedItem);
-                    ((ComboBox)valueElement).ItemsSource = ColEnums[Data];
-
-                    if (Data == "OverlayType")
-                    {
-                        OverlayTypeElement = (ComboBox)valueElement;
-                        ((ComboBox)valueElement).Name = nameof(OverlayTypeElement);
-                        ((ComboBox)valueElement).SelectionChanged += OverlayTypeElement_SelectionChanged;
+                        ((TextBox)valueElement).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
                     }
-                    else if (Data == "ModActionType")
+                    else if (ColEnums.ContainsKey(Data))
                     {
-                        ModActionTypeElement = (ComboBox)valueElement;
-                        ((ComboBox)valueElement).Name = nameof(ModActionTypeElement);
-                        ((ComboBox)valueElement).SelectionChanged += OverlayTypeElement_SelectionChanged;
+                        valueElement = new ComboBox();
+
+                        Binding selectedItem = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, selectedItem);
+                        ((ComboBox)valueElement).ItemsSource = ColEnums[Data];
+
+                        if (Data == "OverlayType")
+                        {
+                            OverlayTypeElement = (ComboBox)valueElement;
+                            ((ComboBox)valueElement).Name = nameof(OverlayTypeElement);
+                            ((ComboBox)valueElement).SelectionChanged += ActionTypeElement_SelectionChanged;
+                        }
+                        else if (Data == "ModActionType")
+                        {
+                            ModActionTypeElement = (ComboBox)valueElement;
+                            ((ComboBox)valueElement).Name = nameof(ModActionTypeElement);
+                            ((ComboBox)valueElement).SelectionChanged += ActionTypeElement_SelectionChanged;
+                        }
+                        else if (Data == "ModPerformType")
+                        {
+                            ModPerformTypeElement = (ComboBox)valueElement;
+                            ((ComboBox)valueElement).Name = nameof(ModPerformTypeElement);
+                            ((ComboBox)valueElement).SelectionChanged += ActionTypeElement_SelectionChanged;
+                        }
                     }
-                    else if (Data == "ModPerformType")
+                    else if (Data == "Category")
                     {
-                        ModPerformTypeElement = (ComboBox)valueElement;
-                        ((ComboBox)valueElement).Name = nameof(ModPerformTypeElement);
-                        ((ComboBox)valueElement).SelectionChanged += OverlayTypeElement_SelectionChanged;
+                        valueElement = new ListBox() { MaxHeight = 200 };
+
+                        Binding categoryvalue = new()
+                        {
+                            Path = new(Data),
+                            Converter = new CategoryConverter()
+                        };
+                        Binding allcategories = new() { Source = DataManage.GetGameCategories(), Mode = BindingMode.OneWayToSource };
+                        ((ListBox)valueElement).SetBinding(ListBox.ItemsSourceProperty, allcategories);
+                        ((ListBox)valueElement).SetBinding(ListBox.SelectedItemProperty, categoryvalue);
+
+                        ((ListBox)valueElement).ItemTemplate = (DataTemplate)Resources["CategoryCheckBox"];
+                        CategoryListView = (ListBox)valueElement;
                     }
-                }
-                else if (Data == "Category")
-                {
-                    valueElement = new ListBox() { MaxHeight = 200 };
-
-                    Binding categoryvalue = new()
+                    else if (Data == "Table")
                     {
-                        Path = new(Data),
-                        Converter = new CategoryConverter()
-                    };
-                    Binding allcategories = new() { Source = DataManage.GetGameCategories(), Mode = BindingMode.OneWayToSource };
-                    ((ListBox)valueElement).SetBinding(ListBox.ItemsSourceProperty, allcategories);
-                    ((ListBox)valueElement).SetBinding(ListBox.SelectedItemProperty, categoryvalue);
+                        valueElement = new ComboBox() { Name = "table" };
+                        Binding selectTable = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).ItemsSource = DataManage.GetTableNames();
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, selectTable);
+                        ((ComboBox)valueElement).SelectionChanged += TableData_SelectionChanged;
 
-                    ((ListBox)valueElement).ItemTemplate = (DataTemplate)Resources["CategoryCheckBox"];
-                    CategoryListView = (ListBox)valueElement;
-                }
-                else if (Data == "Table")
-                {
-                    valueElement = new ComboBox() { Name = "table" };
-                    Binding selectTable = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((ComboBox)valueElement).ItemsSource = DataManage.GetTableNames();
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, selectTable);
-                    ((ComboBox)valueElement).SelectionChanged += TableData_SelectionChanged;
-
-                    TableElement = (ComboBox)valueElement;
-                }
-                else if (Data == "KeyField")
-                {
-                    valueElement = new ComboBox()
+                        TableElement = (ComboBox)valueElement;
+                    }
+                    else if (Data == "KeyField")
                     {
-                        Name = "KeyField",
-                        ItemsSource = TableElement.SelectedItem != null ? DataManage.GetKeys((string)TableElement.SelectedValue) : null
-                    };
+                        valueElement = new ComboBox()
+                        {
+                            Name = "KeyField",
+                            ItemsSource = TableElement.SelectedItem != null ? DataManage.GetKeys((string)TableElement.SelectedValue) : null
+                        };
 
-                    Binding keyValue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValuePathProperty, keyValue);
+                        Binding keyValue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValuePathProperty, keyValue);
 
-                    KeyFieldElement = (ComboBox)valueElement;
-                }
-                else if (Data == "DataField")
-                {
-                    valueElement = new ComboBox()
+                        KeyFieldElement = (ComboBox)valueElement;
+                    }
+                    else if (Data == "DataField")
                     {
-                        Name = "DataField",
-                        ItemsSource = TableElement.SelectedItem != null ? DataManage.GetTableFields((string)TableElement.SelectedValue) : null
-                    };
+                        valueElement = new ComboBox()
+                        {
+                            Name = "DataField",
+                            ItemsSource = TableElement.SelectedItem != null ? DataManage.GetTableFields((string)TableElement.SelectedValue) : null
+                        };
 
-                    Binding dataValue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValuePathProperty, dataValue);
+                        Binding dataValue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValuePathProperty, dataValue);
 
-                    DataFieldElement = (ComboBox)valueElement;
-                }
-                else if (Data == "CurrencyField")
-                {
-                    valueElement = new ComboBox()
+                        DataFieldElement = (ComboBox)valueElement;
+                    }
+                    else if (Data == "CurrencyField")
                     {
-                        Name = "CurrencyField",
-                        ItemsSource = (string)TableElement.SelectedItem == "Currency" ? DataManage.GetCurrencyNames() : null
-                    };
+                        valueElement = new ComboBox()
+                        {
+                            Name = "CurrencyField",
+                            ItemsSource = (string)TableElement.SelectedItem == "Currency" ? DataManage.GetCurrencyNames() : null
+                        };
 
-                    Binding currencyValue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValuePathProperty, currencyValue);
+                        Binding currencyValue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValuePathProperty, currencyValue);
 
-                    CurrencyFieldElement = (ComboBox)valueElement;
-                }
-                else if (Data == "ModActionName")
-                {
-                    valueElement = new ComboBox()
+                        CurrencyFieldElement = (ComboBox)valueElement;
+                    }
+                    else if (Data == "ModActionName")
                     {
-                        ItemsSource = MediaOverlayEventActions[CurrData.Values[Data].ToString()]
-                    };
+                        valueElement = new ComboBox()
+                        {
+                            ItemsSource = MediaOverlayEventActions[CurrData.Values[Data].ToString()]
+                        };
 
-                    Binding actions = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, actions);
-                }
-                else if (Data == "ModPerformAction")
-                {
-                    valueElement = new ComboBox()
+                        Binding actions = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, actions);
+                    }
+                    else if (Data == "ModPerformAction")
                     {
-                        ItemsSource = MediaOverlayEventActions[CurrData.Values[Data].ToString()]
-                    };
+                        valueElement = new ComboBox()
+                        {
+                            ItemsSource = MediaOverlayEventActions[CurrData.Values[Data].ToString()]
+                        };
 
-                    Binding actions = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, actions);
+                        Binding actions = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, actions);
+                    }
+                    else if (Data == "OverlayAction")
+                    {
+                        valueElement = new ComboBox();
+
+                        OverlayActionTypeElement = (ComboBox)valueElement;
+
+                        if (OverlayTypeElement != null && OverlayTypeElement.SelectedValue != null)
+                        {
+                            ((ComboBox)valueElement).ItemsSource = MediaOverlayEventActions[OverlayTypeElement.SelectedValue.ToString()];
+                        }
+
+                        Binding overlayaction = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((ComboBox)valueElement).SetBinding(ComboBox.SelectedValueProperty, overlayaction);
+                    }
+                    else if (CurrData.Meta[Data] == typeof(string))
+                    {
+                        stringCounter = true;
+                        valueElement = new TextBox();
+
+                        Binding datatext = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((TextBox)valueElement).SetBinding(TextBox.TextProperty, datatext);
+                        ((TextBox)valueElement).TextChanged += EditData_TextChanged_TextBoxLen;
+                    }
+                    else if (CurrData.Meta[Data] == typeof(DateTime))
+                    {
+                        valueElement = new DatePicker();
+
+                        Binding date = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((DatePicker)valueElement).SetBinding(DatePicker.DisplayDateProperty, date);
+                    }
+                    else if (CurrData.Meta[Data] == typeof(bool))
+                    {
+                        valueElement = new CheckBox();
+                        Binding boolvalue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((CheckBox)valueElement).SetBinding(CheckBox.IsCheckedProperty, boolvalue);
+                    }
+                    else
+                    {
+                        stringCounter = true;
+                        valueElement = new TextBox();
+
+                        Binding datatext = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        ((TextBox)valueElement).SetBinding(TextBox.TextProperty, datatext);
+                        ((TextBox)valueElement).TextChanged += EditData_TextChanged_TextBoxLen;
+                    }
+
+                    ((FrameworkElement)valueElement).Width = ValueWidth;
+                    ((FrameworkElement)valueElement).VerticalAlignment = VerticalAlignment.Center;
+                    ((Control)valueElement).TabIndex = tabindex;
+
+                    // end instantiate valueElement;
+
+                    TextBlock datalabel = new() { Text = Data };
+
+                    StackPanel fullRow = new() { Orientation = Orientation.Horizontal };    // outer element wrapper
+                    StackPanel dataLabelBlock = new() { Orientation = Orientation.Vertical, Width = LabelWidth }; // inner element wrapper, left-side
+
+                    dataLabelBlock.Children.Add(datalabel);
+                    fullRow.Children.Add(dataLabelBlock);
+                    _ = valueElement != null ? fullRow.Children.Add(valueElement).ToString() : ""; // add element if it isn't null
+
+                    // add 'character counter' row for string data to show message length
+                    if (stringCounter)
+                    {
+                        TextBlock countLabel = new() { Text = "Current Chars: " };
+                        TextBlock countData = new();
+
+                        StackPanel CountLabel = new() { Orientation = Orientation.Horizontal };
+                        CountLabel.Children.Add(countLabel);
+                        CountLabel.Children.Add(countData);
+
+                        dataLabelBlock.Children.Add(CountLabel);
+                    }
+
+                    ListBox_DataList.Items.Add(fullRow);
+
+                    tabindex++;
                 }
-                else if (CurrData.Meta[Data] == typeof(string))
-                {
-                    stringCounter = true;
-                    valueElement = new TextBox();
-
-                    Binding datatext = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((TextBox)valueElement).SetBinding(TextBox.TextProperty, datatext);
-                    ((TextBox)valueElement).TextChanged += EditData_TextChanged_TextBoxLen;
-                }
-                else if (CurrData.Meta[Data] == typeof(DateTime))
-                {
-                    valueElement = new DatePicker();
-
-                    Binding date = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((DatePicker)valueElement).SetBinding(DatePicker.DisplayDateProperty, date);
-                }
-                else if (CurrData.Meta[Data] == typeof(bool))
-                {
-                    valueElement = new CheckBox();
-                    Binding boolvalue = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((CheckBox)valueElement).SetBinding(CheckBox.IsCheckedProperty, boolvalue);
-                }
-                else
-                {
-                    stringCounter = true;
-                    valueElement = new TextBox();
-
-                    Binding datatext = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
-                    ((TextBox)valueElement).SetBinding(TextBox.TextProperty, datatext);
-                    ((TextBox)valueElement).TextChanged += EditData_TextChanged_TextBoxLen;
-                }
-
-                ((FrameworkElement)valueElement).Width = ValueWidth;
-                ((FrameworkElement)valueElement).VerticalAlignment = VerticalAlignment.Center;
-                ((Control)valueElement).TabIndex = tabindex;
-
-                // end instantiate valueElement;
-
-                TextBlock datalabel = new() { Text = Data };
-
-                StackPanel fullRow = new() { Orientation = Orientation.Horizontal };    // outer element wrapper
-                StackPanel dataLabelBlock = new() { Orientation = Orientation.Vertical, Width = 150 }; // inner element wrapper, left-side
-
-                dataLabelBlock.Children.Add(datalabel);
-                fullRow.Children.Add(dataLabelBlock);
-                _ = valueElement != null ? fullRow.Children.Add(valueElement).ToString() : ""; // add element if it isn't null
-
-                // add 'character counter' row for string data to show message length
-                if (stringCounter)
-                {
-                    TextBlock countLabel = new() { Text = "Current Chars: " };
-                    TextBlock countData = new();
-
-                    StackPanel CountLabel = new() { Orientation = Orientation.Horizontal };
-                    CountLabel.Children.Add(countLabel);
-                    CountLabel.Children.Add(countData);
-
-                    dataLabelBlock.Children.Add(CountLabel);
-                }
-
-                ListBox_DataList.Items.Add(fullRow);
-
-                tabindex++;
             }
         }
 
@@ -489,7 +509,7 @@ namespace StreamerBotLib.GUI.Windows
                 CheckFileExists = true,
                 DereferenceLinks = true,
                 Title = "Select media file (picture/video) for Overlay event! (needs to be viewable in a webpage)",
-                InitialDirectory = OptionFlags.MediaOverlayMRUPathSelect
+                InitialDirectory = Directory.Exists(OptionFlags.MediaOverlayMRUPathSelect) ? OptionFlags.MediaOverlayMRUPathSelect : Directory.GetCurrentDirectory()
             };
 
 
@@ -500,23 +520,17 @@ namespace StreamerBotLib.GUI.Windows
             }
         }
 
-        private void OverlayTypeElement_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ActionTypeElement_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox ActionType = (ComboBox)sender;
-            ComboBox ActionNameElement = null;
 
-            switch (ActionType.Name)
+            ComboBox ActionNameElement = ActionType.Name switch
             {
-                case nameof(OverlayTypeElement):
-                    ActionNameElement = OverlayActionTypeElement;
-                    break;
-                case nameof(ModActionTypeElement):
-                    ActionNameElement = ModActionElement;
-                    break;
-                case nameof(ModPerformTypeElement):
-                    ActionNameElement = ModPerformElement;
-                    break;
-            }
+                nameof(OverlayTypeElement) => OverlayActionTypeElement,
+                nameof(ModActionTypeElement) => ModActionElement,
+                nameof(ModPerformTypeElement) => ModPerformElement,
+                _ => null
+            };
 
             if (ActionType != null && ActionType.SelectedValue.ToString() != "" && ActionNameElement != null)
             {
