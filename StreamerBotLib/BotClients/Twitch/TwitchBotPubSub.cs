@@ -112,9 +112,12 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceError(object sender, OnPubSubServiceErrorArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name,
-                DebugLogTypes.TwitchPubSubBot, "Found a service error. Checking the token for issues.");
-            twitchTokenBot.CheckToken();
+            if (OptionFlags.ActiveToken)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name,
+                    DebugLogTypes.TwitchPubSubBot, "Found a service error. Checking the token for issues.");
+                twitchTokenBot.CheckToken();
+            }
         }
 
         /// <summary>
@@ -153,15 +156,18 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void ReconnectService()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Reconnecting the service.");
+            if (OptionFlags.ActiveToken)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Reconnecting the service.");
 
-            IsStarted = false;
-            IsStopped = true;
-            UnregisterHandlers();
-            HandlersAdded = false;
-            TwitchPubSub = null;
+                IsStarted = false;
+                IsStopped = true;
+                UnregisterHandlers();
+                HandlersAdded = false;
+                TwitchPubSub = null;
 
-            StartBot();
+                StartBot();
+            }
         }
 
         /// <summary>
@@ -204,8 +210,13 @@ namespace StreamerBotLib.BotClients.Twitch
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                        InvokeBotFailedStart();
-                        Connected = false;
+                        if (!IsStarted)
+                        {
+                            InvokeBotFailedStart();
+                            IsStarted = false;
+                            IsStopped = true;
+                            Connected = false;
+                        }
                     }
                 }
             });

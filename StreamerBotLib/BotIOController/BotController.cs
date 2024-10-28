@@ -116,18 +116,114 @@ namespace StreamerBotLib.BotIOController
 
                 try
                 {
-                    if (e.MethodName.Contains('.'))
-                    {
-                        throw new ArgumentException("Method name to invoke contains '.', which is invalid.");
-                    }
+                    //_ = typeof(BotController).InvokeMember(
+                    //        name: e.MethodName,
+                    //        invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
+                    //        binder: null,
+                    //        target: this,
+                    //        args: e.e == null ? null : [e.e],
+                    //        culture: null);
 
-                    _ = typeof(BotController).InvokeMember(
-                            name: e.MethodName,
-                            invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
-                            binder: null,
-                            target: this,
-                            args: e.e == null ? null : [e.e],
-                            culture: null);
+                    switch (e.MethodName)
+                    {
+                        case BotEvents.TwitchChatBotStarted:
+                            TwitchChatBotStarted(e.e);
+                            break;
+                        case BotEvents.TwitchChatBotStopping:
+                            TwitchChatBotStopping(e.e);
+                            break;
+                        case BotEvents.TwitchChatBotStopped:
+                            TwitchChatBotStopped(e.e);
+                            break;
+                        case BotEvents.TwitchBeingHosted:
+                            break;
+                        case BotEvents.TwitchBulkPostFollowers:
+                            TwitchBulkPostFollowers((OnNewFollowersDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStartBulkFollowers:
+                            TwitchStartBulkFollowers(e.e);
+                            break;
+                        case BotEvents.TwitchStopBulkFollowers:
+                            TwitchStopBulkFollowers();
+                            break;
+                        case BotEvents.TwitchCommunitySubscription:
+                            TwitchCommunitySubscription((OnCommunitySubscriptionArgs)e.e);
+                            break;
+                        case BotEvents.TwitchGiftSubscription:
+                            TwitchGiftSubscription((OnGiftedSubscriptionArgs)e.e);
+                            break;
+                        case BotEvents.TwitchNewSubscriber:
+                            TwitchNewSubscriber((OnNewSubscriberArgs)e.e);
+                            break;
+                        case BotEvents.TwitchPostNewClip:
+                            TwitchPostNewClip((OnNewClipsDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchClipSvcOnClipFound:
+                            TwitchClipSvcOnClipFound((ClipFoundEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchPostNewFollowers:
+                            TwitchPostNewFollowers((OnNewFollowersDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchReSubscriber:
+                            TwitchReSubscriber((OnReSubscriberArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStreamOffline:
+                            TwitchStreamOffline((OnStreamOfflineArgs)e.e);
+                            break;
+                        case BotEvents.TwitchMultiStreamOnline:
+                            TwitchMultiStreamOnline((OnStreamOnlineArgs)e.e);
+                            break;
+                        case BotEvents.TwitchMultiGetChannels:
+                            break;
+                        case BotEvents.TwitchStreamOnline:
+                            TwitchStreamOnline((OnStreamOnlineArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStreamUpdate:
+                            TwitchStreamUpdate((OnStreamUpdateArgs)e.e);
+                            break;
+                        case BotEvents.TwitchCategoryUpdate:
+                            TwitchCategoryUpdate((OnGetChannelGameNameEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchNowHosting:
+                            break;
+                        case BotEvents.TwitchExistingUsers:
+                            TwitchExistingUsers((StreamerOnExistingUserDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOnUserJoined:
+                            TwitchOnUserJoined((StreamerOnUserJoinedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOnUserLeft:
+                            TwitchOnUserLeft((StreamerOnUserLeftArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOnUserTimedout:
+                            TwitchOnUserTimedout((OnUserTimedoutArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOnUserBanned:
+                            TwitchOnUserBanned((OnUserBannedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchRitualNewChatter:
+                            break;
+                        case BotEvents.TwitchMessageReceived:
+                            TwitchMessageReceived((OnMessageReceivedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchIncomingRaid:
+                            TwitchIncomingRaid((OnIncomingRaidArgs)e.e);
+                            break;
+                        case BotEvents.TwitchChatCommandReceived:
+                            TwitchChatCommandReceived((OnChatCommandReceivedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchChannelPointsRewardRedeemed:
+                            TwitchChannelPointsRewardRedeemed((OnChannelPointsRewardRedeemedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOutgoingRaid:
+                            TwitchOutgoingRaid((OnStreamRaidResponseEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchBotCommandCall:
+                            TwitchBotCommandCall((SendBotCommandEventArgs)e.e);
+                            break;
+                        case BotEvents.HandleBotEventEmpty:
+                            break;
+                    }
 
                 }
                 catch (Exception ex)
@@ -214,7 +310,7 @@ namespace StreamerBotLib.BotIOController
 
                 TwitchStreamOffline();
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the the channel.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the channel.");
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
 
@@ -227,7 +323,6 @@ namespace StreamerBotLib.BotIOController
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending an exit to the data system.");
                 Systems.Exit();
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
             }
             catch (Exception ex)
             {

@@ -577,8 +577,37 @@ namespace StreamerBotLib.DataSQL.Import
                 }
             }
 
-
             CurrentTotalProgress += _MultiDataSource.Channels.Rows.Count;
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
+
+            LogWriter.WriteLog("Adding Multilive SummaryStream data.");
+
+            if (_MultiDataSource.SummaryLiveStream.Count > 0)
+            {
+                foreach (SummaryLiveStreamRow S in _MultiDataSource.SummaryLiveStream)
+                {
+                    if (!(from MS in context.MultiSummaryLiveStreams
+                          where S.ChannelsRow.UserId == MS.UserId
+                          select MS).Any())
+                    {
+                        var founddata = (from C in _MultiDataSource.LiveStream
+                                         where C.ChannelName == S.ChannelName
+                                         select C);
+
+                        if (founddata.Any())
+                        {
+                            context.MultiSummaryLiveStreams.Add(new MultiSummaryLiveStreams(streamCount: S.StreamCount, throughDate: S.ThroughDate,
+                                userId: founddata.First().UserId, platform: Platform.Twitch));
+                        }
+                        else
+                        {
+                            LogWriter.WriteLog($"Could not import summary data for row: {ConvertDataRow(S, _MultiDataSource.SummaryLiveStream.Columns.Count)}");
+                        }
+                    }
+                }
+            }
+
+            CurrentTotalProgress += _MultiDataSource.SummaryLiveStream.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             // post multilive stream data
@@ -657,38 +686,7 @@ namespace StreamerBotLib.DataSQL.Import
             CurrentTotalProgress += _MultiDataSource.MsgEndPoints.Rows.Count;
             ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
-            LogWriter.WriteLog("Adding Multilive SummaryStream data.");
-
-            if (_MultiDataSource.SummaryLiveStream.Count > 0)
-            {
-                foreach (SummaryLiveStreamRow S in _MultiDataSource.SummaryLiveStream)
-                {
-                    if (!(from MS in context.MultiSummaryLiveStreams
-                          where S.ChannelsRow.UserId == MS.UserId
-                          select MS).Any())
-                    {
-                        var founddata = (from C in context.MultiChannels
-                                         where C.UserName == S.ChannelName
-                                         select C);
-
-                        if (founddata.Any())
-                        {
-                            context.MultiSummaryLiveStreams.Add(new MultiSummaryLiveStreams(streamCount: S.StreamCount, throughDate: S.ThroughDate,
-                                userId: founddata.First().UserId, platform: Platform.Twitch));
-                        }
-                        else
-                        {
-                            LogWriter.WriteLog($"Could not import summary data for row: {ConvertDataRow(S, _MultiDataSource.SummaryLiveStream.Columns.Count)}");
-                        }
-                    }
-                }
-            }
-
-            CurrentTotalProgress += _MultiDataSource.SummaryLiveStream.Rows.Count;
-            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
-
             #endregion
-
 
             #region User
 
@@ -943,56 +941,57 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.Followers.Count > 0)
             {
-                foreach (FollowersRow F in _DataSource.Followers)
+                foreach (FollowersRow F in (from FR in _DataSource.Followers
+                                            orderby FR.StatusChangeDate descending
+                                            select FR)
+                                            )
                 {
-                    if (!(from CF in context.Followers where F.UserId == CF.UserId && CF.User.UserName == F.UserName select CF).Any()
-                        && !(from OF in context.OldFollowUsers where OF.UserId == F.UserId && OF.UserName == F.UserName select OF).Any())
+                    if (F.IsFollower)
                     {
                         Users currUser = (from U in context.Users where U.UserId == F.UserId && U.Platform == Enum.Parse<Platform>(F.Platform) select U).FirstOrDefault();
-                        if (!(DBNull.Value.Equals(F["UserId"])) && !DBNull.Value.Equals(F["Platform"]) && !string.IsNullOrEmpty(F.UserId) && currUser != null)
+                        if (currUser.UserName != F.UserName)
                         {
-                            if (F.IsFollower)
-                            {
-                                if (currUser.UserName != F.UserName)
-                                {
-                                    currUser.UserName = F.UserName;
-                                }
-
-                                context.Followers.Add(new(
+                            currUser.UserName = F.UserName;
+                        }
+                    }
+                    if (!(DBNull.Value.Equals(F["UserId"])) && !DBNull.Value.Equals(F["Platform"]) && !string.IsNullOrEmpty(F.UserId))
+                    {
+                        if (F.IsFollower && !(from CF in context.Followers where F.UserId == CF.UserId && CF.User.UserName == F.UserName select CF).Any())
+                        {
+                            context.Followers.Add(new(
+                                                    isFollower: F.IsFollower,
+                                                    followedDate: F.FollowedDate,
+                                                    statusChangeDate: F.StatusChangeDate,
+                                                    category: (DBNull.Value.Equals(F["Category"]) || F.Category == "N/A" || F.Category == "") ? "All" : F.Category,
+                                                    addDate: F.FollowedDate,
+                                                    userId: F.UserId,
+                                                    platform: Enum.Parse<Platform>(F.Platform)
+                                                ));
+#if DEBUG
+                            DebugFollow.WriteLine($"Now added, {F.UserId} {F.UserName} to context.Followers.");
+#endif
+                        }
+                        else if (!(from OF in context.OldFollowUsers where OF.UserId == F.UserId && OF.UserName == F.UserName select OF).Any())
+                        {
+                            context.OldFollowUsers.Add(new(
                                                         isFollower: F.IsFollower,
                                                         followedDate: F.FollowedDate,
                                                         statusChangeDate: F.StatusChangeDate,
-                                                        category: F.Category == "N/A" ? "All" : F.Category,
+                                                        category: (DBNull.Value.Equals(F["Category"]) || F.Category == "N/A" || F.Category == "") ? "All" : F.Category,
                                                         addDate: F.FollowedDate,
                                                         userId: F.UserId,
+                                                        userName: F.UserName,
                                                         platform: Enum.Parse<Platform>(F.Platform)
-                                                    ));
+                                                ));
 #if DEBUG
-                                DebugFollow.WriteLine($"Now added {F.UserId} {F.UserName} to context.Followers.");
-#endif   
-                            }
-                            else
-                            {
-                                context.OldFollowUsers.Add(new(
-                                                            isFollower: F.IsFollower,
-                                                            followedDate: F.FollowedDate,
-                                                            statusChangeDate: F.StatusChangeDate,
-                                                            category: F.Category == "N/A" ? "All" : F.Category,
-                                                            addDate: F.FollowedDate,
-                                                            userId: F.UserId,
-                                                            userName: F.UserName,
-                                                            platform: Enum.Parse<Platform>(F.Platform)
-                                                    ));
-#if DEBUG
-                                DebugFollow.WriteLine($"Now added {F.UserId} {F.UserName} to context.OldFollowUsers.");
+                            DebugFollow.WriteLine($"Now added, {F.UserId} {F.UserName} to context.OldFollowUsers.");
 #endif
-                            }
-                            context.SaveChanges(true);
                         }
-                        else
-                        {
-                            LogWriter.WriteLog($"Could not import data row: {ConvertDataRow(F, _DataSource.Followers.Columns.Count)}");
-                        }
+                        context.SaveChanges(true);
+                    }
+                    else
+                    {
+                        LogWriter.WriteLog($"Could not import data row: {ConvertDataRow(F, _DataSource.Followers.Columns.Count)}");
                     }
                 }
             }

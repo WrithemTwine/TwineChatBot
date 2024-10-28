@@ -21,42 +21,47 @@ namespace StreamerBot
         {
             CheckBox_MediaOverlayEmbedGUI.IsEnabled = false;
             string TabName = "TabItem_Bot_MediaOverlay_GUI";
+            object FindOverlayTab = null;
+
+            foreach (var T in TabControl_Bots_Content.Items)
+            {
+                if (((TabItem)T).Name == TabName)
+                {
+                    FindOverlayTab = T;
+                }
+            }
+
             if (OptionFlags.MediaOverlayEmbedGUI)
             {
-                Frame OverlayFrame = new()
+                MediaOverlay = null;
+
+                if (FindOverlayTab == null)
                 {
-                    Source = new("pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml"),
-                    IsManipulationEnabled = true,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch
-                };
+                    Frame OverlayFrame = new()
+                    {
+                        Source = new("pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml"),
+                        IsManipulationEnabled = true,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Stretch
+                    };
 
-                OverlayFrame.Loaded += MediaOverlayServer_Loaded;
+                    OverlayFrame.Loaded += MediaOverlayServer_Loaded;
 
-                TabItem OverlayTab = new()
-                {
-                    Name = TabName,
-                    Header = "Overlay",
-                    Content = OverlayFrame
-                };
+                    TabItem OverlayTab = new()
+                    {
+                        Name = TabName,
+                        Header = "Overlay",
+                        Content = OverlayFrame
+                    };
 
-                TabControl_Bots_Content.Items.Add(OverlayTab);
+                    TabControl_Bots_Content.Items.Add(OverlayTab);
+                }
             }
             else
             {
-                object OverlayTab = null;
-
-                foreach (var T in TabControl_Bots_Content.Items)
+                if (FindOverlayTab != null)
                 {
-                    if (((TabItem)T).Name == TabName)
-                    {
-                        OverlayTab = T;
-                    }
-                }
-
-                if (OverlayTab != null)
-                {
-                    TabControl_Bots_Content.Items.Remove(OverlayTab);
+                    TabControl_Bots_Content.Items.Remove(FindOverlayTab);
                 }
 
                 MediaOverlay = new();
@@ -82,7 +87,7 @@ namespace StreamerBot
             {
                 while (MediaOverlayPage == null && MediaOverlay == null)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
                 }
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -174,6 +179,10 @@ namespace StreamerBot
                     _ => throw new NotImplementedException()
                 };
                 HelperStopBot(radio);
+                if (e.BotName == Bots.MediaOverlayServer)
+                {
+                    CheckBox_MediaOverlayEmbedGUI.IsEnabled = true;
+                }
             }), null);
         }
 
@@ -186,10 +195,10 @@ namespace StreamerBot
         {
             foreach (var B in BotOps)
             {
-                if (B.Item2 == Radio_Services_OverlayBotStart)
-                {
-                    PrepareMediaOverlayServerWindow();
-                }
+                //if (B.Item2 == Radio_Services_OverlayBotStart)
+                //{
+                //    PrepareMediaOverlayServerWindow();
+                //}
 
                 if (B.Item2.IsEnabled) // isenabled is a check the credentials are added to the bot
                 {

@@ -260,7 +260,7 @@ namespace StreamerBotLib.BotClients
             IsStarted = false;
             IsStopped = true;
 
-            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty.ToString() });
+            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty });
         }
 
         public void SetOverlayWindowGUI(object window)

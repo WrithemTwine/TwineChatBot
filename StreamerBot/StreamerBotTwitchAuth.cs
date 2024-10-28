@@ -1,5 +1,4 @@
-﻿
-using StreamerBot.Web;
+﻿using StreamerBot.Web;
 
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
@@ -84,7 +83,7 @@ namespace StreamerBot
         {
             Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = false;
 
-            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_BotAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -95,7 +94,7 @@ namespace StreamerBot
         {
             Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = false;
 
-            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_StreamerAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -142,12 +141,12 @@ namespace StreamerBot
         /// Callback method to call when the authentication is completed, and attempt to start any bots the user 
         /// selected to start when the app starts.
         /// </summary>
-        private void AuthenticatedAttempToStartBots()
+        private void AuthenticatedAttemptToStartBots()
         {
             Dispatcher.BeginInvoke(() =>
             {
                 CheckFocus();
-                //StartAutoBots();
+                StartAutoBots();
             });
         }
 

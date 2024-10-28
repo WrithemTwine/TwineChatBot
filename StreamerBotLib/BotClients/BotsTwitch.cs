@@ -69,7 +69,7 @@ namespace StreamerBotLib.BotClients
             TwitchBotChatClient.OnBotStarted += TwitchBotChatClient_OnBotStarted;
             TwitchBotChatClient.OnBotStopping += TwitchBotChatClient_OnBotStopping;
             TwitchBotChatClient.OnBotStopped += TwitchBotChatClient_OnBotStopped;
-            //TwitchBotChatClient.UnRegisterHandlers += TwitchBotChatClient_UnRegisterHandlers;
+            TwitchBotChatClient.UnRegisterHandlers += TwitchBotChatClient_UnRegisterHandlers;
 
             TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
             TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
@@ -365,7 +365,7 @@ namespace StreamerBotLib.BotClients
             Models.LiveUser user = new(s, Platform.Twitch);
 
             string userId = DataManager.GetUserId(user);
-            if (userId == null || userId == string.Empty)
+            if (!string.IsNullOrEmpty(userId))
             {
                 user.UserId = TwitchBotUserSvc.GetUserId(user.UserName);
             }

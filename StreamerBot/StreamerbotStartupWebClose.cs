@@ -219,6 +219,7 @@ namespace StreamerBot
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
             Controller.ExitBots();
 
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");
             LogWriter.ExitCloseLogs();
         }

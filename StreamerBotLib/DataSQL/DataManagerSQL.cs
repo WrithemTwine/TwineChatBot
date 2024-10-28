@@ -21,7 +21,6 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
-using System.Linq;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -73,7 +72,7 @@ switches:
         {
             context = dbContextFactory.CreateDbContext();
 
-            if (!OptionFlags.EFCDataImportDataGram)
+            if (!OptionFlags.EFCDataImportedDataGram)
             {
                 bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status
 
@@ -84,7 +83,7 @@ switches:
                 context.SaveChanges(true);
 
                 OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
-                OptionFlags.EFCDataImportDataGram = true;
+                OptionFlags.EFCDataImportedDataGram = true;
             }
         }
 
@@ -809,7 +808,7 @@ switches:
                 var result = (from Com in (context.CommandsBase)
                               where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
                               orderby Com.CmdName
-                              select $"{(prefix ? "!" : "") }{Com.CmdName}");
+                              select $"{(prefix ? "!" : "")}{Com.CmdName}");
                 ClearDataContext();
                 return result;
             }
@@ -2585,16 +2584,16 @@ switches:
                     BuildDataContext();
                     CleanupList.Clear();
 
-                    List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate);
+                    List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate.Date);
                     List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
 
                     foreach (var A in (from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
-                                            {
-                                                ThroughDate = uniqueDate,
-                                                StreamCount = (from DateTime dates in AllDates
-                                                               where dates.Date <= uniqueDate
-                                                               select dates).Count()
-                                            })
+                    {
+                        ThroughDate = uniqueDate,
+                        StreamCount = (from DateTime dates in AllDates
+                                       where dates.Date <= uniqueDate
+                                       select dates).Count()
+                    })
                                        select M))
                     {
                         CleanupList.Add(A);
@@ -2620,8 +2619,8 @@ switches:
                                              select LS.UserId);
                 foreach (var (userId, CurrUser, MaxDate, CurrSummaryLiveStream) in from string userId in UniqueUserIds
                                                                                    let CurrUser = new List<MultiLiveStreams>(from AR in ArchiveRecords
-                                                                                                      where AR.UserId == userId
-                                                                                                      select AR)
+                                                                                                                             where AR.UserId == userId
+                                                                                                                             select AR)
                                                                                    let MaxDate = (from D in CurrUser
                                                                                                   select D.LiveDate).Max()
                                                                                    let CurrSummaryLiveStream = (from M in context.MultiSummaryLiveStreams

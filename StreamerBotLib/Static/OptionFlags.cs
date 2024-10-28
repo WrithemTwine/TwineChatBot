@@ -22,10 +22,10 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Flag to specify the prior XML Datagram file imported into the database
         /// </summary>
-        public static bool EFCDataImportDataGram
+        public static bool EFCDataImportedDataGram
         {
-            get => Settings.Default.EFCDataImportDataGram;
-            set => Settings.Default.EFCDataImportDataGram = value;
+            get => Settings.Default.EFCDataImportedDataGram;
+            set => Settings.Default.EFCDataImportedDataGram = value;
         }
 
         /// <summary>

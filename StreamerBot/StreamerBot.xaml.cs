@@ -28,9 +28,6 @@ namespace StreamerBot
 
     // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
 
-
-    // TODO: correct "MediaOverlayServer" bot starting with "all bots" -but doesn't properly get started
-
     /// <summary>
     /// Interaction logic for OverlayWindow.xaml
     /// </summary>
@@ -360,9 +357,9 @@ namespace StreamerBot
             {
                 SetBotRadioButtons(
                     !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
-                    && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken))
                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)
-                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode))
+                    && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode))
                     , Platform.Twitch);
             }
 

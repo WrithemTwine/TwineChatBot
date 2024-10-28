@@ -785,12 +785,12 @@ application (checked box) or your default browser (unchecked box). Then, click t
                                                         <StackPanel Orientation="Horizontal" Margin="10">
 
                                                             <TextBlock Width="100">Channel Name:</TextBlock>
-                                                            <TextBox Height="22" Text="{Binding TwitchChannelName}" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" />
+                                                            <TextBox Height="22" Text="{Binding TwitchChannelName}" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" TextChanged="TextBox_TextChanged" TextInput="TextBox_TextChanged" LostFocus="TextBox_TextChanged" />
 
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" Margin="10">
                                                             <TextBlock Width="100">Bot User Name:</TextBlock>
-                                                            <TextBox Text="{Binding TwitchBotUserName}" SourceUpdated="TextBox_SourceUpdated"   TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                            <TextBox Text="{Binding TwitchBotUserName}" SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" TextChanged="TextBox_TextChanged" TextInput="TextBox_TextChanged" LostFocus="TextBox_TextChanged" />
                                                         </StackPanel>
                                                     </StackPanel>
                                                 </GroupBox>

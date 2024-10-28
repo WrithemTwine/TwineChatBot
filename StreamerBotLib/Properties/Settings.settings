@@ -614,7 +614,7 @@
     <Setting Name="EFCKNetApplicationId" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="EFCDataImportDataGram" Type="System.Boolean" Scope="User">
+    <Setting Name="EFCDataImportedDataGram" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

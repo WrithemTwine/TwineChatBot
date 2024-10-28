@@ -49,7 +49,7 @@ namespace StreamerBotLib.Systems
         public void StartElapsedTimerThread()
         {
             // don't start another thread if the current is still active
-            if (ElapsedThread == null || !ElapsedThread.IsAlive)
+            if (ElapsedThread == null)
             {
                 ChatBotStarted = true;
                 ElapsedThread = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ElapsedCommandTimers);
@@ -150,7 +150,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
+                while (OptionFlags.ActiveToken && repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -168,15 +168,23 @@ namespace StreamerBotLib.Systems
                         ResetLive = false;
                     }
 
-                    if (cmd.CheckFireTime())
+                    if (OptionFlags.ActiveToken && cmd.CheckFireTime())
                     {
                         lock (GUI.GUIDataManagerLock.Lock) // lock it up because accessing a DataManage row
                         {
                             lock (RepeatLock)
                             {
-                                if (ComputeRepeat())
+                                try
                                 {
-                                    OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), [], DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    if (ComputeRepeat())
+                                    {
+                                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Performing {cmd.Command}.");
+                                        OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), [], DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                                 }
                             }
                         }
@@ -190,7 +198,10 @@ namespace StreamerBotLib.Systems
 
                     lock (cmd) // lock the cmd because it's referenced in other threads
                     {
-                        repeat = DataManage.GetTimerCommandTime(cmd.Command);
+                        if (OptionFlags.ActiveToken)
+                        {
+                            repeat = DataManage.GetTimerCommandTime(cmd.Command);
+                        }
                         cmd.ModifyTime(repeat, diluteTime);
                     }
                 }
@@ -653,7 +664,8 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
             {
-                bool TryConvertInt = int.TryParse(arglist[0], out int Wager);
+                // in repeat command case, the arglist may be empty and needs capacity check
+                bool TryConvertInt = int.TryParse((arglist != null && arglist.Count > 0) ? arglist[0] : "0", out int Wager);
 
                 if (arglist.Count == 1 && TryConvertInt)
                 {

@@ -116,6 +116,7 @@ namespace StreamerBotLib.Static
         /// <param name="line">The message to save to the log.</param>
         public static void DebugLog(string Method, DebugLogTypes debugLogTypes, string line)
         {
+            #region DebugLogTypes Switch
             string Output = debugLogTypes switch
             {
                 DebugLogTypes.OverlayBot => OptionFlags.EnableDebugLogOverlays ? line : "",
@@ -153,6 +154,8 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.TwitchBots => OptionFlags.EnableDebugTwitchBots ? line : "",
                 _ => "",
             };
+            #endregion
+
             if (Output != "")
             {
                 lock (DebugLogFile)

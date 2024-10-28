@@ -4,8 +4,6 @@ using StreamerBotLib.Static;
 
 using System.Reflection;
 
-using TwitchLib.Api;
-using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 
@@ -44,7 +42,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (FollowerService == null)
             {
                 FollowerService = new ExtFollowerService(
-                     new TwitchAPI(settings: new ApiSettings() { AccessToken = TwitchAccessToken, ClientId = TwitchClientID }),
+                     HelixApiService.BotAPI,
                     (int)Math.Round(TwitchFrequencyFollowerTime, 0));
 
                 FollowerService.SetChannelsByName([ClientName ?? TwitchChannelName]);
@@ -75,7 +73,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     ConnectFollowerService();
                     IsStarted = true;
-                    FollowerService?.Start();
+                    FollowerService.Start();
                     RestartRefreshAccessToken = true; // record reason is from refreshing token
                     IsStopped = false;
                     InvokeBotStarted();
@@ -91,9 +89,12 @@ namespace StreamerBotLib.BotClients.Twitch
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                IsStarted = false;
-                IsStopped = true;
-                InvokeBotFailedStart();
+                if (!IsStarted)
+                {
+                    IsStarted = false;
+                    IsStopped = true;
+                    InvokeBotFailedStart();
+                }
             }
             return false;
         }
@@ -112,7 +113,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     InvokeBotStopped();
-                    FollowerService = null;
+                    //FollowerService = null;
                     HandlersAdded = false;
                 }
                 return true;

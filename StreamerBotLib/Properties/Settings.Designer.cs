@@ -2479,12 +2479,12 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool EFCDataImportDataGram {
+        public bool EFCDataImportedDataGram {
             get {
-                return ((bool)(this["EFCDataImportDataGram"]));
+                return ((bool)(this["EFCDataImportedDataGram"]));
             }
             set {
-                this["EFCDataImportDataGram"] = value;
+                this["EFCDataImportedDataGram"] = value;
             }
         }
     }

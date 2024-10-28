@@ -153,7 +153,7 @@
                     <TextBlock x:Name="TextBlock_OverlayLink_Msg_Copied" DockPanel.Dock="Top" Foreground="{DynamicResource BrightGo}" Visibility="Hidden">Link copied!</TextBlock>
                     <ListView x:Name="ListView_OverlayLink_List" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
                               ItemsSource="{Binding OverlayLinks}"
-                              ContextMenu="{StaticResource OverlayLink_Menu}">
+                              ContextMenu="{StaticResource OverlayLink_Menu}" SelectionMode="Single">
                         <ListView.Resources>
                             <DataTemplate x:Key="OverlayLink">
                                 <Button Content="{Binding OverlayHyperText}" Click="OverlayLink_Click" />
@@ -161,8 +161,8 @@
                         </ListView.Resources>
                         <ListView.View>
                             <GridView >
-                                <GridViewColumn Header="Type" DisplayMemberBinding="{Binding OverlayType}" />
-                                <GridViewColumn Header="Link" CellTemplate="{StaticResource OverlayLink}" />
+                                <GridViewColumn Header="Type" Width="100" DisplayMemberBinding="{Binding OverlayType}" />
+                                <GridViewColumn Header="Link" Width="300" CellTemplate="{StaticResource OverlayLink}" />
                             </GridView>
                         </ListView.View>
                     </ListView>

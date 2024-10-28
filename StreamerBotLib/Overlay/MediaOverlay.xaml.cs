@@ -29,7 +29,10 @@ namespace StreamerBotLib.Overlay
 
         public void AddVisibilityEvent(EventHandler<EventArgs> HideWindow = null)
         {
-            UserHideWindow += HideWindow;
+            if (UserHideWindow == null)
+            {
+                UserHideWindow += HideWindow;
+            }
         }
 
         /// <summary>

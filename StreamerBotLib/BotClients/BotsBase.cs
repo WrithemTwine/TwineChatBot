@@ -69,7 +69,7 @@ namespace StreamerBotLib.BotClients
 
         protected void InvokeBotEvent(object sender, BotEvents Botevent, EventArgs eventargs)
         {
-            BotEvent?.Invoke(sender, new() { MethodName = Botevent.ToString(), e = eventargs });
+            BotEvent?.Invoke(sender, new() { MethodName = Botevent, e = eventargs });
         }
 
         public virtual void GetAllFollowers()
