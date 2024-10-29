@@ -7,7 +7,7 @@ namespace StreamerBotLib.Models
     /// <summary>
     /// Data specifying details of a user joined to the live stream channel.
     /// </summary>
-    [DebuggerDisplay("UserId,UserName,Source = {UserId},{UserName},{ Source}")]
+    [DebuggerDisplay("UserId,UserName,Platform = {UserId},{UserName},{Platform}")]
     public sealed record LiveUser : IComparable<LiveUser>, IEquatable<LiveUser>
     {
         /// <summary>

@@ -1132,9 +1132,17 @@ switches:
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                var result = (from U in context.Users
-                              where U.UserName == User.UserName
-                              select U.UserId).FirstOrDefault();
+                string result = null;
+                List<LiveUser> UsersList = new(from U in context.Users
+                                            select new LiveUser(U.UserName, U.Platform, U.UserId));
+
+                foreach (var s in from LiveUser s in UsersList
+                                  where s.UserName.Equals(User.UserName, StringComparison.OrdinalIgnoreCase)
+                                  select s)
+                {
+                    result = s.UserId;
+                }
+
                 ClearDataContext();
                 return result;
             }

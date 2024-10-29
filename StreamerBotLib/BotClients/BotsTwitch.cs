@@ -365,7 +365,7 @@ namespace StreamerBotLib.BotClients
             Models.LiveUser user = new(s, Platform.Twitch);
 
             string userId = DataManager.GetUserId(user);
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
                 user.UserId = TwitchBotUserSvc.GetUserId(user.UserName);
             }
