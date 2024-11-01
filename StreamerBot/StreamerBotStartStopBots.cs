@@ -17,88 +17,13 @@ namespace StreamerBot
         private MediaOverlayPage MediaOverlayPage = null;
         private MediaOverlay MediaOverlay = null;
 
-        private void PrepareMediaOverlayServerWindow()
-        {
-            CheckBox_MediaOverlayEmbedGUI.IsEnabled = false;
-            string TabName = "TabItem_Bot_MediaOverlay_GUI";
-            object FindOverlayTab = null;
-
-            foreach (var T in TabControl_Bots_Content.Items)
-            {
-                if (((TabItem)T).Name == TabName)
-                {
-                    FindOverlayTab = T;
-                }
-            }
-
-            if (OptionFlags.MediaOverlayEmbedGUI)
-            {
-                MediaOverlay = null;
-
-                if (FindOverlayTab == null)
-                {
-                    Frame OverlayFrame = new()
-                    {
-                        Source = new("pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml"),
-                        IsManipulationEnabled = true,
-                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                        VerticalAlignment = VerticalAlignment.Stretch
-                    };
-
-                    OverlayFrame.Loaded += MediaOverlayServer_Loaded;
-
-                    TabItem OverlayTab = new()
-                    {
-                        Name = TabName,
-                        Header = "Overlay",
-                        Content = OverlayFrame
-                    };
-
-                    TabControl_Bots_Content.Items.Add(OverlayTab);
-                }
-            }
-            else
-            {
-                if (FindOverlayTab != null)
-                {
-                    TabControl_Bots_Content.Items.Remove(FindOverlayTab);
-                }
-
-                MediaOverlay = new();
-                RadioButton_Theme_Light.Checked += MediaOverlay.WindowThemeChanged;
-                RadioButton_Theme_Dark.Checked += MediaOverlay.WindowThemeChanged;
-                MediaOverlay.Show();
-            }
-        }
-
-        private void RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            CheckBox_MediaOverlayEmbedGUI.IsEnabled = true;
-        }
-
-        private void MediaOverlayServer_Loaded(object sender, RoutedEventArgs e)
-        {
-            MediaOverlayPage = (MediaOverlayPage)((Frame)sender).Content;
-        }
-
         private void MediaOverlayServer_SetOverlayWindow(object sender, SetOverlayWindowEventArgs e)
         {
             ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
-                while (MediaOverlayPage == null && MediaOverlay == null)
-                {
-                    Thread.Sleep(500);
-                }
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (OptionFlags.MediaOverlayEmbedGUI)
-                    {
-                        e.SetOverlay(MediaOverlayPage);
-                    }
-                    else
-                    {
-                        e.SetOverlay(MediaOverlay);
-                    }
+                    e.SetOverlay( ((MediaOverlayPage)((Frame)TabItem_Bots_OverlayTab.Content).Content) );
                 }), null);
             });
         }
@@ -179,10 +104,6 @@ namespace StreamerBot
                     _ => throw new NotImplementedException()
                 };
                 HelperStopBot(radio);
-                if (e.BotName == Bots.MediaOverlayServer)
-                {
-                    CheckBox_MediaOverlayEmbedGUI.IsEnabled = true;
-                }
             }), null);
         }
 
@@ -195,11 +116,6 @@ namespace StreamerBot
         {
             foreach (var B in BotOps)
             {
-                //if (B.Item2 == Radio_Services_OverlayBotStart)
-                //{
-                //    PrepareMediaOverlayServerWindow();
-                //}
-
                 if (B.Item2.IsEnabled) // isenabled is a check the credentials are added to the bot
                 {
                     DispatchStartBot(B.Item2.DataContext as IOModule);

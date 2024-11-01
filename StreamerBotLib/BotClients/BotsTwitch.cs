@@ -4,6 +4,7 @@ using StreamerBotLib.Culture;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -408,9 +409,9 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Chat bot received a raid notification.");
 
-            string CategoryName = GetUserCategory(e.RaidNotification.UserId);
+            var Category = GetUserCategory(e.RaidNotification.UserId);
 
-            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = CategoryName, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
+            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid, new OnIncomingRaidArgs() { Category = Category, RaidTime = DateTime.Now.ToLocalTime(), ViewerCount = e.RaidNotification.MsgParamViewerCount, DisplayName = e.RaidNotification.DisplayName });
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -437,7 +438,7 @@ namespace StreamerBotLib.BotClients
 
         #region Twitch User Bot
 
-        public static string GetUserCategory(string UserId = null, string UserName = null)
+        public static CategoryData GetUserCategory(string UserId = null, string UserName = null)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Performing request to receive a user category.");
 
@@ -1031,7 +1032,7 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
         }
 
-        private List<Clip> ClipList { get; set; }
+        private List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> ClipList { get; set; }
 
         private bool StartClips { get; set; }
 
@@ -1046,7 +1047,7 @@ namespace StreamerBotLib.BotClients
 
         private async void ProcessChannelClips(Action<List<Models.Clip>> ActionCallback)
         {
-            List<Clip> result = [];
+            List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = [];
             TwitchBotClipSvc ChannelClips = new();
             if (ChannelClips.StartBot())
             {

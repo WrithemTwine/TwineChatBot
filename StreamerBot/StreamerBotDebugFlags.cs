@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.BotIOController;
+using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -37,12 +38,12 @@ namespace StreamerBot
 
                 ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
-                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, Debug: true);
+                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), Debug: true);
 
-                    List<Tuple<string, string>> output = SystemsController.DataManage.GetGameCategories();
+                    List<CategoryData> output = SystemsController.DataManage.GetGameCategories();
                     Random random = new();
-                    Tuple<string, string> itemfound = output[random.Next(output.Count)];
-                    Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
+                    CategoryData itemfound = output[random.Next(output.Count)];
+                    Controller.HandleOnStreamUpdate(itemfound);
                 });
 
                 SetLiveStreamActive(true);

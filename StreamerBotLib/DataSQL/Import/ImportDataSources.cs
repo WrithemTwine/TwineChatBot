@@ -746,14 +746,15 @@ namespace StreamerBotLib.DataSQL.Import
                                             select IR)
                 {
                     string uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{A.UserName}'").FirstOrDefault())?.UserId;
+                    string categoryId = ((CategoryListRow)_DataSource.CategoryList.Select($"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{A.Category}'").FirstOrDefault()).CategoryId;
 
-                    if (string.IsNullOrEmpty(uId))
+                    if (string.IsNullOrEmpty(uId) || string.IsNullOrEmpty(categoryId))
                     {
                         LogWriter.WriteLog($"Did not import for null user Id: {ConvertDataRow(A, _DataSource.InRaidData.Columns.Count)}");
                     }
                     else if (!(from I in context.InRaidData where I.UserId == uId && I.RaidDate == A.DateTime select I).Any())
                     {
-                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), A.Category);
+                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category) );
                     }
                 }
             }

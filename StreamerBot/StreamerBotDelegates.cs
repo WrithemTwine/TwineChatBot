@@ -15,10 +15,6 @@ namespace StreamerBot
         {
             Dispatcher.BeginInvoke(new BotOperation(() =>
             {
-                if (sender.BotClientName == StreamerBotLib.Enums.Bots.MediaOverlayServer)
-                {
-                    PrepareMediaOverlayServerWindow();
-                }
                 (sender)?.StartBot();
             }));
         }

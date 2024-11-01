@@ -398,12 +398,6 @@
                                             <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
                                                 <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
                                             </Label>
-                                            <CheckBox x:Name="CheckBox_MediaOverlayEmbedGUI" DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayEmbedGUI}">
-                                                <StackPanel>
-                                                    <TextBlock>Put Overlay window in tab here</TextBlock>
-                                                    <TextBlock FontSize="10">(Stop to change setting)</TextBlock>
-                                                </StackPanel>
-                                            </CheckBox>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
@@ -417,7 +411,6 @@
                                             <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
                                                          x:Name="Radio_Services_OverlayBotStop" 
                                                          IsEnabled="False" IsChecked="True" 
-                                                         PreviewMouseLeftButtonDown="RadioButton_MediaOverlayServer_StopBot_PreviewMouseLeftButtonDown"
                                                          PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown"
                                                          >
                                                 <TextBlock>Stop Overlay Service Bot</TextBlock>
@@ -441,7 +434,7 @@
                         </DockPanel>
                     </TabItem>
 
-                    <TabItem  Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
+                    <TabItem Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
                         <TabItem.Resources>
                             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
                                 <Setter Property="Width" Value="120" />
@@ -896,6 +889,11 @@ application (checked box) or your default browser (unchecked box). Then, click t
                         </DockPanel>
 
                     </TabItem>
+
+                    <TabItem Header="Overlay" Name="TabItem_Bots_OverlayTab">
+                        <Frame Source="pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml" IsManipulationEnabled="True" />
+                    </TabItem>
+
                 </TabControl>
             </TabItem>
             <TabItem Header="Options" x:Name="TabItem_DataOptions" >

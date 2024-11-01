@@ -24,7 +24,7 @@ namespace StreamerBotLib.Systems
 
         public static IDataManager DataManage { get; private set; }
 
-        private static Tuple<string, string> CurrCategory { get; set; } = new("", "");
+        private static CategoryData CurrCategory { get; set; } = new("", "");
 
         private ActionSystem SystemActions { get; set; }
         internal static Dispatcher AppDispatcher { get; set; }
@@ -152,7 +152,7 @@ namespace StreamerBotLib.Systems
 
         public static void UpdateFollowers(List<Follow> Follows)
         {
-            Follows.ForEach((f) => { f.Category = CurrCategory.Item2; });
+            Follows.ForEach((f) => { f.Category = CurrCategory.CategoryName; });
             DataManage.UpdateFollowers(Follows);
         }
 
@@ -171,7 +171,7 @@ namespace StreamerBotLib.Systems
         public void AddNewFollowers(List<Follow> FollowList)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
-            FollowList.ForEach((f) => { f.Category = CurrCategory.Item2; }); // add category into follow object(s)
+            FollowList.ForEach((f) => { f.Category = CurrCategory.CategoryName; }); // add category into follow object(s)
             ProcessFollow(FollowList, msg, FollowEnabled);
         }
 
@@ -370,12 +370,12 @@ namespace StreamerBotLib.Systems
             CurrCategory = new("", "");
         }
 
-        public static void SetCategory(string GameId, string GameName)
+        public static void SetCategory(CategoryData categoryData)
         {
-            if (CurrCategory.Item1 != GameId && CurrCategory.Item2 != GameName)
+            if (CurrCategory != categoryData)
             {
-                ActionSystem.SetCategory(GameId, GameName);
-                CurrCategory = new(GameId, GameName);
+                ActionSystem.SetCategory(categoryData);
+                CurrCategory = categoryData;
             }
         }
 
@@ -622,7 +622,7 @@ namespace StreamerBotLib.Systems
             BanUserRequest?.Invoke(this, new() { User = User, BanReason = Reason, Duration = Duration });
         }
 
-        public void PostIncomingRaid(LiveUser User, DateTime RaidTime, string Viewers, string GameName)
+        public void PostIncomingRaid(LiveUser User, DateTime RaidTime, string Viewers, CategoryData GameName)
         {
             lock (ProcMsgQueue)
             {

@@ -531,11 +531,11 @@ namespace StreamerBotLib.Systems
                         bool success = false;
                         string CategoryName = string.Join(' ', arglist);
 
-                        Tuple<string, string> found = DataManage.GetGameCategories().Find((x) => x.Item2 == CategoryName);
+                        CategoryData found = DataManage.GetGameCategories().Find((x) => x.CategoryName == CategoryName);
 
                         if (found != null)
                         {
-                            success = BotController.ModifyChannelInformation(User.Platform, CategoryId: found.Item1);
+                            success = BotController.ModifyChannelInformation(User.Platform, CategoryId: found.CategoryId);
                         }
                         else
                         {

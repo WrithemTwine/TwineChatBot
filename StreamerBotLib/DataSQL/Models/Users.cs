@@ -33,6 +33,7 @@ namespace StreamerBotLib.DataSQL.Models
 
         public ICollection<Currency> Currency { get; } = [];
         public ICollection<GiveawayUserData> GiveawayUserData { get; } = [];
+        public ICollection<InRaidData> InRaidDataList { get; } = [];
         public Followers? Follower { get; set; }
         public ShoutOuts? ShoutOuts { get; set; }
         public CustomWelcome? CustomWelcome { get; set; }

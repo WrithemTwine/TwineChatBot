@@ -21,7 +21,6 @@ namespace StreamerBotLib.Overlay
         private OverlayController Controller { get; }
         private GUIData GUIData { get; }
 
-
         public MediaOverlayPage()
         {
             Controller = new();
@@ -30,8 +29,6 @@ namespace StreamerBotLib.Overlay
 
             TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
 
-
-
             GUIData = (GUIData)Resources["GUIAppData"];
 
             // when overlay server is offline/not started, main bot queues alerts
@@ -39,6 +36,12 @@ namespace StreamerBotLib.Overlay
             // trying to set the alert html text lead to NULL exception when no style available
             // to match the alert, so the bot crashed.
             // UpdateLinks loads the styles in case alerts are waiting to be processed
+
+            if (OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayAutoServerStart)
+            {
+                RadioButton_OverlayServer_Start.IsChecked = true;
+            }            
+            TickerSelections(this, new());
             UpdateLinks();
         }
 
@@ -79,17 +82,6 @@ namespace StreamerBotLib.Overlay
         }
 
         #endregion
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayAutoServerStart)
-            {
-                RadioButton_OverlayServer_Start.IsChecked = true;
-            }
-
-            TickerSelections(sender, new());
-            UpdateLinks();
-        }
 
         private void Click_UpdateLinks(object sender, RoutedEventArgs e)
         {

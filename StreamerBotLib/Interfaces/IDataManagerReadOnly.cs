@@ -24,7 +24,7 @@ namespace StreamerBotLib.Interfaces
         List<LearnMsgRecord> UpdateLearnedMsgs();
         List<string> GetTableFields(string TableName);
         List<string> GetTableNames();
-        List<Tuple<string, string>> GetGameCategories();
+        List<CategoryData> GetGameCategories();
         List<string> GetCurrencyNames();
         bool CheckFollower(string User);
         bool CheckUser(LiveUser User);

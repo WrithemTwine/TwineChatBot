@@ -37,13 +37,13 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckMultiStreams(TimeStream);
         }
 
-        public static void SetCategory(string categoryId, string category)
+        public static void SetCategory(CategoryData categoryData)
         {
-            Category = category;
+            Category = categoryData.CategoryName;
 
             if (OptionFlags.ManageStreamStats)
             {
-                DataManage.PostCategory(categoryId, category);
+                DataManage.PostCategoryStream(categoryData);
             }
         }
 
@@ -149,7 +149,7 @@ namespace StreamerBotLib.Systems
 
         #region Incoming Raids
 
-        public static void PostIncomingRaid(LiveUser liveUser, DateTime RaidTime, string Viewers, string GameName)
+        public static void PostIncomingRaid(LiveUser liveUser, DateTime RaidTime, string Viewers, CategoryData GameName)
         {
             DataManage.PostInRaidData(liveUser, RaidTime, int.Parse(Viewers), GameName);
         }

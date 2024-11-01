@@ -5,6 +5,7 @@ using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Overlay;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 

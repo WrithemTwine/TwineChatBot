@@ -344,3 +344,4 @@ healthchecksdb
 /ChatDataStore.xml
 
 /MaintainStreamerBotLib
+/SimpleTestFeature/SimpleTestFeature.csproj

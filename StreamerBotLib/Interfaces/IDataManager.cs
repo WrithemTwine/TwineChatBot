@@ -51,7 +51,7 @@ namespace StreamerBotLib.Interfaces
         new string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
         int GetFollowerCount();
         ObservableCollection<Followers> GetFollowersLocalObservable();
-        new List<Tuple<string, string>> GetGameCategories();
+        new List<CategoryData> GetGameCategories();
         ObservableCollection<GameDeadCounter> GetGameDeadCounterLocalObservable();
         ObservableCollection<GiveawayUserData> GetGiveawayUserDataLocalObservable();
         ObservableCollection<InRaidData> GetInRaidDataLocalObservable();
@@ -94,14 +94,15 @@ namespace StreamerBotLib.Interfaces
         void Initialize();
         object[] PerformQuery(CommandsBase row, int Top = 0);
         object PerformQuery(CommandsBase row, string ParamValue);
-        bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0);
+        bool PostCategory(CategoryData categoryData);
+        public void PostCategoryStream(CategoryData category, int StreamCount = 0);
         bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName);
         string PostCommand(string cmd, CommandParams Params);
         void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName);
         int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1);
         bool PostFollower(Follow follow);
         void PostGiveawayData(string UserId, DateTime dateTime);
-        public void PostInRaidData(LiveUser user, DateTime time, int viewers, string gamename);
+        public void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename);
         void PostLearnMsgsRow(string Message, MsgTypes MsgType);
         bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform);
         void PostMonitorChannel(IEnumerable<LiveUser> liveUsers);
@@ -144,5 +145,6 @@ namespace StreamerBotLib.Interfaces
         bool PostStream(DateTime StreamStart, string Category);
 
         void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta);
+        void PostMultiLiveLog(string LogItem);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System.Reflection;
@@ -265,7 +266,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="UserId">References the Channel to get the Game Category.</param>
         /// <param name="UserName">References the Channel, converts to UserId, to get the Game Category.</param>
         /// <returns>The Game Category for the requested channel.</returns>
-        public string GetUserGameCategory(string UserId = null, string UserName = null)
+        public CategoryData GetUserGameCategory(string UserId = null, string UserName = null)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Checking for update to game category.");
 
@@ -278,7 +279,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 PostEvent_GetChannelGameName(gameName, gameId);
             }
 
-            return gameName;
+            return new(gameId,gameName);
         }
 
         public GetChannelInformationResponse GetUserInfo(string UserId = null, string UserName = null)

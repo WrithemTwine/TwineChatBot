@@ -495,7 +495,7 @@ namespace StreamerBotLib.BotIOController
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received request to provide the " +
                     $"streaming category for the channel named: {ChannelName}, with {UserId} userId.");
 
-                return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName);
+                return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName).CategoryName;
             }
             else
             {
@@ -767,17 +767,17 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchStreamOnline(OnStreamOnlineArgs e)
         {
-            HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
+            HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), new(e.Stream.GameId, e.Stream.GameName));
         }
 
         public void TwitchStreamUpdate(OnStreamUpdateArgs e)
         {
-            HandleOnStreamUpdate(e.Stream.GameId, e.Stream.GameName);
+            HandleOnStreamUpdate(new(e.Stream.GameId, e.Stream.GameName));
         }
 
         public void TwitchCategoryUpdate(OnGetChannelGameNameEventArgs e)
         {
-            HandleOnStreamUpdate(e.GameId, e.GameName);
+            HandleOnStreamUpdate(new(e.GameId, e.GameName));
         }
 
         public static void TwitchStreamOffline(OnStreamOfflineArgs e = null)
@@ -973,9 +973,9 @@ namespace StreamerBotLib.BotIOController
 
         #region LiveStream
 
-        private void PostGameCategoryEvent(string GameId, string GameName)
+        private void PostGameCategoryEvent(CategoryData categoryData)
         {
-            OnStreamCategoryChanged?.Invoke(this, new() { GameId = GameId, GameName = GameName });
+            OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
         }
 
         private void HandleMultiLiveOnStreamOnline(string userid, string username, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch)
@@ -1003,6 +1003,8 @@ namespace StreamerBotLib.BotIOController
                             { "#url", username }
                         };
 
+                    SystemsController.DataManage.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
+
                     foreach (Tuple<WebhooksSource, Uri> u in SystemsController.DataManage.GetMultiWebHooks())
                     {
                         if (u.Item1 == WebhooksSource.Discord)
@@ -1017,7 +1019,7 @@ namespace StreamerBotLib.BotIOController
 
         }
 
-        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch, bool Debug = false)
+        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
         {
             try
             {
@@ -1029,8 +1031,8 @@ namespace StreamerBotLib.BotIOController
                 if (Started)
                 {
                     bool MultiLive = ActionSystem.CheckStreamTime(StartedAt);
-                    SystemsController.SetCategory(GameId, Category);
-                    PostGameCategoryEvent(GameId, Category);
+                    SystemsController.SetCategory(Category);
+                    PostGameCategoryEvent(Category);
 
                     if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)
                     {
@@ -1041,7 +1043,7 @@ namespace StreamerBotLib.BotIOController
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
                                 new(MsgVars.user, ChannelName),
-                                new(MsgVars.category, Category),
+                                new(MsgVars.category, Category.CategoryName),
                                 new(MsgVars.title, Title),
                                 new(MsgVars.url, ChannelName)
                         });
@@ -1072,10 +1074,10 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        public void HandleOnStreamUpdate(string gameId, string gameName)
+        public void HandleOnStreamUpdate(CategoryData categoryData)
         {
-            SystemsController.SetCategory(gameId, gameName);
-            PostGameCategoryEvent(gameId, gameName);
+            SystemsController.SetCategory(categoryData);
+            PostGameCategoryEvent(categoryData);
         }
 
         public static void HandleOnStreamOffline(string HostedChannel = null, DateTime? RaidTime = null)
@@ -1314,7 +1316,7 @@ namespace StreamerBotLib.BotIOController
             Systems.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source, MsgReceived.UserId));
         }
 
-        public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, string ViewerCount, string Category)
+        public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, string ViewerCount, CategoryData Category)
         {
             Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
         }

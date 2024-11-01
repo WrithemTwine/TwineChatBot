@@ -22,6 +22,8 @@ using System.Data;
 using System.Globalization;
 using System.Reflection;
 
+using TwitchLib.Api.Helix.Models.Schedule;
+
 namespace StreamerBotLib.DataSQL
 {
     /*
@@ -47,7 +49,7 @@ switches:
 -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
  */
 
-    public class DataManagerSQL : IDataManager, IDataManagerReadOnly
+    public class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
     {
         private readonly DataManagerFactory dbContextFactory = new();
         private SQLDBContext context;
@@ -867,13 +869,13 @@ switches:
             }
         }
 
-        public List<Tuple<string, string>> GetGameCategories()
+        public List<CategoryData> GetGameCategories()
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                List<Tuple<string, string>> result = new(from G in context.CategoryList
-                                                         let game = new Tuple<string, string>(G.CategoryId, G.Category)
+                List<CategoryData> result = new(from G in context.CategoryList
+                                                         let game = new CategoryData(G.CategoryId, G.Category)
                                                          select game);
                 ClearDataContext();
                 return result;
@@ -1386,10 +1388,10 @@ switches:
             }
         }
 
-        public bool PostCategory(string CategoryId, string newCategory, int StreamCount = 0)
+        public bool PostCategory(CategoryData categoryData)
         {
             bool found = false;
-            if (string.IsNullOrEmpty(CategoryId) && string.IsNullOrEmpty(newCategory))
+            if (string.IsNullOrEmpty(categoryData.CategoryId) && string.IsNullOrEmpty(categoryData.CategoryName))
             {
                 found = false;
             }
@@ -1399,21 +1401,11 @@ switches:
                 {
                     BuildDataContext();
                     CategoryList categoryList = (from CL in context.CategoryList
-                                                 where (CL.Category == FormatData.AddEscapeFormat(newCategory)) || CL.CategoryId == CategoryId
+                                                 where (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName)) || CL.CategoryId == categoryData.CategoryId
                                                  select CL).FirstOrDefault();
                     if (categoryList == default)
                     {
-                        context.CategoryList.Add(new(categoryId: CategoryId, category: newCategory, streamCount: StreamCount == 0 ? 0 : StreamCount));
-                        found = true;
-                    }
-                    else
-                    {
-                        categoryList.CategoryId ??= CategoryId;
-                        categoryList.Category ??= newCategory;
-                        if (OptionFlags.IsStreamOnline)
-                        {
-                            categoryList.StreamCount++;
-                        }
+                        context.CategoryList.Add(new(categoryId: categoryData.CategoryId, category: categoryData.CategoryName, streamCount: 0));
                         found = true;
                     }
                     context.SaveChanges(true);
@@ -1421,6 +1413,27 @@ switches:
             }
             ClearDataContext();
             return found;
+        }
+
+        public void PostCategoryStream(CategoryData categoryData, int StreamCount = 0)
+        {
+            PostCategory(categoryData);
+            lock (GUIDataManagerLock.Lock)
+            {
+                BuildDataContext();
+                CategoryList category = (from CL in context.CategoryList
+                                         where (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName)) || CL.CategoryId == categoryData.CategoryId
+                                         select CL).FirstOrDefault();
+
+                if (OptionFlags.IsStreamOnline)
+                {
+                    category.StreamCount++;
+                }
+
+                context.SaveChanges(true);
+            }
+
+            ClearDataContext();
         }
 
         public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
@@ -1675,12 +1688,14 @@ switches:
             }
         }
 
-        public void PostInRaidData(LiveUser user, DateTime time, int viewers, string gamename)
+        public void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename)
         {
             lock (GUIDataManagerLock.Lock)
             {
                 BuildDataContext();
-                context.InRaidData.Add(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename, platform: user.Platform));
+                PostNewUser(user, time);
+                PostCategory(gamename);
+                context.InRaidData.Add(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
                 context.SaveChanges(true);
                 ClearDataContext();
             }
@@ -2380,23 +2395,23 @@ switches:
 
                 foreach (LiveUser L in Users)
                 {
-                    UserStats stats = (from S in context.UserStats
+                    Users curruser = (from S in context.Users
                                        where (S.UserId == L.UserId && S.Platform == L.Platform)
                                        select S).FirstOrDefault();
 
-                    if (stats == default)
+                    //if (curruser == default)
+                    //{
+                    //    curruser = context.UserStats.Add(new(userId: L.UserId, platform: L.Platform)).Entity;
+                    //}
+
+                    if (curruser.LastDateSeen < CurrStreamStart)
                     {
-                        stats = context.UserStats.Add(new(userId: L.UserId, platform: L.Platform)).Entity;
+                        curruser.LastDateSeen = CurrStreamStart;
                     }
 
-                    if (stats.User.LastDateSeen < CurrStreamStart)
+                    if (CurrTime > curruser.LastDateSeen && CurrTime > CurrStreamStart)
                     {
-                        stats.User.LastDateSeen = CurrStreamStart;
-                    }
-
-                    if (CurrTime > stats.User.LastDateSeen && CurrTime > CurrStreamStart)
-                    {
-                        stats.WatchTime = stats.WatchTime.Add(CurrTime - stats.User.LastDateSeen);
+                        curruser.UserStats.WatchTime = curruser.UserStats.WatchTime.Add(CurrTime - curruser.LastDateSeen);
                     }
                 }
                 NotifyDataCollectionUpdated(nameof(Models.UserStats));
@@ -2475,6 +2490,8 @@ switches:
         public ObservableCollection<ArchiveMultiStream> CleanupList { get; } = [];
         private bool IsLiveStreamUpdated = false;
         public string MultiLiveStatusLog { get; private set; } = "";
+        private List<string> MultiLiveStatusList = [];
+        private const int MaxList = 50;
 
         public ObservableCollection<ArchiveMultiStream> GetCleanupList()
         {
@@ -2549,6 +2566,22 @@ switches:
                 UpdatedMonitoringChannels?.Invoke(this, new());
                 ClearDataContext();
             }
+        }
+
+        public void PostMultiLiveLog(string LogItem)
+        {
+            lock (MultiLiveStatusLog)
+            {
+                MultiLiveStatusList.Insert(0, LogItem);
+
+                if(MultiLiveStatusList.Count > MaxList)
+                {
+                    MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
+                }
+                MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
+            }
+
+            NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
         }
 
         public bool PostMultiStreamDate(string userid, string username, Platform platform, DateTime onDate)

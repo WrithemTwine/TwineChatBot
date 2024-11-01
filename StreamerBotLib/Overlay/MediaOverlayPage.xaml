@@ -11,7 +11,8 @@
     LostFocus="TabItem_Links_LostFocus"
     UseLayoutRounding="True" 
     SnapsToDevicePixels="True" 
-    Title="MediaOverlayPage">
+    Title="MediaOverlayPage"
+      >
     <Page.Resources>
         <ResourceDictionary>
             <Data:GUIData x:Name="GUIAppData" x:Key="GUIAppData" />
