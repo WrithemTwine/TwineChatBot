@@ -232,19 +232,14 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (HelixApiCalls != null)
             {
-                //ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
-                //{
-                if (StreamerChannelId == null && BotChannelId == null && TwitchChannelName != null)
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
-                    GetUsersResponse BotUser = HelixApiCalls.GetUsersAsync(UserName: TwitchBotUserName).Result;
-                    TwitchBotUserId = BotUser.Users.First().Id;
-                    TwitchBotUserName = BotUser.Users.First().DisplayName;
-
-                    GetUsersResponse ChannelUser = HelixApiCalls.GetUsersAsync(UserName: TwitchChannelName).Result;
-                    TwitchChannelId = ChannelUser.Users.First().Id;
-                    TwitchChannelName = ChannelUser.Users.First().DisplayName;
-                }
-                //});
+                    if (StreamerChannelId == null && BotChannelId == null && TwitchChannelName != null)
+                    {
+                        TwitchBotUserId = GetUserId(TwitchBotUserName);
+                        TwitchChannelId = GetUserId(TwitchChannelName);
+                    }
+                });
             }
         }
 

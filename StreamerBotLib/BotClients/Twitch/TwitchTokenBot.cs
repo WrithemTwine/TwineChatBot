@@ -62,7 +62,10 @@ namespace StreamerBotLib.BotClients.Twitch
             AuthBot = new(apiSettings, new BypassLimiter(), new TwitchHttpClient(null));
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-            StartBot();
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            {
+                CheckToken();
+            });
 
             twitchTokenBot = this;
         }

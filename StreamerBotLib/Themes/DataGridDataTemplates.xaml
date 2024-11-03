@@ -84,7 +84,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditDateGiveawayTemplate">
-        <DatePicker SelectedDate="{Binding DateTime}" />
+        <StackPanel>
+            <TextBox Text="{Binding DateTime}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding DateTime}" />-->
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="DateInRaidTemplate">
@@ -96,7 +99,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditInRaidTemplate">
-        <DatePicker SelectedDate="{Binding RaidDate}" />
+        <StackPanel>
+            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="DateOutRaidTemplate">
@@ -108,7 +114,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditOutRaidTemplate">
-        <DatePicker SelectedDate="{Binding RaidDate}" />
+        <StackPanel>
+            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="DateClipCreatedTemplate">
@@ -128,7 +137,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditStreamStartTemplate">
-        <DatePicker SelectedDate="{Binding StreamStart}" />
+        <StackPanel>
+            <TextBox Text="{Binding StreamStart}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding StreamStart}" />-->
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="DateStreamEndTemplate">
@@ -140,7 +152,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditStreamEndTemplate">
-        <DatePicker SelectedDate="{Binding StreamEnd}" />
+        <StackPanel>
+            <TextBox Text="{Binding StreamEnd}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding StreamEnd}" />-->
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="StreamDurationTemplate">
@@ -156,7 +171,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditLiveDateTemplate">
-        <DatePicker SelectedDate="{Binding LiveDate}" />
+        <StackPanel>
+            <TextBox Text="{Binding LiveDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding LiveDate}" />-->
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="DateThroughTemplate">
@@ -168,7 +186,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EditThroughDateTemplate">
-        <DatePicker SelectedDate="{Binding ThroughDate}" />
+        <StackPanel>
+            <TextBox Text="{Binding ThroughDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
+        </StackPanel>
     </DataTemplate>
     <!--#endregion-->
 
@@ -449,7 +470,7 @@
             <scm:SortDescription PropertyName="StreamStart" Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}">
+    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" IsLiveSortingRequested="True">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="LastDateSeen" Direction="Descending" />
             <scm:SortDescription PropertyName="UserName" />
