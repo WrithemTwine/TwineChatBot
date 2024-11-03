@@ -10,10 +10,14 @@ namespace StreamerBotLib.BotClients
     {
         public Bots BotClientName { get; set; }
 
-        public bool IsInitialStart { get; set; }
-        public bool IsStarted { get; set; }
+        /// <summary>
+        /// Flag for bot activity:
+        /// <code>null - first time bot active</code>
+        /// <code>true - bot is started</code>
+        /// <code>false - bot is stopped</code>
+        /// </summary>
+        public bool? IsActive { get; set; }
         public bool HandlersAdded { get; set; }
-        public bool IsStopped { get; set; } = true;
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;
@@ -62,9 +66,9 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual bool Send(string s)
+        public virtual void Send(string s)
         {
-            return false;
+            return;
         }
 
         public virtual bool SendWhisper(string user, string s)
@@ -72,14 +76,12 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual bool StartBot()
+        public virtual void StartBot()
         {
-            return true;
         }
 
-        public virtual bool StopBot()
+        public virtual void StopBot()
         {
-            return true;
         }
 
         public virtual bool ExitBot()

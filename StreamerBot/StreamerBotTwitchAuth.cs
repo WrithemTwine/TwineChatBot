@@ -1,6 +1,6 @@
-﻿
-using StreamerBot.Web;
+﻿using StreamerBot.Web;
 
+using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
@@ -19,45 +19,33 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow
     {
-        /// <summary>
-        /// Once user sets the Twitch Channel Name and Bot account name, check and get the user Ids for the Streamer/Bot account(s)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TextBox_TwitchChannelBotNames_TargetUpdated(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(OptionFlags.TwitchChannelName) && !string.IsNullOrEmpty(OptionFlags.TwitchBotUserName))
-            {
-                Controller.CheckTwitchChannelBotIds();
-            }
-        }
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (Twitch_AuthCode_Button_AuthorizeBot != null)
             {
-                CheckFocus();
+                TwitchCheckFocus();
             }
         }
         private void TextBox_TextChanged(object sender, TextCompositionEventArgs e)
         {
             if (Twitch_AuthCode_Button_AuthorizeBot != null)
             {
-                CheckFocus();
+                TwitchCheckFocus();
             }
         }
-
         private void TextBox_TextChanged(object sender, RoutedEventArgs e)
         {
             if (Twitch_AuthCode_Button_AuthorizeBot != null)
             {
-                CheckFocus();
+                TwitchCheckFocus();
             }
         }
 
         private void Button_TwitchAuthToken_ReAuthorize(object sender, RoutedEventArgs e)
         {
-            Controller.ForceTwitchAuthReauthorization();
-            CheckFocus();
+            BotController.ForceTwitchAuthReauthorization();
+            GUIStopBots_Click(this, new());
+            TwitchCheckFocus();
         }
 
         private void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
@@ -75,14 +63,14 @@ namespace StreamerBot
                 StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
             }
 
-            CheckFocus();
+            TwitchCheckFocus();
         }
 
         private void Button_TwitchAuthCode_ApproveBotURL(object sender, RoutedEventArgs e)
         {
             Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = false;
 
-            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthBotClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_BotAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -93,7 +81,7 @@ namespace StreamerBot
         {
             Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = false;
 
-            StreamerBotLib.BotIOController.BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttempToStartBots);
+            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_StreamerAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -107,7 +95,7 @@ namespace StreamerBot
                 if (URL == LocalizedMsgSystem.GetVar(Msg.MsgTwitchAuthFailedAuthentication))
                 {
                     MessageBox.Show($"Twitch Authentication Code", LocalizedMsgSystem.GetVar(Msg.MsgTwitchAuthFailedAuthentication));
-                    CheckFocus();
+                    TwitchCheckFocus();
                 }
                 else
                 {
@@ -140,12 +128,11 @@ namespace StreamerBot
         /// Callback method to call when the authentication is completed, and attempt to start any bots the user 
         /// selected to start when the app starts.
         /// </summary>
-        private void AuthenticatedAttempToStartBots()
+        private void AuthenticatedAttemptToStartBots()
         {
             Dispatcher.BeginInvoke(() =>
             {
-                CheckFocus();
-                StartAutoBots();
+                TwitchCheckFocus();
             });
         }
 
@@ -174,6 +161,144 @@ namespace StreamerBot
                         }
                         break;
                 }
+
+                TwitchCheckFocus();
+            });
+        }
+
+        /// <summary>
+        /// Check the conditions for starting the bot, where the data fields require data before the bot can be successfully started.
+        /// </summary>
+        private void TwitchCheckFocus()
+        {
+            /*
+            evaluate Twitch credentials based on string groups
+            user access tokens or auth code tokens
+            
+            generate collections of credentials per choice area, apply !string.IsNullOrEmpty to each string, and test if all are true
+            */
+
+            // User token data
+
+            // bot account data
+
+            bool UserBotTokenData = (from BUT in (ICollection<string>)[
+                                                    OptionFlags.TwitchBotUserName,
+                                                    OptionFlags.TwitchBotClientId,
+                                                    OptionFlags.TwitchBotAccessToken,
+                                                    OptionFlags.TwitchChannelName
+                                                  ]
+                                     select !string.IsNullOrEmpty(BUT)).All((bt) => bt == true);
+
+            bool UserStreamerTokenData = (!OptionFlags.TwitchStreamerUseToken && UserBotTokenData) ||
+                                         (from SUT in (ICollection<string>)[
+                                             OptionFlags.TwitchChannelName,
+                                             OptionFlags.TwitchStreamerClientId,
+                                             OptionFlags.TwitchStreamerAccessToken
+                                             ]
+                                          select !string.IsNullOrEmpty(SUT)).All((st) => st == true);
+            // Auth token data
+
+            bool AuthBotTokenData = (from BAT in (ICollection<string>)[
+                                                    OptionFlags.TwitchBotUserName,
+                                                    OptionFlags.TwitchAuthBotClientId,
+                                                    OptionFlags.TwitchAuthBotClientSecret,
+                                                    OptionFlags.TwitchChannelName
+                                                  ]
+                                     select !string.IsNullOrEmpty(BAT)).All((bt) => bt == true);
+
+            bool AuthStreamerTokenData = (!OptionFlags.TwitchStreamerUseToken && UserBotTokenData) ||
+                                        (from SUT in (ICollection<string>)[
+                                        OptionFlags.TwitchChannelName,
+                                        OptionFlags.TwitchAuthStreamerClientId,
+                                        OptionFlags.TwitchAuthStreamerClientSecret
+                                        ]
+                                         select !string.IsNullOrEmpty(SUT)).All((st) => st == true);
+
+            // Check if credentials are empty and we still need to allow the user to authenticate the application, but block it when successfully authenticated
+            // The authentication code bot checking clears out the auth code when there's a failure, so this checks it's enabled when
+            // both the user adds client Id & secret are available and auth code is not available (not authenticated)
+            Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = AuthBotTokenData && OptionFlags.TwitchAuthBotAuthCode == "";
+            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchStreamerUseToken && AuthStreamerTokenData && OptionFlags.TwitchAuthStreamerAuthCode == "";
+
+            // Twitch
+
+            if (OptionFlags.TwitchChannelName != OptionFlags.TwitchBotUserName)
+            {
+                GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
+                TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
+                TextBox_TwitchScopesOauthSame.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
+                Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
+                Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
+
+                Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Collapsed;
+                TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Collapsed;
+                TextBox_TwitchScopesOauthSame.Visibility = Visibility.Visible;
+                Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Collapsed;
+                Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
+
+                Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Collapsed;
+            }
+
+            // set earliest token expiration date
+
+            List<DateTime> RefreshTokenDateExpiry = (from R in (ICollection<DateTime>)[OptionFlags.TwitchBotTokenDate, OptionFlags.TwitchStreamerTokenDate]
+                                                     where OptionFlags.CurrentToTwitchRefreshDate(R) > new TimeSpan(0, 5, 2)
+                                                     select R).ToList();
+            StatusBarItem_TokenDate.Content = OptionFlags.TwitchTokenUseAuth ?
+                "Auth Code Refresh" :
+                RefreshTokenDateExpiry.Count != 0 ?
+                RefreshTokenDateExpiry?.Min().ToShortDateString() :
+                "None Valid";
+
+            if (
+
+                // OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) <= new TimeSpan(0, 5, sleep / 1000)
+
+                // use User set tokens, check on using the streamer token
+                (!OptionFlags.TwitchTokenUseAuth && UserBotTokenData && UserStreamerTokenData && RefreshTokenDateExpiry.Count == (OptionFlags.TwitchStreamerUseToken ? 2 : 1))
+                ||
+                // use Auth code tokens, check on using the streamer token
+                (OptionFlags.TwitchTokenUseAuth &&
+                    (AuthBotTokenData && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)) &&
+                    (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode)))
+                )
+
+                )
+            {
+                BotController.TwitchInitializeHelix();
+            }
+            else
+            {
+                SetBotRadioButtons(false, Platform.Twitch);
+                BotController.NotifyInvalidTwitchTokens();
+            }
+        }
+
+        private void SetBotRadioButtons(bool value, Platform platform)
+        {
+            foreach (RadioButton rb in
+                                        from A in BotOps
+                                        where A.Item2 == Platform.Service || A.Item2 == platform
+                                        select A.Item3
+                                        )
+            {
+                rb.IsEnabled = value;
+            }
+        }
+
+        private void Controller_TokensInitialized(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                SetBotRadioButtons(true, Platform.Twitch); // event handler from Twitch bots, at this point the tokens are authorized
+                StartAutoBots();
             });
         }
     }

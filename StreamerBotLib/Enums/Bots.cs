@@ -3,14 +3,14 @@
     public enum Bots
     {
         Default, // default case for repeat timer, general commands with no bot origin
-        TwitchChatBot,
-        TwitchLiveBot,
-        TwitchFollowBot,
+        MediaOverlayServer,
+        DiscordWebhooks,
         TwitchClipBot,
         TwitchMultiBot,
-        TwitchUserBot,
-        TwitchPubSub,
+        TwitchStreamerEventSub,
+        TwitchBotEventSub,
+        TwitchBotSendChatClient,
         TwitchTokenBot,
-        MediaOverlayServer
+        TwitchHelixBot
     }
 }

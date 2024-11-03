@@ -1,17 +1,11 @@
-﻿#if UsePipes
-#define UtilizePipeIPC // use the NamedPipe Server/Client mechanism
-using System.Reflection;
-#else
-#define UseGUIDLL
-#endif
-
-
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
+
+using System.Reflection;
 
 namespace StreamerBotLib.BotClients
 {
@@ -25,13 +19,9 @@ namespace StreamerBotLib.BotClients
      *
      */
 
-#if UtilizePipeIPC
-    public class BotOverlayServer : IOModule, IDisposable, IBotTypes
-    {
-#elif UseGUIDLL
+
     public class BotOverlayServer : IOModule, IBotTypes
     {
-#endif
         /// <summary>
         /// Interface handler, primarily for emitting events to BotController - this bot doesn't use.
         /// </summary>
@@ -48,6 +38,10 @@ namespace StreamerBotLib.BotClients
         /// Send ticker item updates to the server.
         /// </summary>
         public event EventHandler<UpdatedTickerItemsEventArgs> SendTickerToServer;
+        /// <summary>
+        /// Sets the OverlayPage to use with the overlay service
+        /// </summary>
+        public event EventHandler<SetOverlayWindowEventArgs> SetOverlayWindow;
 
         /// <summary>
         /// flag to pause alert processing
@@ -57,10 +51,6 @@ namespace StreamerBotLib.BotClients
         /// flag to specify alert sending thread start status
         /// </summary>
         private bool AlertsThreadStarted = false;
-        /// <summary>
-        /// tracks the open close status of the overlay server
-        /// </summary>
-        private bool WindowClosing = false;
 
         /// <summary>
         /// Queue to pipeline the alerts in an orderly and timed fashion, don't send alerts until
@@ -81,167 +71,7 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-#if UtilizePipeIPC
-        private string MediaOverlayProcName = PublicConstants.AssemblyName;
-        private Process MediaOverlayProcess;
-        private bool CheckedProcess = false;
-
-        private StreamWriter WriteToPipe;
-        private NamedPipeServerStream PipeServer;
-
-        public BotOverlayServer()
-        {
-            BotClientName = Enums.Bots.MediaOverlayServer;
-
-            PipeServer = new(PublicConstants.PipeName, PipeDirection.Out, 254, PipeTransmissionMode.Message, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
-
-            WriteToPipe = new(PipeServer);
-
-            IsStarted = false;
-            IsStopped = true;
-
-            ThreadManager.CreateThreadStart(() => CheckProcess());
-        }
-
-        public override bool StartBot()
-        {
-            IsStopped = false;
-
-            while (!CheckedProcess) { Thread.Sleep(500); } // spin until one check of the processes
-            return IsStarted;
-        }
-
-        private void CheckProcess()
-        {
-            while (OptionFlags.ActiveToken)
-            {
-                if (!IsStopped && !IsStarted)
-                {
-                    Process[] processes = Process.GetProcessesByName(MediaOverlayProcName[..^4]);
-                    if (processes.Length == 0)
-                    { // process not found
-                        MediaOverlayProcess = new Process();
-                        MediaOverlayProcess.StartInfo.FileName = MediaOverlayProcName;
-                        MediaOverlayProcess.Start();
-
-                        IsStarted = true;
-                        SetPauseAlert(false);
-                        if (!AlertsThreadStarted)
-                        {
-                            ThreadManager.CreateThread(() => ProcessAlerts(), waitState: Enums.ThreadWaitStates.Wait, Priority: Enums.ThreadExitPriority.High).Start();
-                        }
-
-                    }
-                    else
-                    {
-                        MediaOverlayProcess = processes[0];
-                        IsStarted = true;
-                    }
-
-                    ThreadManager.CreateThreadStart(() => InvokeBotStarted());
-
-                    if (!PipeServer.IsConnected)
-                    {
-                        PipeServer.BeginWaitForConnection(PipeConnected, null);
-                    }
-                    CheckedProcess = true;
-                }
-
-                Thread.Sleep(2000);
-            }
-        }
-
-        private void PipeConnected(IAsyncResult ar)
-        {
-            PipeServer.EndWaitForConnection(ar);
-            WriteToPipe.AutoFlush = true;
-        }
-          
-        internal void SendToServer(OverlayActionType Message)
-        {
-            if (PipeServer.IsConnected)
-            {
-                WriteToPipe.WriteLine(Message);
-            }
-        }
-
-        public void Dispose()
-        {
-            MediaOverlayProcess.Dispose();
-        }
-
-        public override bool StopBot()
-        {
-            IsStopped = true;
-
-            if (MediaOverlayProcess != null && IsStarted)
-            {
-                IsStarted = false;
-                MediaOverlayProcess.CloseMainWindow();
-                Dispose();
-            }
-            if (!OptionFlags.ActiveToken)
-            {
-                SetPauseAlert(false);
-            }
-            else
-            {
-                SetPauseAlert(true);
-            }
-            InvokeBotStopped();
-            if (PipeServer.IsConnected)
-            {
-                PipeServer.Disconnect();
-            }
-            
-            return IsStopped;
-        }
-
-        #region Sending Msg mechansim
-        public void NewOverlayEventHandler(object sender, NewOverlayEventArgs e)
-        {
-            Send(e.OverlayAction);
-        }
-
-        private void Send(OverlayActionType overlayActionType)
-        {
-            Send(overlayActionType.OverlayType, overlayActionType.ActionValue, overlayActionType.UserName, overlayActionType.Message, overlayActionType.Duration, overlayActionType.MediaFile);
-        }
-
-        private void Send(OverlayTypes overlayTypes, string ActionValue, string User, string Msg, int Duration, string MediaPath)
-        {
-            lock (SendAlerts)
-            {
-                SendAlerts.Enqueue(
-                   ThreadManager.CreateThread(
-                       () => SendAlert(
-                           new() { OverlayType = overlayTypes, Duration = Duration, UserName = User, ActionValue = ActionValue, Message = Msg, MediaFile = MediaPath }
-                           )
-                       )
-                    );
-                NotifyActionQueueChanged();
-            }
-        }
-
-        private void NotifyActionQueueChanged()
-        {
-            ActionQueueChanged?.Invoke(this, new());
-        }
-
-        /// <summary>
-        /// The thread action to send the data to the server
-        /// </summary>
-        /// <param name="overlayActionType">Contains the data for the alert.</param>
-        private void SendAlert(OverlayActionType overlayActionType)
-        {
-            SendToServer(overlayActionType);
-            Thread.Sleep(overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
-        }
-
-        #endregion
-
-#elif UseGUIDLL
-        private MainWindow OverlayWindow;
+        private MediaOverlayPage OverlayPage;
 
         /// <summary>
         /// Build and initialize object.
@@ -250,10 +80,14 @@ namespace StreamerBotLib.BotClients
         {
             BotClientName = Bots.MediaOverlayServer;
 
-            IsStarted = false;
-            IsStopped = true;
+            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty });
+        }
 
-            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty.ToString() });
+        public void SetOverlayWindowGUI(MediaOverlayPage window)
+        {
+            OverlayPage = window;
+            SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
+            SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
         }
 
         public void ManageStreamOnlineOfflineStatus(bool Start)
@@ -262,11 +96,11 @@ namespace StreamerBotLib.BotClients
             {
                 if (Start)
                 {
-                    _ = StartBot();
+                    StartBot();
                 }
                 else
                 {
-                    _ = StopBot();
+                    StopBot();
                 }
             }
         }
@@ -275,28 +109,21 @@ namespace StreamerBotLib.BotClients
         /// Probably starts the bot.
         /// </summary>
         /// <returns>True, the bot has started.</returns>
-        public override bool StartBot()
+        public override void StartBot()
         {
-            WindowClosing = false;
-            IsStopped = false;
-            IsStarted = true;
+            IsActive = true;
 
-            if (OverlayWindow == null)
+            if (OverlayPage == null)
             {
-                OverlayWindow = new(OverlayWindow_UserHideWindow);
-                SendOverlayToServer += OverlayWindow.GetOverlayActionReceivedHandler();
-                SendTickerToServer += OverlayWindow.GetupdatedTickerReceivedHandler();
+                SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
             }
 
             if (!AlertsThreadStarted)
             {
-                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
             }
 
             InvokeBotStarted();
-
-            OverlayWindow.Show();
-            return IsStarted;
         }
 
         /// <summary>
@@ -307,8 +134,6 @@ namespace StreamerBotLib.BotClients
         /// <param name="e">Payload data-unused.</param>
         private void OverlayWindow_UserHideWindow(object sender, EventArgs e)
         {
-            WindowClosing = true;
-
             InvokeBotStopped();
             StopBot();
         }
@@ -317,23 +142,17 @@ namespace StreamerBotLib.BotClients
         /// Should stop the bot.
         /// </summary>
         /// <returns>True for bot stopped.</returns>
-        public override bool StopBot()
+        public override void StopBot()
         {
-            IsStarted = false;
-            IsStopped = true;
+            IsActive = false;
 
-            SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
-            SendTickerToServer -= OverlayWindow?.GetupdatedTickerReceivedHandler();
+            SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
+            SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
 
-            if (!WindowClosing)
-            {
-                OverlayWindow?.CloseApp();
-            }
-            OverlayWindow = null;
+            OverlayPage?.StopController();
+            OverlayPage = null;
 
             InvokeBotStopped();
-
-            return IsStopped;
         }
 
         #region Sending Msg mechansim
@@ -347,7 +166,7 @@ namespace StreamerBotLib.BotClients
         {
             lock (SendAlerts)
             {
-                SendAlerts.Enqueue(ThreadManager.CreateThread(() => SendAlert(e.OverlayAction)));
+                SendAlerts.Enqueue(ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () => SendAlert(e.OverlayAction)));
                 NotifyActionQueueChanged();
             }
         }
@@ -386,7 +205,6 @@ namespace StreamerBotLib.BotClients
         }
 
         #endregion
-#endif
 
         #region Alerts
 
@@ -396,7 +214,7 @@ namespace StreamerBotLib.BotClients
         private void ProcessAlerts()
         {
             AlertsThreadStarted = true; // flag, this loop has started
-            while (IsStarted)
+            while (IsActive == true)
             {
                 lock (SendAlerts)
                 {
@@ -455,11 +273,10 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
-
         #region unused interface
-        public override bool Send(string s)
+        public override void Send(string s)
         {
-            return false;
+            return;
         }
 
         public void GetAllFollowers()

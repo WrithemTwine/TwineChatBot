@@ -27,8 +27,8 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Building clip service object.");
 
-                ClipMonitorService = new(BotsTwitch.TwitchBotUserSvc.HelixAPIBotToken, (int)Math.Ceiling(TwitchFrequencyClipTime));
-                ClipMonitorService.SetChannelsById([TwitchChannelId]);
+                ClipMonitorService = new(tokenBot.StreamerHelixApi, (int)Math.Ceiling(OptionFlags.TwitchFrequencyClipTime));
+                ClipMonitorService.SetChannelsById([OptionFlags.TwitchStreamerUserId]);
 
                 ClipMonitorService.AccessTokenUnauthorized += ClipMonitorService_AccessTokenUnauthorized;
             }
@@ -37,83 +37,79 @@ namespace StreamerBotLib.BotClients.Twitch
         private void ClipMonitorService_AccessTokenUnauthorized(object sender, EventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Checking tokens.");
-            twitchTokenBot.CheckToken();
+            tokenBot.CheckToken();
         }
 
         /// <summary>
         /// Start all of the services attached to the client.
         /// </summary>
-        public override bool StartBot()
+        public override void StartBot()
         {
             try
             {
-                if (IsStopped || !IsStarted)
+                if (IsActive == null || IsActive == false)
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Starting bot.");
 
                     ConnectClipService();
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Starting service.");
                     ClipMonitorService.Start();
-                    IsStarted = true;
-                    IsStopped = false;
+                    IsActive = true;
                     InvokeBotStarted();
                 }
-                return true;
             }
             catch (BadRequestException)
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Checking tokens.");
-                twitchTokenBot.CheckToken();
+                tokenBot.CheckToken();
             }
             catch (Exception ex)
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Caught an exception trying to start the bot.");
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                if (!IsStarted)
+                if (IsActive == false)
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Found the bot didn't start, notifying GUI the bot is stopped.");
 
-                    IsStarted = false;
-                    IsStopped = true;
+                    IsActive = false;
                     InvokeBotFailedStart();
-                } else
+                }
+                else
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Determined bot is started, notifying GUI the bot started.");
+                    IsActive = true;
                     InvokeBotStarted();
                 }
             }
-            return false;
         }
 
         /// <summary>
         /// Stop all of the services attached to the client.
         /// </summary>
-        public override bool StopBot()
+        public override void StopBot()
         {
             try
             {
-                if (IsStarted)
+                if (IsActive == true)
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Stopping bot.");
 
                     ClipMonitorService.Stop();
-                    IsStarted = false;
-                    IsStopped = true;
+                    IsActive = false;
                     InvokeBotStopped();
-                    //ClipMonitorService = null;
                 }
-                return true;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                IsActive = false;
+                InvokeBotStopped();
             }
-            return false;
         }
 
         public override bool ExitBot()
         {
-            if (IsStarted)
+            if (IsActive == true)
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Now stopping and exiting bot.");
 
@@ -126,14 +122,14 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Getting all clips.");
 
-            return await ClipMonitorService.GetAllClipsAsync(TwitchChannelId);
+            return await ClipMonitorService.GetAllClipsAsync(OptionFlags.TwitchStreamerUserId);
         }
 
         public void CreateClip()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Creating a new clip.");
 
-            _ = ClipMonitorService.CreateClip(TwitchChannelId);
+            _ = ClipMonitorService.CreateClip(OptionFlags.TwitchStreamerUserId);
         }
     }
 }

@@ -25,14 +25,10 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrUsers)
             {
-                foreach (LiveUser U in CurrUsers)
+                if (OptionFlags.ManageUsers)
                 {
-                    if (OptionFlags.ManageUsers)
-                    {
-                        DataManage.UserJoined(U, SpecifyTime.ToLocalTime());
-                    }
+                    DataManage.UserJoined(CurrUsers, SpecifyTime.ToLocalTime());
                 }
-
             }
         }
 
@@ -41,13 +37,24 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckMultiStreams(TimeStream);
         }
 
-        public static void SetCategory(string categoryId, string category)
+        public static void SetCategory(CategoryData categoryData)
         {
-            Category = category;
+            Category = categoryData.CategoryName;
 
             if (OptionFlags.ManageStreamStats)
             {
-                DataManage.PostCategory(categoryId, category);
+                DataManage.PostCategoryStream(categoryData);
+            }
+        }
+
+        public static void CurrUserUpdate(IEnumerable<LiveUser> liveUsers, Platform platform, DateTime CurrTime)
+        {
+            lock (CurrUsers)
+            {
+                foreach (LiveUser L in CurrUsers.Except(liveUsers))
+                {
+                    UserLeft(L, CurrTime);
+                }
             }
         }
 
@@ -153,16 +160,16 @@ namespace StreamerBotLib.Systems
 
         #region Incoming Raids
 
-        public static void PostIncomingRaid(string UserName, DateTime RaidTime, string Viewers, string GameName)
+        public static void PostIncomingRaid(LiveUser liveUser, DateTime RaidTime, int Viewers, CategoryData GameName)
         {
-            DataManage.PostInRaidData(UserName, RaidTime, Viewers, GameName);
+            DataManage.PostInRaidData(liveUser, RaidTime, Viewers, GameName);
         }
 
         #endregion
 
         public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
-            return DataManage.GetWebhooks(webhooksKind);
+            return DataManage.GetWebhooks(WebhooksSource.Discord, webhooksKind);
         }
 
         public bool StreamOnline(DateTime Started)
@@ -190,7 +197,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
-                    DataManage.PostStream(CurrStream.StreamStart);
+                    DataManage.PostStream(CurrStream.StreamStart, Category);
 
                     found = false;
                 }
@@ -343,8 +350,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
-                CurrStream.Commands++;
-                StreamDataUpdate();
+                CurrStream.CommandMsgs++;
             }
         }
 
@@ -370,7 +376,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
-                CurrStream.DiscordMsgs++;
+                CurrStream.WebhookMsgs++;
             }
         }
 
@@ -419,7 +425,7 @@ namespace StreamerBotLib.Systems
                 UpdateDeathCounter = true;
                 result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Waiting for 30 seconds to prevent another death counter update.");
 

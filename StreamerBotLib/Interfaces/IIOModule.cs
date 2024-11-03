@@ -16,7 +16,7 @@ namespace StreamerBotLib.Interfaces
         bool Connect();
 
         // Send data to the provider
-        bool Send(string s);
+        void Send(string s);
 
         // Send whisper to the provider
         bool SendWhisper(string user, string s);
@@ -25,10 +25,10 @@ namespace StreamerBotLib.Interfaces
         bool ReceiveWhisper(Action<string> ReceiveWhisperCallback);
 
         // Start send receive operations
-        bool StartBot();
+        void StartBot();
 
         // Stop operations
-        bool StopBot();
+        void StopBot();
 
         // Procedures for full app exit
         bool ExitBot();

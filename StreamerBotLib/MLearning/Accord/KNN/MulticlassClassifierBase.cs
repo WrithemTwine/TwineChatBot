@@ -150,7 +150,10 @@
         public double[] Decide(TInput[] input, double[] result)
         {
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Decide(input[i]);
+            }
+
             return result;
         }
 

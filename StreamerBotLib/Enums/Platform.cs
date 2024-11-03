@@ -3,6 +3,7 @@
     public enum Platform
     {
         Default,
-        Twitch
+        Twitch,
+        Service
     }
 }

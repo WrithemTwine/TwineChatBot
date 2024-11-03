@@ -14,27 +14,71 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
 		<SignAssembly>false</SignAssembly>
-		<Version>1.3.1.0</Version>
+		<Version>1.3.1.3</Version>
 		<Copyright>2024</Copyright>
-		<PackageReleaseNotes>Added built-in refresh token</PackageReleaseNotes>
+		<PackageReleaseNotes>Updated to Entity Framework Core</PackageReleaseNotes>
 		<Authors>WrithemTwine</Authors>
 		<Company>TwineStreamerBot</Company>
 		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
+		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
 	</PropertyGroup>
+	
+	<ItemGroup>
+	  <None Remove="img\BotStartupLogo.png" />
+	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2478.35" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 	</ItemGroup>
-	<PropertyGroup>
-		<WebView2LoaderPreference>Static</WebView2LoaderPreference>
-	</PropertyGroup>
-	
+
 	<PropertyGroup Label="Globals">
 	  <WV2WinRTWrapWebViewTypes>True</WV2WinRTWrapWebViewTypes>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<WebView2LoaderPreference>Dynamic</WebView2LoaderPreference>
+		<StartupObject>StreamerBot.App</StartupObject>
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <DebugType>none</DebugType>
 	</PropertyGroup>
 	
 	<ItemGroup>

@@ -18,6 +18,7 @@
         GUIDataViews,
         GUIEvents,
         GUIHelpers,
+        GUIMultiLive,
         GUIProcessWatcher,
         GUITabSizes,
         GUIThemes,
@@ -31,14 +32,12 @@
         SystemController,
         ThreadManager,
         TwitchBots,
-        TwitchBotUserSvc,
-        TwitchChatBot,
+        TwitchHelixBot,
         TwitchClipBot,
-        TwitchFollowBot,
-        TwitchLiveBot,
+        TwitchBotSendChat,
+        TwitchBotEventSubBot,
+        TwitchStreamerEventSubBot,
         TwitchMultiLiveBot,
-        TwitchPubSubBot,
         TwitchTokenBot
-
     }
 }

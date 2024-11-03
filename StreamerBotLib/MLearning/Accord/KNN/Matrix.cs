@@ -88,7 +88,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         internal static int GetLength<T>(T[][] values, int dimension)
         {
             if (dimension == 1)
+            {
                 return values.Length;
+            }
+
             return values[0].Length;
         }
 
@@ -145,7 +148,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public static int Columns<T>(this T[][] matrix)
         {
             if (matrix.Length == 0)
+            {
                 return 0;
+            }
+
             return matrix[0].Length;
         }
 
@@ -156,11 +162,15 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public static T[] GetColumn<T>(this T[][] m, int index, T[] result = null)
         {
             if (result == null)
+            {
                 result = new T[m.Length];
+            }
 
             index = Matrix.index(index, m.Columns());
             for (int i = 0; i < result.Length; i++)
+            {
                 result[i] = m[i][index];
+            }
 
             return result;
         }
@@ -217,15 +227,23 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 int k = 0;
                 for (int i = 0; i < rows; i++)
+                {
                     for (int j = 0; j < cols; j++)
+                    {
                         result[i, j] = array[k++];
+                    }
+                }
             }
             else
             {
                 int k = 0;
                 for (int j = 0; j < cols; j++)
+                {
                     for (int i = 0; i < rows; i++)
+                    {
                         result[i, j] = array[k++];
+                    }
+                }
             }
 
             return result;
@@ -245,7 +263,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 array = new T[cols][];
                 for (int i = 0; i < cols; i++)
+                {
                     array[i] = matrix.GetColumn(i);
+                }
             }
             else
             {
@@ -253,7 +273,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 array = new T[rows][];
                 for (int i = 0; i < rows; i++)
+                {
                     array[i] = matrix.GetRow(i);
+                }
             }
 
             return array;
@@ -266,11 +288,15 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public static T[] GetRow<T>(this T[,] m, int index, T[] result = null)
         {
             if (result == null)
+            {
                 result = new T[m.GetLength(1)];
+            }
 
             index = Matrix.index(index, m.Rows());
             for (int i = 0; i < result.Length; i++)
+            {
                 result[i] = m[index, i];
+            }
 
             return result;
 
@@ -297,11 +323,15 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public static T[] GetColumn<T>(this T[,] m, int index, T[] result = null)
         {
             if (result == null)
+            {
                 result = new T[m.Rows()];
+            }
 
             index = Matrix.index(index, m.Columns());
             for (int i = 0; i < result.Length; i++)
+            {
                 result[i] = m[i, index];
+            }
 
             return result;
         }
@@ -323,7 +353,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         private static int index(int end, int length)
         {
             if (end < 0)
+            {
                 end = length + end;
+            }
+
             return end;
         }
 
@@ -366,10 +399,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             }
 
             if (count == 0)
+            {
                 return new int[0];
+            }
 
             if (count > values.Length)
+            {
                 return Range(0, values.Length);
+            }
 
             T[] work = inPlace ? values : (T[])values.Clone();
             int[] idx = Range(values.Length);
@@ -389,7 +426,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             var r = new T[count];
             for (int i = 0; i < r.Length; i++)
+            {
                 r[i] = values[i];
+            }
+
             return r;
         }
 
@@ -416,7 +456,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             int[] r = new int[n];
             for (int i = 0; i < r.Length; i++)
+            {
                 r[i] = i;
+            }
+
             return r;
         }
 
@@ -443,7 +486,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public static int[] Range(int a, int b)
         {
             if (a == b)
+            {
                 return new int[] { };
+            }
 
             int[] r;
 
@@ -451,13 +496,17 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 r = new int[(b - a)];
                 for (int i = 0; i < r.Length; i++)
+                {
                     r[i] = a++;
+                }
             }
             else
             {
                 r = new int[(a - b)];
                 for (int i = 0; i < r.Length; i++)
+                {
                     r[i] = a--;
+                }
             }
 
             return r;
@@ -475,28 +524,40 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public static T[] Get<T>(this T[] source, int[] indexes, bool inPlace = false)
         {
             if (source == null)
+            {
                 throw new ArgumentNullException("source");
+            }
 
             if (indexes == null)
+            {
                 throw new ArgumentNullException("indexes");
+            }
 
             if (inPlace && source.Length != indexes.Length)
+            {
                 throw new DimensionMismatchException(paramName: "Source and indexes arrays must have the same dimension for in-place operations.");
+            }
 
             var destination = new T[indexes.Length];
             for (int i = 0; i < indexes.Length; i++)
             {
                 int j = indexes[i];
                 if (j >= 0)
+                {
                     destination[i] = source[j];
+                }
                 else
+                {
                     destination[i] = source[source.Length + j];
+                }
             }
 
             if (inPlace)
             {
                 for (int i = 0; i < destination.Length; i++)
+                {
                     source[i] = destination[i];
+                }
             }
 
             return destination;

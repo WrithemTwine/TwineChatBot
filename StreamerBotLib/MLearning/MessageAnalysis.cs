@@ -28,8 +28,8 @@ namespace StreamerBotLib.MLearning
             StopWords.Clear();
 
             // https://countwordsfree.com/stopwords - removed: "www", "com", "edu", "follows", "followed", "following"; as these might be spam words used in text chat
-            string[] StopList = new[]
-            {
+            string[] StopList =
+            [
                 @"
 a
 able
@@ -877,7 +877,7 @@ you've
 z
 zero
 "
-            };
+            ];
 
             foreach (string SW in StopList)
             {

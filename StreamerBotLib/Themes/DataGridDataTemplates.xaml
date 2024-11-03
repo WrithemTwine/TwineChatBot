@@ -1,0 +1,484 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style TargetType="{x:Type DataGrid}">
+        <Setter Property="AlternationCount" Value="1" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+        <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+        <Setter Property="RowBackground" Value="{DynamicResource DataGridBackground}" />
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternateColor}"/>
+        <Setter Property="CanUserAddRows" Value="False" />
+
+        <Setter Property="ColumnHeaderStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
+                    <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                    <Setter Property="Padding" Value="8,0" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="RowHeaderStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridRowHeader}">
+                    <Setter Property="Background" Value="{DynamicResource DataGridRowHeaderBackground}" />
+                    <Setter Property="Width" Value="5" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--#region DataGrid DateTime templates -->
+    <DataTemplate x:Key="DateFirstSeenTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateCurrentLoginTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateLastSeenTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateFollowedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStatusChangedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateGiveawayTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding DateTime, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditDateGiveawayTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding DateTime}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding DateTime}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateInRaidTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditInRaidTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateOutRaidTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditOutRaidTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateClipCreatedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStreamStartTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditStreamStartTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding StreamStart}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding StreamStart}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStreamEndTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditStreamEndTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding StreamEnd}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding StreamEnd}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="StreamDurationTemplate">
+        <TextBlock Text="{Binding Duration, StringFormat={}{0:g}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateLiveTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding LiveDate, StringFormat={}{0:d}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditLiveDateTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding LiveDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding LiveDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateThroughTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:d}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditThroughDateTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding ThroughDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+    <!--#endregion-->
+
+    <!--#region DataGrid RowDetail DataTemplates -->
+
+    <DataTemplate x:Key="DG_RowDetailDT_Followers">
+        <Border BorderThickness="2">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
+                    <TextBlock>Category when Followed:</TextBlock>
+                    <TextBlock Text="{Binding Category}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Followed Date:</TextBlock>
+                    <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:F}}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Status Changed Date:</TextBlock>
+                    <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:F}}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
+        <Border BorderThickness="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="10" />
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" /> <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat={}{0:N0}}"/>
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
+                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
+                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
+                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
+                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
+                <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
+                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
+                <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat={}{0:N0}}" />
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
+                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
+                <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat={}{0:N0}}" />
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_MultiWebhooks">
+        <Border BorderThickness="1">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
+                    <TextBlock>Server NickName:</TextBlock>
+                    <TextBox Text="{Binding Server}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Webhook URL:</TextBlock>
+                    <TextBox Width="150" Text="{Binding Webhook}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_MultiChannelNames">
+        <Border BorderThickness="1">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock>Summary Data, if available:<LineBreak />
+                (use archive tab to compact daily data)</TextBlock>
+                <StackPanel>
+                    <TextBlock>Through Date:</TextBlock>
+                    <TextBlock Text="{Binding MultiSummaryLiveStreams.ThroughDate, FallbackValue=1/1/1900}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Number of Streams:</TextBlock>
+                    <TextBlock Text="{Binding MultiSummaryLiveStreams.StreamCount, FallbackValue=0, StringFormat={}{0:N0}}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_Users">
+        <Border BorderThickness="1">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="250" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0">First Date seen:</TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0">Current Login:</TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+                <TextBlock Grid.Row="2" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="0">Commands called:</TextBlock>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="4" Grid.Column="0">Chats:</TextBlock>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="5" Grid.Column="0">Clips created:</TextBlock>
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="6" Grid.Column="0">Channel Point Rewards:</TextBlock>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
+
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <!--#endregion-->
+
+    <!--#region DataGrid SelectionViews for Sorting & Grouping table rows -->
+
+    <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
+
+    <CollectionViewSource x:Key="DG_BanReasons_CVS" Source="{Binding BanReasons, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_BanRules_CVS" Source="{Binding BanRules, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CategoryList_CVS" Source="{Binding CategoryList, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ChannelEvents_CVS" Source="{Binding ChannelEvents, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="Name" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_Clips_CVS" Source="{Binding Clips, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Commands_CVS" Source="{Binding Commands, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="CmdName"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_CommandsUser_CVS" Source="{Binding CommandsUser, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="CmdName"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="User.UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="User.UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+
+    <CollectionViewSource x:Key="DG_Follows_CVS" Source="{Binding Followers, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="FollowedDate" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+
+    <CollectionViewSource x:Key="DG_GameDeadCounter_CVS" Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
+
+    <CollectionViewSource x:Key="DG_MultiWebhooks_CVS" Source="{Binding MultiWebhooks, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="Server" />
+            <scm:SortDescription PropertyName="Kind" />
+        </CollectionViewSource.SortDescriptions>
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="Kind" />
+            <PropertyGroupDescription PropertyName="AddEveryone" />
+            <PropertyGroupDescription PropertyName="IsEnabled" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OldFollowUsers_CVS" Source="{Binding OldFollowUsers, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OutRaidData_CVS" Source="{Binding OutRaidData, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Quotes_CVS" Source="{Binding Quotes, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_ShoutOuts_CVS" Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_StreamStats_CVS" Source="{Binding StreamStats, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="StreamStart" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" IsLiveSortingRequested="True">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="LastDateSeen" Direction="Descending" />
+            <scm:SortDescription PropertyName="UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_UserStats_CVS" Source="{Binding UserStats, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
+
+    <!--#endregion-->
+    
+</ResourceDictionary>

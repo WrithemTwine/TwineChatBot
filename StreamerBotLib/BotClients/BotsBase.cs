@@ -16,7 +16,7 @@ namespace StreamerBotLib.BotClients
         /// <summary>
         /// Utilize the read-only version of the data manager, designed to only read data
         /// </summary>
-        public static IDataManageReadOnly DataManager { get; set; }
+        public static IDataManagerReadOnly DataManager { get; set; }
 
         internal Collection<IIOModule> BotsList { get; private set; } = new();
 
@@ -69,14 +69,10 @@ namespace StreamerBotLib.BotClients
 
         protected void InvokeBotEvent(object sender, BotEvents Botevent, EventArgs eventargs)
         {
-            BotEvent?.Invoke(sender, new() { MethodName = Botevent.ToString(), e = eventargs });
+            BotEvent?.Invoke(sender, new() { MethodName = Botevent, e = eventargs });
         }
 
         public virtual void GetAllFollowers()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual void GetAllFollowers(bool OverrideUpdateFollowers = false)
         {
             throw new NotImplementedException();
         }

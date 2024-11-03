@@ -25,7 +25,10 @@
         public static T[][] Create<T>(int rows, int columns, params T[] values)
         {
             if (values.Length == 0)
+            {
                 return Zeros<T>(rows, columns);
+            }
+
             return values.Reshape(rows, columns).ToJagged();
         }
 
@@ -46,7 +49,10 @@
         {
             T[][] matrix = new T[rows][];
             for (int i = 0; i < matrix.Length; i++)
+            {
                 matrix[i] = new T[columns];
+            }
+
             return matrix;
         }
 
@@ -70,7 +76,10 @@
         {
             var one = (T)Convert.ChangeType(1, typeof(T));
             for (int i = 0; i < indices.Length; i++)
+            {
                 result[i][indices[i]] = one;
+            }
+
             return result;
         }
     }

@@ -2,9 +2,9 @@
 {
     public enum BotEvents
     {
-        TwitchChatBotStarted,
-        TwitchChatBotStopping,
-        TwitchChatBotStopped,
+        TwitchBotEventSubStarted,
+        TwitchBotEventSubStopping,
+        TwitchBotEventSubStopped,
         TwitchBeingHosted,
         TwitchBulkPostFollowers,
         TwitchStartBulkFollowers,
@@ -17,12 +17,12 @@
         TwitchPostNewFollowers,
         TwitchReSubscriber,
         TwitchStreamOffline,
+        TwitchMultiStreamOnline,
+        TwitchMultiGetChannels,
         TwitchStreamOnline,
         TwitchStreamUpdate,
         TwitchCategoryUpdate,
         TwitchNowHosting,
-        TwitchExistingUsers,
-        TwitchOnUserJoined,
         TwitchOnUserLeft,
         TwitchOnUserTimedout,
         TwitchOnUserBanned,
@@ -33,6 +33,9 @@
         TwitchChannelPointsRewardRedeemed,
         TwitchOutgoingRaid,
         TwitchBotCommandCall,
-        HandleBotEventEmpty
+        HandleBotEventEmpty,
+        TwitchCurrentUsers,
+        TwitchChannelCheer,
+        TwitchResumeStreamOnline
     }
 }

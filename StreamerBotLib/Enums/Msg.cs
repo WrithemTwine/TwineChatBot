@@ -17,6 +17,7 @@
         MsgDefaultQuote,
         MsgQuoteNumber,
         MsgTwitchAuthFailedAuthentication,
-        MsgDefaultSocialMsg
+        MsgDefaultSocialMsg,
+        MsgAddCommandFailed
     }
 }

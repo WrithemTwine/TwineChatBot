@@ -115,7 +115,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 count++;
 
                 if (node.IsLeaf)
+                {
                     leaves++;
+                }
             }
         }
 
@@ -156,7 +158,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 var list = new List<NodeDistance<TNode>>();
 
                 if (Root != null)
+                {
                     nearest(Root, position, radius, list);
+                }
 
                 return list;
             }
@@ -165,7 +169,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 var list = new KDTreeNodeCollection<TNode>(maximum);
 
                 if (Root != null)
+                {
                     nearest(Root, position, radius, list);
+                }
 
                 return list;
             }
@@ -185,7 +191,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             var list = new List<NodeDistance<TNode>>();
 
             if (Root != null)
+            {
                 nearest(Root, position, radius, list);
+            }
 
             return list;
         }
@@ -204,7 +212,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             var list = new KDTreeNodeCollection<TNode>(size: neighbors);
 
             if (Root != null)
+            {
                 nearest(Root, position, list);
+            }
 
             return list;
         }
@@ -372,10 +382,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             // Initial argument checks for creating the tree
             if (points == null)
+            {
                 throw new ArgumentNullException("points");
+            }
 
             if (!inPlace)
+            {
                 points = (double[][])points.Clone();
+            }
 
             leaves = 0;
 
@@ -396,7 +410,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         int depth, int k, int start, int length, ElementComparer comparer, ref int leaves)
         {
             if (length <= 0)
+            {
                 return null;
+            }
 
             // We will be doing sorting in place
             int axis = comparer.Index = depth % k;
@@ -423,7 +439,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             var right = create(points, depth, k, rightStart, rightLength, comparer, ref leaves);
 
             if (left == null && right == null)
+            {
                 leaves++;
+            }
 
             // Backtrack and create
             return new TNode()
@@ -453,7 +471,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             double d = distance.Distance(position, current.Position);
 
             if (d <= radius)
+            {
                 list.Add(new NodeDistance<TNode>(current, d));
+            }
 
             // Prepare for recursion. The following null checks
             // will be used to avoid function calls if possible
@@ -465,18 +485,26 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (u <= 0)
             {
                 if (current.Left != null)
+                {
                     nearest(current.Left, position, radius, list);
+                }
 
                 if (current.Right != null && Math.Abs(u) <= radius)
+                {
                     nearest(current.Right, position, radius, list);
+                }
             }
             else
             {
                 if (current.Right != null)
+                {
                     nearest(current.Right, position, radius, list);
+                }
 
                 if (current.Left != null && Math.Abs(u) <= radius)
+                {
                     nearest(current.Left, position, radius, list);
+                }
             }
         }
 
@@ -506,18 +534,26 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (u <= 0)
             {
                 if (current.Left != null)
+                {
                     nearest(current.Left, position, list);
+                }
 
                 if (current.Right != null && Math.Abs(u) <= list.Maximum)
+                {
                     nearest(current.Right, position, list);
+                }
             }
             else
             {
                 if (current.Right != null)
+                {
                     nearest(current.Right, position, list);
+                }
 
                 if (current.Left != null && Math.Abs(u) <= list.Maximum)
+                {
                     nearest(current.Left, position, list);
+                }
             }
         }
 
@@ -545,18 +581,26 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (u <= 0)
             {
                 if (current.Left != null)
+                {
                     nearest(current.Left, position, ref match, ref minDistance);
+                }
 
                 if (current.Right != null && u <= minDistance)
+                {
                     nearest(current.Right, position, ref match, ref minDistance);
+                }
             }
             else
             {
                 if (current.Right != null)
+                {
                     nearest(current.Right, position, ref match, ref minDistance);
+                }
 
                 if (current.Left != null && u <= minDistance)
+                {
                     nearest(current.Left, position, ref match, ref minDistance);
+                }
             }
         }
 
@@ -570,7 +614,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             list.Add(current, d);
 
             if (++visited > maxLeaves)
+            {
                 return true;
+            }
 
 
             // Check for leafs on the opposite sides of
@@ -586,21 +632,35 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (u <= 0)
             {
                 if (current.Left != null)
+                {
                     if (approximate(current.Left, position, list, maxLeaves, ref visited))
+                    {
                         return true;
+                    }
+                }
 
                 if (current.Right != null && Math.Abs(u) <= list.Maximum)
+                {
                     if (approximate(current.Right, position, list, maxLeaves, ref visited))
+                    {
                         return true;
+                    }
+                }
             }
             else
             {
                 if (current.Right != null)
+                {
                     approximate(current.Right, position, list, maxLeaves, ref visited);
+                }
 
                 if (current.Left != null && Math.Abs(u) <= list.Maximum)
+                {
                     if (approximate(current.Left, position, list, maxLeaves, ref visited))
+                    {
                         return true;
+                    }
+                }
             }
 
             return false;
@@ -620,7 +680,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             }
 
             if (++visited > maxLeaves)
+            {
                 return true;
+            }
 
 
             // Check for leafs on the opposite sides of
@@ -636,22 +698,36 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (u <= 0)
             {
                 if (current.Left != null)
+                {
                     if (approximateNearest(current.Left, position, ref match, ref minDistance, maxLeaves, ref visited))
+                    {
                         return true;
+                    }
+                }
 
                 if (current.Right != null && Math.Abs(u) <= minDistance)
+                {
                     if (approximateNearest(current.Right, position, ref match, ref minDistance, maxLeaves, ref visited))
+                    {
                         return true;
+                    }
+                }
             }
             else
             {
                 if (current.Right != null)
+                {
                     approximateNearest(current.Right, position,
                     ref match, ref minDistance, maxLeaves, ref visited);
+                }
 
                 if (current.Left != null && Math.Abs(u) <= minDistance)
+                {
                     if (approximateNearest(current.Left, position, ref match, ref minDistance, maxLeaves, ref visited))
+                    {
                         return true;
+                    }
+                }
             }
 
             return false;

@@ -1,10 +1,11 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
-using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.PubSub;
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -14,11 +15,14 @@ using System.Reflection;
 using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
-using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
+using TwitchLib.EventSub.Core.Models.Chat;
+using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
 
+
+// TODO: add/verify "DataManage.UpdateStats" updates; including commands, chats, clips, channel redeems
 
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
 
@@ -29,6 +33,7 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler<PostChannelMessageEventArgs> OutputSentToBots;
         public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidAuthorizationToken;
+        public event EventHandler TokensInitialized;
 
         private static Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
@@ -59,8 +64,6 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
-            ActionSystem.BotUserName = TwitchBotsBase.TwitchBotUserName;
-            ActionSystem.ChannelName = TwitchBotsBase.TwitchChannelName;
             OutputSentToBots += ActionSystem.OutputSentToBotsHandler;
 
             SetNewOverlayEventHandler();
@@ -69,14 +72,25 @@ namespace StreamerBotLib.BotIOController
             BotsList.Add(OverlayServerBot);
 
             TwitchBots.InvalidTwitchAccess += TwitchBots_InvalidTwitchAccess;
+            TwitchBots.OnTwitchTokensInitialized += TwitchBots_OnTwitchTokensInitialized;
+        }
+
+        private void TwitchBots_OnTwitchTokensInitialized(object sender, EventArgs e)
+        {
+            TokensInitialized?.Invoke(this, new());
         }
 
         /// <summary>
         /// Initializes a Helix api.
         /// </summary>
-        public static void InitializeHelix()
+        public static void TwitchInitializeHelix()
         {
             BotsTwitch.InitializeHelix();
+        }
+
+        public static void NotifyInvalidTwitchTokens()
+        {
+            BotsTwitch.NotifyInvalidTwitchTokens();
         }
 
         /// <summary>
@@ -108,24 +122,117 @@ namespace StreamerBotLib.BotIOController
         /// <param name="e">The parameters to include the method name to invoke, and the event arguments for the invoked method.</param>
         private void HandleBotEvent(object sender, BotEventArgs e)
         {
-            AppDispatcher.Invoke(() =>
+            AppDispatcher.BeginInvoke(() =>
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Event, {e.MethodName}, received from bots to post into system.");
 
                 try
                 {
-                    if (e.MethodName.Contains('.'))
-                    {
-                        throw new ArgumentException("Method name to invoke contains '.', which is invalid.");
-                    }
+                    //_ = typeof(BotController).InvokeMember(
+                    //        name: e.MethodName,
+                    //        invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
+                    //        binder: null,
+                    //        target: this,
+                    //        args: e.e == null ? null : [e.e],
+                    //        culture: null);
 
-                    _ = typeof(BotController).InvokeMember(
-                            name: e.MethodName,
-                            invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
-                            binder: null,
-                            target: this,
-                            args: e.e == null ? null : [e.e],
-                            culture: null);
+                    switch (e.MethodName)
+                    {
+                        case BotEvents.TwitchBotEventSubStarted:
+                            TwitchBotEventSubStarted(e.e);
+                            break;
+                        case BotEvents.TwitchBotEventSubStopping:
+                            TwitchBotEventSubStopping(e.e);
+                            break;
+                        case BotEvents.TwitchBotEventSubStopped:
+                            TwitchBotEventSubStopped(e.e);
+                            break;
+                        case BotEvents.TwitchBeingHosted:
+                            break;
+                        case BotEvents.TwitchBulkPostFollowers:
+                            TwitchBulkPostFollowers((OnNewFollowersDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStartBulkFollowers:
+                            TwitchStartBulkFollowers(e.e);
+                            break;
+                        case BotEvents.TwitchStopBulkFollowers:
+                            TwitchStopBulkFollowers();
+                            break;
+                        case BotEvents.TwitchCommunitySubscription:
+                            TwitchCommunitySubscription((NewChannelSubscriptionGiftEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchGiftSubscription:
+                            TwitchGiftSubscription((NewChannelSubscribeEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchNewSubscriber:
+                            TwitchNewSubscriber((NewChannelSubscribeEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchPostNewClip:
+                            TwitchPostNewClip((OnNewClipsDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchClipSvcOnClipFound:
+                            TwitchClipSvcOnClipFound((ClipFoundEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchPostNewFollowers:
+                            TwitchPostNewFollowers((NewChannelFollowEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchReSubscriber:
+                            TwitchReSubscriber((NewChannelSubscriptionMessageEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStreamOffline:
+                            TwitchStreamOffline((NewStreamOfflineEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchMultiStreamOnline:
+                            TwitchMultiStreamOnline((OnStreamOnlineArgs)e.e);
+                            break;
+                        case BotEvents.TwitchMultiGetChannels:
+                            break;
+                        case BotEvents.TwitchStreamOnline:
+                            TwitchStreamOnline((NewStreamOnlineEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchResumeStreamOnline:
+                            TwitchResumeStreamOnline((ResumeStreamOnlineEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStreamUpdate:
+                            TwitchStreamUpdate((NewChannelUpdateEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchCategoryUpdate:
+                            TwitchCategoryUpdate((OnGetChannelGameNameEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchNowHosting:
+                            break;
+                        case BotEvents.TwitchOnUserLeft:
+                            TwitchOnUserLeft((StreamerOnUserLeftArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOnUserTimedout:
+                            TwitchOnUserTimedout((OnUserTimedoutArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOnUserBanned:
+                            TwitchOnUserBanned((OnUserBannedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchRitualNewChatter:
+                            break;
+                        case BotEvents.TwitchMessageReceived:
+                            TwitchMessageReceived((ChannelChatMessageEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchIncomingRaid:
+                            TwitchIncomingRaid((OnIncomingRaidArgs)e.e);
+                            break;
+                        case BotEvents.TwitchChatCommandReceived:
+                            TwitchChatCommandReceived((ChannelChatMessageEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchChannelPointsRewardRedeemed:
+                            TwitchChannelPointsRewardRedeemed((NewChannelCustomRewardRedemptionEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOutgoingRaid:
+                            TwitchOutgoingRaid((OnStreamRaidResponseEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchBotCommandCall:
+                            TwitchBotCommandCall((SendBotCommandEventArgs)e.e);
+                            break;
+                        case BotEvents.HandleBotEventEmpty:
+                            break;
+                    }
 
                 }
                 catch (Exception ex)
@@ -210,13 +317,9 @@ namespace StreamerBotLib.BotIOController
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "User wants to exit the bot.");
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending a Twitch Stream Offline message.");
 
-                TwitchStreamOffline();
+                TwitchStreamOffline(null);
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending an exit to the data system.");
-
-                Systems.Exit();
-
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the the channel.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the channel.");
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
 
@@ -227,7 +330,8 @@ namespace StreamerBotLib.BotIOController
                     bot.StopBots();
                 }
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending an exit to the data system.");
+                Systems.Exit();
             }
             catch (Exception ex)
             {
@@ -245,13 +349,13 @@ namespace StreamerBotLib.BotIOController
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
-            if (OptionFlags.ManageFollowers)
-            {
-                foreach (IBotTypes bot in BotsList)
-                {
-                    bot.GetAllFollowers();
-                }
-            }
+            //if (OptionFlags.ManageFollowers)
+            //{
+            //    foreach (IBotTypes bot in BotsList)
+            //    {
+            //        bot.GetAllFollowers();
+            //    }
+            //}
             // when management resumes, code upstream enables the startbot process 
         }
 
@@ -324,12 +428,12 @@ namespace StreamerBotLib.BotIOController
         }
 
         /// <summary>
-        /// Send a "Set Discord Webhooks Enabled" toggle request to the system database.
+        /// Send a "Set WebHooks Webhooks Enabled" toggle request to the system database.
         /// </summary>
-        /// <param name="Enabled">True or False to set Discord Webhooks in bulk.</param>
+        /// <param name="Enabled">True or False to set WebHooks Webhooks in bulk.</param>
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set Discord Webhooks Enabled\" " +
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set WebHooks Webhooks Enabled\" " +
                 $"request to set all events to {Enabled}.");
 
             SystemsController.SetDiscordWebhooksEnabled(Enabled);
@@ -339,28 +443,23 @@ namespace StreamerBotLib.BotIOController
         /// Insert a new AutoShoutUser entry into the database.
         /// </summary>
         /// <param name="UserName">The username to add into the database for the autoshout table.</param>
-        public static void AddNewAutoShoutUser(string UserName, string Userid, string platform)
+        public static void AddNewAutoShoutUser(string Userid, Platform platform)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
-                $"request to add= {UserName} =to the database.");
+                $"request to add= {Userid} =to the database.");
 
-            SystemsController.AddNewAutoShoutUser(UserName, Userid, platform);
+            SystemsController.AddNewAutoShoutUser(Userid, platform);
         }
 
         #endregion
 
         #region Query Bots
 
-        public void CheckTwitchChannelBotIds()
-        {
-            BotsTwitch.CheckStreamerBotIds();
-        }
-
         /// <summary>
         /// Part of the Twitch-Auth-Code Token operation method.
         /// Call to clear out the Twitch Authorization Code(s) to permit the user to re-authorize the application.
         /// </summary>
-        public void ForceTwitchAuthReauthorization()
+        public static void ForceTwitchAuthReauthorization()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
@@ -400,7 +499,7 @@ namespace StreamerBotLib.BotIOController
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received request to provide the " +
                     $"streaming category for the channel named: {ChannelName}, with {UserId} userId.");
 
-                return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName);
+                return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName).CategoryName;
             }
             else
             {
@@ -505,7 +604,7 @@ namespace StreamerBotLib.BotIOController
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Found the stream is online.");
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     if (bots == Platform.Twitch || bots == Platform.Default)
                     {
@@ -542,43 +641,45 @@ namespace StreamerBotLib.BotIOController
             BotsTwitch.CreateClip();
         }
 
+        public static string GetMultiChannelUserId(string UserName)
+        {
+            return BotsTwitch.GetUserId(UserName);
+        }
+
         #endregion
 
         #region Twitch Bot Events
 
-        public static void ConnectTwitchMultiLive()
+        public void TwitchStartUpdateAllFollowers()
         {
-            BotsTwitch.LiveMonitorSvc.MultiConnect();
+            TwitchBots.GetAllFollowers();
         }
 
-        public static void DisconnectTwitchMultiLive()
+        internal void TwitchPostNewFollowers(NewChannelFollowEventArgs Follower)
         {
-            BotsTwitch.LiveMonitorSvc.MultiDisconnect();
+            HandleBotEventNewFollowers(ConvertFollowers(Follower.Channel, Platform.Twitch));
         }
 
-        public static void StartTwitchMultiLive()
+        public void TwitchStopBulkFollowers()
         {
-            BotsTwitch.LiveMonitorSvc.StartMultiLive();
+            HandleBotEventStopBulkFollowers();
         }
 
-        public static void StopTwitchMultiLive()
+        /// <summary>
+        /// Convert from Twitch Follower objects to generic "Models.Follow" objects.
+        /// </summary>
+        /// <param name="follows">The Twitch follows list to convert.</param>
+        /// <returns>The follower list converted to the generic "Models.Follow" list.</returns>
+        private static Models.Follow ConvertFollowers(ChannelFollow follows, Platform Source)
         {
-            BotsTwitch.LiveMonitorSvc.StopMultiLive();
-        }
+            return new Models.Follow(
 
-        public static void UpdateTwitchMultiLiveChannels()
-        {
-            BotsTwitch.LiveMonitorSvc.UpdateChannels();
-        }
-
-        public void TwitchStartUpdateAllFollowers(bool OverrideUpdateFollows = false)
-        {
-            TwitchBots.GetAllFollowers(OverrideUpdateFollows);
-        }
-
-        public void TwitchPostNewFollowers(OnNewFollowersDetectedArgs Follower)
-        {
-            HandleBotEventNewFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
+                follows.FollowedAt.DateTime.ToLocalTime(),
+                follows.UserId,
+                follows.UserName,
+                Source,
+                null // gets re-assigned in SystemController where Category is tracked
+            );
         }
 
         /// <summary>
@@ -595,24 +696,25 @@ namespace StreamerBotLib.BotIOController
                     DateTime.Parse(f.FollowedAt).ToLocalTime(),
                     f.UserId,
                     f.UserName,
-                    Source
+                    Source,
+                    null // gets re-assigned in SystemController where Category is tracked
                 );
             });
         }
 
-        public void TwitchChatBotStarted(EventArgs args = null)
+        public void TwitchBotEventSubStarted(EventArgs args = null)
         {
-            HandleChatBotStarted(Bots.TwitchChatBot, args);
+            HandleChatBotStarted(Bots.TwitchBotEventSub, args);
         }
 
-        public void TwitchChatBotStopping(EventArgs args = null)
+        public void TwitchBotEventSubStopping(EventArgs args = null)
         {
-            HandleChatBotStopped(Bots.TwitchChatBot, args);
+            HandleChatBotStopped(Bots.TwitchBotEventSub, args);
         }
 
-        public void TwitchChatBotStopped(EventArgs args = null)
+        public void TwitchBotEventSubStopped(EventArgs args = null)
         {
-            HandleChatBotStopped(Bots.TwitchChatBot, args);
+            HandleChatBotStopped(Bots.TwitchBotEventSub, args);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
@@ -626,18 +728,12 @@ namespace StreamerBotLib.BotIOController
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
-        public static void TwitchStopBulkFollowers(EventArgs args = null)
-        {
-            HandleBotEventStopBulkFollowers();
-        }
-
         public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
         {
             HandleBotEventPostNewClip(ConvertClips(clips.ClipList));
         }
 
-        public static List<Models.Clip> ConvertClips(List<Clip> clips)
+        public static List<Models.Clip> ConvertClips(List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> clips)
         {
             return clips.ConvertAll((SrcClip) =>
             {
@@ -649,7 +745,9 @@ namespace StreamerBotLib.BotIOController
                     GameId = SrcClip.GameId,
                     Language = SrcClip.Language,
                     Title = SrcClip.Title,
-                    Url = SrcClip.Url
+                    Url = SrcClip.Url,
+                    FromUserId = SrcClip.CreatorId,
+                    FromUserName = SrcClip.CreatorName
                 };
             });
         }
@@ -659,77 +757,104 @@ namespace StreamerBotLib.BotIOController
             HandleBotEventPostNewClip(ConvertClips(clips.Clips));
         }
 
-        public void TwitchStreamOnline(OnStreamOnlineArgs e)
+        /// <summary>
+        /// Send notification messages based on a monitored channel stream went live.
+        /// </summary>
+        /// <param name="e"></param>
+        internal void TwitchMultiStreamOnline(OnStreamOnlineArgs e)
         {
-            HandleOnStreamOnline(e.Stream.UserName, e.Stream.Title, e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
+            HandleMultiLiveOnStreamOnline(e.Stream.UserId, e.Stream.UserName, e.Stream.Title,
+                e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
         }
 
-        public void TwitchStreamUpdate(OnStreamUpdateArgs e)
+        internal void TwitchStreamOnline(NewStreamOnlineEventArgs e)
         {
-            HandleOnStreamUpdate(e.Stream.GameId, e.Stream.GameName);
+            var CurrStream = TwitchBots.GetStreamDetail(UserId: e.StreamOnline.BroadcasterUserId);
+
+            HandleOnStreamOnline(
+                e.StreamOnline.BroadcasterUserName, 
+                CurrStream.Streams[0].Title, 
+                CurrStream.Streams[0].StartedAt.ToLocalTime(), 
+                new(CurrStream.Streams[0].GameId, CurrStream.Streams[0].GameName)
+                );
+        }
+
+        internal void TwitchResumeStreamOnline(ResumeStreamOnlineEventArgs e)
+        {
+            HandleOnStreamOnline(
+                e.Stream.UserName,
+                e.Stream.Title,
+                e.Stream.StartedAt.ToLocalTime(),
+                new(e.Stream.GameId, e.Stream.GameName)
+                );
+        }
+
+        internal void TwitchStreamUpdate(NewChannelUpdateEventArgs e)
+        {
+            HandleOnStreamUpdate(new(e.ChannelUpdate.CategoryId, e.ChannelUpdate.CategoryName));
         }
 
         public void TwitchCategoryUpdate(OnGetChannelGameNameEventArgs e)
         {
-            HandleOnStreamUpdate(e.GameId, e.GameName);
+            HandleOnStreamUpdate(new(e.GameId, e.GameName));
         }
 
-        public static void TwitchStreamOffline(OnStreamOfflineArgs e = null)
+        internal static void TwitchStreamOffline(NewStreamOfflineEventArgs e)
         {
-            if (!OptionFlags.TwitchOutRaidStarted && e == null)
-            {
+            //if (!OptionFlags.TwitchOutRaidStarted)
+            //{
                 HandleOnStreamOffline();
-            }
+            //}
         }
 
-        public void TwitchNewSubscriber(OnNewSubscriberArgs e)
+        internal void TwitchNewSubscriber(NewChannelSubscribeEventArgs e)
         {
             HandleNewSubscriber(
-                e.Subscriber.DisplayName,
-                e.Subscriber.MsgParamCumulativeMonths,
-                e.Subscriber.SubscriptionPlan.ToString(),
-                e.Subscriber.SubscriptionPlanName);
+                new LiveUser(e.ChannelSubscribe.UserName, Platform.Twitch, e.ChannelSubscribe.UserId),
+                "1",
+                e.ChannelSubscribe.Tier.Replace("0", ""),
+                e.ChannelSubscribe.Tier.Replace("0", ""));
         }
 
-        public void TwitchReSubscriber(OnReSubscriberArgs e)
+        internal void TwitchReSubscriber(NewChannelSubscriptionMessageEventArgs e)
         {
             HandleReSubscriber(
-                e.ReSubscriber.DisplayName,
-                e.ReSubscriber.Months,
-                e.ReSubscriber.MsgParamCumulativeMonths,
-                e.ReSubscriber.SubscriptionPlan.ToString(),
-                e.ReSubscriber.SubscriptionPlanName,
-                e.ReSubscriber.MsgParamShouldShareStreak,
-                e.ReSubscriber.MsgParamStreakMonths);
+                new(e.ChannelSubscriptionMessage.UserName, Platform.Twitch, e.ChannelSubscriptionMessage.UserId),
+                e.ChannelSubscriptionMessage.DurationMonths,
+                e.ChannelSubscriptionMessage.CumulativeMonths.ToString(),
+                e.ChannelSubscriptionMessage.Tier.Replace("0", ""),
+                e.ChannelSubscriptionMessage.Tier.Replace("0", ""),
+                e.ChannelSubscriptionMessage.StreakMonths != null,
+                e.ChannelSubscriptionMessage.StreakMonths.ToString());
         }
 
-        public void TwitchGiftSubscription(OnGiftedSubscriptionArgs e)
+        internal void TwitchGiftSubscription(NewChannelSubscribeEventArgs e)
         {
             HandleGiftSubscription(
-                e.GiftedSubscription.DisplayName,
-                e.GiftedSubscription.MsgParamMonths,
-                e.GiftedSubscription.MsgParamRecipientUserName,
-                e.GiftedSubscription.MsgParamSubPlan.ToString(),
-                e.GiftedSubscription.MsgParamSubPlanName);
+                new(null, Platform.Twitch, null),
+                "1",
+                e.ChannelSubscribe.UserName,
+                e.ChannelSubscribe.Tier.Replace("0", ""),
+                e.ChannelSubscribe.Tier.Replace("0", ""));
         }
 
-        public void TwitchCommunitySubscription(OnCommunitySubscriptionArgs e)
+        internal void TwitchCommunitySubscription(NewChannelSubscriptionGiftEventArgs e)
         {
             HandleCommunitySubscription(
-                e.GiftedSubscription.DisplayName,
-                e.GiftedSubscription.MsgParamSenderCount,
-                e.GiftedSubscription.MsgParamSubPlan.ToString());
+                e.ChannelSubscriptionGift.IsAnonymous ? new(null, Platform.Twitch, null) : new(e.ChannelSubscriptionGift.UserName, Platform.Twitch, e.ChannelSubscriptionGift.UserId),
+                e.ChannelSubscriptionGift.Total,
+                e.ChannelSubscriptionGift.Tier.Replace("0", ""));
         }
 
-        public void TwitchExistingUsers(StreamerOnExistingUserDetectedArgs e)
+        public void TwitchCurrentUsers(StreamerOnExistingUserDetectedArgs e)
         {
             HandleUserJoined(e.Users);
         }
 
-        public void TwitchOnUserJoined(StreamerOnUserJoinedArgs e)
-        {
-            HandleUserJoined([e.LiveUser]);
-        }
+        //public void TwitchOnUserJoined(StreamerOnUserJoinedArgs e)
+        //{
+        //    HandleUserJoined([e.LiveUser]);
+        //}
 
         public void TwitchOnUserLeft(StreamerOnUserLeftArgs e)
         {
@@ -743,35 +868,36 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchOnUserBanned(OnUserBannedArgs e = null)
         {
-            HandleUserBanned(e.UserBan.Username, Platform.Twitch);
+            HandleUserBanned(new(e.UserBan.TargetUserId, Platform.Twitch, e.UserBan.Username));
         }
 
-        public void TwitchMessageReceived(OnMessageReceivedArgs e)
+        public void TwitchMessageReceived(ChannelChatMessageEventArgs e)
         {
             HandleMessageReceived(
                 new()
                 {
-                    DisplayName = e.ChatMessage.DisplayName,
-                    Channel = e.ChatMessage.Channel,
-                    IsBroadcaster = e.ChatMessage.IsBroadcaster,
-                    IsHighlighted = e.ChatMessage.IsHighlighted,
-                    IsMe = e.ChatMessage.IsMe,
-                    IsModerator = e.ChatMessage.IsModerator,
-                    IsPartner = e.ChatMessage.IsPartner,
-                    IsSkippingSubMode = e.ChatMessage.IsSkippingSubMode,
-                    IsStaff = e.ChatMessage.IsStaff,
-                    IsSubscriber = e.ChatMessage.IsSubscriber,
-                    IsTurbo = e.ChatMessage.IsTurbo,
-                    IsVip = e.ChatMessage.IsVip,
-                    Message = e.ChatMessage.Message,
-                    Bits = e.ChatMessage.Bits
+                    UserId = e.ChannelChatMessage.ChatterUserId,
+                    DisplayName = e.ChannelChatMessage.ChatterUserName,
+                    Channel = e.ChannelChatMessage.BroadcasterUserName,
+                    IsBroadcaster = e.ChannelChatMessage.IsBroadcaster,
+                    IsHighlighted = false,
+                    IsMe = false,
+                    IsModerator = e.ChannelChatMessage.IsModerator,
+                    IsPartner = false,
+                    IsSkippingSubMode = false,
+                    IsStaff = e.ChannelChatMessage.IsStaff,
+                    IsSubscriber = e.ChannelChatMessage.IsSubscriber,
+                    IsTurbo = false,
+                    IsVip = e.ChannelChatMessage.IsVip,
+                    Message = e.ChannelChatMessage.Message.Text,
+                    Bits = e.ChannelChatMessage.Cheer.Bits
                 }
                 , Platform.Twitch);
         }
 
         public void TwitchIncomingRaid(OnIncomingRaidArgs e)
         {
-            HandleIncomingRaidData(new(e.DisplayName, Platform.Twitch), e.RaidTime, e.ViewerCount, e.Category);
+            HandleIncomingRaidData(e.LiveUser, e.RaidTime, e.ViewerCount, e.Category);
         }
 
         public static void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
@@ -781,25 +907,42 @@ namespace StreamerBotLib.BotIOController
             HandleOutgoingRaidData(e.ToChannel, e.CreatedAt);
         }
 
-        public void TwitchChatCommandReceived(OnChatCommandReceivedArgs e)
+        public void TwitchChatCommandReceived(ChannelChatMessageEventArgs e)
         {
+            string commandtext = "";
+            List<string> cmdarglist = [];
+            bool foundcommand = false;
+
+            foreach (ChatMessageFragment f in e.ChannelChatMessage.Message.Fragments)
+            {
+                if (f.Text.StartsWith('!') && !foundcommand)
+                {
+                    foundcommand = true;
+                    commandtext = f.Text[1..].ToLower();
+                } else if(foundcommand)
+                {
+                    cmdarglist.Add(f.Text);
+                }
+            }
+
             HandleChatCommandReceived(new()
             {
-                CommandArguments = e.Command.ArgumentsAsList,
-                CommandText = e.Command.CommandText.ToLower(),
-                DisplayName = e.Command.ChatMessage.DisplayName,
-                Channel = e.Command.ChatMessage.Channel,
-                IsBroadcaster = e.Command.ChatMessage.IsBroadcaster,
-                IsHighlighted = e.Command.ChatMessage.IsHighlighted,
-                IsMe = e.Command.ChatMessage.IsMe,
-                IsModerator = e.Command.ChatMessage.IsModerator,
-                IsPartner = e.Command.ChatMessage.IsPartner,
-                IsSkippingSubMode = e.Command.ChatMessage.IsSkippingSubMode,
-                IsStaff = e.Command.ChatMessage.IsStaff,
-                IsSubscriber = e.Command.ChatMessage.IsSubscriber,
-                IsTurbo = e.Command.ChatMessage.IsTurbo,
-                IsVip = e.Command.ChatMessage.IsVip,
-                Message = e.Command.ChatMessage.Message
+                CommandArguments = cmdarglist,
+                CommandText = commandtext,
+                UserId = e.ChannelChatMessage.ChatterUserId,
+                DisplayName = e.ChannelChatMessage.ChatterUserName,
+                Channel = e.ChannelChatMessage.BroadcasterUserName,
+                IsBroadcaster = e.ChannelChatMessage.IsBroadcaster,
+                IsHighlighted = false,
+                IsMe = false,
+                IsModerator = e.ChannelChatMessage.IsModerator,
+                IsPartner = false,
+                IsSkippingSubMode = false,
+                IsStaff = e.ChannelChatMessage.IsStaff,
+                IsSubscriber = e.ChannelChatMessage.IsSubscriber,
+                IsTurbo = false,
+                IsVip = e.ChannelChatMessage.IsVip,
+                Message = e.ChannelChatMessage.Message.Text
             }, Platform.Twitch);
         }
 
@@ -808,14 +951,23 @@ namespace StreamerBotLib.BotIOController
             HandleChatCommandReceived(e.CmdMessage, Platform.Twitch);
         }
 
-        public void TwitchChannelPointsRewardRedeemed(OnChannelPointsRewardRedeemedArgs e)
+        internal void TwitchChannelPointsRewardRedeemed(NewChannelCustomRewardRedemptionEventArgs e)
         {
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
             // much more data exists in the resulting data output
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, $"Received Twitch Channel Point Reward \"{e.RewardRedeemed.Redemption.Reward.Title}\". Now processing.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Received Twitch Channel Point Reward {e.ChannelPointsCustomRewardRedemption.Reward.Title}. Now processing.");
 
-            HandleCustomReward(e.RewardRedeemed.Redemption.User.DisplayName, e.RewardRedeemed.Redemption.Reward.Title, e.RewardRedeemed.Redemption.UserInput, Platform.Twitch);
+            HandleCustomReward(
+                new(e.ChannelPointsCustomRewardRedemption.UserName, Platform.Twitch, e.ChannelPointsCustomRewardRedemption.UserId),
+                e.ChannelPointsCustomRewardRedemption.Reward.Title,
+                e.ChannelPointsCustomRewardRedemption.UserInput
+                );
+        }
+
+        internal void TwitchChannelCheered(NewChannelCheerEventArgs channelCheer)
+        {
+            HandleChannelCheer(new(channelCheer.ChannelCheer.UserName, Platform.Twitch, channelCheer.ChannelCheer.UserId), channelCheer.ChannelCheer.Bits);
         }
 
         #endregion
@@ -832,9 +984,9 @@ namespace StreamerBotLib.BotIOController
 
         #region Followers
 
-        public void HandleBotEventNewFollowers(List<Models.Follow> follows)
+        public void HandleBotEventNewFollowers(Models.Follow follow)
         {
-            Systems.AddNewFollowers(follows);
+            Systems.AddNewFollowers([follow]);
         }
 
         public static void HandleBotEventStartBulkFollowers()
@@ -865,25 +1017,65 @@ namespace StreamerBotLib.BotIOController
 
         #region LiveStream
 
-        private void PostGameCategoryEvent(string GameId, string GameName)
+        private void PostGameCategoryEvent(CategoryData categoryData)
         {
-            OnStreamCategoryChanged?.Invoke(this, new() { GameId = GameId, GameName = GameName });
+            OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
         }
 
-        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch, bool Debug = false)
+        private void HandleMultiLiveOnStreamOnline(string userid, string username, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch)
+        {
+            DateTime CurrTime = StartedAt.ToLocalTime();
+
+            // true posted new event, false did not post
+            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(userid, username, Platform.Twitch, CurrTime);
+
+            if (PostedLive)
+            {
+                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(userid, Platform.Twitch, CurrTime);
+
+                if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
+                {
+                    // get message, set a default if otherwise deleted/unavailable
+                    string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+
+                    // keys for exchanging codes for representative names
+                    Dictionary<string, string> dictionary = new()
+                        {
+                            { "#user", username },
+                            { "#category", Category },
+                            { "#title", Title },
+                            { "#url", username }
+                        };
+
+                    SystemsController.DataManage.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
+
+                    foreach (Tuple<WebhooksSource, Uri> u in SystemsController.DataManage.GetMultiWebHooks())
+                    {
+                        if (u.Item1 == WebhooksSource.Discord)
+                        {
+                            DiscordWebhook.SendMessage(u.Item2,
+                                VariableParser.ParseReplace(msg, dictionary),
+                                VariableParser.BuildPlatformUrl(username, Platform.Twitch));
+                        }
+                    }
+                }
+            }
+
+        }
+
+        public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
         {
             try
             {
                 ManageBotsStreamStatusChanged(true);
 
                 bool Started = Systems.StreamOnline(StartedAt);
-                ActionSystem.ChannelName = ChannelName;
 
                 if (Started)
                 {
                     bool MultiLive = ActionSystem.CheckStreamTime(StartedAt);
-                    SystemsController.SetCategory(GameId, Category);
-                    PostGameCategoryEvent(GameId, Category);
+                    SystemsController.SetCategory(Category);
+                    PostGameCategoryEvent(Category);
 
                     if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)
                     {
@@ -894,7 +1086,7 @@ namespace StreamerBotLib.BotIOController
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
                                 new(MsgVars.user, ChannelName),
-                                new(MsgVars.category, Category),
+                                new(MsgVars.category, Category.CategoryName),
                                 new(MsgVars.title, Title),
                                 new(MsgVars.url, ChannelName)
                         });
@@ -912,7 +1104,6 @@ namespace StreamerBotLib.BotIOController
                                                             )
                                                         ),
                                                         VariableParser.BuildPlatformUrl(ChannelName, platform)
-
                                                     );
                                 Systems.UpdatedStat(StreamStatType.Discord);
                             }
@@ -926,10 +1117,10 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        public void HandleOnStreamUpdate(string gameId, string gameName)
+        public void HandleOnStreamUpdate(CategoryData categoryData)
         {
-            SystemsController.SetCategory(gameId, gameName);
-            PostGameCategoryEvent(gameId, gameName);
+            SystemsController.SetCategory(categoryData);
+            PostGameCategoryEvent(categoryData);
         }
 
         public static void HandleOnStreamOffline(string HostedChannel = null, DateTime? RaidTime = null)
@@ -978,7 +1169,10 @@ namespace StreamerBotLib.BotIOController
 
             if (StartedChatBots.Count == 1 && args == null)
             {
-                SendThread = ThreadManager.CreateThread(BeginProcMsgs, Priority: ThreadExitPriority.Normal);
+                SendThread = ThreadManager.CreateThread(
+                                                        MethodBase.GetCurrentMethod().Name,
+                                                        BeginProcMsgs,
+                                                        Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
                 Systems.NotifyBotStart();
             }
@@ -1000,18 +1194,18 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleChatBotStopped(Bots Source, EventArgs args)
         {
-            if (Source == Bots.TwitchChatBot && args == null)
+            if (Source == Bots.TwitchBotEventSub && args == null)
             {
                 ChatBotStopping = false;
             }
         }
 
-        public void HandleNewSubscriber(string DisplayName, string Months, string Subscription, string SubscriptionName)
+        public void HandleNewSubscriber(LiveUser User, string Months, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Subscribe, out bool Enabled, out short Multi);
 
             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
-                new( MsgVars.user, DisplayName ),
+                new( MsgVars.user, User.UserName ),
                 new( MsgVars.submonths, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.subplan, Subscription ),
                 new( MsgVars.subplanname, SubscriptionName )
@@ -1027,15 +1221,15 @@ namespace StreamerBotLib.BotIOController
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, DisplayName, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, User, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, User.UserName);
         }
 
-        public void HandleReSubscriber(string DisplayName, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
+        public void HandleReSubscriber(LiveUser User, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Resubscribe, out bool Enabled, out short Multi);
             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
-                new( MsgVars.user, DisplayName ),
+                new( MsgVars.user, User.UserName ),
                 new( MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total)) ),
                 new( MsgVars.submonths, FormatData.Plurality(TotalMonths, MsgVars.Pluralmonth, Prefix: LocalizedMsgSystem.GetVar(MsgVars.Total))),
                 new( MsgVars.subplan, Subscription),
@@ -1054,21 +1248,21 @@ namespace StreamerBotLib.BotIOController
             {
                 Send(ParsedMsg, Multi);
             }
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, DisplayName, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, User, UserMsg: HTMLParsedMsg);
 
             Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, DisplayName);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, User.UserName);
         }
 
-        public void HandleGiftSubscription(string DisplayName, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
+        public void HandleGiftSubscription(LiveUser User, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.GiftSub, out bool Enabled, out short Multi);
             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
-                    new(MsgVars.user,DisplayName),
+                    new(MsgVars.user, User.UserName ?? "anonymous"),
                     new(MsgVars.months, FormatData.Plurality(Months, MsgVars.Pluralmonth)),
-                    new(MsgVars.receiveuser, RecipientUserName ),
-                    new(MsgVars.subplan, Subscription ),
-                    new(MsgVars.subplanname, SubscriptionName)
+                    new(MsgVars.receiveuser, RecipientUserName ?? "" ),
+                    new(MsgVars.subplan, Subscription ?? "" ),
+                    new(MsgVars.subplanname, SubscriptionName ?? "")
                 });
 
             string ParsedMsg = VariableParser.ParseReplace(msg, dictionary);
@@ -1078,16 +1272,16 @@ namespace StreamerBotLib.BotIOController
                 Send(ParsedMsg, Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, DisplayName, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, User, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, User.UserName);
             //            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
 
-        public void HandleCommunitySubscription(string DisplayName, int SubCount, string Subscription)
+        public void HandleCommunitySubscription(LiveUser User, int SubCount, string Subscription)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.CommunitySubs, out bool Enabled, out short Multi);
             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
-                    new(MsgVars.user, DisplayName),
+                    new(MsgVars.user, User.UserName ?? "anonymous"),
                     new(MsgVars.count, FormatData.Plurality(SubCount, MsgVars.Pluralsub, Subscription)),
                     new(MsgVars.subplan, Subscription)
                 });
@@ -1102,11 +1296,16 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
             Systems.UpdatedStat(StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, DisplayName, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, DisplayName);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, User, UserMsg: HTMLParsedMsg);
+            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, User.UserName ?? "anonymous");
         }
 
-        public void HandleBeingHosted(string HostedByChannel, bool IsAutoHosted, int Viewers)
+        public void HandleChannelCheer(LiveUser user, int Bits)
+        {
+            Systems.UserCheered(user, Bits);
+        }
+
+        public void HandleBeingHosted(LiveUser User, string HostedByChannel, bool IsAutoHosted, int Viewers)
         {
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BeingHosted, out bool Enabled, out short Multi);
             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -1124,7 +1323,7 @@ namespace StreamerBotLib.BotIOController
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, UserName: HostedByChannel, UserMsg: HTMLParsedMsg);
+            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, User, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<Models.LiveUser> Users)
@@ -1143,14 +1342,14 @@ namespace StreamerBotLib.BotIOController
             Systems.UpdatedStat(StreamStatType.UserTimedOut);
         }
 
-        public void HandleUserBanned(string UserName, Platform Source)
+        public void HandleUserBanned(LiveUser User)
         {
             try
             {
                 Systems.UpdatedStat(StreamStatType.UserBanned);
-                HandleUserLeft(new(UserName, Source));
+                HandleUserLeft(User);
 
-                Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, UserName: UserName);
+                Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, User);
             }
             catch (Exception ex)
             {
@@ -1165,10 +1364,10 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleMessageReceived(Models.CmdMessage MsgReceived, Platform Source)
         {
-            Systems.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source));
+            Systems.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source, MsgReceived.UserId));
         }
 
-        public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, string ViewerCount, string Category)
+        public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, int ViewerCount, CategoryData Category)
         {
             Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
         }
@@ -1182,31 +1381,31 @@ namespace StreamerBotLib.BotIOController
         {
             if (GiveawayItemType == GiveawayTypes.Command && commandmsg.CommandText == GiveawayItemName)
             {
-                HandleGiveawayPostName(commandmsg.DisplayName);
+                HandleGiveawayPostName(new(commandmsg.DisplayName, Source, commandmsg.UserId));
             }
             Systems.ProcessCommand(commandmsg, Source);
         }
 
-        public void HandleCustomReward(string DisplayName, string RewardTitle, string RewardMsg, Platform Source)
+        public void HandleCustomReward(LiveUser User, string RewardTitle, string RewardMsg)
         {
             if (GiveawayItemType == GiveawayTypes.CustomRewards && RewardTitle == GiveawayItemName)
             {
-                HandleGiveawayPostName(DisplayName);
+                HandleGiveawayPostName(User);
             }
 
             Tuple<string, string> approval = SystemsController.GetApprovalRule(ModActionType.ChannelPoints, RewardTitle);
 
             if (approval != null)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, $"Custom reward {RewardTitle} requires approval.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Custom reward {RewardTitle} requires approval.");
 
-                switch (Source)
+                switch (User.Platform)
                 {
                     case Platform.Twitch:
-                        Systems.PostApproval($"{approval.Item2} {DisplayName} {RewardMsg}",
+                        Systems.PostApproval($"{approval.Item2} {User.UserName} {RewardMsg}",
                             new(() =>
                             {
-                                TwitchBots.PostInternalCommand(approval.Item2, [DisplayName, RewardMsg], $"!{approval.Item2} {DisplayName} {RewardMsg}");
+                                TwitchBots.PostInternalCommand(approval.Item2, [User.UserName, RewardMsg], $"!{approval.Item2} {User.UserName} {RewardMsg}");
                             })
                         );
 
@@ -1219,7 +1418,7 @@ namespace StreamerBotLib.BotIOController
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay request.");
 
-                Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, DisplayName);
+                Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, User);
             }
         }
 
@@ -1242,9 +1441,9 @@ namespace StreamerBotLib.BotIOController
             GiveawayStarted = false;
         }
 
-        public void HandleGiveawayPostName(string DisplayName)
+        public void HandleGiveawayPostName(LiveUser User)
         {
-            Systems.ManageGiveaway(DisplayName);
+            Systems.ManageGiveaway(User);
         }
 
         public void HandleGiveawayWinner()
@@ -1269,7 +1468,7 @@ namespace StreamerBotLib.BotIOController
 
         private void Systems_BanUserRequest(object sender, BanUserRequestEventArgs e)
         {
-            if (e.User.Source == Platform.Twitch)
+            if (e.User.Platform == Platform.Twitch)
             {
                 // TODO: verify users are correctly determined to be banned before banning, added to log
                 LogWriter.WriteLog($"Request to ban or timeout user {e.User.UserName} for {e.BanReason} for {e.Duration} seconds.");
