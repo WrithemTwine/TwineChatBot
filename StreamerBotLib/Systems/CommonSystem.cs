@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Data;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
@@ -22,10 +22,10 @@ namespace StreamerBotLib.Systems
     /// </summary>
     internal partial class ActionSystem
     {
-        internal static DataManager DataManage { get; set; }
+        internal static IDataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();
         public static ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
-        public static ObservableCollection<string> GiveawayCollection { get; set; } = [];
+        public static ObservableCollection<LiveUser> GiveawayCollection { get; set; } = [];
         public static ObservableCollection<string> CurrUserJoin { get; private set; } = [];
 
         public static string Category { get; set; }
@@ -112,13 +112,13 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        /// <summary>
-        /// Add currency accrual rows for every user when a new currency type is added to the database
-        /// </summary>
-        public static void UpdateCurrencyTable()
-        {
-            DataManage.PostCurrencyRows();
-        }
+        ///// <summary>
+        ///// Add currency accrual rows for every user when a new currency type is added to the database
+        ///// </summary>
+        //public static void UpdateCurrencyTable()
+        //{
+        //    DataManage.PostCurrencyRows();
+        //}
 
         public static void ClearWatchTime()
         {
@@ -152,12 +152,12 @@ namespace StreamerBotLib.Systems
 
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
-            DataManage.SetDiscordWebhooksEnabled(Enabled);
+            DataManage.SetWebhooksEnabled(Enabled);
         }
 
         public static void PostUpdatedDataRow(bool RowChanged)
         {
-            DataManage.PostUpdatedDataRow(RowChanged);
+            //DataManage.PostUpdatedDataRow(RowChanged);
         }
 
         public static void DeleteRows(IEnumerable<DataRow> dataRows)
@@ -165,9 +165,9 @@ namespace StreamerBotLib.Systems
             DataManage.DeleteDataRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserName, string UserId, string platform)
+        public static void AddNewAutoShoutUser(string UserId, Enums.Platform platform)
         {
-            DataManage.PostNewAutoShoutUser(UserName, UserId, platform);
+            DataManage.PostNewAutoShoutUser(UserId, platform);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
@@ -185,7 +185,7 @@ namespace StreamerBotLib.Systems
 
         public static bool AddClip(Clip c)
         {
-            return DataManage.PostClip(c.ClipId, c.CreatedAt, c.Duration, c.GameId, c.Language, c.Title, c.Url);
+            return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName);
         }
 
         /// <summary>

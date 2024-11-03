@@ -13,6 +13,8 @@
                         Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
                 <ResourceDictionary x:Name="ResourceStyleDictionary" 
                         Source="pack://application:,,,/StreamerBotLib;component/Themes/BaseStyle.xaml" />
+                <ResourceDictionary x:Name="ResourceDataGridDictionary" 
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/DataGridDataTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -112,9 +112,12 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="e"></param>
         private void TwitchPubSub_OnPubSubServiceError(object sender, OnPubSubServiceErrorArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name,
-                DebugLogTypes.TwitchPubSubBot, "Found a service error. Checking the token for issues.");
-            twitchTokenBot.CheckToken();
+            if (OptionFlags.ActiveToken)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name,
+                    DebugLogTypes.TwitchPubSubBot, "Found a service error. Checking the token for issues.");
+                twitchTokenBot.CheckToken();
+            }
         }
 
         /// <summary>
@@ -153,15 +156,18 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void ReconnectService()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Reconnecting the service.");
+            if (OptionFlags.ActiveToken)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchPubSubBot, "Reconnecting the service.");
 
-            IsStarted = false;
-            IsStopped = true;
-            UnregisterHandlers();
-            HandlersAdded = false;
-            TwitchPubSub = null;
+                IsStarted = false;
+                IsStopped = true;
+                UnregisterHandlers();
+                HandlersAdded = false;
+                TwitchPubSub = null;
 
-            StartBot();
+                StartBot();
+            }
         }
 
         /// <summary>
@@ -172,7 +178,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Connected = true;
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 lock (this)
                 {
@@ -226,7 +232,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             bool Stopped = true;
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 lock (this)
                 {

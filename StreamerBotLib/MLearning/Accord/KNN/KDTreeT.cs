@@ -184,17 +184,23 @@
         {
             // Initial argument checks for creating the tree
             if (points == null)
+            {
                 throw new ArgumentNullException("points");
+            }
 
             if (values != null && points.Length != values.Length)
+            {
                 throw new DimensionMismatchException("values");
+            }
 
             if (!inPlace)
             {
                 points = (double[][])points.Clone();
 
                 if (values != null)
+                {
                     values = (T[])values.Clone();
+                }
             }
 
             leaves = 0;
@@ -216,7 +222,9 @@
  int depth, int k, int start, int length, ElementComparer comparer, ref int leaves)
         {
             if (length <= 0)
+            {
                 return null;
+            }
 
             // We will be doing sorting in place
             int axis = comparer.Index = depth % k;
@@ -244,7 +252,9 @@
             var right = create(points, values, depth, k, rightStart, rightLength, comparer, ref leaves);
 
             if (left == null && right == null)
+            {
                 leaves++;
+            }
 
             // Backtrack and create
             return new KDTreeNode<T>()

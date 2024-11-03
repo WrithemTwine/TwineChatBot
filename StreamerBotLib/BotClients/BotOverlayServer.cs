@@ -13,6 +13,8 @@ using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
+using System.Reflection;
+
 namespace StreamerBotLib.BotClients
 {
     /*
@@ -48,6 +50,10 @@ namespace StreamerBotLib.BotClients
         /// Send ticker item updates to the server.
         /// </summary>
         public event EventHandler<UpdatedTickerItemsEventArgs> SendTickerToServer;
+        /// <summary>
+        /// Sets the OverlayPage to use with the overlay service
+        /// </summary>
+        public event EventHandler<SetOverlayWindowEventArgs> SetOverlayWindow;
 
         /// <summary>
         /// flag to pause alert processing
@@ -57,10 +63,6 @@ namespace StreamerBotLib.BotClients
         /// flag to specify alert sending thread start status
         /// </summary>
         private bool AlertsThreadStarted = false;
-        /// <summary>
-        /// tracks the open close status of the overlay server
-        /// </summary>
-        private bool WindowClosing = false;
 
         /// <summary>
         /// Queue to pipeline the alerts in an orderly and timed fashion, don't send alerts until
@@ -241,7 +243,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
 #elif UseGUIDLL
-        private MainWindow OverlayWindow;
+        private MediaOverlayPage OverlayPage;
 
         /// <summary>
         /// Build and initialize object.
@@ -253,7 +255,14 @@ namespace StreamerBotLib.BotClients
             IsStarted = false;
             IsStopped = true;
 
-            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty.ToString() });
+            BotEvent?.Invoke(this, new() { MethodName = BotEvents.HandleBotEventEmpty });
+        }
+
+        public void SetOverlayWindowGUI(MediaOverlayPage window)
+        {
+            OverlayPage = window;
+            SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
+            SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
         }
 
         public void ManageStreamOnlineOfflineStatus(bool Start)
@@ -277,25 +286,21 @@ namespace StreamerBotLib.BotClients
         /// <returns>True, the bot has started.</returns>
         public override bool StartBot()
         {
-            WindowClosing = false;
             IsStopped = false;
             IsStarted = true;
 
-            if (OverlayWindow == null)
+            if (OverlayPage == null)
             {
-                OverlayWindow = new(OverlayWindow_UserHideWindow);
-                SendOverlayToServer += OverlayWindow.GetOverlayActionReceivedHandler();
-                SendTickerToServer += OverlayWindow.GetupdatedTickerReceivedHandler();
+                SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
             }
 
             if (!AlertsThreadStarted)
             {
-                ThreadManager.CreateThreadStart(() => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
             }
 
             InvokeBotStarted();
 
-            OverlayWindow.Show();
             return IsStarted;
         }
 
@@ -307,8 +312,6 @@ namespace StreamerBotLib.BotClients
         /// <param name="e">Payload data-unused.</param>
         private void OverlayWindow_UserHideWindow(object sender, EventArgs e)
         {
-            WindowClosing = true;
-
             InvokeBotStopped();
             StopBot();
         }
@@ -322,14 +325,11 @@ namespace StreamerBotLib.BotClients
             IsStarted = false;
             IsStopped = true;
 
-            SendOverlayToServer -= OverlayWindow?.GetOverlayActionReceivedHandler();
-            SendTickerToServer -= OverlayWindow?.GetupdatedTickerReceivedHandler();
+            SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
+            SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
 
-            if (!WindowClosing)
-            {
-                OverlayWindow?.CloseApp();
-            }
-            OverlayWindow = null;
+            OverlayPage?.StopController();
+            OverlayPage = null;
 
             InvokeBotStopped();
 
@@ -347,7 +347,7 @@ namespace StreamerBotLib.BotClients
         {
             lock (SendAlerts)
             {
-                SendAlerts.Enqueue(ThreadManager.CreateThread(() => SendAlert(e.OverlayAction)));
+                SendAlerts.Enqueue(ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () => SendAlert(e.OverlayAction)));
                 NotifyActionQueueChanged();
             }
         }
@@ -454,7 +454,6 @@ namespace StreamerBotLib.BotClients
         }
 
         #endregion
-
 
         #region unused interface
         public override bool Send(string s)

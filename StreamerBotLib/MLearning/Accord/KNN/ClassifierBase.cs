@@ -86,7 +86,10 @@
         public virtual TClasses[] Decide(TInput[] input, TClasses[] result)
         {
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Decide(input[i]);
+            }
+
             return result;
         }
 
@@ -131,21 +134,30 @@
         internal T[] createOrReuse<T>(TInput input, T[] decision)
         {
             if (decision == null)
+            {
                 decision = new T[NumberOfClasses];
+            }
+
             return decision;
         }
 
         internal T[][] createOrReuse<T>(TInput[] input, T[][] decision)
         {
             if (decision == null)
+            {
                 decision = Jagged.Create<T>(input.Length, NumberOfClasses);
+            }
+
             return decision;
         }
 
         internal T[] createOrReuse<T>(TInput[] input, T[] decision)
         {
             if (decision == null)
+            {
                 decision = new T[input.Length];
+            }
+
             return decision;
         }
 

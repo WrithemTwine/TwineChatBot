@@ -36,12 +36,12 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         public TwineBotWebServer()
         {
-            static short Assign(short CheckPort)
+            static int Assign(int CheckPort)
             {
                 if (CheckPort == 0)
                 {
                     Random random = new();
-                    return ValidatePort((short)random.Next(1024, 65536));
+                    return ValidatePort(random.Next(1024, 65536));
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         /// <param name="port">The port to check.</param>
         /// <returns>The provided port or next port determined availabe within the system.</returns>
-        public static short ValidatePort(short port)
+        public static int ValidatePort(int port)
         {
             while (!IsFree(port))
             {
@@ -94,7 +94,7 @@ namespace StreamerBotLib.Overlay.Server
                 HTTPListenServer.Prefixes.Add(P);
             }
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 HTTPListenServer.Start();
                 ProcessPages = new(() => ServerSendAlerts());
@@ -273,7 +273,7 @@ namespace StreamerBotLib.Overlay.Server
                     {
                         ResponseCount++; // increase count for active listeners
                     }
-                    ThreadManager.CreateThreadStart(() => ResponseListen.Invoke());
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ResponseListen.Invoke());
                     //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Adding more http server listening threads, now {ResponseCount}.");
                 }
                 Thread.Sleep(200);

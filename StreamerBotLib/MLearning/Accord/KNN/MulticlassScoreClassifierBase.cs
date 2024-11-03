@@ -47,7 +47,10 @@
         public virtual double[] Scores(TInput input, double[] result)
         {
             for (int i = 0; i < NumberOfClasses; i++)
+            {
                 result[i] = Score(input, i);
+            }
+
             return result;
         }
 
@@ -134,7 +137,10 @@
         {
             double[] temp = new double[NumberOfClasses];
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Scores(input[i], temp)[classIndex[i]];
+            }
+
             return result;
         }
 
@@ -166,7 +172,10 @@
         {
             double[] temp = new double[NumberOfClasses];
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Scores(input[i], temp)[classIndex];
+            }
+
             return result;
         }
 
@@ -217,7 +226,10 @@
         public double[] Score(TInput[] input, double[] result)
         {
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Score(input[i]);
+            }
+
             return result;
         }
 
@@ -257,7 +269,10 @@
         public virtual double[][] Scores(TInput[] input, double[][] result)
         {
             for (int i = 0; i < input.Length; i++)
+            {
                 Scores(input[i], result[i]);
+            }
+
             return result;
         }
 
@@ -500,7 +515,10 @@
         {
             decision = createOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Score(input[i], out decision[i]);
+            }
+
             return result;
         }
 
@@ -519,7 +537,10 @@
         {
             decision = createOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Score(input[i], out decision[i]);
+            }
+
             return result;
         }
 
@@ -540,7 +561,10 @@
         {
             decision = createOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
+            {
                 Scores(input[i], out decision[i], result[i]);
+            }
+
             return result;
         }
 
@@ -560,7 +584,10 @@
         {
             decision = createOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
+            {
                 Scores(input[i], out decision[i], result[i]);
+            }
+
             return result;
         }
 
@@ -568,7 +595,10 @@
         {
             decision = createOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
+            {
                 ToMultilabel().Scores(input[i], ref decision[i], result[i]);
+            }
+
             return result;
         }
 

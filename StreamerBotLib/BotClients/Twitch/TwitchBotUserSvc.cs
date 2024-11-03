@@ -1,6 +1,7 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System.Reflection;
@@ -12,6 +13,7 @@ using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Chat.GetChatters;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -20,6 +22,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private readonly static string TokenLock = "Lock";
 
         private static HelixApiService HelixApiCalls;
+
 
         /// <summary>
         /// Contains the Helix API utilizing the Channel-Streamer access token
@@ -36,6 +39,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 return HelixApiService.StreamerAPI;
             }
         }
+
         /// <summary>
         /// Contains the Helix API utilizing the Bot account access token
         /// </summary>
@@ -200,7 +204,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.LogException(ex, MethodName);
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Exception found. Attempting to update token.");
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-
                 twitchTokenBot.CheckToken();
 
                 LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchBotUserSvc, "Attempting to again perform user-service action.");
@@ -229,7 +232,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (HelixApiCalls != null)
             {
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     if (StreamerChannelId == null && BotChannelId == null && TwitchChannelName != null)
                     {
@@ -258,20 +261,20 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="UserId">References the Channel to get the Game Category.</param>
         /// <param name="UserName">References the Channel, converts to UserId, to get the Game Category.</param>
         /// <returns>The Game Category for the requested channel.</returns>
-        public string GetUserGameCategory(string UserId = null, string UserName = null)
+        public CategoryData GetUserGameCategory(string UserId = null, string UserName = null)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Checking for update to game category.");
 
             ChannelInformation channelInformation = GetUserInfo(UserId: UserId, UserName: UserName)?.Data[0];
-            string gameName = channelInformation?.GameName ?? "N/A";
-            string gameId = channelInformation?.GameId ?? "N/A";
+            string gameName = channelInformation?.GameName ?? "All";
+            string gameId = channelInformation?.GameId ?? "0";
 
             if (UserName == TwitchChannelName)
             {
                 PostEvent_GetChannelGameName(gameName, gameId);
             }
 
-            return gameName;
+            return new(gameId,gameName);
         }
 
         public GetChannelInformationResponse GetUserInfo(string UserId = null, string UserName = null)
@@ -334,8 +337,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns>A list of Chatters detailing the current viewers of the channel.</returns>
         public List<Chatter> GetChatters()
         {
-                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
-         
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Getting a list of current chatters.");
+
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
                 string channelId = TwitchChannelId, botId = TwitchBotUserId;
@@ -345,7 +348,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 do
                 {
-
                     GetChattersResponse curr = HelixApiCalls.GetChatters(channelId, botId, after: cursor).Result;
                     cursor = curr.Pagination?.Cursor;
                     currChat.AddRange(curr.Data);
@@ -390,7 +392,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public List<string> GetUserCustomRewards(string UserId = null, string UserName = null)
         {
-            if(UserName == TwitchChannelName && TwitchChannelId != null) // switch the username for Id
+            if (UserName == TwitchChannelName && TwitchChannelId != null) // switch the username for Id
             {
                 UserName = null;
                 UserId = TwitchChannelId;
@@ -483,7 +485,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
             GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName, GameId = foundGameId });
         }
-
         private void PostEvent_GetCustomRewards(List<string> CustomRewardsList)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotUserSvc, "Posting custom reward list through 'GetCustomRewards' event.");

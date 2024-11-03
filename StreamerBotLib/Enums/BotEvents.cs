@@ -17,6 +17,8 @@
         TwitchPostNewFollowers,
         TwitchReSubscriber,
         TwitchStreamOffline,
+        TwitchMultiStreamOnline,
+        TwitchMultiGetChannels,
         TwitchStreamOnline,
         TwitchStreamUpdate,
         TwitchCategoryUpdate,

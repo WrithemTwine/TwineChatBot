@@ -111,7 +111,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Detected new access token. Updating and reseting TwitchChatClient.");
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
                     try
                     {
@@ -121,7 +121,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         CreateClient();
                         Connect();
                         resetToken = false;
-                        InvokeBotStarted();
+                        InvokeBotStopped();
 
                         SendChatMessages();
                     }
@@ -469,10 +469,9 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <returns></returns>
         public override bool ExitBot()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Exiting the chat bot.");
-
             if (TwitchChat != null && TwitchChat.IsConnected)
             {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchChatBot, "Exiting the chat bot.");
                 StopBot();
                 TwitchChat = null;
             }

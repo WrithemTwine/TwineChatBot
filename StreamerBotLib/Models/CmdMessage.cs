@@ -7,6 +7,7 @@ namespace StreamerBotLib.Models
         public string CommandText { get; set; }
         public List<string> CommandArguments { get; set; }
         public string Channel { get; set; }
+        public string UserId { get; set; }
         public string DisplayName { get; set; }
         public bool IsBroadcaster { get; set; }
         public bool IsHighlighted { get; set; }

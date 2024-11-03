@@ -3,6 +3,8 @@ using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
+using System.Reflection;
+
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem
@@ -73,7 +75,7 @@ namespace StreamerBotLib.Systems
 
             if (ItemCount)
             {
-                ThreadManager.CreateThreadStart(() => { MonitorApprovals(); });
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => { MonitorApprovals(); });
             }
         }
 

@@ -48,11 +48,18 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 int pivotIndex = keys.Partition(items, first, last, asc: asc);
 
                 if (n == pivotIndex)
+                {
                     return keys[n];
+                }
                 else if (n > pivotIndex)
+                {
                     first = pivotIndex + 1;
+                }
                 else // if (n < pivotIndex)
+                {
                     last = pivotIndex;
+                }
+
                 Debug.Assert(last >= first);
             }
 
@@ -80,7 +87,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where T : IComparable<T>
         {
             if (first >= last)
+            {
                 return first;
+            }
 
             int pivotIndex = pivot(keys, first, last - 1, asc);
             var pivotValue = keys[pivotIndex];
@@ -135,7 +144,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             where TKey : IComparable<TKey>
         {
             if (first >= last)
+            {
                 return first;
+            }
 
             int pivotIndex = pivot(keys, items, first, last - 1, asc);
             var pivotValue = keys[pivotIndex];
@@ -185,13 +196,17 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             int dir = asc ? 1 : -1;
             int middle = first + (last - first) / 2;
             if (dir * keys[middle].CompareTo(keys[first]) < 0)
+            {
                 keys.Swap(middle, first);
+            }
 
             if (dir * keys[last].CompareTo(keys[middle]) < 0)
             {
                 keys.Swap(last, middle);
                 if (dir * keys[middle].CompareTo(keys[first]) < 0)
+                {
                     keys.Swap(middle, first);
+                }
             }
 
             return middle;
@@ -240,7 +255,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             Debug.Assert(last >= first);
 
             if (first == last)
+            {
                 return last;
+            }
 
             if (asc)
             {
@@ -252,12 +269,16 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                     if (key.CompareTo(keys[first]) < 0)
                     {
                         for (; first != j; j--)
+                        {
                             keys[j] = keys[j - 1];
+                        }
                     }
                     else
                     {
                         for (; key.CompareTo(keys[j - 1]) < 0; j--)
+                        {
                             keys[j] = keys[j - 1];
+                        }
                     }
 
                     keys[j] = key;
@@ -273,12 +294,16 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                     if (key.CompareTo(keys[first]) > 0)
                     {
                         for (; first != j; j--)
+                        {
                             keys[j] = keys[j - 1];
+                        }
                     }
                     else
                     {
                         for (; key.CompareTo(keys[j - 1]) > 0; j--)
+                        {
                             keys[j] = keys[j - 1];
+                        }
                     }
 
                     keys[j] = key;
@@ -298,7 +323,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             Debug.Assert(last >= first);
 
             if (first == last)
+            {
                 return last;
+            }
 
             if (asc)
             {

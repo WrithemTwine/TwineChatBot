@@ -42,7 +42,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (FollowerService == null)
             {
                 FollowerService = new ExtFollowerService(
-                   HelixApiService.BotAPI,
+                     HelixApiService.BotAPI,
                     (int)Math.Round(TwitchFrequencyFollowerTime, 0));
 
                 FollowerService.SetChannelsByName([ClientName ?? TwitchChannelName]);
@@ -114,6 +114,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStopped = true;
                     InvokeBotStopped();
                     //FollowerService = null;
+                    HandlersAdded = false;
                 }
                 return true;
             }
@@ -128,9 +129,9 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Retrieve all followers to the streamer's channel and add to the database.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> GetAllFollowersBulkAsync()
+        public void GetAllFollowersBulkAsync()
         {
-            return await FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
+            FollowerService.GetAllFollowersBulkAsync(TwitchChannelName);
         }
 
         /// <summary>

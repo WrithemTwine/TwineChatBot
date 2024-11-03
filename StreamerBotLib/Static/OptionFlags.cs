@@ -18,6 +18,16 @@ namespace StreamerBotLib.Static
         /// Indicates database xml file successfully loaded.
         /// </summary>
         public static bool MultiDataLoaded { get; set; } = false;
+
+        /// <summary>
+        /// Flag to specify the prior XML Datagram file imported into the database
+        /// </summary>
+        public static bool EFCDataImportedDataGram
+        {
+            get => Settings.Default.EFCDataImportedDataGram;
+            set => Settings.Default.EFCDataImportedDataGram = value;
+        }
+
         /// <summary>
         /// The app-wide token to keep threads running, setting it false indicates it's all shut down to close the application.
         /// </summary>
@@ -68,7 +78,12 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies whether to record bot status messages in the log file.
         /// </summary>
-        public static bool LogBotStatus => Settings.Default.LogBotStatus;
+        public static bool LogBotStatus
+        {
+            get => Settings.Default.LogBotStatus;
+            set => Settings.Default.LogBotStatus = value;
+        }
+
         /// <summary>
         /// Specifies whether to record exceptions during bot operation.
         /// </summary>
@@ -347,7 +362,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static double TwitchFrequencyClipTime => Settings.Default.TwitchFrequencyClipTime;
         /// <summary>
-        /// Specifies whether to post a channel clip link to Discord, and Discord webhooks need a 'clips' link.
+        /// Specifies whether to post a channel clip link to WebHooks, and WebHooks webhooks need a 'clips' link.
         /// </summary>
         public static bool TwitchClipPostDiscord => Settings.Default.TwitchClipPostDiscord;
         /// <summary>
@@ -395,7 +410,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
         /// </summary>
-        public static short GiveawayCount
+        public static int GiveawayCount
         {
             get => Settings.Default.GiveawayCount; set => Settings.Default.GiveawayCount = value;
         }
@@ -430,7 +445,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// The number of giveaway entries a user can submit.
         /// </summary>
-        public static short GiveawayMaxEntries
+        public static int GiveawayMaxEntries
         {
             get => Settings.Default.GiveawayMaxEntries; set => Settings.Default.GiveawayMaxEntries = value;
         }
@@ -658,6 +673,15 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayEnabled; set => Settings.Default.MediaOverlayEnabled = value;
         }
+
+        /// <summary>
+        /// Choose whether to show Media Overlay Services in a separate window or within the main window
+        /// </summary>
+        public static bool MediaOverlayEmbedGUI
+        {
+            get => Settings.Default.MediaOverlayEmbedGUI; set => Settings.Default.MediaOverlayEmbedGUI = value;
+        }
+
         /// <summary>
         /// Enable the Media Overlay (Twitch) channel points redemption for an overlay action.
         /// </summary>
@@ -683,7 +707,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
-        public static short MediaOverlayMediaActionPort
+        public static int MediaOverlayMediaActionPort
         {
             get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
         }
@@ -691,7 +715,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay ticker medition port server Overlay ticker item Content through the http server.
         /// </summary>
-        public static short MediaOverlayMediaTickerPort
+        public static int MediaOverlayMediaTickerPort
         {
             get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
@@ -731,6 +755,9 @@ namespace StreamerBotLib.Static
         /// Defines rotating each ticker item in the same spot
         /// </summary>
         public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
+        /// <summary>
+        /// Defines the overlay ticker rotation time
+        /// </summary>
         public static int MediaOverlayTickerRotateTime => Settings.Default.MediaOverlayTickerRotateTime;
         /// <summary>
         /// Defines a marquee ticker scroller
@@ -827,7 +854,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool EnableDebugTwitchUserSvcBot => Settings.Default.EnableDebugTwitchUserSvcBot;
         /// <summary>
-        /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
+        /// Enables the Media-WebHooks (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
         public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
@@ -880,6 +907,86 @@ namespace StreamerBotLib.Static
         /// Specifies the GitHub link to the application Wiki
         /// </summary>
         public static string GitHubWikiLink => Resources.GitHubWikiLink;
+
+        #endregion
+
+        #region Database choose and connection strings
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlite
+        {
+            get => Settings.Default.EFCDatabaseProviderSqlite; set => Settings.Default.EFCDatabaseProviderSqlite = value;
+        }
+
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringSqlite => Settings.Default.EFCConnectStringSqlite;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlServer
+        {
+            get => Settings.Default.EFCDatabaseProviderSqlServer; set => Settings.Default.EFCDatabaseProviderSqlServer = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringSqlServer => Settings.Default.EFCConnectStringSqlServer;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderCosmos
+        {
+            get => Settings.Default.EFCDatabaseProviderCosmos; set => Settings.Default.EFCDatabaseProviderCosmos = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringCosmos => Settings.Default.EFCConnectStringCosmos;
+        public static string EFCDbNameCosmos => Settings.Default.EFCDbNameCosmos;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderPostgreSQL
+        {
+            get => Settings.Default.EFCDatabaseProviderPostgreSQL; set => Settings.Default.EFCDatabaseProviderPostgreSQL = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringPostgreSQL => Settings.Default.EFCConnectStringPostgreSQL;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderMySql
+        {
+            get => Settings.Default.EFCDatabaseProviderMySql; set => Settings.Default.EFCDatabaseProviderMySql = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringMySql => Settings.Default.EFCConnectStringMySql;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderKNet
+        {
+            get => Settings.Default.EFCDatabaseProviderKNet; set => Settings.Default.EFCDatabaseProviderKNet = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCDbNameKNet => Settings.Default.EFCDbNameKNet;
+        public static string EFCKNetApplicationId => Settings.Default.EFCKNetApplicationId;
+        public static string EFCKNetBootstrapServers => Settings.Default.EFCKNetBootstrapServers;
 
         #endregion
 

@@ -76,7 +76,8 @@ namespace StreamerBotLib.BotClients.Twitch
                     IsStarted = false;
                     IsStopped = true;
                     InvokeBotFailedStart();
-                } else
+                }
+                else
                 {
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchClipBot, "Determined bot is started, notifying GUI the bot started.");
                     InvokeBotStarted();

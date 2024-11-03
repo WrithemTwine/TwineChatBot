@@ -1,5 +1,6 @@
 ﻿
 using StreamerBotLib.BotIOController;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
@@ -48,10 +49,10 @@ namespace StreamerBotLib.Systems
         public void StartElapsedTimerThread()
         {
             // don't start another thread if the current is still active
-            if (ElapsedThread == null || !ElapsedThread.IsAlive)
+            if (ElapsedThread == null)
             {
                 ChatBotStarted = true;
-                ElapsedThread = ThreadManager.CreateThread(ElapsedCommandTimers);
+                ElapsedThread = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ElapsedCommandTimers);
                 ElapsedThread.Start();
             }
         }
@@ -86,14 +87,14 @@ namespace StreamerBotLib.Systems
                 while (ComputeRerunLoop())
                 {
                     diluteTime = CheckDilute();
-                    foreach (var item in from Tuple<string, int, string[]> Timers in DataManage.GetTimerCommands()
+                    foreach (var item in from Tuple<string, int, List<string>> Timers in DataManage.GetTimerCommands()
                                          where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))
                                          let item = new TimerCommand(Timers, diluteTime)
                                          select item)
                     {
                         if (RepeatList.UniqueAdd(item))
                         {
-                            ThreadManager.CreateThreadStart(() => RepeatCmd(item));
+                            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => RepeatCmd(item));
                         }
                         else
                         {
@@ -149,7 +150,7 @@ namespace StreamerBotLib.Systems
 
             try
             {
-                while (repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
+                while (OptionFlags.ActiveToken && repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
                 {
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
@@ -167,9 +168,8 @@ namespace StreamerBotLib.Systems
                         ResetLive = false;
                     }
 
-                    if (cmd.CheckFireTime())
+                    if (OptionFlags.ActiveToken && cmd.CheckFireTime())
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"The repeat command, {cmd.Command}, is ready to activate.");
                         lock (GUI.GUIDataManagerLock.Lock) // lock it up because accessing a DataManage row
                         {
                             lock (RepeatLock)
@@ -198,7 +198,10 @@ namespace StreamerBotLib.Systems
 
                     lock (cmd) // lock the cmd because it's referenced in other threads
                     {
-                        repeat = DataManage.GetTimerCommandTime(cmd.Command) ?? 0;
+                        if (OptionFlags.ActiveToken)
+                        {
+                            repeat = DataManage.GetTimerCommandTime(cmd.Command);
+                        }
                         cmd.ModifyTime(repeat, diluteTime);
                     }
                 }
@@ -301,7 +304,7 @@ namespace StreamerBotLib.Systems
             {
                 result = "";
             }
-            else if ((ViewerTypes)Enum.Parse(typeof(ViewerTypes), cmdrow.Permission) < cmdMessage.UserType)
+            else if (cmdrow.Permission < cmdMessage.UserType)
             {
                 Tuple<string, string> ApproveAction = GetApprovalRule(ModActionType.Commands, cmdMessage.CommandText);
                 if (ApproveAction == null)
@@ -311,14 +314,15 @@ namespace StreamerBotLib.Systems
                 else
                 {
                     AddApprovalRequest($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
-                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
+                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
                     result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
                 }
             }
             else
             {
                 // parse commands, either built-in or custom
-                result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source), cmdMessage.CommandArguments, cmdrow, out multi);
+                result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi);
+                DataManage.UpdateStats(DBUserStats.Commands, cmdMessage.UserId, source);
             }
 
             FormatResult(result, multi, cmdrow);
@@ -349,12 +353,12 @@ namespace StreamerBotLib.Systems
 
             foreach (LiveUser u in CurrActiveUsers)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Contains {u.UserName}, {u.UserId}, {u.Source}");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Contains {u.UserName}, {u.UserId}, {u.Platform}");
             }
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Now checking if the user is on the shout list.");
 
-            ThreadManager.CreateThreadStart(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 foreach (LiveUser U in CurrActiveUsers)
                 {
@@ -386,6 +390,7 @@ namespace StreamerBotLib.Systems
                 {
                     OnProcessCommand(response, multi);
 
+
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
                 }
             }
@@ -396,9 +401,9 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="User">The user to check.</param>
         /// <returns>The user's welcome message, or empty string if it's not found.</returns>
-        public static string CheckWelcomeUser(string User)
+        public static string CheckWelcomeUser(string UserId)
         {
-            return DataManage.CheckWelcomeUser(User);
+            return DataManage.CheckWelcomeUser(UserId);
         }
 
         private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
@@ -416,7 +421,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count > 0)
                 {
-                    bool success = BotController.ModifyChannelInformation(User.Source, Title: string.Join(' ', arglist));
+                    bool success = BotController.ModifyChannelInformation(User.Platform, Title: string.Join(' ', arglist));
                     result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
                 }
                 else
@@ -428,7 +433,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count > 0)
                 {
-                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Source);
+                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Platform);
                     result = cmdrow.Message;
                 }
                 else
@@ -438,7 +443,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
             {
-                BotController.CancelRaidChannel(User.Source);
+                BotController.CancelRaidChannel(User.Platform);
                 result = cmdrow.Message;
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.approve))
@@ -474,7 +479,7 @@ namespace StreamerBotLib.Systems
                     string adduser = arglist[0].Replace("@", "");
                     string message = string.Join(' ', arglist.Skip(1));
 
-                    DataManage.PostUserCustomWelcome(adduser, message);
+                    DataManage.PostUserCustomWelcome(DataManage.GetUser(adduser), message);
                 }
                 else
                 {
@@ -508,7 +513,7 @@ namespace StreamerBotLib.Systems
                             break;
                     }
 
-                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Source);
+                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
                 }
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
@@ -518,7 +523,7 @@ namespace StreamerBotLib.Systems
                 {
                     if (int.TryParse(arglist[0], out int GameId))
                     {
-                        BotController.ModifyChannelInformation(User.Source, CategoryId: GameId.ToString());
+                        BotController.ModifyChannelInformation(User.Platform, CategoryId: GameId.ToString());
                         result = cmdrow.Message;
                     }
                     else
@@ -526,15 +531,15 @@ namespace StreamerBotLib.Systems
                         bool success = false;
                         string CategoryName = string.Join(' ', arglist);
 
-                        Tuple<string, string> found = DataManage.GetGameCategories().Find((x) => x.Item2 == CategoryName);
+                        CategoryData found = DataManage.GetGameCategories().Find((x) => x.CategoryName == CategoryName);
 
                         if (found != null)
                         {
-                            success = BotController.ModifyChannelInformation(User.Source, CategoryId: found.Item1);
+                            success = BotController.ModifyChannelInformation(User.Platform, CategoryId: found.CategoryId);
                         }
                         else
                         {
-                            success = BotController.ModifyChannelInformation(User.Source, CategoryName: CategoryName);
+                            success = BotController.ModifyChannelInformation(User.Platform, CategoryName: CategoryName);
                         }
 
                         result = success ? cmdrow.Message : LocalizedMsgSystem.GetVar("MsgNoSuccess");
@@ -568,13 +573,13 @@ namespace StreamerBotLib.Systems
             {
                 string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@", "") : User.UserName;
 
-                ThreadManager.CreateThreadStart(() =>
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
-                    DateTime created = BotController.GetUserAccountAge(ParamUser, User.Source);
+                    DateTime created = BotController.GetUserAccountAge(ParamUser, User.Platform);
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.user,ParamUser),
-                        new(MsgVars.date, FormatData.FormatTimes(created))
+                        new(MsgVars.date, created == DateTime.MinValue ? "not found" : FormatData.FormatTimes(created))
                     });
 
                     OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));
@@ -604,7 +609,7 @@ namespace StreamerBotLib.Systems
             {
                 if (arglist.Count == 0 && cmdrow.Message.Contains(MsgVars.viewers.ToString()))
                 {
-                    BotController.GetViewerCount(User.Source);
+                    BotController.GetViewerCount(User.Platform);
                     result = "";
                 }
                 else
@@ -620,7 +625,7 @@ namespace StreamerBotLib.Systems
                         new( MsgVars.uptime, FormatData.FormatTimes(GetCurrentStreamStart) ),
                         new( MsgVars.viewers, FormatData.Plurality(arglist.Count > 0 ? arglist[0] : "", MsgVars.Pluralviewers) ),
                         new( MsgVars.deltaviewers, $"{(DeltaViewers>0?'+':"")}{DeltaViewers}" ),
-                        new( MsgVars.viewrate, arglist.Count > 0 ? (Convert.ToDouble(arglist[0])/(DataManage.GetFollowerCount() ?? 1)).ToString("0.#00 %") : "0 %")
+                        new( MsgVars.viewrate, arglist.Count > 0 ? (Convert.ToDouble(arglist[0])/( Math.Max( DataManage.GetFollowerCount(), 1) )).ToString("0.#00 %") : "0 %")
                     }));
 
                     LastLiveViewerCount = Convert.ToInt32(arglist[0]);
@@ -632,7 +637,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
             {
-                result = DataManage.GetCommands();
+                result = DataManage.GetCommandString();
             }
             // capture all of the join queue commands
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.join)
@@ -660,7 +665,7 @@ namespace StreamerBotLib.Systems
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
             {
                 // in repeat command case, the arglist may be empty and needs capacity check
-                bool TryConvertInt = int.TryParse((arglist!=null && arglist.Count > 0 )? arglist[0] : "0", out int Wager);
+                bool TryConvertInt = int.TryParse((arglist != null && arglist.Count > 0) ? arglist[0] : "0", out int Wager);
 
                 if (arglist.Count == 1 && TryConvertInt)
                 {
@@ -768,7 +773,7 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Source))
+                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Platform))
                 {
                     result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
                 }
@@ -781,12 +786,12 @@ namespace StreamerBotLib.Systems
 
                     if (cmdrow.Message.Contains(MsgVars.category.ToString()))
                     {
-                        ThreadManager.CreateThreadStart(() =>
+                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                         {
                             lock (GUI.GUIDataManagerLock.Lock)
                             {
                                 VariableParser.AddData(ref datavalues,
-                                new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Source)), bots: User.Source) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                                new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                                 string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                                 tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
@@ -799,7 +804,7 @@ namespace StreamerBotLib.Systems
 
                                 CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
                                     Action: DefaultCommand.so.ToString(),
-                                    UserName: User.UserName, UserMsg: tempHTMLResponse);
+                                    User, UserMsg: tempHTMLResponse);
                             }
                         });
 
@@ -820,10 +825,12 @@ namespace StreamerBotLib.Systems
 
             if (result != "")
             {
-                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, UserName: User.UserName, UserMsg: tempHTMLResponse);
+                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, User, UserMsg: tempHTMLResponse);
             }
 
+            result ??= "";
             result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;
+
             multi = cmdrow.SendMsgCount;
 
             return result;
@@ -887,14 +894,14 @@ namespace StreamerBotLib.Systems
                 case > 0:
                 case -1:
                     {
-                        if (CommData.Action != CommandAction.Get.ToString())
+                        if (CommData.Action != CommandAction.Get)
                         {
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidComUsage), CommData.CmdName, CommData.Action, CommandAction.Get.ToString()));
                         }
 
                         // convert multi-row output to a string
                         string queryoutput = "";
-                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(CommData, CommData.Top)
+                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(Commands.GetCommands(CommData), CommData.Top)
                                                                  let bundle = r as Tuple<object, object>
                                                                  where bundle.Item1 == bundle.Item2
                                                                  select bundle)
@@ -909,7 +916,7 @@ namespace StreamerBotLib.Systems
 
                 default:
                     {
-                        object querydata = DataManage.PerformQuery(CommData, paramvalue);
+                        object querydata = DataManage.PerformQuery(CommandsBase.GetCommands(CommData), paramvalue);
 
                         string output = "";
                         if (querydata.GetType() == typeof(string))

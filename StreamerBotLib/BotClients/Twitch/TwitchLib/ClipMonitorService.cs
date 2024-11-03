@@ -131,8 +131,8 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                     GetClipsResponse curr = await _monitor.ActionAsync((c, param) =>
                                                                     _api.Helix.Clips.GetClipsAsync(first: (int)param[0],
                                                                                                    broadcasterId: c,
-                                                                                                   after: (string)param[1]), 
-                                                                                                   ChannelName, 
+                                                                                                   after: (string)param[1]),
+                                                                                                   ChannelName,
                                                                                                    [QueryCountPerRequest, after]);
                     after = curr.Pagination.Cursor;
                     clips.AddRange(curr.Clips);

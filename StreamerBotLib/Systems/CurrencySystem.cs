@@ -14,7 +14,7 @@ namespace StreamerBotLib.Systems
 
         public bool BlackJackActive; // whether a game is active
         private bool BlackJackPlay; // bool - time to play, add no more players
-        private List<LiveUser> GameBlackJackPlayers { get; set; } = new();
+        private List<LiveUser> GameBlackJackPlayers { get; set; } = [];
         private LiveUser GameCurrBlackJackPlayer = null;
         private BlackJack GameCurrBlackJack;
         private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = new();
@@ -29,7 +29,7 @@ namespace StreamerBotLib.Systems
 
                 try
                 {
-                    ThreadManager.CreateThreadStart(() =>
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                     {
                         while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                         {
@@ -58,15 +58,14 @@ namespace StreamerBotLib.Systems
                 WatchStarted = true;
                 try
                 {
-                    ThreadManager.CreateThreadStart(() =>
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                     {
                         // watch time accruing only works when stream is online <- i.e. watched!
                         while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                         {
                             lock (CurrUsers)
                             {
-                                DataManage.UpdateWatchTime(new List<string>(from LiveUser U in CurrUsers
-                                                                            select U.UserName), DateTime.Now.ToLocalTime());
+                                DataManage.UpdateWatchTime(CurrUsers, DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
                             Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
@@ -101,8 +100,8 @@ namespace StreamerBotLib.Systems
                         }
                         )), cmdrow.SendMsgCount, cmdrow);
 
-                    ThreadManager.CreateThreadStart(() => GameBlackJackStart());
                     GameCurrBlackJack = new();
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => GameBlackJackStart());
 
                     GameBlackJackCurrency = cmdrow.Currency_field;
                     lock (GameCurrBlackJackAnswer)
@@ -164,7 +163,7 @@ namespace StreamerBotLib.Systems
                     {
                         new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                         new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
-                    })));
+                    })), 0);
 
                 int WaitTime = 30000; // 30 seconds in milliseconds
 
@@ -188,7 +187,7 @@ namespace StreamerBotLib.Systems
                                     new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                                     new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
                                     }
-                                )));
+                                )), 0);
                             int ThreadWait = 0;
                             while (ThreadWait < WaitTime && GameCurrBlackJackAnswer.Count == 0)
                             {
@@ -220,11 +219,11 @@ namespace StreamerBotLib.Systems
 
                             if (CurrCardCount == BlackJack.BlackJackWin)
                             {
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}");
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}", 0);
                             }
                             else if (CurrCardCount > BlackJack.BlackJackWin)
                             {
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}");
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}", 0);
                             }
                         }
                     }

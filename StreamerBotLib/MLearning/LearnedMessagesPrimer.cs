@@ -7,18 +7,17 @@ namespace StreamerBotLib.MLearning
     public class LearnedMessagesPrimer
     {
         private static string[] SpamBotMsgs =
-        {
+        [
             "Best followers, primes and viewers on mountviewers.com(remove the space)",
             "Wanna become famous? Buy followers, primes and views on bigfollows .com",
             "Best followers, primes and viewers on mystrm .store (remove the space)"
-        };
+        ];
 
         public static List<LearnedMessage> PrimerList
         {
             get
             {
-                List<LearnedMessage> data = new();
-                data.AddRange(LearnedMessage.BuildList(SpamBotMsgs, MsgTypes.InstantBanSpam));
+                List<LearnedMessage> data = [.. LearnedMessage.BuildList(SpamBotMsgs, MsgTypes.InstantBanSpam)];
 
                 return data;
             }
@@ -28,14 +27,14 @@ namespace StreamerBotLib.MLearning
         {
             get
             {
-                return new()
-                {
+                return
+                [
                     new() { MsgType = MsgTypes.Allow, Reason = BanReasons.None },
                     new() { MsgType = MsgTypes.InstantBanHateSpeech, Reason = BanReasons.RacismOrHate },
                     new() { MsgType = MsgTypes.InstantBanSpam, Reason = BanReasons.UnsolicitedSpam },
                     new() { MsgType = MsgTypes.Questionable, Reason = BanReasons.Harrassment },
                     new() { MsgType = MsgTypes.UnidentifiedChatInput, Reason = BanReasons.None }
-                };
+                ];
             }
         }
 
@@ -43,7 +42,7 @@ namespace StreamerBotLib.MLearning
         {
             get
             {
-                List<BanViewerRule> output = new();
+                List<BanViewerRule> output = [];
 
                 foreach (ViewerTypes V in Enum.GetValues(typeof(ViewerTypes)))
                 {
@@ -69,10 +68,10 @@ namespace StreamerBotLib.MLearning
 
                         rule.TimeoutSeconds = rule.ModAction switch
                         {
-                            ModActions.Allow => "0",
-                            ModActions.Ban => "0",
-                            ModActions.Timeout => V is > ViewerTypes.Broadcaster and < ViewerTypes.VIP ? "0" : "1800",
-                            ModActions.Respond => "0",
+                            ModActions.Allow => 0,
+                            ModActions.Ban => 0,
+                            ModActions.Timeout => V is > ViewerTypes.Broadcaster and < ViewerTypes.VIP ? 0 : 1800,
+                            ModActions.Respond => 0,
                             _ => throw new NotImplementedException()
                         };
 

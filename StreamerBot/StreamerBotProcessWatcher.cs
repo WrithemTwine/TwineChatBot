@@ -1,6 +1,7 @@
-﻿using StreamerBotLib.Static;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Events;
+using StreamerBotLib.Static;
 
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,17 +21,7 @@ namespace StreamerBot
 
         public event EventHandler VerifyNewVersion;
 
-        /// <summary>
-        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
-        /// </summary>
-        private bool? IsMultiProcActive { get; set; }
-
         private delegate void ProcWatch(bool IsActive);
-
-        private void UpdateProc(bool IsActive)
-        {
-            _ = AppDispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
-        }
 
         private void ProcessWatcher()
         {
@@ -43,13 +34,6 @@ namespace StreamerBot
             {
                 while (WatchProcessOps)
                 {
-                    Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                    if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
-                    {
-                        UpdateProc(processes.Length > 0);
-                        IsMultiProcActive = processes.Length > 0;
-                    }
-
                     if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
                         NotifyExpiredCredentials?.Invoke(this, new());
@@ -110,9 +94,75 @@ namespace StreamerBot
             Controller.TwitchStartUpdateAllFollowers(true);
         }
 
-        #endregion 
+        #endregion
         #endregion
 
+        #region GUIAppStats
+        private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
+        {
+            AppDispatcher.BeginInvoke(new BotOperation(() =>
+            {
+                guiAppStats.Threads.UpdateValue(e.AllThreadCount);
+                guiAppStats.ClosedThreads.UpdateValue(e.ClosedThreadCount);
+            }));
+        }
 
+        private void UpdateAppTime()
+        {
+            AppDispatcher.BeginInvoke(new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); }));
+        }
+
+        #endregion
+
+        /// <summary>
+        /// A running watcher thread checks for elapsed time, and raises an event when current time exceeds the 
+        /// time to check for another version; and not just when the application starts - the user can have the 
+        /// application open for weeks and would know of a new version without restarting it.
+        /// Handles the event when it's time to check for a new version.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StreamerBotWindow_VerifyNewVersion(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                // navigate to the predefined stable link.
+                WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+            });
+        }
+
+
+        #region BotOps-changes in token expiration
+
+        /// <summary>
+        /// Event to handle when the Bot Credentials expire. The expiration date 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
+
+            List<RadioButton> BotOps =
+            [
+                Radio_MultiLiveTwitch_StopBot,
+                Radio_Twitch_FollowBotStop,
+                Radio_Twitch_LiveBotStop,
+                Radio_Twitch_StopBot,
+                Radio_Twitch_ClipBotStop
+            ];
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (RadioButton button in BotOps)
+                {
+                    HelperStopBot(button);
+                }
+
+                CheckFocus();
+            });
+        }
+
+        #endregion
     }
 }

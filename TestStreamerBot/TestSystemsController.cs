@@ -1,3 +1,4 @@
+using StreamerBotLib.DataSQL;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -7,7 +8,6 @@ namespace TestStreamerBot
     public class TestSystemsController
     {
         private bool Initialized;
-        private static readonly string DataFileXML = "ChatDataStore.xml";
 
         private string result = string.Empty;
 
@@ -23,10 +23,6 @@ namespace TestStreamerBot
         {
             if (!Initialized)
             {
-                if (File.Exists(DataFileXML))
-                {
-                    File.Delete(DataFileXML);
-                }
                 systemsController.PostChannelMessage += SystemsController_PostChannelMessage;
 
                 OptionFlags.FirstUserChatMsg = true;
@@ -82,11 +78,11 @@ namespace TestStreamerBot
             string Category = "New World";
             DateTime RaidTime = DateTime.Now;
 
-            systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, Category);
+            systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, new("3813210654" , Category));
             SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
-            Assert.True(SystemsController.DataManage.TestInRaidData(RaidName, RaidTime, viewers, Category));
-            Assert.True(SystemsController.DataManage.TestOutRaidData(RaidName, RaidTime));
+            Assert.True(((DataManagerSQL)SystemsController.DataManage).TestInRaidData(RaidName, RaidTime, viewers, Category));
+            Assert.True(((DataManagerSQL)SystemsController.DataManage).TestOutRaidData(RaidName, RaidTime));
         }
 
         [Theory]

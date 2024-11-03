@@ -93,7 +93,10 @@
         public virtual TOutput[] Transform(TInput[] input, TOutput[] result)
         {
             for (int i = 0; i < input.Length; i++)
+            {
                 result[i] = Transform(input[i]);
+            }
+
             return result;
         }
     }
@@ -163,7 +166,10 @@
         public override TOutput[][] Transform(TInput[] input, TOutput[][] result)
         {
             for (int i = 0; i < input.Length; i++)
+            {
                 Transform(input[i], result[i]);
+            }
+
             return result;
         }
     }

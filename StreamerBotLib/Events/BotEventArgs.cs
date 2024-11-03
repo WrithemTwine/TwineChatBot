@@ -1,8 +1,10 @@
-﻿namespace StreamerBotLib.Events
+﻿using StreamerBotLib.Enums;
+
+namespace StreamerBotLib.Events
 {
     public class BotEventArgs
     {
-        public string MethodName { get; set; }
+        public BotEvents MethodName { get; set; }
         public EventArgs e { get; set; }
     }
 }
